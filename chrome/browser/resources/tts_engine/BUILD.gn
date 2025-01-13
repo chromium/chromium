@@ -6,8 +6,6 @@ import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_win || is_mac || is_linux)
 
-out_dir = "$root_out_dir/resources/tts_engine"
-
 generate_grd("build_bindings_grdp") {
   grd_prefix = "tts_engine"
   resource_path_prefix = "tts_engine"
@@ -20,7 +18,6 @@ build_webui("build") {
   grd_prefix = "tts_engine"
   grd_resource_path_prefix = "tts_engine"
   non_web_component_files = [ "background.ts" ]
-  ts_out_dir = "$out_dir"
   extra_grdp_files = [ "$target_gen_dir/bindings_resources.grdp" ]
   extra_grdp_deps = [ ":build_bindings_grdp" ]
 }
