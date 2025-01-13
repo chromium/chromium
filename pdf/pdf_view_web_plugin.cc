@@ -2777,6 +2777,9 @@ gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
 AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
   AccessibilityDocInfo doc_info;
   doc_info.page_count = engine_->GetNumberOfPages();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+    doc_info.is_tagged = engine_->IsTagged();
+  }
   doc_info.text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info.text_copyable = engine_->HasPermission(DocumentPermission::kCopy);

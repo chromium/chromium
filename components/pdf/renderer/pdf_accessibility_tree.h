@@ -271,6 +271,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   uint32_t selection_end_page_index_ = 0;
   uint32_t selection_end_char_index_ = 0;
   uint32_t page_count_ = 0;
+  bool is_tagged_ = false;
   std::unique_ptr<ui::AXNodeData> doc_node_;
   // The banner node will have an appropriate ARIA landmark for easy navigation
   // for screen reader users. It will contain the status node below.

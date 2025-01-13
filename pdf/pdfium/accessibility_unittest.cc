@@ -4,10 +4,14 @@
 
 #include "pdf/accessibility.h"
 
+#include <array>
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/types/zip.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -121,6 +125,55 @@ TEST_P(AccessibilityTest, GetAccessibilityPage) {
       EXPECT_NEAR(expected_char_width, chars[i].char_width, 0.001) << i;
     }
   });
+}
+
+TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(features::kPdfTags);
+
+  struct TestTextRun {
+    uint32_t len;
+    std::string tag_type;
+  };
+  static constexpr std::array<TestTextRun, 5> kExpectedTextRuns = {
+      TestTextRun{/*"Article\r\n"*/ 9, "Art"},
+      TestTextRun{/*"BlockQuote\r\n"*/ 12, "BlockQuote"},
+      TestTextRun{/*"Paragraph\r\n"*/ 11, "P"},
+      TestTextRun{/*"Heading1\r\n"*/ 10, "H1"},
+      TestTextRun{/*"Heading2"*/ 8, "H2"},
+  };
+
+  static constexpr char kExpectedChars[] =
+      "Article\r\nBlockQuote\r\nParagraph\r\nHeading1\r\nHeading2";
+
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("tags.pdf"));
+  ASSERT_TRUE(engine);
+
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  AccessibilityPageInfo page_info;
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityCharInfo> chars;
+  AccessibilityPageObjects page_objects;
+  GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                       page_objects);
+  EXPECT_EQ(0u, page_info.page_index);
+  EXPECT_EQ(gfx::Rect(5, 3, 816, 1056), page_info.bounds);
+  EXPECT_EQ(text_runs.size(), page_info.text_run_count);
+  EXPECT_EQ(chars.size(), page_info.char_count);
+
+  ASSERT_EQ(kExpectedTextRuns.size(), text_runs.size());
+  for (const auto [expected, actual] :
+       base::zip(kExpectedTextRuns, text_runs)) {
+    EXPECT_EQ(expected.len, actual.len);
+    EXPECT_EQ(expected.tag_type, actual.tag_type);
+  }
+
+  ASSERT_EQ(std::size(kExpectedChars) - 1, chars.size());
+  for (const auto [expected, actual] : base::zip(kExpectedChars, chars)) {
+    EXPECT_EQ(static_cast<uint32_t>(expected), actual.unicode_character);
+  }
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {

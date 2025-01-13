@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -248,6 +249,7 @@ gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
 bool PdfOcrInRenderer() {
   return !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify);
 }
+
 }  // namespace
 
 PdfAccessibilityTree::PdfAccessibilityTree(
@@ -470,6 +472,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
 
   ClearAccessibilityNodes();
   page_count_ = doc_info.page_count;
+  is_tagged_ = doc_info.is_tagged;
 
   doc_node_ =
       CreateNode(ax::mojom::Role::kPdfRoot, ax::mojom::Restriction::kReadOnly,
@@ -674,9 +677,9 @@ void PdfAccessibilityTree::AddPageContent(
   auto obj = GetPluginContainerAXObject();
   CHECK(obj);
   PdfAccessibilityTreeBuilder tree_builder(
-      GetWeakPtr(), text_runs, chars, page_objects, page_info, page_index,
-      doc_node_.get(), &(*obj), &nodes_, &node_id_to_page_char_index_,
-      &node_id_to_annotation_info_
+      /*mark_headings_using_heuristic=*/!is_tagged_, text_runs, chars,
+      page_objects, page_info, page_index, doc_node_.get(), &(*obj), &nodes_,
+      &node_id_to_page_char_index_, &node_id_to_annotation_info_
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       ,
       ocr_helper_.get(), had_accessible_text_
