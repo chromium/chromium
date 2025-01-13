@@ -111,6 +111,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -221,6 +222,13 @@ public @interface FeatureConstants {
      * about tab group sync and save functionality.
      */
     String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE = "IPH_TabGroupCreationDialogSyncText";
+
+    /**
+     * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on
+     * the group title when the group is collapsed and on updated tabs when the group is expanded.
+     */
+    String TAB_GROUP_SHARE_NOTIFICATION_BUBBLE_ON_STRIP_FEATURE =
+            "IPH_TabGroupSharedNotificationBubbleOnStrip";
 
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";

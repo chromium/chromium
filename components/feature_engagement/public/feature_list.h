@@ -152,15 +152,17 @@ DEFINE_VARIATION_PARAM(kIPHShoppingListSaveFlowFeature,
                        "IPH_ShoppingListSaveFlow");
 DEFINE_VARIATION_PARAM(kIPHTabGroupCreationDialogSyncTextFeature,
                        "IPH_TabGroupCreationDialogSyncText");
-DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
-                       "IPH_TabGroupSyncOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsDragAndDropFeature,
                        "IPH_TabGroupsDragAndDrop");
+DEFINE_VARIATION_PARAM(kIPHTabGroupShareNotificationBubbleOnStripFeature,
+                       "IPH_TabGroupSharedNotificationBubbleOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsRemoteGroupFeature,
                        "IPH_TabGroupsRemoteGroup");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceFeature, "IPH_TabGroupsSurface");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceOnHideFeature,
                        "IPH_TabGroupsSurfaceOnHide");
+DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
+                       "IPH_TabGroupSyncOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonSwitchIncognitoFeature,
                        "IPH_TabSwitcherButtonSwitchIncognito");

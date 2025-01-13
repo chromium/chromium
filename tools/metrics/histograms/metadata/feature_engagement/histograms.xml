@@ -552,6 +552,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
+  <variant name="IPH_TabGroupSharedNotificationBubbleOnStrip"
+      summary="For tab group share notification bubble on tablet tab strip."/>
   <variant name="IPH_TabGroupsQuicklyComparePages"
       summary="(obsolete) long pressing a link to open in a tab group"/>
   <variant name="IPH_TabGroupsRemoteGroup"
@@ -567,7 +569,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabGroupsTapToSeeAnotherTab"
       summary="(obsolete) tab strip"/>
   <variant name="IPH_TabGroupSyncOnStrip"
-      summary="For tab group sync on tab strip."/>
+      summary="For tab group sync on tablet tab strip."/>
   <variant name="IPH_TabGroupsYourTabsTogether"
       summary="tab switcher cards with multiple tab thumbnails"/>
   <variant name="IPH_TabOrganizationSuccess"
