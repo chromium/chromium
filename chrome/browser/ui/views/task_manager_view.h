@@ -52,7 +52,9 @@ class TaskManagerView : public TableViewDelegate,
   struct FilterTab {
     DisplayCategory associated_category;
     int title_id;
-    raw_ptr<const gfx::VectorIcon> icon;
+    // This field is not a raw_ptr<> because it only ever points to statically-
+    // allocated data which is never freed, and hence cannot dangle.
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* icon;
   };
 
   TaskManagerView(const TaskManagerView&) = delete;
