@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_VISIBILITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_VISIBILITY_VOTER_H_
 
-#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager {
@@ -21,18 +21,18 @@ namespace execution_context_priority {
 // unimportant.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class FrameVisibilityVoter : public VoterBase, public FrameNodeObserver {
+class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
  public:
   static const char kFrameVisibilityReason[];
 
-  explicit FrameVisibilityVoter(VotingChannel voting_channel);
+  FrameVisibilityVoter();
   ~FrameVisibilityVoter() override;
 
   FrameVisibilityVoter(const FrameVisibilityVoter&) = delete;
   FrameVisibilityVoter& operator=(const FrameVisibilityVoter&) = delete;
 
-  // VoterBase:
-  void InitializeOnGraph(Graph* graph) override;
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
   void TearDownOnGraph(Graph* graph) override;
 
   // FrameNodeObserver:

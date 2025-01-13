@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
 
 #include <map>
 #include <utility>
@@ -31,6 +31,8 @@ class MaxVoteAggregator : public VoteObserver {
 
   // Sets the upstream voting channel. Should only be called once.
   void SetUpstreamVotingChannel(VotingChannel channel);
+
+  void ResetUpstreamVotingChannel();
 
  protected:
   // VoteObserver implementation:
@@ -61,8 +63,9 @@ class MaxVoteAggregator : public VoteObserver {
     StampedVote& operator=(const StampedVote&) = delete;
 
     bool operator<(const StampedVote& rhs) const {
-      if (vote_.value() != rhs.vote_.value())
+      if (vote_.value() != rhs.vote_.value()) {
         return vote_.value() < rhs.vote_.value();
+      }
       // Higher |vote_id| values are of lower priority.
       return vote_id_ > rhs.vote_id_;
     }
@@ -135,4 +138,4 @@ class MaxVoteAggregator : public VoteObserver {
 }  // namespace execution_context_priority
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_MAX_VOTE_AGGREGATOR_H_

@@ -34,18 +34,22 @@ Vote GetVote(bool is_capturing_media_stream) {
 const char FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason[] =
     "Frame capturing media stream.";
 
-FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter(
-    VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter() = default;
 
 FrameCapturingMediaStreamVoter::~FrameCapturingMediaStreamVoter() = default;
 
-void FrameCapturingMediaStreamVoter::InitializeOnGraph(Graph* graph) {
+void FrameCapturingMediaStreamVoter::InitializeOnGraph(
+    Graph* graph,
+    VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
   graph->AddFrameNodeObserver(this);
 }
 
 void FrameCapturingMediaStreamVoter::TearDownOnGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeAdded(

@@ -1,4 +1,4 @@
-The **ExecutionContextPriorityDecorator** is responsible for assigning the
+The **PriorityVotingSystem** is responsible for assigning the
 priority of all the frames and workers in the graph.
 
 This is done through a system of voting where each voter can increase the
