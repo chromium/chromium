@@ -48,7 +48,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
     kLocalFile = 0,
     kDriveFile = 1,
     kUnknown = 2,
-    kMaxValue = kUnknown,
+    kHelpApp = 3,
+    kDesksAdminTemplate = 4,
+    kMaxValue = kDesksAdminTemplate,
   };
 
   ContinueTaskView(AppListViewDelegate* view_delegate, bool tablet_mode);

@@ -368,8 +368,12 @@ ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
       return TaskResultType::kLocalFile;
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
+    case AppListSearchResultType::kZeroStateHelpApp:
+      return TaskResultType::kHelpApp;
+    case AppListSearchResultType::kDesksAdminTemplate:
+      return TaskResultType::kDesksAdminTemplate;
     default:
-      NOTREACHED();
+      return TaskResultType::kUnknown;
   }
 }
 
