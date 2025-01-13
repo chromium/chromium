@@ -618,6 +618,30 @@ export class ProductSpecificationsElement extends PolymerElement {
     return aggregatedDatas;
   }
 
+  private async loadSet_(uuid: Uuid): Promise<boolean> {
+    const {set} =
+        await this.shoppingApi_.getProductSpecificationsSetByUuid(uuid);
+    if (set) {
+      const {disclosureShown} =
+          await this.productSpecificationsProxy_.maybeShowDisclosure(
+              /* urls= */[], /* name= */ '', uuid.value);
+      if (disclosureShown) {
+        this.updateEmptyState_(true);
+        this.id_ = null;
+        return false;
+      }
+      this.id_ = set.uuid;
+      document.title = set.name;
+      this.setName_ = set.name;
+      this.populateTable_(set.urls.map(url => (url.url)));
+      return true;
+    }
+
+    this.updateEmptyState_(true);
+    this.id_ = null;
+    return false;
+  }
+
   private deleteSet_(uuid: Uuid|null = this.id_) {
     if (this.isOffline_) {
       this.showOfflineToast_();
@@ -1017,28 +1041,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.deleteSet_(event.detail.uuid);
   }
 
-  private async loadSet_(uuid: Uuid): Promise<boolean> {
-    const {set} =
-        await this.shoppingApi_.getProductSpecificationsSetByUuid(uuid);
-    if (set) {
-      const {disclosureShown} =
-          await this.productSpecificationsProxy_.maybeShowDisclosure(
-              /* urls= */[], /* name= */ '', uuid.value);
-      if (disclosureShown) {
-        this.updateEmptyState_(true);
-        this.id_ = null;
-        return false;
-      }
-      this.id_ = set.uuid;
-      document.title = set.name;
-      this.setName_ = set.name;
-      this.populateTable_(set.urls.map(url => (url.url)));
-      return true;
-    }
-
-    this.updateEmptyState_(true);
-    this.id_ = null;
-    return false;
+  private onHeaderMenuDeleteClick_() {
+    this.deleteSet_();
   }
 }
 

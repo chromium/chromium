@@ -1808,7 +1808,13 @@ suite('AppTest', () => {
 
     const uuid =
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][2];
-    appElement.$.header.dispatchEvent(new CustomEvent('delete-click'));
+    const header = appElement.$.header;
+    header.$.menuButton.click();
+    const menu = header.$.menu.$.menu;
+    const menuItemButton = menu.get().querySelector<HTMLElement>('#delete');
+    assertTrue(!!menuItemButton);
+    menuItemButton.click();
+    await flushTasks();
 
     assertEquals(
         1, shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
