@@ -5832,6 +5832,12 @@ const char kAutocorrectUseReplaceSurroundingTextDescription[] =
     "When autocorrect is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
+const char kBlockTelephonyDevicePhoneMuteName[] =
+    "Block Telephony Device Phone Mute";
+const char kBlockTelephonyDevicePhoneMuteDescription[] =
+    "Block telephony device phone mute HID code so it does not toggle ChromeOS "
+    "system microphone mute.";
+
 const char kBluetoothAudioLEAudioOnlyName[] = "Bluetooth Audio LE Audio Only";
 const char kBluetoothAudioLEAudioOnlyDescription[] =
     "Enable Bluetooth LE audio and disable classic profiles "

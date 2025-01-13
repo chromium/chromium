@@ -3397,6 +3397,9 @@ extern const char kAutocorrectToggleDescription[];
 extern const char kAutocorrectUseReplaceSurroundingTextName[];
 extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 
+extern const char kBlockTelephonyDevicePhoneMuteName[];
+extern const char kBlockTelephonyDevicePhoneMuteDescription[];
+
 extern const char kBluetoothAudioLEAudioOnlyName[];
 extern const char kBluetoothAudioLEAudioOnlyDescription[];
 
