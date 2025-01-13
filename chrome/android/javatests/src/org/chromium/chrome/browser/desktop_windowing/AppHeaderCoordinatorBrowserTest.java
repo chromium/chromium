@@ -408,6 +408,29 @@ public class AppHeaderCoordinatorBrowserTest {
                 activity.getActivityTab().getWebContents(),
                 "document.querySelector('input').blur()");
 
+        // Verify that the root view bottom padding uses the nav bar bottom inset.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var navBarBottomInset =
+                            insetObserver
+                                    .getLastRawWindowInsets()
+                                    .getInsets(WindowInsetsCompat.Type.navigationBars())
+                                    .bottom;
+                    Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(navBarBottomInset));
+                });
+
+        // Dispatch window insets to simulate no overlap of the app window with the nav bar.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    insetObserver.onApplyWindowInsets(
+                            rootView,
+                            new WindowInsetsCompat.Builder()
+                                    .setInsets(
+                                            WindowInsetsCompat.Type.navigationBars(),
+                                            Insets.of(0, 0, 0, 0))
+                                    .build());
+                });
+
         // Verify that the root view bottom padding is reset.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
