@@ -417203,6 +417203,12 @@
        []
       ]
      },
+     "interfaces": {
+      "SVGPathSegment-expected.txt": [
+       "5ef6abd62bb20066c23d36acfd732c188655ad49",
+       []
+      ]
+     },
      "property": {
       "d-none-expected.svg": [
        "60195b1777f3ed2fd800380d02ba488e24ed5af5",
@@ -417845,7 +417851,7 @@
        []
       ],
       "SVGGeometryElement.getTotalLength-01-expected.txt": [
-       "b00415a2f6780870939955e08b01cc1ecdc5e9aa",
+       "aa53daa3be12789adac2855cf58ee312c0a4e7ca",
        []
       ],
       "SVGGeometryElement.isPointInFill-01-expected.txt": [
@@ -438102,39 +438108,479 @@
       }
      ]
     ],
-    "transaction-abort-generator-revert.html": [
-     "bbe0338c3acdc8791e308d8411c986048096f36c",
+    "transaction-abort-generator-revert.any.js": [
+     "0c6ffa52d276e426db0f2771fafe79d35b087ce8",
      [
-      null,
-      {}
+      "IndexedDB/transaction-abort-generator-revert.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts an object store's key generator state"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-generator-revert.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts an object store's key generator state"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-generator-revert.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts an object store's key generator state"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-generator-revert.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts an object store's key generator state"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-abort-index-metadata-revert.html": [
-     "54a873d8758c6a906c1899ee0c15e990a8798444",
+    "transaction-abort-index-metadata-revert.any.js": [
+     "9b429795c48f381127d467ee3fc46b9e5870188e",
      [
-      null,
-      {}
+      "IndexedDB/transaction-abort-index-metadata-revert.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts index metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-index-metadata-revert.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts index metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-index-metadata-revert.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts index metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-index-metadata-revert.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts index metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-abort-multiple-metadata-revert.html": [
-     "18abd0588c4197e22976644a706f1df4731aad5d",
+    "transaction-abort-multiple-metadata-revert.any.js": [
+     "9161af8e2baad31dd51a58ae8d22d08bb94ef344",
      [
-      null,
-      {}
+      "IndexedDB/transaction-abort-multiple-metadata-revert.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts multiple operations on the same metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-multiple-metadata-revert.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts multiple operations on the same metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-multiple-metadata-revert.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts multiple operations on the same metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-multiple-metadata-revert.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts multiple operations on the same metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-abort-object-store-metadata-revert.html": [
-     "c31537bc5cda382fdf87608f55af434129e2710a",
+    "transaction-abort-object-store-metadata-revert.any.js": [
+     "d5f14b54de48030cdd129c300b2db3435418be6c",
      [
-      null,
-      {}
+      "IndexedDB/transaction-abort-object-store-metadata-revert.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts object store metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-object-store-metadata-revert.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts object store metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-object-store-metadata-revert.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts object store metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-object-store-metadata-revert.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: aborting transactions reverts object store metadata"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-abort-request-error.html": [
-     "fa828286f4d7c4f9cb0d2a8a7ac561082dbfc4f4",
+    "transaction-abort-request-error.any.js": [
+     "a7ddd02f1d2ad88d810db36bb82d0e29cf6be336",
      [
-      null,
-      {}
+      "IndexedDB/transaction-abort-request-error.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test error events fired at requests from aborted transaction"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-request-error.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test error events fired at requests from aborted transaction"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-request-error.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test error events fired at requests from aborted transaction"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-abort-request-error.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Test error events fired at requests from aborted transaction"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "transaction-create_in_versionchange.htm": [
@@ -704456,6 +704902,13 @@
         null,
         {}
        ]
+      ],
+      "SVGPathSegment.svg": [
+       "a4f67363dc3b179fa8bd46ec1692a7d8eff9e701",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "property": {
@@ -705285,7 +705738,7 @@
        ]
       ],
       "SVGGeometryElement.getTotalLength-01.svg": [
-       "412afe7b730a9fadddf6b7c27e2688c5ebffd7f0",
+       "e429a55af4fc38df0344e68756d0a1f4ce97e15f",
        [
         null,
         {}
