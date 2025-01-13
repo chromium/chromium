@@ -597,7 +597,9 @@ def _CombineConfigs(configs,
 
   def format_config_contents(path, contents):
     formatted_contents = []
-    if not contents.strip():
+    # Ignore files that contain only comments (androidx has a lot of these).
+    if all(l.isspace() or l.rstrip().startswith('#')
+           for l in contents.splitlines()):
       return []
 
     # Fix up line endings (third_party configs can have windows endings).
