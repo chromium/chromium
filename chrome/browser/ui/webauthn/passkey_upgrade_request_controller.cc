@@ -91,26 +91,36 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   CHECK(pending_callback_);
   password_manager::LoginsResult result =
       password_manager::GetLoginsOrEmptyListOnFailure(results_or_error);
-  bool found = false;
-  // Passwords must have been used within the last 90 days in order to be
-  // eligible.
-  const auto min_last_used = base::Time::Now() - base::Days(90);
+  bool upgrade_eligible = false;
+  bool match_not_recent = false;
+  // A password with a matching username must have been used within the last 5
+  // minutes in order for the automatic passkey upgrade to succeed.
+  base::TimeDelta kLastUsedThreshold = base::Minutes(5);
+  const auto min_last_used = base::Time::Now() - kLastUsedThreshold;
   for (const password_manager::PasswordForm& password_form : result) {
-    if (password_form.username_value == user_name_ &&
-        password_form.date_last_used >= min_last_used) {
-      found = true;
-      break;
+    if (password_form.username_value != user_name_) {
+      continue;
     }
+    if (password_form.date_last_used < min_last_used) {
+      match_not_recent = true;
+      continue;
+    }
+    upgrade_eligible = true;
+    break;
   }
 
-  if (!found) {
-    FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
+  if (!upgrade_eligible) {
+    if (match_not_recent) {
+      FIDO_LOG(EVENT) << "Passkey upgrade request failed, matching password "
+                         "not recently used";
+    } else {
+      FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
+    }
     std::move(pending_callback_).Run(false);
     return;
   }
 
   CHECK(enclave_request_callback_);
-  // TODO(crbug.com/377758786): Make the request up=0.
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
