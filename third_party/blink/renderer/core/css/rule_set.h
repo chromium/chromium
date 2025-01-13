@@ -270,10 +270,6 @@ class RuleMap {
       const RuleSet& old_rule_set,
       RuleSet& new_rule_set);
   base::span<const RuleData> Find(const AtomicString& key) const {
-    if (buckets.IsNull()) {
-      return {};
-    }
-
     // Go through all the buckets and check for equality, brute force.
     // Note that we don't check for IsNull() to get an early abort
     // on empty buckets; the comparison of AtomicString is so cheap

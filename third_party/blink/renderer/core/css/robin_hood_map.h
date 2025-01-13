@@ -56,6 +56,8 @@ namespace blink {
 //    Of course, if you lower kPossibleBucketsPerKey to e.g. 4, you'll
 //    only need a 5-collision, which is _much_ more likely.)
 //
+//  - A tiny Bloom filter to quickly filter out most (~80%+) negative queries.
+//
 // Possible future extensions:
 //
 //  - Arbitrary keys (currently supports only AtomicString as key).
@@ -101,7 +103,9 @@ struct RobinHoodMap {
   };
 
   // Constructs a map that can hold no elements; the only thing
-  // you can do with it is check IsNull() (which will be true).
+  // you can do with it is check IsNull() (which will be true)
+  // and Find() (which will return nullptr, since pre_filter_
+  // will be empty).
   RobinHoodMap() = default;
   explicit RobinHoodMap(unsigned size)
       : buckets_(new Bucket[size + kPossibleBucketsPerKey]),
@@ -110,6 +114,17 @@ struct RobinHoodMap {
   bool IsNull() const { return buckets_ == nullptr; }
 
   Bucket* Find(const Key& key) {
+    uint32_t hash = key.Hash();
+    bool h1 = (pre_filter_ >> (hash & 63)) & 1;
+    bool h2 = (pre_filter_ >> ((hash >> 6) & 63)) & 1;
+    if (!h1 || !h2) {
+      // NOTE: Since the filter will always be empty
+      // if buckets_ is nullptr, we don't need an extra
+      // test for buckets_ below (nor in the caller);
+      // we'll always hit this path.
+      return nullptr;
+    }
+
     Bucket* bucket = FindBucket(key);
     for (unsigned i = 0; i < kPossibleBucketsPerKey; ++i, ++bucket) {
       if (bucket->key == key) {
@@ -244,6 +259,17 @@ struct RobinHoodMap {
   // Non-inlined helper function for Insert(); calls Grow(), then tracks
   // where the given key ended up and returns its bucket.
   Bucket* InsertWithRehashing(const Key& key);
+
+  // A tiny Bloom filter that is used as a prefilter for Find().
+  // This allows us to quickly return nullptr for queries that are not
+  // in the map (which is a fairly common case for us), without having to
+  // take the cache miss to actually look up in the map. (We'd get even
+  // better filter rates with three hashes instead of two, but it seems
+  // to be net-negative in performance.)
+  //
+  // Note that this filter uses the lower bits of the string hash,
+  // which are fairly independent from what FindBucketIndex() uses.
+  uint64_t pre_filter_ = 0;
 
   // The buckets, allocated in the usual way. Note that in addition to the
   // requested number of buckets (num_buckets_), we allocate first

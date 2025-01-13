@@ -65,6 +65,10 @@ RobinHoodMap<Key, Value>::InsertInternal(
 template <class Key, class Value>
 typename RobinHoodMap<Key, Value>::Bucket* RobinHoodMap<Key, Value>::Insert(
     const Key& key) {
+  unsigned hash = key.Hash();
+  pre_filter_ |= 1ULL << (hash & 63);
+  pre_filter_ |= 1ULL << ((hash >> 6) & 63);
+
   Bucket* bucket = InsertInternal({key, {}});
   if (bucket != nullptr) {
     // Normal, happy path.
@@ -91,6 +95,7 @@ RobinHoodMap<Key, Value> RobinHoodMap<Key, Value>::Grow() {
       new_ht = new_ht.Grow();
     }
   }
+  new_ht.pre_filter_ = pre_filter_;
   return new_ht;
 }
 
