@@ -130,11 +130,6 @@ DownloadToolbarUIController::DownloadToolbarUIController(
       std::make_unique<DownloadBubbleUIController>(browser_view_->browser());
 
   BrowserList::GetInstance()->AddObserver(this);
-
-  // Wait until we're done with everything else before creating `controller_`
-  // since it can call `Show()` synchronously.
-  controller_ = std::make_unique<DownloadDisplayController>(
-      this, browser_view_->browser(), bubble_controller_.get());
 }
 
 DownloadToolbarUIController::~DownloadToolbarUIController() {
@@ -143,8 +138,18 @@ DownloadToolbarUIController::~DownloadToolbarUIController() {
   bubble_controller_.reset();
 }
 
+void DownloadToolbarUIController::Init() {
+  // `controller_` can call `Show()` synchronously so it must be initialized
+  // separately at a point where the PinnedToolbarActionsContainer will exist.
+  controller_ = std::make_unique<DownloadDisplayController>(
+      this, browser_view_->browser(), bubble_controller_.get());
+}
+
 void DownloadToolbarUIController::Show() {
   auto* container = GetPinnedToolbarActionsContainer(browser_view_);
+  if (!container) {
+    return;
+  }
   container->ShowActionEphemerallyInToolbar(kActionShowDownloads, true);
 }
 
