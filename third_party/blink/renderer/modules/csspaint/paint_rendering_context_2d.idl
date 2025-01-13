@@ -28,12 +28,12 @@
 
 
     // compositing
-    attribute unrestricted double globalAlpha; // (default 1.0)
+    [NoAllocDirectCall=Setter] attribute unrestricted double globalAlpha; // (default 1.0)
     [HighEntropy] attribute DOMString globalCompositeOperation; // (default source-over)
     [MeasureAs=Canvas2DFilter, SetterCallWith=ScriptState] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
 
     // image smoothing
-    attribute boolean imageSmoothingEnabled; // (default True)
+    [NoAllocDirectCall=Setter] attribute boolean imageSmoothingEnabled; // (default True)
     [RuntimeEnabled=CanvasImageSmoothing, MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
@@ -45,9 +45,9 @@
     CanvasGradient createConicGradient(double startAngle, double cx, double cy);
 
     // shadows
-    [HighEntropy] attribute unrestricted double shadowOffsetX;
-    [HighEntropy] attribute unrestricted double shadowOffsetY;
-    [HighEntropy] attribute unrestricted double shadowBlur;
+    [HighEntropy, NoAllocDirectCall=Setter] attribute unrestricted double shadowOffsetX;
+    [HighEntropy, NoAllocDirectCall=Setter] attribute unrestricted double shadowOffsetY;
+    [HighEntropy, NoAllocDirectCall=Setter] attribute unrestricted double shadowBlur;
     [HighEntropy] attribute DOMString shadowColor;
 
     // rects
@@ -84,14 +84,14 @@
                                                                                                       CanvasImageSource image);
     // FIXME: factor out to CanvasDrawingStyles
     // line caps/joins
-    attribute unrestricted double lineWidth; // (default 1)
+    [NoAllocDirectCall=Setter] attribute unrestricted double lineWidth; // (default 1)
     attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
     attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
-    attribute unrestricted double miterLimit; // (default 10)
+    [NoAllocDirectCall=Setter] attribute unrestricted double miterLimit; // (default 10)
 
     // dashed lines
     void setLineDash(sequence<unrestricted double> dash);
     sequence<unrestricted double> getLineDash();
-    attribute unrestricted double lineDashOffset;
+    [NoAllocDirectCall=Setter] attribute unrestricted double lineDashOffset;
 };
 PaintRenderingContext2D includes CanvasPath;
