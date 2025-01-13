@@ -4693,6 +4693,34 @@ message FmRegistrationTokenUploadRequest {
 // Response to `FmRegistrationTokenUploadRequest`.
 message FmRegistrationTokenUploadResponse {}
 
+enum PromotionType {
+  PROMOTION_TYPE_UNSPECIFIED = 0;
+  CHROME_ENTERPRISE_CORE = 1;
+  CHROME_ENTERPRISE_PREMIUM = 2;
+}
+
+// The list of CEC, CEP promotions that the user is eligible for.
+message PromotionEligibilityList {
+  optional PromotionType policy_page_promotion = 1;
+
+  optional PromotionType management_page_promotion = 2;
+
+  optional PromotionType interstitial_block_promotion = 3;
+
+  optional PromotionType interstitial_warn_promotion = 4;
+
+  optional PromotionType ntp_promotion = 5;
+
+  optional PromotionType cws_extension_details_promotion = 6;
+
+  optional PromotionType cws_privacy_details_promotion = 7;
+}
+
+message GetUserEligiblePromotionsResponse {
+  // The list of promotions that the user is eligible for.
+  optional PromotionEligibilityList promotions = 1;
+}
+
 // Additional detail about the error which can be used to clarify user messaging
 // around the error or to influence Chrome's error-handling behavior.
 enum DeviceManagementErrorDetail {
@@ -5109,7 +5137,10 @@ message DeviceManagementResponse {
   optional FmRegistrationTokenUploadResponse
       fm_registration_token_upload_response = 41;
 
-  // Next id: 42.
+  optional GetUserEligiblePromotionsResponse
+      get_user_eligible_promotions_response = 42;
+
+  // Next id: 43.
 }
 
 // Device State Information stored in the server is retrieval at
