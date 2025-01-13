@@ -140,7 +140,7 @@ void HeaderView::SetAvatarIcon(const gfx::ImageSkia& avatar) {
       avatar_icon_ = new views::ImageView();
       AddChildView(avatar_icon_.get());
     }
-    avatar_icon_->SetImage(avatar);
+    avatar_icon_->SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
   frame_header_->SetLeftHeaderView(avatar_icon_);
   DeprecatedLayoutImmediately();
