@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/glic/glic_page_handler.h"
+#include "chrome/browser/glic/glic_page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

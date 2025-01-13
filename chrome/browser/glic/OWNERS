@@ -3,3 +3,6 @@ file://chrome/browser/glic/API_OWNERS
 andreaxg@google.com
 cuianthony@chromium.org
 iwells@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

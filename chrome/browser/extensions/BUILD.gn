@@ -1467,7 +1467,9 @@ source_set("extensions") {
       deps += [
         "//chrome/browser/glic:enabling",
         "//chrome/browser/glic:glic",
+        "//chrome/browser/glic:impl",
       ]
+      allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
     }
   }  # if (enable_extensions)
 }

@@ -492,7 +492,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/ui/webui/glic/glic_ui.h"
+#include "chrome/browser/glic/glic_ui.h"
 #endif
 
 namespace chrome::internal {

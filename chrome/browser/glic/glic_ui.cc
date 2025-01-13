@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/glic/glic_ui.h"
+#include "chrome/browser/glic/glic_ui.h"
 
 #include <string>
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
-#include "chrome/browser/ui/webui/glic/glic_page_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"

@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/render_widget_host_view.h"

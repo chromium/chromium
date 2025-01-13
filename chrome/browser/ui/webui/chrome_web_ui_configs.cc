@@ -191,7 +191,7 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/ui/webui/glic/glic_ui.h"
+#include "chrome/browser/glic/glic_ui.h"
 #endif
 
 void RegisterChromeWebUIConfigs() {

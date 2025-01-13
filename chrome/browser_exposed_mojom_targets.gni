@@ -14,6 +14,7 @@
 browser_exposed_mojom_targets = [
   "//cc/mojom:layer_type",
   "//cc/mojom:mojom",
+  "//chrome/browser/glic:mojo_bindings",
   "//chrome/browser/lens/core/mojom:mojo_bindings",
   "//chrome/browser/media:mojo_bindings",
   "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
@@ -29,7 +30,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
   "//chrome/browser/ui/webui/discards:mojo_bindings",
   "//chrome/browser/ui/webui/downloads:mojo_bindings",
-  "//chrome/browser/ui/webui/glic:mojo_bindings",
   "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
   "//chrome/browser/ui/webui/location_internals:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",

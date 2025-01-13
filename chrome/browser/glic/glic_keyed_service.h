@@ -9,11 +9,11 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/glic_window_controller.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/views/view.h"
 

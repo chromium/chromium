@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 
 #include "chrome/browser/glic/border_view.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"

@@ -11,8 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/content_extraction/inner_text.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom-forward.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic.mojom-forward.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkSize.h"
 

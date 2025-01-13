@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 
 #include "base/check.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"

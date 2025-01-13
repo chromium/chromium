@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_GLIC_GLIC_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_GLIC_GLIC_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
+#define CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
 
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -49,4 +49,4 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 };
 
 }  // namespace glic
-#endif  // CHROME_BROWSER_UI_WEBUI_GLIC_GLIC_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_

@@ -10,10 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 

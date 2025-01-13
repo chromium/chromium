@@ -7,7 +7,7 @@
 
 // Interface to the glic web client, provided by the glic WebUI.
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/webui/glic/glic.mojom-forward.h"
+#include "chrome/browser/glic/glic.mojom-forward.h"
 
 namespace glic {
 

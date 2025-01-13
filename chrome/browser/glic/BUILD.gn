@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_glic)
+
 source_set("glic") {
   sources = [
     "border_view.h",
@@ -11,28 +16,31 @@ source_set("glic") {
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
+    "glic_page_handler.h",
     "glic_pref_names.h",
     "glic_profile_configuration.h",
     "glic_profile_manager.h",
     "glic_tab_indicator_helper.h",
+    "glic_ui.h",
     "glic_view.h",
     "glic_web_client_access.h",
     "glic_window_controller.h",
     "guest_util.h",
   ]
   public_deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//components/prefs",
     "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
     "//ui/views:views",
     "//ui/views/controls/webview",
+    "//ui/webui",
   ]
 }
 
@@ -45,9 +53,11 @@ source_set("impl") {
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
+    "glic_page_handler.cc",
     "glic_profile_configuration.cc",
     "glic_profile_manager.cc",
     "glic_tab_indicator_helper.cc",
+    "glic_ui.cc",
     "glic_view.cc",
     "glic_window_controller.cc",
     "guest_util.cc",
@@ -60,6 +70,8 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/glic/launcher",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/resources/glic:resources",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
@@ -72,7 +84,21 @@ source_set("impl") {
     "//components/guest_view/browser",
     "//components/sessions",
     "//extensions/browser:browser",
+    "//ui/webui",
     "//url",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "glic.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 }
 
