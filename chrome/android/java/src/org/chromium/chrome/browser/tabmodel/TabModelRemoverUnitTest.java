@@ -277,9 +277,7 @@ public class TabModelRemoverUnitTest {
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
 
         verify(mTabModel).commitAllTabClosures();
-
-        verify(mDataSharingService)
-                .removeMember(eq(COLLABORATION_ID), eq(EMAIL), mOnResultCaptor.capture());
+        verify(mDataSharingService).leaveGroup(eq(COLLABORATION_ID), mOnResultCaptor.capture());
 
         mOnResultCaptor.getValue().onResult(PeopleGroupActionOutcome.PERSISTENT_FAILURE);
         verify(mModalDialogManager).showDialog(any(), anyInt());

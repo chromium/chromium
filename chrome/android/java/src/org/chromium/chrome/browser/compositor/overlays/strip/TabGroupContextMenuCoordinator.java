@@ -219,7 +219,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);
                 recordUserAction("RecentActivity");
             } else if (menuId == R.id.delete_shared_group) {
-                TabUiUtils.deleteSharedTabGroup(
+                TabUiUtils.exitSharedTabGroupWithDialog(
                         activity,
                         tabGroupModelFilter,
                         actionConfirmationManager,
@@ -227,7 +227,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabId);
                 recordUserAction("DeleteSharedGroup");
             } else if (menuId == R.id.leave_group) {
-                TabUiUtils.leaveTabGroup(
+                TabUiUtils.exitSharedTabGroupWithDialog(
                         activity,
                         tabGroupModelFilter,
                         actionConfirmationManager,
