@@ -64,8 +64,7 @@
         <!--  TODO(crbug.com/40267370): Add a test to basic_page_test.ts
         to check that settings-safety-hub-entry-point is not visible
         in the guest mode. -->
-        <template is="dom-if"
-            if="[[showSafetyHubEntryPointPage_(pageVisibility.safetyHub)]]"
+        <template is="dom-if" if="[[showPage_(pageVisibility.safetyHub)]]"
             restamp>
           <settings-section page-title="$i18n{safetyHub}"
               section="safetyHubEntryPoint" nest-under-section="privacy"

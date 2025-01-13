@@ -380,19 +380,17 @@ suite('NonExistentRoute', function() {
   });
 });
 
-suite('SafetyHubReachable', function() {
+suite('SafetyHub', function() {
   let routes: SettingsRoutes;
 
-  setup(function() {
-    loadTimeData.overrideValues({enableSafetyHub: true});
+  function setupRoutes() {
+    resetPageVisibilityForTesting();
     resetRouterForTesting();
-
     routes = Router.getInstance().getRoutes();
-    Router.getInstance().navigateTo(routes.BASIC);
-    return flushTasks();
-  });
+  }
 
   test('SafetyHubRouteReachable', async function() {
+    setupRoutes();
     let path = Router.getInstance().getCurrentRoute().path;
     assertEquals('/', path);
 
@@ -402,5 +400,13 @@ suite('SafetyHubReachable', function() {
     // Assert that the route is changed to safety hub.
     path = Router.getInstance().getCurrentRoute().path;
     assertEquals('/safetyCheck', path);
+  });
+
+  test('SafetyHubRouteNotReachableInGuestMode', async function() {
+    loadTimeData.overrideValues({isGuest: true});
+    setupRoutes();
+
+    // Safety Hub should not be reachable in Guest mode.
+    assertEquals(undefined, routes.SAFETY_HUB);
   });
 });

@@ -643,25 +643,20 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableRelatedWebsiteSets) {
           "runMochaSuite('DisableRelatedWebsiteSets')");
 }
 
-class SettingsBasicPageTest : public SettingsBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
-};
-
 // TODO(crbug.com/40823128): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, DISABLED_BasicPage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_BasicPage) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('BasicPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, PrivacyGuidePromo) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromo) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, Performance) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, Performance) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, ExperimentalAdvanced) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, ExperimentalAdvanced) {
   RunTest("settings/basic_page_test.js",
           "runMochaSuite('ExperimentalAdvanced')");
 }
@@ -1016,7 +1011,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             blink::features::kWebPrinting,
 #endif
             features::kEnableCertManagementUIV2,
-            features::kSafetyHub,
         },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -1209,8 +1203,8 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, DynamicParameters) {
   RunTest("settings/route_test.js", "runMochaSuite('DynamicParameters')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHubReachable) {
-  RunTest("settings/route_test.js", "runMochaSuite('SafetyHubReachable')");
+IN_PROC_BROWSER_TEST_F(SettingsRouteTest, SafetyHub) {
+  RunTest("settings/route_test.js", "runMochaSuite('SafetyHub')");
 }
 
 // Copied from Polymer 2 test:
@@ -1225,18 +1219,9 @@ IN_PROC_BROWSER_TEST_F(SettingsRouteTest, MAYBE_NonExistentRoute) {
 }
 
 class SettingsSafetyHubTest : public SettingsBrowserTest {
- protected:
-  SettingsSafetyHubTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kSafetyHub,
-            safe_browsing::kSafetyHubAbusiveNotificationRevocation,
-        },
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      safe_browsing::kSafetyHubAbusiveNotificationRevocation};
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubCard) {
@@ -1409,7 +1394,6 @@ class SettingsSiteSettingsPageTest : public SettingsBrowserTest {
         {
             content_settings::features::kSafetyCheckUnusedSitePermissions,
             features::kAutomaticFullscreenContentSetting,
-            features::kSafetyHub,
         },
         {});
   }
@@ -1439,11 +1423,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        MAYBE_UnusedSitePermissionsReview) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('UnusedSitePermissionsReview')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('SafetyHubDisabled')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

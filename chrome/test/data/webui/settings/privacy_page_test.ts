@@ -927,6 +927,7 @@ suite('NotificationPermissionReview', function() {
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         oneElementMockData);
     await flushTasks();
+    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
 
     // Set guest mode back to false.
     loadTimeData.overrideValues({isGuest: false});

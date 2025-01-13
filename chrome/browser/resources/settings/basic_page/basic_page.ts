@@ -358,11 +358,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return this.showPage_(visibility);
   }
 
-  private showSafetyHubEntryPointPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('enableSafetyHub') &&
-        this.showPage_(visibility);
-  }
-
   private showAiInfoCard_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
         this.showExperimentalAdvancedPage_(visibility);

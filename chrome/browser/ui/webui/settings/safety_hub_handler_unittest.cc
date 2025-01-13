@@ -1366,7 +1366,6 @@ class SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest
   SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(features::kSafetyHub);
     disabled_features.push_back(
         content_settings::features::
             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);

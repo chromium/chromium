@@ -167,7 +167,7 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" if="[[enableSafetyHub_]]">
+      <template is="dom-if" if="[[shouldShowSafetyHub_]]">
         <template is="dom-if" route-path="/safetyCheck">
           <!-- TODO(crbug.com/40267370): Make the page searchable.-->
           <settings-subpage id="safetyHub" page-title="$i18n{safetyHub}"
@@ -687,7 +687,7 @@
             search-term="{{searchFilter_}}">
           <div id="notificationRadioGroup" class="radio-group">
             <template is="dom-if" if="[[showNotificationPermissionsReview_]]">
-              <template is="dom-if" if="[[enableSafetyHub_]]">
+              <template is="dom-if" if="[[shouldShowSafetyHub_]]">
                 <h2>$i18n{safetyHub}</h2>
                 <settings-safety-hub-module id="safetyHubEntryPoint"
                     header="[[notificationPermissionsReviewHeader_]]"

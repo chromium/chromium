@@ -373,18 +373,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
 #endif
 
 // Test case for Safety Hub notification.
-class AppMenuBrowserTestSafetyHub : public AppMenuBrowserTest {
- public:
-  AppMenuBrowserTestSafetyHub() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSafetyHub);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestSafetyHub,
-                       Safety_Hub_shown_notification) {
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, Safety_Hub_shown_notification) {
   auto* mock_sentiment_service = static_cast<MockTrustSafetySentimentService*>(
       TrustSafetySentimentServiceFactory::GetInstance()
           ->SetTestingFactoryAndUse(

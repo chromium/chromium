@@ -350,6 +350,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
 
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
     pref_change_registrar_->Add(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
@@ -357,6 +358,13 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
   }
+#else   // BUILDFLAG(IS_ANDROID)
+  pref_change_registrar_->Add(
+      safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled,
+      base::BindRepeating(&UnusedSitePermissionsService::
+                              OnPermissionsAutorevocationControlChanged,
+                          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {

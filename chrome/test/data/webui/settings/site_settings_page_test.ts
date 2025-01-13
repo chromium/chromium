@@ -280,11 +280,6 @@ suite('SiteSettingsPage', function() {
       '#automatic-fullscreen'));
   });
 
-  // TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-  test('UnusedSitePermissionsControlToggleExists', function() {
-    assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
-  });
-
   test('UnusedSitePermissionsControlToggleUpdatesPrefs', function() {
     const unusedSitePermissionsRevocationToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -377,29 +372,5 @@ suite('UnusedSitePermissionsReview', function() {
     loadTimeData.overrideValues({
       isGuest: false,
     });
-  });
-});
-
-// TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-suite('SafetyHubDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('NoUnusedSitePermissionsControlToggle', function() {
-    assertFalse(
-        Boolean(page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#unusedSitePermissionsRevocationToggle')));
   });
 });

@@ -2075,11 +2075,6 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
 }
 
 bool AppMenuModel::AddSafetyHubMenuItem() {
-  // TODO(crbug.com/40267370): Remove when the service is only created when the
-  // feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return false;
-  }
   auto* safety_hub_menu_notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(
           browser_->profile());

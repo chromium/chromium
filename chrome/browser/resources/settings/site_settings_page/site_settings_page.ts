@@ -582,13 +582,6 @@ export class SettingsSiteSettingsPageElement extends
             'safetyHubAbusiveNotificationRevocationEnabled'),
       },
 
-      enableSafetyHub_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableSafetyHub');
-        },
-      },
-
       unusedSitePermissionsHeader_: String,
       unusedSitePermissionsSubeader_: String,
     };

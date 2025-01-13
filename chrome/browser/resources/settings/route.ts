@@ -18,7 +18,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  if (loadTimeData.getBoolean('enableSafetyHub')) {
+  const visibility = pageVisibility || {};
+
+  if (visibility.safetyHub !== false) {
     r.SAFETY_HUB = r.PRIVACY.createChild('/safetyCheck');
   }
 

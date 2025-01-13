@@ -199,11 +199,13 @@ NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     : engagement_service_(engagement_service), hcsm_(hcsm) {
   content_settings_observation_.Observe(hcsm);
 
+#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/40267370): Because there is only an UI thread for this
+  // TODO(crbug.com/40267370): Because there is only a UI thread for this
   // service, calling both |StartRepeatedUpdates()| and
   // |InitializeLatestResult()| will result in the result being calculated twice
   // when the service starts. When redesigning SafetyHubService, that should be

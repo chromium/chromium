@@ -1433,8 +1433,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SET_BROWSER_AS_DEFAULT, true);
 
   // Safety Hub commands.
-  command_updater_.UpdateCommandEnabled(
-      IDC_OPEN_SAFETY_HUB, base::FeatureList::IsEnabled(features::kSafetyHub));
+  command_updater_.UpdateCommandEnabled(IDC_OPEN_SAFETY_HUB, true);
 
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, normal_window);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, normal_window);

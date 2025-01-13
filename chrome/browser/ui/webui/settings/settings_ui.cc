@@ -507,9 +507,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation));
 
-  html_source->AddBoolean("enableSafetyHub",
-                          base::FeatureList::IsEnabled(features::kSafetyHub));
-
   // Mode B UX
   html_source->AddBoolean(
       "is3pcdCookieSettingsRedesignEnabled",

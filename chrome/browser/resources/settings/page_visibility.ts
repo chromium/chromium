@@ -36,6 +36,8 @@ export interface AppearancePageVisibility {
   sidePanel: boolean;
 }
 
+// TODO(crbug.com/362659905): Merge pageVisibility.safetyHub with
+// PrivacyPageVisibility when the crash is fixed.
 export interface PrivacyPageVisibility {
   networkPrediction: boolean;
   searchPrediction: boolean;

@@ -461,8 +461,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
-  source->AddBoolean("safetyHubShowReviewPanel",
-                     base::FeatureList::IsEnabled(features::kSafetyHub));
 
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
