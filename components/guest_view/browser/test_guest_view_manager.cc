@@ -12,6 +12,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace guest_view {
@@ -131,6 +132,19 @@ void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
   // having been called. We need to wait until the attachment is no longer
   // considered in progress.
   EXPECT_TRUE(base::test::RunUntil([&]() { return guest_view->attached(); }));
+}
+
+bool TestGuestViewManager::WaitUntilAttachedAndLoaded(
+    GuestViewBase* guest_view) {
+  WaitUntilAttached(guest_view);
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return base::test::RunUntil([&]() {
+      return guest_view->GetGuestMainFrame()
+          ->IsDocumentOnLoadCompletedInMainFrame();
+    });
+  } else {
+    return content::WaitForLoadStop(guest_view->web_contents());
+  }
 }
 
 void TestGuestViewManager::WaitForViewGarbageCollected() {
