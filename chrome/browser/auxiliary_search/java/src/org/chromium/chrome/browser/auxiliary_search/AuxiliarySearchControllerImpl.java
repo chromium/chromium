@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
@@ -46,6 +47,7 @@ public class AuxiliarySearchControllerImpl
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
+    private CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -106,6 +108,10 @@ public class AuxiliarySearchControllerImpl
 
     @Override
     public void destroy() {
+        if (mCallbackController == null) return;
+
+        mCallbackController.destroy();
+        mCallbackController = null;
         AuxiliarySearchConfigManager.getInstance().removeListener(this);
 
         if (mActivityLifecycleDispatcher != null) {
@@ -146,7 +152,8 @@ public class AuxiliarySearchControllerImpl
 
         long startTime = TimeUtils.uptimeMillis();
         mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
-                (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime));
+                mCallbackController.makeCancelable(
+                        (tabs) -> onNonSensitiveTabsAvailable(tabs, startTime)));
     }
 
     /**
