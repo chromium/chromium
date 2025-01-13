@@ -141,7 +141,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
                        status:(const WebStateListStatus&)status {
   // Update the Tab Grid button style, based on whether the active tab is
   // grouped or not.
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
   }
 
@@ -232,9 +232,11 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 
 // Returns the tab group state to display in the Tab Grid button.
 - (ToolbarTabGroupState)tabGroupStateToDisplay {
-  return [self activeWebStateTabGroup] != nullptr
-             ? ToolbarTabGroupState::kTabGroup
-             : ToolbarTabGroupState::kNormal;
+  if ([self activeWebStateTabGroup] == nullptr) {
+    return ToolbarTabGroupState::kNormal;
+  }
+  return IsTabGroupIndicatorEnabled() ? ToolbarTabGroupState::kTabGroup
+                                      : ToolbarTabGroupState::kNormal;
 }
 
 // Updates the blue dot in the Tab Grid button depending on the messages and the

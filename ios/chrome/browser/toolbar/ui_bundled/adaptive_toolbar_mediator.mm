@@ -536,7 +536,7 @@
 
 // Returns the tab group of the active web state, if any.
 - (const TabGroup*)activeWebStateTabGroup {
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     const int active_index = _webStateList->active_index();
     if (active_index != WebStateList::kInvalidIndex) {
       return _webStateList->GetGroupOfWebStateAt(active_index);
@@ -548,15 +548,22 @@
 // Returns the tab count to display in the Tab Grid button.
 - (int)tabCountToDisplay {
   const TabGroup* activeTabGroup = [self activeWebStateTabGroup];
-  return activeTabGroup ? activeTabGroup->range().count()
-                        : _webStateList->count();
+  if (activeTabGroup == nullptr) {
+    return _webStateList->count();
+  }
+
+  return IsTabGroupIndicatorEnabled() ? activeTabGroup->range().count()
+                                      : _webStateList->count();
 }
 
 // Returns the tab group state to display in the Tab Grid button.
 - (ToolbarTabGroupState)tabGroupStateToDisplay {
-  return [self activeWebStateTabGroup] != nullptr
-             ? ToolbarTabGroupState::kTabGroup
-             : ToolbarTabGroupState::kNormal;
+  const TabGroup* activeTabGroup = [self activeWebStateTabGroup];
+  if (activeTabGroup == nullptr) {
+    return ToolbarTabGroupState::kNormal;
+  }
+  return IsTabGroupIndicatorEnabled() ? ToolbarTabGroupState::kTabGroup
+                                      : ToolbarTabGroupState::kNormal;
 }
 
 @end

@@ -379,7 +379,7 @@
   [self configureContentSuggestionsCoordinator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
-  if (IsTabGroupIndicatorEnabled()) {
+  if (IsTabGroupInGridEnabled()) {
     [self configureTabGroupIndicator];
   }
 
@@ -407,10 +407,8 @@
 
   [sceneState.profileState removeObserver:self];
 
-  if (IsTabGroupIndicatorEnabled()) {
-    [_tabGroupIndicatorCoordinator stop];
-    _tabGroupIndicatorCoordinator = nil;
-  }
+  [_tabGroupIndicatorCoordinator stop];
+  _tabGroupIndicatorCoordinator = nil;
 
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;

@@ -78,8 +78,8 @@ const CGFloat kLabelOffset = 3;
 }
 
 - (void)setTabGroupState:(ToolbarTabGroupState)tabGroupState {
-  CHECK(IsTabGroupIndicatorEnabled() ||
-        tabGroupState == ToolbarTabGroupState::kNormal);
+  CHECK(tabGroupState == ToolbarTabGroupState::kNormal ||
+        IsTabGroupIndicatorEnabled());
   if (_tabGroupState == tabGroupState) {
     return;
   }
