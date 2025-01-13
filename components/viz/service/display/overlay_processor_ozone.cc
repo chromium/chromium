@@ -481,6 +481,10 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
     has_independent_cursor_plane_ =
         hardware_capabilities.has_independent_cursor_plane;
 
+    UMA_HISTOGRAM_COUNTS_100(
+        "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",
+        hardware_capabilities.num_overlay_capable_planes);
+
     DCHECK(overlay_candidates_);
     overlay_candidates_->SetSupportedBufferFormats(
         std::move(hardware_capabilities.supported_buffer_formats));

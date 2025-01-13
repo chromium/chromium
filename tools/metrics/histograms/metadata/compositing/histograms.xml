@@ -463,6 +463,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Display.DrmThreadProxy.CheckOverlayCapabilitiesSyncOnDrmThreadUs"
+    units="microseconds" expires_after="2025-07-10">
+  <owner>harthuang@google.com</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    Logged zero or more times per frame, the time spent checking if a page flip
+    is succeeded or failed on DRM thread. Only reported for platforms supporting
+    high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2025-05-11">
   <owner>jonross@chromium.org</owner>
@@ -484,6 +498,21 @@ chromium-metrics-reviews@google.com.
     Logged once per frame, represents whether we could successfully schedule a
     page flip, or what error we encountered along the way. Note: this metric was
     expired from 2023-03-02 to 2023-04-13.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
+    units="units" expires_after="2025-07-09">
+  <owner>harthuang@google.com</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    This is logged every time a valid HardwareCapabilites is received DRM thread
+    when display configuration may have changed. It records the number of
+    overlay planes we have available on this device including the primary plane.
+    Note: this metric was expired and removed on 2024-06-17 and re-enabled on
+    2025-01-09.
   </summary>
 </histogram>
 
@@ -553,6 +582,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged once per frame, the number of quads considered for promotion to
     overlay. Note: this metric was expired from 2023-06-18 to 2024-02-05.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldAttemptMultipleOverlays"
+    enum="AttemptingMultipleOverlays" expires_after="2025-07-09">
+  <owner>harthuang@google.com</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    Logged zero or one times per frame, whether we are using the
+    AttemptingMultipleOverlays code path this frame or we are not, and log the
+    reason we are not attempting multiple overlays. Note: this metric was
+    expired and removed on 2024-06-18 and re-enabled on 2025-01-09.
   </summary>
 </histogram>
 
