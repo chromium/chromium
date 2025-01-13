@@ -422,12 +422,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
       size.set_width(size.width() - 25);
       bb_view_->SetBounds(0, 0, size.width(), size.height());
       bb_view_->DeprecatedLayoutImmediately();
-    } while (bb_view_->bookmark_buttons_[6]->GetVisible());
+    } while (bb_view_->bookmark_buttons_[6].first->GetVisible());
     return size;
   }
 
   const views::LabelButton* GetBookmarkButton(size_t view_index) const {
-    return bb_view_->bookmark_buttons_[view_index];
+    return bb_view_->bookmark_buttons_[view_index].first;
   }
   views::LabelButton* GetBookmarkButton(size_t view_index) {
     return const_cast<views::LabelButton*>(

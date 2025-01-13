@@ -55,7 +55,8 @@ BookmarkMenuController::BookmarkMenuController(
 
 void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
   bookmark_bar_ = bookmark_bar;
-  views::MenuButton* menu_button = bookmark_bar_->GetMenuButtonForNode(folder_);
+  views::MenuButton* menu_button =
+      bookmark_bar_->GetMenuButtonForFolder(folder_);
   DCHECK(menu_button);
   views::MenuAnchorPosition anchor;
   bookmark_bar_->GetAnchorPositionForButton(menu_button, &anchor);
@@ -183,7 +184,7 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
 
   const BookmarkParentFolder folder(BookmarkParentFolder::FromFolderNode(node));
   menu_delegate_->SetActiveMenu(folder, start_index);
-  *button = bookmark_bar_->GetMenuButtonForNode(folder);
+  *button = bookmark_bar_->GetMenuButtonForFolder(folder);
   bookmark_bar_->GetAnchorPositionForButton(*button, anchor);
   *has_mnemonics = false;
   return this->menu();

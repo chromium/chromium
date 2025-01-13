@@ -45,6 +45,7 @@ class Profile;
 
 namespace bookmarks {
 class BookmarkModel;
+class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 
@@ -123,7 +124,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
       size_t* model_start_index);
 
   // Returns the MenuButton for folder.
-  views::MenuButton* GetMenuButtonForNode(const BookmarkParentFolder& folder);
+  views::MenuButton* GetMenuButtonForFolder(const BookmarkParentFolder& folder);
 
   // Returns the position to anchor the menu for |button| at.
   void GetAnchorPositionForButton(views::MenuButton* button,
@@ -247,6 +248,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
       int available_width);
 
  private:
+  using BookmarkButtonAndNode =
+      std::pair<raw_ptr<views::LabelButton>,
+                raw_ptr<const bookmarks::BookmarkNode>>;
   struct DropInfo;
   struct DropLocation;
 
@@ -319,8 +323,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Implementation for BookmarkNodeRemoved. Returns true if LayoutAndPaint() is
   // required.
-  bool BookmarkNodeRemovedImpl(const bookmarks::BookmarkNode* parent,
-                               size_t index);
+  bool BookmarkNodeRemovedImpl(const bookmarks::BookmarkNode* node);
 
   // If the node is a child of the root node, the button is updated
   // appropriately.
@@ -450,7 +453,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<views::MenuButton> overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
-  std::vector<raw_ptr<views::LabelButton>> bookmark_buttons_;
+  std::vector<BookmarkButtonAndNode> bookmark_buttons_;
 
   std::map<raw_ptr<const views::LabelButton>, base::CallbackListSubscription>
       button_visibility_changed_callbacks_;

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <utility>
@@ -524,13 +525,13 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   // crbug.com/1223919)
 
   // Then check the bookmark buttons.
-  for (size_t i = 0; i < bookmark_buttons_.size(); ++i) {
-    views::View* child = bookmark_buttons_[i];
+  for (const auto& button_and_node : bookmark_buttons_) {
+    views::View* child = button_and_node.first;
     if (!child->GetVisible()) {
       break;
     }
     if (child->bounds().Contains(adjusted_loc)) {
-      return bookmark_model_->bookmark_bar_node()->children()[i].get();
+      return button_and_node.second;
     }
   }
 
@@ -550,7 +551,7 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   return nullptr;
 }
 
-MenuButton* BookmarkBarView::GetMenuButtonForNode(
+MenuButton* BookmarkBarView::GetMenuButtonForFolder(
     const BookmarkParentFolder& folder) {
   std::optional<PermanentFolderType> type = folder.as_permanent_folder();
   if (type == PermanentFolderType::kManagedNode) {
@@ -561,15 +562,14 @@ MenuButton* BookmarkBarView::GetMenuButtonForNode(
     return overflow_button_;
   }
 
-  // TODO: add logic to handle saved groups node(crbug.com/1223929 and
-  // crbug.com/1223919)
-
   // Check if direct child of bookmark bar and is a folder.
   if (const BookmarkNode* node = folder.as_non_permanent_folder();
       node && node->is_folder() &&
       node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
-    size_t index = GetBookmarkService(browser_)->GetIndexOf(node);
-    return static_cast<MenuButton*>(bookmark_buttons_[index]);
+    auto it = base::ranges::find(bookmark_buttons_, node,
+                                 &BookmarkButtonAndNode::second);
+    CHECK(it != bookmark_buttons_.end());
+    return static_cast<MenuButton*>(it->first);
   }
 
   return nullptr;
@@ -781,32 +781,34 @@ void BookmarkBarView::Layout(PassKey) {
     // height of `saved_tab_group_bar_`).
     saved_tab_group_bar_->overflow_button()->SetPreferredSize(
         gfx::Size(button_height, button_height));
-      // Calculate the save tab group width without any restriction.
-      int saved_tab_group_max_width =
-          saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(INT_MAX);
-      // Estimate the bookmark buttons width with existing buttons because not
-      // all the bookmarks have button created.
-      int estimate_bookmark_buttons_width = 0;
-      for (views::LabelButton* button : bookmark_buttons_) {
-        estimate_bookmark_buttons_width += button->GetPreferredSize().width();
-      }
-      int bookmark_count =
-          bookmark_model_->loaded()
-              ? bookmark_model_->bookmark_bar_node()->children().size()
-              : 0;
-      int button_count = bookmark_buttons_.size();
-      if (button_count > 0) {
-        estimate_bookmark_buttons_width *=
-            (1.0 * bookmark_count / button_count);
-      }
-      estimate_bookmark_buttons_width +=
-          (bookmark_count - 1) * bookmark_bar_button_padding;
+    // Calculate the save tab group width without any restriction.
+    int saved_tab_group_max_width =
+        saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(INT_MAX);
+    // Estimate the bookmark buttons width with existing buttons because not
+    // all the bookmarks have button created.
+    int estimate_bookmark_buttons_width = std::accumulate(
+        bookmark_buttons_.begin(), bookmark_buttons_.end(), 0,
+        [](size_t total, const auto& bookmark_button_and_node) {
+          return total +
+                 bookmark_button_and_node.first->GetPreferredSize().width();
+        });
 
-      saved_tab_groups_bar_available_width =
-          GetAvailableWidthForSavedTabGroupsBar(
-              saved_tab_group_max_width, estimate_bookmark_buttons_width,
-              max_x - x -
-                  saved_tab_groups_separator_view_->GetPreferredSize().width());
+    int bookmark_count =
+        bookmark_model_->loaded()
+            ? bookmark_model_->bookmark_bar_node()->children().size()
+            : 0;
+    int button_count = bookmark_buttons_.size();
+    if (button_count > 0) {
+      estimate_bookmark_buttons_width *= (1.0 * bookmark_count / button_count);
+    }
+    estimate_bookmark_buttons_width +=
+        (bookmark_count - 1) * bookmark_bar_button_padding;
+
+    saved_tab_groups_bar_available_width =
+        GetAvailableWidthForSavedTabGroupsBar(
+            saved_tab_group_max_width, estimate_bookmark_buttons_width,
+            max_x - x -
+                saved_tab_groups_separator_view_->GetPreferredSize().width());
 
     saved_tab_group_bar_width =
         saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(
@@ -859,7 +861,7 @@ void BookmarkBarView::Layout(PassKey) {
             i);
         button_count = bookmark_buttons_.size();
       }
-      views::View* child = bookmark_buttons_[i];
+      views::View* child = bookmark_buttons_[i].first;
 
       // If the child view can fit in the bookmarks comfortably, make it visible
       // and set its bounds.
@@ -879,13 +881,15 @@ void BookmarkBarView::Layout(PassKey) {
       bookmark_model_->loaded() &&
       (bookmark_model_->bookmark_bar_node()->children().size() >
            bookmark_buttons_.size() ||
-       (!bookmark_buttons_.empty() && !bookmark_buttons_.back()->GetVisible()));
+       (!bookmark_buttons_.empty() &&
+        !bookmark_buttons_.back().first->GetVisible()));
 
   // Set the visibility of the tab group separator if there are groups and
   // bookmarks.
   if (saved_tab_groups_separator_view_) {
     const bool bookmarks_button_visible =
-        !bookmark_buttons_.empty() && bookmark_buttons_.front()->GetVisible();
+        !bookmark_buttons_.empty() &&
+        bookmark_buttons_.front().first->GetVisible();
     saved_tab_groups_separator_view_->SetVisible(
         saved_tab_group_bar_width > 0 &&
         (bookmarks_button_visible || show_bookmarks_overflow));
@@ -948,7 +952,7 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
     int h = height();
     if (index == bookmark_buttons_.size()) {
       if (index != 0) {
-        x = bookmark_buttons_[index - 1]->bounds().right();
+        x = bookmark_buttons_[index - 1].first->bounds().right();
       } else if (managed_bookmarks_button_->GetVisible()) {
         x = managed_bookmarks_button_->bounds().right();
       } else if (apps_page_shortcut_->GetVisible()) {
@@ -957,11 +961,12 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
         x = GetLeadingMargin();
       }
     } else {
-      x = bookmark_buttons_[index]->x();
+      x = bookmark_buttons_[index].first->x();
     }
-    if (!bookmark_buttons_.empty() && bookmark_buttons_.front()->GetVisible()) {
-      y = bookmark_buttons_.front()->y();
-      h = bookmark_buttons_.front()->height();
+    if (!bookmark_buttons_.empty() &&
+        bookmark_buttons_.front().first->GetVisible()) {
+      y = bookmark_buttons_.front().first->y();
+      h = bookmark_buttons_.front().first->height();
     }
 
     // Since the drop indicator is painted directly onto the canvas, we must
@@ -1058,9 +1063,8 @@ int BookmarkBarView::OnDragUpdated(const ui::DropTargetEvent& event) {
     } else if (location.button_type == DROP_OVERFLOW) {
       node = bookmark_model_->bookmark_bar_node();
     } else {
-      node = bookmark_model_->bookmark_bar_node()
-                 ->children()[location.index.value()]
-                 .get();
+      CHECK_LE(*location.index, bookmark_buttons_.size());
+      node = bookmark_buttons_[location.index.value()].second;
       CHECK(node->is_folder());
     }
     StartShowFolderDropMenuTimer(BookmarkParentFolder::FromFolderNode(node));
@@ -1191,7 +1195,8 @@ void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,
   // mouse/touch-device, the location will update accordingly.
   InvalidateDrop();
 
-  bool needs_layout_and_paint = BookmarkNodeRemovedImpl(old_parent, old_index);
+  bool needs_layout_and_paint =
+      BookmarkNodeRemovedImpl(new_parent->children()[new_index].get());
   if (BookmarkNodeAddedImpl(new_parent, new_index)) {
     needs_layout_and_paint = true;
   }
@@ -1230,8 +1235,7 @@ void BookmarkBarView::BookmarkNodeRemoved(const BookmarkNode* parent,
       bookmark_menu_->Cancel();
     }
   }
-
-  if (BookmarkNodeRemovedImpl(parent, old_index)) {
+  if (BookmarkNodeRemovedImpl(node)) {
     LayoutAndPaint();
   }
 
@@ -1421,10 +1425,8 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     // the user clicked on the bookmark bar background.
     size_t bookmark_button_index = GetIndexForButton(source);
     DCHECK_NE(static_cast<size_t>(-1), bookmark_button_index);
-    DCHECK_LT(bookmark_button_index, bookmark_buttons_.size());
-    const BookmarkNode* node = bookmark_model_->bookmark_bar_node()
-                                   ->children()[bookmark_button_index]
-                                   .get();
+    CHECK_LT(bookmark_button_index, bookmark_buttons_.size());
+    const BookmarkNode* node = bookmark_buttons_[bookmark_button_index].second;
     nodes.push_back(node);
   } else {
     nodes.push_back(bookmark_model_->bookmark_bar_node());
@@ -1544,8 +1546,10 @@ void BookmarkBarView::Init() {
 }
 
 size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
-  const auto i = base::ranges::find_if_not(bookmark_buttons_,
-                                           &views::LabelButton::GetVisible);
+  const auto i = base::ranges::find_if_not(
+      bookmark_buttons_, [](const BookmarkButtonAndNode& pair) {
+        return pair.first->GetVisible();
+      });
   return i - bookmark_buttons_.cbegin();
 }
 
@@ -1620,7 +1624,8 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
   }
   ConfigureButton(node, button.get());
   size_t index = node->parent()->GetIndexOf(node).value();
-  bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index, button.get());
+  bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index,
+                           {button.get(), node});
   button_visibility_changed_callbacks_[button.get()] =
       button->AddVisibleChangedCallback(
           base::BindRepeating(&BookmarkBarView::UpdateFirstHiddenNodeIndex,
@@ -1631,7 +1636,7 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
 
 void BookmarkBarView::RemoveBookmarkButton(size_t index) {
   CHECK_LE(index, bookmark_buttons_.size());
-  views::LabelButton* button = bookmark_buttons_[index];
+  views::LabelButton* button = bookmark_buttons_[index].first;
   bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
   // Set not visible before removing to advance focus if needed, and to ensure
   // that the overflow menu is updated.
@@ -1763,21 +1768,16 @@ bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* parent,
   return index == bookmark_buttons_.size();
 }
 
-bool BookmarkBarView::BookmarkNodeRemovedImpl(const BookmarkNode* parent,
-                                              size_t index) {
+bool BookmarkBarView::BookmarkNodeRemovedImpl(
+    const bookmarks::BookmarkNode* node) {
   const bool needs_layout = UpdateOtherAndManagedButtonsVisibility();
-
-  if (parent != bookmark_model_->bookmark_bar_node()) {
-    // Only children of the bookmark_bar_node get buttons.
-    return needs_layout;
+  for (size_t i = 0; i < bookmark_buttons_.size(); i++) {
+    if (bookmark_buttons_[i].second == node) {
+      RemoveBookmarkButton(i);
+      return true;
+    }
   }
-  if (index >= bookmark_buttons_.size()) {
-    return needs_layout;
-  }
-
-  RemoveBookmarkButton(index);
-
-  return true;
+  return needs_layout;
 }
 
 void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {
@@ -1796,11 +1796,13 @@ void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {
     // We only care about nodes on the bookmark bar.
     return;
   }
-  size_t index = bookmark_model_->bookmark_bar_node()->GetIndexOf(node).value();
-  if (index >= bookmark_buttons_.size()) {
+
+  auto it = base::ranges::find(bookmark_buttons_, node,
+                               &BookmarkButtonAndNode::second);
+  if (it == bookmark_buttons_.end()) {
     return;  // Buttons are created as needed.
   }
-  views::LabelButton* button = bookmark_buttons_[index];
+  views::LabelButton* button = it->first;
   const int old_pref_width = button->GetPreferredSize().width();
   ConfigureButton(node, button);
   if (old_pref_width != button->GetPreferredSize().width()) {
@@ -1818,7 +1820,7 @@ void BookmarkBarView::ShowDropFolderForNode(
     bookmark_drop_menu_->Cancel();
   }
 
-  MenuButton* menu_button = GetMenuButtonForNode(folder);
+  MenuButton* menu_button = GetMenuButtonForFolder(folder);
   if (!menu_button) {
     return;
   }
@@ -1897,15 +1899,14 @@ void BookmarkBarView::CalculateDropLocation(
   }
 
   for (size_t i = 0; i < bookmark_buttons_.size() &&
-                     bookmark_buttons_[i]->GetVisible() && !found;
+                     bookmark_buttons_[i].first->GetVisible() && !found;
        i++) {
-    views::LabelButton* button = bookmark_buttons_[i];
+    views::LabelButton* button = bookmark_buttons_[i].first;
     int button_x = mirrored_x - button->x();
     int button_w = button->width();
     if (button_x < button_w) {
       found = true;
-      const BookmarkNode* node =
-          bookmark_model_->bookmark_bar_node()->children()[i].get();
+      const BookmarkNode* node = bookmark_buttons_[i].second;
       if (node->is_folder()) {
         if (button_x <= views::kDropBetweenPixels) {
           location->index = i;
@@ -1985,10 +1986,10 @@ void BookmarkBarView::InvalidateDrop() {
 }
 
 const BookmarkNode* BookmarkBarView::GetNodeForSender(View* sender) const {
-  const auto i = base::ranges::find(bookmark_buttons_, sender);
+  const auto i = base::ranges::find(bookmark_buttons_, sender,
+                                    &BookmarkButtonAndNode::first);
   DCHECK(i != bookmark_buttons_.cend());
-  size_t child = i - bookmark_buttons_.cbegin();
-  return bookmark_model_->bookmark_bar_node()->children()[child].get();
+  return i->second;
 }
 
 void BookmarkBarView::WriteBookmarkDragData(const BookmarkNode* node,
@@ -2004,9 +2005,9 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   if (!color_provider) {
     return;
   }
-  for (size_t i = 0; i < bookmark_buttons_.size(); ++i) {
-    ConfigureButton(bookmark_model_->bookmark_bar_node()->children()[i].get(),
-                    bookmark_buttons_[i]);
+  for (auto& bookmark_button_and_node : bookmark_buttons_) {
+    ConfigureButton(bookmark_button_and_node.second,
+                    bookmark_button_and_node.first);
   }
 
   const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
@@ -2061,9 +2062,12 @@ bool BookmarkBarView::UpdateOtherAndManagedButtonsVisibility() {
     UpdateBookmarksSeparatorVisibility();
   }
 
-  bool show_managed = !managed_->managed_node()->children().empty() &&
-                      browser_->profile()->GetPrefs()->GetBoolean(
-                          bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+  bool show_managed = false;
+  if (managed_ && managed_->managed_node()) {
+    show_managed = !managed_->managed_node()->children().empty() &&
+                   browser_->profile()->GetPrefs()->GetBoolean(
+                       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+  }
   bool update_managed = show_managed != managed_bookmarks_button_->GetVisible();
   if (update_managed) {
     managed_bookmarks_button_->SetVisible(show_managed);
@@ -2154,7 +2158,8 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
 }
 
 size_t BookmarkBarView::GetIndexForButton(views::View* button) {
-  auto it = base::ranges::find(bookmark_buttons_, button);
+  auto it = base::ranges::find(bookmark_buttons_, button,
+                               &BookmarkButtonAndNode::first);
   if (it == bookmark_buttons_.cend()) {
     return static_cast<size_t>(-1);
   }
