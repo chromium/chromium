@@ -122,9 +122,12 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
   request->url = image_url;
   request->referrer_policy = referrer_policy;
   request->referrer = GURL(referrer);
-  request->credentials_mode = send_cookies
-                                  ? network::mojom::CredentialsMode::kInclude
-                                  : network::mojom::CredentialsMode::kOmit;
+  if (send_cookies) {
+    request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+    request->site_for_cookies = net::SiteForCookies::FromUrl(image_url);
+  } else {
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
 
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request),
