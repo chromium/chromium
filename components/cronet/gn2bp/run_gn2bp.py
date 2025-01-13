@@ -21,7 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from typing import List, Set
+from typing import List, Optional, Set, Tuple
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -47,7 +47,6 @@ _GN2BP_SCRIPT_PATH = os.path.join(REPOSITORY_ROOT,
 _JAVA_HOME = os.path.join(REPOSITORY_ROOT, 'third_party', 'jdk', 'current')
 _JAVA_PATH = os.path.join(_JAVA_HOME, 'bin', 'java')
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, 'out')
-_WORKFLOW_NAME = 'import_cronet_to_aosp_gerrit'
 
 
 def _run_license_generation() -> int:
@@ -106,31 +105,35 @@ def _gen_boringssl() -> int:
   return cronet_utils.run(cmd, shell=True)
 
 
-def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
-                          workflow: str = _WORKFLOW_NAME,
-                          copybara_binary: str = _COPYBARA_PATH) -> int:
+def _run_copybara_to_aosp(
+    config: str = _COPYBARA_CONFIG_PATH,
+    copybara_binary: str = _COPYBARA_PATH,
+    git_url_and_branch: Optional[Tuple[str, str]] = None) -> int:
   """Run Copybara CLI to generate an AOSP Gerrit CL with the generated files.
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
   """
-  parent_commit_raw = subprocess.check_output(
-      ('git ls-remote '
-       'https://android.googlesource.com/platform/external/cronet '
-       '| grep "refs/heads/main$" | cut -f 1'), shell=True)
-  parent_commit = parent_commit_raw.decode('utf-8').strip('\n')
-  print(f'AOSP {parent_commit=}')
-  # TODO(crbug.com/349099325): Generate gerrit change id until
-  # --gerrit-new-change flag is fixed.
-  msg = f'gn2bp{time.time_ns()}'
-  change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
-  print(f'Generated {change_id=}')
+  if not git_url_and_branch:
+    parent_commit_raw = subprocess.check_output(
+        ('git ls-remote '
+         'https://android.googlesource.com/platform/external/cronet '
+         '| grep "refs/heads/main$" | cut -f 1'),
+        shell=True)
+    parent_commit = parent_commit_raw.decode('utf-8').strip('\n')
+    print(f'AOSP {parent_commit=}')
+    # TODO(crbug.com/349099325): Generate gerrit change id until
+    # --gerrit-new-change flag is fixed.
+    msg = f'gn2bp{time.time_ns()}'
+    change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
+    print(f'Generated {change_id=}')
   with tempfile.TemporaryDirectory() as empty_dir:
     return cronet_utils.run([
         _JAVA_PATH,
         '-jar',
         copybara_binary,
         config,
-        workflow,
+        "import_cronet_to_aosp_gerrit"
+        if git_url_and_branch is None else "import_cronet_to_git_branch",
         REPOSITORY_ROOT,
         # We use copybara in merge_import mode to preserve local changes in AOSP
         # that were not upstreamed to Chromium (in practice, that means
@@ -170,15 +173,12 @@ def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
         # TODO: https://crbug.com/382268057 - improve on the above.
         '--baseline-for-merge-import',
         empty_dir,
-        '--change-request-parent',
-        parent_commit,
-        '--git-push-option',
-        'nokeycheck',
-        '--git-push-option',
-        'uploadvalidator~skip',
         '--ignore-noop',
-        '--gerrit-change-id',
-        change_id
+        *(('--change-request-parent', parent_commit, '--git-push-option',
+           'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
+           '--gerrit-change-id', change_id) if git_url_and_branch is None else
+          ('--git-destination-url', git_url_and_branch[0],
+           '--git-destination-push', git_url_and_branch[1]))
     ])
 
 
@@ -189,11 +189,6 @@ def main():
                       type=str,
                       help='Copy.bara.sky file path to run Copybara on',
                       default=_COPYBARA_CONFIG_PATH,
-                      required=False)
-  parser.add_argument('--workflow',
-                      type=str,
-                      help='Name of workflow in copy.bara.sky to run',
-                      default=_WORKFLOW_NAME,
                       required=False)
   parser.add_argument('--copybara',
                       type=str,
@@ -211,6 +206,14 @@ def main():
                             "copybara afterwards. This is useful if you only "
                             "want to take a look at the generated files "
                             "without doing an actual import."))
+  parser.add_argument('--git-url-and-branch',
+                      type=str,
+                      help=("Git URL and branch to push to. If not specified, "
+                            "creates an AOSP Gerrit CL. This option is useful "
+                            "to push to a local git repo for manual testing, "
+                            "for example: "
+                            "file:////home/foo/aosp/external/cronet mybranch"),
+                      nargs=2)
   args = parser.parse_args()
   run_copybara = not args.skip_copybara
 
@@ -248,8 +251,8 @@ def main():
       # Only run Copybara if all build files generated successfully.
       res_copybara = _run_copybara_to_aosp(
           config=args.config,
-          workflow=args.workflow,
-          copybara_binary=args.copybara)
+          copybara_binary=args.copybara,
+          git_url_and_branch=args.git_url_and_branch)
 
   finally:
     for file in arch_to_temp_desc_file.values():
