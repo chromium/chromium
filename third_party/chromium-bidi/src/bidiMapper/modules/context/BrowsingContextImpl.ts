@@ -1293,6 +1293,8 @@ export class BrowsingContextImpl {
     argumentsLocalValues: Script.LocalValue[];
   }> {
     switch (locator.type) {
+      case 'context':
+        throw new Error('Unreachable');
       case 'css':
         return {
           functionDeclaration: String(

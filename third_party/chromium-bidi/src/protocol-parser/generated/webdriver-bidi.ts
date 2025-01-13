@@ -607,6 +607,7 @@ export namespace BrowsingContext {
     z.union([
       BrowsingContext.AccessibilityLocatorSchema,
       BrowsingContext.CssLocatorSchema,
+      BrowsingContext.ContextLocatorSchema,
       BrowsingContext.InnerTextLocatorSchema,
       BrowsingContext.XPathLocatorSchema,
     ]),
@@ -628,6 +629,16 @@ export namespace BrowsingContext {
     z.object({
       type: z.literal('css'),
       value: z.string(),
+    }),
+  );
+}
+export namespace BrowsingContext {
+  export const ContextLocatorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('context'),
+      value: z.object({
+        context: BrowsingContext.BrowsingContextSchema,
+      }),
     }),
   );
 }
