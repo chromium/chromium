@@ -81,6 +81,8 @@ public class AuxiliarySearchModuleBuilderUnitTest {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
         mFactory.setHooksForTesting(mHooks);
         assertTrue(mFactory.isEnabled());
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, true);
 
         mBuilder = new AuxiliarySearchModuleBuilder(mContext, mOpenSettingsRunnable);
     }
@@ -93,6 +95,14 @@ public class AuxiliarySearchModuleBuilderUnitTest {
 
         when(mHooks.isEnabled()).thenReturn(false);
         assertFalse(mFactory.isEnabled());
+        assertFalse(mBuilder.isEligible());
+
+        // Verifies that if the device doesn't provide a consumer schema, we no longer build the
+        // opt in card module.
+        when(mHooks.isEnabled()).thenReturn(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+        assertTrue(mFactory.isEnabled());
         assertFalse(mBuilder.isEligible());
     }
 

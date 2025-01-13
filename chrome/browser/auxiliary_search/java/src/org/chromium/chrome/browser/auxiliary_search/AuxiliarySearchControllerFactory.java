@@ -13,6 +13,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -46,6 +48,21 @@ public class AuxiliarySearchControllerFactory {
         }
 
         return mHooks != null && mHooks.isEnabled();
+    }
+
+    /**
+     * Returns whether Tab Sharing is enabled and the device is ready to use it. This check is used
+     * to control the visibility of UI like the toggle in Tabs Settings and opt in card on the magic
+     * stack. This function should NOT be used to determine whether to create a Tab Sharing
+     * controller.
+     */
+    public boolean isEnabledAndDeviceCompatible() {
+        boolean consumerSchemaFound =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, false);
+
+        return consumerSchemaFound && isEnabled();
     }
 
     /** Returns whether the sharing Tabs with the system is enabled by default on the device. */

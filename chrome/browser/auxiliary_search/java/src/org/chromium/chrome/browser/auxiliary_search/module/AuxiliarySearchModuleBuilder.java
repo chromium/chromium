@@ -79,7 +79,7 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
     @Override
     public boolean isEligible() {
         return ChromeFeatureList.sAndroidAppIntegrationModule.isEnabled()
-                && AuxiliarySearchControllerFactory.getInstance().isEnabled();
+                && AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
     }
 
     @Override

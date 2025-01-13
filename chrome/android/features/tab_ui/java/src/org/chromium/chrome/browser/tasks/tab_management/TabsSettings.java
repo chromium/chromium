@@ -131,7 +131,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 (TextMessagePreference)
                         findPreference(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
 
-        if (!AuxiliarySearchControllerFactory.getInstance().isEnabled()) {
+        if (!AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible()) {
             shareTitlesAndUrlsWithOsSwitch.setVisible(false);
             learnMoreTextMessagePreference.setVisible(false);
             return;

@@ -244,7 +244,32 @@ public class AuxiliarySearchDonorUnitTest {
         // Verifies that closeSession() which calls the pending callback is executed when device
         // isn't capable for Tabs donation while previously donation was allowed (schema is set).
         assertFalse(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ false));
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
+                                false));
         verify(callback).onResult(eq(false));
+
+        // Verifies that onConsumerSchemaSearchedImpl() doesn't reset the schema thus returns
+        // false, while AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND is set to be true.
+        assertFalse(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
+                                false));
+
+        // Verifies that onConsumerSchemaSearchedImpl() returns true to set the schema, and
+        // AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND is set to be true.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+        assertTrue(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
+                                false));
     }
 
     @Test

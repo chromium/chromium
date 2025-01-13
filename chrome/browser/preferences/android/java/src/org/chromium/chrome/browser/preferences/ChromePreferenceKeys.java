@@ -99,6 +99,10 @@ public final class ChromePreferenceKeys {
     public static final String AUXILIARY_SEARCH_IS_SCHEMA_SET =
             "Chrome.AuxiliarySearch.IsSchemaSet";
 
+    /** Whether the consumer schema for Tabs sharing exists. */
+    public static final String AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND =
+            "Chrome.AuxiliarySearch.ConsumerSchemaFound";
+
     /** The total times that the opt in card was shown to the user. */
     public static final String AUXILIARY_SEARCH_MODULE_IMPRESSION =
             "Chrome.AuxiliarySearchModule.Impression";
@@ -919,6 +923,7 @@ public final class ChromePreferenceKeys {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
+                AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
                 AUXILIARY_SEARCH_MODULE_USER_RESPONDED,
                 AUXILIARY_SEARCH_MODULE_IMPRESSION,
                 AUXILIARY_SEARCH_IS_SCHEMA_SET,

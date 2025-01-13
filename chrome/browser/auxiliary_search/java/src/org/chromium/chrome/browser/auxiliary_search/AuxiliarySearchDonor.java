@@ -170,6 +170,8 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     boolean onConsumerSchemaSearchedImpl(boolean success) {
         mIsDeviceCompatible = success;
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, success);
 
         mIsSchemaSet =
                 ChromeSharedPreferences.getInstance()
