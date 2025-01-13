@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
@@ -2170,6 +2171,17 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
   MarkAXObjectDirty(ax_object);
 }
 
+void AXObjectCacheImpl::ClearBlockFlowCachedData(
+    const LayoutBlockFlow* block_flow) {
+  if (!::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+    return;
+  }
+  auto it = block_flow_data_cache_.find(block_flow);
+  if (it != block_flow_data_cache_.end()) {
+    block_flow_data_cache_.erase(it);
+  }
+}
+
 void AXObjectCacheImpl::CSSAnchorChanged(const LayoutObject* positioned_obj) {
   if (Node* node = positioned_obj->GetNode()) {
     DeferTreeUpdate(TreeUpdateReason::kCSSAnchorChanged, node);
@@ -3416,14 +3428,19 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
 
 const AXBlockFlowData* AXObjectCacheImpl::GetBlockFlowData(
     const AXObject* object) {
-  // TODO: Assumption that we are only really working on one paragraph at a
-  // time turned out to be incorrect. Ideally, we can come up with a strategy
-  // to make this work in order to avoid memory bloat. For now just compute the
-  // AxBlockFlowData every time as depending on a cached version may cause
-  // problems.
   LayoutBlockFlow* block_flow =
       object->GetLayoutObject()->FragmentItemsContainer();
-  return MakeGarbageCollected<AXBlockFlowData>(block_flow);
+  if (!block_flow) {
+    return nullptr;
+  }
+  auto it = block_flow_data_cache_.find(block_flow);
+  if (it != block_flow_data_cache_.end()) {
+    return it->value;
+  }
+  auto result = block_flow_data_cache_.insert(
+      block_flow, MakeGarbageCollected<AXBlockFlowData>(block_flow));
+  CHECK(result.is_new_entry);
+  return result.stored_value->value;
 }
 
 bool AXObjectCacheImpl::IsParsingMainDocument() const {
@@ -6121,6 +6138,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(next_on_line_map_);
   visitor->Trace(processed_blocks_);
   visitor->Trace(previous_on_line_map_);
+  visitor->Trace(block_flow_data_cache_);
 
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);

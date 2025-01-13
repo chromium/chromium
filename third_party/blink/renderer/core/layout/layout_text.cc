@@ -260,12 +260,12 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
       Parent()->DirtyLinesFromChangedChild(this);
     }
     if (FirstInlineFragmentItemIndex()) {
-      DetachAbstractInlineTextBoxesIfNeeded();
+      DetachAxHooksIfNeeded();
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
-    DetachAbstractInlineTextBoxesIfNeeded();
+    DetachAxHooksIfNeeded();
     ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();
@@ -297,10 +297,10 @@ void LayoutText::WillBeDestroyed() {
 
 void LayoutText::DeleteTextBoxes() {
   NOT_DESTROYED();
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
 }
 
-void LayoutText::DetachAbstractInlineTextBoxes() {
+void LayoutText::DetachAxHooks() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
@@ -310,14 +310,21 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   InlineCursor cursor;
-  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
+  for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
     AbstractInlineTextBox::WillDestroy(cursor);
+  }
+}
+
+void LayoutText::ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) {
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->ClearBlockFlowCachedData(FragmentItemsContainer());
+  }
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   first_fragment_item_index_ = 0u;
 }
 
@@ -326,7 +333,7 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
-  DetachAbstractInlineTextBoxesIfNeeded();
+  DetachAxHooksIfNeeded();
   // Changing the first fragment item index causes
   // LayoutText::FirstAbstractInlineTextBox to return a box,
   // so notify the AX object for this LayoutText that it might need to

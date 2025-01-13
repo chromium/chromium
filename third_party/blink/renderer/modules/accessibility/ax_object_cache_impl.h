@@ -274,6 +274,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
 
+  // Called when fragments in the LayoutBlockFlow changed.
+  void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) override;
+
   void DocumentTitleChanged() override;
 
   // Returns true if we can immediately process tree updates for this node.
@@ -1268,6 +1271,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, Member<const LayoutObject>>
       previous_on_line_map_;
   HeapHashSet<Member<const LayoutBlockFlow>> processed_blocks_;
+
+  HeapHashMap<Member<const LayoutBlockFlow>, Member<AXBlockFlowData>>
+      block_flow_data_cache_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,

@@ -332,7 +332,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void InvalidateSubtreeLayoutForFontUpdates() override;
 
-  void DetachAbstractInlineTextBoxesIfNeeded();
+  void DetachAxHooksIfNeeded();
 
   // Returns the logical location of the first line box, and the logical height
   // of the LayoutText.
@@ -438,7 +438,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
  private:
   ContentCaptureManager* GetOrResetContentCaptureManager();
-  void DetachAbstractInlineTextBoxes();
+  void DetachAxHooks();
+  void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow);
 
   virtual unsigned NonCollapsedCaretMaxOffset() const;
 
@@ -470,10 +471,15 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   return first_fragment_item_index_;
 }
 
-inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {
+inline void LayoutText::DetachAxHooksIfNeeded() {
   if (has_abstract_inline_text_box_) [[unlikely]] {
-    DetachAbstractInlineTextBoxes();
+    DetachAxHooks();
   }
+  if (!IsInLayoutNGInlineFormattingContext()) {
+    return;
+  }
+
+  ClearBlockFlowCachedData(FragmentItemsContainer());
 }
 
 template <>

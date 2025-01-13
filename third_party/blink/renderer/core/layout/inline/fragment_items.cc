@@ -60,7 +60,7 @@ FragmentItems::FragmentItems(const FragmentItems& other)
     // |FragmentItem|.
     if (auto* layout_text =
             DynamicTo<LayoutText>(other_item.GetMutableLayoutObject()))
-      layout_text->DetachAbstractInlineTextBoxesIfNeeded();
+      layout_text->DetachAxHooksIfNeeded();
   }
 }
 

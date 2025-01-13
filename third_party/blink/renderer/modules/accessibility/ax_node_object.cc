@@ -5555,7 +5555,8 @@ void AXNodeObject::AddInlineTextBoxChildren() {
     if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
       DCHECK(it.Next()) << "Failed to advance the BlockFlow Iterator while "
                            "processing AxInlineTextBox children of "
-                        << this;
+                        << this << " which has layout " << GetLayoutObject()
+                        << "\n and the AITB produced " << box->GetText();
 
       WTF::String fragment_text = it.GetText();
       WTF::String abstract_inline_text = box->GetText();
