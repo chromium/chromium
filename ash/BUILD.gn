@@ -3817,6 +3817,7 @@ test("ash_unittests") {
     "bubble//simple_grid_layout_unittest.cc",
     "bubble/bubble_event_filter_unittest.cc",
     "bubble/bubble_utils_unittest.cc",
+    "capture_mode/action_button_container_view_unittest.cc",
     "capture_mode/action_button_view_unittest.cc",
     "capture_mode/capture_audio_mixing_unittests.cc",
     "capture_mode/capture_mode_camera_unittests.cc",

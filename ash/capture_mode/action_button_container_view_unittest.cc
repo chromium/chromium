@@ -1,0 +1,81 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/capture_mode/action_button_container_view.h"
+
+#include <memory>
+#include <string>
+
+#include "ash/capture_mode/action_button_view.h"
+#include "ash/capture_mode/capture_mode_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/test/view_drawn_waiter.h"
+#include "base/test/test_future.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
+
+namespace ash {
+namespace {
+
+using ::testing::ElementsAre;
+
+using ActionButtonContainerViewTest = views::ViewsTestBase;
+
+TEST_F(ActionButtonContainerViewTest, AddsActionButton) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(50, 50, 300, 200));
+  widget->Show();
+  auto* action_button_container =
+      widget->SetContentsView(std::make_unique<ActionButtonContainerView>());
+  base::test::TestFuture<void> action_future;
+
+  ActionButtonView* action_button = action_button_container->AddActionButton(
+      action_future.GetCallback(), u"Button Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kScanner, 0),
+      ActionButtonViewID::kScannerButton);
+
+  // Check that the action button has been successfully created.
+  ASSERT_TRUE(action_button);
+  EXPECT_THAT(action_button_container->children(), ElementsAre(action_button));
+  EXPECT_EQ(action_button->label_for_testing()->GetText(), u"Button Text");
+
+  // Check that clicking the action button runs the action callback.
+  ViewDrawnWaiter().Wait(action_button);
+  ui::test::EventGenerator event_generator(GetRootWindow(widget.get()));
+  event_generator.MoveMouseTo(action_button->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+
+  EXPECT_TRUE(action_future.Wait());
+}
+
+TEST_F(ActionButtonContainerViewTest, ActionButtonsOrderedByRank) {
+  ActionButtonContainerView action_button_container;
+
+  ActionButtonView* copy_text_button = action_button_container.AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+  ActionButtonView* search_button = action_button_container.AddActionButton(
+      views::Button::PressedCallback(), u"Search Button",
+      &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kSunfish, 0),
+      ActionButtonViewID::kSearchButton);
+  ActionButtonView* scanner_button = action_button_container.AddActionButton(
+      views::Button::PressedCallback(), u"Scanner Button",
+      &kCaptureModeImageIcon, ActionButtonRank(ActionButtonType::kScanner, 0),
+      ActionButtonViewID::kScannerButton);
+
+  EXPECT_THAT(action_button_container.children(),
+              ElementsAre(scanner_button, copy_text_button, search_button));
+}
+
+}  // namespace
+}  // namespace ash

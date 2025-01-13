@@ -1384,8 +1384,6 @@ CaptureModeSession::GetImageSearchToken() {
   return is_shutting_down_ ? nullptr : weak_token_factory_.GetWeakPtr();
 }
 
-// TODO(crbug.com/372740410): Determine behavior when we add a button with the
-// exact same rank (type and priority) as an existing valid button.
 ActionButtonView* CaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,
@@ -1403,55 +1401,20 @@ ActionButtonView* CaptureModeSession::AddActionButton(
     return nullptr;
   }
 
-  CHECK(action_container_view_);
-
   // If the user is shown an action button, they have successfully selected a
   // region and invoked a backend response, so there is no need to show the
   // nudge anymore.
   MaybeDismissSunfishRegionNudgeForever();
 
-  // Collect the existing buttons and newly requested button, and sort them by
-  // rank.
-  std::vector<std::unique_ptr<ActionButtonView>> action_buttons;
-
-  // Populate `action_buttons` with the existing action buttons, if any. We need
-  // to copy the vector of `children()` as we will be removing buttons from the
-  // original.
-  auto children = action_container_view_->children();
-  for (views::View* action_button : children) {
-    CHECK(action_button);
-    action_buttons.push_back(action_container_view_->RemoveChildViewT(
-        AsViewClass<ActionButtonView>(action_button)));
-  }
-
-  CHECK(action_container_view_->children().empty());
-
-  // Add the new action button to the vector so it can also be sorted.
-  auto new_action_button =
-      std::make_unique<ActionButtonView>(std::move(callback), text, icon, rank);
-  new_action_button->SetID(id);
-  CaptureModeSessionFocusCycler::HighlightHelper::Install(
-      new_action_button.get());
-  ActionButtonView* new_action_button_ptr = new_action_button.get();
-  action_buttons.push_back(std::move(new_action_button));
-
-  // Sort the buttons by rank.
-  auto rank_sort = [](const std::unique_ptr<ActionButtonView>& lhs,
-                      const std::unique_ptr<ActionButtonView>& rhs) {
-    return lhs->rank() < rhs->rank();
-  };
-  sort(action_buttons.begin(), action_buttons.end(), rank_sort);
-
-  // Re-insert the buttons into the container view in sorted order from highest
-  // to lowest. Higher ranked buttons should appear to the right of lower ranked
-  // buttons, so insert new buttons on the left.
-  for (std::unique_ptr<ActionButtonView>& action_button : action_buttons) {
-    action_container_view_->AddChildView(std::move(action_button));
-  }
+  CHECK(action_container_view_);
+  ActionButtonView* action_button = action_container_view_->AddActionButton(
+      std::move(callback), text, icon, rank, id);
+  CHECK(action_button);
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(action_button);
 
   UpdateActionContainerWidget();
 
-  return new_action_button_ptr;
+  return action_button;
 }
 
 void CaptureModeSession::AddSmartActionsButton() {
