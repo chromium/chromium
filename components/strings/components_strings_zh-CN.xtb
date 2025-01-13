@@ -3820,7 +3820,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798389633136518089">此政策不是由云端来源设置，因此已被忽略。</translation>
 <translation id="7800304661137206267">该连接是使用 <ph name="CIPHER" /> 进行加密的，同时使用 <ph name="MAC" /> 进行讯息身份验证并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
-<translation id="7800977246388195491">Chrome 会根据您近期的浏览记录来推测您感兴趣的主题。此外，您访问的网站也能判断您的喜好。之后，网站可请求获取这类信息，以便向您展示个性化广告。您可以选择允许使用哪些主题和网站向您展示广告。</translation>
+<translation id="7800977246388195491">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。此外，您访问的网站也能反映出您的喜好。之后，网站可请求获取这类信息，以便向您展示个性化广告。您可以选择要根据哪些主题和网站向您展示广告。</translation>
 <translation id="7802523362929240268">网站是合规的</translation>
 <translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>

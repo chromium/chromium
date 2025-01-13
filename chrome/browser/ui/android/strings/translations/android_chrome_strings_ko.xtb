@@ -1240,7 +1240,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
-<translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
+<translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리하기<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">항상 차단</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> 삭제</translation>
 <translation id="6645629752388991326">이 기기를 보안 키로 사용하여 로그인할 수 있는 기기를 제어합니다.</translation>
