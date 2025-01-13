@@ -16976,6 +16976,25 @@
             ]
         }
     ],
+    "PlusAddressAcceptedFirstTimeCreateSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressAcceptedFirstTimeCreateSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressCreateSuggestion": [
         {
             "platforms": [
@@ -16997,6 +17016,44 @@
             ]
         }
     ],
+    "PlusAddressDeclinedFirstTimeCreateSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressDeclinedFirstTimeCreateSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlusAddressFilledPlusAddressViaManualFallbackSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressFilledPlusAddressViaManualFallbackSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressFullFormFill": [
         {
             "platforms": [
@@ -17012,6 +17069,82 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PlusAddressFullFormFill"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlusAddressUserCreatedMultiplePlusAddressesSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressUserCreatedMultiplePlusAddressesSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlusAddressUserDidChooseEmailOverPlusAddressSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressUserDidChooseEmailOverPlusAddressSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PlusAddressUserDidChoosePlusAddressOverEmailSurvey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressUserDidChoosePlusAddressOverEmailSurvey"
                     ]
                 }
             ]
