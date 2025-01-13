@@ -209,7 +209,7 @@ jboolean EventForwarder::OnGestureEvent(JNIEnv* env,
                                         jlong time_ms,
                                         jfloat scale) {
   float dip_scale = view_->GetDipScale();
-  auto size = view_->GetSize();
+  auto size = view_->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
   gfx::PointF root_location =
@@ -226,7 +226,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
     const JavaParamRef<jobject>& motion_event,
     jlong event_time_ns,
     jlong down_time_ms) {
-  auto size = view_->GetSize();
+  auto size = view_->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);

@@ -2616,7 +2616,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
 
   view_->SetSize(gfx::Size(100, 100));
 
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(100, 100), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2624,9 +2624,9 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    // Device pixel size.
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(100, 100),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2641,11 +2641,11 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   sink_->ClearMessages();
   widget_host_->ClearVisualProperties();
 
-  // Device scale factor changes to 2, so the physical pixel sizes should
+  // Device scale factor changes to 2, so the device pixel sizes should
   // change, while the DIP sizes do not.
 
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(2.0f);
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(200, 200), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2653,9 +2653,9 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    // Device pixel size.
+    EXPECT_EQ(gfx::Size(200, 200), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(200, 200),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2671,7 +2671,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
 
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(1.0f);
 
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(100, 100), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2680,8 +2680,8 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(100, 100),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2780,7 +2780,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   EXPECT_EQ(1u, widget_host_->visual_properties().size());
   const auto& received_property = widget_host_->visual_properties()[0];
   EXPECT_EQ(false, received_property.auto_resize_enabled);
-  EXPECT_EQ(size_after_disabling, received_property.new_size);
+  EXPECT_EQ(size_after_disabling, received_property.new_size_device_px);
 }
 
 // This test verifies that in AutoResize mode a new
@@ -2837,7 +2837,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
     // Auto-resizve limits sent to the renderer.
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
-    EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size_device_px);
     EXPECT_EQ(1, visual_properties.screen_infos.current().device_scale_factor);
     // A newly generated LocalSurfaceId is sent.
     EXPECT_TRUE(visual_properties.local_surface_id.has_value());
@@ -3098,7 +3098,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     // Empty size is sent.
-    EXPECT_EQ(gfx::Size(), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(), visual_properties.new_size_device_px);
     // A LocalSurfaceId is sent too.
     ASSERT_TRUE(visual_properties.local_surface_id.has_value());
     EXPECT_TRUE(visual_properties.local_surface_id->is_valid());
@@ -3175,7 +3175,7 @@ TEST_F(RenderWidgetHostViewAuraTest, Resize) {
   EXPECT_TRUE(widget_host_->visual_properties_ack_pending_for_testing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, widget_host_->visual_properties().size());
-  EXPECT_EQ(size2, widget_host_->visual_properties().at(0).new_size);
+  EXPECT_EQ(size2, widget_host_->visual_properties().at(0).new_size_device_px);
   // Render should send back RenderFrameMetadata with new size.
   {
     cc::RenderFrameMetadata metadata;
@@ -3433,7 +3433,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.visible_viewport_size);
   }
 
@@ -3455,7 +3455,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
     EXPECT_EQ(gfx::Size(100, 60), visual_properties.visible_viewport_size);
   }
 }

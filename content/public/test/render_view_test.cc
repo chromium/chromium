@@ -771,7 +771,7 @@ void RenderViewTest::Reload(const GURL& url) {
 void RenderViewTest::Resize(gfx::Size new_size, bool is_fullscreen_granted) {
   blink::VisualProperties visual_properties;
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
-  visual_properties.new_size = new_size;
+  visual_properties.new_size_device_px = new_size;
   visual_properties.compositor_viewport_pixel_rect = gfx::Rect(new_size);
   visual_properties.is_fullscreen_granted = is_fullscreen_granted;
   visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
@@ -880,7 +880,7 @@ blink::VisualProperties RenderViewTest::InitialVisualProperties() {
   initial_visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
   // Ensure the view has some size so tests involving scrolling bounds work.
-  initial_visual_properties.new_size = gfx::Size(400, 300);
+  initial_visual_properties.new_size_device_px = gfx::Size(400, 300);
   initial_visual_properties.visible_viewport_size = gfx::Size(400, 300);
   return initial_visual_properties;
 }

@@ -666,8 +666,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool enabled,
       const blink::DeviceEmulationParams& params);
   void SetScreenInfoAndSize(const display::ScreenInfos& screen_infos,
-                            const gfx::Size& widget_size,
-                            const gfx::Size& visible_viewport_size);
+                            const gfx::Size& widget_size_in_dips,
+                            const gfx::Size& visible_viewport_size_in_dips);
 
   // Update the surface allocation information, compositor viewport rect and
   // screen info on the widget.
@@ -1211,6 +1211,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // It is always valid to read this variable but it can only be set for main
   // frame widgets.
   float device_scale_factor_for_testing_ = 0;
+
+  // When device_scale_factor_for_testing_ is set (i.e. nonzero), this
+  // stores the device scale factor before the testing override was set.
+  // Otherwise it is set to zero.
+  float non_testing_device_scale_factor_ = 0;
 
   // This struct contains data that is only valid for main frame widgets.
   // You should use `main_data()` to access it.

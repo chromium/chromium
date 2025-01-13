@@ -214,7 +214,7 @@ TEST_F(ViewAndroidBoundsTest, OnSizeChanged) {
 
   Reset();
 
-  // Match-parent view should not receivee size events in the first place.
+  // Match-parent view should not receive size events in the first place.
   EXPECT_DCHECK_DEATH(viewm_.OnSizeChanged(100, 200));
   EXPECT_FALSE(handlerm_.OnSizeCalled());
   EXPECT_FALSE(handler3_.OnSizeCalled());

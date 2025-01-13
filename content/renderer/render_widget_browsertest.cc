@@ -68,7 +68,7 @@ class RenderWidgetInitialSizeTest : public RenderWidgetTest {
  protected:
   blink::VisualProperties InitialVisualProperties() override {
     blink::VisualProperties initial_visual_properties;
-    initial_visual_properties.new_size = initial_size_;
+    initial_visual_properties.new_size_device_px = initial_size_;
     initial_visual_properties.compositor_viewport_pixel_rect =
         gfx::Rect(initial_size_);
     initial_visual_properties.local_surface_id =

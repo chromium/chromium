@@ -248,7 +248,7 @@ DropData* WebContentsViewAndroid::GetDropData() const {
 }
 
 gfx::Rect WebContentsViewAndroid::GetViewBounds() const {
-  return gfx::Rect(view_.GetSize());
+  return gfx::Rect(view_.GetSizeDIPs());
 }
 
 void WebContentsViewAndroid::CreateView(gfx::NativeView context) {}

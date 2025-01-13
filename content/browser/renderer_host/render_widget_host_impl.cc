@@ -1051,7 +1051,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   visual_properties.min_size_for_auto_resize = min_size_for_auto_resize_;
   visual_properties.max_size_for_auto_resize = max_size_for_auto_resize_;
 
-  visual_properties.new_size = view_->GetRequestedRendererSize();
+  visual_properties.new_size_device_px =
+      view_->GetRequestedRendererSizeDevicePx();
 
   // This widget is for a frame that is the main frame of the outermost frame
   // tree. That makes it the top-most frame. OR this is a non-frame widget.
@@ -1265,9 +1266,9 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
     blink_widget_->UpdateVisualProperties(*visual_properties);
   }
 
-  bool width_changed =
-      !old_visual_properties_ || old_visual_properties_->new_size.width() !=
-                                     visual_properties->new_size.width();
+  bool width_changed = !old_visual_properties_ ||
+                       old_visual_properties_->new_size_device_px.width() !=
+                           visual_properties->new_size_device_px.width();
 
   // WidgetBase::UpdateSurfaceAndScreenInfo uses similar logic to detect
   // orientation changes on the display currently showing the widget.
@@ -2816,7 +2817,8 @@ bool RenderWidgetHostImpl::DidVisualPropertiesSizeChange(
            old_visual_properties.max_size_for_auto_resize !=
                new_visual_properties.max_size_for_auto_resize)) ||
          (!old_visual_properties.auto_resize_enabled &&
-          (old_visual_properties.new_size != new_visual_properties.new_size ||
+          (old_visual_properties.new_size_device_px !=
+               new_visual_properties.new_size_device_px ||
            (old_visual_properties.compositor_viewport_pixel_rect.IsEmpty() &&
             !new_visual_properties.compositor_viewport_pixel_rect.IsEmpty())));
 }
@@ -2832,7 +2834,7 @@ bool RenderWidgetHostImpl::DoesVisualPropertiesNeedAck(
   bool is_acking_applicable =
       g_check_for_pending_visual_properties_ack &&
       !new_visual_properties.auto_resize_enabled &&
-      !new_visual_properties.new_size.IsEmpty() &&
+      !new_visual_properties.new_size_device_px.IsEmpty() &&
       !new_visual_properties.compositor_viewport_pixel_rect.IsEmpty() &&
       new_visual_properties.local_surface_id;
 
