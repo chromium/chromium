@@ -18,7 +18,7 @@ const EntityInstance& passport() {
        AttributeInstance(AttributeType(kPassportCountry), "USA", {}),
        AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
        AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
-      base::Uuid::GenerateRandomV4(), "Passie", base::TimeTicks::Now(),
+      base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now(),
       /*synced=*/false);
   return kMyPassport;
 }
@@ -32,7 +32,7 @@ const EntityInstance& loyalty_card() {
        AttributeInstance(AttributeType(kLoyaltyCardProvider), "Duck Airways",
                          {}),
        AttributeInstance(AttributeType(kLoyaltyCardMemberId), "1", {})},
-      base::Uuid::GenerateRandomV4(), "Duckie", base::TimeTicks::Now(),
+      base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now(),
       /*synced=*/true);
   return kMyLoyaltyCard;
 }

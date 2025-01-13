@@ -34,7 +34,7 @@ EntityInstance::EntityInstance(
         attributes,
     base::Uuid guid,
     std::string nickname,
-    base::TimeTicks date_modified,
+    base::Time date_modified,
     bool synced)
     : type_(type),
       attributes_(std::move(attributes)),

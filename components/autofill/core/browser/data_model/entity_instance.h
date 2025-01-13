@@ -67,7 +67,7 @@ class AttributeInstance final {
   AttributeInstance& operator=(AttributeInstance&&);
   ~AttributeInstance();
 
-  AttributeType type() const { return AttributeType(type_); }
+  const AttributeType& type() const { return type_; }
 
   // Typically a user-entered string, e.g., a date.
   const std::string& value() const { return value_; }
@@ -112,7 +112,7 @@ class EntityInstance final {
                                 AttributeInstance::CompareByType> attributes,
                  base::Uuid guid,
                  std::string nickname,
-                 base::TimeTicks date_modified,
+                 base::Time date_modified,
                  bool synced);
 
   EntityInstance(const EntityInstance&);
@@ -121,7 +121,7 @@ class EntityInstance final {
   EntityInstance& operator=(EntityInstance&&);
   ~EntityInstance();
 
-  EntityType type() const { return EntityType(type_); }
+  const EntityType& type() const { return type_; }
 
   // The attributes present in this instance.
   // This is a subset of the attributes supported by the entity type.
@@ -144,7 +144,7 @@ class EntityInstance final {
   const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
 
   // The latest time the instance, including any of its attributes, was edited.
-  base::TimeTicks date_modified() const { return date_modified_; }
+  base::Time date_modified() const { return date_modified_; }
 
   // Indicates if the instance is synced.
   bool synced() const { return synced_; }
@@ -155,7 +155,7 @@ class EntityInstance final {
       attributes_;
   base::Uuid guid_;
   std::string nickname_;
-  base::TimeTicks date_modified_;
+  base::Time date_modified_;
   bool synced_ = false;
 };
 
