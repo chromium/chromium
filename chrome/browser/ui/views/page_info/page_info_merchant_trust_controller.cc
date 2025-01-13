@@ -52,6 +52,10 @@ void PageInfoMerchantTrustController::ViewReviewsPressed() {
   ShowMerchantTrustSidePanel(web_contents(), merchant_data_.page_url);
 }
 
+void PageInfoMerchantTrustController::HatsButtonPressed() {
+  // TODO(crbug.com/381405880): Open the HaTS.
+}
+
 void PageInfoMerchantTrustController::InitCallbacks() {
   learn_more_link_callback_ =
       content_view_->RegisterLearnMoreLinkPressedCallback(base::BindRepeating(
@@ -63,4 +67,8 @@ void PageInfoMerchantTrustController::InitCallbacks() {
           base::BindRepeating(
               &PageInfoMerchantTrustController::ViewReviewsPressed,
               base::Unretained(this)));
+
+  hats_button_callback_ = content_view_->RegisterHatsButtonPressedCallback(
+      base::BindRepeating(&PageInfoMerchantTrustController::HatsButtonPressed,
+                          base::Unretained(this)));
 }

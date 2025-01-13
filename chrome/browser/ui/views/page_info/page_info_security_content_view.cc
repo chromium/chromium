@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 PageInfoSecurityContentView::PageInfoSecurityContentView(
     PageInfo* presenter,
@@ -31,6 +32,12 @@ PageInfoSecurityContentView::PageInfoSecurityContentView(
           .left()));
 
   if (is_standalone_page) {
+    const int bottom_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+    // The last view in the subpage is a RichHoverButton, which overrides the
+    // bottom dialog inset in favor of its own.
+    SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
+
     presenter_->InitializeUiState(this, base::DoNothing());
   }
 }

@@ -33,6 +33,11 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
   const int vertical_distance =
       layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   SetOrientation(views::LayoutOrientation::kVertical);
 

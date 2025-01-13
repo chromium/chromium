@@ -6,17 +6,23 @@
 
 #include <string>
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kElementIdForTesting);
@@ -24,13 +30,22 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kViewReviewsId);
 
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  // The distance between the last button and the footer.
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
   SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
   SetOrientation(views::LayoutOrientation::kVertical);
-  // TODO(crbug.com/378854730): Set up layout.
 
   AddChildView(CreateDescriptionLabel());
   AddChildView(CreateReviewsSummarySection());
   view_reviews_button_ = AddChildView(CreateViewReviewsButton());
+  view_reviews_button_->SetProperty(views::kMarginsKey,
+                                    gfx::Insets().set_bottom(bottom_margin));
+  AddChildView(CreateHatsButton());
+  // No bottom margin for the content view because the HaTS button acts as a
+  // footer.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 0));
 }
 
 PageInfoMerchantTrustContentView::~PageInfoMerchantTrustContentView() = default;
@@ -45,6 +60,12 @@ base::CallbackListSubscription
 PageInfoMerchantTrustContentView::RegisterViewReviewsButtonPressedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return view_reviews_button_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+PageInfoMerchantTrustContentView::RegisterHatsButtonPressedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return hats_button_callback_list_.Add(std::move(callback));
 }
 
 void PageInfoMerchantTrustContentView::SetReviewsSummary(
@@ -144,6 +165,20 @@ PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
   return merchant_trust_button;
 }
 
+std::unique_ptr<RichHoverButton>
+PageInfoMerchantTrustContentView::CreateHatsButton() {
+  auto hats_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          &PageInfoMerchantTrustContentView::NotifyHatsButtonPressed,
+          base::Unretained(this)),
+      PageInfoViewFactory::GetImageModel(kSubmitFeedbackIcon),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON),
+      std::u16string());
+  hats_button->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorSysNeutralContainer));
+  return hats_button;
+}
+
 void PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed(
     const ui::Event& event) {
   learn_more_link_callback_list_.Notify(event);
@@ -151,6 +186,10 @@ void PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed(
 
 void PageInfoMerchantTrustContentView::NotifyViewReviewsPressed() {
   view_reviews_button_callback_list_.Notify();
+}
+
+void PageInfoMerchantTrustContentView::NotifyHatsButtonPressed() {
+  hats_button_callback_list_.Notify();
 }
 
 gfx::Size PageInfoMerchantTrustContentView::CalculatePreferredSize(

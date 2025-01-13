@@ -147,14 +147,11 @@ PageInfoBubbleView::PageInfoBubbleView(
   DCHECK(web_contents());
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
-  // In Harmony, the last view is a HoverButton, which overrides the bottom
-  // dialog inset in favor of its own. Note the multi-button value is used here
-  // assuming that the "Cookies" & "Site settings" buttons will always be shown.
-  const int bottom_margin =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // Only set the top margin. The bottom margin is set for each subpage
+  // separately, depending the content.
   const int top_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).top();
-  set_margins(gfx::Insets::TLBR(top_margin, 0, bottom_margin, 0));
+  set_margins(gfx::Insets().set_top(top_margin));
   ui_delegate_ =
       std::make_unique<ChromePageInfoUiDelegate>(web_contents(), url);
   presenter_ = std::make_unique<PageInfo>(

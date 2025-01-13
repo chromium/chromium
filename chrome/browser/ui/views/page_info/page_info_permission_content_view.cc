@@ -51,6 +51,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   web_contents_ = web_contents->GetWeakPtr();
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int bottom_margin =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  // The last view is a RichHoverButton, which overrides the bottom
+  // dialog inset in favor of its own.
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   // Use the same insets as buttons and permission rows in the main page for
   // consistency.

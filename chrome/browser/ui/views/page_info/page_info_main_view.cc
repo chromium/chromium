@@ -113,7 +113,8 @@ PageInfoMainView::PageInfoMainView(
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(0, 0, hover_list_spacing, 0)));
 
   AddChildView(CreateBubbleHeaderView())
       ->SetProperty(views::kMarginsKey,
