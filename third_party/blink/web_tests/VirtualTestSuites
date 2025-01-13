@@ -4627,15 +4627,6 @@
     ]
   },
   {
-    "prefix": "css-mixins",
-    "platforms": ["Linux"],
-    "bases": ["wpt_internal/css/css-mixins"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-blink-features=CSSMixins"],
-    "owners": ["sesse@chromium.org"],
-    "expires": "Jan 1, 2025"
-  },
-  {
     "prefix": "css-relative-currentcolor-disabled",
     "platforms": ["Linux"],
     "bases": [

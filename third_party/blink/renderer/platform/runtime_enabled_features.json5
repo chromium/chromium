@@ -1110,6 +1110,7 @@
     },
     {
       name: "CSSMixins",
+      status: "test",
     },
     {
       name: "CSSNestedPseudoElements",
