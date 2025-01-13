@@ -114,12 +114,12 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void SetBookmarkBarState(BookmarkBar::State state,
                            BookmarkBar::AnimateChangeType animate_type);
 
-  // If |loc| is over a bookmark button the node is returned corresponding to
-  // the button and |model_start_index| is set to 0. If a overflow button is
-  // showing and |loc| is over the overflow button, the bookmark bar node is
-  // returned and |model_start_index| is set to the index of the first node
-  // contained in the overflow menu.
-  const bookmarks::BookmarkNode* GetNodeForButtonAtModelIndex(
+  // If |loc| is over a bookmark button that is a folder, the folder
+  // corresponding to the button is returned and |model_start_index| is set to
+  // 0. If a overflow button is showing and |loc| is over the overflow button,
+  // the bookmark bar folder is returned and |model_start_index| is set to the
+  // index of the first node contained in the overflow menu.
+  std::optional<BookmarkParentFolder> GetBookmarkFolderForButtonAtLocation(
       const gfx::Point& loc,
       size_t* model_start_index);
 

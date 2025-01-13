@@ -504,13 +504,14 @@ void BookmarkBarView::SetBookmarkBarState(
   bookmark_bar_state_ = state;
 }
 
-const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
+std::optional<BookmarkParentFolder>
+BookmarkBarView::GetBookmarkFolderForButtonAtLocation(
     const gfx::Point& loc,
     size_t* model_start_index) {
   *model_start_index = 0;
 
   if (loc.x() < 0 || loc.x() >= width() || loc.y() < 0 || loc.y() >= height()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   gfx::Point adjusted_loc(GetMirroredXInView(loc.x()), loc.y());
@@ -518,11 +519,8 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   // Check the managed button first.
   if (managed_bookmarks_button_->GetVisible() &&
       managed_bookmarks_button_->bounds().Contains(adjusted_loc)) {
-    return managed_->managed_node();
+    return BookmarkParentFolder::ManagedFolder();
   }
-
-  // TODO: add logic to get saved groups node(crbug.com/1223929 and
-  // crbug.com/1223919)
 
   // Then check the bookmark buttons.
   for (const auto& button_and_node : bookmark_buttons_) {
@@ -531,7 +529,9 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
       break;
     }
     if (child->bounds().Contains(adjusted_loc)) {
-      return button_and_node.second;
+      return button_and_node.second->is_folder()
+                 ? BookmarkParentFolder::FromFolderNode(button_and_node.second)
+                 : std::optional<BookmarkParentFolder>(std::nullopt);
     }
   }
 
@@ -539,16 +539,16 @@ const BookmarkNode* BookmarkBarView::GetNodeForButtonAtModelIndex(
   if (overflow_button_->GetVisible() &&
       overflow_button_->bounds().Contains(adjusted_loc)) {
     *model_start_index = first_hidden_node_idx_;
-    return bookmark_model_->bookmark_bar_node();
+    return BookmarkParentFolder::BookmarkBarFolder();
   }
 
   // And finally the all bookmarks button.
   if (all_bookmarks_button_->GetVisible() &&
       all_bookmarks_button_->bounds().Contains(adjusted_loc)) {
-    return bookmark_model_->other_node();
+    return BookmarkParentFolder::OtherFolder();
   }
 
-  return nullptr;
+  return std::nullopt;
 }
 
 MenuButton* BookmarkBarView::GetMenuButtonForFolder(

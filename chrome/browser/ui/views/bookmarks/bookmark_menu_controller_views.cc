@@ -176,15 +176,15 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
   gfx::Point bookmark_bar_loc(screen_point);
   views::View::ConvertPointFromScreen(bookmark_bar_, &bookmark_bar_loc);
   size_t start_index;
-  const BookmarkNode* node = bookmark_bar_->GetNodeForButtonAtModelIndex(
-      bookmark_bar_loc, &start_index);
-  if (!node || !node->is_folder()) {
+  std::optional<BookmarkParentFolder> folder =
+      bookmark_bar_->GetBookmarkFolderForButtonAtLocation(bookmark_bar_loc,
+                                                          &start_index);
+  if (!folder) {
     return nullptr;
   }
 
-  const BookmarkParentFolder folder(BookmarkParentFolder::FromFolderNode(node));
-  menu_delegate_->SetActiveMenu(folder, start_index);
-  *button = bookmark_bar_->GetMenuButtonForFolder(folder);
+  menu_delegate_->SetActiveMenu(*folder, start_index);
+  *button = bookmark_bar_->GetMenuButtonForFolder(*folder);
   bookmark_bar_->GetAnchorPositionForButton(*button, anchor);
   *has_mnemonics = false;
   return this->menu();
