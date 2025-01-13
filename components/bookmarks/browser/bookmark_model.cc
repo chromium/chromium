@@ -980,33 +980,46 @@ void BookmarkModel::ReorderChildren(
   DCHECK(!client_->IsNodeManaged(parent));
 
   // Ensure that all children in `parent` are in `ordered_nodes`.
-  DCHECK_EQ(parent->children().size(), ordered_nodes.size());
+  CHECK_EQ(parent->children().size(), ordered_nodes.size());
   for (const BookmarkNode* node : ordered_nodes) {
-    DCHECK_EQ(parent, node->parent());
+    CHECK_EQ(parent, node->parent());
   }
+
+  bool reordering_needed = false;
+  for (size_t i = 0; i < ordered_nodes.size(); ++i) {
+    if (ordered_nodes[i] != parent->children()[i].get()) {
+      reordering_needed = true;
+      break;
+    }
+  }
+
+  if (!reordering_needed) {
+    // Nothing to do.
+    return;
+  }
+
+  CHECK_GE(ordered_nodes.size(), 2u);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.OnWillReorderBookmarkNode(parent);
   }
 
-  if (ordered_nodes.size() > 1) {
-    std::map<const BookmarkNode*, int> order;
-    for (size_t i = 0; i < ordered_nodes.size(); ++i) {
-      order[ordered_nodes[i]] = i;
-    }
-
-    std::vector<size_t> new_order(ordered_nodes.size());
-    for (size_t old_index = 0; old_index < parent->children().size();
-         ++old_index) {
-      const BookmarkNode* node = parent->children()[old_index].get();
-      size_t new_index = order[node];
-      new_order[old_index] = new_index;
-    }
-
-    AsMutable(parent)->ReorderChildren(new_order);
-
-    ScheduleSaveForNode(parent);
+  std::map<const BookmarkNode*, int> order;
+  for (size_t i = 0; i < ordered_nodes.size(); ++i) {
+    order[ordered_nodes[i]] = i;
   }
+
+  std::vector<size_t> new_order(ordered_nodes.size());
+  for (size_t old_index = 0; old_index < parent->children().size();
+       ++old_index) {
+    const BookmarkNode* node = parent->children()[old_index].get();
+    size_t new_index = order[node];
+    new_order[old_index] = new_index;
+  }
+
+  AsMutable(parent)->ReorderChildren(new_order);
+
+  ScheduleSaveForNode(parent);
 
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeChildrenReordered(parent);

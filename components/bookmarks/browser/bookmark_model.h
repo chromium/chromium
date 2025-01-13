@@ -198,7 +198,10 @@ class BookmarkModel : public BookmarkUndoProvider,
   // `Remove()` for the actual child, i.e.
   // `Remove(parent->children()[parent->children().size() - 1].get())`. The
   // only difference is that `RemoveLastChild()` is guaranteed to require
-  // constant time, for advanced cases where performance is a concern.
+  // constant time, for advanced cases where performance is a concern (to be
+  // more accurate, it exhibits logarithmic runtime complexity with respect to
+  // the tree depth, excluding the cost incurred in observers, which may
+  // implement arbitrary logic outside BookmarkModel's control).
   void RemoveLastChild(const BookmarkNode* parent,
                        metrics::BookmarkEditSource source,
                        const base::Location& location);

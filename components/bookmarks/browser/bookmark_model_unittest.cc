@@ -1732,6 +1732,34 @@ TEST_F(BookmarkModelTest, Reorder) {
   EXPECT_EQ("A", base::UTF16ToASCII(parent->children()[3]->GetTitle()));
 }
 
+TEST_F(BookmarkModelTest, NoOpReorderCall) {
+  // Populate the bookmark bar node with nodes 'A', 'B', 'C' and 'D'.
+  TestNode bbn;
+  PopulateNodeFromString("A B C D", &bbn);
+  BookmarkNode* parent = AsMutable(model_->bookmark_bar_node());
+  PopulateBookmarkNode(&bbn, model_.get(), parent);
+
+  ClearCounts();
+
+  std::vector<const BookmarkNode*> same_order = {
+      parent->children()[0].get(),
+      parent->children()[1].get(),
+      parent->children()[2].get(),
+      parent->children()[3].get(),
+  };
+  model_->ReorderChildren(parent, same_order);
+
+  // Make sure observers were not notified.
+  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  // Make sure the order remains the same.
+  ASSERT_EQ(4u, parent->children().size());
+  EXPECT_EQ("A", base::UTF16ToASCII(parent->children()[0]->GetTitle()));
+  EXPECT_EQ("B", base::UTF16ToASCII(parent->children()[1]->GetTitle()));
+  EXPECT_EQ("C", base::UTF16ToASCII(parent->children()[2]->GetTitle()));
+  EXPECT_EQ("D", base::UTF16ToASCII(parent->children()[3]->GetTitle()));
+}
+
 TEST_F(BookmarkModelTest, NodeVisibility) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
