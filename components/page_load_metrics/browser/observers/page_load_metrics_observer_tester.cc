@@ -79,6 +79,10 @@ class TestPageLoadMetricsEmbedderInterface
 
   bool ShouldObserveScheme(std::string_view scheme) override { return false; }
 
+  bool IsIncognito(content::WebContents* web_contents) override {
+    return false;
+  }
+
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {

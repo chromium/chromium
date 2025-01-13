@@ -487,6 +487,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.Ads.AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the time from frame navigation start to FirstContentfulPaint of each
+    ad frame that receives a FirstContentfulPaint. The time could be quite
+    large, as some ads don't paint until they're scrolled into view. But the
+    metric is still useful in aggregate.
+
+    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
+    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
+
+    This metric is a version of
+    PageLoad.Clients.Ads.AdPaintTiming.NavigationToFirstContentfulPaint3, that
+    is recorded only in incognito mode.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaint"
     units="ms" expires_after="2025-06-22">
   <owner>jkarlin@chromium.org</owner>

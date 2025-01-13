@@ -171,7 +171,8 @@ std::unique_ptr<AdsPageLoadMetricsObserver>
 AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
-    const ApplicationLocaleGetter& application_locale_getter) {
+    const ApplicationLocaleGetter& application_locale_getter,
+    bool is_incognito) {
   // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
   // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
   // this should use the associated page rather than the primary page.
@@ -179,8 +180,9 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
       !subresource_filter::ContentSubresourceFilterWebContentsHelper::
           FromWebContents(web_contents))
     return nullptr;
+
   return std::make_unique<AdsPageLoadMetricsObserver>(
-      heavy_ad_service, application_locale_getter);
+      heavy_ad_service, application_locale_getter, is_incognito);
 }
 
 // static
@@ -240,6 +242,7 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     const ApplicationLocaleGetter& application_locale_getter,
+    bool is_incognito,
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
     : clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
@@ -251,7 +254,8 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
               heavy_ad_privacy_mitigations_enabled_ /* use_noise */)),
-      page_ad_density_tracker_(clock) {
+      page_ad_density_tracker_(clock),
+      is_incognito_(is_incognito) {
   // Manual setting of the heavy ad blocklist should be used only as a
   // convenience for tests that don't create HeavyAdService.
   DCHECK(!heavy_ad_service_ || !heavy_ad_blocklist_);
@@ -1235,6 +1239,15 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
       ADS_HISTOGRAM("AdPaintTiming.TopFrameNavigationToFirstContentfulPaint",
                     PAGE_LOAD_LONG_HISTOGRAM, visibility,
                     earliest_fcp_since_top_nav_start.value());
+    }
+  }
+
+  if (is_incognito_) {
+    if (auto first_contentful_paint =
+            ad_frame_data.earliest_first_contentful_paint()) {
+      ADS_HISTOGRAM("AdPaintTiming.NavigationToFirstContentfulPaint3.Incognito",
+                    PAGE_LOAD_LONG_HISTOGRAM, FrameVisibility::kAnyVisibility,
+                    first_contentful_paint.value());
     }
   }
 }

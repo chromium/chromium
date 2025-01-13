@@ -116,6 +116,7 @@ class PageLoadMetricsEmbedder
   bool IsExtensionUrl(const GURL& url) override;
   bool IsNonTabWebUI(const GURL& url) override;
   bool ShouldObserveScheme(std::string_view scheme) override;
+  bool IsIncognito(content::WebContents* web_contents) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -193,7 +194,8 @@ void PageLoadMetricsEmbedder::RegisterObservers(
                 tracker->GetWebContents(),
                 HeavyAdServiceFactory::GetForBrowserContext(
                     tracker->GetWebContents()->GetBrowserContext()),
-                base::BindRepeating(&GetApplicationLocale));
+                base::BindRepeating(&GetApplicationLocale),
+                IsIncognito(tracker->GetWebContents()));
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 
@@ -281,6 +283,14 @@ bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
 
 bool PageLoadMetricsEmbedder::ShouldObserveScheme(std::string_view scheme) {
   return scheme == chrome::kIsolatedAppScheme;
+}
+
+bool PageLoadMetricsEmbedder::IsIncognito(content::WebContents* web_contents) {
+  if (Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
+    return profile->IsIncognitoProfile();
+  }
+  return false;
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*

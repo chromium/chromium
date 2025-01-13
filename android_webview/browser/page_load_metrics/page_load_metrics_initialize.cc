@@ -45,6 +45,7 @@ class PageLoadMetricsEmbedder
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
+  bool IsIncognito(content::WebContents* web_contents) override;
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:
@@ -96,6 +97,11 @@ PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
 
   return AwPageLoadMetricsMemoryTrackerFactory::GetForBrowserContext(
       browser_context);
+}
+
+bool PageLoadMetricsEmbedder::IsIncognito(content::WebContents* web_contents) {
+  // Android web view doesn't have Incognito mode.
+  return false;
 }
 
 }  // namespace

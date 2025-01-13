@@ -36,6 +36,7 @@ class TestMetricsWebContentsObserverEmbedder
   bool ShouldObserveScheme(std::string_view scheme) override;
   PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
+  bool IsIncognito(content::WebContents* web_contents) override;
 
   void set_is_ntp(bool is_ntp) { is_ntp_ = is_ntp; }
 
