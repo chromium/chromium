@@ -604,15 +604,10 @@
 // - src/qs8-f32-vcvt/gen/qs8-f32-vcvt-sse41-u16.c
 // - src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c
-// - src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-scalar.c
+// - src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni.c
-// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-avx256vnni-prfm.c
-// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c
-// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avx256vnni-prfm.c
-// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avxvnni-prfm.c
-// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-scalar.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx2-mul32.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c
@@ -832,9 +827,6 @@
 // - src/qu8-vmulc/gen/qu8-vmulc-minmax-fp32-sse2-mul16-ld64-u8.c
 // - src/qu8-vmulc/gen/qu8-vmulc-minmax-fp32-sse41-mul16-ld64-u16.c
 // - src/reference/packing.cc
-// - src/s32-f32-vcvt/gen/s32-f32-vcvt-avx2.c
-// - src/s32-f32-vcvt/gen/s32-f32-vcvt-avx512f.c
-// - src/s32-f32-vcvt/gen/s32-f32-vcvt-scalar.c
 // - src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c
 // - src/s8-ibilinear/gen/s8-ibilinear-sse2-c8.c
 // - src/s8-ibilinear/gen/s8-ibilinear-sse41-c16.c
@@ -888,14 +880,6 @@
 // - src/x32-transposec/x32-transposec-4x4-sse.c
 // - src/x32-unpool/x32-unpool-scalar.c
 // - src/x32-unpool/x32-unpool-sse2.c
-// - src/x32-zip/x32-zip-x2-scalar.c
-// - src/x32-zip/x32-zip-x2-sse2.c
-// - src/x32-zip/x32-zip-x3-scalar.c
-// - src/x32-zip/x32-zip-x3-sse2.c
-// - src/x32-zip/x32-zip-x4-scalar.c
-// - src/x32-zip/x32-zip-x4-sse2.c
-// - src/x32-zip/x32-zip-xm-scalar.c
-// - src/x32-zip/x32-zip-xm-sse2.c
 // - src/x64-transposec/gen/x64-transposec-2x2-multi-mov-sse2.c
 // - src/x64-transposec/gen/x64-transposec-4x2-scalar-int.c
 // - src/x64-transposec/gen/x64-transposec-4x4-reuse-multi-avx.c
@@ -912,14 +896,6 @@
 // - src/x8-transposec/gen/x8-transposec-16x16-reuse-mov-sse2.c
 // - src/x8-transposec/gen/x8-transposec-2x4-scalar-int.c
 // - src/x8-transposec/gen/x8-transposec-32x32-reuse-switch-avx2.c
-// - src/x8-zip/x8-zip-x2-scalar.c
-// - src/x8-zip/x8-zip-x2-sse2.c
-// - src/x8-zip/x8-zip-x3-scalar.c
-// - src/x8-zip/x8-zip-x3-sse2.c
-// - src/x8-zip/x8-zip-x4-scalar.c
-// - src/x8-zip/x8-zip-x4-sse2.c
-// - src/x8-zip/x8-zip-xm-scalar.c
-// - src/x8-zip/x8-zip-xm-sse2.c
 // - src/xx-copy/xx-copy-scalar-memcpy.c
 // - src/xx-fill/xx-fill-scalar-u16.c
 // - src/xx-fill/xx-fill-sse2-u64.c
@@ -933,10 +909,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  134,  14, 156, 130,  30, 132,  68,  25,
-   79, 183, 144, 102,   1, 152, 248, 226,
-  248,  39,  21,   0,  87,  30,  69, 153,
-   81,  20,  12, 245,  44,  98, 182, 103
+    1,  80, 140, 209,  11,  70,  27,  98,
+   18, 206, 157,  40,  28, 164,  23,  45,
+  130, 131,  18,   8, 147,  49,  85,  43,
+   83,  53, 152, 105, 176, 155, 245, 108
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

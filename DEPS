@@ -1943,7 +1943,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '24e0c2a125d2b37b35719124d1f758777c150ca8',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '7bb23b1e360e22a395eef75061565fc079ae6a85',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2573,7 +2573,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e34549db516f8712f678fcd4bc411613b5cc5295',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/Maratyszcza/pthreadpool.git' + '@' + '560c60d342a76076f0557a3946924c6478470044',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'b4fb4eb1668c7d976cdaa941b135a02462adb460',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2656,7 +2656,7 @@ deps = {
   },
 
   'src/third_party/ruy/src':
-    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '95484c3e02206f73309c08ee5ee23d2304ca092b',
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '83fd40d730feb0804fafbc2d8814bcc19a17b2e5',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
@@ -2739,7 +2739,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b25df276c8e912c22f57263ffcae6ca8f4c64342',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'b7bed6cb1d5eeebd81324b60d8bd624b9124ef5b',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2837,7 +2837,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '7440eee88f66c4b81d4e7d31f6ae07af66e059ea',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '0824e2965f6edc2297e55c8dff5a8ac4cb12aaad',
 
   'src/third_party/libei/cipd': {
 
