@@ -1424,20 +1424,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "fledge-two-seller-worklet-threads",
-    "platforms": ["Linux", "Mac", "Win"],
-    "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
-    "bases": [
-      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js",
-      "http/tests/inspector-protocol/target/target-auction-worklet.js"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=FledgeSellerWorkletThreadPool:seller_worklet_thread_pool_size/2"
-    ],
-    "expires": "Nov 15, 2024"
-  },
-  {
     "prefix": "fledge-kanon-status-below-threshold",
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
@@ -1469,7 +1455,7 @@
     "args": [
       "--enable-features=EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
     ],
-    "expires": "Jan 14, 2025"
+    "expires": "Mar 14, 2025"
   },
   {
     "prefix": "fledge-bidding-and-auction-kanonymity",
@@ -1490,7 +1476,7 @@
       "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandADealSupport,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
       "--disable-features=CookieDeprecationFacilitatedTesting"
     ],
-    "expires": "Jan 14, 2025"
+    "expires": "Mar 14, 2025"
   },
   {
     "prefix": "async-script-scheduling-disabled",
