@@ -47,8 +47,6 @@ void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
 
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
-  // TODO(crbug.com/384740189): Find out if/how to start the border animation
-  // when web_contents is not available yet.
 }
 
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
