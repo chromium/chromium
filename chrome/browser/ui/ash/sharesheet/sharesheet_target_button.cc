@@ -67,7 +67,7 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   image_ = AddChildView(std::make_unique<views::ImageView>());
   if (icon.has_value()) {
-    image_->SetImage(icon.value());
+    image_->SetImage(ui::ImageModel::FromImageSkia(icon.value()));
     vector_icon_ = nullptr;
   }
   image_->SetCanProcessEventsWithinSubtree(false);
@@ -140,7 +140,7 @@ void SharesheetTargetButton::OnThemeChanged() {
   gfx::ImageSkia circle_icon_with_shadow =
       gfx::ImageSkiaOperations::CreateImageWithDropShadow(circle_icon,
                                                           shadow_values);
-  image_->SetImage(circle_icon_with_shadow);
+  image_->SetImage(ui::ImageModel::FromImageSkia(circle_icon_with_shadow));
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {

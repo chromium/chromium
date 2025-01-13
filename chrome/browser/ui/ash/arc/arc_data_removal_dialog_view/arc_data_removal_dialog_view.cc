@@ -144,7 +144,7 @@ void DataRemovalConfirmationDialog::OnAppImageUpdated(
   DCHECK_EQ(image.width(), kArcAppIconSize);
   DCHECK_EQ(image.height(), kArcAppIconSize);
   icon_view_->SetImageSize(image.size());
-  icon_view_->SetImage(image);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {

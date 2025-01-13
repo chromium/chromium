@@ -196,7 +196,7 @@ void ArcAppDialogView::OnAppImageUpdated(
   DCHECK_EQ(image.width(), kIconSourceSize);
   DCHECK_EQ(image.height(), kIconSourceSize);
   icon_view_->SetImageSize(image.size());
-  icon_view_->SetImage(image);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 BEGIN_METADATA(ArcAppDialogView)
