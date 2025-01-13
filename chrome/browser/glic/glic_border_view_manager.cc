@@ -42,8 +42,7 @@ GlicBorderViewManager::GlicBorderViewManager(BrowserWindowInterface* browser)
 GlicBorderViewManager::~GlicBorderViewManager() = default;
 
 void GlicBorderViewManager::UpdateBorderView() {
-  BorderView::CancelAllAnimationsForProfile(
-      Profile::FromBrowserContext(browser_->GetProfile()));
+  BorderView::CancelAnimation(browser_.get());
   auto* const model = browser_->GetTabStripModel();
   CHECK(model);
   const int index = model->GetIndexOfWebContents(focused_tab_.get());

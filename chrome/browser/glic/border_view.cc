@@ -47,18 +47,11 @@ BorderView* BorderView::FindBorderForWebContents(
 }
 
 // static.
-void BorderView::CancelAllAnimationsForProfile(Profile* profile) {
-  std::vector<Browser*> browsers = chrome::FindAllBrowsersWithProfile(profile);
-  for (auto* browser : browsers) {
-    if (!browser || !browser->window()) {
-      // Unittests, or the View tree is torn down.
-      continue;
-    }
-    // Border is null if the feature is disabled for `profile`.
-    if (auto* border = browser->GetBrowserView().glic_border()) {
-      border->CancelAnimation();
-    }
-  }
+void BorderView::CancelAnimation(BrowserWindowInterface* browser_interface) {
+  BorderView* glic_border =
+      static_cast<Browser*>(browser_interface)->GetBrowserView().glic_border();
+  CHECK(glic_border);
+  glic_border->CancelAnimation();
 }
 
 BorderView::BorderView() = default;
@@ -136,6 +129,8 @@ void BorderView::CancelAnimation() {
 
   compositor_->RemoveAnimationObserver(this);
   compositor_ = nullptr;
+  progress_ = 0.f;
+  first_frame_time_ = base::TimeTicks();
 
   // `DestroyLayer()` schedules another paint to repaint the affected area by
   // the destroyed layer.

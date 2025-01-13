@@ -9,11 +9,15 @@
 #include <math.h>
 
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +29,7 @@
 namespace glic {
 
 namespace {
-class BorderViewBrowserTest : public InProcessBrowserTest {
+class BorderViewBrowserTest : public InteractiveBrowserTest {
  public:
   BorderViewBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -65,6 +69,18 @@ class BorderViewBrowserTest : public InProcessBrowserTest {
     auto* tab_strip_model = browser->tab_strip_model();
     EXPECT_TRUE(tab_strip_model->ContainsIndex(0));
     return tab_strip_model->GetTabAtIndex(0)->GetContents()->GetViewBounds();
+  }
+
+  // Appends a new tab with `url` to the end of the tabstrip.
+  void AppendTab(Browser* browser, const GURL& url) {
+    chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
+  }
+
+  GlicButton* GetGlicButton(Browser* browser) {
+    TabStripRegionView* tab_strip_view =
+        browser->GetBrowserView().tab_strip_region_view();
+    EXPECT_TRUE(tab_strip_view);
+    return tab_strip_view->GetGlicButton();
   }
 
  protected:
@@ -135,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
-  // Note: the following is based on having the animation duration = 2 seconds.
+  // Note: the following is based on having animation duration = 2 seconds.
   // timestamp = 0 (now).
   {
     border->OnAnimationStep(timestamp);
@@ -220,6 +236,131 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationSteps) {
         capture_rect.size(),
         /*border_color=*/border_color,
         /*center_color=*/background_color, /*border_width=*/10, /*alpha=*/1);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  border->CancelAnimation();
+}
+
+// Ensures that the border animation state is reset after canceling the
+// animation.
+IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, AnimationStateReset) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+
+  border->StartAnimation();
+  border->OnAnimationStep(base::TimeTicks::Now());
+  border->CancelAnimation();
+
+  ASSERT_FALSE(border->compositor_for_testing());
+}
+
+// Ensures that the border animation is restarted when tab focus changes.
+IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, FocusedTabChange) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  gfx::Rect capture_rect = GetContentsRectForWindow(browser());
+  SkColor background_color = SkColors::kBlack.toSkColor();
+  SkColor border_color =
+      browser()->GetBrowserView().GetColorProvider()->GetColor(
+          ui::kColorSysPrimary);
+
+  // Mimicking the user journey by clicking the button and having the WebApp set
+  // the context access indicator status.
+  auto* const glic_keyed_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          browser()->GetProfile());
+  GetGlicButton(browser())->LaunchUI();
+  glic_keyed_service->SetContextAccessIndicator(true);
+
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  // Note: the following is based on having animation duration = 2 seconds.
+  // timestamp = 0 (now).
+  {
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/2, /*alpha=*/0);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // timestamp = 0.5 seconds.
+  {
+    timestamp += base::Seconds(0.5);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    float progress = sin(0.125 * M_PI);
+    float border_width = 2 + (8 * progress);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/border_width,
+        /*alpha=*/progress);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // Changing the active tab.
+  AppendTab(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+
+  // Since the active tab has changed, the animation should start from the
+  // beginning.
+  // timestamp = 6 seconds; second 0 in the current animation.
+  {
+    timestamp += base::Seconds(5.5);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/2,
+        /*alpha=*/0);
+
+    EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
+                                  cc::ExactPixelComparator()));
+  }
+
+  // timestamp = 6.5 seconds; second 0.5 in the current animation.
+  {
+    timestamp += base::Seconds(0.5);
+    border->OnAnimationStep(timestamp);
+    gfx::Canvas canvas(capture_rect.size(), /*image_scale=*/1.0f,
+                       /*is_opaque=*/true);
+    canvas.DrawColor(background_color);
+    border->OnPaint(&canvas);
+    SkBitmap actual_bitmap = canvas.GetBitmap();
+
+    float progress = sin(0.125 * M_PI);
+    float border_width = 2 + (8 * progress);
+    SkBitmap expected_bitmap = ConstructExpectedBitmap(
+        capture_rect.size(),
+        /*border_color=*/border_color,
+        /*center_color=*/background_color, /*border_width=*/border_width,
+        /*alpha=*/progress);
 
     EXPECT_TRUE(cc::MatchesBitmap(actual_bitmap, expected_bitmap,
                                   cc::ExactPixelComparator()));

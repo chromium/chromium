@@ -10,7 +10,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class Profile;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -32,7 +32,7 @@ class BorderView : public views::View,
   static BorderView* FindBorderForWebContents(
       const content::WebContents* web_contents);
 
-  static void CancelAllAnimationsForProfile(Profile* profile);
+  static void CancelAnimation(BrowserWindowInterface* browser_interface);
 
   BorderView();
   BorderView(const BorderView&) = delete;
@@ -49,6 +49,8 @@ class BorderView : public views::View,
   void StartAnimation();
 
   void CancelAnimation();
+
+  ui::Compositor* compositor_for_testing() const { return compositor_; }
 
  private:
   raw_ptr<ui::Compositor> compositor_ = nullptr;
