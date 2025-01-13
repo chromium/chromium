@@ -10,7 +10,7 @@ INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
 -- Ties together input (`LatencyInfo.Flow`) and frame (`Graphics.Pipeline`)
 -- trace events. Only covers input events of the `GESTURE_SCROLL_UPDATE_EVENT`
 -- type.
-CREATE PERFETTO TABLE _chrome_scroll_update_refs(
+CREATE PERFETTO TABLE chrome_scroll_update_refs(
   -- Id of the Chrome input pipeline (`LatencyInfo.Flow`).
   scroll_update_latency_id LONG,
   -- Id of the touch move input corresponding to this scroll update.
@@ -92,7 +92,7 @@ SELECT
   compositor_coalesced_input_handled_step.ts
     + compositor_coalesced_input_handled_step.dur
     AS compositor_coalesced_input_handled_end_ts
-FROM _chrome_scroll_update_refs refs
+FROM chrome_scroll_update_refs refs
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 LEFT JOIN chrome_event_latencies chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.scroll_update_latency_id
@@ -362,7 +362,7 @@ SELECT
   chrome_event_latency.buffer_ready_timestamp,
   chrome_event_latency.latch_timestamp,
   chrome_event_latency.presentation_timestamp
-FROM _chrome_scroll_update_refs refs
+FROM chrome_scroll_update_refs refs
 LEFT JOIN chrome_event_latencies chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.presentation_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
