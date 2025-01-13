@@ -114,9 +114,9 @@ class WindowEventObserver : public ui::EventObserver {
 
     gfx::Point mouse_location = event_monitor_->GetLastMouseLocation();
     views::View::ConvertPointFromScreen(glic_view_, &mouse_location);
-    if (event.type() == ui::EventType::kMousePressed &&
-        glic_view_->IsPointWithinDraggableArea(mouse_location)) {
-      mouse_down_in_draggable_area_ = true;
+    if (event.type() == ui::EventType::kMousePressed) {
+      mouse_down_in_draggable_area_ =
+          glic_view_->IsPointWithinDraggableArea(mouse_location);
     }
 
     if (event.type() == ui::EventType::kMouseReleased ||
