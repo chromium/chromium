@@ -146,6 +146,12 @@
                                completion:(ProceduralBlock)completion {
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
+
+  // The sign-in screen should not be displayed if the user is already
+  // signed-in.
+  CHECK(!_authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M140);
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock startSignInCompletion = ^() {
@@ -162,44 +168,18 @@
         completion();
     }];
   };
-  id<SystemIdentity> primaryIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (primaryIdentity && ![primaryIdentity isEqual:self.selectedIdentity]) {
-    // This case is possible if the user signs in with the FRE, and quits Chrome
-    // without completed the FRE. And the user starts Chrome again.
-    // See crbug.com/1312449.
-    // TODO(crbug.com/40832610): Need test for this case.
-    _authenticationService->SignOut(
-        signin_metrics::ProfileSignout::kAbortSignin,
-        /*force_clear_browsing_data=*/false, startSignInCompletion);
-    return;
-  }
   startSignInCompletion();
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
-  if (!_authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
-    if (completion) {
-      completion();
-    }
-    return;
+  // The sign-in screen should not be displayed if the user is already
+  // signed-in.
+  CHECK(!_authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M140);
+  if (completion) {
+    completion();
   }
-  [self.consumer setUIEnabled:NO];
-  // This case is possible if the user signs in with the FRE, and quits Chrome
-  // without completed the FRE. And the user starts Chrome again.
-  // See crbug.com/1312449.
-  // TODO(crbug.com/40832610): Need test for this case.
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock signOutCompletion = ^() {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (completion) {
-      completion();
-    }
-  };
-  _authenticationService->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
-                                  /*force_clear_browsing_data=*/false,
-                                  signOutCompletion);
 }
 
 - (void)userAttemptedToSignin {
