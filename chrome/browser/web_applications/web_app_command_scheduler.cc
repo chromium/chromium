@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
+#include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 #include "chrome/browser/web_applications/commands/external_app_resolution_command.h"
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
@@ -518,7 +519,8 @@ void WebAppCommandScheduler::SetAppIsDisabled(const webapps::AppId& app_id,
 
 void WebAppCommandScheduler::ComputeAppSize(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(std::optional<ComputedAppSize>)> callback) {
+    base::OnceCallback<void(std::optional<ComputedAppSizeWithOrigin>)>
+        callback) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ComputeAppSizeCommand>(app_id, &profile_.get(),
                                               std::move(callback)));
