@@ -126,7 +126,7 @@ class SunfishSearchBoxView : public views::View,
     // Resize the image to fit in the searchbox, keeping the same aspect ratio.
     const int target_height = height();
     const int target_width = (image.width() * target_height) / image.height();
-    image_view_->SetImage(image);
+    image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
     image_view_->SetImageSize(gfx::Size(target_width, target_height));
   }
 

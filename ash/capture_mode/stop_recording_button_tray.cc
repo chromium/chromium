@@ -41,16 +41,11 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      kCaptureModeCircleStopIcon, kColorAshIconColorAlert));
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
-
-void StopRecordingButtonTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  image_view_->SetImage(gfx::CreateVectorIcon(
-      kCaptureModeCircleStopIcon,
-      GetColorProvider()->GetColor(kColorAshIconColorAlert)));
-}
 
 BEGIN_METADATA(StopRecordingButtonTray)
 END_METADATA

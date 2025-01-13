@@ -41,7 +41,6 @@ class StopRecordingButtonTray : public TrayBackgroundView {
   void UpdateTrayItemColor(bool is_active) override {}
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void OnThemeChanged() override;
   void HideBubble(const TrayBubbleView* bubble_view) override {}
 
   // Image view of the stop recording icon.

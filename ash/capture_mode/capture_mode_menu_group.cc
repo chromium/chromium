@@ -305,7 +305,7 @@ class CaptureModeOption
 
     const auto checked_icon_enabled_color =
         color_provider->GetColor(kColorAshButtonLabelColorBlue);
-    checked_icon_view_->SetImage(gfx::CreateVectorIcon(
+    checked_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
         kHollowCheckCircleIcon,
         is_disabled ? ColorUtil::GetDisabledColor(checked_icon_enabled_color)
                     : checked_icon_enabled_color));
