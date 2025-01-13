@@ -4842,19 +4842,19 @@ deps = {
 
   'src/third_party/widevine/cdm/linux': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/linux.git' + '@' +
-        '91eaf08b6d45a593d8fa9a3aaff2ff0f6a97b422',
+        '8a12afc6ad470fac67ecb97bc9acf4bdbf9285e7',
       'condition': 'checkout_linux and checkout_src_internal',
   },
 
   'src/third_party/widevine/cdm/mac': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/mac.git' + '@' +
-        'a0b43dc94b6519a2f0e4163801748e234fdfdaff',
+        '8c2898cf5e27669beeb7fc432a30f953f2541106',
       'condition': 'checkout_mac and checkout_src_internal',
     },
 
   'src/third_party/widevine/cdm/win': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/cdm/win.git' + '@' +
-        '7c1534e91a8bfdc4af28f8b7d6900343a845a8af',
+        '33d580b25178a85837950972b985f555c6d65fa9',
       'condition': 'checkout_win and checkout_src_internal',
   },
 
