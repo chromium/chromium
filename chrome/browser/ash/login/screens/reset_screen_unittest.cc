@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -47,10 +46,6 @@ class ResetScreenTest : public testing::Test {
   // Configure policy
   void SetPowerwashAllowedByPolicy(bool allowed);
 
-  // Configure VPD values
-  void SetFreOn();
-  void SetFreOff();
-
  private:
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -79,16 +74,6 @@ void ResetScreenTest::SetPowerwashAllowedByPolicy(bool allowed) {
   cros_settings_test_helper_.Set(kDevicePowerwashAllowed, base::Value(allowed));
 }
 
-void ResetScreenTest::SetFreOn() {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kCheckEnrollmentKey, "1");
-}
-
-void ResetScreenTest::SetFreOff() {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kCheckEnrollmentKey, "0");
-}
-
 TEST_F(ResetScreenTest, CheckPowerwashAllowedConsumerOwned) {
   SetConsumerOwned();
   ExpectPowerwashAllowed(true);
@@ -104,18 +89,8 @@ TEST_F(ResetScreenTest, CheckPowerwashAllowedOnEnrolledDevice) {
   ExpectPowerwashAllowed(false);
 }
 
-// TODO(b/353731379): Remove when removing legacy state determination code.
 TEST_F(ResetScreenTest, CheckPowerwashAllowedNotOwned) {
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
-      policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   SetUnowned();
-
-  SetFreOn();
-  ExpectPowerwashAllowed(false);
-
-  SetFreOff();
   ExpectPowerwashAllowed(true);
 }
 

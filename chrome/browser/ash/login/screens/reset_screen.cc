@@ -122,41 +122,34 @@ void ResetScreen::SetTpmFirmwareUpdateCheckerForTesting(
 void ResetScreen::CheckIfPowerwashAllowed(
     base::OnceCallback<void(bool, std::optional<tpm_firmware_update::Mode>)>
         callback) {
-  if (InstallAttributes::Get()->IsDeviceLocked()) {
-    if (!InstallAttributes::Get()->IsEnterpriseManaged()) {
-      // The consumer owned device is always allowed to powerwash.
-      std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
-      return;
-    }
-
-    // Powerwash is allowed by default, if the policy is loaded. Admin can
-    // explicitly forbid powerwash. If the policy is not loaded yet, we
-    // consider by default that the device is not allowed to powerwash.
-    bool is_powerwash_allowed = false;
-    CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
-                                    &is_powerwash_allowed);
-    if (is_powerwash_allowed) {
-      std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
-      return;
-    }
-
-    // Check if powerwash is only allowed by the admin specifically for the
-    // purpose of installing a TPM firmware update.
-    tpm_firmware_update::GetAvailableUpdateModes(
-        base::BindOnce(&OnUpdateModesAvailable, std::move(callback)),
-        base::TimeDelta());
+  // Always allow powerwash in OOBE, i.e. before device ownership is taken.
+  if (!InstallAttributes::Get()->IsDeviceLocked()) {
+    std::move(callback).Run(true, std::nullopt);
     return;
   }
 
-  // Devices that are still in OOBE may be subject to forced re-enrollment (FRE)
-  // and thus pending for enterprise management. These should not be allowed to
-  // powerwash either. Note that taking consumer device ownership has the side
-  // effect of dropping the FRE requirement if it was previously in effect.
-  const auto is_reset_allowed =
-      policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-          system::StatisticsProvider::GetInstance()) !=
-      policy::AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired;
-  std::move(callback).Run(is_reset_allowed, std::nullopt);
+  if (!InstallAttributes::Get()->IsEnterpriseManaged()) {
+    // The consumer owned device is always allowed to powerwash.
+    std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
+    return;
+  }
+
+  // Powerwash is allowed by default, if the policy is loaded. Admin can
+  // explicitly forbid powerwash. If the policy is not loaded yet, we
+  // consider by default that the device is not allowed to powerwash.
+  bool is_powerwash_allowed = false;
+  CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
+                                  &is_powerwash_allowed);
+  if (is_powerwash_allowed) {
+    std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
+    return;
+  }
+
+  // Check if powerwash is only allowed by the admin specifically for the
+  // purpose of installing a TPM firmware update.
+  tpm_firmware_update::GetAvailableUpdateModes(
+      base::BindOnce(&OnUpdateModesAvailable, std::move(callback)),
+      base::TimeDelta());
 }
 
 ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
