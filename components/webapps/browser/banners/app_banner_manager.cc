@@ -467,6 +467,10 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
 
 void AppBannerManager::PostInstallableWebAppCheckValidation(
     const bool does_conflict) {
+  if (state_ != State::ACTIVE || !web_app_data_) {
+    return;
+  }
+
   if (does_conflict) {
     TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
