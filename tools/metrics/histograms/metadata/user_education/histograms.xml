@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
-    expires_after="2024-09-20">
+    expires_after="never">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
