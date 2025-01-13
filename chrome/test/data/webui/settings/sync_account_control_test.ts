@@ -376,6 +376,32 @@ suite('SyncAccountControl', function() {
         assertTrue(isChildVisible(testElement, '#turn-off'));
       });
 
+
+  test(
+      'signed in, has passphrase error, with kImprovedSettingsUIOnDesktopEnabled enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SIGNED_IN,
+          hasError: true,
+          statusAction: StatusAction.ENTER_PASSPHRASE,
+          statusText: 'error text',
+          disabled: false,
+        };
+        flush();
+
+        assertTrue(testElement.shadowRoot!
+                       .querySelector<HTMLElement>('#sync-icon-container')!
+                       .classList.contains('sync-problem'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon="settings:sync-problem"]'));
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+        assertTrue(isChildVisible(testElement, '#turn-off'));
+      });
+
   test(
       'signed in, has error with kImprovedSettingsUIOnDesktopEnabled disabled',
       function() {

@@ -235,6 +235,12 @@ export interface SyncBrowserProxy {
   startKeyRetrieval(): void;
 
   /**
+   * Displays the sync passphrase dialog for users to enter passphrase to enable
+   * sync.
+   */
+  showSyncPassphraseDialog(): void;
+
+  /**
    * Gets the current sync status.
    */
   getSyncStatus(): Promise<SyncStatus>;
@@ -361,6 +367,10 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   startKeyRetrieval() {
     chrome.send('SyncStartKeyRetrieval');
+  }
+
+  showSyncPassphraseDialog() {
+    chrome.send('SyncShowSyncPassphraseDialog');
   }
 
   getSyncStatus() {

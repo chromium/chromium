@@ -84,6 +84,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #endif
 
@@ -355,6 +356,11 @@ void PeopleHandler::RegisterMessages() {
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SyncShowSyncPassphraseDialog",
+      base::BindRepeating(&PeopleHandler::HandleShowSyncPassphraseDialog,
+                          base::Unretained(this)));
+
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   web_ui()->RegisterMessageCallback(
@@ -924,6 +930,22 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
       browser, syncer::TrustedVaultUserActionTriggerForUMA::kSettings);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+void PeopleHandler::HandleShowSyncPassphraseDialog(
+    const base::Value::List& args) {
+  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
+  if (!browser) {
+    return;
+  }
+
+  ShowSyncPassphraseDialog(
+      *browser,
+      base::BindRepeating(&SyncPassphraseDialogDecryptData,
+                          base::Unretained(SyncServiceFactory::GetForProfile(
+                              browser->profile()))));
+}
+#endif
+
 void PeopleHandler::HandleGetSyncStatus(const base::Value::List& args) {
   AllowJavascript();
 
@@ -1065,6 +1087,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
 
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   UpdateSyncStatus();
+  UpdateStoredAccounts();
   // TODO(crbug.com/40140566): Re-evaluate marking sync as configuring here,
   // since this gets called whenever SyncService changes state. Inline
   // MaybeMarkSyncConfiguring() then.
