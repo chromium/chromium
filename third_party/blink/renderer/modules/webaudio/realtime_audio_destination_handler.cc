@@ -263,9 +263,11 @@ void RealtimeAudioDestinationHandler::Render(
 
   context->HandlePostRenderTasks();
 
-  context->HandleVolumeMultiplier(destination_bus);
-
+  // Handle audibility before handling the volume multiplier since the volume
+  // multiplier should not be taken into account for audibility.
   context->HandleAudibility(destination_bus);
+
+  context->HandleVolumeMultiplier(destination_bus);
 
   // Advances the current sample-frame.
   AdvanceCurrentSampleFrame(number_of_frames);
