@@ -310,4 +310,7 @@ HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
                             "sanity/create-target-position.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
+                            "sanity/create-target-window-state.js")
+
 }  // namespace headless
