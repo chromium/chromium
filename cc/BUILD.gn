@@ -271,8 +271,6 @@ cc_component("cc") {
     "resources/resource_pool.h",
     "resources/scoped_ui_resource.cc",
     "resources/scoped_ui_resource.h",
-    "resources/shared_bitmap_id_registrar.cc",
-    "resources/shared_bitmap_id_registrar.h",
     "resources/ui_resource_bitmap.cc",
     "resources/ui_resource_bitmap.h",
     "resources/ui_resource_client.h",

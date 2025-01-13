@@ -53,8 +53,6 @@ class PLATFORM_EXPORT ImageLayerBridge
   void Trace(Visitor* visitor) const {}
 
  private:
-  // SharedMemory bitmap that was registered with SharedBitmapIdRegistrar. Used
-  // only with software compositing.
   struct RegisteredBitmap {
     RegisteredBitmap();
     RegisteredBitmap(RegisteredBitmap&& other);

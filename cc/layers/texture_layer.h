@@ -19,7 +19,6 @@
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -36,7 +35,7 @@ class TextureLayerClient;
 // to display gpu or software resources, depending if the compositor is working
 // in gpu or software compositing mode (the resources must match the compositing
 // mode).
-class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
+class CC_EXPORT TextureLayer : public Layer {
  public:
   class CC_EXPORT TransferableResourceHolder
       : public base::RefCountedThreadSafe<TransferableResourceHolder> {
@@ -123,17 +122,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() const override;
 
-  // Request a mapping from SharedBitmapId to SharedMemory be registered via the
-  // LayerTreeFrameSink with the display compositor. Once this mapping is
-  // registered, the SharedBitmapId can be used in TransferableResources given
-  // to the TextureLayer for display. The SharedBitmapId registration will end
-  // when the returned SharedBitmapIdRegistration object is destroyed.
-  // Implemented as a SharedBitmapIdRegistrar interface so that clients can
-  // have a limited API access.
-  SharedBitmapIdRegistration RegisterSharedBitmapId(
-      const viz::SharedBitmapId& id,
-      scoped_refptr<CrossThreadSharedBitmap> bitmap) override;
-
   const viz::TransferableResource current_transferable_resource() const {
     if (const auto& resource_holder = resource_holder_.Read(*this))
       return resource_holder->resource();
@@ -160,12 +148,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
       viz::ReleaseCallback release_callback,
       bool requires_commit);
 
-  // Friends to give access to UnregisterSharedBitmapId().
-  friend SharedBitmapIdRegistration;
-  // Remove a mapping from SharedBitmapId to SharedMemory in the display
-  // compositor.
-  void UnregisterSharedBitmapId(viz::SharedBitmapId id);
-
   // Dangling on `mac-rel` in `blink_web_tests`:
   // `fast/events/touch/touch-handler-iframe-plugin-assert.html`
   ProtectedSequenceForbidden<raw_ptr<TextureLayerClient, DanglingUntriaged>>
@@ -185,21 +167,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   typedef base::flat_map<viz::SharedBitmapId,
                          scoped_refptr<CrossThreadSharedBitmap>>
       BitMapMap;
-
-  // The set of SharedBitmapIds to register with the LayerTreeFrameSink on the
-  // compositor thread. These requests are forwarded to the TextureLayerImpl to
-  // use, then stored in |registered_bitmaps_| to re-send if the
-  // TextureLayerImpl object attached to this layer changes, by moving out of
-  // the LayerTreeHost.
-  ProtectedSequenceWritable<BitMapMap> to_register_bitmaps_;
-  // The set of previously registered SharedBitmapIds for the current
-  // LayerTreeHost. If the LayerTreeHost changes, these must be re-sent to the
-  // (new) TextureLayerImpl to be re-registered.
-  ProtectedSequenceWritable<BitMapMap> registered_bitmaps_;
-  // The SharedBitmapIds to unregister on the compositor thread, passed to the
-  // TextureLayerImpl.
-  ProtectedSequenceWritable<std::vector<viz::SharedBitmapId>>
-      to_unregister_bitmap_ids_;
 
   const base::WeakPtrFactory<TextureLayer> weak_ptr_factory_{this};
 };
