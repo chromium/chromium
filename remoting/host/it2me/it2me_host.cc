@@ -442,6 +442,14 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     return;
   }
 
+  if (is_enterprise_session() && IsRunning()) {
+    // Don't notify on policy changes for Admin sessions as the policies can
+    // change as they log into different sessions and this should not cause
+    // them to be disconnected: See crbug.com/380421478.
+    HOST_LOG << "Dropping policy update during enterprise connection.";
+    return;
+  }
+
   // Retrieve the policy value on whether to allow connections but don't apply
   // it until after we've finished reading the rest of the policies and started
   // the connection process.

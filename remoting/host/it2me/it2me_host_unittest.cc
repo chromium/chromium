@@ -1014,6 +1014,20 @@ TEST_F(
   StartHost(/*enterprise_params=*/std::nullopt);
   ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
 }
+
+TEST_F(It2MeHostTest, EnterpriseSessionsShouldNotDisconnectOnPolicyChange) {
+  StartHost(ChromeOsEnterpriseParams());
+  const It2MeHostState initial_state = last_host_state_;
+  ASSERT_EQ(initial_state, It2MeHostState::kReceivedAccessCode);
+
+  SetPolicies({{policy::key::kRemoteAccessHostFirewallTraversal,
+                base::Value(!last_nat_traversal_enabled_value_)}});
+
+  // Using RunUntilIdle is frowned upon, but there is no other way to check a
+  // change does *not* happen.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(last_host_state_, initial_state);
+}
 #endif
 
 }  // namespace remoting
