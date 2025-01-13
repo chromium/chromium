@@ -68,6 +68,7 @@ static constexpr int kUIUpdateIconSize = 16;
 namespace tab_groups {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kDeleteGroupMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kLeaveGroupMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
                                       kMoveGroupToNewWindowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
@@ -457,19 +458,36 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           browser, saved_group->saved_guid()),
       ui::DialogModelMenuItem::Params().SetId(kToggleGroupPinStateMenuItem));
 
-  dialog_model
-      .AddMenuItem(
-          ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
-                                         ui::kColorMenuIcon, kUIUpdateIconSize),
-          l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
-          base::BindRepeating(
-              [](const Browser* browser, const base::Uuid& saved_group_guid,
-                 int event_flags) {
-                SavedTabGroupUtils::DeleteSavedGroup(browser, saved_group_guid);
-              },
-              browser, saved_group->saved_guid()),
-          ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem))
-      .AddSeparator();
+  // Only the owner of a tab group is allowed to delete it, members will have
+  // the option to leave instead.
+  if (IsOwnerOfSharedTabGroup(browser->profile(), saved_group->saved_guid())) {
+    dialog_model.AddMenuItem(
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize),
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
+        base::BindRepeating(
+            [](const Browser* browser, const base::Uuid& saved_group_guid,
+               int event_flags) {
+              SavedTabGroupUtils::DeleteSavedGroup(browser, saved_group_guid);
+            },
+            browser, saved_group->saved_guid()),
+        ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem));
+  } else {
+    dialog_model.AddMenuItem(
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize),
+        l10n_util::GetStringUTF16(
+            IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM),
+        base::BindRepeating(
+            [](const Browser* browser, const base::Uuid& saved_group_guid,
+               int event_flags) {
+              SavedTabGroupUtils::LeaveSharedGroup(browser, saved_group_guid);
+            },
+            browser, saved_group->saved_guid()),
+        ui::DialogModelMenuItem::Params().SetId(kLeaveGroupMenuItem));
+  }
+
+  dialog_model.AddSeparator();
 
   dialog_model.AddTitleItem(l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
                             kTabsTitleItem);

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -418,6 +419,27 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
       WaitForShow(kDeletionDialogOkButtonId),
       PressButton(kDeletionDialogOkButtonId),
       WaitForHide(kTabGroupHeaderElementId), FinishTabstripAnimations());
+}
+
+// Verify members see the leave group button instead of the delete button in the
+// context menu of a tab group. Pressing the button should delete the group.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       LeaveGroupPressedFromContextMenu) {
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id",
+                data_sharing::MemberRole::kMember, /*should_sign_in=*/true);
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      EnsurePresent(SavedTabGroupUtils::kLeaveGroupMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kLeaveGroupMenuItem),
+      WaitForShow(kDeletionDialogOkButtonId),
+      PressButton(kDeletionDialogOkButtonId), FinishTabstripAnimations(),
+      WaitForHide(kTabGroupHeaderElementId));
 }
 
 }  // namespace tab_groups

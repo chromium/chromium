@@ -208,7 +208,7 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
 
   submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   int parent_command_id = parent->GetCommand();
-  auto group_id = GetTabGroupIdFromCommandId(parent_command_id);
+  base::Uuid group_id = GetTabGroupIdFromCommandId(parent_command_id);
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
@@ -281,17 +281,31 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
   command_id_to_action_.emplace(
       latest_command_id, Action{Action::Type::PIN_OR_UNPIN_GROUP, group_id});
 
-  // Add item: delete group.
   latest_command_id = GetAndIncrementLatestCommandId();
-  submenu_model_->AddItemWithStringIdAndIcon(
-      latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
-      ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon, ui::kColorMenuIcon,
-                                     kUIUpdateIconSize));
-  submenu_model_->SetElementIdentifierAt(
-      submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
-      SavedTabGroupUtils::kDeleteGroupMenuItem);
-  command_id_to_action_.emplace(latest_command_id,
-                                Action{Action::Type::DELETE_GROUP, group_id});
+  if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
+                                                  group_id)) {
+    // Add item: delete group.
+    submenu_model_->AddItemWithStringIdAndIcon(
+        latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    submenu_model_->SetElementIdentifierAt(
+        submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
+        SavedTabGroupUtils::kDeleteGroupMenuItem);
+    command_id_to_action_.emplace(latest_command_id,
+                                  Action{Action::Type::DELETE_GROUP, group_id});
+  } else {
+    // Add item: leave group.
+    submenu_model_->AddItemWithStringIdAndIcon(
+        latest_command_id, IDS_DATA_SHARING_MEMBER_DELETE_LAST_TAB_CONFIRM,
+        ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                       ui::kColorMenuIcon, kUIUpdateIconSize));
+    submenu_model_->SetElementIdentifierAt(
+        submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
+        SavedTabGroupUtils::kLeaveGroupMenuItem);
+    command_id_to_action_.emplace(latest_command_id,
+                                  Action{Action::Type::LEAVE_GROUP, group_id});
+  }
 
   // Add a separator and title.
   submenu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -394,7 +408,11 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
       case Action::Type::DELETE_GROUP:
         SavedTabGroupUtils::DeleteSavedGroup(browser_, uuid);
         break;
-      default:
+      case Action::Type::LEAVE_GROUP:
+        SavedTabGroupUtils::LeaveSharedGroup(browser_, uuid);
+        break;
+      case Action::Type::OPEN_URL:
+      case Action::Type::DEFAULT:
         break;
     }
   } else if (command_id == IDC_CREATE_NEW_TAB_GROUP) {

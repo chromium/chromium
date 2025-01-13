@@ -42,6 +42,7 @@ class STGEverythingMenu : public views::MenuDelegate,
       OPEN_OR_MOVE_TO_NEW_WINDOW,
       PIN_OR_UNPIN_GROUP,
       DELETE_GROUP,
+      LEAVE_GROUP,
       OPEN_URL,
     };
 
