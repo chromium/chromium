@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 
@@ -32,7 +33,7 @@ class TextFragment {
   // [prefix-,]textStart[,textEnd][,-suffix]
   // Returns |std::nullopt| if parsing failed.
   static std::optional<TextFragment> FromEscapedString(
-      std::string escaped_string);
+      std::string_view escaped_string);
 
   // Returns a TextFragment instance created from a dictionary |value|
   // containing the right set of values. The values stored in |value| must be
