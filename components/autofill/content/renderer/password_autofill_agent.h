@@ -171,8 +171,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TriggerFormSubmission() override;
 #endif
 
-  void OnFormSubmitted(const blink::WebFormElement& form);
-
   // WebLocalFrameClient editor related calls forwarded by AutofillAgent.
   // If they return true, it indicates the event was consumed and should not
   // be used for any other autofill activity.
@@ -244,7 +242,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   bool logging_state_active() const { return logging_state_active_; }
 
+  // TODO(crbug.com/40281981): Replace `form_id` with non-optional
+  // `submitted_form`.
   void FireHostSubmitEvent(FormRendererId form_id,
+                           base::optional_ref<const FormData> submitted_form,
                            mojom::SubmissionSource source);
 
   // `form` and `input` are the elements user has just been interacting with
@@ -410,6 +411,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     bool was_user_gesture_seen_;
     std::vector<FieldRef> elements_;
   };
+
+  // TODO(crbug.com/40947729): Make `submitted_form` a const reference when
+  // `AutofillOptimizeFormExtraction` is launched.
+  void OnFormSubmitted(FormData submitted_form);
 
   // Annotate `forms` and all fields in the current frame with form and field
   // signatures as HTML attributes. Used by

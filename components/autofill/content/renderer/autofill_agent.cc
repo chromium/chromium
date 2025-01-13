@@ -772,7 +772,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
   if (!is_duplicate_submission_for_password_manager) {
     password_autofill_agent_->FireHostSubmitEvent(form_data.renderer_id(),
-                                                  source);
+                                                  form_data, source);
   }
   if (!is_duplicate_submission_for_autofill) {
     base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
@@ -1930,7 +1930,8 @@ void AutofillAgent::OnFormSubmission(
   if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
     // TODO(crbug.com/40281981): Investigate removing this and relying on the
     // call conditioned on the submitted form.
-    password_autofill_agent_->FireHostSubmitEvent(FormRendererId(), source);
+    password_autofill_agent_->FireHostSubmitEvent(
+        FormRendererId(), /*submitted_form=*/std::nullopt, source);
   }
   if (std::optional<FormData> form_data =
           GetSubmittedForm(source, submitted_form_element)) {
