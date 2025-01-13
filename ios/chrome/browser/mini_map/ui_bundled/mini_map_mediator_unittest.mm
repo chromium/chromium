@@ -74,7 +74,11 @@ TEST_F(MiniMapMediatorTest, TestUserConsents) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
+  base::FieldTrialParams feature_parameters{
+      {web::features::kOneTapForMapsConsentModeParamTitle,
+       web::features::kOneTapForMapsConsentModeDefaultParam}};
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      web::features::kOneTapForMaps, feature_parameters);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showConsentInterstitial]);
@@ -93,7 +97,11 @@ TEST_F(MiniMapMediatorTest, TestUserDeclines) {
     GTEST_SKIP() << "Feature only available on iOS16.4+";
   }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
+  base::FieldTrialParams feature_parameters{
+      {web::features::kOneTapForMapsConsentModeParamTitle,
+       web::features::kOneTapForMapsConsentModeDefaultParam}};
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      web::features::kOneTapForMaps, feature_parameters);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showConsentInterstitial]);

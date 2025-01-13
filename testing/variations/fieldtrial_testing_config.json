@@ -8990,29 +8990,6 @@
             ]
         }
     ],
-    "EnableOneTapForMaps": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240709",
-                    "params": {
-                        "OneTapForMapsConsentModeParam": "iph",
-                        "TCAddressOneTap": "true",
-                        "confidence_score_threshold": "0.9963"
-                    },
-                    "enable_features": [
-                        "EnableExpKitTextClassifier",
-                        "EnableExpKitTextClassifierAddress",
-                        "EnableOneTapForMaps"
-                    ],
-                    "min_os_version": "16.4.0"
-                }
-            ]
-        }
-    ],
     "EnableOverwritingPlaceholderUsernames": [
         {
             "platforms": [
