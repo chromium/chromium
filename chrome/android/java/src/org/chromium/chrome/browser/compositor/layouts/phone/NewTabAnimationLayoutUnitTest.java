@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -128,8 +127,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
 
         when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
-        when(mUpdateHost.createLayoutTab(anyInt(), anyBoolean(), anyFloat(), anyFloat()))
-                .thenReturn(mLayoutTab);
+        when(mUpdateHost.createLayoutTab(anyInt(), anyBoolean())).thenReturn(mLayoutTab);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }

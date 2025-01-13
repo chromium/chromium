@@ -64,23 +64,18 @@ public interface LayoutUpdateHost {
     /**
      * Creates or recycles a {@Link LayoutTab}.
      *
-     * @param id               The id of the reference tab in the
-     *                         {@link org.chromium.chrome.browser.tabmodel.TabModel}.
-     * @param incognito        Whether the new tab is incognito.
-     * @param maxContentWidth  The maximum layout width this tab can be.  Negative numbers will use
-     *                         the original content width.
-     * @param maxContentHeight The maximum layout height this tab can be.  Negative numbers will use
-     *                         the original content height.
-     * @return                 The created or recycled {@link LayoutTab}.
+     * @param id The id of the reference tab in the {@link
+     *     org.chromium.chrome.browser.tabmodel.TabModel}.
+     * @param incognito Whether the new tab is incognito.
+     * @return The created or recycled {@link LayoutTab}.
      */
-    LayoutTab createLayoutTab(
-            int id, boolean incognito, float maxContentWidth, float maxContentHeight);
+    LayoutTab createLayoutTab(int id, boolean incognito);
 
     /**
      * Notifies the host that the {@link LayoutTab} is no longer needed by the layout.
      *
-     * @param id The id of the reference tab in the
-     *           {@link org.chromium.chrome.browser.tabmodel.TabModel}.
+     * @param id The id of the reference tab in the {@link
+     *     org.chromium.chrome.browser.tabmodel.TabModel}.
      */
     void releaseTabLayout(int id);
 

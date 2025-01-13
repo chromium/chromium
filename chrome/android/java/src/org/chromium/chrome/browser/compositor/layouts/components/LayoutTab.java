@@ -318,38 +318,10 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @return The original unclamped width (not scaled) of the tab contents texture.
-     */
-    public float getUnclampedOriginalContentHeight() {
-        return get(ORIGINAL_CONTENT_HEIGHT_IN_DP);
-    }
-
-    /**
      * @return The width of the drawn content (clipped and scaled).
      */
     public float getFinalContentWidth() {
         return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
-    }
-
-    /**
-     * @return The maximum height the content can be.
-     */
-    public float getMaxContentHeight() {
-        return get(MAX_CONTENT_HEIGHT);
-    }
-
-    /**
-     * @param width The maximum width the content can be.
-     */
-    public void setMaxContentWidth(float width) {
-        set(MAX_CONTENT_WIDTH, width);
-    }
-
-    /**
-     * @param height The maximum height the content can be.
-     */
-    public void setMaxContentHeight(float height) {
-        set(MAX_CONTENT_HEIGHT, height);
     }
 
     /**
