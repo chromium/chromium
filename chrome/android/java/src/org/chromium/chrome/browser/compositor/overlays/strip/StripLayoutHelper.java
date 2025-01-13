@@ -1693,8 +1693,7 @@ public class StripLayoutHelper
 
     private void updateTouchableRect() {
         // Make the entire strip touchable when during dragging / reordering mode.
-        boolean isTabDraggingInProgress =
-                mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
+        boolean isTabDraggingInProgress = isTabDraggingInProgress();
         if (isTabStripFull() || mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
             mTouchableRect.set(getVisibleLeftBound(), 0, getVisibleRightBound(), mHeight);
             return;
@@ -1714,6 +1713,10 @@ public class StripLayoutHelper
             touchableRect.right = Math.min(ntbTouchRect.right, getVisibleRightBound());
         }
         mTouchableRect.set(touchableRect);
+    }
+
+    private boolean isTabDraggingInProgress() {
+        return mTabDragSource != null && mTabDragSource.isTabDraggingInProgress();
     }
 
     /**
@@ -2448,8 +2451,11 @@ public class StripLayoutHelper
      * @param time The current time of the app in ms.
      */
     public void onUpOrCancel(long time) {
-        // 1. Stop any reordering that is happening.
-        if (mReorderDelegate.getInReorderMode()) {
+        /* 1. Stop any reordering that is happening. For Android drag&drop, this method is invoked
+         * immediately after View#startDrag to stop ongoing gesture events. Do not stop reorder in
+         * this case.
+         */
+        if (mReorderDelegate.getInReorderMode() && !isTabDraggingInProgress()) {
             mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
         }
 
@@ -3794,9 +3800,7 @@ public class StripLayoutHelper
     }
 
     void stopReorderMode() {
-        // TODO(crbug.com/381285152): Remove getViewBeingDragged check once
-        //  SourceViewDragDropReorderStrategy implementation is complete.
-        if (mReorderDelegate.getInReorderMode() || mReorderDelegate.getViewBeingDragged() != null) {
+        if (mReorderDelegate.getInReorderMode()) {
             mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
         }
     }

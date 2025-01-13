@@ -4369,11 +4369,9 @@ public class StripLayoutHelperTest {
 
         verify(mTabDragSource, times(1))
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
-        // TODO(crbug.com/381285152): Reenable check once SourceViewDragDropReorderStrategy
-        // implementation is complete.
-        // assertTrue(
-        //      "Drag action should initiate reorder.",
-        //    mStripLayoutHelper.getInReorderModeForTesting());
+        assertTrue(
+                "Drag action should initiate reorder.",
+                mStripLayoutHelper.getInReorderModeForTesting());
         assertTrue(
                 "Dragged Tab should match selected tab during drag action.",
                 mStripLayoutHelper.getReorderDelegateForTesting().getInteractingTab()
@@ -4472,20 +4470,19 @@ public class StripLayoutHelperTest {
                 "Animator should be running.", mStripLayoutHelper.getRunningAnimatorForTesting());
         mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
 
-        // Verify we stop reorder mode and animate the tab exiting.
+        // Verify we animate the tab exiting. Reorder is still in progress.
         assertEquals(
                 "Should have stored dragged tab's x-offset.",
                 expectedOffsetX,
                 mStripLayoutHelper.getLastOffsetXForTesting(),
                 EPSILON);
         assertTrue("Should mark the tab is off the strip.", draggedTab.isDraggedOffStrip());
-        assertFalse(
-                "Should not be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
         assertEquals(
                 "Tab should be translated off the strip.",
                 SCREEN_HEIGHT,
                 draggedTab.getOffsetY(),
                 EPSILON);
+        assertTrue("Should be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
     }
 
     @Test

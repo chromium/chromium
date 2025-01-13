@@ -180,13 +180,6 @@ public class ReorderDelegate {
         return null;
     }
 
-    // TODO(crbug.com/381285152): Remove get viewBeingDragged once DragDropReorderStrategy is
-    // complete.
-    StripLayoutView getViewBeingDragged() {
-        if (mSourceViewDragDropReorderStrategy == null) return null;
-        return mSourceViewDragDropReorderStrategy.mViewBeingDragged;
-    }
-
     // ============================================================================================
     // Initialization
     // ============================================================================================
@@ -252,11 +245,7 @@ public class ReorderDelegate {
             @ReorderType int reorderType) {
         assert mInitialized && mActiveStrategy == null && !getInReorderMode();
         mActiveStrategy = getReorderStrategy(interactingView, reorderType);
-        // TODO(crbug.com/381285152): Remove below check once SourceViewDragDropReorderStrategy
-        // implementation is complete.
-        if (mActiveStrategy != mSourceViewDragDropReorderStrategy) {
-            mInReorderModeSupplier.set(true);
-        }
+        mInReorderModeSupplier.set(true);
         mActiveStrategy.startReorderMode(stripTabs, stripGroupTitles, interactingView, startPoint);
     }
 
@@ -268,11 +257,7 @@ public class ReorderDelegate {
             float endX,
             float deltaX,
             @ReorderType int reorderType) {
-        // TODO(crbug.com/381285152): Remove SourceViewDragDropReorderStrategy check once
-        // implementation is complete.
-        assert mActiveStrategy != null
-                        && (getInReorderMode()
-                                || mActiveStrategy == mSourceViewDragDropReorderStrategy)
+        assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to update reorder without an active Strategy.";
         // Return if accumulated delta is too small. This isn't the accumulated delta since the
         // beginning of the drag. It accumulates the delta X until a threshold is crossed and then
@@ -309,11 +294,7 @@ public class ReorderDelegate {
             float stripWidth,
             float leftMargin,
             float rightMargin) {
-        // TODO(crbug.com/381285152): Remove SourceViewDragDropReorderStrategy check once
-        // implementation is complete.
-        assert mActiveStrategy != null
-                        && (getInReorderMode()
-                                || mActiveStrategy == mSourceViewDragDropReorderStrategy)
+        assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to update reorder without an active Strategy.";
         float scrollOffsetDelta =
                 computeScrollOffsetDeltaForAutoScroll(time, stripWidth, leftMargin, rightMargin);
@@ -336,11 +317,7 @@ public class ReorderDelegate {
 
     /** See {@link ReorderStrategy#stopReorderMode} */
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
-        // TODO(crbug.com/381285152): Remove SourceViewDragDropReorderStrategy check once
-        // implementation is complete.
-        assert mActiveStrategy != null
-                        && (getInReorderMode()
-                                || mActiveStrategy == mSourceViewDragDropReorderStrategy)
+        assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to stop reorder without an active Strategy.";
         mActiveStrategy.stopReorderMode(groupTitles, stripTabs);
 
@@ -1119,9 +1096,6 @@ public class ReorderDelegate {
                 mTabStrategy.startReorderMode(
                         stripTabs, groupTitles, mViewBeingDragged, new PointF(endX, 0f));
                 mTabStrategyInProgress = true;
-                // TODO(crbug.com/381285152): Remove below once SourceViewDragDropReorderStrategy
-                // implementation is complete.
-                mInReorderModeSupplier.set(true);
             } else if (reorderType == ReorderType.DRAG_WITHIN_STRIP) {
                 // Drag within strip - delegate to another strategy.
                 mTabStrategy.updateReorderPosition(
@@ -1155,9 +1129,6 @@ public class ReorderDelegate {
                 mLastOffsetX = draggedTab.getOffsetX();
                 mTabStrategy.stopReorderMode(groupTitles, stripTabs);
                 mTabStrategyInProgress = false;
-                // TODO(crbug.com/381285152): Remove below once SourceViewDragDropReorderStrategy
-                // implementation is complete.
-                mInReorderModeSupplier.set(false);
 
                 // 3. Immediately hide the dragged tab container, as if it were being translated
                 // off like a closed tab. Resize strip views accordingly.
