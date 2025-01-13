@@ -62,40 +62,31 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
     return glic_service()->window_controller();
   }
 
-  glic::GlicView* glic_view() { return window_controller().GetGlicView(); }
-
  private:
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
-  RunTestSequence(PressButton(kGlicButtonElementId));
-
-  RunTestSequence(
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                MoveMouseTo(kGlicViewElementId)),
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                ActivateSurface(kGlicViewElementId)));
+  RunTestSequence(PressButton(kGlicButtonElementId),
+                  InAnyContext(WaitForShow(kGlicViewElementId)),
+                  InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
+                                      ActivateSurface(kGlicViewElementId))));
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
-  RunTestSequence(PressButton(kGlicButtonElementId));
   RunTestSequence(
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                MoveMouseTo(kGlicViewElementId)),
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                ActivateSurface(kGlicViewElementId)));
-
-  window_controller().Close();
-
-  RunTestSequence(PressButton(kGlicButtonElementId));
-  RunTestSequence(
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                MoveMouseTo(kGlicViewElementId)),
-      InContext(views::ElementTrackerViews::GetContextForView(glic_view()),
-                ActivateSurface(kGlicViewElementId)));
+      PressButton(kGlicButtonElementId),
+      // TODO(crbug.com/389729273): observe web client initialization directly.
+      InAnyContext(WaitForShow(kGlicViewElementId)),
+      InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
+                          ActivateSurface(kGlicViewElementId))),
+      Do([this]() { window_controller().Close(); }),
+      PressButton(kGlicButtonElementId),
+      InAnyContext(WaitForShow(kGlicViewElementId)),
+      InSameContext(Steps(MoveMouseTo(kGlicViewElementId),
+                          ActivateSurface(kGlicViewElementId))));
 }
 
 }  // namespace
