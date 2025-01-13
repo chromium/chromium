@@ -609,7 +609,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     bool edit_username;
     bool change_password;
     // The UMA sample expected for PasswordManager.EditsInSaveBubble.
-    base::HistogramBase::Sample expected_uma_sample;
+    base::HistogramBase::Sample32 expected_uma_sample;
   } kTests[] = {
       {false, false, 0}, {true, false, 1}, {false, true, 2}, {true, true, 3}};
 

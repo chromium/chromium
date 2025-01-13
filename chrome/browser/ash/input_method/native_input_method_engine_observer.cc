@@ -1455,7 +1455,7 @@ void NativeInputMethodEngineObserver::DEPRECATED_ReportSuggestionOpportunity(
 void NativeInputMethodEngineObserver::ReportHistogramSample(
     base::Histogram* histogram,
     uint16_t value) {
-  histogram->Add(base::strict_cast<base::Histogram::Sample>(value));
+  histogram->Add(base::strict_cast<base::Histogram::Sample32>(value));
 }
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(

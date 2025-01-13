@@ -46,7 +46,7 @@ ProcessMonitor::Metrics GetFakeProcessMetrics(bool with_cpu_usage = true) {
 
 struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
-  std::optional<base::Histogram::Sample> sample;
+  std::optional<base::Histogram::Sample32> sample;
 };
 
 // For each histogram named after the combination of prefixes from

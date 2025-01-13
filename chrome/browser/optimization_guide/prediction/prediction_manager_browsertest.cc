@@ -224,12 +224,15 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
       const net::test_server::HttpRequest& request) {
     // Returning nullptr will cause the test server to fallback to serving the
     // file from the test data directory.
-    if (request.GetURL() == model_file_url_)
+    if (request.GetURL() == model_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_good_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_good_additional_file_url_) {
       return nullptr;
-    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_)
+    }
+    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_) {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
 
@@ -614,19 +617,19 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       histogram_tester.GetAllSamples("OptimizationGuide.PredictionManager."
                                      "ModelDeliveryEvents.PainfulPageLoad"),
       testing::UnorderedElementsAre(
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kGetModelsRequest),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kDownloadServiceRequest),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDownloadStarted),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDownloaded),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDelivered),
                        1)));
 }
@@ -671,19 +674,19 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       histogram_tester.GetAllSamples("OptimizationGuide.PredictionManager."
                                      "ModelDeliveryEvents.PainfulPageLoad"),
       testing::UnorderedElementsAre(
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kGetModelsRequest),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kDownloadServiceRequest),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDownloadStarted),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDownloaded),
                        1),
-          base::Bucket(static_cast<base::HistogramBase::Sample>(
+          base::Bucket(static_cast<base::HistogramBase::Sample32>(
                            ModelDeliveryEvent::kModelDelivered),
                        1)));
 }

@@ -250,8 +250,9 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
                                       : navigation_handle->GetURL().host());
-  base::UmaHistogramSparse("Settings.PrivacySandbox.DialogDisplayHost",
-                           static_cast<base::HistogramBase::Sample>(host_hash));
+  base::UmaHistogramSparse(
+      "Settings.PrivacySandbox.DialogDisplayHost",
+      static_cast<base::HistogramBase::Sample32>(host_hash));
 
   browser->tab_strip_model()->ActivateTabAt(
       browser->tab_strip_model()->GetIndexOfWebContents(

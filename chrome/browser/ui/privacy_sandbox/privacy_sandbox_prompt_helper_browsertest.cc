@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("about:blank")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("settings")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("settings")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("history")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("history")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
@@ -458,10 +458,10 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   histogram_tester.ExpectBucketCount(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("new-tab-page")), 1);
   histogram_tester.ExpectBucketCount(
       kPrivacySandboxDialogDisplayHostHistogram,
-      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
+      static_cast<base::HistogramBase::Sample32>(base::Hash("about:blank")), 1);
   ValidatePromptEventEntries(
       &histogram_tester,
       {{PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::

@@ -1988,7 +1988,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // The layout shift score was originally 1, after multiplying 10000, it
   // should fit into the bucket of value 9130, with a histogram of maximum
   // value of 24000.
-  const base::HistogramBase::Sample max_cls = 9130;
+  const base::HistogramBase::Sample32 max_cls = 9130;
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability."
                   "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
@@ -2044,7 +2044,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // The layout shift score was originally 1, after multiplying 10000, it
   // should fit into the bucket of value 9130, with a histogram of maximum
   // value of 24000.
-  const base::HistogramBase::Sample max_cls = 9130;
+  const base::HistogramBase::Sample32 max_cls = 9130;
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                   "PageLoad.LayoutInstability."
                   "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."

@@ -158,7 +158,7 @@ class EmbeddedPermissionPromptInteractiveTest
                       int count) {
     return Steps(Do([=, &tester]() {
       tester.ExpectBucketCount(
-          view_name, static_cast<base::HistogramBase::Sample>(request_type),
+          view_name, static_cast<base::HistogramBase::Sample32>(request_type),
           count);
     }));
   }

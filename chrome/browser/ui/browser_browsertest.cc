@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
 #if BUILDFLAG(IS_WIN)
   {  // From launch_mode_recorder.cc:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }

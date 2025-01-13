@@ -782,7 +782,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
   void ExpectBlocklistedFeature(
       blink::scheduler::WebSchedulerTrackedFeature feature,
       base::Location location) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(feature);
+    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample(feature);
     AddSampleToBuckets(&expected_blocklisted_features_, sample);
 
     EXPECT_THAT(
@@ -802,7 +802,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
 
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
-                          base::HistogramBase::Sample sample) {
+                          base::HistogramBase::Sample32 sample) {
     auto it = base::ranges::find(*buckets, sample, &base::Bucket::min);
     if (it == buckets->end()) {
       buckets->push_back(base::Bucket(sample, 1));

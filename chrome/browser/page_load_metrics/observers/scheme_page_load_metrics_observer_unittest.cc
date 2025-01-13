@@ -106,7 +106,7 @@ class SchemePageLoadMetricsObserverTest
         prefix + ".PaintTiming.ParseStartToFirstContentfulPaint", 1);
     tester()->histogram_tester().ExpectUniqueSample(
         prefix + ".PaintTiming.ParseStartToFirstContentfulPaint",
-        static_cast<base::HistogramBase::Sample>(200), 1);
+        static_cast<base::HistogramBase::Sample32>(200), 1);
     tester()->histogram_tester().ExpectTotalCount(
         prefix + ".Experimental.PaintTiming.NavigationToFirstMeaningfulPaint",
         1);

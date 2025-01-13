@@ -920,7 +920,7 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   NavigateAndCommitActiveTab(GURL("about:blank"));
   EXPECT_EQ(training_labels.Get().output_metric,
             std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
-                           static_cast<base::HistogramBase::Sample>(
+                           static_cast<base::HistogramBase::Sample32>(
                                compose::ProactiveNudgeDerivedEngagement::
                                    kAcceptedComposeSuggestion)));
 }

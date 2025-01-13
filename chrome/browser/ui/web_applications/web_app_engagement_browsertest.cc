@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   {
     // From c/b/ui/startup/launch_mode_recorder.h:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   {
     // From startup_browser_creator_impl.cc:
     constexpr char kLaunchModesHistogram[] = "Launch.Mode2";
-    const base::HistogramBase::Sample kWebAppOther = 22;
+    const base::HistogramBase::Sample32 kWebAppOther = 22;
 
     tester.ExpectUniqueSample(kLaunchModesHistogram, kWebAppOther, 1);
   }

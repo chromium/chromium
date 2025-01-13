@@ -407,7 +407,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     histograms.ExpectBucketCount(
         permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
             ContentSettingsType::FILE_SYSTEM_WRITE_GUARD),
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND),
         1);
     EXPECT_EQ(grant1->GetStatus(), PermissionStatus::ASK);

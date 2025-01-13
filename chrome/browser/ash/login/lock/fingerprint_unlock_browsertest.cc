@@ -51,10 +51,10 @@ void AuthenticateAndCheckThroughHistogram(
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Auth.ScanResult"),
               ::testing::ElementsAre(
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                  base::Bucket(static_cast<base::HistogramBase::Sample32>(
                                    device::mojom::ScanResult::SUCCESS),
                                1),
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                  base::Bucket(static_cast<base::HistogramBase::Sample32>(
                                    device::mojom::ScanResult::TOO_FAST),
                                1)));
 }
@@ -418,10 +418,10 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintScanResult) {
   AuthenticateAndCheckThroughHistogram(histogram_tester, biod);
   EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Enroll.ScanResult"),
               ::testing::ElementsAre(
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                  base::Bucket(static_cast<base::HistogramBase::Sample32>(
                                    device::mojom::ScanResult::SUCCESS),
                                1),
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                  base::Bucket(static_cast<base::HistogramBase::Sample32>(
                                    device::mojom::ScanResult::TOO_SLOW),
                                1)));
 }

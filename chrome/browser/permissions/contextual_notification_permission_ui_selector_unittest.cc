@@ -666,7 +666,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
                                  Decision::UseNormalUi(),
                                  WarningReason::kAbusiveContent);
 
-    auto expected_bucket = static_cast<base::HistogramBase::Sample>(
+    auto expected_bucket = static_cast<base::HistogramBase::Sample32>(
         test.expected_histogram_bucket);
     histograms.ExpectBucketCount("Permissions.CrowdDeny.DidHoldbackQuietUi",
                                  expected_bucket, 1);

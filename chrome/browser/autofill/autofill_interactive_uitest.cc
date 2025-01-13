@@ -3113,7 +3113,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
   // Short hand for ExpectBucketCount:
   auto expect_count = [&](std::string_view name,
-                          base::HistogramBase::Sample sample,
+                          base::HistogramBase::Sample32 sample,
                           base::HistogramBase::Count expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);
   };

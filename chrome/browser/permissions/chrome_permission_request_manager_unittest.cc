@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <stddef.h>
 
 #include <optional>
@@ -174,12 +173,12 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
   WaitForBubbleToBeShown();
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
@@ -189,7 +188,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
   Accept();
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
@@ -197,7 +196,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
 
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAcceptedGesture,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::PERMISSION_GEOLOCATION),
       1);
   histograms.ExpectTotalCount(
@@ -216,7 +215,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture, 0);
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShownNoGesture,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::DOWNLOAD),
       1);
   histograms.ExpectTotalCount("Permissions.Engagement.Denied.MultipleDownload",
@@ -229,13 +228,13 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted, 0);
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptDenied,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::DOWNLOAD),
       1);
 
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptDeniedNoGesture,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::DOWNLOAD),
       1);
   histograms.ExpectTotalCount(
@@ -254,7 +253,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
 
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectTotalCount(
@@ -268,7 +267,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
 
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(
@@ -291,7 +290,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
 
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptDenied,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(

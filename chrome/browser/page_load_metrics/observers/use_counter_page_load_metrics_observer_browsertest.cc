@@ -97,17 +97,17 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   for (auto feature : features_0) {
     histogram_tester().ExpectBucketCount(
         "Blink.UseCounter.Features",
-        static_cast<base::Histogram::Sample>(feature), 1);
+        static_cast<base::Histogram::Sample32>(feature), 1);
     histogram_tester().ExpectBucketCount(
         "Blink.UseCounter.MainFrame.Features",
-        static_cast<base::Histogram::Sample>(feature), 1);
+        static_cast<base::Histogram::Sample32>(feature), 1);
   }
   for (auto feature : features_1) {
     histogram_tester().ExpectBucketCount(
         "Blink.UseCounter.Features",
-        static_cast<base::Histogram::Sample>(feature), 1);
+        static_cast<base::Histogram::Sample32>(feature), 1);
     histogram_tester().ExpectBucketCount(
         "Blink.UseCounter.MainFrame.Features",
-        static_cast<base::Histogram::Sample>(feature), 1);
+        static_cast<base::Histogram::Sample32>(feature), 1);
   }
 }

@@ -112,7 +112,7 @@ class HistogramWaiter {
   void Wait();
   void OnHistogramCallback(const char* metric_name,
                            uint64_t name_hash,
-                           base::HistogramBase::Sample sample);
+                           base::HistogramBase::Sample32 sample);
 
  private:
   std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>

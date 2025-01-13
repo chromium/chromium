@@ -220,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(2U, buckets.size());
-  base::HistogramBase::Sample shown;
-  base::HistogramBase::Sample could_not_show;
+  base::HistogramBase::Sample32 shown;
+  base::HistogramBase::Sample32 could_not_show;
   // Order of histogram recording is non-deterministic. So use EVENT_SHOWN bit
   // to differentiate between the two histograms.
   if (buckets[0].min & toInt(Event2::kShown)) {

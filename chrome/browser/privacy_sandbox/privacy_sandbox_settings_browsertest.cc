@@ -951,7 +951,7 @@ class
         histogram_name,
         base::BindLambdaForTesting([&](const char* histogram_name,
                                        uint64_t name_hash,
-                                       base::HistogramBase::Sample sample) {
+                                       base::HistogramBase::Sample32 sample) {
           if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {
             run_loop.Quit();
           }

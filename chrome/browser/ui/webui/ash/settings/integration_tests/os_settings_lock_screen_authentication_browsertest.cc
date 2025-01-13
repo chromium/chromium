@@ -19,7 +19,7 @@ using PasswordType = ash::AshAuthFactor;
 // Name and value of the metric that records authentication on the lock screen
 // page.
 const char kPinUnlockUmaHistogramName[] = "Settings.PinUnlockSetup";
-const base::HistogramBase::Sample kEnterPasswordCorrectly = 1;
+const base::HistogramBase::Sample32 kEnterPasswordCorrectly = 1;
 
 }  // namespace
 

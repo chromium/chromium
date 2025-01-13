@@ -56,9 +56,9 @@ const char kTooLongPinForAutosubmit[] = "3213213213213";
 // Name and value of the metric that records authentication on the lock screen
 // page.
 const char kPinUnlockUmaHistogramName[] = "Settings.PinUnlockSetup";
-const base::HistogramBase::Sample kChoosePinOrPassword = 2;
-const base::HistogramBase::Sample kEnterPin = 3;
-const base::HistogramBase::Sample kConfirmPin = 4;
+const base::HistogramBase::Sample32 kChoosePinOrPassword = 2;
+const base::HistogramBase::Sample32 kEnterPin = 3;
+const base::HistogramBase::Sample32 kConfirmPin = 4;
 
 }  // namespace
 
