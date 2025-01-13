@@ -49,15 +49,28 @@ import java.util.Map;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
-    // TODO(crbug.com/379930582): Replace this enum with an `@IntDef`.
-    private enum PrivacySandboxSurveyType {
-        UNKNOWN,
-        CCT_EEA_ACCEPTED,
-        CCT_EEA_DECLINED,
-        CCT_EEA_CONTROL,
-        CCT_ROW_ACKNOWLEDGED,
-        CCT_ROW_CONTROL,
-        SENTIMENT_SURVEY,
+    /** List of all the survey types that this controller manages. */
+    @IntDef({
+        PrivacySandboxSurveyType.UNKNOWN,
+        PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
+        PrivacySandboxSurveyType.CCT_EEA_DECLINED,
+        PrivacySandboxSurveyType.CCT_EEA_CONTROL,
+        PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
+        PrivacySandboxSurveyType.CCT_ROW_CONTROL,
+        PrivacySandboxSurveyType.SENTIMENT_SURVEY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PrivacySandboxSurveyType {
+        // Default survey type if we don't surey type not explicitly defined.
+        int UNKNOWN = 0;
+        // Represents the surveys for the Ads CCT notice.
+        int CCT_EEA_ACCEPTED = 1;
+        int CCT_EEA_DECLINED = 2;
+        int CCT_EEA_CONTROL = 3;
+        int CCT_ROW_ACKNOWLEDGED = 4;
+        int CCT_ROW_CONTROL = 5;
+        // Represents the always on sentiment survey.
+        int SENTIMENT_SURVEY = 6;
     }
 
     // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
@@ -96,8 +109,9 @@ public class PrivacySandboxSurveyController {
 
     // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxCctAdsNoticeSurveyFailures)
 
-    private static final Map<PrivacySandboxSurveyType, String> sSurveyTriggers =
-            ImmutableMap.<PrivacySandboxSurveyType, String>builder()
+    // Maps {@link PrivacySandboxSurveyType} to their survey triggerid.
+    private static final Map<Integer, String> sSurveyTriggers =
+            ImmutableMap.<Integer, String>builder()
                     .put(
                             PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
                             "privacy-sandbox-cct-ads-notice-eea-accepted")
@@ -217,7 +231,7 @@ public class PrivacySandboxSurveyController {
     // Determines the appropriate survey to launch based on the user interaction with either the EEA
     // consent or the ROW notice and launches the survey.
     private void maybeLaunchAdsCctTreatmentSurvey() {
-        PrivacySandboxSurveyType surveyType = PrivacySandboxSurveyType.UNKNOWN;
+        @PrivacySandboxSurveyType int surveyType = PrivacySandboxSurveyType.UNKNOWN;
         PrefService prefs = UserPrefs.get(mProfile);
         // Check if the EEA consent was shown.
         if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE)) {
@@ -269,7 +283,7 @@ public class PrivacySandboxSurveyController {
         }
     }
 
-    private SurveyClient constructSurveyClient(PrivacySandboxSurveyType survey) {
+    private SurveyClient constructSurveyClient(@PrivacySandboxSurveyType int survey) {
         SurveyConfig surveyConfig = SurveyConfig.get(mProfile, sSurveyTriggers.get(survey));
         if (surveyConfig == null) {
             emitInvalidSurveyConfigHistogram(survey);
@@ -298,7 +312,7 @@ public class PrivacySandboxSurveyController {
                 mActivity.getResources(), mMessage);
     }
 
-    private void showSurvey(PrivacySandboxSurveyType surveyType) {
+    private void showSurvey(@PrivacySandboxSurveyType int surveyType) {
         SurveyClient surveyClient = constructSurveyClient(surveyType);
         if (surveyClient == null) {
             return;
@@ -328,14 +342,14 @@ public class PrivacySandboxSurveyController {
                 };
     }
 
-    private Map<String, Boolean> populateSurveyPsb(PrivacySandboxSurveyType surveyType) {
+    private Map<String, Boolean> populateSurveyPsb(@PrivacySandboxSurveyType int surveyType) {
         if (surveyType == PrivacySandboxSurveyType.SENTIMENT_SURVEY) {
             return getSentimentSurveyPsb();
         }
         return Collections.emptyMap();
     }
 
-    private Map<String, String> populateSurveyPsd(PrivacySandboxSurveyType surveyType) {
+    private Map<String, String> populateSurveyPsd(@PrivacySandboxSurveyType int surveyType) {
         if (surveyType == PrivacySandboxSurveyType.SENTIMENT_SURVEY) {
             return getSentimentSurveyPsd();
         }
@@ -417,29 +431,29 @@ public class PrivacySandboxSurveyController {
                 CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG + 1);
     }
 
-    private static void emitInvalidSurveyConfigHistogram(PrivacySandboxSurveyType surveyType) {
+    private static void emitInvalidSurveyConfigHistogram(@PrivacySandboxSurveyType int surveyType) {
         switch (surveyType) {
-            case SENTIMENT_SURVEY:
+            case PrivacySandboxSurveyType.SENTIMENT_SURVEY:
                 recordSentimentSurveyStatus(
                         PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
                 return;
-            case CCT_EEA_ACCEPTED:
+            case PrivacySandboxSurveyType.CCT_EEA_ACCEPTED:
                 recordCctAdsNoticeSurveyFailures(
                         CctAdsNoticeSurveyFailures.INVALID_EEA_ACCEPTED_SURVEY_CONFIG);
                 return;
-            case CCT_EEA_DECLINED:
+            case PrivacySandboxSurveyType.CCT_EEA_DECLINED:
                 recordCctAdsNoticeSurveyFailures(
                         CctAdsNoticeSurveyFailures.INVALID_EEA_DECLINED_SURVEY_CONFIG);
                 return;
-            case CCT_EEA_CONTROL:
+            case PrivacySandboxSurveyType.CCT_EEA_CONTROL:
                 recordCctAdsNoticeSurveyFailures(
                         CctAdsNoticeSurveyFailures.INVALID_EEA_CONTROL_SURVEY_CONFIG);
                 return;
-            case CCT_ROW_ACKNOWLEDGED:
+            case PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED:
                 recordCctAdsNoticeSurveyFailures(
                         CctAdsNoticeSurveyFailures.INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG);
                 return;
-            case CCT_ROW_CONTROL:
+            case PrivacySandboxSurveyType.CCT_ROW_CONTROL:
                 recordCctAdsNoticeSurveyFailures(
                         CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG);
                 return;
