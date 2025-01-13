@@ -23,12 +23,12 @@ cr-view-manager > [slot='view'] {
 }
 
 .tangible-sync-style-left-banner {
-  content: url(images/left_banner.svg);
+  content: url(left_banner.svg);
   left: 0;
 }
 
 .tangible-sync-style-right-banner {
-  content: url(images/right_banner.svg);
+  content: url(right_banner.svg);
   right: 0;
 }
 
@@ -41,19 +41,11 @@ cr-view-manager > [slot='view'] {
 }
 
 @media (prefers-color-scheme: dark) {
-  .left-banner {
-    content: url(images/dark_mode_left_banner_image.svg);
-  }
-
-  .right-banner {
-    content: url(images/dark_mode_right_banner_image.svg);
-  }
-
   .tangible-sync-style-left-banner {
-    content: url(images/left_banner_dark.svg);
+    content: url(left_banner_dark.svg);
   }
 
   .tangible-sync-style-right-banner {
-    content: url(images/right_banner_dark.svg);
+    content: url(right_banner_dark.svg);
   }
 }

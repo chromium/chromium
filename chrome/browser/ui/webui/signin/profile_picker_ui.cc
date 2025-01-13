@@ -13,7 +13,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -41,6 +40,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -94,12 +94,7 @@ int GetMainViewTitleId() {
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
-  int profile_type_choice_subtitle =
-      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
-          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO
-          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE;
-
-  static webui::LocalizedString kLocalizedStrings[] = {
+  constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"mainViewSubtitle", IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE},
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
@@ -128,7 +123,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
       {"profileTypeChoiceTitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
-      {"profileTypeChoiceSubtitle", profile_type_choice_subtitle},
       {"notNowButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
       {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
@@ -140,21 +134,33 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"removeWarningSignedInProfile",
        IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
       {"ok", IDS_OK},
+      {"signInButtonLabel",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddLocalizedString("mainViewTitle", GetMainViewTitleId());
 
   html_source->AddLocalizedString(
-      "signInButtonLabel",
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL);
+      "profileTypeChoiceSubtitle",
+      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
+          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO
+          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE);
 
-  ProfilePicker::AvailabilityOnStartup availability_on_startup =
+  html_source->AddString("minimumPickerSize",
+                         base::StringPrintf("%ipx", kMinimumPickerSizePx));
+
+  html_source->AddString("managedDeviceDisclaimer",
+                         GetManagedDeviceDisclaimer());
+}
+
+void AddPolicies(content::WebUIDataSource* html_source) {
+  bool ask_on_startup_allowed =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
-              prefs::kBrowserProfilePickerAvailabilityOnStartup));
-  bool ask_on_startup_allowed =
-      availability_on_startup == ProfilePicker::AvailabilityOnStartup::kEnabled;
+              prefs::kBrowserProfilePickerAvailabilityOnStartup)) ==
+      ProfilePicker::AvailabilityOnStartup::kEnabled;
+  html_source->AddBoolean("isAskOnStartupAllowed", ask_on_startup_allowed);
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
@@ -167,31 +173,22 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           true);
 #endif
 
-  html_source->AddString("minimumPickerSize",
-                         base::StringPrintf("%ipx", kMinimumPickerSizePx));
-
-  html_source->AddString("managedDeviceDisclaimer",
-                         GetManagedDeviceDisclaimer());
-
-  // Add policies.
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());
   html_source->AddBoolean("isForceSigninEnabled",
                           signin_util::IsForceSigninEnabled());
   html_source->AddBoolean("isGuestModeEnabled", profiles::IsGuestModeEnabled());
   html_source->AddBoolean("isProfileCreationAllowed",
                           profiles::IsProfileCreationAllowed());
-  html_source->AddBoolean("profileShortcutsEnabled",
-                          ProfileShortcutManager::IsFeatureEnabled());
-  html_source->AddBoolean("isAskOnStartupAllowed", ask_on_startup_allowed);
+}
 
-  html_source->AddResourcePath("images/left_banner.svg",
-                               IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
-  html_source->AddResourcePath("images/left_banner_dark.svg",
-                               IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
-  html_source->AddResourcePath("images/right_banner.svg",
-                               IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
-  html_source->AddResourcePath("images/right_banner_dark.svg",
-                               IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+void AddResourcePaths(content::WebUIDataSource* html_source) {
+  constexpr webui::ResourcePath kResourcePaths[] = {
+      {"left_banner.svg", IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG},
+      {"left_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG},
+      {"right_banner.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG},
+      {"right_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG},
+  };
+  html_source->AddResourcePaths(kResourcePaths);
 }
 
 }  // namespace
@@ -221,7 +218,11 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   // ends up being the URL) when we try to get it on startup for a11y purposes.
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
 
+  // Add all resources.
   AddStrings(html_source);
+  AddPolicies(html_source);
+  AddResourcePaths(html_source);
+
   webui::SetupWebUIDataSource(html_source, kProfilePickerResources,
                               IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
 }
