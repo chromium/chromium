@@ -504,10 +504,9 @@ class PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam
 };
 
 // This is a regression test for crbug.com/1335418
-// Flaky on multiple platforms. See crbug.com/384840280
 IN_PROC_BROWSER_TEST_P(
     PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam,
-    DISABLED_SaveUiDismissalReason) {
+    SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
   SetupPendingPassword();

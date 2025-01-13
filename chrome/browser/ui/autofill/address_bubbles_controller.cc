@@ -262,10 +262,7 @@ void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
 
   // Verify if user is eligible for iOS promo, and attempt showing if they are.
-  ios_promos_utils::VerifyIOSPromoEligibility(
-      IOSPromoType::kAddress, browser->profile(),
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider());
+  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress, browser);
 }
 
 void AddressBubblesController::MaybeShowSignInPromo(

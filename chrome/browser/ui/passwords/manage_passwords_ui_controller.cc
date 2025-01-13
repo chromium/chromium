@@ -1115,6 +1115,8 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
 }
 
 void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
+// TODO(crbug.com/339262105): Extract out of Chrome branding when the legacy
+// promo is cleaned up.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
@@ -1123,10 +1125,8 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
 
   if (base::FeatureList::IsEnabled(
           features::kIOSPromoRefreshedPasswordBubble)) {
-    ios_promos_utils::VerifyIOSPromoEligibility(
-        IOSPromoType::kPassword, browser->profile(),
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->toolbar_button_provider());
+    ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
+                                                browser);
   } else {
     // TODO(crbug.com/339262105): Clean up the old password promo methods after
     // the generic promo launch.
