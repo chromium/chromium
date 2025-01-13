@@ -2188,6 +2188,71 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   .ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayControllerBrowserTest,
+    SidePanel_UnsupportedSearchLinkClick_ShouldOpenSearchURLInNewTab) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Loading a url in the side panel should show the results page. This needs to
+  // be done to set up the WebContentsObserver.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+  int tabs = browser()->tab_strip_model()->count();
+
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetSidePanelTracking();
+
+  // The results frame should be the only child frame of the side panel web
+  // contents.
+  content::RenderFrameHost* results_frame = content::ChildFrameAt(
+      controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+      0);
+  EXPECT_TRUE(results_frame);
+
+  // Simulate a same-origin navigation that should open in a new tab on the
+  // results frame.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  const GURL nav_url("https://www.google.com/search?q=apples&udm=28");
+  EXPECT_TRUE(content::ExecJs(
+      results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Verify the new tab has the URL.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
+  // It should open a new tab as this is a an unsupported search URL for the
+  // side panel.
+  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
+
+  // Verify the loading state was not set.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SidePanel_SameTabCrossOriginLinkClick) {
   WaitForPaint();

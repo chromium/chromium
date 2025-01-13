@@ -783,4 +783,18 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTranslateLanguagesURL) {
   EXPECT_EQ(client_param_value, "lens-overlay");
 }
 
+TEST_F(LensOverlayUrlBuilderTest, ShouldOpenSearchURLInNewTab) {
+  const GURL base_results_url = GURL(kResultsSearchBaseUrl);
+  const GURL results_url_shopping_mode =
+      GURL(std::string(kResultsSearchBaseUrl) + "?udm=28");
+  const GURL results_url_unimodal =
+      GURL(std::string(kResultsSearchBaseUrl) + "?udm=26");
+  const GURL results_url_multimodal =
+      GURL(std::string(kResultsSearchBaseUrl) + "?udm=24");
+  EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(base_results_url));
+  EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_unimodal));
+  EXPECT_FALSE(lens::ShouldOpenSearchURLInNewTab(results_url_multimodal));
+  EXPECT_TRUE(lens::ShouldOpenSearchURLInNewTab(results_url_shopping_mode));
+}
+
 }  // namespace lens
