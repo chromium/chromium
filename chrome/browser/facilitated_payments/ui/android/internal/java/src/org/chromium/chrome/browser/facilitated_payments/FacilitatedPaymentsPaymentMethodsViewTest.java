@@ -368,13 +368,13 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    public void testDescriptionLine() {
+    public void testPixDescriptionLine() {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
-                            .add(mMediator.buildAdditionalInfo());
+                            .add(mMediator.buildPixAdditionalInfo());
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -384,6 +384,28 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 descriptionLine1.getText(),
                 hasToString(
                         containsString("To turn off Pix in Chrome, go to your payment settings")));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletDescriptionLine() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(mMediator.buildEwalletAdditionalInfo(List.of(EWALLET_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line);
+        assertThat(
+                descriptionLine1.getText(),
+                hasToString(
+                        containsString(
+                                "Your saved auto-pay method may be used for this payment. To turn"
+                                        + " off eWallets in Chrome, go to your payment settings")));
     }
 
     @Test

@@ -102,7 +102,7 @@ void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
 
 void LogPixFopSelected() {
   // The histogram name should be in sync with
-  // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
+  // `FacilitatedPaymentsPaymentMethodsMediator.PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
   base::UmaHistogramEnumeration(
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       FopSelectorAction::kFopSelected);
@@ -110,7 +110,7 @@ void LogPixFopSelected() {
 
 void LogEwalletFopSelected(AvailableEwalletsConfiguration type) {
   // The histogram name should be in sync with
-  // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
+  // `FacilitatedPaymentsPaymentMethodsMediator.EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM`.
   base::UmaHistogramEnumeration(
       base::StrCat({"FacilitatedPayments.Ewallet.FopSelector.UserAction.",
                     AvailableEwalletsConfigurationToString(type)}),

@@ -64,6 +64,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
@@ -74,6 +75,7 @@ import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.facilitated_payments.core.ui_utils.FopSelectorAction;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
@@ -254,14 +256,14 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mCoordinator.showSheetForEwallet(List.of(EWALLET_1, EWALLET_2));
 
         // Verify the screen contents set in the model when 2 eWallets exist.
-        // TODO(crbug.com/40280186): Modify the assertions when other items of eWallet FOP selector
-        // are implemented.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(3));
+        assertThat(itemList.size(), is(5));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, EWALLET);
         assertEquals(itemList.get(2).type, EWALLET);
+        assertEquals(itemList.get(3).type, ADDITIONAL_INFO);
+        assertEquals(itemList.get(4).type, FOOTER);
     }
 
     @Test
@@ -284,14 +286,14 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
 
         // Verify the screen contents set in the model when only 1 eWallet account exists.
-        // TODO(crbug.com/40280186): Modify the assertions when other items of eWallet FOP selector
-        // are implemented.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(3));
+        assertThat(itemList.size(), is(5));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, EWALLET);
-        assertEquals(itemList.get(2).type, CONTINUE_BUTTON);
+        assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
+        assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
+        assertEquals(itemList.get(4).type, FOOTER);
     }
 
     @Test
@@ -423,10 +425,18 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testShowFinancialAccountsManagementSettings() {
+    public void testPixShowFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
-        // The additional info is the last item of the screen items list right now.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                        .PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the second to last item of the screen items list right now.
         int lastItemPos =
                 mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)
@@ -441,6 +451,103 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
                 .run();
 
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
+    }
+
+    @Test
+    public void testSingleFidoUnenrolledEwalletShowFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_3));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "SingleUnboundEwallet",
+                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the third to last item of the screen items list right now.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 3;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
+    }
+
+    @Test
+    public void testSingleFidoEnrolledEwalletShowFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_2));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "SingleBoundEwallet",
+                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the third to last item of the screen items list right now.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 3;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
+    }
+
+    @Test
+    public void testMultipleEwalletsShowFinancialAccountsManagementSettings() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_3, EWALLET_4));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "MultipleEwallets",
+                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
+                        .build();
+
+        // The additional info is the second to last item of the screen items list right now.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 2;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
         verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
     }
 
@@ -505,8 +612,16 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testShowManagePaymentMethodsSettingsOnFooter() {
+    public void testPixShowManagePaymentMethodsSettingsOnFooter() {
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                        .PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                                FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
 
         int lastItemPos =
                 mFacilitatedPaymentsPaymentMethodsModel
@@ -514,7 +629,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                 .get(SCREEN_ITEMS)
                                 .size()
                         - 1;
-
         mFacilitatedPaymentsPaymentMethodsModel
                 .get(SCREEN_VIEW_MODEL)
                 .get(SCREEN_ITEMS)
@@ -523,6 +637,100 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
                 .run();
 
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+    }
+
+    @Test
+    public void testSingleFidoUnenrolledEwalletShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_4));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "SingleUnboundEwallet",
+                                FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+    }
+
+    @Test
+    public void testSingleFidoEnrolledEwalletShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_1));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "SingleBoundEwallet",
+                                FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
+        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
+    }
+
+    @Test
+    public void testMultipleEwalletsShowManagePaymentMethodsSettingsOnFooter() {
+        mCoordinator.showSheetForEwallet(List.of(EWALLET_3, EWALLET_2));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
+                                        + "MultipleEwallets",
+                                FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED)
+                        .build();
+
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        histogramWatcher.assertExpected();
         verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
     }
 

@@ -76,10 +76,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
 
     // This histogram name should be in sync with the one in
-    // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogFopSelected.
+    // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogPixFopSelected.
     @VisibleForTesting
-    static final String FOP_SELECTOR_USER_ACTION_HISTOGRAM =
+    static final String PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM =
             "FacilitatedPayments.Pix.FopSelector.UserAction";
+
+    // This histogram name should be in sync with the one in
+    // components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:LogEwalletFopSelected.
+    @VisibleForTesting
+    static final String EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM =
+            "FacilitatedPayments.Ewallet.FopSelector.UserAction.";
 
     private Context mContext;
     private PropertyModel mModel;
@@ -115,18 +121,17 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             screenItems.add(new ListItem(BANK_ACCOUNT, model));
         }
 
-        screenItems.add(buildAdditionalInfo());
+        screenItems.add(buildPixAdditionalInfo());
 
         maybeShowContinueButton(screenItems, BANK_ACCOUNT);
 
         screenItems.add(0, buildPixHeader(mContext));
-        screenItems.add(buildFooter());
+        screenItems.add(buildPixFooter());
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
     }
 
-    // TODO(crbug.com/40280186): Implement the content of eWallet FOP selector.
     void showSheetForEwallet(List<Ewallet> ewallets) {
         mInputProtector.markShowTime();
         if (ewallets == null || ewallets.isEmpty()) {
@@ -143,9 +148,12 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             screenItems.add(new ListItem(EWALLET, model));
         }
 
+        screenItems.add(buildEwalletAdditionalInfo(ewallets));
+
         maybeShowContinueButton(screenItems, EWALLET);
 
         screenItems.add(0, buildEwalletHeader(mContext, ewallets));
+        screenItems.add(buildEwalletFooter(ewallets));
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
@@ -260,18 +268,32 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER, headerBuilder.build());
     }
 
-    private ListItem buildFooter() {
+    private ListItem buildPixFooter() {
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> this.onManagePaymentMethodsOptionSelected())
+                                () ->
+                                        this.onManagePaymentMethodsOptionSelected(
+                                                PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM))
+                        .build());
+    }
+
+    private ListItem buildEwalletFooter(List<Ewallet> ewallets) {
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(
+                                FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
+                                () ->
+                                        this.onManagePaymentMethodsOptionSelected(
+                                                getEwalletFopSelectorUserActionHistogram(ewallets)))
                         .build());
     }
 
     @VisibleForTesting
-    ListItem buildAdditionalInfo() {
+    ListItem buildPixAdditionalInfo() {
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
                 new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
@@ -280,7 +302,26 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 R.string.pix_payment_additional_info)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> this.onTurnOffPaymentPromptLinkClicked())
+                                () ->
+                                        this.onTurnOffPaymentPromptLinkClicked(
+                                                PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM))
+                        .build());
+    }
+
+    @VisibleForTesting
+    ListItem buildEwalletAdditionalInfo(List<Ewallet> ewallets) {
+
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
+                new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
+                        .with(
+                                AdditionalInfoProperties.DESCRIPTION_ID,
+                                R.string.ewallet_payment_additional_info)
+                        .with(
+                                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
+                                () ->
+                                        this.onTurnOffPaymentPromptLinkClicked(
+                                                getEwalletFopSelectorUserActionHistogram(ewallets)))
                         .build());
     }
 
@@ -348,22 +389,32 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate.onEwalletSelected(ewallet.getInstrumentId());
     }
 
-    private void onManagePaymentMethodsOptionSelected() {
+    private void onManagePaymentMethodsOptionSelected(String histogramName) {
         mDelegate.showManagePaymentMethodsSettings(mContext);
 
         RecordHistogram.recordEnumeratedHistogram(
-                FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                histogramName,
                 FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
                 FopSelectorAction.MAX_VALUE + 1);
     }
 
-    private void onTurnOffPaymentPromptLinkClicked() {
+    private void onTurnOffPaymentPromptLinkClicked(String histogramName) {
         mDelegate.showFinancialAccountsManagementSettings(mContext);
 
         RecordHistogram.recordEnumeratedHistogram(
-                FOP_SELECTOR_USER_ACTION_HISTOGRAM,
+                histogramName,
                 FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
                 FopSelectorAction.MAX_VALUE + 1);
+    }
+
+    private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {
+        if (ewallets.size() == 1) {
+            if (ewallets.get(0).getIsFidoEnrolled()) {
+                return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "SingleBoundEwallet";
+            }
+            return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "SingleUnboundEwallet";
+        }
+        return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "MultipleEwallets";
     }
 
     @VisibleForTesting
