@@ -1189,7 +1189,7 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
   if (request &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
-    return std::make_unique<ShareThisTabDialogViews>();
+    return std::make_unique<ShareThisTabMediaPicker>();
   } else {
     return std::make_unique<DesktopMediaPickerViews>();
   }

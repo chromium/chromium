@@ -17,22 +17,22 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class ShareThisTabDialogViews;
+class ShareThisTabMediaPicker;
 
-// Dialog view used for ShareThisTabDialogViews.
+// Dialog view used for ShareThisTabMediaPicker.
 class ShareThisTabDialogView : public views::DialogDelegateView {
   METADATA_HEADER(ShareThisTabDialogView, views::DialogDelegateView)
 
  public:
   ShareThisTabDialogView(const DesktopMediaPicker::Params& params,
-                         ShareThisTabDialogViews* parent);
+                         ShareThisTabMediaPicker* parent);
   ShareThisTabDialogView(const ShareThisTabDialogView&) = delete;
   ShareThisTabDialogView& operator=(const ShareThisTabDialogView&) = delete;
   ~ShareThisTabDialogView() override;
 
   void RecordUmaDismissal() const;
 
-  // Called by parent (ShareThisTabDialogViews) when it's destroyed.
+  // Called by parent (ShareThisTabMediaPicker) when it's destroyed.
   void DetachParent();
 
   // views::DialogDelegateView:
@@ -55,7 +55,7 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   const base::WeakPtr<content::WebContents> web_contents_;
   const std::u16string app_name_;
 
-  raw_ptr<ShareThisTabDialogViews> parent_;
+  raw_ptr<ShareThisTabMediaPicker> parent_;
 
   // Child view displaying a preview, icon and title for the tab being shared,
   // or a throbber while the dialog is not yet activated.
@@ -79,12 +79,12 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 };
 
 // Implementation of DesktopMediaPicker for the ShareThisTabDialogView.
-class ShareThisTabDialogViews : public DesktopMediaPicker {
+class ShareThisTabMediaPicker : public DesktopMediaPicker {
  public:
-  ShareThisTabDialogViews();
-  ShareThisTabDialogViews(const ShareThisTabDialogViews&) = delete;
-  ShareThisTabDialogViews& operator=(const ShareThisTabDialogViews&) = delete;
-  ~ShareThisTabDialogViews() override;
+  ShareThisTabMediaPicker();
+  ShareThisTabMediaPicker(const ShareThisTabMediaPicker&) = delete;
+  ShareThisTabMediaPicker& operator=(const ShareThisTabMediaPicker&) = delete;
+  ~ShareThisTabMediaPicker() override;
 
   void NotifyDialogResult(const content::DesktopMediaID& source);
 
@@ -97,7 +97,7 @@ class ShareThisTabDialogViews : public DesktopMediaPicker {
   DoneCallback callback_;
 
   // The |dialog_| is owned by the corresponding views::Widget instance.
-  // When ShareThisTabDialogViews is destroyed the |dialog_| is destroyed
+  // When ShareThisTabMediaPicker is destroyed the |dialog_| is destroyed
   // asynchronously by closing the widget.
   raw_ptr<ShareThisTabDialogView> dialog_;
 };
