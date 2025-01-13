@@ -265,7 +265,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             }
 
             if (network != null) {
-                final NetworkCapabilities capabilities = getNetworkCapabilities(network);
+                final NetworkCapabilitiesWrapper capabilities = getNetworkCapabilities(network);
                 boolean isMetered =
                         (capabilities != null
                                 && !capabilities.hasCapability(
@@ -401,17 +401,18 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         }
 
         /**
-         * Return the NetworkCapabilities for {@code network}, or {@code null} if they cannot
-         * be retrieved (e.g. {@code network} has disconnected).
+         * Return the NetworkCapabilities for {@code network}, or {@code null} if they cannot be
+         * retrieved (e.g. {@code network} has disconnected).
          */
         @VisibleForTesting
-        protected @Nullable NetworkCapabilities getNetworkCapabilities(Network network) {
+        protected @Nullable NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
             final int retryCount = 2;
             for (int i = 0; i < retryCount; ++i) {
                 // This try-catch is a workaround for https://crbug.com/1218536. We ignore
                 // the exception intentionally.
                 try {
-                    return mConnectivityManager.getNetworkCapabilities(network);
+                    return new NetworkCapabilitiesWrapper(
+                            mConnectivityManager.getNetworkCapabilities(network));
                 } catch (SecurityException e) {
                     // Do nothing.
                 }
@@ -643,7 +644,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     @RequiresApi(Build.VERSION_CODES.P)
     private class AndroidRDefaultNetworkCallback extends NetworkCallback {
         @Nullable LinkProperties mLinkProperties;
-        @Nullable NetworkCapabilities mNetworkCapabilities;
+        @Nullable NetworkCapabilitiesWrapper mNetworkCapabilities;
 
         @Override
         public void onAvailable(Network network) {
@@ -679,7 +680,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onCapabilitiesChanged(
                 Network network, NetworkCapabilities networkCapabilities) {
-            mNetworkCapabilities = networkCapabilities;
+            mNetworkCapabilities = new NetworkCapabilitiesWrapper(networkCapabilities);
             if (mRegistered && mLinkProperties != null && mNetworkCapabilities != null) {
                 connectionTypeChangedTo(getNetworkState(network));
             }
@@ -753,7 +754,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 mVpnInPlace = null;
                 // If the filtered list of networks contains just a VPN, then that VPN is in place.
                 if (networks.length == 1) {
-                    final NetworkCapabilities capabilities =
+                    final NetworkCapabilitiesWrapper capabilities =
                             mConnectivityManagerDelegate.getNetworkCapabilities(networks[0]);
                     if (capabilities != null && capabilities.hasTransport(TRANSPORT_VPN)) {
                         mVpnInPlace = networks[0];
@@ -775,13 +776,13 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
          * Should changes to connected network {@code network} be ignored?
          *
          * @param network Network to possibly consider ignoring changes to.
-         * @param capabilities {@code NetworkCapabilities} for {@code network} if known, otherwise
-         *     {@code null}.
+         * @param capabilities {@code NetworkCapabilitiesWrapper} for {@code network} if known,
+         *     otherwise {@code null}.
          * @return {@code true} when either: {@code network} is an inaccessible VPN, or has already
          *     disconnected.
          */
         private boolean ignoreConnectedInaccessibleVpn(
-                Network network, @Nullable NetworkCapabilities capabilities) {
+                Network network, @Nullable NetworkCapabilitiesWrapper capabilities) {
             // Ignore inaccessible VPNs as they don't apply to Chrome.
             return capabilities == null
                     || (capabilities.hasTransport(TRANSPORT_VPN)
@@ -790,12 +791,13 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
         /**
          * Should changes to connected network {@code network} be ignored?
+         *
          * @param network Network to possible consider ignoring changes to.
-         * @param capabilities {@code NetworkCapabilities} for {@code network} if known, otherwise
-         *         {@code null}.
+         * @param capabilities {@code NetworkCapabilitiesWrapper} for {@code network} if known,
+         *     otherwise {@code null}.
          */
         private boolean ignoreConnectedNetwork(
-                Network network, @Nullable NetworkCapabilities capabilities) {
+                Network network, @Nullable NetworkCapabilitiesWrapper capabilities) {
             return ignoreNetworkDueToVpn(network)
                     || ignoreConnectedInaccessibleVpn(network, capabilities);
         }
@@ -803,7 +805,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onAvailable(Network network) {
             try (TraceEvent e = TraceEvent.scoped("NetworkChangeNotifierCallback::onAvailable")) {
-                NetworkCapabilities capabilities =
+                NetworkCapabilitiesWrapper capabilities =
                         mConnectivityManagerDelegate.getNetworkCapabilities(network);
                 if (ignoreConnectedNetwork(network, capabilities)) {
                     return;
@@ -842,7 +844,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                 Network network, NetworkCapabilities networkCapabilities) {
             try (TraceEvent e =
                     TraceEvent.scoped("NetworkChangeNotifierCallback::onCapabilitiesChanged")) {
-                if (ignoreConnectedNetwork(network, networkCapabilities)) {
+                if (ignoreConnectedNetwork(
+                        network, new NetworkCapabilitiesWrapper(networkCapabilities))) {
                     return;
                 }
                 // A capabilities change may indicate the ConnectionType has changed,
@@ -862,7 +865,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onLosing(Network network, int maxMsToLive) {
             try (TraceEvent e = TraceEvent.scoped("NetworkChangeNotifierCallback::onLosing")) {
-                final NetworkCapabilities capabilities =
+                final NetworkCapabilitiesWrapper capabilities =
                         mConnectivityManagerDelegate.getNetworkCapabilities(network);
                 if (ignoreConnectedNetwork(network, capabilities)) {
                     return;
@@ -1269,7 +1272,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             if (network.equals(ignoreNetwork)) {
                 continue;
             }
-            final NetworkCapabilities capabilities =
+            final NetworkCapabilitiesWrapper capabilities =
                     connectivityManagerDelegate.getNetworkCapabilities(network);
             if (capabilities == null || !capabilities.hasCapability(NET_CAPABILITY_INTERNET)) {
                 continue;

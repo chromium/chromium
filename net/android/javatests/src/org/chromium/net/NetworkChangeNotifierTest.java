@@ -104,20 +104,30 @@ public class NetworkChangeNotifierTest {
 
     private static class Helper {
 
-        static NetworkCapabilities getCapabilities(int transport) {
+        static NetworkCapabilitiesWrapper getCapabilities(int transport) {
             // Create a NetworkRequest with corresponding capabilities
             NetworkRequest request =
                     new NetworkRequest.Builder()
                             .addCapability(NET_CAPABILITY_INTERNET)
                             .addTransportType(transport)
                             .build();
-            // Extract the NetworkCapabilities from the NetworkRequest.
-            try {
-                return (NetworkCapabilities)
-                        request.getClass().getDeclaredField("networkCapabilities").get(request);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                return null;
+            // Pre S, we can extract the NetworkCapabilities using reflection.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                // Extract the NetworkCapabilities from the NetworkRequest.
+                try {
+                    return new NetworkCapabilitiesWrapper(
+                            (NetworkCapabilities)
+                                    request.getClass()
+                                            .getDeclaredField("networkCapabilities")
+                                            .get(request));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    return null;
+                }
             }
+            // On S+, there are APIs to get the underlying data from the NetworkCapabilities.
+            int[] capabilities = request.getCapabilities();
+            int[] transportTypes = request.getTransportTypes();
+            return new NetworkCapabilitiesWrapper(capabilities, transportTypes);
         }
 
         // Create Network object given a NetID. The implementation is based on the code in
@@ -172,7 +182,7 @@ public class NetworkChangeNotifierTest {
             // Is this VPN accessible to the current user?
             final boolean mVpnAccessible;
 
-            NetworkCapabilities getCapabilities() {
+            NetworkCapabilitiesWrapper getCapabilities() {
                 return Helper.getCapabilities(mTransport);
             }
 
@@ -215,7 +225,7 @@ public class NetworkChangeNotifierTest {
         }
 
         @Override
-        protected NetworkCapabilities getNetworkCapabilities(Network network) {
+        protected NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
             int netId = demungeNetId(NetworkChangeNotifierAutoDetect.networkToNetId(network));
             for (MockNetwork mockNetwork : mMockNetworks) {
                 if (netId == mockNetwork.mNetId) {
@@ -308,6 +318,7 @@ public class NetworkChangeNotifierTest {
 
         /**
          * Pretends a network connects.
+         *
          * @param netId Network identifier
          * @param transport Transport, one of android.net.NetworkCapabilities.TRANSPORT_*
          * @param vpnAccessible Is this VPN accessible to the current user?
@@ -908,7 +919,6 @@ public class NetworkChangeNotifierTest {
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testQueryableAPIsReturnExpectedValuesFromMockDelegate() {
         NetworkChangeNotifierAutoDetect.Observer observer =
                 new TestNetworkChangeNotifierAutoDetectObserver();
@@ -941,7 +951,7 @@ public class NetworkChangeNotifierTest {
                     }
 
                     @Override
-                    protected NetworkCapabilities getNetworkCapabilities(Network network) {
+                    protected NetworkCapabilitiesWrapper getNetworkCapabilities(Network network) {
                         return Helper.getCapabilities(TRANSPORT_WIFI);
                     }
 
@@ -973,7 +983,6 @@ public class NetworkChangeNotifierTest {
     @MediumTest
     @Feature({"Android-AppBase"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R, message = "crbug.com/385118415")
     public void testNetworkCallbacks() throws Exception {
         // Setup NetworkChangeNotifierAutoDetect
         final TestNetworkChangeNotifierAutoDetectObserver observer =
