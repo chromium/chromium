@@ -165,4 +165,7 @@ interface CertificateManagerPage {
 
   // Triggers a reload of the certificates for the given sources.
   TriggerReload(array<CertificateSource> sources);
+
+  // Trigger an update to refetch the Cert Metadata
+  TriggerMetadataUpdate();
 };

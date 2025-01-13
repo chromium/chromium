@@ -165,36 +165,6 @@ void ExportCertificatesAsync(
                               std::move(export_certs), file_name);
 }
 
-void DeleteCertificateResultAsync(
-    CertificateManagerPageHandler::DeleteCertificateCallback callback,
-    bool result) {
-  if (result) {
-    std::move(callback).Run(
-        certificate_manager_v2::mojom::ActionResult::NewSuccess(
-            certificate_manager_v2::mojom::SuccessResult::kSuccess));
-    return;
-  }
-  std::move(callback).Run(certificate_manager_v2::mojom::ActionResult::NewError(
-      "Error deleting certificate"));
-}
-
-void GotDeleteConfirmation(
-    const std::string& sha256hash_hex,
-    CertificateManagerPageHandler::DeleteCertificateCallback callback,
-    base::WeakPtr<Profile> profile,
-    bool confirmed) {
-  if (confirmed && profile) {
-    net::ServerCertificateDatabaseService* server_cert_service =
-        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-            profile.get());
-    server_cert_service->DeleteCertificate(
-        sha256hash_hex,
-        base::BindOnce(&DeleteCertificateResultAsync, std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(nullptr);
-}
-
 }  // namespace
 
 UserCertSource::UserCertSource(
@@ -272,8 +242,42 @@ void UserCertSource::DeleteCertificate(
               base::UTF8ToUTF16(display_name)),
           l10n_util::GetStringUTF8(
               IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_SERVER_CERT_DESCRIPTION),
-          base::BindOnce(&GotDeleteConfirmation, sha256hash_hex,
-                         std::move(callback), profile_->GetWeakPtr()));
+          base::BindOnce(&UserCertSource::GotDeleteConfirmation,
+                         weak_ptr_factory_.GetWeakPtr(), sha256hash_hex,
+                         std::move(callback)));
+}
+
+void UserCertSource::GotDeleteConfirmation(
+    const std::string& sha256hash_hex,
+    CertificateManagerPageHandler::DeleteCertificateCallback callback,
+    bool confirmed) {
+  if (confirmed) {
+    net::ServerCertificateDatabaseService* server_cert_service =
+        net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+            profile_.get());
+    server_cert_service->DeleteCertificate(
+        sha256hash_hex,
+        base::BindOnce(&UserCertSource::DeleteCertificateResultAsync,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(nullptr);
+}
+
+void UserCertSource::DeleteCertificateResultAsync(
+    CertificateManagerPageHandler::DeleteCertificateCallback callback,
+    bool result) {
+  if (result) {
+    // Trigger metadata refresh on local certs page to update count.
+    (*remote_client_)->TriggerMetadataUpdate();
+
+    std::move(callback).Run(
+        certificate_manager_v2::mojom::ActionResult::NewSuccess(
+            certificate_manager_v2::mojom::SuccessResult::kSuccess));
+    return;
+  }
+  std::move(callback).Run(certificate_manager_v2::mojom::ActionResult::NewError(
+      "Error deleting certificate"));
 }
 
 void UserCertSource::ImportCertificate(
@@ -327,6 +331,7 @@ void UserCertSource::FileSelected(const ui::SelectedFileInfo& file, int index) {
       base::BindOnce(&UserCertSource::FileRead,
                      weak_ptr_factory_.GetWeakPtr()));
 }
+
 void UserCertSource::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
   std::move(import_callback_).Run(nullptr);
@@ -379,6 +384,9 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
 
 void UserCertSource::ImportCertificateResult(bool success) {
   if (success) {
+    // Trigger metadata refresh on local certs page to update count.
+    (*remote_client_)->TriggerMetadataUpdate();
+
     std::move(import_callback_)
         .Run(certificate_manager_v2::mojom::ActionResult::NewSuccess(
             certificate_manager_v2::mojom::SuccessResult::kSuccess));

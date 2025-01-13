@@ -51,10 +51,14 @@ class FakeCertificateManagerPage
       const std::vector<certificate_manager_v2::mojom::CertificateSource>&
           sources) override {}
 
+  void TriggerMetadataUpdate() override { metadata_update_called_ = true; }
+  bool metadata_update_called() { return metadata_update_called_; }
+
   void SetConfirmationResult(bool result) { confirmation_result_ = result; }
 
  private:
   bool confirmation_result_;
+  bool metadata_update_called_ = false;
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPage>
       receiver_;
 };
@@ -153,11 +157,18 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificate) {
       select_file_dialog_opened_waiter.GetRepeatingCallback());
   base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       import_future;
+
+  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+      fake_page_remote;
+  std::unique_ptr<FakeCertificateManagerPage> fake_page =
+      std::make_unique<FakeCertificateManagerPage>(
+          fake_page_remote.BindNewPipeAndPassReceiver());
+
   UserCertSource source(
       "",
       chrome_browser_server_certificate_database::
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
-      profile(), nullptr);
+      profile(), &fake_page_remote);
   source.ImportCertificate(web_contents()->GetWeakPtr(),
                            import_future.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -179,6 +190,7 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificate) {
       certs[0].cert_metadata.trust().trust_type(),
       chrome_browser_server_certificate_database::
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED);
+  EXPECT_TRUE(fake_page->metadata_update_called());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -336,6 +348,7 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificate) {
                 base::HexEncode(net::X509Certificate::CalculateFingerprint256(
                                     test_cert_2->cert_buffer())
                                     .data)));
+  EXPECT_TRUE(fake_page->metadata_update_called());
 }
 
 TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateConfirmationRejected) {

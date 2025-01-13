@@ -57,6 +57,13 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
  private:
   void FileRead(std::optional<std::vector<uint8_t>> file_bytes);
   void ImportCertificateResult(bool success);
+  void GotDeleteConfirmation(
+      const std::string& sha256hash_hex,
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool confirmed);
+  void DeleteCertificateResultAsync(
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool result);
 
   std::string export_file_name_;
   chrome_browser_server_certificate_database::CertificateTrust::
