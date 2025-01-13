@@ -118,12 +118,6 @@ BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
              "WebViewSupervisedUserSiteBlock",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
-// is not same origin with the main frame.
-BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
-             "WebViewSuppressDifferentOriginSubframeJSDialogs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
 // around for testing purposes.

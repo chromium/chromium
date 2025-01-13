@@ -35,7 +35,6 @@ BASE_DECLARE_FEATURE(kWebViewRenderDocument);
 BASE_DECLARE_FEATURE(kWebViewRestrictSensitiveContent);
 BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteDetection);
 BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteBlock);
-BASE_DECLARE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);
