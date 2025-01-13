@@ -105,10 +105,11 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
 
-  void LoadData() {
+  void LoadData(blink::mojom::AIPageContentOptionsPtr request =
+                    DefaultAIPageContentOptions()) {
     base::RunLoop run_loop;
     GetAIPageContent(
-        web_contents(),
+        web_contents(), std::move(request),
         base::BindOnce(&PageContentProtoProviderBrowserTest::SetPageContent,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -160,6 +161,34 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentNoGeometry) {
+  LoadPage(https_server()->GetURL("/simple.html"),
+           /* with_page_content = */ false);
+
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->include_geometry = false;
+  LoadData(std::move(request));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentNoCriticalPath) {
+  LoadPage(https_server()->GetURL("/simple.html"),
+           /* with_page_content = */ false);
+
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->on_critical_path = false;
+  LoadData(std::move(request));
+
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_TRUE(page_content().root_node().content_attributes().has_geometry());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

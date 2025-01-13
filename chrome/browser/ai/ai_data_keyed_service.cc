@@ -87,7 +87,9 @@ void GetAIPageContentForModelPrototyping(
 
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
-  optimization_guide::GetAIPageContent(web_contents, std::move(callback));
+  optimization_guide::GetAIPageContent(
+      web_contents, optimization_guide::DefaultAIPageContentOptions(),
+      std::move(callback));
 }
 
 // Fills an AiData proto with information from GetInnerText. If no result,

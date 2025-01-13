@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace optimization_guide {
 
@@ -82,7 +81,16 @@ void OnGotAIPageContentForFrame(
 
 }  // namespace
 
+blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
+  auto request = blink::mojom::AIPageContentOptions::New();
+  request->include_geometry = true;
+  request->on_critical_path = true;
+
+  return request;
+}
+
 void GetAIPageContent(content::WebContents* web_contents,
+                      blink::mojom::AIPageContentOptionsPtr request,
                       OnAIPageContentDone done_callback) {
   DCHECK(web_contents);
   DCHECK(web_contents->GetPrimaryMainFrame());
@@ -108,11 +116,14 @@ void GetAIPageContent(content::WebContents* web_contents,
         rfh->GetRemoteInterfaces()->GetInterface(
             agent.BindNewPipeAndPassReceiver());
         auto* agent_ptr = agent.get();
-        agent_ptr->GetAIPageContent(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindOnce(&OnGotAIPageContentForFrame,
-                           rfh->GetGlobalFrameToken(), std::move(agent),
-                           page_content_map.get(), concurrent.CreateClosure()),
-            nullptr));
+        agent_ptr->GetAIPageContent(
+            request.Clone(),
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                base::BindOnce(&OnGotAIPageContentForFrame,
+                               rfh->GetGlobalFrameToken(), std::move(agent),
+                               page_content_map.get(),
+                               concurrent.CreateClosure()),
+                nullptr));
       });
 
   std::move(concurrent)

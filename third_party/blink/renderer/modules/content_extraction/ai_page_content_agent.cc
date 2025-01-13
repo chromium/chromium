@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -415,18 +416,54 @@ void AIPageContentAgent::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 
-void AIPageContentAgent::GetAIPageContent(GetAIPageContentCallback callback) {
-  std::move(callback).Run(GetAIPageContentSync());
+void AIPageContentAgent::GetAIPageContent(
+    mojom::blink::AIPageContentOptionsPtr request,
+    GetAIPageContentCallback callback) {
+  if (request->on_critical_path) {
+    GetAIPageContentSync(std::move(request), std::move(callback),
+                         base::TimeTicks());
+    return;
+  }
+
+  // Note: We could maintain a set of all pending requests to batch process them
+  // when the idle task runs. But it's better for this to be handled in the
+  // browser process.
+  //
+  // TODO(crbug.com/389117697): Consider running this after a frame is
+  // committed, in case that happens before the idle task runs.
+  ThreadScheduler::Current()->PostIdleTask(
+      FROM_HERE, WTF::BindOnce(&AIPageContentAgent::GetAIPageContentSync,
+                               WrapWeakPersistent(this), std::move(request),
+                               std::move(callback)));
 }
 
-mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
-    const {
+void AIPageContentAgent::GetAIPageContentSync(
+    mojom::blink::AIPageContentOptionsPtr request,
+    GetAIPageContentCallback callback,
+    base::TimeTicks deadline) const {
+  std::move(callback).Run(GetAIPageContentInternal(request->include_geometry));
+}
+
+mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
+    bool include_geometry) const {
   LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame || !frame->GetDocument() || !frame->GetDocument()->View()) {
     return nullptr;
   }
 
-  auto& document = *frame->GetDocument();
+  ContentBuilder builder(include_geometry);
+  return builder.Build(*frame);
+}
+
+AIPageContentAgent::ContentBuilder::ContentBuilder(bool include_geometry)
+    : include_geometry_(include_geometry) {}
+
+AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
+
+mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
+    LocalFrame& frame) {
+  auto& document = *frame.GetDocument();
+
   mojom::blink::AIPageContentPtr page_content =
       mojom::blink::AIPageContent::New();
   const auto start_time = base::TimeTicks::Now();
@@ -467,7 +504,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
   page_content->root_node = std::move(root_node);
 
   const auto latency = base::TimeTicks::Now() - start_time;
-  if (frame->IsOutermostMainFrame()) {
+  if (frame.IsOutermostMainFrame()) {
     UMA_HISTOGRAM_TIMES(
         "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
   } else {
@@ -479,7 +516,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
   return page_content;
 }
 
-bool AIPageContentAgent::WalkChildren(
+bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
     const ComputedStyle& document_style) const {
@@ -520,7 +557,7 @@ bool AIPageContentAgent::WalkChildren(
   return has_visible_content;
 }
 
-void AIPageContentAgent::ProcessIframe(
+void AIPageContentAgent::ContentBuilder::ProcessIframe(
     const LayoutIFrame& object,
     mojom::blink::AIPageContentNode& content_node) const {
   CHECK(IsVisible(object));
@@ -554,7 +591,8 @@ void AIPageContentAgent::ProcessIframe(
   }
 }
 
-mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
+mojom::blink::AIPageContentNodePtr
+AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
     const ComputedStyle& document_style) const {
   auto content_node = mojom::blink::AIPageContentNode::New();
@@ -632,13 +670,12 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
     attributes.common_ancestor_dom_node_id = *node_id;
   }
 
-  attributes.geometry = mojom::blink::AIPageContentGeometry::New();
-  AddNodeGeometry(object, *attributes.geometry);
+  AddNodeGeometry(object, attributes);
 
   return content_node;
 }
 
-std::optional<DOMNodeId> AIPageContentAgent::AddNodeId(
+std::optional<DOMNodeId> AIPageContentAgent::ContentBuilder::AddNodeId(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
   if (auto node_id = GetNodeId(object)) {
@@ -649,9 +686,16 @@ std::optional<DOMNodeId> AIPageContentAgent::AddNodeId(
   return std::nullopt;
 }
 
-void AIPageContentAgent::AddNodeGeometry(
+void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
-    mojom::blink::AIPageContentGeometry& geometry) const {
+    mojom::blink::AIPageContentAttributes& attributes) const {
+  if (!include_geometry_) {
+    return;
+  }
+
+  attributes.geometry = mojom::blink::AIPageContentGeometry::New();
+  auto& geometry = *attributes.geometry;
+
   geometry.outer_bounding_box =
       object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
 

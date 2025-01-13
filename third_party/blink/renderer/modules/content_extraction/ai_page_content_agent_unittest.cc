@@ -214,6 +214,15 @@ class AIPageContentAgentTest : public testing::Test {
         << ", expected: " << expected.ToString();
   }
 
+  mojom::blink::AIPageContentPtr GetAIPageContent(
+      bool include_geometry = true) {
+    auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+        *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+    EXPECT_TRUE(agent);
+
+    return agent->GetAIPageContentInternal(include_geometry);
+  }
+
  protected:
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
@@ -234,11 +243,7 @@ TEST_F(AIPageContentAgentTest, Basic) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -284,10 +289,7 @@ TEST_F(AIPageContentAgentTest, Image) {
       ->item(0)
       ->setAttribute(html_names::kSrcAttr, AtomicString(kSmallImage));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(document);
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -316,14 +318,12 @@ TEST_F(AIPageContentAgentTest, ImageNoAltText) {
                          "</body>",
                          kSmallImage),
       url_test_helpers::ToKURL("http://foobar.com"));
-  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(document);
-  auto page_content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
 
   mojom::blink::AIPageContentPtr output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::blink::AIPageContent>(
-      page_content, output));
+      content, output));
 }
 
 TEST_F(AIPageContentAgentTest, Headings) {
@@ -336,11 +336,7 @@ TEST_F(AIPageContentAgentTest, Headings) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -384,11 +380,7 @@ TEST_F(AIPageContentAgentTest, Paragraph) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -426,11 +418,7 @@ TEST_F(AIPageContentAgentTest, Lists) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -480,11 +468,7 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   iframe_doc->body()->setInnerHTML("<body>inside iframe</body>");
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -509,11 +493,7 @@ TEST_F(AIPageContentAgentTest, NoLayoutElement) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -529,11 +509,7 @@ TEST_F(AIPageContentAgentTest, VisibilityHidden) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -553,11 +529,7 @@ TEST_F(AIPageContentAgentTest, TextSize) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -611,11 +583,7 @@ TEST_F(AIPageContentAgentTest, TextEmphasis) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -684,11 +652,7 @@ TEST_F(AIPageContentAgentTest, Table) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -797,11 +761,7 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -900,11 +860,7 @@ TEST_F(AIPageContentAgentTest, LandmarkSections) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -969,11 +925,7 @@ TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1055,11 +1007,7 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
       "     </body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1149,11 +1097,7 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
       "     </body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1228,11 +1172,7 @@ TEST_F(AIPageContentAgentTest, Anchors) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1265,11 +1205,7 @@ TEST_F(AIPageContentAgentTest, TopLayerContainer) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1308,11 +1244,7 @@ TEST_F(AIPageContentAgentTest, TableWithAnonymousCells) {
       "</html>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1343,11 +1275,7 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHidden) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1376,11 +1304,7 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1412,11 +1336,7 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFound) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1476,11 +1396,7 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundInsideIframe) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1524,11 +1440,7 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1571,11 +1483,7 @@ TEST_F(AIPageContentAgentTest, LineBreak) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1609,11 +1517,7 @@ TEST_F(AIPageContentAgentTest, VisibilityHiddenOnSubtree) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1637,11 +1541,7 @@ TEST_F(AIPageContentAgentTest, VisibilityHiddenOnParentOnly) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1670,16 +1570,31 @@ TEST_F(AIPageContentAgentTest, VisibilityHiddenOnIframe) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
-      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
-  ASSERT_TRUE(agent);
-
-  auto content = agent->GetAIPageContentSync();
+  auto content = GetAIPageContent();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
   EXPECT_EQ(root.children_nodes.size(), 0u);
+}
+
+TEST_F(AIPageContentAgentTest, NoGeometry) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div>text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent(/*include_geometry=*/false);
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+  EXPECT_FALSE(content->root_node->content_attributes->geometry);
+
+  EXPECT_EQ(content->root_node->children_nodes.size(), 1u);
+  const auto& text_node = *content->root_node->children_nodes[0];
+  CheckTextNode(text_node, "text");
+  EXPECT_FALSE(text_node.content_attributes->geometry);
 }
 
 }  // namespace

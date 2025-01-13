@@ -43,28 +43,48 @@ class MODULES_EXPORT AIPageContentAgent final
   void Trace(Visitor* visitor) const override;
 
   // mojom::blink::AIPageContentAgent overrides.
-  void GetAIPageContent(GetAIPageContentCallback callback) override;
+  void GetAIPageContent(mojom::blink::AIPageContentOptionsPtr request,
+                        GetAIPageContentCallback callback) override;
 
-  mojom::blink::AIPageContentPtr GetAIPageContentSync() const;
+  // public for testing.
+  mojom::blink::AIPageContentPtr GetAIPageContentInternal(
+      bool include_geometry) const;
 
  private:
-  void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
+  void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr request,
+                            GetAIPageContentCallback callback,
+                            base::TimeTicks deadline) const;
 
-  // Returns true if any descendant of `object` has a computed value of
-  // visible for `visibility`.
-  bool WalkChildren(const LayoutObject& object,
-                    mojom::blink::AIPageContentNode& content_node,
-                    const ComputedStyle& document_style) const;
-  void ProcessIframe(const LayoutIFrame& object,
-                     mojom::blink::AIPageContentNode& content_node) const;
-  mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
-      const LayoutObject& object,
-      const ComputedStyle& document_style) const;
-  std::optional<DOMNodeId> AddNodeId(
-      const LayoutObject& object,
-      mojom::blink::AIPageContentAttributes& attributes) const;
-  void AddNodeGeometry(const LayoutObject& object,
-                       mojom::blink::AIPageContentGeometry& geometry) const;
+  // Synchronously services a single request.
+  class ContentBuilder {
+   public:
+    explicit ContentBuilder(bool include_geometry);
+    ~ContentBuilder();
+
+    mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
+
+   private:
+    // Returns true if any descendant of `object` has a computed value of
+    // visible for `visibility`.
+    bool WalkChildren(const LayoutObject& object,
+                      mojom::blink::AIPageContentNode& content_node,
+                      const ComputedStyle& document_style) const;
+    void ProcessIframe(const LayoutIFrame& object,
+                       mojom::blink::AIPageContentNode& content_node) const;
+    mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
+        const LayoutObject& object,
+        const ComputedStyle& document_style) const;
+    std::optional<DOMNodeId> AddNodeId(
+        const LayoutObject& object,
+        mojom::blink::AIPageContentAttributes& attributes) const;
+    void AddNodeGeometry(
+        const LayoutObject& object,
+        mojom::blink::AIPageContentAttributes& attributes) const;
+
+    const bool include_geometry_ = true;
+  };
+
+  void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
   HeapMojoReceiverSet<mojom::blink::AIPageContentAgent, AIPageContentAgent>
       receiver_set_;

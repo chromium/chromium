@@ -196,6 +196,16 @@ struct AIPageContent {
   AIPageContentNode root_node;
 };
 
+struct AIPageContentOptions {
+  // Indicates whether the geometry for each ContentNode should be included in
+  // the content.
+  bool include_geometry = true;
+
+  // Indicates whether this request is on the critical path, i.e., user visible.
+  // Requests which are not on the critical path can be de-prioritized to avoid
+  // blocking higher priority work.
+  bool on_critical_path = true;
+};
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the
 // renderer process and called by the browser process to pull data for a
@@ -204,5 +214,5 @@ struct AIPageContent {
 interface AIPageContentAgent {
   // Provides the AIPageContent representation for this LocalFrame and all
   // LocalFrames accessible from the LocalFrameRoot.
-  GetAIPageContent() => (AIPageContent page_content);
+  GetAIPageContent(AIPageContentOptions request) => (AIPageContent page_content);
 };

@@ -7,18 +7,21 @@
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace content {
 class WebContents;
 }
 
 namespace optimization_guide {
+blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions();
 
 // Provides AIPageContent representation for the primary page displayed in a
 // WebContents.
 using OnAIPageContentDone = base::OnceCallback<void(
     std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
 void GetAIPageContent(content::WebContents* web_contents,
+                      blink::mojom::AIPageContentOptionsPtr request,
                       OnAIPageContentDone done_callback);
 
 }  // namespace optimization_guide
