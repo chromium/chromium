@@ -2610,6 +2610,9 @@ extern const char kEducationalTipModuleDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
+extern const char kTabClosureMethodRefactorName[];
+extern const char kTabClosureMethodRefactorDescription[];
+
 extern const char kEnableClipboardDataControlsAndroidName[];
 extern const char kEnableClipboardDataControlsAndroidDescription[];
 

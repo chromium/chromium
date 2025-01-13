@@ -19730,6 +19730,7 @@ from previous Chrome versions.
   <int value="-297225350" label="SensitiveContentWhileSwitchingTabs:disabled"/>
   <int value="-296762162" label="ExoOrdinalMotion:enabled"/>
   <int value="-296493265" label="ProjectorAppDebug:enabled"/>
+  <int value="-296285056" label="TabClosureMethodRefactor:enabled"/>
   <int value="-296208832" label="ServiceWorkerStaticRouter:disabled"/>
   <int value="-296203212"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:enabled"/>
@@ -20999,6 +21000,7 @@ from previous Chrome versions.
   <int value="218317796" label="CastStreamingVp9:enabled"/>
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
+  <int value="219162425" label="TabClosureMethodRefactor:disabled"/>
   <int value="219384037" label="ESimPolicy:disabled"/>
   <int value="220182175" label="PipTuck:disabled"/>
   <int value="220654375" label="SearchResultInlineIcon:disabled"/>

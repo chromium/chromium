@@ -4431,6 +4431,11 @@ const char kEdgeToEdgeWebOptInDescription[] =
     "opted into Edge-to-Edge. Requires DrawCutoutEdgeToEdge to also be "
     "enabled.";
 
+const char kTabClosureMethodRefactorName[] = "Tab closure method refactor";
+const char kTabClosureMethodRefactorDescription[] =
+    "Enables the refactored changes for tab closure methods where existing "
+    "methods usages are switched off and newly introduced are made active.";
+
 const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
 const char kDynamicSafeAreaInsetsDescription[] =
     "Dynamically change the safe area insets based on the bottom browser "

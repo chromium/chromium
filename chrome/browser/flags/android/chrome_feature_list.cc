@@ -209,6 +209,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
     &kBottomBrowserControlsRefactor,
+    &kTabClosureMethodRefactor,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
@@ -653,6 +654,10 @@ BASE_FEATURE(kCCTOpenInBrowserButtonIfAllowedByEmbedder,
 BASE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder,
              "CCTOpenInBrowserButtonIfEnabledByEmbedder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabClosureMethodRefactor,
+             "TabClosureMethodRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrewarmTab, "CCTPrewarmTab", base::FEATURE_ENABLED_BY_DEFAULT);
 

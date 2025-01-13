@@ -8318,6 +8318,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-closure-method-refactor",
+    "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "tab-drag-drop",
     "owners": [ "ranjithkagathi@google.com", "gurmeetk@google.com" ],
     "expiry_milestone": 130

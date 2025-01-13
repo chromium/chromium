@@ -5544,6 +5544,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavBarColorAnimationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNavBarColorAnimation)},
 
+    // Tab closure methods refactor.
+    {"tab-closure-method-refactor",
+     flag_descriptions::kTabClosureMethodRefactorName,
+     flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

@@ -521,6 +521,7 @@ public abstract class ChromeFeatureList {
     public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
             "SuppressToolbarCapturesAtGestureEnd";
     public static final String ENABLE_BATCH_UPLOAD_FROM_SETTINGS = "EnableBatchUploadFromSettings";
+    public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_GROUP_CREATION_DIALOG_ANDROID = "TabGroupCreationDialogAndroid";
     public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
@@ -762,6 +763,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
+    public static final CachedFlag sTabClosureMethodRefactor =
+            newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabGroupCreationDialogAndroid =
@@ -891,6 +894,7 @@ public abstract class ChromeFeatureList {
                     sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
+                    sTabClosureMethodRefactor,
                     sTabDragDropAsWindowAndroid,
                     sTabGroupCreationDialogAndroid,
                     sTabGroupPaneAndroid,
