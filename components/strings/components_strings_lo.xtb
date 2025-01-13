@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ມີການເຂົ້າເບິ່ງໜ້າເວັບ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}other{ຈາກ # ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}}</translation>
 <translation id="1167877250265821930">ດາວໂຫຼດ <ph name="LANGUAGE" /> ບໍ່ສຳເລັດ</translation>
+<translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">ທ່ານຕ້ອງການອະນຸຍາດໃຫ້ <ph name="EMBEDDED_URL" /> ໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊໃນ <ph name="TOP_LEVEL_URL" /> ບໍ?
 
@@ -386,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">ເພື່ອໃຊ້ຕົວຈັດການລະຫັດຜ່ານດ້ວຍ Keychain ຂອງ macOS, ໃຫ້ເລີ່ມເປີດໃຊ້ Chromium ຄືນໃໝ່ ແລະ ອະນຸຍາດໃຫ້ມີການເຂົ້າເຖິງ Keychain. ແຖບຂອງທ່ານຈະເປີດຄືນໃໝ່ຫຼັງຈາກທີ່ເລີ່ມເປີດໃຊ້ໃໝ່.</translation>
 <translation id="1652887625750064647">ກົງກັນທີ່ສຸດຈາກ AI</translation>
+<translation id="1653465303147789530">ຈ່າຍເງິນດ້ວຍ <ph name="PAYMENT_METHOD" /> ໂດຍບໍ່ຕ້ອງປ່ຽນແອັບ</translation>
 <translation id="1656024727720460136">Chrome ໄດ້ເຮັດໃຫ້ໜ້ານີ້ອ່ານໄດ້ງ່າຍຂຶ້ນ. Chrome ກູ້ຄືນໜ້າຕົ້ນສະບັບຜ່ານການເຊື່ອມຕໍ່ທີ່ປອດໄພ.</translation>
 <translation id="1656489000284462475">ບ່ອນຮັບເຄື່ອງ</translation>
 <translation id="1658111267661135323">ໂທລະທັດ ແລະ ວິດີໂອ</translation>
@@ -556,6 +558,7 @@
 <translation id="1959001866257244765">ຊ່ວຍປັບປຸງຄວາມປອດໄພຂອງເວັບໄຊສຳລັບທຸກຄົນໂດຍການສົ່ງ <ph name="BEGIN_WHITEPAPER_LINK" />URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບແບບຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າເວັບ<ph name="END_WHITEPAPER_LINK" /> ໄປໃຫ້ Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">ຂໍ້ຄວາມ ແລະ ເນື້ອຫາໜ້າເວັບຂອງທ່ານຈະຖືກສົ່ງໄປຫາ Google ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄຸນສົມບັດນີ້.
   <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">ກວດສອບຄວາມປອດໄພແບບເທື່ອດຽວໃຫ້ສຳເລັດເພື່ອຈ່າຍເງິນໄດ້ໄວຂຶ້ນ</translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
 <translation id="1973785048533660168">ວຽກສະໝຽນ ແລະ ບໍລິຫານ</translation>
@@ -1585,6 +1588,7 @@
 <translation id="378611282717571199">ຜົນຮັບທີ່ກົງທີ່ສຸດສຳລັບ "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">ຂະໜາດ 16</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
+<translation id="3791118028061680614">ຈ່າຍເງິນໂດຍບໍ່ຕ້ອງປ່ຽນແອັບ</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ນິ້ວ)</translation>
 <translation id="3792826587784915501">ໜັງແນວລັດທິ ແລະ ອິນດີ້</translation>
 <translation id="3793574014653384240">ຈຳນວນ ແລະ ສາເຫດຂອງການຂັດຂ້ອງທີ່ເກີດຂຶ້ນເມື່ອບໍ່ດົນມານີ້</translation>

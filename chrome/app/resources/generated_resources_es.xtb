@@ -793,6 +793,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Puede modificar o eliminar tus archivos.</translation>
 <translation id="1549966883323105187">Accede a tus contraseñas guardadas más rápido</translation>
 <translation id="1550656959113606473">Chrome predeterminado</translation>
+<translation id="1552065819535218588">Chrome dejará de marcar como spam las notificaciones de <ph name="URL" /></translation>
 <translation id="1552301827267621511">La extensión <ph name="EXTENSION_NAME" /> ha cambiado el proveedor de búsquedas a <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gestionar extensión</translation>
 <translation id="1553538517812678578">sin límite</translation>
@@ -3086,6 +3087,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3159978855457658359">Editar nombre del dispositivo</translation>
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
+<translation id="3162070126914310576">Este dispositivo no se puede registrar ahora mismo porque tu unidad organizativa ha alcanzado su límite de registro inicial. Ponte en contacto con tu administrador para obtener ayuda.</translation>
 <translation id="3162766632262775911">Siempre se permite usar el optimizador de V8</translation>
 <translation id="3162853326462195145">Cuenta de centro educativo</translation>
 <translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.</translation>
@@ -9057,6 +9059,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="746861123368584540">Extensión cargada</translation>
 <translation id="7469612367552312334">Activado • Usa frases cotidianas para buscar en tu historial de navegación y encontrar los sitios que has visitado.</translation>
 <translation id="7470131554696493512">Impedir que los accesorios Thunderbolt o USB4 accedan a la memoria (RAM) y la compartan</translation>
+<translation id="7470284766345262333">Esta cuenta no está asociada a Google, por lo que no están disponibles funciones como la Sincronización de Chrome</translation>
 <translation id="7470424110735398630">Puede ver tu portapapeles</translation>
 <translation id="747114903913869239">Error: no es posible decodificar la extensión.</translation>
 <translation id="7471520329163184433">Más lenta</translation>

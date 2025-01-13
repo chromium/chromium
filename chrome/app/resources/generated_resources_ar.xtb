@@ -796,6 +796,7 @@
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1549966883323105187">الوصول بسرعة إلى كلمات المرور المحفوظة</translation>
 <translation id="1550656959113606473">‏إعدادات Chrome التلقائية</translation>
+<translation id="1552065819535218588">‏سيتوقف Chrome عن تنبيهك من أي محتوى غير مرغوب فيه من <ph name="URL" /></translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
 <translation id="1552752544932680961">إدارة الإضافة</translation>
 <translation id="1553538517812678578">غير محدودة</translation>

@@ -197,7 +197,7 @@
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1808803439260407870">אומנות קלאסית</translation>
 <translation id="181434555916624618">כרגע, תוצאות עם אנשים לא יוצגו. אפשר לנסות הנחיה אחרת.</translation>
-<translation id="1815850098929213707">המקש שנבחר הוא <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך להקיש על הלחצן</translation>
+<translation id="1815850098929213707">המקש שנבחר הוא <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך ללחוץ על הכפתור</translation>
 <translation id="1823120442877418684">דימויים</translation>
 <translation id="1827738518074806965">גלריית אומנות</translation>
 <translation id="1836553715834333258">צבע המערכת</translation>
@@ -646,7 +646,7 @@
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4137700675046373159">ביום שבת</translation>
 <translation id="4139326893730851150">עדכוני קושחה</translation>
-<translation id="4143226836069425823">כדי לשנות, צריך להקיש על מקש מקלדת אחר</translation>
+<translation id="4143226836069425823">כדי לשנות, צריך ללחוץ על מקש מקלדת אחר</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">תצוגה</translation>
@@ -764,7 +764,7 @@
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="467715984478005772">חומת אש חשודה</translation>
 <translation id="4678534708181186163">לא ניתן לסכם. צריך לנסות תמליל קצר יותר.</translation>
-<translation id="4683762547447150570">כדי להתמקד בהקצאת המקש, צריך להקיש על הלחצן</translation>
+<translation id="4683762547447150570">כדי להתמקד בהקצאת המקש, צריך ללחוץ על הכפתור</translation>
 <translation id="4691278870498629773">הפסיקה – המגש חסר</translation>
 <translation id="469379815867856270">עוצמת אות</translation>
 <translation id="4697260493945012995">בחירה של סוג אמצעי הבקרה</translation>
@@ -1007,7 +1007,7 @@
 <translation id="5876385649737594562">צריך להפעיל כדי לבחור אפשרויות</translation>
 <translation id="5877503382465267833">השהיה של <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">מסך מלא</translation>
-<translation id="5893975327266416093">צריך להקיש על מקש במקלדת כדי להקצות</translation>
+<translation id="5893975327266416093">צריך ללחוץ על מקש במקלדת כדי להקצות</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5896602941605730551">הפעלה</translation>
 <translation id="5901630391730855834">צהוב</translation>
@@ -1742,7 +1742,7 @@
 <translation id="9189000703457422362">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN שזוהו באופן אוטומטי. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">*APN</translation>
-<translation id="9195918315673527512">מקשי הג'ויסטיק שנבחרו הם <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך להקיש על הלחצן</translation>
+<translation id="9195918315673527512">מקשי הג'ויסטיק שנבחרו הם <ph name="KEYS" />. כדי לערוך את הרכיב האינטראקטיבי, צריך ללחוץ על הכפתור</translation>
 <translation id="9204237731135241582">‏לא ניתן ליצור קשר עם השער מאפליקציות ל-Android</translation>
 <translation id="921080052717160800">התמונה מוגדרת כרקע של מצלמה</translation>
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>

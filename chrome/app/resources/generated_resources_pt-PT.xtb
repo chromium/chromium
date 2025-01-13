@@ -793,6 +793,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quer aceder a <ph name="VOLUME_NAME" />. Pode modificar ou eliminar os seus ficheiros.</translation>
 <translation id="1549966883323105187">Aceda mais rapidamente às suas palavras-passe guardadas</translation>
 <translation id="1550656959113606473">Chrome predefinido</translation>
+<translation id="1552065819535218588">O Chrome vai deixar de sinalizar as notificações de <ph name="URL" /> como spam</translation>
 <translation id="1552301827267621511">A extensão "<ph name="EXTENSION_NAME" />" alterou a pesquisa para utilizar <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
 <translation id="1552752544932680961">Gerir extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
@@ -3086,6 +3087,7 @@ Quer pará-lo?</translation>
 <translation id="3159978855457658359">Edite o nome do dispositivo</translation>
 <translation id="3160928651883997588">Preferências da VPN</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="3162070126914310576">Não é possível inscrever este dispositivo neste momento porque a sua unidade organizacional atingiu o limite de inscrição inicial. Contacte o seu administrador para receber assistência.</translation>
 <translation id="3162766632262775911">Sempre com autorização para usar o otimizador do V8</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
 <translation id="3162899666601560689">Os sites podem usar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras</translation>
@@ -9061,6 +9063,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="746861123368584540">Extensão carregada.</translation>
 <translation id="7469612367552312334">Ativado • Use linguagem corrente para pesquisar o seu histórico de navegação e encontrar os sites que visitou</translation>
 <translation id="7470131554696493512">Impedir os acessórios Thunderbolt ou USB4 de acederem e partilharem a memória (RAM)</translation>
+<translation id="7470284766345262333">Esta conta não está associada à Google. Por isso, certas funcionalidades, como a Sincronização do Chrome, não estão disponíveis</translation>
 <translation id="7470424110735398630">Com autorização para ver a sua área de transferência</translation>
 <translation id="747114903913869239">Erro: não foi possível descodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>

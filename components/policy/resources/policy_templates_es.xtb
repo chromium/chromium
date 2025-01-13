@@ -182,6 +182,17 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
       Si se inhabilita esta política, la función de lista de la compra no estará disponible.
       </translation>
 <translation id="1144147113722324623">Habilitar las actualizaciones automáticas a HTTPS en audio y vídeo, y mostrar una advertencia sobre las imágenes que indique que no son seguras</translation>
+<translation id="1146804230175611166">La búsqueda en el historial basada en IA es una función que permite a los usuarios buscar en su historial de navegación y recibir respuestas generadas en función del contenido de las páginas, no solo de su título y URL.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1147732569915511430">El hash SHA-256 de la imagen de avatar.</translation>
 <translation id="1148415065145333943">Inhabilitar el modo avanzado de carga de la batería</translation>
 <translation id="1149203480502386713">Habilitar acuerdo de claves poscuántico para TLS</translation>
@@ -202,6 +213,19 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
       Si se inhabilita, no se activará el cuadro de diálogo de interceptación de inicio de sesión.
       Cuando esté inhabilitada, se seguirá mostrando un cuadro de diálogo si la separación de perfiles de cuentas gestionadas se aplica mediante <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">Configuración de Kerberos (una línea por elemento de matriz). Más información: https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
+<translation id="1159241725763211010">Superposición de Lens permite a los usuarios hacer búsquedas de Google interactuando con una captura de pantalla de la página actual superpuesta al contenido web. También les permite hacer búsquedas en Google que tengan en cuenta el contexto de la página actual. Para proporcionar respuestas contextuales, Superposición de Lens envía el contenido de la página a Google para responder a la consulta del usuario con el contexto de la página en la que se encuentra.
+
+No hay ninguna configuración de usuario para controlar esta función, que generalmente está disponible para todos los usuarios que tienen Google como buscador predeterminado a menos que esta política la inhabilite.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1160479894929412407">Permitir protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación segura</translation>
 <translation id="1161685818042751282">No importar certificados de servidor TLS añadidos por el usuario desde almacenes de confianza de la plataforma.</translation>
@@ -2147,6 +2171,17 @@ Si se inhabilita esta política o no se define, los registros no se podrán aña
       * La acción predeterminada que se deberá llevar a cabo en caso de inactividad cuando el dispositivo esté conectado a la red eléctrica es apagar el dispositivo.
 
       Si no se definen esta política ni ninguno de sus ajustes, se usarán los valores predeterminados de los distintos ajustes de energía.</translation>
+<translation id="2589944745979739478">Esta política controla la configuración de la función de edición de fotos basada en IA generativa de <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2591775699187375408">Poner siempre el proceso de audio en un entorno aislado</translation>
 <translation id="2592091433672667839">Duración de la inactividad antes de que se muestre el protector de pantalla en el modo de venta</translation>
 <translation id="259289618675490104">Si a esta política se le asigna el valor 0 ("All") o no se le asigna ningún valor, los usuarios podrán gestionar certificados. Si se le asigna el valor 2 ("None"), los usuarios solo podrán visualizar certificados, pero no podrán gestionarlos.
@@ -2306,6 +2341,17 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />, si se ha definido. En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
 <translation id="2727844239611930002">Permitir que <ph name="PRODUCT_NAME" /> determine si se muestra el mensaje de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
+<translation id="2729889068935597630">Esta política define la configuración predeterminada de todas las funciones de IA generativa incluidas. Por ejemplo, si se le asigna el valor 1 a la política, esta será la configuración predeterminada de todas las funciones de IA generativa incluidas. No afectará a ningún valor de política definido manualmente. Consulta https://support.google.com/chrome/a?p=generative_ai_settings para ver la lista de funciones incluidas.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si una función incluida no tiene un valor de política equivalente, se usará el valor más alto más cercano. Consulta la documentación de esa función para obtener más información sobre cómo interactúa con los valores de esta política.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2730200383593984228">Permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2730644640965800157">Si se habilita esta política, se desactivará la sincronización de <ph name="GOOGLE_DRIVE_NAME" /> en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" />. No se subirán datos a Drive.
@@ -4610,6 +4656,7 @@ Esta política impide a los administradores de empresa conectarse a dispositivos
 Esta política no tendrá efecto si se habilita, se deja vacía o no se define.</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449561952193478261">Color azul para la retroiluminación del teclado</translation>
+<translation id="4497491764379007385">Particionar URLs blob durante la obtención y la navegación.</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
 <translation id="4498626728750662965">El visor de PDFs usa el renderizador de Skia</translation>
 <translation id="4499376951770369935">Las actualizaciones de ChromeOS se configuran a la versión definida en el manifiesto de la aplicación de kiosco</translation>
@@ -5067,6 +5114,17 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
 <translation id="4857223512478723171">No permitir el modo de pantalla completa</translation>
 <translation id="4857888176748302062">Permitir que los orígenes consulten atributos de dispositivos</translation>
 <translation id="4858735034935305895">Permitir modo de pantalla completa</translation>
+<translation id="4858882153530729282">Esta política controla si las URLs blob se particionan durante la obtención y la navegación.
+Si se habilita esta política o no se define, las URLs blob se particionarán.
+Si se inhabilita esta política, las URLs blob no se particionarán.
+
+Si Partición del almacenamiento se inhabilita en un origen de nivel superior concreto mediante <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, las URLs blob tampoco se particionarán.
+
+Si tienes que usar esta política, registra un error en crbug.com, explica cómo la quieres usar y pon en copia a {janiceliu, awillia}@chromium.org. Se prevé que esta política esté disponible en la versión 138 de <ph name="PRODUCT_NAME" />. Después, la antigua implementación se eliminará.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.
+
+Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="4860900625632464759">Permitir que los usuarios sincronicen mensajes SMS entre su teléfono y el Chromebook</translation>
 <translation id="486146220825734683">No permitir que los usuarios activen la opción de recordar contraseñas de Kerberos</translation>
 <translation id="4861767323695239729">Configurar los métodos de introducción admitidos en una sesión de usuario</translation>
@@ -5356,6 +5414,17 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="504689994545234073">Habilitar el almacenamiento local de archivos de usuario</translation>
 <translation id="5048890362473520096">Habilitar el entorno aislado de LPAC para servicios de impresión</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
+<translation id="5055513974503523022">La IA generativa en VC Background permite a los usuarios expresarse mediante funciones de IA generativa con las que crear fondos personalizados para videoconferencias en <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
 <translation id="5061114193960158745">Si se define esta política, controlará la lista de sitios web que nunca provocarán que se cambie de navegador. Cada elemento se tratará como una regla. Las reglas para las que se encuentre una coincidencia no abrirán un navegador alternativo. A diferencia de la política <ph name="URL_LIST_POLICY_NAME" />, estas reglas se aplicarán en ambas direcciones. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, también controlará si <ph name="IE_PRODUCT_NAME" /> debe abrir esas URL en <ph name="PRODUCT_NAME" />.
@@ -5375,6 +5444,17 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se eliminarán la mayoría de los datos de usuario. Solo se conservarán los archivos que sean independientes del navegador (como las descargas).
 
       Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos de usuario. Esta opción tiene un alto riesgo de fallo. Si se produce un error, será necesario hacer un Powerwash para recuperar el dispositivo.</translation>
+<translation id="507032775281485106">La función de fondos de pantalla creados con IA generativa permite a los usuarios expresarse mediante funciones de IA generativa para crear fondos de pantalla personalizados en <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5071303485174858500">Inhabilitar sesión de invitado administrada y restringida.</translation>
 <translation id="5073609397321802133">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
 
@@ -6177,6 +6257,17 @@ Nota: Esta política no se aplica al modo Incógnito ni al modo Invitado.</trans
 
       Esta política está obsoleta. Usa la política <ph name="USER_PRINTERS_ALLOWED" /> en su lugar.
       </translation>
+<translation id="5582570632838248297">Comparación de pestañas es una herramienta basada en IA para comparar la información de las pestañas de un usuario. Por ejemplo, la función se puede ofrecer al usuario cuando se abran varias pestañas con productos de una categoría similar.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5583806683960333345">Si se habilita esta opción, los usuarios podrán usar la conexión compartida instantánea para permitir que su teléfono de Google comparta los datos móviles con su dispositivo.
 
       Si se inhabilita esta opción, los usuarios no podrán usar la conexión compartida instantánea.
@@ -6968,6 +7059,17 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="6203715554101884845">Si se define esta política, podrás añadir una lista con URLs que especifiquen qué sitios obtendrán permiso automáticamente para acceder a un dispositivo HID con los IDs de proveedor y producto facilitados en la pantalla de inicio de sesión. Cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" /> para ser válido. De lo contrario, el elemento se ignorará. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> debe tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y puede tener un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política referida a todos los dispositivos con el ID de proveedor especificado. Un elemento que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no se considerará válido y se ignorará.
 
 Si no se define esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
+<translation id="6205472215607025971">Organizador de pestañas es una herramienta basada en IA que crea automáticamente grupos de pestañas a partir de las pestañas abiertas de un usuario. Las sugerencias se basan en pestañas abiertas, pero no en el contenido de la página.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
@@ -7314,6 +7416,24 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />, si se ha definido. En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
 <translation id="6383774771168138899">Configura el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren páginas de resultados del buscador predeterminado en un panel lateral del navegador.</translation>
+<translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
+<translation id="6390338862225976270">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Entre las funciones de IA generativa de DevTools se incluyen las siguientes:
+
+- Console Insights: explica los mensajes de la consola y ofrece sugerencias sobre cómo corregir errores de la consola.
+
+- Asistencia de IA: recibe ayuda para entender los estilos de CSS (desde la versión 131), las solicitudes de red, el rendimiento y los archivos (todos ellos desde la versión 132).
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6397588391180665797">Envía información sobre la configuración de red de los usuarios en los dispositivos registrados.
 
@@ -7893,6 +8013,7 @@ Hasta Chrome 114, esta política requería que se asignara el valor true a la po
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
+<translation id="6776202826080834193">Si esta política se habilita o no se define, los usuarios podrán usar la función <ph name="GLIC" />. Si se inhabilita esta política, los usuarios no podrán interactuar con <ph name="GLIC" />. El botón de la barra de pestañas se ocultará y <ph name="GLIC" /> no estará disponible mediante una combinación de teclas, a menos que se habilite en otro perfil.</translation>
 <translation id="678121785914414680">Lista de tipos de archivo que deberían abrirse automáticamente al descargarse. No se debe incluir el separador inicial al añadir un tipo de archivo a la lista, así que añade "txt" en lugar de ".txt".
 
 Los archivos de los tipos que se deben abrir automáticamente seguirán estando sujetos a las comprobaciones de Navegación segura y no se abrirán si no las superan.
@@ -8067,6 +8188,7 @@ Si se inhabilita esta política o no se define, se aplicará el comportamiento p
 <translation id="692096803256767290">Restaurar SO a la versión seleccionada</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos utilicen máquinas virtuales en ChromeOS</translation>
+<translation id="6922265559343919728">Elegir si las URLs blob se particionan durante la obtención y la navegación</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.
 
@@ -10144,6 +10266,17 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
 
       Esta política anula las políticas <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.</translation>
 <translation id="8528951285051082869">No permitir que ninguna aplicación web acceda a ciertos tipos de archivo a través de la API File Handling</translation>
+<translation id="8529958869261780079">Esta política controla la configuración de la función Ayúdame a leer de <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8533145294731270627">Bloquea las descargas maliciosas y los tipos de archivos peligrosos.</translation>
 <translation id="8543108307976719751">Impedir conexiones de acceso remoto a este equipo</translation>
 <translation id="8543639085146778837">Permitir que se recojan registros de texto WebRTC de los servicios de Google</translation>
@@ -10176,6 +10309,17 @@ Si se habilita esta política o no se define, los usuarios podrán activar o des
 Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8559221882677768248">Inhabilitar Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="8561512522781085002">Los ajustes de Re Pág y Av Pág usan la combinación de teclas que incluye la tecla modificadora Búsqueda</translation>
+<translation id="8562398722263115493">Ayúdame a escribir es un asistente de escritura basado en IA para contenido breve en la Web. El contenido sugerido se basa en las peticiones que introduce el usuario y en el contenido de la página web.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Oculta tienda web en página Nueva pestaña y en menú de aplicaciones</translation>
 <translation id="8571119890730528225">Inhabilitar la partición del almacenamiento de terceros.</translation>
 <translation id="8571314270766672278">Restaurar y restablecer el dispositivo al cambiar a una versión inferior (intentar conservar el registro)</translation>
@@ -10365,6 +10509,7 @@ Esta política asigna IDs de configuración a las configuraciones de VM. Si una 
       Si se realizan cambios en esta política mientras <ph name="PRODUCT_NAME" /> está abierto, solo se aplicarán al abrir pestañas nuevas.</translation>
 <translation id="8685748277907759932">Evitar que los usuarios utilicen la función Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes sobre los usuarios del dispositivo</translation>
+<translation id="8687570136798972353">Habilitar <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Volver a habilitar la API v0 de componentes web hasta M84.</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la consola de administración</translation>
@@ -10745,6 +10890,17 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="8983537551095611459">Configura la lista de IDs de extensiones que quedarán exentas del proceso de borrado de las sesiones de invitado gestionadas y restringidas.</translation>
 <translation id="8983539044126123594">Habilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="8985219286836584291">Habilitar los informes sobre el sistema del dispositivo</translation>
+<translation id="8986457452582123237">Con la opción de crear temas con IA, los usuarios pueden crear temas o fondos de pantalla personalizados seleccionando previamente opciones de una lista.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8986738188516411168">Para mejorar la productividad, permite que la información de las aplicaciones y los servicios de Google aparezca en las superficies del sistema de <ph name="PRODUCT_OS_NAME" />.
 
 Si se habilita esta política o no se define, se habilitarán las integraciones seleccionadas en <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" />.
@@ -10939,7 +11095,19 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9107635531763682565">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar notificaciones de escritorio. Si se le asigna el valor 2, no se permitirán las notificaciones de escritorio.
 
 Si no se establece, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="910929592571075861">No particionar las URLs blob durante la obtención y la navegación.</translation>
 <translation id="9110194749335632373">Impedir conexiones de acceso remoto de administradores de empresa en este equipo</translation>
+<translation id="9110198768621013941">Habilita la configuración de predicción de Autocompletar.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. También es posible que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9110251436602897914">Proporcionar información sobre los periféricos conectados al dispositivo</translation>
 <translation id="9110485853581788150">Lista de certificados que no son de confianza en <ph name="PRODUCT_NAME" />,
 pero que se pueden usar como sugerencias para la creación de rutas. Los certificados deben estar codificados en Base64.</translation>
@@ -10979,6 +11147,7 @@ Esta política solo tendrá efecto si se le asigna el valor true a la política 
       Si se le asigna el valor "Verdadero", se enviará información sobre el sistema del dispositivo.</translation>
 <translation id="9131419675479917141">Permitir que los usuarios definan un PIN poco seguro, pero mostrarles una advertencia</translation>
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
+<translation id="9132345265506256744">Inhabilitar el uso de <ph name="GLIC" /></translation>
 <translation id="9133526448421932754">Color amarillo para la retroiluminación del teclado</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Síða var opnuð</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af 1 vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
 <translation id="1167877250265821930">Ekki tókst að sækja „<ph name="LANGUAGE" />“</translation>
+<translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1174644974616730562">Umslag: kínverskt #1</translation>
 <translation id="1174723505405632867">Viltu leyfa <ph name="EMBEDDED_URL" /> að nota fótspor og vefsvæðisgögn á <ph name="TOP_LEVEL_URL" />?
 
@@ -386,6 +387,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Til að nota Aðgangsorðastjórnun með macOS Keychain skaltu endurræsa Chromium og veita Keychain aðgang. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
 <translation id="1652887625750064647">Besta samsvörun samkvæmt gervigreind</translation>
+<translation id="1653465303147789530">Greiða með <ph name="PAYMENT_METHOD" /> án þess að skipta um forrit</translation>
 <translation id="1656024727720460136">Chrome einfaldaði þessa síðu svo það yrði auðveldara að lesa hana. Chrome sótti upprunalegu síðuna um örugga tengingu.</translation>
 <translation id="1656489000284462475">Afhending</translation>
 <translation id="1658111267661135323">Sjónvarp og myndskeið</translation>
@@ -556,6 +558,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1959001866257244765">Hjálpaðu til við að auka öryggi allra á vefnum með því að senda <ph name="BEGIN_WHITEPAPER_LINK" />vefslóðir sumra þeirra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna<ph name="END_WHITEPAPER_LINK" /> til Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Persónuverndarstefna<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Textinn þinn og efni síðunnar er sent til Google og verður hugsanlega notað til að bæta þennan eiginleika.
   <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Ljúka stakri öryggisskoðun til að greiða hraðar</translation>
 <translation id="1962204205936693436">Bókamerki frá <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Röðunarvilla</translation>
 <translation id="1973785048533660168">Skrifstofu- og stjórnunarstörf</translation>
@@ -1585,6 +1588,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="378611282717571199">Bestu samsvaranirnar fyrir „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Stærð 16</translation>
 <translation id="3789841737615482174">Setja upp</translation>
+<translation id="3791118028061680614">Greiddu án þess að skipta á milli forrita</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> to.)</translation>
 <translation id="3792826587784915501">Költ- og indímyndir</translation>
 <translation id="3793574014653384240">Fjöldi nýlegra hruntilvika og orsakir þeirra</translation>

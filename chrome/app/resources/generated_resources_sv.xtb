@@ -794,6 +794,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vill ha åtkomst till <ph name="VOLUME_NAME" />. Den kan ändra eller ta bort dina filer.</translation>
 <translation id="1549966883323105187">Kom åt dina sparade lösenord snabbare</translation>
 <translation id="1550656959113606473">Standardinställningar för Chrome</translation>
+<translation id="1552065819535218588">Chrome slutar flagga aviseringar från <ph name="URL" /> som spam</translation>
 <translation id="1552301827267621511">Tillägget <ph name="EXTENSION_NAME" /> ändrade sökleverantören till <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Hantera tillägg</translation>
 <translation id="1553538517812678578">obegränsad</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Halaman dilawati</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Tiada}=1{Daripada 1 laman (anda akan kekal dilog masuk ke Google Account anda)}other{Daripada # laman (anda akan kekal dilog masuk ke Google Account anda)}}</translation>
 <translation id="1167877250265821930">Gagal memuat turun <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Namakan semula</translation>
 <translation id="1174644974616730562">Sampul Cina #1</translation>
 <translation id="1174723505405632867">Adakah anda mahu membenarkan <ph name="EMBEDDED_URL" /> menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" />?
 
@@ -1205,6 +1206,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3156511682997763015">Mundar 10 saat</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158539265159265653">Cakera</translation>
+<translation id="3162070126914310576">Peranti gagal didaftarkan pada masa ini kerana unit organisasi anda telah mencapai had pendaftaran permulaan. Hubungi pentadbir anda untuk mendapatkan bantuan.</translation>
 <translation id="3162559335345991374">Wi-Fi yang anda gunakan mungkin memerlukan anda untuk melawat halaman log masuknya.</translation>
 <translation id="316638481603975524">Boleh meminta untuk memasang apl web</translation>
 <translation id="3168744840365648658">Peralatan Radio</translation>
@@ -1941,6 +1943,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Muat naik fail kepada Microsoft OneDrive telah dijeda</translation>
 <translation id="4390472908992056574">Bertepi</translation>
+<translation id="4395550503472021297">Dasar ini mengawal gelagat lalai dasar yang berikut: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Membuka tetingkap timbul untuk membuat pengesahan pada laman web bank anda</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
@@ -2383,6 +2386,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5244521145258281926">Butang urus Google Account, aktifkan untuk mengurus maklumat, privasi dan keselamatan dalam Google Account anda</translation>
 <translation id="5244732203286792411">Memuatkan...
     Proses ini mungkin mengambil masa seketika.</translation>
+<translation id="5248543496748975054">Nombor kad tidak diisi?</translation>
 <translation id="5250209940322997802">"Sambung kepada rangkaian"</translation>
 <translation id="52517543715119994">Ketahui tentang ciri Chrome</translation>
 <translation id="5251803541071282808">Awan</translation>
@@ -3999,6 +4003,7 @@ Butiran tambahan:
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8118489163946903409">Kaedah pembayaran</translation>
 <translation id="8118506371121007279">Beri maklum balas</translation>
+<translation id="8120720167840853945">Dasar ini tidak mengawal gelagat lalai sebarang dasar lain.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8133495915926741232">Pilih kategori topik yang luas yang boleh digunakan untuk memeribadikan iklan. Tindakan mematikan kategori yang lebih luas akan turut menyekat topik yang berkaitan dengan kategori tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>

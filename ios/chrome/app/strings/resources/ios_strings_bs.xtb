@@ -1115,6 +1115,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6027619584715411062">Prijavite se da dobijete oznake, lozinke i još mnogo toga na svim uređajima.</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nova funkcija</translation>
+<translation id="6038823991892265570">Upravljanje Google pohranom</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
@@ -1150,6 +1151,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6160780110287872296">Preuzeti fajl?</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6168647875670665004">Prijedlozi članaka</translation>
+<translation id="6169031022444660352">Da izbrišete sve sačuvane akreditive, prvo morate postaviti šifru na uređaju.</translation>
 <translation id="6173499589275053515">Lozinka je sačuvana na Google računu, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Posljednji put sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Kreirano je <ph name="DATE" /></translation>
@@ -1201,6 +1203,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6355820205320395730">Slabe lozinke je lako pogoditi. Vodite računa da kreirate jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još sigurnosnih savjeta.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Prati <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Odaberite pretraživač s liste.</translation>
+<translation id="6368102751067608420">Da izbrišete sve podatke upravitelja lozinki</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6387994324662817823">Lozinke se pohranjuju u Google Upravitelju lozinki samo na ovom uređaju.</translation>
 <translation id="6404422529625928907">Otvaranje na Google Disku</translation>

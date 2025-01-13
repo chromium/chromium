@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Stranica je posećena</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nijedan}=1{Sa 1 sajta (ostaćete prijavljeni na Google nalog)}one{Sa # sajta (ostaćete prijavljeni na Google nalog)}few{Sa # sajta (ostaćete prijavljeni na Google nalog)}other{Sa # sajtova (ostaćete prijavljeni na Google nalog)}}</translation>
 <translation id="1167877250265821930">Preuzimanje jezika <ph name="LANGUAGE" /> nije uspelo</translation>
+<translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174644974616730562">Kineska koverta br. 1</translation>
 <translation id="1174723505405632867">Želite li da dozvolite da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" />?
 
@@ -1205,6 +1206,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3156511682997763015">Premotaj 10 sekundi unapred</translation>
 <translation id="3157931365184549694">Ponovo otvori</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Ovaj uređaj trenutno ne može da se registruje jer je organizaciona jedinica dostigla početno ograničenje za registracije. Zatražite pomoć od administratora.</translation>
 <translation id="3162559335345991374">WiFi mreža koju koristite će možda zahtevati da posetite stranicu za prijavljivanje.</translation>
 <translation id="316638481603975524">Može da zatraži instaliranje veb-aplikacija</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
@@ -1940,6 +1942,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Otpremanje fajla u Microsoft OneDrive je pauzirano</translation>
 <translation id="4390472908992056574">Obod</translation>
+<translation id="4395550503472021297">Ove smernice kontrolišu podrazumevano ponašanje sledećih smernica: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Otvara iskačući prozor za verifikaciju na veb-sajtu banke</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4406896451731180161">rezultati pretrage</translation>
@@ -2382,6 +2385,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5244521145258281926">Upravljaj Google nalogom, aktivirajte ga da biste upravljali informacijama, privatnošću i bezbednošću na Google nalogu</translation>
 <translation id="5244732203286792411">Učitava se…
     Ovo će možda malo potrajati.</translation>
+<translation id="5248543496748975054">Broj kartice nije unet?</translation>
 <translation id="5250209940322997802">„Povežite se na mrežu“</translation>
 <translation id="52517543715119994">Saznajte više o Chrome funkcijama</translation>
 <translation id="5251803541071282808">Klaud</translation>
@@ -3997,6 +4001,7 @@ Dodatni detalji:
 <translation id="8116925261070264013">Zvuk je isključen</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
+<translation id="8120720167840853945">Ove smernice ne kontrolišu podrazumevano ponašanje drugih smernica.</translation>
 <translation id="8127301229239896662">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno instaliran na računaru ili mreži. Zatražite od IT administratora da reši ovaj problem.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite široke kategorije tema koje mogu da se koriste za personalizaciju oglasa. Ako isključite širu kategoriju, blokiraćete i srodne teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

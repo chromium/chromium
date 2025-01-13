@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Səhifə ziyarət edilib</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Yoxdur}=1{1 saytdan (Google Hesabına daxil olmuş kimi qalacaqsınız)}other{# saytdan (Google Hesabına daxil olmuş kimi qalacaqsınız)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> endirilmədi</translation>
+<translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1174644974616730562">Zərf Çin #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> saytına <ph name="TOP_LEVEL_URL" /> ünvanında kukilər və sayt datasını istifadə etmək icazəsi verilsin?
 
@@ -386,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">MacOS Keychain ilə Parol Menecerindən istifadə üçün Chromium-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="1652887625750064647">AI ən yaxşı uyğunluq</translation>
+<translation id="1653465303147789530">Tətbiqləri dəyişmədən <ph name="PAYMENT_METHOD" /> ilə ödəniş edin</translation>
 <translation id="1656024727720460136">Chrome bu səhifənin daha rahat oxunması üçün onu sadələşdirib. Chrome güvənli bağlantı üzərindən ilkin səhifəni açdı.</translation>
 <translation id="1656489000284462475">Götürmə</translation>
 <translation id="1658111267661135323">TV və video</translation>
@@ -556,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Daxil olduğunuz bəzi səhifələrin keçidlərini, məhdud sistem məlumatlarını və bəzi səhifə məzmununu<ph name="END_WHITEPAPER_LINK" /> Google'a göndərməklə vebdə hər kəs üçün təhlükəsizliyi artırmağa yardım edin. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Məxfilik siyasəti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Mətn və səhifə kontenti Google-a göndərilir və bu funksiyanı təkmilləşdirmək üçün istifadə edilə bilər.
   <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Daha tez ödəmək üçün birdəfəlik təhlükəsizlik yoxlamasını tamamlayın</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Əlfəcinləri</translation>
 <translation id="1973335181906896915">Serializasiya xətası</translation>
 <translation id="1973785048533660168">Kargüzarlıq və inzibati işlər</translation>
@@ -1581,6 +1584,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" üzrə ən yaxşı uyğunluqlar</translation>
 <translation id="3789155188480882154">Ölçü 16</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
+<translation id="3791118028061680614">Tətbiqləri dəyişmədən ödəyin</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> düym)</translation>
 <translation id="3792826587784915501">Kult və Müstəqil Filmlər</translation>
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>

@@ -793,6 +793,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vol accedir a <ph name="VOLUME_NAME" />. És possible que modifiqui o suprimeixi els fitxers.</translation>
 <translation id="1549966883323105187">Accedeix a les contrasenyes desades més ràpidament</translation>
 <translation id="1550656959113606473">Chrome predeterminat</translation>
+<translation id="1552065819535218588">Chrome deixarà de marcar les notificacions de <ph name="URL" /> com a correu brossa</translation>
 <translation id="1552301827267621511">L'extensió "<ph name="EXTENSION_NAME" />" ha canviat el proveïdor de cerca i ara s'utilitza <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gestiona l'extensió</translation>
 <translation id="1553538517812678578">il·limitat</translation>

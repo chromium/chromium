@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Stranica je posjećena</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ništa}=1{S 1 web lokacije (ostat ćete prijavljeni na Google račun)}one{S # web lokacije (ostat ćete prijavljeni na Google račun)}few{S # web lokacije (ostat ćete prijavljeni na Google račun)}other{S # web lokacija (ostat ćete prijavljeni na Google račun)}}</translation>
 <translation id="1167877250265821930">Preuzimanje jezika <ph name="LANGUAGE" /> nije uspjelo</translation>
+<translation id="1173894706177603556">Promijeni naziv</translation>
 <translation id="1174644974616730562">Koverta Chinese #1</translation>
 <translation id="1174723505405632867">Želite li dozvoliti web lokaciji <ph name="EMBEDDED_URL" /> da koristi kolačiće i podatke web lokacije na <ph name="TOP_LEVEL_URL" />?
 
@@ -386,6 +387,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Da koristite Upravitelj lozinki s macOS Keychainom, ponovo pokrenite Chromium i dozvolite pristup Keychainu. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="1652887625750064647">Najbolje podudaranje AI-ja</translation>
+<translation id="1653465303147789530">Plaćajte putem načina plaćanja <ph name="PAYMENT_METHOD" /> bez promjene aplikacija</translation>
 <translation id="1656024727720460136">Chrome je pojednostavio ovu stranicu za lakše čitanje. Chrome je preuzeo originalnu stranicu putem sigurne veze.</translation>
 <translation id="1656489000284462475">Preuzmi</translation>
 <translation id="1658111267661135323">TV i videozapisi</translation>
@@ -556,6 +558,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1959001866257244765">Pomozite nam da poboljšamo sigurnost na webu za sve slanjem <ph name="BEGIN_WHITEPAPER_LINK" />URL-ova nekih stranica koje posjećujete, ograničenih sistemskih informacija i sadržaja nekih stranica<ph name="END_WHITEPAPER_LINK" /> Googleu. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravila privatnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Vaš tekst i sadržaj stranice se šalju Googleu i mogu se koristiti za poboljšanje ove funkcije.
   <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Izvršite jednokratnu sigurnosnu provjeru da brže plaćate</translation>
 <translation id="1962204205936693436">Oznake domene <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Greška u serijalizaciji</translation>
 <translation id="1973785048533660168">Službenički i administrativni poslovi</translation>
@@ -1585,6 +1588,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="378611282717571199">Najbolja podudaranja za "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Veličina 16</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
+<translation id="3791118028061680614">Plaćajte bez promjene aplikacija</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Kultni i indie filmovi</translation>
 <translation id="3793574014653384240">Broj nedavnih padova aplikacija i uzroci</translation>
@@ -1937,6 +1941,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Otpremanje fajl(ov)a na Microsoft OneDrive je pauzirano</translation>
 <translation id="4390472908992056574">Rub</translation>
+<translation id="4395550503472021297">Ovo pravilo upravlja zadanim ponašanjem sljedećih pravila: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Otvara skočni prozor radi potvrđivanja na web lokaciji banke</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4406896451731180161">rezultati pretraživanja</translation>
@@ -3995,6 +4000,7 @@ Dodatni detalji:
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
+<translation id="8120720167840853945">Ovo pravilo ne upravlja zadanim ponašanjem drugih pravila.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nije pravilno instaliran na vaš računar ili mrežu. Zamolite IT administratora da riješi taj problem.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa. Isključivanjem šire kategorije blokiraju se i povezane teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Es visita una pàgina</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Cap}=1{D'1 lloc web (continuaràs tenint la sessió iniciada al teu Compte de Google)}other{De # llocs web (continuaràs tenint la sessió iniciada al teu Compte de Google)}}</translation>
 <translation id="1167877250265821930">Hi ha hagut un error en baixar el paquet d'idioma en <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1174644974616730562">Sobre xinès número 1</translation>
 <translation id="1174723505405632867">Vols permetre que <ph name="EMBEDDED_URL" /> utilitzi les galetes i les dades del lloc web a <ph name="TOP_LEVEL_URL" />?
 
@@ -1937,6 +1938,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">La pujada de fitxers a Microsoft OneDrive s'ha posat en pausa</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Aquesta política controla el comportament predeterminat de les polítiques següents: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Obre una finestra emergent per fer la verificació al lloc web del teu banc</translation>
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4406896451731180161">resultats de la cerca</translation>
@@ -3995,6 +3997,7 @@ Detalls addicionals:
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8118489163946903409">Mètode de pagament</translation>
 <translation id="8118506371121007279">Envia suggeriments</translation>
+<translation id="8120720167840853945">Aquesta política no controla el comportament predeterminat de cap altra política.</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> no s'ha instal·lat correctament a l'ordinador o a la xarxa. Demana a l'administrador de TI que resolgui aquest problema.</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8133495915926741232">Tria quines categories àmplies de temes es poden utilitzar per personalitzar els anuncis. En desactivar una categoria més àmplia, també es bloquejaran els temes relacionats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

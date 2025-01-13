@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">En nettside besøkes</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted (du forblir logget på Google-kontoen din)}other{Fra # nettsteder (du forblir pålogget Google-kontoen din)}}</translation>
 <translation id="1167877250265821930">Kunne ikke laste ned <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1174644974616730562">Kinesisk konvolutt nr. 1</translation>
 <translation id="1174723505405632867">Vil du gi <ph name="EMBEDDED_URL" /> tillatelse til å bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" />?
 
@@ -1203,6 +1204,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3158539265159265653">Plate</translation>
+<translation id="3162070126914310576">Denne enheten kan ikke registreres nå fordi organisasjonsenheten din har nådd grensen for initiell registrering. Kontakt administratoren din hvis du trenger hjelp.</translation>
 <translation id="3162559335345991374">Det kan hende at Wifi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
 <translation id="316638481603975524">Kan be om å få installere nettapper</translation>
 <translation id="3168744840365648658">Radioutstyr</translation>
@@ -1937,6 +1939,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Filopplasting til Microsoft OneDrive er satt på pause</translation>
 <translation id="4390472908992056574">Rand</translation>
+<translation id="4395550503472021297">Denne regelen styrer standardfunksjonaliteten for disse reglene: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Åpner et forgrunnsvindu for bekreftelse på bankens nettsted</translation>
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406896451731180161">søkeresultater</translation>
@@ -2379,6 +2382,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5244521145258281926">Administrer Google-konto – aktiver for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="5244732203286792411">Laster inn …
     Dette kan ta en liten stund.</translation>
+<translation id="5248543496748975054">Ble ikke kortnummeret fylt ut?</translation>
 <translation id="5250209940322997802">«Koble til nettverk»</translation>
 <translation id="52517543715119994">Lær om Chrome-funksjoner</translation>
 <translation id="5251803541071282808">Nettsky</translation>
@@ -3994,6 +3998,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8116925261070264013">Kuttet lyd</translation>
 <translation id="8118489163946903409">Betalingsmåte</translation>
 <translation id="8118506371121007279">Gi tilbakemelding</translation>
+<translation id="8120720167840853945">Denne regelen styrer ikke standardfunksjonaliteten for andre regler.</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» er ikke riktig installert på datamaskinen eller på nettverket. Be IT-administratoren din om å løse problemet.</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8133495915926741232">Velg hvilke generelle emnekategorier som kan brukes til å tilpasse annonser personlig. Hvis du slår av en mer generell kategori, blokkeres også de relaterte emnene. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

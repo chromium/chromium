@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">มีการเข้าชมหน้าเว็บ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ไม่มี}=1{จาก 1 เว็บไซต์ (แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่)}other{จาก # เว็บไซต์ (คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่)}}</translation>
 <translation id="1167877250265821930">ดาวน์โหลด<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
+<translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">คุณต้องการอนุญาตให้ <ph name="EMBEDDED_URL" /> ใช้คุกกี้และข้อมูลเว็บไซต์ใน <ph name="TOP_LEVEL_URL" /> ไหม
 
@@ -1203,6 +1204,7 @@
 <translation id="3156511682997763015">กรอไปข้างหน้า 10 วินาที</translation>
 <translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3158539265159265653">ดิสก์</translation>
+<translation id="3162070126914310576">ลงทะเบียนอุปกรณ์นี้ไม่ได้ในตอนนี้เนื่องจากหน่วยขององค์กรถึงขีดจำกัดการลงทะเบียนเริ่มต้นแล้ว โปรดติดต่อผู้ดูแลระบบเพื่อขอความช่วยเหลือ</translation>
 <translation id="3162559335345991374">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
 <translation id="316638481603975524">สามารถขอติดตั้งเว็บแอปได้</translation>
 <translation id="3168744840365648658">อุปกรณ์วิทยุ</translation>
@@ -1936,6 +1938,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">หยุดอัปโหลดไฟล์ไปยัง Microsoft OneDrive ชั่วคราว</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">นโยบายนี้กำลังควบคุมลักษณะการทำงานเริ่มต้นของนโยบายต่อไปนี้ <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">เปิดป๊อปอัปเพื่อยืนยันในเว็บไซต์ของธนาคาร</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4406896451731180161">ผลการค้นหา</translation>
@@ -2378,6 +2381,7 @@
 <translation id="5244521145258281926">จัดการบัญชี Google เปิดใช้งานเพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
 <translation id="5244732203286792411">กำลังโหลด...
     การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
+<translation id="5248543496748975054">ระบบไม่ได้กรอกหมายเลขบัตรเครดิตใช่ไหม</translation>
 <translation id="5250209940322997802">"เชื่อมต่อกับเครือข่าย"</translation>
 <translation id="52517543715119994">ดูข้อมูลเกี่ยวกับฟีเจอร์ของ Chrome</translation>
 <translation id="5251803541071282808">ระบบคลาวด์</translation>
@@ -3994,6 +3998,7 @@
 <translation id="8116925261070264013">ปิดเสียง</translation>
 <translation id="8118489163946903409">วิธีการชำระเงิน</translation>
 <translation id="8118506371121007279">แสดงความคิดเห็น</translation>
+<translation id="8120720167840853945">นโยบายนี้ไม่ได้ควบคุมลักษณะการทำงานเริ่มต้นของนโยบายอื่นใด</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ไม่ได้ติดตั้งในคอมพิวเตอร์หรือเครือข่ายอย่างถูกต้อง โปรดขอให้ผู้ดูแลระบบ IT แก้ไขปัญหานี้</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8133495915926741232">เลือกหมวดหมู่กว้างๆ ของหัวข้อที่สามารถใช้ในการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ การปิดหมวดหมู่ที่กว้างขึ้นจะบล็อกหัวข้อที่เกี่ยวข้องด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

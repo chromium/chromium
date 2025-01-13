@@ -794,6 +794,7 @@
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」想要存取「<ph name="VOLUME_NAME" />」。它可以修改或刪除您的檔案。</translation>
 <translation id="1549966883323105187">快速查看已儲存的密碼</translation>
 <translation id="1550656959113606473">預設的 Chrome</translation>
+<translation id="1552065819535218588">Chrome 會停止將 <ph name="URL" /> 的通知標記為垃圾內容</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充程式已變更搜尋引擎，改為使用 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
@@ -3097,6 +3098,7 @@
 <translation id="3159978855457658359">編輯裝置名稱</translation>
 <translation id="3160928651883997588">VPN 偏好設定</translation>
 <translation id="3161522574479303604">所有語言</translation>
+<translation id="3162070126914310576">你的機構單位達到初始註冊限制，因此這部裝置目前無法註冊。請聯絡管理員尋求協助。</translation>
 <translation id="3162766632262775911">一律允許使用 V8 優化工具</translation>
 <translation id="3162853326462195145">學校帳戶</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品</translation>
@@ -9056,6 +9058,7 @@
 <translation id="746861123368584540">已載入擴充程式</translation>
 <translation id="7469612367552312334">開啟 • 利用日常用語搜尋瀏覽記錄，搜尋你瀏覽過的網站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件存取並分享記憶體 (RAM)</translation>
+<translation id="7470284766345262333">此帳戶未與 Google 建立關聯，因此無法使用 Chrome 同步等功能</translation>
 <translation id="7470424110735398630">已允許查看剪貼簿</translation>
 <translation id="747114903913869239">錯誤：無法為擴充功能解碼</translation>
 <translation id="7471520329163184433">減速</translation>

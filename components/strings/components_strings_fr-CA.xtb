@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">La page est visitée</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Aucun}=1{À partir de 1 site (vous resterez connecté à votre compte Google)}one{À partir de # site (vous resterez connecté à votre compte Google)}other{À partir de # sites (vous resterez connecté à votre compte Google)}}</translation>
 <translation id="1167877250265821930">Échec du téléchargement suivant : <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Renommer</translation>
 <translation id="1174644974616730562">Enveloppe chinoise nᵒ 1</translation>
 <translation id="1174723505405632867">Souhaitez-vous autoriser <ph name="EMBEDDED_URL" /> à utiliser les témoins et les données relatives aux sites sur <ph name="TOP_LEVEL_URL" />?
 

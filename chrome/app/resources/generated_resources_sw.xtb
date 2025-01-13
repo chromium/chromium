@@ -791,6 +791,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1549788673239553762"><ph name="APP_NAME" /> inataka kufikia <ph name="VOLUME_NAME" />. Inaweza kurekebisha au kufuta faili zako.</translation>
 <translation id="1549966883323105187">Fikia kwa haraka manenosiri yako yaliyohifadhiwa</translation>
 <translation id="1550656959113606473">Chrome ya Chaguomsingi</translation>
+<translation id="1552065819535218588">Chrome itaacha kutia alama arifa kutoka <ph name="URL" /> kuwa ni taka</translation>
 <translation id="1552301827267621511">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kilibadilisha mtambo wa kutafuta ili kitumie <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Dhibiti kiendelezi</translation>
 <translation id="1553538517812678578">bila kikomo</translation>
@@ -3095,6 +3096,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3159978855457658359">Badilisha jina la kifaa</translation>
 <translation id="3160928651883997588">Mapendeleo ya VPN</translation>
 <translation id="3161522574479303604">Lugha zote</translation>
+<translation id="3162070126914310576">Kifaa hiki hakiwezi kuandikishwa kwa sasa kwa sababu kitengo cha shirika lako kimefikia kikomo chake cha kwanza cha uandikishaji. Wasiliana na msimamizi wako ili upate usaidizi.</translation>
 <translation id="3162766632262775911">Zinazoruhusiwa kila wakati kutumia kiboreshaji cha V8</translation>
 <translation id="3162853326462195145">Akaunti ya shule</translation>
 <translation id="3162899666601560689">Tovuti zinaweza kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi</translation>
@@ -9067,6 +9069,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="746861123368584540">Kiendelezi kimepakiwa</translation>
 <translation id="7469612367552312334">Imewashwa • Tumia lugha ya kawaida kutafuta historia yako ya kuvinjari na kupata tovuti ulizotembelea</translation>
 <translation id="7470131554696493512">Kuzuia vifuasi vya Thunderbolt au USB4 visifikie na kutuma hifadhi (RAM)</translation>
+<translation id="7470284766345262333">Akaunti hii haijahusishwa na Google kwa hivyo vipengele kama vile usawazishaji wa Chrome havipatikani</translation>
 <translation id="7470424110735398630">Zinazoruhusiwa kuona ubao wako wa kunakili</translation>
 <translation id="747114903913869239">Hitilafu: Haikuweza kufumbua kiendelezi</translation>
 <translation id="7471520329163184433">Polepole</translation>

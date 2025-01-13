@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">စာမျက်နှာကို ဝင်ကြည့်ခဲ့သည်</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{မရှိ}=1{ဝဘ်ဆိုက် ၁ ခုမှ (သင့် Google Account တွင် ဆက်၍ လက်မှတ်ထိုးဝင်ထားပါမည်)}other{ဝဘ်ဆိုက် # ခုမှ (သင့် Google Account တွင် ဆက်၍ လက်မှတ်ထိုးဝင်ထားပါမည်)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> ဒေါင်းလုဒ်လုပ်၍ မရပါ</translation>
+<translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1174644974616730562">Chinese #1 စာအိတ်</translation>
 <translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" /> တွင် ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ သုံးရန် <ph name="EMBEDDED_URL" /> ကို ခွင့်ပြုလိုသလား။
 
@@ -386,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain ဖြင့် Password Manager သုံးရန် Chromium ကို ပြန်ဖွင့်ပြီး Keychain သုံးခွင့်ပြုပါ။ ပြန်ဖွင့်ပြီးနောက် သင့်တဘ်များ ပြန်ပွင့်ပါမည်။</translation>
 <translation id="1652887625750064647">AI အကောင်းဆုံးကိုက်ညီမှု</translation>
+<translation id="1653465303147789530">အက်ပ်များမပြောင်းဘဲ <ph name="PAYMENT_METHOD" /> ဖြင့် ငွေပေးချေခြင်း</translation>
 <translation id="1656024727720460136">ဤစာမျက်နှာကို ပိုမိုလွယ်ကူစွာဖတ်နိုင်ရန် Chrome က ရိုးရှင်းအောင်ပြုလုပ်ထားသည်။ Chrome သည် မူရင်းစာမျက်နှာကို လုံခြုံသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ရယူထားသည်။</translation>
 <translation id="1656489000284462475">ထုတ်ယူရန်</translation>
 <translation id="1658111267661135323">TV နှင့် ဗီဒီယို</translation>
@@ -557,6 +559,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />သင်ဝင်ကြည့်သည့် စာမျက်နှာအချို့၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သောစာမျက်နှာပါ အကြောင်းအရာများ<ph name="END_WHITEPAPER_LINK" /> ကို Google သို့ ပို့ပေးခြင်းဖြင့် လူတိုင်းအတွက် ဝဘ်ပေါ်တွင် လုံခြုံရေး ကောင်းမွန်လာအောင် ကူညီပါ။ <ph name="BEGIN_PRIVACY_PAGE_LINK" />ကိုယ်ရေးအချက်အလက် မူဝါဒ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">သင့်စာသားနှင့် စာမျက်နှာအကြောင်းအရာကို Google သို့ ပို့ပြီး ဤဝန်ဆောင်မှု ပိုကောင်းစေရန် သုံးနိုင်သည်။
   <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">ပိုမိုမြန်ဆန်စွာ ငွေပေးချေရန် တစ်ကြိမ် လုံခြုံရေးစစ်ဆေးခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> စာညှပ်များ</translation>
 <translation id="1973335181906896915">နံပါတ်စဉ်စီမှု အမှား</translation>
 <translation id="1973785048533660168">စာရေးစာချီနှင့် စီမံခန့်ခွဲရေးအလုပ်</translation>
@@ -1585,6 +1588,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" အတွက် အကိုက်ညီဆုံးများ</translation>
 <translation id="3789155188480882154">အရွယ်အစား ၁၆</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
+<translation id="3791118028061680614">အက်ပ်များမပြောင်းဘဲ ငွေပေးချေခြင်း</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> လက်မ)</translation>
 <translation id="3792826587784915501">ယုံကြည်မှုဆိုင်ရာ၊ အင်ဒီး ရုပ်ရှင်</translation>
 <translation id="3793574014653384240">မကြာသေးမီက ဖြစ်ပွားခဲ့သည့် ရပ်တန့်သွားခြင်း အရေအတွက်များနှင့် အကြောင်းရင်းများ</translation>

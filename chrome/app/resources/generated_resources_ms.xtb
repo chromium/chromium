@@ -794,6 +794,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Apl mungkin mengubah suai atau memadamkan fail anda.</translation>
 <translation id="1549966883323105187">Akses kata laluan disimpan anda dengan lebih pantas</translation>
 <translation id="1550656959113606473">Chrome Lalai</translation>
+<translation id="1552065819535218588">Chrome akan berhenti membenderakan pemberitahuan daripada <ph name="URL" /> sebagai spam</translation>
 <translation id="1552301827267621511">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar carian agar menggunakan <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Uruskan sambungan</translation>
 <translation id="1553538517812678578">tidak terhad</translation>
@@ -3098,6 +3099,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3159978855457658359">Edit nama peranti</translation>
 <translation id="3160928651883997588">Pilihan VPN</translation>
 <translation id="3161522574479303604">Semua bahasa</translation>
+<translation id="3162070126914310576">Peranti gagal didaftarkan pada masa ini kerana unit organisasi anda telah mencapai had pendaftaran permulaan. Hubungi pentadbir anda untuk mendapatkan bantuan.</translation>
 <translation id="3162766632262775911">Sentiasa dibenarkan untuk menggunakan pengoptimum V8</translation>
 <translation id="3162853326462195145">Akaun sekolah</translation>
 <translation id="3162899666601560689">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingat item dalam troli beli-belah anda</translation>
@@ -9072,6 +9074,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="746861123368584540">Sambungan dimuatkan</translation>
 <translation id="7469612367552312334">Dihidupkan • Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati</translation>
 <translation id="7470131554696493512">Sekat aksesori Thunderbolt atau USB4 daripada mengakses dan berkongsi memori (RAM)</translation>
+<translation id="7470284766345262333">Akaun ini tidak dikaitkan dengan Google, maka ciri seperti penyegerakan Chrome tidak tersedia</translation>
 <translation id="7470424110735398630">Dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="747114903913869239">Ralat: Tidak dapat menyahkod sambungan</translation>
 <translation id="7471520329163184433">Lebih perlahan</translation>

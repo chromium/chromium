@@ -7425,6 +7425,7 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ 
       Nếu bạn không đặt chính sách này cho một trang web, thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì quyền kiểm soát sẽ tuân theo chế độ mặc định của trình duyệt và cho phép người dùng chọn quyền này trên từng trang web.</translation>
 <translation id="6383774771168138899">Định cấu hình quy trình <ph name="CLOUD_UPLOAD_NAME" /> cho <ph name="MICROSOFT_ONE_DRIVE_NAME" /> và <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Bật chế độ hiện trang kết quả của công cụ tìm kiếm mặc định trong bảng điều khiển bên của Trình duyệt</translation>
+<translation id="6389858262577493180">Cho phép sử dụng <ph name="GLIC" /></translation>
 <translation id="6394350458541421998">Chính sách này đã chấm dứt kể từ phiên bản <ph name="PRODUCT_OS_NAME" /> 29. Vui lòng sử dụng chính sách PresentationScreenDimDelayScale thay vào đó.</translation>
 <translation id="6397588391180665797">Báo cáo cho người dùng về cấu hình mạng trên các thiết bị đã đăng ký.
 
@@ -8018,6 +8019,8 @@ Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name
 <translation id="6766216162565713893">Cho phép trang web yêu cầu người dùng cấp quyền truy cập vào thiết bị Bluetooth lân cận</translation>
 <translation id="6770454900105963262">Báo cáo thông tin về các phiên kiosk hiện hoạt</translation>
 <translation id="6774132787348495175">Không cho phép người dùng sử dụng máy ảo cần thiết để hỗ trợ các ứng dụng Linux</translation>
+<translation id="6776202826080834193">Nếu bạn Bật hoặc không đặt chính sách này, thì người dùng có thể sử dụng tính năng
+<ph name="GLIC" />. Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thể tương tác với <ph name="GLIC" />; nút trong dải thẻ sẽ bị ẩn và <ph name="GLIC" /> sẽ không dùng được qua phím tắt trừ phi bạn bật trong hồ sơ khác.</translation>
 <translation id="678121785914414680">Danh sách những loại tệp tự động mở khi tải xuống. Bạn không được thêm dấu phân cách phía trước khi liệt kê loại tệp. Do đó, hãy dùng "txt" thay cho ".txt".
 
 Những tệp thuộc loại tự động mở sẽ vẫn phải trải qua các bước kiểm tra trong chế độ duyệt web an toàn mà người dùng đã bật. Các tệp này sẽ không mở nếu không vượt qua các bước kiểm tra đó.
@@ -10509,6 +10512,7 @@ Chính sách này liên kết các mã cấu hình đến các cấu hình máy 
       Nếu chính sách này thay đổi khi <ph name="PRODUCT_NAME" /> đang chạy, thì chính sách này chỉ áp dụng cho các thẻ mới mở.</translation>
 <translation id="8685748277907759932">Ngăn người dùng sử dụng tính năng Chạm để tìm kiếm</translation>
 <translation id="8686700500128191717">Bật tính năng báo cáo người dùng thiết bị</translation>
+<translation id="8687570136798972353">Bật <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Bật lại API Thành phần web phiên bản 0 cho đến M84.</translation>
 <translation id="8693243869659262736">Sử dụng máy khách DNS tích hợp</translation>
 <translation id="8695006038397632296">Tạo hoặc tải yêu cầu cài đặt tiện ích lên Bảng điều khiển dành cho quản trị viên</translation>
@@ -11123,6 +11127,7 @@ Chính sách này chỉ có hiệu lực khi bạn đặt chính sách <ph name=
       Nếu bạn đặt chính sách này thành true, thì thông tin về hệ thống của thiết bị sẽ được báo cáo.</translation>
 <translation id="9131419675479917141">Cho phép người dùng đặt mã PIN yếu nhưng có hiển thị cảnh báo</translation>
 <translation id="913195841488580904">Chặn truy cập vào danh sách các URL</translation>
+<translation id="9132345265506256744">Không cho phép sử dụng <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Đèn nền bàn phím màu vàng</translation>
 <translation id="9135033364005346124">Bật proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Hiện thông báo khi phát hiện thiết bị USB</translation>

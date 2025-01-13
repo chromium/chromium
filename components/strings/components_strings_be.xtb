@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Наведваецца старонка</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Сайтаў няма}=1{З 1 сайта (вы застаняцеся ва Уліковым запісе Google)}one{З # сайта (вы застаняцеся ва Уліковым запісе Google)}few{З # сайтаў (вы застаняцеся ва Уліковым запісе Google)}many{З # сайтаў (вы застаняцеся ва Уліковым запісе Google)}other{З # сайта (вы застаняцеся ва Уліковым запісе Google)}}</translation>
 <translation id="1167877250265821930">Не ўдалося спампаваць пакет: <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1174644974616730562">Канверт Chinese № 1</translation>
 <translation id="1174723505405632867">Дазволіць сайту <ph name="EMBEDDED_URL" /> выкарыстоўваць файлы cookie і даныя сайта <ph name="TOP_LEVEL_URL" />?
 

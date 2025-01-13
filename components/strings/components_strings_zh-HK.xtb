@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">瀏覽網頁</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{無}=1{來自 1 個網站 (Google 帳戶會保持登入狀態)}other{來自 # 個網站 (Google 帳戶會保持登入狀態)}}</translation>
 <translation id="1167877250265821930">無法下載<ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">重新命名</translation>
 <translation id="1174644974616730562">Chinese #1 信封</translation>
 <translation id="1174723505405632867">您要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
 
@@ -1203,6 +1204,7 @@
 <translation id="3156511682997763015">快轉 10 秒</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158539265159265653">光碟</translation>
+<translation id="3162070126914310576">你的機構單位達到初始註冊限制，因此這部裝置目前無法註冊。請聯絡管理員尋求協助。</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 可能要求您前往其登入頁面。</translation>
 <translation id="316638481603975524">可要求安裝網絡應用程式</translation>
 <translation id="3168744840365648658">無線電設備</translation>
@@ -1936,6 +1938,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">已暫停上載檔案到 Microsoft OneDrive</translation>
 <translation id="4390472908992056574">圍邊</translation>
+<translation id="4395550503472021297">此政策會控制以下政策的預設行為：<ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">開啟彈出式視窗，將你導向至銀行網站進行驗證</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
@@ -2378,6 +2381,7 @@
 <translation id="5244521145258281926">管理 Google 帳戶按鈕，啟動之後就可以管理 Google 帳戶嘅資料、私隱權同安全性</translation>
 <translation id="5244732203286792411">正在載入…
     可能需時一分鐘。</translation>
+<translation id="5248543496748975054">未填入卡號嗎？</translation>
 <translation id="5250209940322997802">「連線至網絡」</translation>
 <translation id="52517543715119994">瞭解 Chrome 的功能</translation>
 <translation id="5251803541071282808">雲端</translation>
@@ -3994,6 +3998,7 @@
 <translation id="8116925261070264013">已設為靜音的網站</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8118506371121007279">提供意見</translation>
+<translation id="8120720167840853945">此政策不會控制任何其他政策的預設行為。</translation>
 <translation id="8127301229239896662">無法在您的電腦或網絡上正確安裝「<ph name="SOFTWARE_NAME" />」。請要求您的 IT 管理員解決此問題。</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8133495915926741232">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果封鎖廣泛類別，系統亦會一併封鎖相關主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

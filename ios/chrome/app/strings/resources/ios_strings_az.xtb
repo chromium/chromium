@@ -1150,6 +1150,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6160780110287872296">Fayl endirilsin?</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6168647875670665004">Məqalə təklifləri</translation>
+<translation id="6169031022444660352">Bütün saxlanılmış giriş məlumatlarını silmək üçün öncə cihazınızda giriş kodu təyin etməlisiniz.</translation>
 <translation id="6173499589275053515">Parol Google Hesabınızda (<ph name="EMAIL" />) yadda saxlanıldı</translation>
 <translation id="6187302354554850004">Son sinxronizasiya: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Yaradılıb: <ph name="DATE" /></translation>
@@ -1201,6 +1202,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6355820205320395730">Zəif parolları tapmaq asandır. Güclü parol yaratdığınızdan əmin olun. <ph name="BEGIN_LINK" />Daha çox təhlükəsizlik məsləhətinə baxın.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> izləyin</translation>
 <translation id="6368038301482806847">Siyahıdan axtarış mexanizmi seçin.</translation>
+<translation id="6368102751067608420">Bütün parol meneceri datasını silmək üçün</translation>
 <translation id="6374469231428023295">Yenidən cəhd edin</translation>
 <translation id="6387994324662817823">Parollar yalnız bu cihazda Google Parol Menecerində saxlanılır.</translation>
 <translation id="6404422529625928907">Google Diskdə açın</translation>

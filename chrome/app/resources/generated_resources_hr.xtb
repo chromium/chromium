@@ -795,6 +795,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1549788673239553762"><ph name="APP_NAME" /> želi pristupiti jedinici <ph name="VOLUME_NAME" />. Ta aplikacija može izmijeniti ili izbrisati vaše datoteke.</translation>
 <translation id="1549966883323105187">Brže pristupite spremljenim zaporkama</translation>
 <translation id="1550656959113606473">Zadani Chrome</translation>
+<translation id="1552065819535218588">Chrome će prestati označavati obavijesti s web-lokacije <ph name="URL" /> kao neželjenu poštu</translation>
 <translation id="1552301827267621511">Proširenje "<ph name="EXTENSION_NAME" />" prebacilo je pretraživanje na domenu <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Upravljanje proširenjem</translation>
 <translation id="1553538517812678578">neograničeno</translation>

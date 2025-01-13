@@ -791,6 +791,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vil ha tilgang til <ph name="VOLUME_NAME" />. Det kan føre til at filene dine endres eller slettes.</translation>
 <translation id="1549966883323105187">Få raskere tilgang til de lagrede passordene dine</translation>
 <translation id="1550656959113606473">Standard Chrome</translation>
+<translation id="1552065819535218588">Chrome slutter å flagge varsler fra <ph name="URL" /> som søppelpost</translation>
 <translation id="1552301827267621511">Utvidelsen «<ph name="EXTENSION_NAME" />» endret søkemotoren til <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Administrer utvidelsen</translation>
 <translation id="1553538517812678578">ubegrenset</translation>
@@ -3092,6 +3093,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3159978855457658359">Rediger enhetsnavnet</translation>
 <translation id="3160928651883997588">VPN-innstillinger</translation>
 <translation id="3161522574479303604">Alle språk</translation>
+<translation id="3162070126914310576">Denne enheten kan ikke registreres nå fordi organisasjonsenheten din har nådd grensen for initiell registrering. Kontakt administratoren din hvis du trenger hjelp.</translation>
 <translation id="3162766632262775911">Nettsteder som alltid har lov til å bruke V8-optimalisering</translation>
 <translation id="3162853326462195145">Skolekonto</translation>
 <translation id="3162899666601560689">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din</translation>
@@ -9061,6 +9063,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="746861123368584540">Utvidelsen er lastet inn</translation>
 <translation id="7469612367552312334">På • Bruk dagligdags språk for å søke i nettleserloggen og finne nettsteder du har besøkt</translation>
 <translation id="7470131554696493512">Blokker Thunderbolt- eller USB4-tilbehør fra å bruke og dele minne (RAM)</translation>
+<translation id="7470284766345262333">Denne kontoen er ikke tilknyttet Google, så funksjoner som Chrome-synkronisering er ikke tilgjengelige</translation>
 <translation id="7470424110735398630">Nettsteder som har lov til å se utklippstavlen din</translation>
 <translation id="747114903913869239">Feil: Kan ikke avkode etternavnet</translation>
 <translation id="7471520329163184433">Saktere</translation>

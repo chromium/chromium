@@ -792,6 +792,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1549788673239553762"><ph name="APP_NAME" /> želi da pristupa <ph name="VOLUME_NAME" />. Možda će da menja ili briše datoteke.</translation>
 <translation id="1549966883323105187">Brže pristupajte sačuvanim lozinkama</translation>
 <translation id="1550656959113606473">Podrazumevani Chrome</translation>
+<translation id="1552065819535218588">Chrome će prestati da označava obaveštenja od <ph name="URL" /> kao nepoželjna</translation>
 <translation id="1552301827267621511">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio pretragu tako da koristi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Upravljajte dodatkom</translation>
 <translation id="1553538517812678578">neograničeno</translation>
@@ -3083,6 +3084,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3159978855457658359">Izmenite naziv uređaja</translation>
 <translation id="3160928651883997588">Podešavanja VPN-a</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
+<translation id="3162070126914310576">Ovaj uređaj trenutno ne može da se registruje jer je organizaciona jedinica dostigla početno ograničenje za registracije. Zatražite pomoć od administratora.</translation>
 <translation id="3162766632262775911">Korišćenje V8 optimizatora je uvek dozvoljeno</translation>
 <translation id="3162853326462195145">Školski nalog</translation>
 <translation id="3162899666601560689">Sajtovi mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane</translation>
@@ -9060,6 +9062,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="746861123368584540">Dodatak je učitan</translation>
 <translation id="7469612367552312334">Uključeno • Koristite svakodnevni jezik da biste pretraživali istoriju pregledanja i pronalazili sajtove koje ste posetili</translation>
 <translation id="7470131554696493512">Sprečite Thunderbolt ili USB4 dodatnu opremu da pristupa memoriji (RAM) i da je deli</translation>
+<translation id="7470284766345262333">Ovaj nalog nije povezan sa Google-om, pa funkcije kao što je Chrome sinhronizacija nisu dostupne</translation>
 <translation id="7470424110735398630">Dozvoljeno im je da vide privremenu memoriju</translation>
 <translation id="747114903913869239">Greška: Nije moguće dešifrovati dodatak</translation>
 <translation id="7471520329163184433">Sporije</translation>

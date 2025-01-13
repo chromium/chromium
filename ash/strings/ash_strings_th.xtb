@@ -869,7 +869,6 @@
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="40062176907008878">การเขียนด้วยลายมือ</translation>
 <translation id="4011112806063830608">โหมดห้ามรบกวนเปิดอยู่</translation>
-<translation id="4015144849380506405">หยุดชั่วคราว/ใช้งานแป้นเมาส์ต่อเมื่อเปิดอยู่</translation>
 <translation id="4017989525502048489">ตัวชี้เลเซอร์</translation>
 <translation id="401993194061514265">ตัวทำเครื่องหมายไม่พร้อมใช้งาน เปิด Screencast อีกครั้ง</translation>
 <translation id="4021716437419160885">เลื่อนลง</translation>
@@ -1673,7 +1672,6 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">จัดกล้องพอดีกับมุมซ้ายล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="6605415194043280389">โหมดโฟกัสเปิดอยู่</translation>
-<translation id="660846213831377756">แป้นเมาส์</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6612802754306526077">เลือกโหมดบันทึกหน้าจอแล้ว</translation>
 <translation id="6612889377159412215">งานย่อย</translation>

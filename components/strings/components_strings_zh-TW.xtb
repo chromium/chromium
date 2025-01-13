@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">已造訪網頁</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{無}=1{1 個網站 (Google 帳戶會保持登入狀態)}other{# 個網站 (Google 帳戶會保持登入狀態)}}</translation>
 <translation id="1167877250265821930">無法下載<ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">重新命名</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">你要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
 

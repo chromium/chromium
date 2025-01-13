@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Se visita una página</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{Desde 1 sitio (la sesión de tu cuenta de Google seguirá abierta)}other{Desde # sitios (la sesión de tu cuenta de Google seguirá abierta)}}</translation>
 <translation id="1167877250265821930">No se ha podido descargar el <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174644974616730562">Sobre chino n.º 1</translation>
 <translation id="1174723505405632867">¿Permitir que <ph name="EMBEDDED_URL" /> use cookies y datos de sitios en <ph name="TOP_LEVEL_URL" />?
 
@@ -386,6 +387,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Para usar el Gestor de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="1652887625750064647">Mejor coincidencia de IA</translation>
+<translation id="1653465303147789530">Paga con <ph name="PAYMENT_METHOD" /> sin cambiar de aplicación</translation>
 <translation id="1656024727720460136">Chrome ha simplificado esta página para facilitar su lectura y ha recuperado la página original mediante una conexión segura.</translation>
 <translation id="1656489000284462475">Recogida</translation>
 <translation id="1658111267661135323">Televisión y vídeo</translation>
@@ -556,6 +558,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1959001866257244765">Ayuda a mejorar la seguridad de todos en la Web enviando a Google las <ph name="BEGIN_WHITEPAPER_LINK" />URLs de algunas de las páginas que visites, información limitada del sistema y parte del contenido de las páginas<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Tu texto y el contenido de la página se enviarán a Google y podrán usarse para mejorar esta función.
   <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Completa una comprobación de seguridad única para pagar más rápido</translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Error de serialización</translation>
 <translation id="1973785048533660168">Trabajos de oficinista y administrativo</translation>
@@ -1203,6 +1206,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
+<translation id="3162070126914310576">Este dispositivo no se puede registrar ahora mismo porque tu unidad organizativa ha alcanzado su límite de registro inicial. Ponte en contacto con tu administrador para obtener ayuda.</translation>
 <translation id="3162559335345991374">La red Wi-Fi que estás utilizando puede requerir que accedas a su página de inicio de sesión.</translation>
 <translation id="316638481603975524">Puede solicitar permiso para instalar aplicaciones web</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
@@ -1585,6 +1589,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="378611282717571199">Mejores coincidencias para "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3791118028061680614">Paga sin cambiar de aplicación</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
@@ -1937,6 +1942,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Se ha pausado la subida de archivos a Microsoft OneDrive</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Esta política controla el comportamiento predeterminado de las siguientes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Abre una ventana emergente para realizar la verificación en el sitio web de tu banco</translation>
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4406896451731180161">resultados de la búsqueda</translation>
@@ -2379,6 +2385,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5244521145258281926">Gestionar cuenta de Google: actívalo para gestionar la información, la privacidad y la seguridad de tu cuenta de Google</translation>
 <translation id="5244732203286792411">Cargando...
     Este proceso puede tardar un minuto.</translation>
+<translation id="5248543496748975054">¿No se ha rellenado el número de tarjeta?</translation>
 <translation id="5250209940322997802">"Conéctate a la red"</translation>
 <translation id="52517543715119994">Consulta información sobre las funciones de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>
@@ -3995,6 +4002,7 @@ Más información:
 <translation id="8116925261070264013">Silenciado</translation>
 <translation id="8118489163946903409">Método de pago</translation>
 <translation id="8118506371121007279">Enviar comentarios</translation>
+<translation id="8120720167840853945">Esta política no controla el comportamiento predeterminado de otras políticas.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se ha instalado correctamente en tu ordenador o red. Ponte en contacto con el administrador de TI para resolver el problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios. Si desactivas una categoría más amplia, también se bloquearán los temas relacionados con ella. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

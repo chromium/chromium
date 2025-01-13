@@ -796,6 +796,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1549788673239553762">Aplikacija <ph name="APP_NAME" /> želi pristup za <ph name="VOLUME_NAME" />. Moguće je da će izmijeniti ili izbrisati fajlove.</translation>
 <translation id="1549966883323105187">Dođite brže do sačuvanih lozinki</translation>
 <translation id="1550656959113606473">Zadani Chrome</translation>
+<translation id="1552065819535218588">Chrome će prestati označavati obavijesti s web-lokacije <ph name="URL" /> kao neželjenu poštu</translation>
 <translation id="1552301827267621511">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila pretraživanje da koristi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Upravljajte ekstenzijom</translation>
 <translation id="1553538517812678578">neograničeno</translation>

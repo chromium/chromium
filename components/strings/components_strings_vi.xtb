@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Trang đã truy cập</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Không có}=1{Từ 1 trang web (bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google)}other{Từ # trang web (bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google)}}</translation>
 <translation id="1167877250265821930">Không tải <ph name="LANGUAGE" /> xuống được</translation>
+<translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1174644974616730562">Phong bì kiểu Trung số 1</translation>
 <translation id="1174723505405632867">Bạn có muốn cho phép <ph name="EMBEDDED_URL" /> sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /> không?
 
@@ -1203,6 +1204,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3156511682997763015">Tua đi 10 giây</translation>
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158539265159265653">Đĩa</translation>
+<translation id="3162070126914310576">Hiện không thể đăng ký thiết bị này vì đơn vị tổ chức của bạn đã đạt đến giới hạn đăng ký ban đầu. Hãy liên hệ với quản trị viên để được trợ giúp.</translation>
 <translation id="3162559335345991374">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
 <translation id="316638481603975524">Có thể yêu cầu cài đặt ứng dụng web</translation>
 <translation id="3168744840365648658">Thiết bị vô tuyến</translation>
@@ -1937,6 +1939,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Đã tạm dừng tải tệp lên Microsoft OneDrive</translation>
 <translation id="4390472908992056574">Vành</translation>
+<translation id="4395550503472021297">Chính sách này đang kiểm soát hoạt động mặc định của các chính sách sau: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Mở cửa sổ bật lên để xác minh trên trang web của ngân hàng</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4406896451731180161">kết quả tìm kiếm</translation>
@@ -2379,6 +2382,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5244521145258281926">Nút Quản lý Tài khoản Google, hãy nhấn nút này để quản lý thông tin, quyền riêng tư và chế độ bảo mật trong Tài khoản Google của bạn</translation>
 <translation id="5244732203286792411">Đang tải...
     Quá trình này có thể mất ít phút.</translation>
+<translation id="5248543496748975054">Số thẻ chưa được điền?</translation>
 <translation id="5250209940322997802">"Kết nối với mạng"</translation>
 <translation id="52517543715119994">Tìm hiểu các tính năng của Chrome</translation>
 <translation id="5251803541071282808">Đám mây</translation>
@@ -3995,6 +3999,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="8118489163946903409">Phương thức thanh toán</translation>
 <translation id="8118506371121007279">Gửi phản hồi</translation>
+<translation id="8120720167840853945">Chính sách này không kiểm soát hoạt động mặc định của bất kỳ chính sách nào khác.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" đã được cài đặt không đúng trên máy tính hoặc mạng của bạn. Hãy yêu cầu quản trị viên CNTT của bạn giải quyết vấn đề này.</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8133495915926741232">Chọn những loại chủ đề chính mà các trang web có thể dùng để cá nhân hoá quảng cáo. Nếu bạn tắt một chủ đề chính thì các chủ đề có liên quan cũng sẽ bị chặn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

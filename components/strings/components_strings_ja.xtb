@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ページがアクセスされた</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{なし}=1{1 件のサイトから（Google アカウントへのログイン状態は維持されます）}other{# 件のサイトから（Google アカウントへのログイン状態は維持されます）}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" />をダウンロードできませんでした</translation>
+<translation id="1173894706177603556">名前を変更</translation>
 <translation id="1174644974616730562">中国 #1 封筒</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> が <ph name="TOP_LEVEL_URL" /> で Cookie とサイトデータを使用することを許可しますか？
 
@@ -386,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="1652887625750064647">AI ベストマッチ</translation>
+<translation id="1653465303147789530">アプリを切り替えずに <ph name="PAYMENT_METHOD" /> でお支払い</translation>
 <translation id="1656024727720460136">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護された接続を介して行われました。</translation>
 <translation id="1656489000284462475">受け取り</translation>
 <translation id="1658111267661135323">テレビ＆動画</translation>
@@ -556,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />アクセスしたページの URL、システム情報、およびページのコンテンツの一部<ph name="END_WHITEPAPER_LINK" />を Google に送信して、ウェブ全体のセキュリティ強化にご協力ください。<ph name="BEGIN_PRIVACY_PAGE_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">テキストとページのコンテンツが Google に送信され、この機能の改善に使用されることがあります。
   <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">1 回限りのセキュリティ チェックを行ってすばやくお支払いいただけます</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
 <translation id="1973785048533660168">事務系の求人情報</translation>
@@ -1585,6 +1588,7 @@
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」と一致する結果</translation>
 <translation id="3789155188480882154">サイズ 16</translation>
 <translation id="3789841737615482174">インストール</translation>
+<translation id="3791118028061680614">アプリを切り替えずにお支払い</translation>
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" />x<ph name="HEIGHT" /> インチ）</translation>
 <translation id="3792826587784915501">カルト映画、インディーズ映画</translation>
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>

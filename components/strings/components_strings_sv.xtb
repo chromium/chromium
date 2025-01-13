@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">En sida besöks</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Inga}=1{Från 1 webbplats (du förblir inloggad på Google-kontot)}other{Från # webbplatser (du förblir inloggad på Google-kontot)}}</translation>
 <translation id="1167877250265821930">Det gick inte att ladda ned <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1174644974616730562">Kinesiskt nr 1-kuvert</translation>
 <translation id="1174723505405632867">Vill du tillåta att <ph name="EMBEDDED_URL" /> använder cookies och webbplatsdata på <ph name="TOP_LEVEL_URL" />?
 
@@ -1937,6 +1938,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Filuppladdning till Microsoft OneDrive har pausats</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Den här principen styr standardbeteendet för följande principer: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Öppnar ett popup-fönster för verifiering på bankens webbplats</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">sökresultat</translation>
@@ -3995,6 +3997,7 @@ Mer information.
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="8118489163946903409">Betalningsmetod</translation>
 <translation id="8118506371121007279">Ge feedback</translation>
+<translation id="8120720167840853945">Den här principen styr inte standardbeteendet för andra principer.</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> har inte installerats korrekt på datorn eller nätverket. Be IT-administratören om hjälp med problemet.</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8133495915926741232">Välj vilka breda kategorier av ämnen som kan användas för att anpassa annonser. Om du inaktiverar en bredare kategori blockeras även relaterade ämnen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">A página é visitada</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{De 1 site (mantém a sessão iniciada na sua Conta Google)}other{De # sites (mantém a sessão iniciada na sua Conta Google)}}</translation>
 <translation id="1167877250265821930">Falha ao transferir <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1174644974616730562">Envelope Chinese n.º 1</translation>
 <translation id="1174723505405632867">Permitir que <ph name="EMBEDDED_URL" /> utilize cookies e dados de sites em <ph name="TOP_LEVEL_URL" />?
 
@@ -1205,6 +1206,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
+<translation id="3162070126914310576">Não é possível inscrever este dispositivo neste momento porque a sua unidade organizacional atingiu o limite de inscrição inicial. Contacte o seu administrador para receber assistência.</translation>
 <translation id="3162559335345991374">A rede Wi-Fi que está a utilizar pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="316638481603975524">Pode pedir para instalar apps Web</translation>
 <translation id="3168744840365648658">Equipamento de rádio</translation>
@@ -1940,6 +1942,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">O carregamento do ficheiro para o Microsoft OneDrive foi pausado</translation>
 <translation id="4390472908992056574">Borda</translation>
+<translation id="4395550503472021297">Esta política está a controlar o comportamento predefinido das seguintes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Abre um pop-up para validar no Website do banco</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
@@ -2382,6 +2385,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5244521145258281926">Gerir Atividade da Conta Google; ative para gerir as suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="5244732203286792411">A carregar…
     Pode demorar alguns minutos.</translation>
+<translation id="5248543496748975054">O número do cartão não foi preenchido?</translation>
 <translation id="5250209940322997802">"Ligar à rede"</translation>
 <translation id="52517543715119994">Saiba mais acerca das funcionalidades do Chrome</translation>
 <translation id="5251803541071282808">Nuvem</translation>
@@ -3997,6 +4001,7 @@ Detalhes adicionais:
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8118506371121007279">Envie feedback</translation>
+<translation id="8120720167840853945">Esta política não está a controlar o comportamento predefinido de outras políticas.</translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Escolha as categorias amplas de tópicos que podem ser usadas para ajudar a personalizar anúncios. A desativação de uma categoria mais ampla também bloqueia os respetivos tópicos relacionados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

@@ -794,6 +794,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1549788673239553762"><ph name="APP_NAME" /> muốn truy cập <ph name="VOLUME_NAME" />. Ứng dụng này có thể sửa đổi hoặc xóa các tệp của bạn.</translation>
 <translation id="1549966883323105187">Truy cập mật khẩu bạn đã lưu nhanh chóng hơn</translation>
 <translation id="1550656959113606473">Chrome mặc định</translation>
+<translation id="1552065819535218588">Chrome sẽ ngừng đánh dấu thông báo của <ph name="URL" /> là nội dung rác</translation>
 <translation id="1552301827267621511">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi công cụ tìm kiếm thành <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Quản lý tiện ích</translation>
 <translation id="1553538517812678578">không giới hạn</translation>
@@ -3098,6 +3099,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3159978855457658359">Chỉnh sửa tên thiết bị</translation>
 <translation id="3160928651883997588">Lựa chọn ưu tiên về VPN</translation>
 <translation id="3161522574479303604">Tất cả ngôn ngữ</translation>
+<translation id="3162070126914310576">Hiện không thể đăng ký thiết bị này vì đơn vị tổ chức của bạn đã đạt đến giới hạn đăng ký ban đầu. Hãy liên hệ với quản trị viên để được trợ giúp.</translation>
 <translation id="3162766632262775911">Luôn được phép sử dụng trình tối ưu hoá V8</translation>
 <translation id="3162853326462195145">Tài khoản trường học</translation>
 <translation id="3162899666601560689">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mặt hàng có trong giỏ hàng</translation>
@@ -9074,6 +9076,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="746861123368584540">Đã tải tiện ích</translation>
 <translation id="7469612367552312334">Bật • Dùng ngôn ngữ giao tiếp thường ngày để tìm nhật ký duyệt web và tìm các trang web bạn đã truy cập</translation>
 <translation id="7470131554696493512">Không cho phép các phụ kiện Thunderbolt hoặc USB4 truy cập và chia sẻ bộ nhớ (RAM)</translation>
+<translation id="7470284766345262333">Tài khoản này chưa được liên kết với Google nên bạn không thể sử dụng các tính năng như đồng bộ hoá Chrome</translation>
 <translation id="7470424110735398630">Được phép xem bảng nhớ tạm của bạn</translation>
 <translation id="747114903913869239">Lỗi: Không thể giải mã tiện ích</translation>
 <translation id="7471520329163184433">Chậm hơn</translation>

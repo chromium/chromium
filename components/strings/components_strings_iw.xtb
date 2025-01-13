@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ביקור בדף</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{אין אתרים}=1{‏מאתר אחד (החיבור לחשבון Google שלך ימשיך)}one{‏מ-# אתרים (החיבור לחשבון Google שלך ימשיך)}two{‏מ-# אתרים (החיבור לחשבון Google שלך ימשיך)}other{‏מ-# אתרים (החיבור לחשבון Google שלך ימשיך)}}</translation>
 <translation id="1167877250265821930">ההורדה של <ph name="LANGUAGE" /> נכשלה</translation>
+<translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174644974616730562">מעטפה – סינית 1</translation>
 <translation id="1174723505405632867">‏האם ברצונך לאפשר ל-<ph name="EMBEDDED_URL" /> להשתמש בקובצי Cookie ובנתונים שב-<ph name="TOP_LEVEL_URL" />?
 
@@ -520,7 +521,7 @@
 <translation id="1880901968112404879">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור את פרטי הכרטיס, קוד האבטחה המוצפן והכתובת לחיוב בחשבון Google</translation>
 <translation id="1883255238294161206">כיווץ רשימה</translation>
 <translation id="1884843295353628214">ג'אז</translation>
-<translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך להקיש כדי לדלג מעל מכשולים.</translation>
+<translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך ללחוץ כדי לדלג מעל מכשולים.</translation>
 <translation id="1898423065542865115">סינון</translation>
 <translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
 <translation id="1902576642799138955">תקופת תוקף</translation>
@@ -1746,7 +1747,7 @@
 <translation id="4089152113577680600">מגש 14</translation>
 <translation id="4092349052316400070">אפשר למלא את הכתובת</translation>
 <translation id="4096237801206588987">‏11x15 אינץ'</translation>
-<translation id="4098306082496067348">מקישים על פרטי הכרטיס הווירטואלי כדי להוסיף אותם לתשלום.</translation>
+<translation id="4098306082496067348">לוחצים על פרטי הכרטיס הווירטואלי כדי להוסיף אותם לתשלום.</translation>
 <translation id="4099048595830172239">לפי המדיניות של מנהל המערכת, לא מומלץ לשתף את המסך עם <ph name="APPLICATION_TITLE" /> כשמופיע בו תוכן סודי גלוי:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="4101413244023615925">טקסט וגרפיקה</translation>
@@ -1881,7 +1882,7 @@
 <translation id="4298000214066716287">השקעות</translation>
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4300675098767811073">ניקובים מרובים בצד ימין</translation>
-<translation id="4302514097724775343">יש להקיש על הדינוזאור כדי לשחק</translation>
+<translation id="4302514097724775343">יש ללחוץ על הדינוזאור כדי לשחק</translation>
 <translation id="4304049446746819918">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">כדאי לקרוא הערכות של לקוחות לגבי מוצרים, שירותים או חוויות שימוש. על סמך ביקורות כאלה ניתן לקבל החלטות מושכלות יותר.</translation>
 <translation id="4305666528087210886">לא ניתן לגשת לקובץ</translation>
@@ -1937,6 +1938,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏העלאת הקובץ אל Microsoft OneDrive הושהתה</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">המדיניות הזו קובעת את פעולת ברירת המחדל של כללי המדיניות הבאים: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">ייפתח חלון קופץ לאימות באתר הבנק</translation>
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
@@ -2332,7 +2334,7 @@ Del</translation>
             <ph name="NEW_LINE" />אם תכונות האתר לא פועלות, <ph name="START_LINK" />כדאי לנסות להתיר את השימוש בקובצי Cookie של צד שלישי באופן זמני<ph name="END_LINK" />.</translation>
 <translation id="5145883236150621069">קיים קוד שגיאה בתגובת המדיניות</translation>
 <translation id="5146995429444047494">התראות של <ph name="ORIGIN" /> נחסמו</translation>
-<translation id="514704532284964975">‏נשלחה בקשה מהכתובת <ph name="URL" /> לראות ולשנות מידע במכשירי NFC בזמן ההקשה בטלפון</translation>
+<translation id="514704532284964975">‏נשלחה בקשה מהכתובת <ph name="URL" /> לראות ולשנות מידע במכשירי NFC בזמן הלחיצה בטלפון</translation>
 <translation id="5147633291963801297">הצגת ירידות במחיר בחלונית הצדדית</translation>
 <translation id="5148809049217731050">פנים כלפי מעלה</translation>
 <translation id="5148889558173091794">הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> נחסמה על ידי הארגון שלך עקב הפרת מדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2648,7 +2650,7 @@ Del</translation>
 <translation id="571510845185711675">וטרינרים</translation>
 <translation id="5715150588940290235">למחוק את קודי האבטחה שנשמרו?</translation>
 <translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> מתוך <ph name="WINDOW_COUNT" /> במכשיר הזה</translation>
-<translation id="5716325061445053985">צריך להקיש כדי לפתוח את הכרטיסייה בטלפון</translation>
+<translation id="5716325061445053985">צריך ללחוץ כדי לפתוח את הכרטיסייה בטלפון</translation>
 <translation id="5717509257172454543">החלקה על הקרח</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
 <translation id="5720895412771013401">מחשבים</translation>
@@ -4000,6 +4002,7 @@ Del</translation>
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="8118489163946903409">אמצעי תשלום</translation>
 <translation id="8118506371121007279">שליחת משוב</translation>
+<translation id="8120720167840853945">המדיניות הזו לא קובעת את פעולת ברירת המחדל של כללי מדיניות אחרים.</translation>
 <translation id="8127301229239896662">‏הייתה בעיה בהתקנה של "<ph name="SOFTWARE_NAME" />" במחשב שלך או ברשת. יש לבקש ממנהל ה-IT לפתור את הבעיה.</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8133495915926741232">אפשר לבחור קטגוריות כלליות של נושאים שיוכלו לשמש להתאמה אישית של מודעות. אם קטגוריה כללית יותר תושבת, גם הנושאים שקשורים אליה ייחסמו. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -4299,7 +4302,7 @@ Del</translation>
 <translation id="8676424191133491403">ללא עיכוב</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , תשובה, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">לא ניתן היה לטעון את דף האינטרנט בכתובת <ph name="PAGE" /> מהסיבות הבאות:</translation>
-<translation id="8682297334444610648">‏המשחק Dino, צריך להקיש כדי לשחק</translation>
+<translation id="8682297334444610648">‏המשחק Dino, צריך ללחוץ כדי לשחק</translation>
 <translation id="8686424632716064939">אבטחת מחשבים</translation>
 <translation id="8687278439622293018">הרשומה <ph name="ENTRY_VOICEOVER" /> נמחקה</translation>
 <translation id="8687429322371626002">המכשיר והחשבון שלך מנוהלים על ידי <ph name="MANAGER" />.</translation>

@@ -793,6 +793,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" />. Hierdoor worden je bestanden mogelijk aangepast of verwijderd.</translation>
 <translation id="1549966883323105187">Krijg sneller toegang tot je opgeslagen wachtwoorden</translation>
 <translation id="1550656959113606473">Chrome-standaard</translation>
+<translation id="1552065819535218588">Chrome markeert meldingen van <ph name="URL" /> niet meer als spam</translation>
 <translation id="1552301827267621511">De extensie '<ph name="EXTENSION_NAME" />' heeft ingesteld dat <ph name="SEARCH_PROVIDER_DOMAIN" /> wordt gebruikt voor zoekopdrachten</translation>
 <translation id="1552752544932680961">Extensie beheren</translation>
 <translation id="1553538517812678578">onbeperkt</translation>
@@ -3085,6 +3086,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3159978855457658359">Apparaatnaam bewerken</translation>
 <translation id="3160928651883997588">VPN-voorkeuren</translation>
 <translation id="3161522574479303604">Alle talen</translation>
+<translation id="3162070126914310576">Dit apparaat kan nu niet worden ingeschreven omdat je organisatie-eenheid de aanvankelijke inschrijvingslimiet heeft bereikt. Neem voor hulp contact op met de beheerder.</translation>
 <translation id="3162766632262775911">V8-optimalisatie mag altijd worden gebruikt</translation>
 <translation id="3162853326462195145">Schoolaccount</translation>
 <translation id="3162899666601560689">Sites mogen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden</translation>
@@ -9050,6 +9052,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="746861123368584540">Extensie geladen</translation>
 <translation id="7469612367552312334">Aan • Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht.</translation>
 <translation id="7470131554696493512">Voorkomen dat Thunderbolt- of USB4-accessoires toegang krijgen tot het geheugen (RAM) en het delen</translation>
+<translation id="7470284766345262333">Dit account is niet gekoppeld aan Google, dus functies zoals Chrome-synchronisatie zijn niet beschikbaar</translation>
 <translation id="7470424110735398630">Toestemming om je klembord te bekijken</translation>
 <translation id="747114903913869239">Fout: kan extensie niet decoderen</translation>
 <translation id="7471520329163184433">Langzamer</translation>

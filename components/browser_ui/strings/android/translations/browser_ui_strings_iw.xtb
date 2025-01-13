@@ -13,7 +13,7 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
-<translation id="1263609676484797429">מקישים על 'אפליקציות'  &gt; 'אפליקציות ברירת מחדל'</translation>
+<translation id="1263609676484797429">לוחצים על 'אפליקציות'  &gt; 'אפליקציות ברירת מחדל'</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1289742167380433257">‏כדי לחסוך לך נתונים, התמונות בדף הזה עברו אופטימיזציה על ידי Google.</translation>
 <translation id="129382876167171263">קבצים שנשמרו על ידי אתרים מופיעים כאן</translation>
@@ -60,7 +60,7 @@
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
-<translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש להקיש כאן</translation>
+<translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש ללחוץ כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2096716221239095980">מחיקת כל הנתונים</translation>
@@ -273,7 +273,7 @@
 <translation id="5091663350197390230">‏כשהאפשרות מופעלת, אתרים יכולים להשתמש ב-JavaScript. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש ב-JavaScript.</translation>
 <translation id="5099358668261120049">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שנשמרו על ידי האתר <ph name="ORIGIN" /> או האפליקציה שלו במסך הבית.</translation>
 <translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
-<translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="5116239826668864748">‏אפשר להשתמש ב-Chrome בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{זוהתה ירידה במחיר בכרטיסיות הפתוחות}one{זוהו ירידות במחירים בכרטיסיות הפתוחות}two{זוהו ירידות במחירים בכרטיסיות הפתוחות}other{זוהו ירידות במחירים בכרטיסיות הפתוחות}}</translation>
 <translation id="5186036860380548585">האפשרות זמינה בחלק העליון של המסך</translation>
@@ -357,7 +357,7 @@
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
-<translation id="6234351944623978659">‏מקישים על אפליקציית הדפדפן &gt; Chrome</translation>
+<translation id="6234351944623978659">‏לוחצים על אפליקציית הדפדפן &gt; Chrome</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
@@ -502,7 +502,7 @@
 <translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
-<translation id="8394832520002899662">כדי לחזור לאתר, יש להקיש כאן</translation>
+<translation id="8394832520002899662">כדי לחזור לאתר, יש ללחוץ כאן</translation>
 <translation id="8409345997656833551">קבלת התראה כשאפשר להציג מאמר בתצוגה פשוטה</translation>
 <translation id="8423565414844018592">גודל הטקסט שהוגדר: <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">הגדרות</translation>
@@ -517,7 +517,7 @@
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8541410041357371550">‏האתר הזה מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר</translation>
-<translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או מקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
+<translation id="8558480467877843976">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שגולשים או לוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8617611086246832542">כשהאפשרות מופעלת, אפשר לראות אתרים בתצוגה למחשב. כשהאפשרות מושבתת, אפשר לראות אתרים בתצוגה לנייד.</translation>

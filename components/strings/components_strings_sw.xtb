@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Ukurasa unatembelewa</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Hamna}=1{Kwenye tovuti 1 (utasalia katika Akaunti yako ya Google)}other{Kwenye tovuti # (utasalia katika Akaunti yako ya Google)}}</translation>
 <translation id="1167877250265821930">Imeshindwa kupakua <ph name="LANGUAGE" /></translation>
+<translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1174644974616730562">Bahasha ya muundo wa Kichina ya ukubwa wa #1</translation>
 <translation id="1174723505405632867">Ungependa kuruhusu <ph name="EMBEDDED_URL" /> itumie data ya tovuti na vidakuzi kwenye <ph name="TOP_LEVEL_URL" />?
 
@@ -1203,6 +1204,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3156511682997763015">Sogeza mbele kwa sekunde 10</translation>
 <translation id="3157931365184549694">Rejesha</translation>
 <translation id="3158539265159265653">Diski</translation>
+<translation id="3162070126914310576">Kifaa hiki hakiwezi kuandikishwa kwa sasa kwa sababu kitengo cha shirika lako kimefikia kikomo chake cha kwanza cha uandikishaji. Wasiliana na msimamizi wako ili upate usaidizi.</translation>
 <translation id="3162559335345991374">Wi-Fi unayotumia inaweza kukuhitaji kutembelea ukurasa wake wa kuingia katika akaunti.</translation>
 <translation id="316638481603975524">Inaweza kuomba idhini ya kuweka programu za wavuti kwenye kifaa</translation>
 <translation id="3168744840365648658">Vifaa vya Redio</translation>
@@ -1937,6 +1939,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Mchakato wa kupakia faili kwenye Microsoft OneDrive umesitishwa</translation>
 <translation id="4390472908992056574">Pomoni</translation>
+<translation id="4395550503472021297">Sera hii inadhibiti mwenendo chaguomsingi wa sera zifuatazo: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Hufungua dirisha ibukizi ili kuthibitisha kwenye tovuti ya benki yako</translation>
 <translation id="4406883609789734330">Manukuu Papo Hapo</translation>
 <translation id="4406896451731180161">matokeo ya utafutaji</translation>
@@ -2379,6 +2382,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5244521145258281926">Kitufe cha 'Dhibiti Akaunti ya Google', washa ili udhibiti maelezo, faragha na usalama wako katika Akaunti yako ya Google</translation>
 <translation id="5244732203286792411">Inapakia...
     Hatua hii inaweza kuchukua dakika moja.</translation>
+<translation id="5248543496748975054">Je, namba ya kadi haijajazwa?</translation>
 <translation id="5250209940322997802">"Unganisha kwenye mtandao"</translation>
 <translation id="52517543715119994">Pata maelezo kuhusu vipengele vya Chrome</translation>
 <translation id="5251803541071282808">Wingu</translation>
@@ -3993,6 +3997,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8116925261070264013">Imezimwa</translation>
 <translation id="8118489163946903409">Njia ya kulipa</translation>
 <translation id="8118506371121007279">Toa maoni</translation>
+<translation id="8120720167840853945">Sera hii haidhibiti mwenendo chaguomsingi wa sera nyingine zozote.</translation>
 <translation id="8127301229239896662">Haikusakinisha "<ph name="SOFTWARE_NAME" />" kwa njia sahihi kwenye mtandao au kompyuta yako. Mweleze msimamizi wako wa TEHAMA asuluhishe tatizo hili.</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
 <translation id="8133495915926741232">Chagua ni aina gani pana za mada zinazoweza kutumiwa kusaidia kuwekea matangazo mapendeleo. Hatua ya kuzima aina pana zaidi, itazuia pia mada zinazohusiana. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>

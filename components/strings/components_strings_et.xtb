@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Lehte külastatakse</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Puudub}=1{1 saidilt (jääte oma Google'i kontole sisselogituks)}other{# saidilt (jääte oma Google'i kontole sisselogituks)}}</translation>
 <translation id="1167877250265821930"><ph name="LANGUAGE" /> keele allalaadimine ebaõnnestus</translation>
+<translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1174644974616730562">Ümbrik Hiina nr 1</translation>
 <translation id="1174723505405632867">Kas soovite lubada saidil <ph name="EMBEDDED_URL" /> ülataseme URL-il <ph name="TOP_LEVEL_URL" /> kasutada küpsisefaile ja saidi andmeid?
 

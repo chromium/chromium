@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Pagina is bezocht</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 site (je blijft ingelogd op je Google-account)}other{Van # sites (je blijft ingelogd op je Google-account)}}</translation>
 <translation id="1167877250265821930">Kan <ph name="LANGUAGE" /> niet downloaden</translation>
+<translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1174644974616730562">Envelop Chinees #1</translation>
 <translation id="1174723505405632867">Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
 
@@ -1203,6 +1204,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3156511682997763015">10 seconden vooruit</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158539265159265653">Schijf</translation>
+<translation id="3162070126914310576">Dit apparaat kan nu niet worden ingeschreven omdat je organisatie-eenheid de aanvankelijke inschrijvingslimiet heeft bereikt. Neem voor hulp contact op met de beheerder.</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
 <translation id="316638481603975524">Kan vragen om web-apps te installeren</translation>
 <translation id="3168744840365648658">Radio-apparatuur</translation>
@@ -1931,6 +1933,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Bestandsupload naar Microsoft OneDrive is onderbroken</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Dit beleid bepaalt het standaardgedrag van de volgende beleidsregels: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Er wordt een pop-up geopend voor verificatie op de website van je bank</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
@@ -2373,6 +2376,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5244521145258281926">Knop Google-account beheren. Activeer deze om je gegevens, privacy, en beveiliging te beheren in je Google-account.</translation>
 <translation id="5244732203286792411">Laden...
     Dit kan even duren.</translation>
+<translation id="5248543496748975054">Kaartnummer niet ingevuld?</translation>
 <translation id="5250209940322997802">'Verbinding maken met netwerk'</translation>
 <translation id="52517543715119994">Meer informatie over Chrome-functies</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3988,6 +3992,7 @@ Aanvullende informatie:
 <translation id="8116925261070264013">Geluid uit</translation>
 <translation id="8118489163946903409">Betaalmethode</translation>
 <translation id="8118506371121007279">Feedback geven</translation>
+<translation id="8120720167840853945">Dit beleid bepaalt niet het standaardgedrag van andere beleidsregels.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' is niet correct geïnstalleerd op je computer of netwerk. Neem contact op met je IT-beheerder om dit probleem op te lossen.</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8133495915926741232">Kies welke brede onderwerpcategorieën kunnen worden gebruikt om advertenties te personaliseren. Als je een bredere categorie uitzet, worden ook de gerelateerde onderwerpen van die categorie geblokkeerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>

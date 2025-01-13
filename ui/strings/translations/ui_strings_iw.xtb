@@ -45,7 +45,7 @@
 <translation id="2192232475740621500">שימוש בדחיסות נמוכה</translation>
 <translation id="2267918077332197517">חסימת כל ההודעות מהאתר הזה</translation>
 <translation id="2283117145434822734">F6</translation>
-<translation id="2289052229480071835">יש להקיש על יעדי המגע במסך.</translation>
+<translation id="2289052229480071835">יש ללחוץ על יעדי המגע במסך.</translation>
 <translation id="2295140143284145483">סקר</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" />TB/s</translation>
 <translation id="2353636109065292463">בדיקת חיבור האינטרנט</translation>
@@ -117,7 +117,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}one{# שניות}two{# שניות}other{# שניות}}</translation>
 <translation id="4971687151119236543">טראק קודם במדיה</translation>
-<translation id="5046499563572181734">יש להקיש כאן</translation>
+<translation id="5046499563572181734">יש ללחוץ כאן</translation>
 <translation id="5076340679995252485">&amp;הדבקה</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5278860589123563674">השליחה נכשלה</translation>
