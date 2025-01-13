@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "components/dbus/properties/types.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
@@ -33,6 +33,33 @@ namespace os_crypt_async {
 // which can then be used to encrypt confidential data.
 class FreedesktopSecretKeyProvider : public KeyProvider {
  public:
+  enum class InitStatus {
+    // These values are persisted to logs. Do not renumber or reuse.
+    kSuccess = 0,
+    kCreateCollectionFailed = 1,
+    kCreateItemFailed = 2,
+    kEmptySecret = 3,
+    kGetSecretFailed = 4,
+    kNoService = 6,
+    kReadAliasFailed = 7,
+    kSearchItemsFailed = 8,
+    kSessionFailure = 9,
+    kMaxValue = kSessionFailure,
+  };
+
+  // Supplements InitStatus in case of errors.
+  enum class ErrorDetail {
+    // These values are persisted to logs. Do not renumber or reuse.
+    kNone = 0,
+    kDestructedBeforeComplete = 1,
+    kEmptyObjectPaths = 2,
+    kInvalidReplyFormat = 3,
+    kInvalidSignalFormat = 4,
+    kInvalidVariantFormat = 5,
+    kNoResponse = 6,
+    kMaxValue = kNoResponse,
+  };
+
   FreedesktopSecretKeyProvider(bool use_for_encryption,
                                const std::string& product_name,
                                scoped_refptr<dbus::Bus> bus);
@@ -99,16 +126,19 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
 #endif
 
   void OnServiceStarted(std::optional<bool> service_started);
-  void OnReadAliasDefault(std::optional<DbusObjectPath> collection_path);
-  void OnOpenSession(
-      std::optional<DbusParameters<DbusVariant, DbusObjectPath>> session_reply);
-  void OnSearchItems(std::optional<DbusArray<DbusObjectPath>> results);
-  void OnGetSecret(std::optional<DbusSecret> secret_reply);
+  void OnReadAliasDefault(
+      base::expected<DbusObjectPath, ErrorDetail> collection_path);
+  void OnOpenSession(base::expected<DbusParameters<DbusVariant, DbusObjectPath>,
+                                    ErrorDetail> session_reply);
+  void OnSearchItems(
+      base::expected<DbusArray<DbusObjectPath>, ErrorDetail> results);
+  void OnGetSecret(base::expected<DbusSecret, ErrorDetail> secret_reply);
 
   void OpenSession();
   void DeriveKeyFromSecret(base::span<const uint8_t> secret);
   void FinalizeSuccess(Encryptor::Key key);
-  void FinalizeFailure();
+  void FinalizeFailure(InitStatus status, ErrorDetail detail);
+  void RecordInitStatus(InitStatus status, ErrorDetail detail);
   void CloseSession();
 
   raw_ptr<dbus::ObjectProxy> default_collection_proxy_ = nullptr;

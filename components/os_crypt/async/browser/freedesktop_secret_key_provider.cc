@@ -15,9 +15,12 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "crypto/encryptor.h"
@@ -29,6 +32,11 @@ namespace os_crypt_async {
 
 namespace {
 
+constexpr char kUmaInitStatus[] =
+    "OSCrypt.FreedesktopSecretKeyProvider.InitStatus";
+constexpr char kUmaErrorDetail[] =
+    "OSCrypt.FreedesktopSecretKeyProvider.$1.ErrorDetail";
+
 // These constants are duplicated from the sync backend.
 constexpr char kEncryptionTag[] = "v11";
 constexpr char kSalt[] = "saltysalt";
@@ -36,11 +44,14 @@ constexpr size_t kDerivedKeySizeInBits = 128;
 constexpr size_t kEncryptionIterations = 1;
 
 template <typename ReplyArgs>
-void CallMethod(dbus::ObjectProxy* object_proxy,
-                const std::string& interface_name,
-                const std::string& method_name,
-                const DbusType& arguments,
-                base::OnceCallback<void(std::optional<ReplyArgs>)> callback) {
+void CallMethod(
+    dbus::ObjectProxy* object_proxy,
+    const std::string& interface_name,
+    const std::string& method_name,
+    const DbusType& arguments,
+    base::OnceCallback<void(
+        base::expected<ReplyArgs, FreedesktopSecretKeyProvider::ErrorDetail>)>
+        callback) {
   dbus::MethodCall method_call(interface_name, method_name);
   dbus::MessageWriter writer(&method_call);
   arguments.Write(&writer);
@@ -48,10 +59,15 @@ void CallMethod(dbus::ObjectProxy* object_proxy,
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(
           [](const std::string& interface_name, const std::string& method_name,
-             base::OnceCallback<void(std::optional<ReplyArgs>)> callback,
+             base::OnceCallback<void(
+                 base::expected<ReplyArgs,
+                                FreedesktopSecretKeyProvider::ErrorDetail>)>
+                 callback,
              dbus::Response* response) {
+            using ErrorDetail = FreedesktopSecretKeyProvider::ErrorDetail;
             if (!response) {
-              std::move(callback).Run(std::nullopt);
+              std::move(callback).Run(
+                  base::unexpected(ErrorDetail::kNoResponse));
               return;
             }
             dbus::MessageReader reader(response);
@@ -61,7 +77,8 @@ void CallMethod(dbus::ObjectProxy* object_proxy,
                          << method_name << ": expected type "
                          << ReplyArgs::GetSignature() << " but got type "
                          << response->GetSignature();
-              std::move(callback).Run(std::nullopt);
+              std::move(callback).Run(
+                  base::unexpected(ErrorDetail::kInvalidReplyFormat));
               return;
             }
             std::move(callback).Run(std::move(reply));
@@ -75,6 +92,31 @@ scoped_refptr<dbus::Bus> CreateBus() {
   options.connection_type = dbus::Bus::PRIVATE;
   options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
   return base::MakeRefCounted<dbus::Bus>(options);
+}
+
+const char* InitStatusToString(
+    FreedesktopSecretKeyProvider::InitStatus status) {
+  switch (status) {
+    case FreedesktopSecretKeyProvider::InitStatus::kSuccess:
+      return "Success";
+    case FreedesktopSecretKeyProvider::InitStatus::kCreateCollectionFailed:
+      return "CreateCollectionFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kCreateItemFailed:
+      return "CreateItemFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kEmptySecret:
+      return "EmptySecret";
+    case FreedesktopSecretKeyProvider::InitStatus::kGetSecretFailed:
+      return "GetSecretFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kNoService:
+      return "NoService";
+    case FreedesktopSecretKeyProvider::InitStatus::kReadAliasFailed:
+      return "ReadAliasFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kSearchItemsFailed:
+      return "SearchItemsFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kSessionFailure:
+      return "SessionFailure";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -123,7 +165,7 @@ void FreedesktopSecretKeyProvider::OnServiceStarted(
     std::optional<bool> service_started) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!service_started.value_or(false)) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kNoService, ErrorDetail::kNone);
     return;
   }
 
@@ -136,10 +178,10 @@ void FreedesktopSecretKeyProvider::OnServiceStarted(
 }
 
 void FreedesktopSecretKeyProvider::OnReadAliasDefault(
-    std::optional<DbusObjectPath> collection_path) {
+    base::expected<DbusObjectPath, ErrorDetail> collection_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!collection_path.has_value()) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kReadAliasFailed, collection_path.error());
     return;
   }
   if (collection_path->value().value() != "/") {
@@ -148,7 +190,7 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
     OpenSession();
   } else {
     NOTIMPLEMENTED();
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kCreateCollectionFailed, ErrorDetail::kNone);
   }
 }
 
@@ -163,10 +205,11 @@ void FreedesktopSecretKeyProvider::OpenSession() {
 }
 
 void FreedesktopSecretKeyProvider::OnOpenSession(
-    std::optional<DbusParameters<DbusVariant, DbusObjectPath>> session_reply) {
+    base::expected<DbusParameters<DbusVariant, DbusObjectPath>, ErrorDetail>
+        session_reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!session_reply.has_value()) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kSessionFailure, session_reply.error());
     return;
   }
   const auto& [_, result] = session_reply->value();
@@ -183,16 +226,16 @@ void FreedesktopSecretKeyProvider::OnOpenSession(
 }
 
 void FreedesktopSecretKeyProvider::OnSearchItems(
-    std::optional<DbusArray<DbusObjectPath>> results) {
+    base::expected<DbusArray<DbusObjectPath>, ErrorDetail> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!results.has_value()) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kSearchItemsFailed, results.error());
     return;
   }
 
   if (results->value().empty()) {
     NOTIMPLEMENTED();
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kCreateItemFailed, ErrorDetail::kNone);
     return;
   }
 
@@ -205,10 +248,10 @@ void FreedesktopSecretKeyProvider::OnSearchItems(
 }
 
 void FreedesktopSecretKeyProvider::OnGetSecret(
-    std::optional<DbusSecret> secret_reply) {
+    base::expected<DbusSecret, ErrorDetail> secret_reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!secret_reply.has_value()) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kGetSecretFailed, secret_reply.error());
     return;
   }
 
@@ -216,12 +259,13 @@ void FreedesktopSecretKeyProvider::OnGetSecret(
       secret_reply->value();
   const auto& secret_bytes = value.value();
   if (!secret_bytes) {
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kGetSecretFailed,
+                    ErrorDetail::kInvalidVariantFormat);
     return;
   }
   if (secret_bytes->size() == 0) {
     LOG(ERROR) << "GetSecret returned an empty secret.";
-    FinalizeFailure();
+    FinalizeFailure(InitStatus::kEmptySecret, ErrorDetail::kNone);
     return;
   }
 
@@ -242,24 +286,42 @@ void FreedesktopSecretKeyProvider::DeriveKeyFromSecret(
 
 void FreedesktopSecretKeyProvider::FinalizeSuccess(Encryptor::Key key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordInitStatus(InitStatus::kSuccess, ErrorDetail::kNone);
   std::move(key_callback_).Run(kEncryptionTag, std::move(key));
   CloseSession();
 }
 
-void FreedesktopSecretKeyProvider::FinalizeFailure() {
+void FreedesktopSecretKeyProvider::FinalizeFailure(InitStatus status,
+                                                   ErrorDetail detail) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!key_callback_) {
     return;
   }
+  RecordInitStatus(status, detail);
   std::move(key_callback_).Run(std::string(), std::nullopt);
   CloseSession();
+}
+
+void FreedesktopSecretKeyProvider::RecordInitStatus(InitStatus status,
+                                                    ErrorDetail detail) {
+  // Log the high-level InitStatus.
+  base::UmaHistogramEnumeration(kUmaInitStatus, status);
+
+  // If there was an error, also log the error detail.
+  if (status != InitStatus::kSuccess) {
+    auto histogram_name = base::ReplaceStringPlaceholders(
+        kUmaErrorDetail, std::vector<std::string>{InitStatusToString(status)},
+        nullptr);
+    base::UmaHistogramEnumeration(histogram_name, detail);
+  }
 }
 
 void FreedesktopSecretKeyProvider::CloseSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_opened_) {
     CallMethod(session_proxy_, kSecretSessionInterface, kMethodClose,
-               DbusVoid(), base::BindOnce([](std::optional<DbusVoid>) {}));
+               DbusVoid(),
+               base::BindOnce([](base::expected<DbusVoid, ErrorDetail>) {}));
   }
 }
 
