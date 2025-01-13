@@ -44,7 +44,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kReadAliasFailed = 7,
     kSearchItemsFailed = 8,
     kSessionFailure = 9,
-    kMaxValue = kSessionFailure,
+    kUnlockFailed = 10,
+    kMaxValue = kUnlockFailed,
   };
 
   // Supplements InitStatus in case of errors.
@@ -92,6 +93,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kMethodReadAlias[] = "ReadAlias";
   static constexpr char kMethodGetSecret[] = "GetSecret";
   static constexpr char kMethodOpenSession[] = "OpenSession";
+  static constexpr char kMethodUnlock[] = "Unlock";
   static constexpr char kMethodClose[] = "Close";
   static constexpr char kMethodSearchItems[] = "SearchItems";
   static constexpr char kPropertiesInterface[] =
@@ -128,12 +130,16 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnServiceStarted(std::optional<bool> service_started);
   void OnReadAliasDefault(
       base::expected<DbusObjectPath, ErrorDetail> collection_path);
+  void OnUnlock(
+      base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
+                     ErrorDetail> unlocked_collection);
   void OnOpenSession(base::expected<DbusParameters<DbusVariant, DbusObjectPath>,
                                     ErrorDetail> session_reply);
   void OnSearchItems(
       base::expected<DbusArray<DbusObjectPath>, ErrorDetail> results);
   void OnGetSecret(base::expected<DbusSecret, ErrorDetail> secret_reply);
 
+  void UnlockDefaultCollection();
   void OpenSession();
   void DeriveKeyFromSecret(base::span<const uint8_t> secret);
   void FinalizeSuccess(Encryptor::Key key);

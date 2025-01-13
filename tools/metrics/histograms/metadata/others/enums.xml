@@ -112,6 +112,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="ReadAliasFailed"/>
   <int value="8" label="SearchItemsFailed"/>
   <int value="9" label="SessionFailure"/>
+  <int value="10" label="UnlockFailed"/>
 </enum>
 
 <enum name="HappinessTrackingSurvey">

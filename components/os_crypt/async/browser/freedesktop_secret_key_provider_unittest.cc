@@ -161,6 +161,17 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
            _))
       .WillOnce(RespondWith(DbusObjectPath(dbus::ObjectPath(kCollectionPath))));
 
+  // Unlock(default_collection)
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodUnlock,
+                   MatchArgs(MakeDbusArray(
+                       DbusObjectPath(dbus::ObjectPath(kCollectionPath)))),
+                   _))
+      .WillOnce(RespondWith(MakeDbusParameters(
+          MakeDbusArray(DbusObjectPath(dbus::ObjectPath(kCollectionPath))),
+          DbusObjectPath(dbus::ObjectPath("/")))));
+
   // OpenSession
   EXPECT_CALL(
       *mock_service_proxy,

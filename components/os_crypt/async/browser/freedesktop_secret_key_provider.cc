@@ -115,6 +115,8 @@ const char* InitStatusToString(
       return "SearchItemsFailed";
     case FreedesktopSecretKeyProvider::InitStatus::kSessionFailure:
       return "SessionFailure";
+    case FreedesktopSecretKeyProvider::InitStatus::kUnlockFailed:
+      return "UnlockFailed";
   }
   NOTREACHED();
 }
@@ -187,11 +189,39 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
   if (collection_path->value().value() != "/") {
     default_collection_proxy_ =
         bus_->GetObjectProxy(kSecretServiceName, collection_path->value());
-    OpenSession();
+    UnlockDefaultCollection();
   } else {
     NOTIMPLEMENTED();
     FinalizeFailure(InitStatus::kCreateCollectionFailed, ErrorDetail::kNone);
   }
+}
+
+void FreedesktopSecretKeyProvider::UnlockDefaultCollection() {
+  auto* service_proxy = bus_->GetObjectProxy(
+      kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
+
+  auto objects =
+      MakeDbusArray(DbusObjectPath(default_collection_proxy_->object_path()));
+  CallMethod(service_proxy, kSecretServiceInterface, kMethodUnlock, objects,
+             base::BindOnce(&FreedesktopSecretKeyProvider::OnUnlock,
+                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreedesktopSecretKeyProvider::OnUnlock(
+    base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
+                   ErrorDetail> unlocked_collection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!unlocked_collection.has_value()) {
+    FinalizeFailure(InitStatus::kUnlockFailed, unlocked_collection.error());
+    return;
+  }
+  const auto& [collection_paths, _] = unlocked_collection->value();
+  if (collection_paths.value().empty()) {
+    FinalizeFailure(InitStatus::kUnlockFailed, ErrorDetail::kEmptyObjectPaths);
+    return;
+  }
+  // Unlocked now
+  OpenSession();
 }
 
 void FreedesktopSecretKeyProvider::OpenSession() {

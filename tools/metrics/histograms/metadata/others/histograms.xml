@@ -7098,6 +7098,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ReadAliasFailed"/>
     <variant name="SearchItemsFailed"/>
     <variant name="SessionFailure"/>
+    <variant name="UnlockFailed"/>
   </token>
 </histogram>
 
