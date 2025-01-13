@@ -12,8 +12,11 @@
 #include "base/observer_list.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -56,9 +59,14 @@ class PasswordChangeDelegateImpl
 #if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordChangeTab() override;
 #endif
-  void SuccessfulSubmissionDetected(
-      content::WebContents* web_contents) override;
+  void SuccessfulSubmissionDetected();
+  void OnPasswordFormSubmission(content::WebContents* web_contents) override;
+  void ProcessTree(ui::AXTreeUpdate& ax_tree_update);
   void OnPrivacyNoticeAccepted() override;
+  void OnExecutionResponseCallback(
+      optimization_guide::OptimizationGuideModelExecutionResult
+          execution_result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::u16string GetDisplayOrigin() const override;
@@ -85,6 +93,7 @@ class PasswordChangeDelegateImpl
   const GURL change_password_url_;
   const std::u16string username_;
   const std::u16string original_password_;
+  bool submission_detected_ = false;
 
   std::u16string generated_password_;
 

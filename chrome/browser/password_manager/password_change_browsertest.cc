@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/callback_list.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
@@ -21,6 +27,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
@@ -31,6 +40,15 @@
 
 using affiliations::AffiliationService;
 using affiliations::MockAffiliationService;
+using PasswordChangeOutcome = ::optimization_guide::proto::
+    PasswordChangeSubmissionData_PasswordChangeOutcome;
+using ::testing::_;
+using ::testing::An;
+using ::testing::Contains;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::WithArg;
 
 namespace {
 
@@ -50,6 +68,12 @@ class MockPasswordChangeDelegateObserver
 std::unique_ptr<KeyedService> CreateTestAffiliationService(
     content::BrowserContext* context) {
   return std::make_unique<testing::NiceMock<MockAffiliationService>>();
+}
+
+std::unique_ptr<KeyedService> CreateOptimizationService(
+    content::BrowserContext* context) {
+  return std::make_unique<
+      testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
 content::WebContents* OpenNewTabInBackground(base::WeakPtr<Browser> browser,
@@ -81,6 +105,10 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                   AffiliationServiceFactory::GetInstance()->SetTestingFactory(
                       context,
                       base::BindRepeating(&CreateTestAffiliationService));
+                  OptimizationGuideKeyedServiceFactory::GetInstance()
+                      ->SetTestingFactory(
+                          context,
+                          base::BindRepeating(&CreateOptimizationService));
                 }));
   }
 
@@ -98,9 +126,14 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
         AffiliationServiceFactory::GetForProfile(browser()->profile()));
   }
 
+  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
+    return static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile()));
+  }
+
   ChromePasswordChangeService* password_change_service() {
     return PasswordChangeServiceFactory::GetForProfile(browser()->profile());
-    ;
   }
 
   // This allows to attach a custom ManagePasswordsUIController to intercept UI
@@ -110,6 +143,54 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     // intercepting new tab creation.
     password_change_service()->SetCustomTabOpening(
         base::BindRepeating(&OpenNewTabInBackground, browser()->AsWeakPtr()));
+  }
+
+  void MockPasswordChangeOutcome(PasswordChangeOutcome outcome) {
+    optimization_guide::proto::PasswordChangeResponse response;
+    response.mutable_outcome_data()->set_submission_outcome(outcome);
+
+    EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+                ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                                 kPasswordChangeSubmission,
+                             _, _, _))
+        .WillOnce(WithArg<3>(Invoke([response](auto callback) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  std::move(callback),
+                  optimization_guide::OptimizationGuideModelExecutionResult(
+                      optimization_guide::AnyWrapProto(response),
+                      /*execution_info=*/nullptr),
+                  /*log_entry=*/nullptr));
+        })));
+  }
+
+  void CheckPasswordsSavedOnFailure(const std::string& username,
+                                    const std::string& new_password) {
+    scoped_refptr<password_manager::TestPasswordStore> password_store =
+        static_cast<password_manager::TestPasswordStore*>(
+            ProfilePasswordStoreFactory::GetForProfile(
+                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                .get());
+    const std::vector<password_manager::PasswordForm>& passwords_vector =
+        password_store->stored_passwords().begin()->second;
+    // Check if |username| + |new password| is stored
+    bool found_username_with_new_password = false;
+    // Check if |empty username| + |new password| is stored
+    bool found_empty_username_with_new_password = false;
+
+    for (const auto& form : passwords_vector) {
+      if (form.username_value == base::ASCIIToUTF16(username) &&
+          form.password_value == base::ASCIIToUTF16(new_password)) {
+        found_username_with_new_password = true;
+      } else if (form.username_value.empty() &&
+                 form.password_value == base::ASCIIToUTF16(new_password)) {
+        found_empty_username_with_new_password = true;
+      }
+    }
+
+    EXPECT_FALSE(found_username_with_new_password);
+    EXPECT_TRUE(found_empty_username_with_new_password);
   }
 
  private:
@@ -328,20 +409,24 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   auto generated_password = base::UTF16ToUTF8(delegate->GetGeneratedPassword());
   EXPECT_EQ(generated_password,
             GetElementValue(/*iframe_id=*/"null", "new_password_1"));
-
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
   // Emulate a navigation as an indication of successful submission.
   PasswordsNavigationObserver new_page_observer(WebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/password/done.html")));
   EXPECT_TRUE(new_page_observer.Wait());
-
-  // Verify generated password is saved.
-  WaitForPasswordStore();
-  CheckThatCredentialsStored("test", generated_password);
   // Verify the success state.
   ASSERT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+  // Verify the success state.
+  ASSERT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+  // Verify generated password is saved.
+  WaitForPasswordStore();
+  CheckThatCredentialsStored(/*username=*/"test", generated_password);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
@@ -372,10 +457,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   PasswordsNavigationObserver password_change_page_observer(WebContents());
   EXPECT_TRUE(password_change_page_observer.Wait());
   WaitForElementValue("password", "pa$$word");
-
   std::string new_password =
       GetElementValue(/*iframe_id=*/"null", "new_password_1");
 
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
   // Emulate a navigation as an indication of successful submission.
   PasswordsNavigationObserver new_page_observer(WebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -387,6 +474,62 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   WaitForPasswordStore();
   CheckThatCredentialsStored(base::UTF16ToUTF8(form.username_value),
                              new_password);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       PasswordChangeSubmissionFailed) {
+  SetPrivacyNoticeAcceptedPref();
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  GURL origin = embedded_test_server()->GetURL("example.com", "/");
+  password_manager::PasswordForm form;
+  form.signon_realm = origin.spec();
+  form.url = origin;
+  form.username_value = u"test";
+  form.password_value = u"pa$$word";
+  password_store->AddLogin(form);
+  WaitForPasswordStore();
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(origin))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "example.com", "/password/update_form_empty_fields.html")));
+
+  password_change_service()->StartPasswordChange(
+      origin, form.username_value, form.password_value, WebContents());
+  // Activate tab with password change to simplify testing.
+  SetWebContents(browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  PasswordsNavigationObserver password_change_page_observer(WebContents());
+  EXPECT_TRUE(password_change_page_observer.Wait());
+  WaitForElementValue("password", "pa$$word");
+
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
+
+  std::string new_password =
+      GetElementValue(/*iframe_id=*/"null", "new_password_1");
+
+  // Emulate a navigation as an indication of successful submission.
+  PasswordsNavigationObserver new_page_observer(WebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/password/done.html")));
+  EXPECT_TRUE(new_page_observer.Wait());
+
+  // Verify state is updated to failure and new password is not stored.
+  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordChangeFailed;
+  }));
+  WaitForPasswordStore();
+  CheckPasswordsSavedOnFailure(base::UTF16ToUTF8(form.username_value),
+                               new_password);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

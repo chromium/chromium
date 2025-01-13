@@ -31,7 +31,7 @@ class PasswordChangeDelegateMock final : public PasswordChangeDelegate {
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (), (override));
   MOCK_METHOD(void,
-              SuccessfulSubmissionDetected,
+              OnPasswordFormSubmission,
               (content::WebContents*),
               (override));
   MOCK_METHOD(void, OnPrivacyNoticeAccepted, (), (override));

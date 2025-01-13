@@ -4,8 +4,16 @@
 
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -16,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -30,6 +39,12 @@ namespace {
 using password_manager::PasswordForm;
 using password_manager::PasswordFormCache;
 using password_manager::PasswordFormManager;
+using PasswordChangeOutcome = optimization_guide::proto ::
+    PasswordChangeSubmissionData_PasswordChangeOutcome;
+using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
+
+// Max numbers of nodes for the AX Tree Update Snapshot.
+constexpr int kMaxNodesInAXTreeSnapshot = 5000;
 
 PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
   auto* client = static_cast<password_manager::PasswordManagerClient*>(
@@ -152,6 +167,68 @@ void PasswordChangeDelegateImpl::Stop() {
                     this);
 }
 
+void PasswordChangeDelegateImpl::OnPasswordFormSubmission(
+    content::WebContents* web_contents) {
+  if (executor_ && executor_.get() == web_contents && form_manager_ &&
+      !submission_detected_) {
+    submission_detected_ = true;
+    web_contents->RequestAXTreeSnapshot(
+        base::BindOnce(&PasswordChangeDelegateImpl::ProcessTree,
+                       weak_ptr_factory_.GetWeakPtr()),
+        ui::AXMode::kWebContents, kMaxNodesInAXTreeSnapshot,
+        /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
+  }
+}
+
+void PasswordChangeDelegateImpl::ProcessTree(ui::AXTreeUpdate& ax_tree_update) {
+  ProtoTreeUpdate ax_tree_proto;
+  optimization_guide::PopulateAXTreeUpdateProto(ax_tree_update, &ax_tree_proto);
+  // Construct request.
+  optimization_guide::proto::PasswordChangeRequest request;
+  optimization_guide::proto::PageContext* page_context =
+      request.mutable_page_context();
+  *page_context->mutable_ax_tree_data() = std::move(ax_tree_proto);
+
+  OptimizationGuideKeyedService* optimization_executor =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(executor_->GetBrowserContext()));
+  optimization_executor->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
+      request,
+      /*execution_timeout=*/std::nullopt,
+      base::BindOnce(&PasswordChangeDelegateImpl::OnExecutionResponseCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordChangeDelegateImpl::OnExecutionResponseCallback(
+    optimization_guide::OptimizationGuideModelExecutionResult execution_result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!execution_result.response.has_value()) {
+    UpdateState(State::kPasswordChangeFailed);
+    return;
+  }
+  std::optional<optimization_guide::proto::PasswordChangeResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::PasswordChangeResponse>(
+          execution_result.response.value());
+  if (!response) {
+    UpdateState(State::kPasswordChangeFailed);
+    return;
+  }
+  PasswordChangeOutcome outcome =
+      response.value().outcome_data().submission_outcome();
+  if (outcome ==
+          PasswordChangeOutcome::
+              PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME ||
+      outcome ==
+          PasswordChangeOutcome::
+              PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
+    SuccessfulSubmissionDetected();
+  } else {
+    UpdateState(State::kPasswordChangeFailed);
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   if (executor_) {
@@ -166,11 +243,8 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
 }
 #endif
 
-void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected(
-    content::WebContents* web_contents) {
-  if (executor_ && executor_.get() == web_contents && form_manager_) {
-    // TODO(crbug.com/377878716): Do it only after verification of successful
-    // update.
+void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected() {
+  if (form_manager_) {
     form_manager_->OnUpdateUsernameFromPrompt(username_);
     form_manager_->Save();
     UpdateState(State::kPasswordSuccessfullyChanged);

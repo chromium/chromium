@@ -779,7 +779,7 @@ void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
   if (password_change_service &&
       password_change_service->GetPasswordChangeDelegate(web_contents())) {
     password_change_service->GetPasswordChangeDelegate(web_contents())
-        ->SuccessfulSubmissionDetected(web_contents());
+        ->OnPasswordFormSubmission(web_contents());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

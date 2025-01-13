@@ -66,10 +66,8 @@ class PasswordChangeDelegate {
   // doesn't exist anymore.
   virtual void OpenPasswordChangeTab() = 0;
 #endif
-
-  // Informs delegate about successful form submission.
-  virtual void SuccessfulSubmissionDetected(
-      content::WebContents* web_contents) = 0;
+  // To be executed after a password form was submitted
+  virtual void OnPasswordFormSubmission(content::WebContents* web_contents) = 0;
 
   virtual void OnPrivacyNoticeAccepted() = 0;
 
