@@ -24,15 +24,66 @@
   width: var(--comparison-table-list-width);
 }
 
+:host:has(#footer:not([hidden])) {
+  padding-bottom: 0px;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 20px;
+}
+
+cr-toolbar-selection-overlay {
+  background: transparent;
+  border: 0;
+}
+
+cr-toolbar-selection-overlay::part(clearIcon) {
+  --cr-icon-button-icon-size: 16px;
+  height: 20px;
+  margin-inline-end: 4px;
+  margin-inline-start: -12px;
+  width: 20px;
+}
+
+#edit {
+  float: inline-end;
+  margin-inline-end: var(--container-padding);
+}
+
+#footer {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  font-weight: 500;
+  height: 48px;
+  line-height: 16px;
+  padding: var(--container-padding);
+  margin-inline-end: var(--container-padding);
+  position: sticky;
+}
+
+#footer[hidden] {
+  display: none;
+}
+
+#header {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: var(--container-padding);
+}
+
 #listContainer {
   max-height: 100%;
   overflow: scroll;
+  padding-top: 4px;
   scrollbar-gutter: stable;
 }
 
 #listContainer::-webkit-scrollbar {
   background: transparent;
-  width: var(--scrollbar-width);
+  width: var(--container-padding);
   height: 0;
 }
 
@@ -40,11 +91,13 @@
   background:
     var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
   border-radius: 8px;
+  width: var(--scrollbar-width);
 }
 
-#header {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
-  padding: 8px;
+#numSelected {
+  margin-inline-start: 4px;
+}
+
+.sp-icon-buttons-row {
+  margin-inline-end: -4px;
 }

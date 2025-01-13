@@ -6,12 +6,13 @@ import 'chrome://compare/comparison_table_list_item.js';
 
 import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -39,6 +40,12 @@ suite('ComparisonTableListItemTest', () => {
         $$<CrIconButtonElement>(itemElement, '#trailingIconButton');
     assertTrue(!!trailingIconButton);
     return trailingIconButton;
+  }
+
+  function getCheckbox(): CrCheckboxElement {
+    const checkbox = $$<CrCheckboxElement>(itemElement, '#checkbox');
+    assertTrue(!!checkbox);
+    return checkbox;
   }
 
   setup(async () => {
@@ -141,6 +148,54 @@ suite('ComparisonTableListItemTest', () => {
 
       const event = await deletePromise;
       assertEquals(TABLE_UUID, event.detail.uuid);
+    });
+  });
+
+  suite('checkbox', () => {
+    let checkbox: CrCheckboxElement;
+
+    setup(async () => {
+      itemElement.hasCheckbox = true;
+      await microtasksFinished();
+
+      checkbox = getCheckbox();
+    });
+
+    test(
+        'click on checkbox emits event with UUID and checked state',
+        async () => {
+          let checkboxChangePromise =
+              eventToPromise('checkbox-change', document);
+          checkbox.click();
+
+          let event = await checkboxChangePromise;
+          assertEquals(TABLE_UUID, event.detail.uuid);
+          assertTrue(event.detail.checked);
+
+          // Uncheck.
+          checkboxChangePromise = eventToPromise('checkbox-change', document);
+          checkbox.click();
+
+          event = await checkboxChangePromise;
+          assertEquals(TABLE_UUID, event.detail.uuid);
+          assertFalse(event.detail.checked);
+        });
+
+    test('click on item emits event with UUID and checked state', async () => {
+      let checkboxChangePromise = eventToPromise('checkbox-change', document);
+      checkbox.click();
+
+      let event = await checkboxChangePromise;
+      assertEquals(TABLE_UUID, event.detail.uuid);
+      assertTrue(event.detail.checked);
+
+      // Uncheck.
+      checkboxChangePromise = eventToPromise('checkbox-change', document);
+      checkbox.click();
+
+      event = await checkboxChangePromise;
+      assertEquals(TABLE_UUID, event.detail.uuid);
+      assertFalse(event.detail.checked);
     });
   });
 });

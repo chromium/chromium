@@ -22,16 +22,25 @@ export function getHtml(this: ComparisonTableListItemElement) {
         @contextmenu="${this.onContextMenu_}"
         always-show-suffix>
 
-      ${this.isRenaming_ ? html`
-        <cr-input slot="content" id="renameInput" value="${this.name}"
-            class="stroked" @blur="${this.onRenameInputBlur_}"
-            @keydown="${this.onRenameInputKeyDown_}">
-        </cr-input>`
-      : html`
-        <div id="numItems" slot="badges">${this.numItemsString_}</div>
-        <cr-icon-button id="trailingIconButton" slot="suffix"
-            iron-icon="cr:more-vert" @click="${this.onShowContextMenuClick_}">
-        </cr-icon-button>`}
+      ${this.hasCheckbox ? html`
+        <cr-checkbox id="checkbox" slot="prefix"
+            @checked-changed="${this.onCheckboxChange_}">
+        </cr-checkbox>` : ''}
+
+      ${this.isRenaming_ ?
+        html`
+          <cr-input slot="content" id="renameInput" value="${this.name}"
+              class="stroked" @blur="${this.onRenameInputBlur_}"
+              @keydown="${this.onRenameInputKeyDown_}">
+          </cr-input>`
+        : html`
+          <div id="numItems" slot="badges">${this.numItemsString_}</div>
+          <!-- Hide the trailing icon button if the item has a checkbox. -->
+          ${!this.hasCheckbox ? html`
+            <cr-icon-button id="trailingIconButton" slot="suffix"
+                iron-icon="cr:more-vert"
+                @click="${this.onShowContextMenuClick_}">
+            </cr-icon-button>` : ''}`}
     </cr-url-list-item>
   </div>
 

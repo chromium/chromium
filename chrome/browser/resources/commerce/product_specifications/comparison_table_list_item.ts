@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -20,6 +21,7 @@ import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {ProductSpecificationsBrowserProxy} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -36,6 +38,10 @@ export type ComparisonTableListItemRenameEvent = CustomEvent<{
   name: string,
 }>;
 export type ComparisonTableListItemDeleteEvent = CustomEvent<{uuid: Uuid}>;
+export type ComparisonTableListItemCheckboxChangeEvent = CustomEvent<{
+  uuid: Uuid,
+  checked: boolean,
+}>;
 
 export interface ComparisonTableListItemElement {
   $: {
@@ -64,6 +70,7 @@ export class ComparisonTableListItemElement extends CrLitElement {
       uuid: {type: Object},
       numUrls: {type: Number},
       imageUrl: {type: Object},
+      hasCheckbox: {type: Boolean},
       tableUrl_: {type: Object},
       numItemsString_: {type: String},
       isMenuOpen_: {type: Boolean},
@@ -75,6 +82,7 @@ export class ComparisonTableListItemElement extends CrLitElement {
   uuid: Uuid = {value: ''};
   numUrls: number = 0;
   imageUrl: Url|null = null;
+  hasCheckbox: boolean = false;
 
   protected tableUrl_: Url = {url: ''};
   protected numItemsString_: string = '';
@@ -117,7 +125,16 @@ export class ComparisonTableListItemElement extends CrLitElement {
         await this.pluralStringProxy_.getPluralString('numItems', this.numUrls);
   }
 
-  protected onClick_() {
+  protected onClick_(event: MouseEvent) {
+    // Treat the item click as a checkbox click if it has checkbox.
+    if (this.hasCheckbox) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      this.checkbox_.checked = !this.checkbox_.checked;
+      return;
+    }
+
     if (!this.isRenaming_) {
       this.fire('item-click', {
         uuid: this.uuid,
@@ -184,6 +201,16 @@ export class ComparisonTableListItemElement extends CrLitElement {
     }
   }
 
+  protected onCheckboxChange_(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.fire('checkbox-change', {
+      uuid: this.uuid,
+      checked: (event.target as CrCheckboxElement).checked,
+    });
+  }
+
   private get trailingIconButton_() {
     const trailingIconButton =
         $$<CrIconButtonElement>(this, '#trailingIconButton');
@@ -195,6 +222,12 @@ export class ComparisonTableListItemElement extends CrLitElement {
     const input = $$<CrInputElement>(this, '#renameInput');
     assert(input);
     return input;
+  }
+
+  private get checkbox_(): CrCheckboxElement {
+    const checkbox = $$<CrCheckboxElement>(this, '#checkbox');
+    assert(checkbox);
+    return checkbox;
   }
 }
 
