@@ -38,3 +38,4 @@ This is a testharness.js-based test.
 [FAIL] Property animation-name value '"DEFAULT"'
   assert_true: '"DEFAULT"' is a supported value for animation-name. expected true got false
 Harness: the test ran to completion.
+

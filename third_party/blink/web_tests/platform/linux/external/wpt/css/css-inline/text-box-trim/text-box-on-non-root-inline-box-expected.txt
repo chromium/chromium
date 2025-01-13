@@ -6,3 +6,4 @@ This is a testharness.js-based test.
 [FAIL] .aqua 4
   assert_equals: \n<div class="aqua" data-expected-height="18">\n  <span style="font-size: 18px; text-box: ex alphabetic;">ApÃ‰x</span>\n</div>\nheight expected 18 but got 21
 Harness: the test ran to completion.
+
