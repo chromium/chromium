@@ -80,22 +80,6 @@ const std::string& CoreAccountId::ToString() const {
   return id_;
 }
 
-bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs) {
-  return lhs.ToString() < rhs.ToString();
-}
-
-bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs) {
-  return lhs.ToString() == rhs.ToString();
-}
-
-bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs) {
-  return lhs.ToString() != rhs.ToString();
-}
-
-std::ostream& operator<<(std::ostream& out, const CoreAccountId& a) {
-  return out << a.ToString();
-}
-
 std::vector<std::string> ToStringList(
     const std::vector<CoreAccountId>& account_ids) {
   return base::ToVector(account_ids, &CoreAccountId::ToString);

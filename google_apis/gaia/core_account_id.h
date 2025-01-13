@@ -94,16 +94,19 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
 };
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline auto operator<=>(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() <=> rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs);
+inline bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs) {
+  return lhs.ToString() == rhs.ToString();
+}
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs);
-
-COMPONENT_EXPORT(GOOGLE_APIS)
-std::ostream& operator<<(std::ostream& out, const CoreAccountId& a);
+inline std::ostream& operator<<(std::ostream& out, const CoreAccountId& a) {
+  return out << a.ToString();
+}
 
 // Returns the values of the account ids in a vector. Useful especially for
 // logs.
