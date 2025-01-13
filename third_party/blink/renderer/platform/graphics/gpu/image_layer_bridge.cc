@@ -266,7 +266,7 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
   DCHECK(sii_provider);
   auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
                            [&size](const RegisteredBitmap& registered) {
-                             return registered.bitmap->size() != size ||
+                             return registered.shared_image->size() != size ||
                                     !registered.sii_provider;
                            });
 
