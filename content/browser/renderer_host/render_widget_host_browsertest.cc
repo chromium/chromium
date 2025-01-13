@@ -912,12 +912,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).width").ExtractString());
-  // Rounding of GetVisibleViewportSize in the presence of a non-integer
-  // devicePixelRatio device can make this off by one vs the video height.
-  EXPECT_NEAR(
+  EXPECT_EQ(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
-      1);
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
 
   emulated_display_feature.orientation =
       DisplayFeature::Orientation::kHorizontal;
@@ -928,26 +925,21 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_NEAR(
+  EXPECT_EQ(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
-      1);
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
 
   // No display feature/viewport segments are set, the video should go
   // fullscreen.
   view()->SetDisplayFeatureForTesting(nullptr);
   host()->SynchronizeVisualProperties();
   WaitForVisualPropertiesAck();
-  // Rounding of GetVisibleViewportSize in the presence of a non-integer
-  // devicePixelRatio device can make this off by one vs the video height.
-  EXPECT_NEAR(
+  EXPECT_EQ(
       root_view_size.height(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt(),
-      1);
-  EXPECT_NEAR(
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
+  EXPECT_EQ(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
-      1);
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
 
   constexpr char kExitFullscreenScript[] = R"JS(
     document.exitFullscreen().then(() => {
@@ -964,10 +956,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
-  EXPECT_NEAR(
+  EXPECT_EQ(
       root_view_size.width(),
-      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
-      1);
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
 }
 
 // Tests that the renderer receives the root widget's viewport segments and

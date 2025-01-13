@@ -3978,10 +3978,11 @@ bool RenderFrameHostImpl::CreateRenderFrame(
     if (previous_rfh) {
       // When migrating a frame to a new/different render process, use the frame
       // size we already have from the existing RenderFrameHost.
-      if (params->widget_params->visual_properties.new_size_device_px
-              .IsZero()) {
-        params->widget_params->visual_properties.new_size_device_px =
-            previous_rfh->GetFrameSize().value_or(gfx::Size());
+      if (params->widget_params->visual_properties.new_size.IsZero()) {
+        float dsf = rwh->GetScreenInfo().device_scale_factor;
+        params->widget_params->visual_properties.new_size =
+            gfx::ScaleToRoundedSize(
+                previous_rfh->GetFrameSize().value_or(gfx::Size()), 1.f / dsf);
       }
 
       params->widget_params->reuse_compositor =
