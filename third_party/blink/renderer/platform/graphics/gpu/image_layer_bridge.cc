@@ -227,7 +227,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     // bitmaps to the GPU process.
     viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
     RegisteredBitmap registered = CreateOrRecycleBitmap(size, format);
-    if (!registered.bitmap) {
+    if (!registered.shared_image) {
       return false;
     }
 
@@ -240,15 +240,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
     if (!sk_image->readPixels(dst_info, pixels, dst_info.minRowBytes(), 0, 0))
       return false;
 
-    if (registered.shared_image) {
-      *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-          registered.shared_image, registered.sync_token, size, format,
-          viz::TransferableResource::ResourceSource::kImageLayerBridge);
-    } else {
-      *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
-          registered.bitmap->id(), gpu::SyncToken(), size, format,
-          viz::TransferableResource::ResourceSource::kImageLayerBridge);
-    }
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+        registered.shared_image, registered.sync_token, size, format,
+        viz::TransferableResource::ResourceSource::kImageLayerBridge);
     out_resource->origin = image_->IsOriginTopLeft()
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
