@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -4436,13 +4437,35 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
                scoped_refptr<const SecurityOrigin>>
       sellers;
   bool is_single_seller = false;
-  if (config->hasSeller()) {
-    if (config->hasSellers()) {
+  // Keep the seller being required when
+  // kFledgeBiddingAndAuctionServerAPIMultiSeller is disabled. Throw the same
+  // error as the field being required in idl.
+  bool serverAPIMultiSellerEnabled = RuntimeEnabledFeatures::
+      FledgeBiddingAndAuctionServerAPIMultiSellerEnabled();
+  if (!serverAPIMultiSellerEnabled && !config->hasSeller()) {
+    exception_state.ThrowTypeError(
+        "Failed to read the 'seller' property from 'AdAuctionDataConfig': "
+        "Required member is undefined.");
+    return EmptyPromise();
+  }
+
+  // When kFledgeBiddingAndAuctionServerAPIMultiSeller is enabled, one of seller
+  // and sellers must be provided, but not both.
+  if (serverAPIMultiSellerEnabled) {
+    if (config->hasSeller() && config->hasSellers()) {
       exception_state.ThrowTypeError(
           "Cannot provide both seller and sellers fields for "
           "AdAuctionDataConfig.");
       return EmptyPromise();
     }
+    if (!config->hasSeller() && !config->hasSellers()) {
+      exception_state.ThrowTypeError(
+          "One of seller or sellers for AdAuctionDataConfig must be provided.");
+      return EmptyPromise();
+    }
+  }
+
+  if (config->hasSeller()) {
     is_single_seller = true;
     scoped_refptr<const SecurityOrigin> seller =
         ParseAndValidateOrigin(config->seller(), "seller", exception_state);
@@ -4465,7 +4488,7 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
       }
     }
     sellers.Set(seller, coordinator);
-  } else if (config->hasSellers()) {
+  } else if (serverAPIMultiSellerEnabled && config->hasSellers()) {
     is_single_seller = false;
     for (const auto& seller_and_coordinator : config->sellers()) {
       scoped_refptr<const SecurityOrigin> seller = ParseAndValidateOrigin(
@@ -4497,12 +4520,8 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
       }
       sellers.Set(seller, coordinator);
     }
-
-  } else {
-    exception_state.ThrowTypeError(
-        "One of seller or sellers for AdAuctionDataConfig must be provided.");
-    return EmptyPromise();
   }
+
   std::optional<mojom::blink::AuctionDataConfigPtr> maybe_config_ptr =
       createAuctionDataConfig(config, exception_state);
   if (!maybe_config_ptr.has_value()) {
