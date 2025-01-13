@@ -321,6 +321,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
+#include "components/segmentation_platform/public/result.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if defined(USE_AURA)

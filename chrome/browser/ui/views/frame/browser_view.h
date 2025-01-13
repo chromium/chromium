@@ -43,7 +43,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
-#include "components/segmentation_platform/public/result.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -122,6 +121,10 @@ class WatermarkView;
 namespace glic {
 class BorderView;
 }  // namespace glic
+
+namespace segmentation_platform {
+struct ClassificationResult;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
