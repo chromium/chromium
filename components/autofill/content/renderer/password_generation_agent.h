@@ -76,7 +76,9 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
                                 const SynchronousFormCache& form_cache);
 
   // Returns true if the newly focused node caused the generation UI to show.
-  bool ShowPasswordGenerationSuggestions(const blink::WebInputElement& element);
+  bool ShowPasswordGenerationSuggestions(
+      const blink::WebInputElement& element,
+      const SynchronousFormCache& form_cache);
 
   // Event forwarded by AutofillAgent from WebAutofillClient, informing that
   // the text field editing has ended, which means that the field is not
@@ -146,7 +148,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   void AutomaticGenerationAvailable();
 
   // Show UI for editing a generated password at |generation_element_|.
-  void ShowEditingPopup();
+  void ShowEditingPopup(const SynchronousFormCache& form_cache);
 
   // Signals the browser that generation was rejected. This happens when the
   // user types more characters than the maximum offer size into the password
@@ -155,14 +157,15 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   void GenerationRejectedByTyping();
 
   // Stops treating a password as generated.
-  void PasswordNoLongerGenerated();
+  void PasswordNoLongerGenerated(const SynchronousFormCache& form_cache);
 
   // Creates |current_generation_item_| for |element| if |element| is a
   // generation enabled element. If |current_generation_item_| is already
   // created for |element| it is not recreated.
   void MaybeCreateCurrentGenerationItem(
       blink::WebInputElement element,
-      FieldRendererId confirmation_password_renderer_id);
+      FieldRendererId confirmation_password_renderer_id,
+      const SynchronousFormCache& form_cache);
 
   void LogMessage(SavePasswordProgressLogger::StringID message_id);
   void LogBoolean(SavePasswordProgressLogger::StringID message_id,

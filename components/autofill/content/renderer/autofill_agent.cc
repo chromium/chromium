@@ -1406,7 +1406,7 @@ void AutofillAgent::ShowSuggestions(
     }
     if (password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
-            input_element)) {
+            input_element, form_cache)) {
       is_popup_possibly_visible_ = true;
       return;
     }
