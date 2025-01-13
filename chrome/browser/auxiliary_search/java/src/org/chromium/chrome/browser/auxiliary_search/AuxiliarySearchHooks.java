@@ -40,4 +40,10 @@ public interface AuxiliarySearchHooks {
 
     /** Sets whether the current device is a tablet. */
     default void setIsTablet(boolean isTablet) {}
+
+    /** Returns the package name of the supported app which reads the donated Tabs. */
+    @Nullable
+    default String getSupportedPackageName() {
+        return null;
+    }
 }

@@ -1025,6 +1025,10 @@ public abstract class ChromeFeatureList {
             sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber =
                     newIntCachedFeatureParam(
                             ANDROID_APP_INTEGRATION_WITH_FAVICON, "zero_state_favicon_number", 5);
+
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipSchemaCheck =
+            newBooleanCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_schema_check", false);
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
                     CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, "verification_timeout_ms", 10_000);
@@ -1286,6 +1290,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
+                    sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,

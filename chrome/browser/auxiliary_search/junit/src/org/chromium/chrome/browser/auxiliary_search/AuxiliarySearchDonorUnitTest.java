@@ -10,15 +10,24 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
+import androidx.appsearch.app.AppSearchSession;
+import androidx.appsearch.app.SearchResult;
 import androidx.appsearch.app.SetSchemaResponse;
 import androidx.appsearch.app.SetSchemaResponse.MigrationFailure;
+import androidx.appsearch.builtintypes.GlobalSearchApplicationInfo;
 import androidx.appsearch.builtintypes.WebPage;
+import androidx.appsearch.exceptions.AppSearchException;
 import androidx.test.filters.SmallTest;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -42,13 +50,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for AuxiliarySearchDonor. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mock ListenableFuture.
 public class AuxiliarySearchDonorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private MigrationFailure mMigrationFailure;
     @Mock private AuxiliarySearchHooks mHooks;
+    @Mock private ListenableFuture<AppSearchSession> mAppSearchSession;
+    @Mock private AppSearchSession mSession;
+    @Mock private Callback<Boolean> mCallback;
 
     private AuxiliarySearchDonor mAuxiliarySearchDonor;
 
@@ -62,6 +73,20 @@ public class AuxiliarySearchDonorUnitTest {
 
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
         mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
+        try {
+            when(mAppSearchSession.get()).thenReturn(mSession);
+            mAuxiliarySearchDonor.setAppSearchSessionForTesting(mAppSearchSession);
+        } catch (Exception e) {
+            // Just continue.
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateSessionAndInit() {
+        // #createSessionAndInit() has been called in AuxiliarySearchDonor's constructor.
+        // Verifies that calling createSessionAndInit() again will early exit.
+        assertFalse(mAuxiliarySearchDonor.createSessionAndInit());
     }
 
     @Test
@@ -169,8 +194,9 @@ public class AuxiliarySearchDonorUnitTest {
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
         assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
-        // Verifies not to set the schema again if it has been set.
-        assertFalse(mAuxiliarySearchDonor.maySetSchema());
+        // Verifies that #onConsumerSchemaSearchedImpl() returns false, i.e., not to set the schema
+        // again if it has been set.
+        assertFalse(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
         chromeSharedPreferences.removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
@@ -190,5 +216,69 @@ public class AuxiliarySearchDonorUnitTest {
         mAuxiliarySearchDonor.onConfigChanged(true, callback);
         assertTrue(mAuxiliarySearchDonor.getSharedTabsWithOsStateForTesting());
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testCanDonate() {
+        mAuxiliarySearchDonor.setSharedTabsWithOsStateForTesting(
+                /* sharedTabsWithOsState= */ false);
+        assertFalse(mAuxiliarySearchDonor.canDonate());
+
+        mAuxiliarySearchDonor.setSharedTabsWithOsStateForTesting(/* sharedTabsWithOsState= */ true);
+        mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ false);
+        assertFalse(mAuxiliarySearchDonor.canDonate());
+
+        mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true);
+        assertTrue(mAuxiliarySearchDonor.canDonate());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnConsumerSchemaSearchedImpl() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        mAuxiliarySearchDonor.setPendingCallbackForTesting(callback);
+
+        // Verifies that closeSession() which calls the pending callback is executed when device
+        // isn't capable for Tabs donation while previously donation was allowed (schema is set).
+        assertFalse(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ false));
+        verify(callback).onResult(eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnGetNextPage() {
+        List<SearchResult> page = new ArrayList<>();
+        assertTrue(page.isEmpty());
+
+        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        verify(mCallback).onResult(eq(false));
+
+        SearchResult searchResult1 =
+                createSearchResult(GlobalSearchApplicationInfo.APPLICATION_TYPE_PRODUCER);
+        SearchResult searchResult2 =
+                createSearchResult(GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER);
+
+        page.add(searchResult1);
+        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        verify(mCallback, times(2)).onResult(eq(false));
+
+        page.add(searchResult2);
+        mAuxiliarySearchDonor.onGetNextPage(page, mCallback);
+        verify(mCallback).onResult(eq(true));
+    }
+
+    private SearchResult createSearchResult(int applicationType) {
+        GlobalSearchApplicationInfo appInfo =
+                new GlobalSearchApplicationInfo.Builder("namespace", "id", applicationType)
+                        .setSchemaTypes(Arrays.asList(AuxiliarySearchDonor.SCHEMA))
+                        .build();
+        try {
+            return new SearchResult.Builder("package", "database").setDocument(appInfo).build();
+        } catch (AppSearchException e) {
+            return null;
+        }
     }
 }

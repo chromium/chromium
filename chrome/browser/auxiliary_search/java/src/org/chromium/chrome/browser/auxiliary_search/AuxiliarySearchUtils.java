@@ -41,6 +41,10 @@ public class AuxiliarySearchUtils {
     static final BooleanCachedFeatureParam SHOW_THIRD_PARTY_CARD =
             ChromeFeatureList.sAndroidAppIntegrationModuleShowThirdPartyCard;
 
+    @VisibleForTesting
+    static final BooleanCachedFeatureParam SKIP_SCHEMA_CHECK =
+            ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipSchemaCheck;
+
     /** Convert a Bitmap instance to a byte array. */
     @Nullable
     public static byte[] bitmapToBytes(Bitmap bitmap) {

@@ -100,6 +100,19 @@ public class AuxiliarySearchControllerFactory {
         return mIsTablet;
     }
 
+    @Nullable
+    public String getSupportedPackageName() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.getSupportedPackageName();
+        }
+
+        if (mHooks != null) {
+            return mHooks.getSupportedPackageName();
+        }
+
+        return null;
+    }
+
     private @Nullable AuxiliarySearchController createAuxiliarySearchControllerImp(
             @NonNull Context context,
             @NonNull Profile profile,

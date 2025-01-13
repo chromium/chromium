@@ -130,6 +130,7 @@ public class AuxiliarySearchControllerImpl
             long startTimeMillis) {
         if (!mDonor.canDonate()) return;
 
+        // mDonor will cache the donation list if the initialization of the donor is in progress.
         mDonor.donateFavicons(
                 tabs,
                 tabIdToFaviconMap,
