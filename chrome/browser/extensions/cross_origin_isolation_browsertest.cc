@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -26,6 +22,15 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
+#else
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 namespace extensions {
 namespace {
 
@@ -37,7 +42,13 @@ void RestrictProcessCount() {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 }
 
-class CrossOriginIsolationTest : public ExtensionBrowserTest {
+#if BUILDFLAG(IS_ANDROID)
+using CrossOriginIsolationTestBase = ExtensionPlatformBrowserTest;
+#else
+using CrossOriginIsolationTestBase = ExtensionBrowserTest;
+#endif
+
+class CrossOriginIsolationTest : public CrossOriginIsolationTestBase {
  public:
   CrossOriginIsolationTest() = default;
   ~CrossOriginIsolationTest() override = default;
@@ -45,7 +56,7 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
   CrossOriginIsolationTest& operator=(const CrossOriginIsolationTest&) = delete;
 
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    CrossOriginIsolationTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -58,12 +69,16 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
     const char* test_js = "";
     bool is_platform_app = false;
   };
+  using CrossOriginIsolationTestBase::LoadExtension;
   const Extension* LoadExtension(TestExtensionDir& dir,
                                  const Options& options) {
     CHECK(options.coep_value);
     CHECK(options.coop_value);
     CHECK(!options.is_platform_app || !options.use_service_worker)
         << "Platform apps cannot use 'service_worker' key.";
+#if BUILDFLAG(IS_ANDROID)
+    CHECK(!options.is_platform_app) << "Android does not support platform apps";
+#endif
 
     static constexpr char kManifestTemplate[] = R"(
       {
@@ -122,7 +137,7 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
     dir.WriteFile(FILE_PATH_LITERAL("test.html"),
                   "<script src='test.js'></script>");
     dir.WriteFile(FILE_PATH_LITERAL("test.js"), options.test_js);
-    return ExtensionBrowserTest::LoadExtension(dir.UnpackedPath());
+    return LoadExtension(dir.UnpackedPath());
   }
 
   bool IsCrossOriginIsolated(content::RenderFrameHost* host) {
@@ -232,7 +247,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                             image_url_without_host_permissions));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that platform apps can opt into cross origin isolation.
+// Not run on desktop Android because Android does not support platform apps.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        CrossOriginIsolation_PlatformApps) {
   RestrictProcessCount();
@@ -267,6 +284,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Tests that a web accessible frame from a cross origin isolated extension is
 // not cross origin isolated.
+// TODO(https://crbug.com/388110291): Port to desktop Android. The URL of the
+// extension_iframe is "about:blank#blocked" for unclear reasons. Also, the
+// chrome.browserAction API is not yet supported.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   RestrictProcessCount();
 
@@ -281,16 +301,17 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   EXPECT_TRUE(IsCrossOriginIsolated(coi_background_render_frame_host));
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), extension_test_url));
+  content::WebContents* web_contents = GetActiveWebContents();
   EXPECT_TRUE(IsCrossOriginIsolated(web_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetProcess(),
             coi_background_render_frame_host->GetProcess());
 
   // Load test.html as a web accessible resource inside a web frame.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("/iframe_blank.html")));
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
 
@@ -402,6 +423,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
     }
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that an extension service worker for a cross origin isolated extension
 // is not cross origin isolated. See crbug.com/1131404.
@@ -425,8 +447,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), extension_test_url));
   content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURL(browser(), extension_test_url);
+      content::ConvertToRenderFrameHost(GetActiveWebContents());
   ASSERT_TRUE(extension_tab);
 
   // The service worker should be active since it's waiting for a response to
@@ -462,6 +486,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
                 coi_extension, service_worker_process->GetDeprecatedID(), url));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests certain extension APIs which retrieve in-process extension windows.
 // Test these for a cross origin isolated extension with non-cross origin
 // isolated contexts.
@@ -544,6 +569,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Tests extension messaging between cross origin isolated and
 // non-cross-origin-isolated frames of an extension.
+// TODO(https://crbug.com/388110291): Port to desktop Android when
+// chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   RestrictProcessCount();
 
@@ -633,6 +660,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
 // Tests extension messaging between a cross origin isolated extension frame and
 // the extension service worker which is not cross origin isolated (and hence in
 // a different process).
+// TODO(https://crbug.com/388110291): Port to desktop Android when
+// chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        ExtensionMessaging_ServiceWorker) {
   RestrictProcessCount();
@@ -710,6 +739,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Verify extension resource access if it's in an iframe. Regression test for
 // crbug.com/1343610.
+// TODO(https://crbug.com/388110291): Port to desktop Android when we have a
+// cross-platform replacement for NavigateParams.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
@@ -809,6 +840,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     EXPECT_EQ(target, iframe->GetLastCommittedURL());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace extensions
