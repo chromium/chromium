@@ -256,7 +256,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didMergeTabToGroup(tab, tab.getId());
+            observer.didMergeTabToGroup(tab);
         }
 
         if (notify) {
@@ -351,12 +351,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
             resetFilterState();
 
-            Tab lastMergedTab = tabsToMerge.get(tabsToMerge.size() - 1);
-            TabGroup group = mRootIdToGroupMap.get(lastMergedTab.getRootId());
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                    observer.didMergeTabToGroup(tab);
                 }
             }
 
@@ -694,10 +692,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
         if (isChangingGroups && isTabInTabGroup(tab)) {
-            TabGroup group = mRootIdToGroupMap.get(originalRootId);
             // Last shown tab IDs are not preserved across an undo.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                observer.didMergeTabToGroup(tab);
             }
         }
     }
@@ -1266,9 +1263,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         } else if (isMergeTabToGroup) {
             resetFilterState();
 
-            TabGroup group = mRootIdToGroupMap.get(tab.getRootId());
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab, group.getLastShownTabId());
+                observer.didMergeTabToGroup(tab);
             }
         } else {
             reorder();
