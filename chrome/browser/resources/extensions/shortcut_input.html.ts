@@ -11,13 +11,13 @@ export function getHtml(this: ShortcutInputElement) {
   return html`<!--_html_template_start_-->
 <div id="main">
   <cr-input id="input" ?readonly="${this.readonly_}"
-      aria-label="${this.computeInputAriaLabel_()}"
+      aria-label="${this.inputAriaLabel}"
       .placeholder="${this.computePlaceholder_()}"
       ?invalid="${this.getIsInvalid_()}"
       .errorMessage="${this.getErrorString_()}"
       .value="${this.computeText_()}">
     <cr-icon-button id="edit" title="$i18n{edit}"
-        aria-label="${this.computeEditButtonAriaLabel_()}"
+        aria-label="${this.editButtonAriaLabel}"
         slot="suffix" class="icon-edit no-overlap"
         @click="${this.onEditClick_}">
     </cr-icon-button>

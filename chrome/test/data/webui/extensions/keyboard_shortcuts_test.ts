@@ -4,9 +4,12 @@
 
 /** @fileoverview Suite of tests for extension-keyboard-shortcuts. */
 
+import 'chrome://extensions/extensions.js';
+
 import type {ExtensionsKeyboardShortcutsElement} from 'chrome://extensions/extensions.js';
 import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
@@ -127,5 +130,101 @@ suite('ExtensionShortcutTest', function() {
     assertEquals(oneCommand.commands[0]!.name, params[1]);
     await microtasksFinished();
     assertEquals(selectElement.value, params[2]);
+  });
+
+
+  test('UpdateShortcut', async function() {
+    const shortcutInput = keyboardShortcuts.shadowRoot!.querySelector(
+        'extensions-shortcut-input');
+    assertTrue(!!shortcutInput);
+    const field = shortcutInput.$.input;
+    assertEquals('Ctrl + W', field.value);
+
+    // Click the edit button. Capture should start.
+    shortcutInput.$.edit.click();
+    let arg = await testDelegate.whenCalled('setShortcutHandlingSuspended');
+
+    assertTrue(arg);
+    testDelegate.reset();
+    await microtasksFinished();
+    assertEquals('', field.value);
+
+    // Press character.
+    keyDownOn(field, 65, []);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertTrue(field.errorMessage!.startsWith('Include'));
+    // Add shift to character.
+    keyDownOn(field, 65, ['shift']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertTrue(field.errorMessage!.startsWith('Include'));
+    // Press ctrl.
+    keyDownOn(field, 17, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Add shift.
+    keyDownOn(field, 16, ['ctrl', 'shift']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Remove shift.
+    keyUpOn(field, 16, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Add alt (ctrl + alt is invalid).
+    keyDownOn(field, 18, ['ctrl', 'alt']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    // Remove alt.
+    keyUpOn(field, 18, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+
+    // Add 'A'. Once a valid shortcut is typed (like Ctrl + A), it is
+    // committed.
+    keyDownOn(field, 65, ['ctrl']);
+    arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
+    testDelegate.reset();
+
+    assertDeepEquals(
+        [oneCommand.id, oneCommand.commands[0]!.name, 'Ctrl+A'], arg);
+    await microtasksFinished();
+    assertEquals('Ctrl + A', field.value);
+    assertEquals('Ctrl+A', shortcutInput.shortcut);
+
+    // Test clearing the shortcut.
+    shortcutInput.$.edit.click();
+    assertEquals(
+        shortcutInput.$.input, shortcutInput.shadowRoot!.activeElement);
+    arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
+    await microtasksFinished();
+
+    field.blur();
+    testDelegate.reset();
+    assertDeepEquals([oneCommand.id, oneCommand.commands[0]!.name, ''], arg);
+    assertEquals('', shortcutInput.shortcut);
+
+    // The click event causes the input element to lose focus on mouse down
+    // but regains focus on mouse up after triggering the edit button on mouse
+    // up. This should ultimately result in shortcuts being suspended.
+    shortcutInput.$.edit.click();
+    await testDelegate.whenCalled('setShortcutHandlingSuspended');
+    await microtasksFinished();
+    const shortcutSuspendedArgs =
+        testDelegate.getArgs('setShortcutHandlingSuspended');
+    assertEquals(2, testDelegate.getCallCount('setShortcutHandlingSuspended'));
+    assertFalse(shortcutSuspendedArgs[0]);
+    assertTrue(shortcutSuspendedArgs[1]);
+    testDelegate.reset();
+
+    // Test ending capture using the escape key.
+    shortcutInput.$.edit.click();
+    keyDownOn(field, 27);  // Escape key.
+    arg = await testDelegate.whenCalled('setShortcutHandlingSuspended');
+    assertFalse(arg);
   });
 });

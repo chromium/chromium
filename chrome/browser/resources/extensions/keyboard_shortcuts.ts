@@ -43,6 +43,16 @@ export class ExtensionsKeyboardShortcutsElement extends
     this.addEventListener('view-enter-start', this.onViewEnter_);
   }
 
+  protected onInputCaptureChange_(event: CustomEvent<boolean>) {
+    this.delegate.setShortcutHandlingSuspended(event.detail);
+  }
+
+  protected onShortcutUpdated_(
+      itemId: string, commandName: string, event: CustomEvent<string>) {
+    this.delegate.updateExtensionCommandKeybinding(
+        itemId, commandName, event.detail);
+  }
+
   private onViewEnter_() {
     chrome.metricsPrivate.recordUserAction('Options_ExtensionCommands');
   }

@@ -11,9 +11,6 @@ import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {createDummyExtensionInfo} from './item_util.js';
-import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
-import {createDummyKeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import {getCss} from './shortcut_input.css.js';
 import {getHtml} from './shortcut_input.html.js';
 import {formatShortcutText, hasValidModifiers, isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
@@ -25,7 +22,7 @@ enum ShortcutError {
   NEED_CHARACTER = 3,
 }
 
-// The UI to display and manage keyboard shortcuts set for extension commands.
+// The UI to display and manage keyboard shortcuts.
 
 export interface ExtensionsShortcutInputElement {
   $: {
@@ -52,10 +49,9 @@ export class ExtensionsShortcutInputElement extends
 
   static override get properties() {
     return {
-      delegate: {type: Object},
-      item: {type: Object},
-      command: {type: Object},
       shortcut: {type: String},
+      inputAriaLabel: {type: String},
+      editButtonAriaLabel: {type: String},
       error_: {type: Number},
 
       readonly_: {
@@ -65,17 +61,9 @@ export class ExtensionsShortcutInputElement extends
     };
   }
 
-  delegate: KeyboardShortcutDelegate = createDummyKeyboardShortcutDelegate();
-  item: chrome.developerPrivate.ExtensionInfo = createDummyExtensionInfo();
-  command: chrome.developerPrivate.Command = {
-    description: '',
-    keybinding: '',
-    name: '',
-    isActive: false,
-    scope: chrome.developerPrivate.CommandScope.CHROME,
-    isExtensionAction: false,
-  };
   shortcut: string = '';
+  inputAriaLabel: string = '';
+  editButtonAriaLabel: string = '';
   protected readonly_: boolean = true;
   private capturing_: boolean = false;
   private error_: ShortcutError = ShortcutError.NO_ERROR;
@@ -90,15 +78,16 @@ export class ExtensionsShortcutInputElement extends
     node.addEventListener('keyup', this.onKeyUp_.bind(this));
   }
 
-  private startCapture_() {
+  private async startCapture_() {
     if (this.capturing_ || this.readonly_) {
       return;
     }
     this.capturing_ = true;
-    this.delegate.setShortcutHandlingSuspended(true);
+    await this.updateComplete;
+    this.fire('input-capture-change', true);
   }
 
-  private endCapture_() {
+  private async endCapture_() {
     if (!this.capturing_) {
       return;
     }
@@ -106,8 +95,9 @@ export class ExtensionsShortcutInputElement extends
     this.capturing_ = false;
     this.$.input.blur();
     this.error_ = ShortcutError.NO_ERROR;
-    this.delegate.setShortcutHandlingSuspended(false);
     this.readonly_ = true;
+    await this.updateComplete;
+    this.fire('input-capture-change', false);
   }
 
   private clearShortcut_() {
@@ -219,20 +209,10 @@ export class ExtensionsShortcutInputElement extends
     this.endCapture_();
   }
 
-  private commitPending_() {
+  private async commitPending_() {
     this.shortcut = this.pendingShortcut_;
-    this.delegate.updateExtensionCommandKeybinding(
-        this.item.id, this.command.name, this.shortcut);
-  }
-
-  protected computeInputAriaLabel_(): string {
-    return this.i18n(
-        'editShortcutInputLabel', this.command.description, this.item.name);
-  }
-
-  protected computeEditButtonAriaLabel_(): string {
-    return this.i18n(
-        'editShortcutButtonLabel', this.command.description, this.item.name);
+    await this.updateComplete;
+    this.fire('shortcut-updated', this.shortcut);
   }
 
   protected computePlaceholder_(): string {
