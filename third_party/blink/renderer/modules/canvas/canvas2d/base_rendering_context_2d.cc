@@ -4001,7 +4001,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   }
 
   wgpu::TextureFormat dawn_format =
-      AsDawnType(viz::ToClosestSkColorType(true, client_si->format()));
+      AsDawnType(viz::ToClosestSkColorType(client_si->format()));
   wgpu::TextureDescriptor desc = {
       .usage = tex_usage,
       .size = {base::checked_cast<uint32_t>(client_si->size().width()),

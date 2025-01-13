@@ -748,8 +748,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   DCHECK_EQ(size_.width(), shared_image->size().width());
   DCHECK_EQ(size_.height(), shared_image->size().height());
 
-  auto sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, shared_image->format());
+  auto sk_color_type = viz::ToClosestSkColorType(shared_image->format());
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(
       size_.width(), size_.height(), sk_color_type, kPremul_SkAlphaType);

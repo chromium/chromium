@@ -236,10 +236,9 @@ bool CanvasResource::PrepareTransferableResource(
 }
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
-  return SkImageInfo::Make(
-      SkISize::Make(size_.width(), size_.height()),
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format_), alpha_type_,
-      color_space_.ToSkColorSpace());
+  return SkImageInfo::Make(SkISize::Make(size_.width(), size_.height()),
+                           viz::ToClosestSkColorType(format_), alpha_type_,
+                           color_space_.ToSkColorSpace());
 }
 
 // CanvasResourceSharedBitmap

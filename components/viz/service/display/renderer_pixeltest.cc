@@ -4679,7 +4679,8 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   constexpr SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
   gfx::Rect viewport(this->device_viewport_size_);
 
-  SkColorType ct = ToClosestSkColorType(!is_software_renderer(), format);
+  SkColorType ct =
+      ToClosestSkColorTypeDeprecated(!is_software_renderer(), format);
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);

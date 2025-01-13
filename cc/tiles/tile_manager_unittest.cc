@@ -2159,7 +2159,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     EXPECT_TRUE(tile->draw_info().IsReadyToDraw());
 
     gfx::Size resource_size = tile->draw_info().resource_size();
-    SkColorType ct = ToClosestSkColorType(
+    SkColorType ct = ToClosestSkColorTypeDeprecated(
         TestSoftwareRasterBufferProvider::kIsGpuCompositing,
         TestSoftwareRasterBufferProvider::kSharedImageFormat);
     auto info = SkImageInfo::Make(resource_size.width(), resource_size.height(),

@@ -413,10 +413,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     DCHECK_EQ(static_cast<int>(promise_image_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
-    auto color_type =
-        format.PrefersExternalSampler()
-            ? ToClosestSkColorTypeExternalSampler(format)
-            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    auto color_type = format.PrefersExternalSampler()
+                          ? ToClosestSkColorTypeExternalSampler(format)
+                          : viz::ToClosestSkColorType(format);
     return SkImages::BorrowTextureFrom(
         context_state->gr_context(), promise_image_texture()->backendTexture(),
         surface_origin, color_type, alpha_type, sk_color_space,
@@ -659,10 +658,9 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     CHECK_EQ(static_cast<int>(graphite_textures_.size()), 1);
     auto alpha_type = representation()->alpha_type();
-    auto color_type =
-        format.PrefersExternalSampler()
-            ? ToClosestSkColorTypeExternalSampler(format)
-            : viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    auto color_type = format.PrefersExternalSampler()
+                          ? ToClosestSkColorTypeExternalSampler(format)
+                          : viz::ToClosestSkColorType(format);
     auto origin = representation()->surface_origin() == kTopLeft_GrSurfaceOrigin
                       ? skgpu::Origin::kTopLeft
                       : skgpu::Origin::kBottomLeft;

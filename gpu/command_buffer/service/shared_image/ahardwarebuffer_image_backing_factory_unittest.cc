@@ -309,9 +309,8 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  auto image_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(size),
-                        viz::ToClosestSkColorType(true, format), alpha_type);
+  auto image_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(size), viz::ToClosestSkColorType(format), alpha_type);
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(image_info);
 

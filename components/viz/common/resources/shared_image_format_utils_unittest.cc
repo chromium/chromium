@@ -134,7 +134,7 @@ TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareRGBX) {
   SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
   ASSERT_EQ(format.NumberOfPlanes(), 1);
   EXPECT_EQ(kN32_SkColorType,
-            ToClosestSkColorType(/*gpu_compositing=*/false, format));
+            ToClosestSkColorTypeDeprecated(/*gpu_compositing=*/false, format));
 }
 
 }  // namespace

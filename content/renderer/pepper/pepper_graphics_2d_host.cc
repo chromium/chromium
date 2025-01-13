@@ -721,9 +721,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       src = swizzled.get();
     }
 
-    SkImageInfo src_info = SkImageInfo::Make(
-        size.width(), size.height(), viz::ToClosestSkColorType(true, format),
-        kUnknown_SkAlphaType);
+    SkImageInfo src_info = SkImageInfo::Make(size.width(), size.height(),
+                                             viz::ToClosestSkColorType(format),
+                                             kUnknown_SkAlphaType);
     ri->WaitSyncTokenCHROMIUM(in_sync_token.GetConstData());
 
     uint32_t texture_target = shared_image->GetTextureTarget();

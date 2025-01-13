@@ -248,8 +248,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
                          size_t decoded_image_working_set_budget_bytes,
                          RasterDarkModeFilter* dark_mode_filter) {
     if (raster_caps.use_gpu_rasterization) {
-      auto color_type = viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, raster_caps.tile_format);
+      auto color_type = viz::ToClosestSkColorType(raster_caps.tile_format);
       if (enable_shared_image_cache_for_gpu) {
         image_decode_cache_ptr_ =
             &worker_context_provider_wrapper->GetGpuImageDecodeCache(
@@ -263,7 +262,8 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-          viz::ToClosestSkColorType(gpu_compositing, raster_caps.tile_format),
+          viz::ToClosestSkColorTypeDeprecated(gpu_compositing,
+                                              raster_caps.tile_format),
           decoded_image_working_set_budget_bytes);
     }
 

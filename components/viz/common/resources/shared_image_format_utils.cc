@@ -15,8 +15,8 @@
 
 namespace viz {
 
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format) {
+SkColorType ToClosestSkColorTypeDeprecated(bool gpu_compositing,
+                                           SharedImageFormat format) {
   CHECK(format.is_single_plane());
 
   if (!gpu_compositing) {
@@ -27,6 +27,12 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     // RGBA or BGRA.
     return kN32_SkColorType;
   }
+
+  return ToClosestSkColorType(format);
+}
+
+SkColorType ToClosestSkColorType(SharedImageFormat format) {
+  CHECK(format.is_single_plane());
 
   if (format == SinglePlaneFormat::kRGBA_4444) {
     return kARGB_4444_SkColorType;
@@ -72,7 +78,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
 SkColorType ToClosestSkColorType(SharedImageFormat format, int plane_index) {
   CHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    return ToClosestSkColorType(format);
   }
 
   // No external sampling, format is per plane.

@@ -630,7 +630,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   SkColorType color_type =
       format.PrefersExternalSampler()
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
-          : ToClosestSkColorType(/*gpu_compositing=*/true, format);
+          : ToClosestSkColorType(format);
 
   if (force_rgbx) {
     if (color_type == SkColorType::kBGRA_8888_SkColorType ||
@@ -848,8 +848,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   CHECK(!current_paint_);
   CHECK(resource_sync_tokens_.empty());
 
-  SkColorType color_type =
-      ToClosestSkColorType(/*gpu_compositing=*/true, format);
+  SkColorType color_type = ToClosestSkColorType(format);
   if (graphite_recorder_) {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,

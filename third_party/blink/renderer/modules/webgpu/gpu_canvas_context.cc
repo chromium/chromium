@@ -115,8 +115,7 @@ SkColorType GPUCanvasContext::GetSkColorType() const {
   if (!swap_buffers_) {
     return kN32_SkColorType;
   }
-  return viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, swap_buffers_->Format());
+  return viz::ToClosestSkColorType(swap_buffers_->Format());
 }
 
 sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
@@ -311,8 +310,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   }
   DCHECK(release_callback);
 
-  auto sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, client_si->format());
+  auto sk_color_type = viz::ToClosestSkColorType(client_si->format());
 
   const SkImageInfo sk_image_info = SkImageInfo::Make(
       texture_descriptor_.size.width, texture_descriptor_.size.height,
