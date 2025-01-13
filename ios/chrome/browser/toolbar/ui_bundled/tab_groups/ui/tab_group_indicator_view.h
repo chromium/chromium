@@ -12,8 +12,19 @@
 @protocol TabGroupIndicatorMutator;
 @protocol ToolbarHeightDelegate;
 
+// Delegate for the TabGroupIndicatorView.
+@protocol TabGroupIndicatorViewDelegate
+
+// Called when the visibility of the TabGroupIndicatorView is updated.
+- (void)tabGroupIndicatorViewVisibilityUpdated:(BOOL)visible;
+
+@end
+
 // UIView that contains information about the current tab group.
 @interface TabGroupIndicatorView : UIView <TabGroupIndicatorConsumer>
+
+// Delegate that handles tab group indicator view updates.
+@property(nonatomic, weak) id<TabGroupIndicatorViewDelegate> delegate;
 
 // The view controller on which the face pile is presented.
 @property(nonatomic, weak) UIViewController* facePileParentViewController;
@@ -21,7 +32,7 @@
 // Mutator for actions happening in the view.
 @property(nonatomic, weak) id<TabGroupIndicatorMutator> mutator;
 
-/// Delegate that handles the toolbars height.
+// Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 // Tracks if the view is available.
