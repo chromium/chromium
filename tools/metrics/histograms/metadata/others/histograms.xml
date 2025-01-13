@@ -7094,6 +7094,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CreateItemFailed"/>
     <variant name="EmptySecret"/>
     <variant name="GetSecretFailed"/>
+    <variant name="GnomeKeyringDeadlock"/>
     <variant name="NoService"/>
     <variant name="ReadAliasFailed"/>
     <variant name="SearchItemsFailed"/>

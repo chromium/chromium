@@ -107,6 +107,8 @@ const char* InitStatusToString(
       return "EmptySecret";
     case FreedesktopSecretKeyProvider::InitStatus::kGetSecretFailed:
       return "GetSecretFailed";
+    case FreedesktopSecretKeyProvider::InitStatus::kGnomeKeyringDeadlock:
+      return "GnomeKeyringDeadlock";
     case FreedesktopSecretKeyProvider::InitStatus::kNoService:
       return "NoService";
     case FreedesktopSecretKeyProvider::InitStatus::kReadAliasFailed:
@@ -189,11 +191,37 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
   if (collection_path->value().value() != "/") {
     default_collection_proxy_ =
         bus_->GetObjectProxy(kSecretServiceName, collection_path->value());
-    UnlockDefaultCollection();
+    CallMethod(default_collection_proxy_, kPropertiesInterface, kMethodGet,
+               MakeDbusParameters(DbusString(kSecretCollectionInterface),
+                                  DbusString(kLabelProperty)),
+               base::BindOnce(
+                   &FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse,
+                   weak_ptr_factory_.GetWeakPtr()));
   } else {
     NOTIMPLEMENTED();
     FinalizeFailure(InitStatus::kCreateCollectionFailed, ErrorDetail::kNone);
   }
+}
+
+void FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse(
+    base::expected<DbusVariant, ErrorDetail> variant) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!variant.has_value()) {
+    LOG(ERROR) << "Get(Label) failed.";
+    FinalizeFailure(InitStatus::kGnomeKeyringDeadlock, variant.error());
+    return;
+  }
+
+  const DbusString* label_variant = variant->GetAs<DbusString>();
+  if (!label_variant) {
+    LOG(ERROR) << "Label property missing or invalid.";
+    FinalizeFailure(InitStatus::kGnomeKeyringDeadlock,
+                    ErrorDetail::kInvalidVariantFormat);
+    return;
+  }
+
+  // Label property read successfully
+  UnlockDefaultCollection();
 }
 
 void FreedesktopSecretKeyProvider::UnlockDefaultCollection() {

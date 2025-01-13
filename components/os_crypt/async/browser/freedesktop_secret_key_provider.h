@@ -40,6 +40,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kCreateItemFailed = 2,
     kEmptySecret = 3,
     kGetSecretFailed = 4,
+    kGnomeKeyringDeadlock = 5,
     kNoService = 6,
     kReadAliasFailed = 7,
     kSearchItemsFailed = 8,
@@ -130,6 +131,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnServiceStarted(std::optional<bool> service_started);
   void OnReadAliasDefault(
       base::expected<DbusObjectPath, ErrorDetail> collection_path);
+  void OnGetCollectionLabelResponse(
+      base::expected<DbusVariant, ErrorDetail> variant);
   void OnUnlock(
       base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
                      ErrorDetail> unlocked_collection);

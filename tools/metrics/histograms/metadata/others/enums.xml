@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="CreateItemFailed"/>
   <int value="3" label="EmptySecret"/>
   <int value="4" label="GetSecretFailed"/>
+  <int value="5" label="GnomeKeyringDeadlock"/>
   <int value="6" label="NoService"/>
   <int value="7" label="ReadAliasFailed"/>
   <int value="8" label="SearchItemsFailed"/>
