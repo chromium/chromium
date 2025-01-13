@@ -913,7 +913,7 @@ void ExtensionInfoGenerator::OnImageLoaded(
     ExtensionInfoList list = std::move(list_);
     list_.clear();
     std::move(callback_).Run(std::move(list));
-    // WARNING: |this| is possibly deleted after this line!
+    // WARNING: `this` is possibly deleted after this line!
   }
 }
 

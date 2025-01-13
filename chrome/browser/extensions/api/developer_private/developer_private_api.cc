@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -2967,25 +2969,13 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(params);
   extension_id_ = std::move(params->extension_id);
+  profile_ = Profile::FromBrowserContext(browser_context());
 
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context())
-          ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
-  if (!extension) {
-    return RespondNow(Error(
-        ErrorUtils::FormatErrorMessage(kNoExtensionError, extension_id_)));
+  auto result = VerifyExtensionAndSigninState();
+  if (!result.has_value()) {
+    return RespondNow(Error(result.error()));
   }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-
-  // Return an error if there is no signed in user.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  if (account_info.IsEmpty()) {
-    return RespondNow(Error(kUserNotSignedIn));
-  }
+  const Extension* extension = *result;
 
   // Return an error if the extension cannot be uploaded for reasons such as:
   // - syncing extensions in transport mode (signed in but not full sync) is
@@ -2993,7 +2983,7 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
   // - the extension is already associated with the signed in user's account.
   // - the extension is not syncable (for example, if it's unpacked).
   if (!sync_util::IsExtensionsExplicitSigninEnabled() ||
-      !AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
+      !AccountExtensionTracker::Get(profile_)->CanUploadAsAccountExtension(
           *extension)) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         kCannotUploadExtensionToAccount, extension_id_)));
@@ -3030,6 +3020,37 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
   return RespondLater();
 }
 
+base::expected<const Extension*, std::string>
+DeveloperPrivateUploadExtensionToAccountFunction::
+    VerifyExtensionAndSigninState() {
+  const Extension* extension =
+      ExtensionRegistry::Get(browser_context())
+          ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
+  if (!extension) {
+    return base::unexpected(
+        ErrorUtils::FormatErrorMessage(kNoExtensionError, extension_id_));
+  }
+
+  // Return an error if there is no signed in user.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  if (account_info.IsEmpty()) {
+    return base::unexpected(kUserNotSignedIn);
+  }
+
+  return base::ok(extension);
+}
+
+void DeveloperPrivateUploadExtensionToAccountFunction::UploadExtensionToAccount(
+    const Extension& extension) {
+  AccountExtensionTracker::Get(browser_context())
+      ->OnAccountUploadInitiatedForExtension(extension.id());
+  ExtensionSyncService::Get(browser_context())
+      ->SyncExtensionChangeIfNeeded(extension);
+}
+
 void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
   // We cannot proceed if the `browser_context` is not valid as the relevant
   // classes needed to upload the extension will not exist.
@@ -3037,8 +3058,14 @@ void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
     return;
   }
 
-  // TODO(crbug.com/381127648): Upload the associated `extension_id_` to the
-  // user's account once the dialog is accepted.
+  auto result = VerifyExtensionAndSigninState();
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
+    return;
+  }
+  const Extension* extension = *result;
+
+  UploadExtensionToAccount(*extension);
   Respond(NoArguments());
 }
 

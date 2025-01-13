@@ -106,6 +106,10 @@ class AccountExtensionTracker : public KeyedService,
   // current signed in user.
   bool CanUploadAsAccountExtension(const Extension& extension) const;
 
+  // Called when the user initiates an upload for the given `extension_id` to
+  // their account.
+  void OnAccountUploadInitiatedForExtension(const ExtensionId& extension_id);
+
   void SetAccountExtensionTypeForTesting(const ExtensionId& extension_id,
                                          AccountExtensionType type);
 
@@ -121,6 +125,9 @@ class AccountExtensionTracker : public KeyedService,
 
   // Removes `extension_id` in `extensions_installed_with_signin_promo_`.
   void RemoveExpiredExtension(const ExtensionId& extension_id);
+
+  // Promotes `extension_id` from a local to an account extension.
+  void PromoteLocalToAccountExtension(const ExtensionId& extension_id);
 
   // Notifies observers that the eligibility of multiple extensions to be
   // uploaded to the user's account may have changed.

@@ -3473,6 +3473,12 @@ class DeveloperPrivateApiTransportModeUnitTest
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
 
+  AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
+      const ExtensionId& extension_id) {
+    return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(
+        extension_id);
+  }
+
   bool CanUploadToAccount(const Extension& extension) {
     return AccountExtensionTracker::Get(profile())->CanUploadAsAccountExtension(
         extension);
@@ -3586,7 +3592,8 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
           unsyncable_extension->id()));
 }
 
-TEST_F(DeveloperPrivateApiTransportModeUnitTest, UploadExtensionToAccount) {
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_Cancelled) {
   // Add a syncable extension.
   auto syncable_extension = LoadSyncableExtension("ext");
 
@@ -3623,6 +3630,76 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, UploadExtensionToAccount) {
       ErrorUtils::FormatErrorMessage(
           "Extension with ID '*' cannot be uploaded to the user's account.",
           syncable_extension->id()));
+}
+
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_Accepted) {
+  // Add a syncable extension.
+  auto extension = LoadSyncableExtension("ext");
+  ItemStatePrefsChangedObserver test_observer =
+      StartListeningForEvent(extension->id());
+
+  // Sign the user in without full sync.
+  SimulateExplicitSignIn();
+
+  // Now simulate an initial sync with no extensions in the user's account. This
+  // is needed to spin up the sync service so uploaded extensions actually get
+  // synced.
+  SimulateInitialSync({});
+
+  // Wait for the associated prefs changed event from the initial sync so the
+  // event that gets emitted later from an extension upload can be properly
+  // picked up.
+  test_observer.WaitForEvent();
+
+  // The syncable extension can be uploaded and should be a local extension.
+  EXPECT_TRUE(CanUploadToAccount(*extension));
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(extension->id()));
+
+  // On this machine, there should be no extensions syncing.
+  {
+    syncer::SyncDataList list =
+        ExtensionSyncService::Get(profile())->GetAllSyncDataForTesting(
+            syncer::EXTENSIONS);
+    EXPECT_TRUE(list.empty());
+  }
+
+  // Now upload the extension and accept the dialog to proceed with the upload.
+  base::Value::List args;
+  args.Append(extension->id());
+  auto upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+  upload_function->accept_bubble_for_testing(true);
+
+  test_observer.Reset();
+  EXPECT_TRUE(RunFunction(upload_function, args));
+
+  // Wait for the prefs changed update and verify that the extension is no
+  // longer uploadable after being uploaded.
+  test_observer.WaitForEvent();
+  auto info = test_observer.event_info();
+  EXPECT_FALSE(info.can_upload_as_account_extension);
+  EXPECT_FALSE(CanUploadToAccount(*extension));
+
+  // Double check that the extension is now an account extension.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(extension->id()));
+
+  // Verify that the extension is now syncing from the sync service.
+  {
+    syncer::SyncDataList list =
+        ExtensionSyncService::Get(profile())->GetAllSyncDataForTesting(
+            syncer::EXTENSIONS);
+    ASSERT_EQ(1u, list.size());
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(list[0]);
+    ASSERT_TRUE(data.get());
+    EXPECT_EQ(extension->id(), data->id());
+    EXPECT_TRUE(data->enabled());
+  }
 }
 
 // Test that an extension is uploadable when the user signs into transport mode

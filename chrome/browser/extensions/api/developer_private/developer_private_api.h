@@ -1128,6 +1128,13 @@ class DeveloperPrivateUploadExtensionToAccountFunction
 
   ResponseAction Run() override;
 
+  // Verify that the extension to be uploaded exists and that there's a signed
+  // in user. Returns the extension if successful, otherwise returns an error.
+  base::expected<const Extension*, std::string> VerifyExtensionAndSigninState();
+
+  // Uploads the given `extension` to the user's account.
+  void UploadExtensionToAccount(const Extension& extension);
+
   // A callback function to run when the user accepts the action dialog.
   void OnDialogAccepted();
 
@@ -1136,6 +1143,8 @@ class DeveloperPrivateUploadExtensionToAccountFunction
 
   // The ID of the extension to be uploaded.
   ExtensionId extension_id_;
+
+  raw_ptr<Profile> profile_;
 
   // If true, immediately accepts the keep dialog by running the callback.
   std::optional<bool> accept_bubble_for_testing_;

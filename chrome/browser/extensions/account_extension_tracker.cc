@@ -206,11 +206,7 @@ void AccountExtensionTracker::OnExtensionSyncDataReceived(
   // and thus don't need to be set here.
   AccountExtensionType type = GetAccountExtensionType(extension_id);
   if (type == AccountExtensionType::kLocal) {
-    SetAccountExtensionType(extension_id,
-                            AccountExtensionType::kAccountInstalledLocally);
-    for (auto& observer : observers_) {
-      observer.OnExtensionUploadabilityChanged(extension_id);
-    }
+    PromoteLocalToAccountExtension(extension_id);
   }
 }
 
@@ -271,6 +267,15 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
          sync_util::ShouldSync(profile_, &extension);
 }
 
+void AccountExtensionTracker::OnAccountUploadInitiatedForExtension(
+    const ExtensionId& extension_id) {
+  PromoteLocalToAccountExtension(extension_id);
+
+  // The "local state" of the uploaded extension will be pushed to sync soon,
+  // so set NeedsSync to false.
+  ExtensionPrefs::Get(profile_)->SetNeedsSync(extension_id, false);
+}
+
 void AccountExtensionTracker::SetAccountExtensionTypeForTesting(
     const ExtensionId& extension_id,
     AccountExtensionType type) {
@@ -297,6 +302,25 @@ void AccountExtensionTracker::RemoveExpiredExtension(
   std::erase_if(
       extensions_installed_with_signin_promo_,
       [&extension_id](const ExtensionId& id) { return extension_id == id; });
+}
+
+void AccountExtensionTracker::PromoteLocalToAccountExtension(
+    const ExtensionId& extension_id) {
+  // Make sure we're actually promoting a local extension!
+  DCHECK_EQ(GetAccountExtensionType(extension_id),
+            AccountExtensionType::kLocal);
+
+  // The previous `AccountExtensionType::kLocal` state implies the extension is
+  // still associated with the current device hence the promotion to
+  // `AccountExtensionType::kAccountInstalledLocally`.
+  SetAccountExtensionType(extension_id,
+                          AccountExtensionType::kAccountInstalledLocally);
+
+  // The extension's uploadability may change when its AccountExtensionType
+  // changes.
+  for (auto& observer : observers_) {
+    observer.OnExtensionUploadabilityChanged(extension_id);
+  }
 }
 
 void AccountExtensionTracker::NotifyOnExtensionsUploadabilityChanged() {
