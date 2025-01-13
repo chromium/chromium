@@ -1771,7 +1771,7 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
     add_profiles_extra_parts = false;
 #endif
   if (add_profiles_extra_parts)
-    chrome::AddProfilesExtraParts(main_parts.get());
+    AddProfilesExtraParts(main_parts.get());
 
     // Construct additional browser parts. Stages are called in the order in
     // which they are added.

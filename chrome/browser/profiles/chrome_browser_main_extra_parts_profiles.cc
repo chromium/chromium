@@ -565,13 +565,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
-namespace chrome {
-
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsProfiles>());
 }
-
-}  // namespace chrome
 
 ChromeBrowserMainExtraPartsProfiles::ChromeBrowserMainExtraPartsProfiles() =
     default;
