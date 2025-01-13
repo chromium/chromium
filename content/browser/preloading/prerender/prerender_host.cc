@@ -368,6 +368,12 @@ FrameTree* PrerenderHost::GetPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
+bool PrerenderHost::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
+}
+
 FrameTreeNodeId PrerenderHost::GetOuterDelegateFrameTreeNodeId() {
   // A prerendered FrameTree is not "inner to" or "nested inside" another
   // FrameTree; it exists in parallel to the primary FrameTree of the current

@@ -218,6 +218,12 @@ FrameTree* FencedFrame::GetOwnedPictureInPictureFrameTree() {
   return nullptr;
 }
 
+bool FencedFrame::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
+}
+
 FrameTree* FencedFrame::GetPictureInPictureOpenerFrameTree() {
   return nullptr;
 }

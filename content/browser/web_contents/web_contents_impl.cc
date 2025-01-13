@@ -4503,6 +4503,18 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
       base::BindRepeating(
           [](PageVisibilityState page_visibility,
              RenderViewHostImpl* render_view_host) {
+            // If we are a guest frame tree, allow the visibility (ie
+            // display:none) to override the page visibility.
+            if (render_view_host->frame_tree()->is_guest()) {
+              RenderFrameProxyHost* proxy = render_view_host->frame_tree()
+                                                ->root()
+                                                ->render_manager()
+                                                ->GetProxyToOuterDelegate();
+              if (proxy && proxy->cross_process_frame_connector()->IsHidden()) {
+                page_visibility = PageVisibilityState::kHidden;
+              }
+            }
+
             render_view_host->SetFrameTreeVisibility(page_visibility);
           },
           page_visibility);

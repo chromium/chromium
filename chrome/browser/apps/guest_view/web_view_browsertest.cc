@@ -2139,8 +2139,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestGetProcessId) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, Shim_TestHiddenBeforeNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testHiddenBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 

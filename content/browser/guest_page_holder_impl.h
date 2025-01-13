@@ -58,6 +58,9 @@ class GuestPageHolderImpl : public GuestPageHolder,
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
   FrameTree* GetOwnedPictureInPictureFrameTree() override;
   FrameTree* GetPictureInPictureOpenerFrameTree() override;
+  bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
+      blink::mojom::FrameVisibility visibility) override;
 
   // NavigationControllerDelegate implementation.
   void NotifyNavigationStateChangedFromController(
