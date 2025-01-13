@@ -98,6 +98,7 @@ constexpr char kOpTypeSigmoid[] = "Sigmoid";
 constexpr char kOpTypeSlice[] = "Slice";
 constexpr char kOpTypeSoftmax[] = "Softmax";
 constexpr char kOpTypeTranspose[] = "Transpose";
+constexpr char kOpTypeTriangular[] = "Trilu";
 constexpr char kOpTypeWhere[] = "Where";
 
 // constexpr char kBuildGraphError[] = "Failed to build graph.";
@@ -1471,6 +1472,30 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
                          attributes);
 }
 
+void GraphBuilderOrt::AddTriangularOperation(
+    const mojom::Triangular& triangular) {
+  const std::string node_name = GetNodeName(triangular.label);
+  const std::string input_name = GetOperandName(triangular.input_operand_id);
+  const std::string output_name = GetOperandName(triangular.output_operand_id);
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  // K is an operand with data type int64, not an attribute.;
+  const std::string k_name = CreateScalarInitializer<int64_t>(
+      static_cast<int64_t>(triangular.diagonal));
+  input_names.push_back(k_name.c_str());
+
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_
+          .CreateAttribute(/*name=*/"upper",
+                           static_cast<int64_t>(triangular.upper))
+          .Release()};
+
+  model_builder_.AddNode(kOpTypeTriangular, node_name, input_names,
+                         output_names, attributes);
+}
+
 void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   const std::string node_name = GetNodeName(where.label);
   // ONNX only supports bool data type for the condition input of Where, insert
@@ -1613,6 +1638,10 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
+      case mojom::Operation::Tag::kTriangular: {
+        AddTriangularOperation(*operation->get_triangular());
+        break;
+      }
       case mojom::Operation::Tag::kWhere: {
         AddWhereOperation(*operation->get_where());
         break;
@@ -1642,7 +1671,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTile:
-      case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError("op is not supported.");
     }
   }

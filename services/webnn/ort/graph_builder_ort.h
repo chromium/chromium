@@ -190,6 +190,7 @@ class GraphBuilderOrt {
   void AddSliceOperation(const mojom::Slice& slice);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddTransposeOperation(const mojom::Transpose& transpose);
+  void AddTriangularOperation(const mojom::Triangular& triangular);
   void AddWhereOperation(const mojom::Where& where);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();

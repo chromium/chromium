@@ -153,7 +153,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*tanh_input=*/{},
        /*tile_input=*/{},
        /*transpose_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
-       /*triangular_input=*/{},
+       /*triangular_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*where_condition=*/DataTypeConstraint::kUint8,
        /*where_value=*/DataTypeConstraint::kAllDataTypesAtLeast8bits});
 }
