@@ -112,10 +112,6 @@ TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInBeforeDeadline) {
 
 TEST_F(FamilyInfoLogSourceTest,
        FetchMemberSignedInBeforeDeadlineWithFamilyMemberPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      supervised_user::kUseFamilyMemberRolePrefsForFeedback);
-
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "user_child@gmail.com", signin::ConsentLevel::kSignin);
 

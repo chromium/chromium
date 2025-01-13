@@ -119,10 +119,6 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
-// Uses `prefs::kFamilyLinkUserMemberRole` to populate the family member role
-// for feedback if it is available.
-BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
-
 // Alters the behavior of the supervised_user::SupervisedUserNavigationThrottle
 // so that the decision whether to proceed or cancel is made when the response
 // is ready to be rendered, rather than before the request (or any redirect) is
