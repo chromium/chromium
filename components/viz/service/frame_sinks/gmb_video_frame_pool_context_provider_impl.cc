@@ -142,6 +142,10 @@ class GmbVideoFramePoolContext
     shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return sii_in_process_->GetCapabilities();
+  }
+
  private:
   void InitializeOnGpu(base::WaitableEvent* event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

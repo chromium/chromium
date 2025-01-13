@@ -80,6 +80,10 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
         gpu::kNullSurfaceHandle, buffer_usage);
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return context_provider_->SharedImageInterface()->GetCapabilities();
+  }
+
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
                void(const gfx::Size& size, gfx::BufferFormat format));
   MOCK_METHOD5(DoCreateSharedImage,

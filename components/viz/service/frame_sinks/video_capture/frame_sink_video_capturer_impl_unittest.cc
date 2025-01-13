@@ -796,6 +796,10 @@ class TestGmbVideoFramePoolContext
     shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return context_provider_->SharedImageInterface()->GetCapabilities();
+  }
+
  private:
   scoped_refptr<TestContextProvider> context_provider_;
 };

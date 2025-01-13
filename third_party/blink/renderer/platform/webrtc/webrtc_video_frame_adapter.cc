@@ -115,6 +115,10 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return SharedImageInterface()->GetCapabilities();
+  }
+
  private:
   gpu::SharedImageInterface* SharedImageInterface() const {
     return raster_context_provider_->SharedImageInterface();

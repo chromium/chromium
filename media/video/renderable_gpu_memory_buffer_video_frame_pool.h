@@ -24,6 +24,7 @@ class Size;
 namespace gpu {
 class ClientSharedImage;
 class GpuMemoryBufferManager;
+struct SharedImageCapabilities;
 class SharedImageInterface;
 struct SyncToken;
 }  // namespace gpu
@@ -68,6 +69,8 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
     virtual void DestroySharedImage(
         const gpu::SyncToken& sync_token,
         scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
+
+    virtual const gpu::SharedImageCapabilities& GetCapabilities() = 0;
 
     virtual ~Context() = default;
   };
