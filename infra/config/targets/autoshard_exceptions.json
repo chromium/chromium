@@ -95,18 +95,18 @@
         "android-15-x64-rel": {
             "android_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 41,
-                    "estimated_bot_hour_delta": 0.3,
-                    "prev_avg_pending_time_sec": 21.6,
+                    "avg_num_builds_per_peak_hour": 69,
+                    "estimated_bot_hour_delta": -35.42,
+                    "prev_avg_pending_time_sec": 12.3,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 68.0,
-                    "prev_percentile_duration_minutes": 17.04,
-                    "prev_shard_count": 12,
-                    "simulated_max_shard_duration": 14.64,
-                    "test_overhead_min": 0.21666666666666667,
+                    "prev_p90_pending_time_sec": 29.0,
+                    "prev_percentile_duration_minutes": 12.41,
+                    "prev_shard_count": 14,
+                    "simulated_max_shard_duration": 14.29,
+                    "test_overhead_min": 7.7,
                     "try_builder": "android-x64-rel"
                 },
-                "shards": 14
+                "shards": 10
             },
             "components_browsertests": {
                 "debug": {
