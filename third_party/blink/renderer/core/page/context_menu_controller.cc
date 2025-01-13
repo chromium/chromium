@@ -106,7 +106,7 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
     data.form_control_type = form_control->FormControlType();
     data.field_renderer_id = form_control->GetDomNodeId();
-    if (auto* form = form_control->Form()) {
+    if (auto* form = form_control->GetOwningFormForAutofill()) {
       data.form_renderer_id = form->GetDomNodeId();
     } else {
       data.form_renderer_id = 0;

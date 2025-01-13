@@ -15,10 +15,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -163,6 +165,277 @@ TEST_F(WebFormControlElementTest,
 
   element.SetAutofillValue("valueTooLong");
   EXPECT_EQ(element.Value().Ascii(), "value");
+}
+
+class WebFormControlElementGetOwningFormForAutofillTest
+    : public WebFormControlElementTest {
+ protected:
+  template <typename DocumentOrShadowRoot>
+  WebFormElement GetFormElementById(
+      const DocumentOrShadowRoot& document_or_shadow_root,
+      std::string_view id) {
+    return WebFormElement(DynamicTo<HTMLFormElement>(
+        document_or_shadow_root.getElementById(WebString::FromASCII(id))));
+  }  // namespace blink
+
+  template <typename DocumentOrShadowRoot>
+  WebFormControlElement GetFormControlElementById(
+      const DocumentOrShadowRoot& document_or_shadow_root,
+      std::string_view id) {
+    return WebFormControlElement(DynamicTo<HTMLFormControlElement>(
+        document_or_shadow_root.getElementById(WebString::FromASCII(id))));
+  }
+};
+
+// Tests that the owning form of a form control element in light DOM is its
+// associated form (i.e. the form explicitly set via form attribute or its
+// closest ancestor).
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInLightDom) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f>
+      <input id=t1>
+      <input id=t2>
+    </form>
+    <input id=t3>)");
+  WebFormElement f = GetFormElementById(document, "f");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(document, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(document, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(document, "t3");
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f_unowned);
+}
+
+// Tests that explicit association overrules DOM ancestry when determining the
+// owning form.
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInLightDomWithExplicitAssociation) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <div>
+      <form id=f1>
+        <input id=t1>
+        <input id=t2 form=f2>
+      </form>
+    </div>
+    <form id=f2>
+      <input id=t3>
+      <input id=t4 form=f1>
+      <input id=t5 form=f_unowned>
+    </form>
+    <input id=t6 form=f1>
+    <input id=t7 form=f2>
+    <input id=t8>)");
+  WebFormElement f1 = GetFormElementById(document, "f1");
+  WebFormElement f2 = GetFormElementById(document, "f2");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(document, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(document, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(document, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(document, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(document, "t5");
+  WebFormControlElement t6 = GetFormControlElementById(document, "t6");
+  WebFormControlElement t7 = GetFormControlElementById(document, "t7");
+  WebFormControlElement t8 = GetFormControlElementById(document, "t8");
+
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f2);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f2);
+  EXPECT_EQ(t4.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t5.GetOwningFormForAutofill(), f_unowned);
+  EXPECT_EQ(t6.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t7.GetOwningFormForAutofill(), f2);
+  EXPECT_EQ(t8.GetOwningFormForAutofill(), f_unowned);
+}
+
+// Tests that input elements in shadow DOM whose closest ancestor is in the
+// light DOM are extracted correctly.
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInShadowDomWithoutFormInShadowDom) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f1>
+      <div id=host1>
+        <template shadowrootmode="open">
+          <div>
+            <input id=t1>
+          </div>
+        </template>
+        <input id=t2>
+      </div>
+    </form>
+    <div id=host2>
+      <template shadowrootmode="open">
+        <input id=t3>
+      </template>
+    </div>)");
+  const ShadowRoot& shadow_root1 = *GetElementById("host1")->GetShadowRoot();
+  const ShadowRoot& shadow_root2 = *GetElementById("host2")->GetShadowRoot();
+  WebFormElement f1 = GetFormElementById(document, "f1");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(document, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
+
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f_unowned);
+}
+
+// Tests that the owning form of a form control element is the furthest
+// shadow-including ancestor form element (in absence of explicit associations).
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInShadowDomWithFormInShadowDom) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f1>
+      <div id=host1>
+        <template shadowrootmode=open>
+          <div>
+            <form id=f2>
+              <input id=t1>
+            </form>
+          </div>
+          <input id=t2>
+        </template>
+      </div>
+    </form>
+    <div id=host2>
+      <template shadowrootmode=open>
+        <form id=f3>
+          <input id=t3>
+        </form>
+      </template>
+    </div>)");
+  const ShadowRoot& shadow_root1 = *GetElementById("host1")->GetShadowRoot();
+  const ShadowRoot& shadow_root2 = *GetElementById("host2")->GetShadowRoot();
+  WebFormElement f1 = GetFormElementById(document, "f1");
+  WebFormElement f3 = GetFormElementById(shadow_root2, "f3");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root1, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
+
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f3);
+}
+
+// Tests that the owning form is returned correctly even if there are
+// multiple levels of Shadow DOM.
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInShadowDomWithFormInShadowDomWithMultipleLevels) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f1>
+      <div id=host1>
+        <template shadowrootmode=open>
+          <form id=f2>
+            <input id=t1>
+          </form>
+          <div id=host2>
+            <template shadowrootmode=open>
+              <form id=f3>
+                <input id=t2>
+              </form>
+              <input id=t3>
+            </template>
+            <input id=t4>
+          </div>
+          <input id=t5>
+        </template>
+      </div>
+    </form>)");
+
+  const ShadowRoot& shadow_root1 = *GetElementById("host1")->GetShadowRoot();
+  const ShadowRoot& shadow_root2 =
+      *shadow_root1.getElementById(AtomicString("host2"))->GetShadowRoot();
+  WebFormElement f1 = GetFormElementById(document, "f1");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root2, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(shadow_root1, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(shadow_root1, "t5");
+
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t4.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t5.GetOwningFormForAutofill(), f1);
+}
+
+// Tests that the owning form is computed correctly for form control elements
+// inside the shadow DOM that have explicit form attributes.
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInShadowDomWithFormInShadowDomAndExplicitAssociation) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f1>
+      <div id=host1>
+        <template shadowrootmode=open>
+          <form id=f2>
+            <input id=t1>
+          </form>
+          <input id=t2>
+          <form id=f3>
+            <input id=t3 form=f2>
+          </form>
+          <input id=t4 form=f2>
+          <input id=t5 form=f3>
+          <input id=t6 form=f1>
+        </template>
+      </div>
+    </form>
+    <div id=host2>
+      <template shadowrootmode=open>
+        <form id=f4>
+          <input id=t7>
+        </form>
+      </template>
+    </div>)");
+  const ShadowRoot& shadow_root1 = *GetElementById("host1")->GetShadowRoot();
+  const ShadowRoot& shadow_root2 = *GetElementById("host2")->GetShadowRoot();
+  WebFormElement f1 = GetFormElementById(document, "f1");
+  WebFormElement f4 = GetFormElementById(shadow_root2, "f4");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root1, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root1, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(shadow_root1, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(shadow_root1, "t5");
+  WebFormControlElement t6 = GetFormControlElementById(shadow_root1, "t6");
+  WebFormControlElement t7 = GetFormControlElementById(shadow_root2, "t7");
+
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t2.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t3.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t4.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t5.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t6.GetOwningFormForAutofill(), f1);
+  EXPECT_EQ(t7.GetOwningFormForAutofill(), f4);
+}
+
+TEST_F(WebFormControlElementGetOwningFormForAutofillTest,
+       GetOwningFormInLightDomWithSlots) {
+  const Document& document = GetDocument();
+  document.body()->setHTMLUnsafe(R"(
+    <form id=f>
+      <div>
+        <template shadowrootmode=open>
+          <form id=f_unowned>
+            <slot></slot>
+          </form>
+        </template>
+        <input id=t1>
+      </div>
+    </form>)");
+  WebFormElement f = GetFormElementById(document, "f");
+  WebFormControlElement t1 = GetFormControlElementById(document, "t1");
+  EXPECT_EQ(t1.GetOwningFormForAutofill(), f);
 }
 
 }  // namespace blink
