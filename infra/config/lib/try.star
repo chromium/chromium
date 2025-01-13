@@ -71,6 +71,11 @@ def default_location_filters(builder_name = None):
 
     return filters
 
+def default_owner_whitelist_group_for_cq_bots(project):
+    if project.startswith("chrome"):
+        return ["googlers", "project-chromium-robot-committers"]
+    return []
+
 def location_filters_without_defaults(tryjob_builder_proto):
     default_filters = default_location_filters(tryjob_builder_proto.name)
     return [f for f in tryjob_builder_proto.location_filters if cq.location_filter(
@@ -79,6 +84,15 @@ def location_filters_without_defaults(tryjob_builder_proto):
         path_regexp = f.path_regexp,
         exclude = f.exclude,
     ) not in default_filters]
+
+def owner_whitelist_group_without_defaults(tryjob_builder_proto):
+    project = tryjob_builder_proto.name.split("/")[0]
+    default_group = default_owner_whitelist_group_for_cq_bots(project)
+    return [
+        g
+        for g in tryjob_builder_proto.owner_whitelist_group
+        if g not in default_group
+    ]
 
 # Intended to be used for the `caches` builder arg when no source checkout is
 # required.

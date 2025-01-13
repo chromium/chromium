@@ -8,7 +8,7 @@
 # http://go/chromium-cq#internal-builders-on-the-cq.
 
 load("//lib/branches.star", "branches")
-load("//lib/try.star", "default_location_filters", "try_")
+load("//lib/try.star", "default_location_filters", "default_owner_whitelist_group_for_cq_bots", "try_")
 load("//project.star", "settings")
 
 def chrome_internal_verifier(
@@ -44,10 +44,7 @@ def chrome_internal_verifier(
             builder = "{}:try/{}".format(settings.chrome_project, builder),
             cq_group = "cq",
             includable_only = True,
-            owner_whitelist = [
-                "googlers",
-                "project-chromium-robot-committers",
-            ],
+            owner_whitelist = default_owner_whitelist_group_for_cq_bots(settings.chrome_project),
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
             **kwargs
         )
@@ -311,8 +308,6 @@ chrome_internal_verifier(
         "optimization-guide-try-opt-in",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
@@ -327,8 +322,6 @@ chrome_internal_verifier(
         "optimization-guide-try-opt-in",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
@@ -351,8 +344,6 @@ chrome_internal_verifier(
         "optimization-guide-try-opt-in",
     ],
     tryjob = try_.job(
-        # TODO: crbug.com/375065753 - Promote out of experimental once stable.
-        experiment_percentage = 100,
         location_filters = [
             "chrome/browser/ai/.+",
             "components/optimization_guide/.+",
