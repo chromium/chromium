@@ -180,6 +180,9 @@ class NavigatorDelegate {
   // e.g. not enough memory) if this returns true.
   virtual bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) = 0;
+
+  // Whether animations when performing forward transitions are supported.
+  virtual bool SupportsForwardTransitionAnimation() = 0;
 };
 
 }  // namespace content

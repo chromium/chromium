@@ -335,6 +335,16 @@ bool NavigationTransitionUtils::
     return false;
   }
 
+  if (navigation_request.IsHistory() &&
+      navigation_request.GetNavigationEntryOffset() < 0 &&
+      !navigation_request.GetDelegate()->SupportsForwardTransitionAnimation()) {
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    last_committed_entry->navigation_transition_data()
+        .set_cache_hit_or_miss_reason(
+            CacheHitOrMissReason::kForwardTransitionAnimationNotSupported);
+    return false;
+  }
+
   bool only_use_embedder_screenshot = false;
   switch (navigation_request.early_render_frame_host_swap_type()) {
     case NavigationRequest::EarlyRenderFrameHostSwapType::kNone:

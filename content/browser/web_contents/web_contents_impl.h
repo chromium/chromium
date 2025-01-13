@@ -1061,6 +1061,7 @@ class CONTENT_EXPORT WebContentsImpl
       NavigationRequest* navigation_request_to_exclude) override;
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
+  bool SupportsForwardTransitionAnimation() override;
 
   // RenderWidgetHostDelegate --------------------------------------------------
 

@@ -9221,6 +9221,17 @@ bool WebContentsImpl::MaybeCopyContentAreaAsBitmap(
   return GetDelegate()->MaybeCopyContentAreaAsBitmap(std::move(callback));
 }
 
+bool WebContentsImpl::SupportsForwardTransitionAnimation() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!GetDelegate()) {
+    return true;
+  }
+  return GetDelegate()->SupportsForwardTransitionAnimation();
+#else
+  return true;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
                                     const std::string& name) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::DidChangeName",

@@ -484,6 +484,16 @@ bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+bool WebContentsDelegateAndroid::SupportsForwardTransitionAnimation() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+  return Java_WebContentsDelegateAndroid_supportsForwardTransitionAnimation(
+      env, obj);
+}
+
 SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
   TRACE_EVENT("content",
               "WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync");

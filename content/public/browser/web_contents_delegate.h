@@ -830,6 +830,10 @@ class CONTENT_EXPORT WebContentsDelegate {
       base::OnceCallback<void(const SkBitmap&)> callback);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Allows delegate to override whether there is support for animations when
+  // performing a forward transition.
+  virtual bool SupportsForwardTransitionAnimation();
+
   // Synchronous version of |MaybeCopyContentAreaAsBitmap|. Return an
   // empty bitmap if embedder is not showing any custom view.
   virtual SkBitmap MaybeCopyContentAreaAsBitmapSync();

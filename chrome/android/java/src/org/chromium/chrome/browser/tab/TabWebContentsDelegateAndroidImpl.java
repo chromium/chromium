@@ -32,6 +32,7 @@ import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.UiUtils;
 import org.chromium.url.GURL;
 
 /** Implementation class of {@link TabWebContentsDelegateAndroid}. */
@@ -438,6 +439,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
         return NativePageBitmapCapturer.maybeCaptureNativeView(mTab, callback);
+    }
+
+    @Override
+    public boolean supportsForwardTransitionAnimation() {
+        var window = mTab.getWindowAndroid().getWindow();
+        if (window == null) {
+            return true;
+        }
+        // Android doesn't currently offer semantics for forward navigation for an edge gesture.
+        return !UiUtils.isGestureNavigationMode(window);
     }
 
     @Override
