@@ -98,30 +98,6 @@ ChromeThreadPoolTask::ShutdownBehavior ShutdownBehaviorToProto(
 }
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 
-auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
-                                      const TaskTraits& traits,
-                                      TaskSource* task_source,
-                                      const SequenceToken& token) {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  // Other parameters are included only when "scheduler" category is enabled.
-  const uint8_t* scheduler_category_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
-
-  if (!*scheduler_category_enabled) {
-    return;
-  }
-  auto* task = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                   ->set_thread_pool_task();
-  task->set_task_priority(TaskPriorityToProto(traits.priority()));
-  task->set_execution_mode(ExecutionModeToProto(task_source->execution_mode()));
-  task->set_shutdown_behavior(
-      ShutdownBehaviorToProto(traits.shutdown_behavior()));
-  if (token.IsValid()) {
-    task->set_sequence_token(token.ToInternalValue());
-  }
-#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
-}
-
 // If this is greater than 0 on a given thread, it will ignore the DCHECK which
 // prevents posting BLOCK_SHUTDOWN tasks after shutdown. There are cases where
 // posting back to a BLOCK_SHUTDOWN sequence is a coincidence rather than part
@@ -654,6 +630,34 @@ void TaskTracker::InvokeFlushCallbacksForTesting() {
   for (auto& flush_callback : flush_callbacks) {
     std::move(flush_callback).Run();
   }
+}
+
+void TaskTracker::EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
+                                                   const TaskTraits& traits,
+                                                   TaskSource* task_source,
+                                                   const SequenceToken& token) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  if (TRACE_EVENT_CATEGORY_ENABLED("scheduler.flow")) {
+    if (token.IsValid()) {
+      ctx.event()->add_flow_ids(reinterpret_cast<uint64_t>(this) ^
+                                static_cast<uint64_t>(token.ToInternalValue()));
+    }
+  }
+
+  // Other parameters are included only when "scheduler" category is enabled.
+  if (TRACE_EVENT_CATEGORY_ENABLED("scheduler")) {
+    auto* task = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                     ->set_thread_pool_task();
+    task->set_task_priority(TaskPriorityToProto(traits.priority()));
+    task->set_execution_mode(
+        ExecutionModeToProto(task_source->execution_mode()));
+    task->set_shutdown_behavior(
+        ShutdownBehaviorToProto(traits.shutdown_behavior()));
+    if (token.IsValid()) {
+      task->set_sequence_token(token.ToInternalValue());
+    }
+  }
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 NOINLINE void TaskTracker::RunContinueOnShutdown(Task& task,

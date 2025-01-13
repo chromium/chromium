@@ -204,6 +204,13 @@ class BASE_EXPORT TaskTracker {
   // Invokes all |flush_callbacks_for_testing_| if any in a lock-safe manner.
   void InvokeFlushCallbacksForTesting();
 
+  // Adds ThreadPool related trace event metadata to the event `ctx`. Notably,
+  // records sequence information, as well as priority/execution mode.
+  void EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
+                                        const TaskTraits& traits,
+                                        TaskSource* task_source,
+                                        const SequenceToken& token);
+
   // Dummy frames to allow identification of shutdown behavior in a stack trace.
   void RunContinueOnShutdown(Task& task,
                              const TaskTraits& traits,

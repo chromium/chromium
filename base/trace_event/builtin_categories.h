@@ -166,6 +166,10 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("SiteEngagement"),
     perfetto::Category("safe_browsing"),
     perfetto::Category("scheduler"),
+    perfetto::Category("scheduler.flow").SetDescription(
+        "Includes flow events related to scheduling dependency. Notably, "
+        "records flows between tasks running in the thread pool on the same "
+        "sequence."),
     perfetto::Category("scheduler.long_tasks"),
     perfetto::Category("screenlock_monitor"),
     perfetto::Category("segmentation_platform"),
