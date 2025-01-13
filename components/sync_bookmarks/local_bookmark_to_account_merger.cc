@@ -8,6 +8,7 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -159,7 +160,7 @@ void ReorderChildrenByMovingSubsetToLast(
 
 LocalBookmarkToAccountMerger::LocalBookmarkToAccountMerger(
     bookmarks::BookmarkModel* model)
-    : model_(model), uuid_to_match_map_(FindGuidMatches(model)) {
+    : model_(model) {
   CHECK(model_);
   CHECK(model_->loaded());
   for (const auto& [local_permanent_node, account_permanent_node] :
@@ -203,9 +204,6 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
         /*account_subtree_root=*/account_permanent_node);
   }
 
-  // Clear the UUID match map to avoid dangling pointers.
-  uuid_to_match_map_.clear();
-
   // All local nodes have been copied to account storage and can be safely
   // removed.
   for (const auto& [local_permanent_node, unused] :
@@ -221,50 +219,6 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAtForTesting(
     const std::vector<size_t>& indices_to_remove,
     const base::Location& location) {
   RemoveChildrenAt(parent, indices_to_remove, location);
-}
-
-// static
-std::unordered_map<base::Uuid,
-                   LocalBookmarkToAccountMerger::GuidMatch,
-                   base::UuidHash>
-LocalBookmarkToAccountMerger::FindGuidMatches(
-    const bookmarks::BookmarkModel* model) {
-  CHECK(model);
-  CHECK(model->loaded());
-
-  std::unordered_map<base::Uuid, LocalBookmarkToAccountMerger::GuidMatch,
-                     base::UuidHash>
-      uuid_to_match_map;
-
-  // Iterate through all local bookmarks to find matches by UUID.
-  for (const auto& [local_permanent_node, unused] :
-       GetLocalAndAccountPermanentNodePairs(model)) {
-    CHECK(local_permanent_node);
-    ui::TreeNodeIterator<const bookmarks::BookmarkNode> local_iterator(
-        local_permanent_node);
-    while (local_iterator.has_next()) {
-      const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
-      CHECK(local_node->uuid().is_valid());
-
-      const bookmarks::BookmarkNode* const account_node = model->GetNodeByUuid(
-          local_node->uuid(),
-          bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
-      if (!account_node) {
-        // No match found by UUID.
-        continue;
-      }
-
-      if (NodesCompatibleForMatchByUuid(account_node, local_node)) {
-        const bool success = uuid_to_match_map
-                                 .emplace(account_node->uuid(),
-                                          GuidMatch{local_node, account_node})
-                                 .second;
-        CHECK(success);
-      }
-    }
-  }
-
-  return uuid_to_match_map;
 }
 
 void LocalBookmarkToAccountMerger::RemoveChildrenAt(
@@ -286,8 +240,6 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAt(
   if (indices_to_remove.size() == 1u) {
     const size_t index = *indices_to_remove.begin();
     const bookmarks::BookmarkNode* child = parent->children().at(index).get();
-    // Remove the UUID from the map to avoid dangling pointers.
-    uuid_to_match_map_.erase(child->uuid());
     model_->Remove(child, kEditSourceForMetrics, location);
     return;
   }
@@ -296,8 +248,6 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAt(
           switches::kSyncFastDeletionsDuringBookmarkBatchUpload)) {
     for (size_t index : base::Reversed(indices_to_remove)) {
       const bookmarks::BookmarkNode* child = parent->children().at(index).get();
-      // Remove the UUID from the map to avoid dangling pointers.
-      uuid_to_match_map_.erase(child->uuid());
       model_->Remove(child, kEditSourceForMetrics, location);
     }
     return;
@@ -317,8 +267,6 @@ void LocalBookmarkToAccountMerger::RemoveChildrenAt(
   // internal indices in BookmarkModel, which can exhibit slower characteristics
   // depending on the actual content of the nodes, such as the title or the URL.
   for (size_t i = 0; i < indices_to_remove.size(); ++i) {
-    // Remove the UUID from the map to avoid dangling pointers.
-    uuid_to_match_map_.erase(parent->children().back()->uuid());
     model_->RemoveLastChild(parent, kEditSourceForMetrics, FROM_HERE);
   }
 }
@@ -396,9 +344,10 @@ void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
       MergeAndDeleteDescendantsThatMatchByUuid(local_child);
 
       // Move the local node to account storage, along with all remaining
-      // descendants that didn't match by UUID.
-      // TODO(crbug.com/332532186): This has quadratic runtime complexity and
-      // should be improved.
+      // descendants that didn't match by UUID. Note that this can theoretically
+      // lead to quadratic runtime complexity, but measurements with a large
+      // number of bookmarks suggest the issue is not severe in practice and the
+      // complexity of the improved algorithm is not worth the maintenance cost.
       model_->Move(local_child, account_subtree_root,
                    account_subtree_root->children().size());
     }
@@ -408,9 +357,6 @@ void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
   // merged into it, as nodes without a match have been moved. Therefore, the
   // remaining local data can be safely deleted.
   while (!local_subtree_root->children().empty()) {
-    // Update the UUID match map to avoid dangling pointers.
-    uuid_to_match_map_.erase(local_subtree_root->children().back()->uuid());
-
     model_->RemoveLastChild(local_subtree_root, kEditSourceForMetrics,
                             FROM_HERE);
   }
@@ -471,17 +417,14 @@ LocalBookmarkToAccountMerger::FindMatchingLocalNodeByUuid(
     const bookmarks::BookmarkNode* account_node) const {
   CHECK(account_node);
 
-  const auto it = uuid_to_match_map_.find(account_node->uuid());
-  if (it == uuid_to_match_map_.end()) {
-    return nullptr;
+  const bookmarks::BookmarkNode* const local_node = model_->GetNodeByUuid(
+      account_node->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  if (local_node && NodesCompatibleForMatchByUuid(local_node, account_node) &&
+      !model_->client()->IsNodeManaged(local_node)) {
+    return local_node;
   }
-
-  const bookmarks::BookmarkNode* local_node = it->second.local_node;
-  CHECK(local_node);
-  CHECK_EQ(it->second.account_node, account_node);
-  CHECK(NodesCompatibleForMatchByUuid(local_node, account_node));
-
-  return local_node;
+  return nullptr;
 }
 
 const bookmarks::BookmarkNode*
@@ -489,17 +432,13 @@ LocalBookmarkToAccountMerger::FindMatchingAccountNodeByUuid(
     const bookmarks::BookmarkNode* local_node) const {
   CHECK(local_node);
 
-  const auto it = uuid_to_match_map_.find(local_node->uuid());
-  if (it == uuid_to_match_map_.end()) {
-    return nullptr;
+  const bookmarks::BookmarkNode* const account_node = model_->GetNodeByUuid(
+      local_node->uuid(),
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  if (account_node && NodesCompatibleForMatchByUuid(local_node, account_node)) {
+    return account_node;
   }
-
-  const bookmarks::BookmarkNode* account_node = it->second.account_node;
-  CHECK(account_node);
-  CHECK_EQ(it->second.local_node, local_node);
-  CHECK(NodesCompatibleForMatchByUuid(local_node, account_node));
-
-  return account_node;
+  return nullptr;
 }
 
 }  // namespace sync_bookmarks
