@@ -234,8 +234,8 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerNullDerefCrashTest) {
 TEST(ToolsSanityTest, DISABLED_AddressSanitizerLocalOOBCrashTest) {
   // Intentionally crash to make sure AddressSanitizer is instrumenting
   // the local variables.
-  // This test should not be ran on bots.
-  std::array<int, 5> array;
+  // This test should not be run on bots.
+  int array[5];  // Must not use std::array, lest hardening catch this first.
   // Work around the OOB warning reported by Clang.
   int* volatile access = &array[5];
   *access = 43;
