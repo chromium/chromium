@@ -391,6 +391,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             R.id.divider_line_id,
             R.id.share_row_menu_id,
             R.id.find_in_page_id,
+            R.id.open_with_id,
             R.id.divider_line_id,
             R.id.preferences_id,
             R.id.help_id

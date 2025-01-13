@@ -498,8 +498,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 menu.findItem(R.id.disable_price_tracking_menu_id),
                 currentTab);
 
-        // TODO(crbug.com/370803107): Hide the placeholder menu items until implementation complete.
-        menu.findItem(R.id.open_with_id).setVisible(false);
+        boolean showOpenWith =
+                currentTab != null
+                        && currentTab.isNativePage()
+                        && currentTab.getNativePage().isPdf();
+        menu.findItem(R.id.open_with_id).setVisible(showOpenWith);
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared, or when the
         // current tab is null.
