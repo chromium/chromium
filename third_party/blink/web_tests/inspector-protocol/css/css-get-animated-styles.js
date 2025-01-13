@@ -35,6 +35,12 @@
   background-color: black;
 }
 
+#element-for-pseudo::before {
+  content: '';
+  background-color: white;
+  animation: 1s --color infinite;
+}
+
 @keyframes --color {
   from {
     color: red;
@@ -61,6 +67,7 @@
 <div class='grand-parent'>
   <div class='parent'>
     <div id='element'>Text</div>
+    <div id='element-for-pseudo'></div>
   </div>
 </div>
 `,
@@ -187,6 +194,24 @@
   logCondition(
       'Second inherited entry is empty (.parent does not have any transitions)',
       inheritedForPseudo[1].transitionsStyle === undefined);
+
+  testRunner.log('\nAnimations for pseudo ::before when its origin element does not have any animations');
+  const nodeForPseudo = nodeTracker.nodes().find(
+    node => DOMHelper.attributes(node).get('id') === 'element-for-pseudo');
+  const beforeNodeIdForPseudo = getPseudoElement(nodeForPseudo, 'before').nodeId;
+  const {
+    result: {
+      animationStyles: animationStylesForPseudoWithoutParentAnimations,
+    }
+  } = await dp.CSS.getAnimatedStylesForNode({nodeId: beforeNodeIdForPseudo});
+  logCondition(
+    'There is only 1 animation', animationStylesForPseudoWithoutParentAnimations.length === 1);
+  logCondition(
+      'The name of the animation is --color',
+      animationStylesForPseudoWithoutParentAnimations[0].name === '--color');
+  logCondition(
+      'The color property is animated',
+      animationStylesForPseudoWithoutParentAnimations[0].style.cssProperties[0].name === 'color');
 
   testRunner.completeTest();
   function logCondition(text, condition) {

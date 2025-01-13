@@ -3639,8 +3639,22 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
       name = css_animation->animationName();
     }
 
+    auto property_pass_filter = [](const PropertyHandle& property) {
+      return property.IsCSSProperty();
+    };
+
+    EffectStack& effect_stack = element_animations->GetEffectStack();
+    HashSet<PropertyHandle> affected_properties =
+        effect_stack.AffectedProperties(
+            KeyframeEffect::Priority::kDefaultPriority);
     ActiveInterpolationsMap active_interpolations =
-        effect->InterpolationsForCommitStyles();
+        EffectStack::ActiveInterpolations(
+            &effect_stack,
+            /*new_animations=*/nullptr,
+            /*suppressed_animations=*/nullptr,
+            KeyframeEffect::Priority::kDefaultPriority, property_pass_filter,
+            effect);
+
     PropertyHandleSet animation_properties = effect->Model()->Properties();
     MutableCSSPropertyValueSet* property_values =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(
