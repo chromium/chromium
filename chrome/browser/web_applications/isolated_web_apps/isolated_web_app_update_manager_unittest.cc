@@ -777,8 +777,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
 }
 
-// TODO(crbug.com/389137516): Flaky on ChromeOS MSAN.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/389137516): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled \
   DISABLED_StopsNonStartedUpdateDiscoveryTasksIfIwaIsUninstalled
 #else
