@@ -324,20 +324,30 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
       return type;
 
     // We don't know about this scheme.  It might be that the user typed a
-    // URL of the form "username:password@foo.com".
+    // URL of the form "username:password@foo.com", or a custom query, such as
+    // "site:socialmedia.com @tagname".
     const std::u16string http_scheme_prefix = base::ASCIIToUTF16(
         std::string(url::kHttpScheme) + url::kStandardSchemeSeparator);
+    const std::u16string tentative_url_candidate = http_scheme_prefix + text;
     url::Parsed http_parts;
     std::u16string http_scheme;
     GURL http_canonicalized_url;
     metrics::OmniboxInputType http_type =
-        Parse(http_scheme_prefix + text, desired_tld, scheme_classifier,
+        Parse(tentative_url_candidate, desired_tld, scheme_classifier,
               &http_parts, &http_scheme, &http_canonicalized_url);
     DCHECK_EQ(std::string(url::kHttpScheme), base::UTF16ToUTF8(http_scheme));
 
     if ((http_type == metrics::OmniboxInputType::URL) &&
         http_parts.username.is_nonempty() &&
         http_parts.password.is_nonempty()) {
+      // Recognize and re-classify queries like: `site:web.com @query`
+      auto tentative_password_sv = http_parts.password.as_string_view_on(
+          tentative_url_candidate.c_str());
+      if (tentative_password_sv.find(u' ') != tentative_password_sv.npos) {
+        *canonicalized_url = GURL::EmptyGURL();
+        return metrics::OmniboxInputType::QUERY;
+      }
+
       // Manually re-jigger the parsed parts to match |text| (without the
       // http scheme added).
       http_parts.scheme.reset();

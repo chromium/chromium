@@ -535,3 +535,46 @@ TEST(AutocompleteInputTest, GetFeaturedKeywordMode) {
     EXPECT_EQ(input.GetFeaturedKeywordMode(), test_case.expected_mode);
   }
 }
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithCredentials) {
+  std::u16string input = u"login:password@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:password@domain:1234/path", canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithScheme) {
+  std::u16string input = u"http://login:pass word@domain:1234/path";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_TRUE(parts.username.is_nonempty());
+  EXPECT_TRUE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::URL, input_type);
+  EXPECT_EQ("http://login:pass%20word@domain:1234/path",
+            canonicalized_url.spec());
+}
+
+TEST(AutocompleteInputTest, ParseUrlLookalikeWithSearchQuery) {
+  std::u16string input = u"site:wikipedia.org ch4@zeolite";
+  std::u16string scheme;
+  url::Parsed parts;
+  GURL canonicalized_url;
+  auto input_type = AutocompleteInput::Parse(
+      input, "", TestSchemeClassifier(), &parts, &scheme, &canonicalized_url);
+
+  EXPECT_FALSE(parts.username.is_nonempty());
+  EXPECT_FALSE(parts.password.is_nonempty());
+  EXPECT_EQ(metrics::OmniboxInputType::QUERY, input_type);
+  EXPECT_FALSE(canonicalized_url.is_valid());
+}
