@@ -8,6 +8,7 @@
 #include "base/hash/md5.h"
 #include "base/hash/md5_boringssl.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,16 +37,13 @@ const char kCommonMessage[] =
     "accelerator_layout_table.h and the following value(s) on the "
     "top of this file:\n";
 
-const char* BooleanToString(bool value) {
-  return value ? "true" : "false";
-}
-
 std::string ModifiersToString(int modifiers) {
-  return base::StringPrintf("shift=%s control=%s alt=%s search=%s",
-                            BooleanToString(modifiers & ui::EF_SHIFT_DOWN),
-                            BooleanToString(modifiers & ui::EF_CONTROL_DOWN),
-                            BooleanToString(modifiers & ui::EF_ALT_DOWN),
-                            BooleanToString(modifiers & ui::EF_COMMAND_DOWN));
+  return base::StringPrintf(
+      "shift=%s control=%s alt=%s search=%s",
+      base::ToString<bool>(modifiers & ui::EF_SHIFT_DOWN),
+      base::ToString<bool>(modifiers & ui::EF_CONTROL_DOWN),
+      base::ToString<bool>(modifiers & ui::EF_ALT_DOWN),
+      base::ToString<bool>(modifiers & ui::EF_COMMAND_DOWN));
 }
 
 struct ChromeAcceleratorMappingCmp {
