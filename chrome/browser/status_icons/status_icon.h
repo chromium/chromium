@@ -83,6 +83,10 @@ class StatusIcon {
   // secondary click, and dispatch the click event on left click.
   virtual void SetOpenMenuWithSecondaryClick(
       bool open_menu_with_secondary_click);
+
+  // Use template property on the status icon image so that it changes color
+  // based on contrast with the wallpaper.
+  virtual void SetImageTemplate(bool is_template);
 #endif
 
  protected:

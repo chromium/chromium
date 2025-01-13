@@ -45,6 +45,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
     status_icon_->SetOpenMenuWithSecondaryClick(true);
   }
+  status_icon_->SetImageTemplate(true);
 #endif
   status_icon_->AddObserver(this);
 

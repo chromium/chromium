@@ -201,6 +201,10 @@ void StatusIconMac::SetOpenMenuWithSecondaryClick(
       sendActionOn:(NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown)];
 }
 
+void StatusIconMac::SetImageTemplate(bool is_template) {
+  [item().button.image setTemplate:is_template];
+}
+
 void StatusIconMac::OnMenuStateChanged() {
   // Recreate menu to reflect changes to the menu model.
   CreateMenu(menu_model_, tool_tip_);

@@ -37,6 +37,7 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
                       const message_center::NotifierId& notifier_id) override;
   void SetOpenMenuWithSecondaryClick(
       bool open_menu_with_secondary_click) override;
+  void SetImageTemplate(bool is_template) override;
 
   // StatusIconMenuModel::Observer overrides:
   void OnMenuStateChanged() override;
