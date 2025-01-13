@@ -208,7 +208,6 @@
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-// TODO(crbug.com/370899564): Hide the summary after the several impressions.
 // Removes the activity summary cell from the current snapshot.
 - (void)removeActivitySummaryCell {
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
@@ -229,6 +228,7 @@
 }
 
 - (void)activityButtonForActivitySummaryTapped {
+  [self removeActivitySummaryCell];
   [self.viewDelegate showRecentActivity];
 }
 
