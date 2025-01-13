@@ -1279,7 +1279,7 @@ CanvasResourceProvider::CreateSwapChainProvider(
     gfx::Size size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     CanvasResourceHost* resource_host) {
@@ -1303,9 +1303,8 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      size, sk_color_type, alpha_type,
-      SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
-      context_provider_wrapper, resource_host);
+      size, sk_color_type, alpha_type, color_space, context_provider_wrapper,
+      resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
