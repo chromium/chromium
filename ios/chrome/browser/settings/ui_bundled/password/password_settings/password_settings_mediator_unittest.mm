@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 
+#import "base/rand_util.h"
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"

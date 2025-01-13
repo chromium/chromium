@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/location.h"
+#import "base/rand_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
