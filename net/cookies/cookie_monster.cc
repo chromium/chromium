@@ -64,6 +64,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -71,6 +72,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -722,6 +724,11 @@ void CookieMonster::GetCookieListWithOptions(
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  std::optional<base::ElapsedTimer> timer;
+  if (get_cookie_list_timing_subsampler_.ShouldSample(0.001)) {
+    timer.emplace();
+  }
+
   CookieAccessResultList included_cookies;
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
@@ -767,6 +774,12 @@ void CookieMonster::GetCookieListWithOptions(
 
   MaybeRunCookieCallback(std::move(callback), included_cookies,
                          excluded_cookies);
+
+  if (timer) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Cookie.GetCookieListWithOptions.Duration", timer->Elapsed(),
+        base::Microseconds(1), base::Milliseconds(128), 100);
+  }
 }
 
 void CookieMonster::DeleteAllCreatedInTimeRange(const TimeRange& creation_range,

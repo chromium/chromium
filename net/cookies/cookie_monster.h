@@ -24,6 +24,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -807,6 +808,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::Time last_statistic_record_time_;
 
   bool persist_session_cookies_ = false;
+
+  base::MetricsSubSampler get_cookie_list_timing_subsampler_;
 
   THREAD_CHECKER(thread_checker_);
 
