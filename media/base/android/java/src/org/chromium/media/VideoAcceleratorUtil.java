@@ -232,6 +232,10 @@ class VideoAcceleratorUtil {
         return 1;
     }
 
+    private static int alignUp(int size, int alignment) {
+        return (size + alignment - 1) & ~(alignment - 1);
+    }
+
     /**
      * Returns an array of SupportedProfileAdapter entries since the NDK doesn't provide this
      * functionality :/
@@ -298,10 +302,17 @@ class VideoAcceleratorUtil {
                         new Resolution(supportedWidths.getUpper(), supportedHeights.getUpper()));
                 LinkedHashMap<Integer, Resolution> frameRateResolutionMap =
                         new LinkedHashMap<Integer, Resolution>();
+
+                // Retrieve the alignment of the current codec.
+                int widthAlignment = videoCapabilities.getWidthAlignment();
+                int heightAlignment = videoCapabilities.getHeightAlignment();
                 // Compute the final supported resolution and framerate combinations.
                 for (Resolution supportedResolution : supportedResolutions) {
-                    int supportedWidth = supportedResolution.getWidth();
-                    int supportedHeight = supportedResolution.getHeight();
+                    // Adjust the width and height here based on the retrieved alignment. Otherwise,
+                    // if a width or height doesn't match the alignment, the function
+                    // `isSizeSupported()` below will return false.
+                    int supportedWidth = alignUp(supportedResolution.getWidth(), widthAlignment);
+                    int supportedHeight = alignUp(supportedResolution.getHeight(), heightAlignment);
                     if (!videoCapabilities.isSizeSupported(supportedWidth, supportedHeight)) {
                         continue;
                     }
@@ -313,7 +324,9 @@ class VideoAcceleratorUtil {
                     int supportedFrameRate =
                             (int) Math.floor(supportedFrameRates.getUpper().doubleValue());
                     if (!frameRateResolutionMap.containsKey(supportedFrameRate)) {
-                        frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                        frameRateResolutionMap.put(
+                                supportedFrameRate,
+                                new Resolution(supportedWidth, supportedHeight));
                     } else {
                         Resolution resolution = frameRateResolutionMap.get(supportedFrameRate);
                         // If the framerates of the two are the same, always use the higher
@@ -321,7 +334,9 @@ class VideoAcceleratorUtil {
                         // useless result to the list.
                         if (supportedWidth >= resolution.getWidth()
                                 && supportedHeight >= resolution.getHeight()) {
-                            frameRateResolutionMap.put(supportedFrameRate, supportedResolution);
+                            frameRateResolutionMap.put(
+                                    supportedFrameRate,
+                                    new Resolution(supportedWidth, supportedHeight));
                         }
                     }
                 }
