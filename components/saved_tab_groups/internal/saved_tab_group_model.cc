@@ -154,8 +154,6 @@ void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
 
-  stats::RecordEmptyGroupsMetricsOnGroupAddedLocally(saved_group, is_loaded_);
-
   InsertGroupImpl(std::move(saved_group));
 
   for (auto& observer : observers_) {
