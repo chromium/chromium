@@ -40,7 +40,7 @@ class TrackedElement;
 }  // namespace ui
 
 // Declaring these in the global namespace for testing purposes.
-class BrowserFeaturePromoController20Test;
+class BrowserFeaturePromoController20TestBase;
 class FeaturePromoLifecycleUiTest;
 
 namespace user_education {
@@ -270,7 +270,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  protected:
-  friend BrowserFeaturePromoController20Test;
+  friend BrowserFeaturePromoController20TestBase;
   friend FeaturePromoLifecycleUiTest;
 
   struct ShowPromoBubbleParams {
