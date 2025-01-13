@@ -14,7 +14,6 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
-class CrossThreadSharedBitmap;
 class Layer;
 class TextureLayer;
 }
@@ -61,7 +60,6 @@ class PLATFORM_EXPORT ImageLayerBridge
     RegisteredBitmap(RegisteredBitmap&& other);
     RegisteredBitmap& operator=(RegisteredBitmap&& other);
 
-    scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;

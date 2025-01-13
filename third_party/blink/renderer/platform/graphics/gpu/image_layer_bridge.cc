@@ -6,7 +6,6 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "cc/layers/texture_layer.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -234,11 +233,13 @@ bool ImageLayerBridge::PrepareTransferableResource(
     SkImageInfo dst_info =
         SkImageInfo::Make(size.width(), size.height(), dst_color_type,
                           kPremul_SkAlphaType, sk_image->refColorSpace());
-    void* pixels = registered.bitmap->memory();
 
     // Copy from SkImage into SharedMemory owned by |registered|.
-    if (!sk_image->readPixels(dst_info, pixels, dst_info.minRowBytes(), 0, 0))
+    auto dst_mapping = registered.shared_image->Map()->GetMemoryForPlane(0);
+    if (!sk_image->readPixels(dst_info, dst_mapping.data(),
+                              dst_info.minRowBytes(), 0, 0)) {
       return false;
+    }
 
     *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
         registered.shared_image, registered.sync_token, size, format,
@@ -285,16 +286,13 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
   if (!shared_image_interface) {
     return registered;
   }
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {format, size, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-       "ImageLayerBridgeBitmap"});
+  registered.shared_image =
+      shared_image_interface->CreateSharedImageForSoftwareCompositor(
+          {format, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "ImageLayerBridgeBitmap"});
 
   registered.sii_provider = sii_provider->GetWeakPtr();
   registered.sync_token = shared_image_interface->GenVerifiedSyncToken();
-  registered.shared_image = std::move(shared_image_mapping.shared_image);
-  registered.bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
-      std::move(shared_image_mapping.mapping), size, format);
 
   return registered;
 }
