@@ -285,7 +285,8 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
             summary->icon, skia::ImageOperations::RESIZE_BEST,
             kDeskButtonAvatarSize);
 
-        desk_avatar_view_->SetImage(desk_avatar_image_);
+        desk_avatar_view_->SetImage(
+            ui::ImageModel::FromImageSkia(desk_avatar_image_));
         desk_avatar_view_->SetImageSize(kDeskButtonAvatarSize);
         desk_avatar_view_->SetVisible(true);
         return;
