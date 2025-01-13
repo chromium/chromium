@@ -148,6 +148,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               (const autofill::FieldDataManager&, const PasswordManagerDriver*),
               (override));
 #endif
+  MOCK_METHOD(bool, IsFormManagerPendingPasswordUpdate, (), (const override));
 };
 }  // namespace password_manager
 

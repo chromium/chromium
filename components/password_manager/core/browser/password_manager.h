@@ -158,6 +158,7 @@ class PasswordManager : public PasswordManagerInterface {
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) override;
 #endif
+  bool IsFormManagerPendingPasswordUpdate() const override;
 
   // Notifies the renderer to start the generation flow or pops up additional UI
   // in case there is a danger to overwrite an existing password.
@@ -270,9 +271,6 @@ class PasswordManager : public PasswordManagerInterface {
         possible_usernames_.begin(), possible_usernames_.end());
   }
 #endif  // defined(UNIT_TEST)
-
-  // Returns true if a form manager is processing a password update.
-  bool IsFormManagerPendingPasswordUpdate() const;
 
   // Returns the submitted PasswordForm if there exists one.
   std::optional<PasswordForm> GetSubmittedCredentials() const override;

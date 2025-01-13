@@ -1020,7 +1020,7 @@ ChromePasswordManagerClient::GetProfileType() const {
   return profile_metrics::GetBrowserProfileType(browser_context);
 }
 
-const password_manager::PasswordManager*
+const password_manager::PasswordManagerInterface*
 ChromePasswordManagerClient::GetPasswordManager() const {
   return &password_manager_;
 }

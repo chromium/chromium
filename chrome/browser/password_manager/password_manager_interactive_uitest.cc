@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
   FillElementWithValue("password_field", "new", "pwnew");
 
   // Wait until the form change is picked up by the password manager.
-  const PasswordManager* password_manager =
+  const PasswordManagerInterface* password_manager =
       ChromePasswordManagerClient::FromWebContents(WebContents())
           ->GetPasswordManager();
   EXPECT_TRUE(base::test::RunUntil([&]() {

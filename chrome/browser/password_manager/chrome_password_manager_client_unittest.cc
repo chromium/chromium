@@ -628,9 +628,10 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 
-  EXPECT_THAT(
-      GetClient()->GetPasswordManager()->GetServerPredictionsForTesting(),
-      UnorderedElementsAre(Key(CalculateFormSignature(form))));
+  EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
+                  GetClient()->GetPasswordManager())
+                  ->GetServerPredictionsForTesting(),
+              UnorderedElementsAre(Key(CalculateFormSignature(form))));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -664,9 +665,10 @@ TEST_F(ChromePasswordManagerClientTest,
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
 
-  auto received_predictions = GetClient()
-                                  ->GetPasswordManager()
-                                  ->GetClassifierModelPredictionsForTesting();
+  auto received_predictions =
+      static_cast<const password_manager::PasswordManager*>(
+          GetClient()->GetPasswordManager())
+          ->GetClassifierModelPredictionsForTesting();
   // Check that predictions are available for the form.
   auto form_key = std::make_pair(password_driver, form.renderer_id());
   ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
