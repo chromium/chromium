@@ -1993,6 +1993,9 @@ const FeatureEntry::FeatureParam
     kNtpMostRelevantTabResumptionModuleRemoteTabData[] = {
         {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "2"}};
 const FeatureEntry::FeatureParam
+    kNtpMostRelevantTabResumptionModuleRemoteVisitsData[] = {
+        {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "2,4"}};
+const FeatureEntry::FeatureParam
     kNtpMostRelevantTabResumptionModuleAllHistoryRemoteTabData[] = {
         {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "2,3,4"}};
 const FeatureEntry::FeatureParam
@@ -2020,6 +2023,9 @@ const FeatureEntry::FeatureVariation
          std::size(kNtpMostRelevantTabResumptionModuleTabData), nullptr},
         {"- Remote Tabs Only", kNtpMostRelevantTabResumptionModuleRemoteTabData,
          std::size(kNtpMostRelevantTabResumptionModuleRemoteTabData), nullptr},
+        {"- Remote Visits", kNtpMostRelevantTabResumptionModuleRemoteVisitsData,
+         std::size(kNtpMostRelevantTabResumptionModuleRemoteVisitsData),
+         nullptr},
         {"- All History, Remote Tabs",
          kNtpMostRelevantTabResumptionModuleAllHistoryRemoteTabData,
          std::size(kNtpMostRelevantTabResumptionModuleAllHistoryRemoteTabData),
