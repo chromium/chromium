@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/performance_manager/public/side_panel_loading_policy.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -37,6 +38,11 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
   SetID(kSidePanelWebViewId);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
+
+  // The mechanism that ensure the Side Panel will load at high priority even
+  // while it is still not visible requires the WebContents to be tagged.
+  performance_manager::execution_context_priority::MarkAsSidePanel(
+      contents_wrapper_->web_contents());
 
   // For per-window side panels the scoped browser does not change. The browser
   // is cleared automatically when the browser is closed.
