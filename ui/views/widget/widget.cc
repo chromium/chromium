@@ -673,6 +673,7 @@ void Widget::NotifyNativeViewHierarchyWillChange() {
   // that may have been in focus.
   ClearFocusFromWidget();
   native_widget_->OnNativeViewHierarchyWillChange();
+  root_view_->NotifyNativeViewHierarchyWillChange();
 }
 
 void Widget::NotifyNativeViewHierarchyChanged() {

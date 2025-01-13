@@ -70,6 +70,9 @@ class VIEWS_EXPORT RootView : public View,
   void SetContentsView(View* contents_view);
   View* GetContentsView();
 
+  // Called when parent of the host is about to change.
+  void NotifyNativeViewHierarchyWillChange();
+
   // Called when parent of the host changed.
   void NotifyNativeViewHierarchyChanged();
 
