@@ -154,6 +154,7 @@ export declare interface DataSharingSdkGroupData {
   members: DataSharingSdkGroupMember[];
   displayName?: string;
   accessToken?: string;
+  consistencyToken?: string;
 }
 export declare type DataSharingMemberRole =
     | 'unknown' | 'member' | 'owner' | 'invitee';
@@ -177,8 +178,12 @@ export declare interface CreateGroupParams {
 export declare interface CreateGroupResult {
   groupData: DataSharingSdkGroupData;
 }
+export declare interface ReadGroupParams {
+  groupId: string;
+  consistencyToken?: string;
+}
 export declare interface ReadGroupsParams {
-  groupIds: string[];
+  params: ReadGroupParams[];
 }
 export declare interface ReadGroupsResult {
   groupData: DataSharingSdkGroupData[];

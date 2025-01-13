@@ -148,10 +148,10 @@ void DataSharingPageHandler::OnAccessTokenFetched(
 }
 
 void DataSharingPageHandler::ReadGroups(
-    std::vector<std::string> group_ids,
+    data_sharing::mojom::ReadGroupsParamsPtr read_group_params,
     data_sharing::mojom::Page::ReadGroupsCallback callback) {
   CHECK(api_initialized_);
-  page_->ReadGroups(group_ids, std::move(callback));
+  page_->ReadGroups(std::move(read_group_params), std::move(callback));
 }
 
 void DataSharingPageHandler::DeleteGroup(

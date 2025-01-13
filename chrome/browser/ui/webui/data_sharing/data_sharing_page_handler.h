@@ -53,7 +53,7 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   void OpenTabGroup(const std::string& group_id) override;
 
-  void ReadGroups(std::vector<std::string> group_ids,
+  void ReadGroups(data_sharing::mojom::ReadGroupsParamsPtr read_groups_params,
                   data_sharing::mojom::Page::ReadGroupsCallback callback);
 
   void DeleteGroup(std::string group_id,
