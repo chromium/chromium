@@ -411,24 +411,7 @@ void DiceResponseHandlerTest::RunSignoutTest(
   }
 }
 
-class SigninDiceResponseHandlerTestPreconnect
-    : public DiceResponseHandlerTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SigninDiceResponseHandlerTestPreconnect() {
-    feature_list_.InitWithFeatureState(
-        switches::kPreconnectAccountCapabilitiesPostSignin,
-        PreconnectEnabled());
-  }
-
-  bool PreconnectEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Checks that a SIGNIN action triggers a token exchange request.
-TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
+TEST_F(DiceResponseHandlerTest, Signin) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -464,7 +447,7 @@ TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
             signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   EXPECT_EQ(
       identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
-      PreconnectEnabled() ? 1 : 0);
+      1);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   histogram_tester_.ExpectUniqueSample(
       kTokenBindingOutcomeHistogram,
@@ -472,10 +455,6 @@ TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
       /*expected_bucket_count=*/1);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
-
-INSTANTIATE_TEST_SUITE_P(PreconnectEnabled,
-                         SigninDiceResponseHandlerTestPreconnect,
-                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Checks that a SIGNIN action triggers a token exchange request.

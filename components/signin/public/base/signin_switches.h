@@ -128,13 +128,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
 #endif
 
-// Pre-connectes the network socket for the Account Capabilities fetch, after
-// receiving the signin response header from Gaia.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesPostSignin);
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBatchUploadDesktop);
