@@ -173,10 +173,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   }
 
   const GapFragmentData::GapGeometry* GapGeometry() const {
-    if (const auto* field = GetRareField(FieldId::kGapGeometry)) {
-      return field->gap_geometry.get();
-    }
-    return nullptr;
+    return rare_data_->gap_geometry_.Get();
   }
 
   LogicalRect TableGridRect() const {

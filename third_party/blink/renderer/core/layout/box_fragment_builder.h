@@ -589,9 +589,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     use_last_baseline_for_inline_baseline_ = true;
   }
 
-  void SetGapGeometry(
-      std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry) {
-    gap_geometry_ = std::move(gap_geometry);
+  void SetGapGeometry(GapFragmentData::GapGeometry* gap_geometry) {
+    gap_geometry_ = gap_geometry;
   }
 
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
@@ -770,7 +769,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
 
-  std::unique_ptr<GapFragmentData::GapGeometry> gap_geometry_;
+  GapFragmentData::GapGeometry* gap_geometry_ = nullptr;
 
   // Table specific types.
   std::optional<LogicalRect> table_grid_rect_;

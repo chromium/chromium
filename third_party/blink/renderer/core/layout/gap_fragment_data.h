@@ -46,9 +46,7 @@ class GapFragmentData {
   using GapBoundaries = HeapVector<GapBoundary>;
 
   // Gap locations are used for painting gap decorations.
-  struct GapGeometry {
-    USING_FAST_MALLOC(GapGeometry);
-
+  struct GapGeometry : public GarbageCollected<GapGeometry> {
    public:
     GapBoundaries columns;
     GapBoundaries rows;
