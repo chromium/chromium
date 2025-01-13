@@ -125,6 +125,7 @@ source_set("ipc_common_sources") {
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
     ":memory_stats_sources",
+    ":shared_image_pool_client_interface",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
     "//ipc",
@@ -304,6 +305,19 @@ mojom("gmb_interface") {
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
+}
+
+mojom("shared_image_pool_client_interface") {
+  generate_java = true
+  visibility = [
+    "//gpu/*",
+    "//services/*",
+  ]
+  sources = [ "shared_image_pool_client_interface.mojom" ]
+  deps = [ "//mojo/public/mojom/base" ]
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
 mojom("surface_handle") {
