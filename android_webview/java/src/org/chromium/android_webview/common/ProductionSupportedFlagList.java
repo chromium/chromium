@@ -1030,6 +1030,18 @@ public final class ProductionSupportedFlagList {
                 "SimpleCachePrioritizedCaching",
                 "When enabled, main frame navigation resources will be prioritized in Simple"
                         + " Cache."),
+        Flag.baseFeature(
+                CcFeatures.PREVENT_DUPLICATE_IMAGE_DECODES,
+                "De-duplicate and share image decode requests between raster tasks "
+                        + "and javascript image decode requests."),
+        Flag.baseFeature(
+                CcFeatures.SEND_EXPLICIT_DECODE_REQUESTS_IMMEDIATELY,
+                "Forward javascript image decode requests to cc right away, "
+                        + "rather than bundling them into the next compositor commit."),
+        Flag.baseFeature(
+                BlinkFeatures.SPECULATIVE_IMAGE_DECODES,
+                "Start decoding in-viewport images as soon as they have loaded, "
+                        + "rather than waiting for them to appear in a raster task."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
