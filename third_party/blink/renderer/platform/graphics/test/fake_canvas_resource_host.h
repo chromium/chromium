@@ -60,7 +60,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
           Size(), kN32_SkColorType, kPremul_SkAlphaType,
-          SkColorSpace::MakeSRGB(), kShouldInitialize,
+          gfx::ColorSpace::CreateSRGB(), kShouldInitialize,
           SharedGpuContext::SharedImageInterfaceProvider(), this);
     }
     if (!provider) {

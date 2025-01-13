@@ -95,7 +95,7 @@ void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
   dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id_);
   resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
       gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
-      SkColorSpace::MakeSRGB(),
+      gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider_.get());
 }

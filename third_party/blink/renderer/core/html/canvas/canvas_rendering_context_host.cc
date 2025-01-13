@@ -229,7 +229,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
 
   if (!provider && use_shared_bitmap_provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
@@ -323,7 +324,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
 
   if (!provider && use_shared_bitmap_provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {

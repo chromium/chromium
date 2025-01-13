@@ -602,7 +602,7 @@ TEST_F(CanvasResourceProviderTest,
 
   EXPECT_FALSE(CanvasResourceProvider::CreateSharedBitmapProvider(
       gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
-      SkColorSpace::MakeSRGB(),
+      gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider.get()));
 }
@@ -619,7 +619,8 @@ TEST_F(CanvasResourceProviderTest,
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-      kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
+      kSize, kInfo.colorType(), kInfo.alphaType(),
+      gfx::ColorSpace::CreateSRGB(),
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider.get());
 
