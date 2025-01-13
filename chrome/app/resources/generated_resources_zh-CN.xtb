@@ -2107,7 +2107,7 @@
 <translation id="2442916515643169563">文字阴影</translation>
 <translation id="2443487764245141020">网站可能还需要使用标识符来识别您的设备</translation>
 <translation id="244475495405467108">关闭左侧标签页</translation>
-<translation id="2444874983932528148">轻松地从上次停下的地方继续</translation>
+<translation id="2444874983932528148">无缝延续浏览体验</translation>
 <translation id="2445081178310039857">必须指定扩展程序根目录。</translation>
 <translation id="2445484935443597917">创建新的个人资料</translation>
 <translation id="2445726032315793326">局部放大镜</translation>
@@ -7899,7 +7899,7 @@
 <translation id="6628316682330029452">客户端证书是用于向其他服务器标识您身份的证书。</translation>
 <translation id="6628328486509726751">上传时间：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
-<translation id="6630117778953264026">更高的安全性</translation>
+<translation id="6630117778953264026">安全再升级</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />希望获得某个证书的永久访问权限，以便代表您进行自我身份验证。</translation>
 <translation id="6634220840123396409">我信任该网站，单选按钮分组，第 2 个，共 3 个</translation>
 <translation id="6635362468090274700">任何人都无法与您分享内容，除非您将自己设为可见。<ph name="BR" /><ph name="BR" />若要将自己设为暂时可见，请打开状态区，然后开启“附近分享”的高可见度模式。</translation>
@@ -9878,7 +9878,7 @@
 <translation id="8024161440284949905">继续使用这些标签页</translation>
 <translation id="8025151549289123443">锁定屏幕和登录</translation>
 <translation id="8025291188699172126">更新简介</translation>
-<translation id="8026471514777758216">在您的所有设备上保持同步</translation>
+<translation id="8026471514777758216">跨设备同步</translation>
 <translation id="8026784703228858744">借助同步功能保存书签和其他数据</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前访问过}=1{1 天前访问过}other{# 天前访问过}}</translation>
 <translation id="8028060951694135607">Microsoft 密钥恢复</translation>
