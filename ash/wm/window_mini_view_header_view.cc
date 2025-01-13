@@ -121,8 +121,9 @@ void WindowMiniViewHeaderView::UpdateIconView(aura::Window* window) {
     icon_view_->layer()->SetFillsBoundsOpaquely(false);
   }
 
-  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      *icon, skia::ImageOperations::RESIZE_BEST, kIconSize));
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          *icon, skia::ImageOperations::RESIZE_BEST, kIconSize)));
 }
 
 void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
