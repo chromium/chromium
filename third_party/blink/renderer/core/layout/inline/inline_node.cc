@@ -68,8 +68,8 @@ namespace {
 
 template <typename Span1, typename Span2>
 unsigned MismatchInternal(const Span1& span1, const Span2& span2) {
-  const auto old_new = base::ranges::mismatch(span1, span2);
-  return static_cast<unsigned>(old_new.first - span1.begin());
+  const auto old_new = std::ranges::mismatch(span1, span2);
+  return static_cast<unsigned>(old_new.in1 - span1.begin());
 }
 
 unsigned Mismatch(const String& old_text, const String& new_text) {
@@ -89,9 +89,9 @@ unsigned Mismatch(const String& old_text, const String& new_text) {
 
 template <typename Span1, typename Span2>
 unsigned MismatchFromEnd(const Span1& span1, const Span2& span2) {
-  const auto old_new =
-      base::ranges::mismatch(base::Reversed(span1), base::Reversed(span2));
-  return static_cast<unsigned>(old_new.first - span1.rbegin());
+  auto rspan1 = base::Reversed(span1);
+  const auto old_new = std::ranges::mismatch(rspan1, base::Reversed(span2));
+  return static_cast<unsigned>(old_new.in1 - rspan1.begin());
 }
 
 unsigned MismatchFromEnd(StringView old_text, StringView new_text) {

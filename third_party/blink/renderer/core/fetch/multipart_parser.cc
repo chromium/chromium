@@ -251,12 +251,12 @@ void MultipartParser::ParseDataAndDelimiter(base::span<const char>& bytes) {
   DCHECK_EQ(0u, matcher_.NumMatchedBytes());
 
   // Search for a complete delimiter within the bytes.
-  auto delimiter_begin = base::ranges::search(bytes, delimiter_);
-  if (delimiter_begin != bytes.end()) {
+  auto found_delimiter = std::ranges::search(bytes, delimiter_);
+  if (found_delimiter.begin() != bytes.end()) {
     // A complete delimiter was found. The bytes before that are octet
     // bytes.
-    auto delimiter_and_rest =
-        bytes.subspan(static_cast<size_t>(delimiter_begin - bytes.begin()));
+    auto delimiter_and_rest = bytes.subspan(
+        static_cast<size_t>(found_delimiter.begin() - bytes.begin()));
     auto [delimiter, rest] = delimiter_and_rest.split_at(delimiter_.size());
     const bool matched = matcher_.Match(delimiter);
     DCHECK(matched);

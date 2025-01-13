@@ -99,7 +99,9 @@ void XRHand::updateFromHandTrackingData(
   } else if (has_missing_poses_ && new_poses) {
     // Need to check if there are any missing poses
     has_missing_poses_ =
-        !base::ranges::all_of(*joints_, &XRJointSpace::MojoFromNative);
+        std::ranges::any_of(*joints_, [](const Member<XRJointSpace>& joint) {
+          return !joint->MojoFromNative().has_value();
+        });
   }
 }
 

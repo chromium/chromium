@@ -97,11 +97,8 @@ void PressureObserver::unobserve(V8PressureSource source) {
   // Reject all pending promises for `source`.
   RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                          "Called unobserve method.");
-  records_.erase(base::ranges::remove_if(records_,
-                                         [source](const auto& record) {
-                                           return record->source() == source;
-                                         }),
-                 records_.end());
+  auto removed = std::ranges::remove(records_, source, &PressureRecord::source);
+  records_.erase(removed.begin(), removed.end());
 }
 
 void PressureObserver::disconnect() {

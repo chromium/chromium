@@ -326,10 +326,10 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 }
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
-  auto it = base::ranges::remove(rule_sets_, rule_set);
-  CHECK(it != rule_sets_.end(), base::NotFatalUntil::M130)
+  auto removed = std::ranges::remove(rule_sets_, rule_set);
+  CHECK(!removed.empty(), base::NotFatalUntil::M130)
       << "rule set was removed without existing";
-  rule_sets_.erase(it, rule_sets_.end());
+  rule_sets_.erase(removed.begin(), removed.end());
   if (rule_set->has_document_rule()) {
     InvalidateAllLinks();
     if (!rule_set->selectors().empty()) {
@@ -707,12 +707,13 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   // Note that the document's URL is not necessarily the same as the base URL
   // (e,g., when a <base> element is present in the document).
   const KURL& document_url = document.Url();
-  auto last = base::ranges::remove_if(candidates, [&](const auto& candidate) {
+  auto last = std::ranges::remove_if(candidates, [&](const auto& candidate) {
     const KURL& url = candidate->url();
     return url.HasFragmentIdentifier() &&
            EqualIgnoringFragmentIdentifier(url, document_url);
   });
-  candidates.Shrink(base::checked_cast<wtf_size_t>(last - candidates.begin()));
+  candidates.Shrink(
+      base::checked_cast<wtf_size_t>(last.begin() - candidates.begin()));
 
   probe::SpeculationCandidatesUpdated(document, candidates);
 

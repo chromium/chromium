@@ -1431,6 +1431,13 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'in_out_out_result',
             'min_max_result',
             'in_found_result',
+            # From https://en.cppreference.com/w/cpp/header/functional
+            'equal_to',
+            'not_equal_to',
+            'greater',
+            'less',
+            'greater_equal',
+            'less_equal',
             # From https://en.cppreference.com/w/cpp/iterator
             'advance',
             'distance',

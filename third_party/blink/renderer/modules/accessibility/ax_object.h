@@ -190,6 +190,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     using pointer = value_type*;
     using reference = value_type&;
 
+    AncestorsIterator() = default;
     ~AncestorsIterator() = default;
 
     AncestorsIterator(const AncestorsIterator& other)
@@ -239,8 +240,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     }
 
    private:
-    AncestorsIterator() = default;
-
     explicit AncestorsIterator(AXObject& current) : current_(&current) {}
 
     friend class AXObject;
