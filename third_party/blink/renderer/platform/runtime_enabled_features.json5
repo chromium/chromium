@@ -241,6 +241,12 @@
       status: "test",
     },
     {
+      // If the author did not define aria-actions, surface button and link
+      // children inside option and menuitem elements as implicit actions.
+      name: "AccessibilityImplicitActions",
+      status: "experimental",
+    },
+    {
       // Use a minimum role of group on elements that are keyboard-focusable.
       // See https://w3c.github.io/html-aam/#minimum-role.
       name: "AccessibilityMinRoleTabbable",

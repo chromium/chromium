@@ -1544,6 +1544,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeChildTreeID(ui::AXNodeData* node_data) const;
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const;
   void SerializeColorAttributes(ui::AXNodeData* node_data) const;
+  void SerializeImplicitActions(ui::AXNodeData* node_data) const;
   void SerializeElementAttributes(ui::AXNodeData* node_data) const;
   void SerializeHTMLNonStandardAttributesForJAWS(
       ui::AXNodeData* node_data) const;

@@ -776,6 +776,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaActions) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaActionsImplicit) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  RunAriaTest(FILE_PATH_LITERAL("aria-actions-implicit.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaActionsReferenceTarget) {
   RunAriaTest(FILE_PATH_LITERAL("aria-actions-reference-target.html"));
 }

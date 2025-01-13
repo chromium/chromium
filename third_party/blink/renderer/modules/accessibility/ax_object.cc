@@ -1632,6 +1632,39 @@ void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) const {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor, color);
 }
 
+void AXObject::SerializeImplicitActions(ui::AXNodeData* node_data) const {
+  // Serialize implicit actions for the following roles only.
+  if (RoleValue() != ax::mojom::blink::Role::kMenuItem &&
+      RoleValue() != ax::mojom::blink::Role::kListBoxOption &&
+      RoleValue() != ax::mojom::blink::Role::kMenuListOption) {
+    return;
+  }
+
+  // Sometimes the children of these elements are nested in a generic container,
+  // skip the container to reach the actions we wish to surface.
+  const AXObjectVector& children = ChildrenIncludingIgnored();
+  bool hasContainer =
+      children.size() == 1 &&
+      (children[0]->RoleValue() == ax::mojom::blink::Role::kGenericContainer ||
+       children[0]->RoleValue() == ax::mojom::blink::Role::kNone);
+  const AXObjectVector& potential_actions =
+      hasContainer ? children[0]->ChildrenIncludingIgnored() : children;
+
+  auto actions_ids = node_data->GetIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kActionsIds);
+  for (const auto& child : potential_actions) {
+    if (child->RoleValue() == ax::mojom::blink::Role::kButton ||
+        child->RoleValue() == ax::mojom::blink::Role::kLink) {
+      actions_ids.push_back(child->AXObjectID());
+    }
+  }
+
+  if (!actions_ids.empty()) {
+    node_data->AddIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds, actions_ids);
+  }
+}
+
 void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   if (!element)
@@ -2592,6 +2625,12 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (RuntimeEnabledFeatures::AriaActionsEnabled() &&
       HasAriaAttribute(html_names::kAriaActionsAttr)) {
     node_data->AddState(ax::mojom::blink::State::kHasActions);
+  }
+
+  // Author-defined actions should take precedence over implicit ones.
+  if (RuntimeEnabledFeatures::AccessibilityImplicitActionsEnabled() &&
+      !HasAriaAttribute(html_names::kAriaActionsAttr)) {
+    SerializeImplicitActions(node_data);
   }
 
   if (IsScrollableContainer())

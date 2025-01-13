@@ -388,6 +388,8 @@ data/accessibility/aria/aria-actions-expected-auralinux.txt
 data/accessibility/aria/aria-actions-expected-blink.txt
 data/accessibility/aria/aria-actions-expected-uia-win.txt
 data/accessibility/aria/aria-actions-expected-win.txt
+data/accessibility/aria/aria-actions-implicit-expected-blink.txt
+data/accessibility/aria/aria-actions-implicit.html
 data/accessibility/aria/aria-actions-reference-target-expected-blink.txt
 data/accessibility/aria/aria-actions-reference-target.html
 data/accessibility/aria/aria-actions-target-id-change-expected-blink.txt
