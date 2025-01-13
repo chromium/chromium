@@ -545,9 +545,9 @@ const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
 const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
     "enterprise-force-manual-enrollment-in-test-builds";
 
-// Whether to enable unified state determination.
+// Whether to enable state determination.
 const char kEnterpriseEnableUnifiedStateDetermination[] =
-    "enterprise-enable-unified-state-determination";
+    "enterprise-enable-state-determination";
 
 // Whether to enable forced enterprise re-enrollment.
 const char kEnterpriseEnableForcedReEnrollment[] =
