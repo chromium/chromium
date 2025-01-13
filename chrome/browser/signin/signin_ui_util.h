@@ -139,10 +139,10 @@ bool ShouldShowAnimatedIdentityOnOpeningWindow(
     const ProfileAttributesStorage& profile_attributes_storage,
     Profile* profile);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::AutoReset<SigninUiDelegate*> SetSigninUiDelegateForTesting(
     SigninUiDelegate* delegate);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Records that the animated identity was shown for the given profile. This is
 // used for metrics and to decide whether/when the animation can be shown again.

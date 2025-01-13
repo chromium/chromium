@@ -156,13 +156,11 @@ void ResetForceSigninForTesting() {
 }
 
 bool IsProfileDeletionAllowed(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return !profile->IsMainProfile();
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -123,7 +123,6 @@ TEST_F(SigninUtilTest, GetForceSigninPolicy) {
   EXPECT_FALSE(signin_util::IsForceSigninEnabled());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(SigninUtilTest, IsProfileSeparationEnforcedByProfile) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   for (const auto& local_policy : all_policies) {
@@ -441,5 +440,3 @@ TEST(SignedInStatesTest, SignedInStates) {
   }
 }
 #endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#endif
