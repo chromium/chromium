@@ -9,7 +9,7 @@ import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, Routes} f
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -159,7 +159,9 @@ suite('ProfilePickerMainViewTest', function() {
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     // Browse as guest.
-    assertTrue(!!mainViewElement.$.browseAsGuestButton);
+    assertTrue(isVisible(mainViewElement.$.browseAsGuestButton));
+    // Add profile
+    assertTrue(isVisible(mainViewElement.$.addProfile));
     mainViewElement.$.browseAsGuestButton.click();
     await browserProxy.whenCalled('launchGuestProfile');
     // Ask when chrome opens.
@@ -206,10 +208,10 @@ suite('ProfilePickerMainViewTest', function() {
       isGuestModeEnabled: false,
     });
     resetTest();
-    assertEquals(mainViewElement.$.browseAsGuestButton.style.display, 'none');
+    assertFalse(isVisible(mainViewElement.$.browseAsGuestButton));
     await browserProxy.whenCalled('initializeMainView');
     await simulateProfilesListChanged(generateProfilesList(2));
-    assertEquals(mainViewElement.$.browseAsGuestButton.style.display, 'none');
+    assertFalse(isVisible(mainViewElement.$.browseAsGuestButton));
   });
 
   test('ProfileCreationNotAllowed', async function() {
@@ -217,16 +219,15 @@ suite('ProfilePickerMainViewTest', function() {
       isProfileCreationAllowed: false,
     });
     resetTest();
-    const addProfile =
-        mainViewElement.shadowRoot!.querySelector<HTMLElement>('#addProfile')!;
-    assertEquals(addProfile.style.display, 'none');
+    const addProfileButton = mainViewElement.$.addProfile;
+    assertFalse(isVisible(addProfileButton));
     await browserProxy.whenCalled('initializeMainView');
     await simulateProfilesListChanged(generateProfilesList(2));
     navigationElement.reset();
-    assertEquals(addProfile.style.display, 'none');
-    addProfile.click();
+    assertFalse(isVisible(addProfileButton));
+    addProfileButton.click();
     await microtasksFinished();
-    assertTrue(!navigationElement.changeCalled);
+    assertFalse(navigationElement.changeCalled);
   });
 
   test('AskOnStartupSingleToMultipleProfiles', async function() {

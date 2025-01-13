@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -36,6 +37,7 @@ struct ProfilePickerTestParam {
   bool show_kite_for_supervised_users = false;
   // param to be removed when `kOutlineSilhouetteIcon` is enabled by default.
   bool outline_silhouette_icon = false;
+  bool disallow_profile_creation = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -51,19 +53,32 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles"},
      .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "PortraitModeWindow",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize}},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesSmall",
+                          .window_size = PixelTestParam::kSmallWindowSize},
+     .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesPortraitMode",
+                          .window_size =
+                              PixelTestParam::kPortraitModeWindowSize},
+     .use_multiple_profiles = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesNoProfileCreation"},
+     .use_multiple_profiles = true,
+     .disallow_profile_creation = true},
     {.pixel_test_param = {.test_suffix = "MultipleProfiles_OutlineSilhouette"},
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true},
     {.pixel_test_param = {.test_suffix =
                               "DarkRtlSmallMultipleProfiles_OutlineSilhouette",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
      .outline_silhouette_icon = true},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -76,16 +91,14 @@ const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "DarkRtlSmallMultipleProfiles_Kite",
                           .use_dark_theme = true,
                           .use_right_to_left_language = true,
-                          .use_small_window = true},
+                          .window_size = PixelTestParam::kSmallWindowSize},
      .use_multiple_profiles = true,
      .show_kite_for_supervised_users = true},
 #endif
 };
 
 // Create 4 profiles with different icons and types.
-void AddMultipleProfiles(Profile* profile) {
-  DCHECK(profile);
-
+void AddMultipleProfiles() {
   for (size_t i = 0; i < 4; i++) {
     base::RunLoop run_loop;
     ProfileManager::CreateMultiProfileAsync(
@@ -154,8 +167,14 @@ class ProfilePickerUIPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
     if (GetParam().use_multiple_profiles) {
-      AddMultipleProfiles(browser()->profile());
+      AddMultipleProfiles();
     }
+
+    if (GetParam().disallow_profile_creation) {
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kBrowserAddPersonEnabled, false);
+    }
+
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
@@ -176,10 +195,7 @@ class ProfilePickerUIPixelTest
               return ProfileManagementStepController::CreateForProfilePickerApp(
                   host, profile_picker_main_view_url);
             }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
     observer.Wait();
   }
 

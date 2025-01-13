@@ -55,7 +55,7 @@ const ManagedUserNoticeTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
-                          .use_small_window = true}},
+                          .window_size = PixelTestParam::kSmallWindowSize}},
 };
 
 const ManagedUserNoticeTestParam kDialogTestParams[] = {
@@ -159,10 +159,7 @@ class ManagedUserNoticeUIWindowPixelTest
               return std::make_unique<ManagedUserNoticeStepControllerForTest>(
                   host, browser()->profile(), account_info);
             }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }
 
   bool VerifyUi() override {

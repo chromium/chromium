@@ -67,6 +67,7 @@ export class ProfilePickerMainViewElement extends
       hideAskOnStartup_: {type: Boolean},
       askOnStartup_: {type: Boolean},
       guestModeEnabled_: {type: Boolean},
+      profileCreationAllowed_: {type: Boolean},
       forceSigninErrorDialogTitle_: {type: String},
       forceSigninErrorDialogBody_: {type: String},
       forceSigninErrorProfilePath_: {type: String},
@@ -82,6 +83,7 @@ export class ProfilePickerMainViewElement extends
   // Potentially updated on profile addition/removal/sign-in.
   protected guestModeEnabled_: boolean =
       loadTimeData.getBoolean('isGuestModeEnabled');
+  protected profileCreationAllowed_: boolean = isProfileCreationAllowed();
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
@@ -99,14 +101,6 @@ export class ProfilePickerMainViewElement extends
   protected shouldShownSigninButton_: boolean = false;
 
   override firstUpdated() {
-    if (!this.guestModeEnabled_) {
-      this.$.browseAsGuestButton.style.display = 'none';
-    }
-
-    if (!isProfileCreationAllowed()) {
-      this.$.addProfile.style.display = 'none';
-    }
-
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
 
     this.addEventListener('toggle-drag', this.toggleDrag_);

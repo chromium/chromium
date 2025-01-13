@@ -74,7 +74,7 @@ class TestProfileManagementFlowController
     }
   }
 
-  void DidFirstVisuallyNonEmptyPaint() override {
+  void DidStopLoading() override {
     Observe(nullptr);
     DCHECK(initial_step_load_finished_closure_);
     std::move(initial_step_load_finished_closure_).Run();

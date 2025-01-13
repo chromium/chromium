@@ -27,6 +27,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       `)}
       <cr-button id="addProfile" class="profile-item"
           @click="${this.onAddProfileClick_}"
+          ?hidden="${!this.profileCreationAllowed_}"
           aria-labelledby="addProfileButtonLabel">
         <div id="addProfileButtonLabel"
             class="profile-card-info prominent-text">
@@ -39,7 +40,8 @@ export function getHtml(this: ProfilePickerMainViewElement) {
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"
-      @click="${this.onLaunchGuestProfileClick_}">
+      @click="${this.onLaunchGuestProfileClick_}"
+      ?hidden="${!this.guestModeEnabled_}">
     <cr-icon icon="profiles:account-circle" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>
