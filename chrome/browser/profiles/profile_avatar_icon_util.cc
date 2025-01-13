@@ -557,8 +557,10 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon = entry->GetAvatarIcon(
       kAvatarIconSize, /*download_high_res=*/false, icon_params);
-  return profiles::GetSizedAvatarIcon(
-      icon, kMenuAvatarIconSize, kMenuAvatarIconSize, profiles::SHAPE_CIRCLE);
+  constexpr int kMenuAvatarIconSizeForNSMenu = 20;
+  return profiles::GetSizedAvatarIcon(icon, kMenuAvatarIconSizeForNSMenu,
+                                      kMenuAvatarIconSizeForNSMenu,
+                                      profiles::SHAPE_CIRCLE);
 }
 #endif
 

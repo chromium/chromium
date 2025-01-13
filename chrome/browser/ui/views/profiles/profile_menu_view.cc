@@ -1264,7 +1264,10 @@ void ProfileMenuView::BuildOtherProfilesSection(
   for (ProfileAttributesEntry* profile_entry : available_profiles) {
     AddAvailableProfile(
         ui::ImageModel::FromImage(profile_entry->GetAvatarIcon(
-            profiles::kMenuAvatarIconSize, /*use_high_res_file=*/true,
+            switches::IsImprovedSigninUIOnDesktopEnabled()
+                ? kOtherProfileImageSize
+                : kDeprecatedOtherProfileImageSize,
+            /*use_high_res_file=*/true,
             GetPlaceholderAvatarIconParamsVisibleAgainstColor(
                 browser()->window()->GetColorProvider()->GetColor(
                     ui::kColorMenuBackground)))),

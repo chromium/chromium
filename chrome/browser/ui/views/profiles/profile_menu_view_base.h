@@ -144,6 +144,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kManagementBadgeSize = 24;
   // Size of the small identity image shown inside the signin button.
   static constexpr int kIdentityImageSizeForButton = 22;
+  // Size of the profile image in the "Other profiles" section, matches the
+  // icon size of other rows.
+  static constexpr int kOtherProfileImageSize = 16;
+  static constexpr int kDeprecatedOtherProfileImageSize = 20;
 
   ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuViewBase() override;

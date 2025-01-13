@@ -1042,19 +1042,19 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
         views::BoxLayout::Orientation::kVertical));
   }
 
-  if (&icon == &gfx::kNoneIcon) {
-    features_container_->AddChildView(std::make_unique<HoverButton>(
-        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                            base::Unretained(this), std::move(action)),
-        text));
-  } else {
-    auto icon_view =
+  std::unique_ptr<FeatureButtonIconView> icon_view;
+  if (&icon != &gfx::kNoneIcon) {
+    icon_view =
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
-    features_container_->AddChildView(std::make_unique<HoverButton>(
-        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                            base::Unretained(this), std::move(action)),
-        std::move(icon_view), text));
   }
+
+  features_container_->AddChildView(std::make_unique<HoverButton>(
+      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                          base::Unretained(this), std::move(action)),
+      std::move(icon_view), text, /*subtitle=*/std::u16string(),
+      /*secondary_view=*/nullptr,
+      /*add_vertical_label_spacing=*/
+      !switches::IsImprovedSigninUIOnDesktopEnabled()));
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
@@ -1104,13 +1104,19 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
   }
 
   DCHECK(!image_model.IsEmpty());
-  ui::ImageModel sized_image =
-      GetCircularSizedImage(image_model, profiles::kMenuAvatarIconSize);
+  ui::ImageModel sized_image = GetCircularSizedImage(
+      image_model, switches::IsImprovedSigninUIOnDesktopEnabled()
+                       ? kOtherProfileImageSize
+                       : kDeprecatedOtherProfileImageSize);
   views::Button* button = selectable_profiles_container_->AddChildView(
       std::make_unique<HoverButton>(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
-          sized_image, name));
+          std::make_unique<views::ImageView>(sized_image), name,
+          /*subtitle=*/std::u16string(),
+          /*secondary_view=*/nullptr,
+          /*add_vertical_label_spacing=*/
+          !switches::IsImprovedSigninUIOnDesktopEnabled()));
 
   if (!is_guest && !first_profile_button_) {
     first_profile_button_ = button;
@@ -1165,7 +1171,10 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
   profile_mgmt_features_container_->AddChildView(std::make_unique<HoverButton>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
-      std::move(icon_view), text));
+      std::move(icon_view), text, /*subtitle=*/std::u16string(),
+      /*secondary_view=*/nullptr,
+      /*add_vertical_label_spacing=*/
+      !switches::IsImprovedSigninUIOnDesktopEnabled()));
 }
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
