@@ -29,7 +29,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/api/app_window.h"
-#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -268,7 +267,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     if (options->alpha_enabled) {
-      const char* const kAllowlist[] = {
+      static constexpr const char* kAllowlist[] = {
 #if BUILDFLAG(IS_CHROMEOS)
           "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
           "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
@@ -285,8 +284,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           "F16F23C83C5F6DAD9B65A120448B34056DD80691",
           "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
-                                      std::size(kAllowlist))) {
+          !base::Contains(kAllowlist, extension()->hashed_id().value())) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }

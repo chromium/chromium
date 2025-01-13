@@ -474,20 +474,6 @@ bool SimpleFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
 }
 
 // static
-bool SimpleFeature::IsIdInArray(const ExtensionId& extension_id,
-                                const char* const array[],
-                                size_t array_length) {
-  if (!IsValidExtensionId(extension_id))
-    return false;
-
-  const char* const* start = array;
-  const char* const* end = array + array_length;
-
-  return ((std::find(start, end, extension_id) != end) ||
-          (std::find(start, end, HashedIdInHex(extension_id)) != end));
-}
-
-// static
 bool SimpleFeature::IsIdInList(const HashedExtensionId& hashed_id,
                                const std::vector<std::string>& list) {
   if (!IsValidHashedExtensionId(hashed_id))

@@ -772,25 +772,6 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
                 .result());
 }
 
-TEST_F(SimpleFeatureTest, IsIdInArray) {
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", {}, 0));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray(
-      "bbbbccccdddddddddeeeeeeffffgghhh", {}, 0));
-
-  const char* const kIdArray[] = {
-    "bbbbccccdddddddddeeeeeeffffgghhh",
-    // aaaabbbbccccddddeeeeffffgggghhhh
-    "9A0417016F345C934A1A88F55CA17C05014EEEBA"
-  };
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, std::size(kIdArray)));
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("bbbbccccdddddddddeeeeeeffffgghhh",
-                                         kIdArray, std::size(kIdArray)));
-  EXPECT_TRUE(SimpleFeature::IsIdInArray("aaaabbbbccccddddeeeeffffgggghhhh",
-                                         kIdArray, std::size(kIdArray)));
-}
-
 // Tests that all combinations of feature channel and Chrome channel correctly
 // compute feature availability.
 TEST_F(SimpleFeatureTest, SupportedChannel) {
