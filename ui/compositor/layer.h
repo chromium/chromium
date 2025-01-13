@@ -765,7 +765,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // does not affect the layer's descendants.
   bool accept_events_ = true;
 
-  // See SetFillsBoundsOpaquely(). Defaults to true.
+  // See SetFillsBoundsOpaquely().
   bool fills_bounds_opaquely_;
 
   bool fills_bounds_completely_;

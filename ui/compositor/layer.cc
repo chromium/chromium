@@ -39,6 +39,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/canvas.h"
@@ -219,6 +220,11 @@ Layer::Layer(LayerType type)
       backdrop_filter_quality_(1.0f),
       trilinear_filtering_request_(0) {
   CreateCcLayer();
+
+  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
+  if (type_ == LAYER_SOLID_COLOR) {
+    fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
+  }
 }
 
 Layer::~Layer() {
@@ -1221,6 +1227,7 @@ void Layer::SetShowSolidColorContent() {
     return;
 
   solid_color_layer_ = new_layer;
+  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
 
   transfer_resource_ = viz::TransferableResource();
   if (transfer_release_callback_) {
@@ -1688,6 +1695,10 @@ void Layer::SetGrayscaleFromAnimation(float grayscale,
 void Layer::SetColorFromAnimation(SkColor4f color,
                                   PropertyChangeReason reason) {
   DCHECK_EQ(type_, LAYER_SOLID_COLOR);
+
+  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
+  // And `SetContentOpaque()` is called in
+  // `SolidColorLayer::SetBackgroundColor()`.
   cc_layer_->SetBackgroundColor(color);
   cc_layer_->SetSafeOpaqueBackgroundColor(color);
   SetFillsBoundsOpaquelyWithReason(color.isOpaque(), reason);
@@ -1814,11 +1825,20 @@ void Layer::CreateCcLayer() {
     cc_layer_ = content_layer_.get();
   }
   cc_layer_->SetTransformOrigin(gfx::Point3F());
-  cc_layer_->SetContentsOpaque(true);
-  cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
   cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
   cc_layer_->SetHitTestable(IsHitTestableForCC());
   cc_layer_->SetElementId(cc::ElementId(cc_layer_->id()));
+  cc_layer_->SetBackgroundColor(SkColors::kTransparent);
+  cc_layer_->SetSafeOpaqueBackgroundColor(
+      type_ == LAYER_SOLID_COLOR ? SkColors::kBlack : SkColors::kWhite);
+
+  // For LAYER_SOLID_COLOR, the background color dictates content opaqueness.
+  // And `SetContentOpaque()` is called in
+  // `cc::SolidColorLayer::SetBackgroundColor()`.
+  if (type_ != LAYER_SOLID_COLOR) {
+    cc_layer_->SetContentsOpaque(true);
+  }
+
   RecomputePosition();
 }
 
