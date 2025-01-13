@@ -959,7 +959,8 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHostImpl* frame_host,
       mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver)
       override;
-  void RequestMediaAccessPermission(const MediaStreamRequest& request,
+  void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                    const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override;
 
   void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,

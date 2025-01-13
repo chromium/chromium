@@ -189,7 +189,6 @@ WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHostId(
 }
 
 void WebViewPermissionHelper::RequestMediaAccessPermission(
-    content::WebContents* source,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   base::Value::Dict request_info;

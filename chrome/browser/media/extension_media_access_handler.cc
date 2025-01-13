@@ -47,7 +47,7 @@ ExtensionMediaAccessHandler::ExtensionMediaAccessHandler() = default;
 ExtensionMediaAccessHandler::~ExtensionMediaAccessHandler() = default;
 
 bool ExtensionMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return extension &&

@@ -289,8 +289,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The render frame has requested access to media devices listed in
   // |request|, and the client should grant or deny that permission by
   // calling |callback|.
-  virtual void RequestMediaAccessPermission(const MediaStreamRequest& request,
-                                            MediaResponseCallback callback);
+  virtual void RequestMediaAccessPermission(
+      RenderFrameHostImpl* render_frame_host,
+      const MediaStreamRequest& request,
+      MediaResponseCallback callback);
 
   // Called when a renderer requests to select an audio output device.
   // |request| contains parameters for audio output device selection.

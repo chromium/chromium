@@ -236,6 +236,13 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) final;
   void GuestClose() final;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) final;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,

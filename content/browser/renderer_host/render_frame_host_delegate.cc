@@ -49,6 +49,7 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
 }
 
 void RenderFrameHostDelegate::RequestMediaAccessPermission(
+    RenderFrameHostImpl* render_frame_host,
     const MediaStreamRequest& request,
     MediaResponseCallback callback) {
   LOG(ERROR) << "RenderFrameHostDelegate::RequestMediaAccessPermission: "

@@ -27,7 +27,7 @@ class MediaAccessHandler {
   virtual ~MediaAccessHandler() = default;
 
   // Check if the media stream type is supported by MediaAccessHandler.
-  virtual bool SupportsStreamType(content::WebContents* web_contents,
+  virtual bool SupportsStreamType(content::RenderFrameHost* render_frame_host,
                                   const blink::mojom::MediaStreamType type,
                                   const extensions::Extension* extension) = 0;
 

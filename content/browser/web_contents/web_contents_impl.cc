@@ -5385,6 +5385,7 @@ void WebContentsImpl::CreateMediaPlayerHostForRenderFrameHost(
 }
 
 void WebContentsImpl::RequestMediaAccessPermission(
+    RenderFrameHostImpl* render_frame_host,
     const MediaStreamRequest& request,
     MediaResponseCallback callback) {
   OPTIONAL_TRACE_EVENT2("content",
@@ -5392,14 +5393,22 @@ void WebContentsImpl::RequestMediaAccessPermission(
                         "render_process_id", request.render_process_id,
                         "render_frame_id", request.render_frame_id);
 
-  if (delegate_) {
+  if (GuestPageHolderImpl* guest =
+          render_frame_host
+              ? GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)
+              : nullptr) {
+    if (auto* delegate = guest->delegate()) {
+      delegate->GuestRequestMediaAccessPermission(request, std::move(callback));
+      return;
+    }
+  } else if (delegate_) {
     delegate_->RequestMediaAccessPermission(this, request, std::move(callback));
-  } else {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-        std::unique_ptr<MediaStreamUI>());
+    return;
   }
+  std::move(callback).Run(
+      blink::mojom::StreamDevicesSet(),
+      blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+      std::unique_ptr<MediaStreamUI>());
 }
 
 void WebContentsImpl::ProcessSelectAudioOutput(
@@ -5426,6 +5435,15 @@ bool WebContentsImpl::CheckMediaAccessPermission(
 
   DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* delegate = guest->delegate()) {
+      return delegate->GuestCheckMediaAccessPermission(render_frame_host,
+                                                       security_origin, type);
+    }
+    return false;
+  }
   return delegate_ && delegate_->CheckMediaAccessPermission(
                           render_frame_host, security_origin, type);
 }

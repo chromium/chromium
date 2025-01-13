@@ -3383,7 +3383,7 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
       /*captured_surface_control_active=*/false);
   bool callback_run = false;
   contents()->RequestMediaAccessPermission(
-      dummy_request,
+      contents()->GetPrimaryMainFrame(), dummy_request,
       base::BindLambdaForTesting(
           [&callback_run](
               const blink::mojom::StreamDevicesSet& stream_devices_set,

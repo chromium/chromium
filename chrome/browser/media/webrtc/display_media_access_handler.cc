@@ -99,7 +99,7 @@ DisplayMediaAccessHandler::DisplayMediaAccessHandler(
 DisplayMediaAccessHandler::~DisplayMediaAccessHandler() = default;
 
 bool DisplayMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType stream_type,
     const extensions::Extension* extension) {
   return stream_type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||

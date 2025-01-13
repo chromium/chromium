@@ -310,7 +310,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||

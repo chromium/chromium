@@ -878,6 +878,31 @@ void WebViewGuest::GuestClose() {
       std::make_unique<GuestViewEvent>(webview::kEventClose, std::move(args)));
 }
 
+void WebViewGuest::GuestRequestMediaAccessPermission(
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    web_view_permission_helper_->RequestMediaAccessPermissionForControlledFrame(
+        web_contents(), request, std::move(callback));
+    return;
+  }
+  web_view_permission_helper_->RequestMediaAccessPermission(
+      request, std::move(callback));
+}
+
+bool WebViewGuest::GuestCheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    return web_view_permission_helper_
+        ->CheckMediaAccessPermissionForControlledFrame(render_frame_host,
+                                                       security_origin, type);
+  }
+  return web_view_permission_helper_->CheckMediaAccessPermission(
+      render_frame_host, security_origin, type);
+}
+
 void WebViewGuest::CreateNewGuestWebViewWindow(
     const content::OpenURLParams& params) {
   GuestViewManager* guest_manager =
@@ -1493,13 +1518,7 @@ void WebViewGuest::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
-  if (IsOwnedByControlledFrameEmbedder()) {
-    web_view_permission_helper_->RequestMediaAccessPermissionForControlledFrame(
-        source, request, std::move(callback));
-    return;
-  }
-  web_view_permission_helper_->RequestMediaAccessPermission(
-      source, request, std::move(callback));
+  GuestRequestMediaAccessPermission(request, std::move(callback));
 }
 
 bool WebViewGuest::CheckMediaAccessPermission(
@@ -1508,13 +1527,8 @@ bool WebViewGuest::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
-  if (IsOwnedByControlledFrameEmbedder()) {
-    return web_view_permission_helper_
-        ->CheckMediaAccessPermissionForControlledFrame(render_frame_host,
-                                                       security_origin, type);
-  }
-  return web_view_permission_helper_->CheckMediaAccessPermission(
-      render_frame_host, security_origin, type);
+  return GuestCheckMediaAccessPermission(render_frame_host, security_origin,
+                                         type);
 }
 
 void WebViewGuest::CanDownload(const GURL& url,

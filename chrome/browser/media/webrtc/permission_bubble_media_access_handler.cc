@@ -131,7 +131,7 @@ PermissionBubbleMediaAccessHandler::~PermissionBubbleMediaAccessHandler() =
     default;
 
 bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||

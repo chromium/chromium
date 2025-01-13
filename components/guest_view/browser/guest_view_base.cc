@@ -30,6 +30,7 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using content::WebContents;
 
@@ -719,6 +720,21 @@ void GuestViewBase::GuestOpenURL(
         navigation_handle_callback) {}
 
 void GuestViewBase::GuestClose() {}
+
+void GuestViewBase::GuestRequestMediaAccessPermission(
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+                          std::unique_ptr<content::MediaStreamUI>());
+}
+
+bool GuestViewBase::GuestCheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return false;
+}
 
 void GuestViewBase::LoadProgressChanged(double progress) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {

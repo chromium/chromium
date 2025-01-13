@@ -38,7 +38,8 @@ namespace content {
 namespace {
 class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
  public:
-  void RequestMediaAccessPermission(const MediaStreamRequest& request,
+  void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                    const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override {
     return RequestMediaAccessPermission(request, &callback);
   }
@@ -632,7 +633,8 @@ class MediaStreamUIProxyPermissionsPolicyTest
  private:
   class TestRFHDelegate : public RenderFrameHostDelegate {
    public:
-    void RequestMediaAccessPermission(const MediaStreamRequest& request,
+    void RequestMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
+                                      const MediaStreamRequest& request,
                                       MediaResponseCallback callback) override {
       blink::mojom::StreamDevicesSet stream_devices_set;
       stream_devices_set.stream_devices.emplace_back(

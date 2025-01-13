@@ -468,6 +468,13 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                     base::OnceCallback<void(content::NavigationHandle&)>
                         navigation_handle_callback) override;
   void GuestClose() override;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool GuestCheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& security_origin,
+      blink::mojom::MediaStreamType type) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
