@@ -12,7 +12,6 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -21,6 +20,7 @@
 namespace blink {
 
 class AgentGroupScheduler;
+class DocumentResourceCoordinator;
 class PageScheduler;
 
 class FrameScheduler : public FrameOrWorkerScheduler {
