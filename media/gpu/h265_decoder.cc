@@ -53,7 +53,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     // Spec A.3.5
     case HEVCPROFILE_REXT:
       return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
-             bit_depth == 14u || bit_depth == 16u;
+             bit_depth == 16u;
     // Spec A.3.6
     case HEVCPROFILE_HIGH_THROUGHPUT:
       return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u ||
