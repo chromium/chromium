@@ -930,7 +930,8 @@ VideoCaptureManager::LookupControllerByMediaTypeAndDeviceId(
 bool VideoCaptureManager::IsControllerPointerValid(
     const VideoCaptureController* controller) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return base::Contains(controllers_, controller);
+  return base::Contains(controllers_, controller,
+                        &scoped_refptr<VideoCaptureController>::get);
 }
 
 scoped_refptr<VideoCaptureController>

@@ -611,8 +611,8 @@ void PrefetchResponseReader::StoreInfoFromResponseHead(
     auto& indices = cookie_indices_.emplace();
     indices.cookie_names = *head.parsed_headers->cookie_indices;
     base::ranges::sort(indices.cookie_names);
-    indices.cookie_names.erase(base::ranges::unique(indices.cookie_names),
-                               indices.cookie_names.end());
+    auto repeated = std::ranges::unique(indices.cookie_names);
+    indices.cookie_names.erase(repeated.begin(), repeated.end());
     indices.cookie_names.shrink_to_fit();
     indices.expected_hash =
         net::HashCookieIndices(indices.cookie_names, head.request_cookies);

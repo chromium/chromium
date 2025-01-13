@@ -115,14 +115,13 @@ void ComputeAndRecordBudgetValidity(
       PrivateAggregationBudgeter::kLargerScopeValues.budget_scope_duration
           .InMicroseconds() -
       kWindowDuration;
-  const auto minmax = base::ranges::minmax(
+  const auto minmax = std::ranges::minmax(
       *budget_entries, /*comp=*/{},
       &proto::PrivateAggregationBudgetEntry::entry_start_timestamp);
 
   CHECK_EQ(kMaximumWindowStartDifference,
            current_window_start - earliest_window_in_larger_scope_start);
-  if (minmax.second.entry_start_timestamp() -
-          minmax.first.entry_start_timestamp() >
+  if (minmax.max.entry_start_timestamp() - minmax.min.entry_start_timestamp() >
       kMaximumWindowStartDifference) {
     RecordBudgetValidity(ValidityStatus::kSpansMoreThanADay);
     return;
@@ -147,14 +146,14 @@ bool CleanUpStaleBudgetEntries(
     google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
         budget_entries,
     const int64_t earliest_window_in_larger_scope_start) {
-  auto new_end = base::ranges::remove_if(
+  auto to_remove = std::ranges::remove_if(
       *budget_entries, [&earliest_window_in_larger_scope_start](
                            const proto::PrivateAggregationBudgetEntry& elem) {
         return elem.entry_start_timestamp() <
                earliest_window_in_larger_scope_start;
       });
-  bool was_modified = new_end != budget_entries->end();
-  budget_entries->erase(new_end, budget_entries->end());
+  bool was_modified = !to_remove.empty();
+  budget_entries->erase(to_remove.begin(), to_remove.end());
   return was_modified;
 }
 
@@ -163,14 +162,14 @@ bool CleanUpStaleReportingOrigins(
     google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
         reporting_origins,
     const int64_t earliest_window_in_larger_scope_start) {
-  auto new_end = base::ranges::remove_if(
+  auto to_remove = std::ranges::remove_if(
       *reporting_origins, [&earliest_window_in_larger_scope_start](
                               const proto::ReportingOrigin& elem) {
         return elem.last_used_timestamp() <
                earliest_window_in_larger_scope_start;
       });
-  bool was_modified = new_end != reporting_origins->end();
-  reporting_origins->erase(new_end, reporting_origins->end());
+  bool was_modified = !to_remove.empty();
+  reporting_origins->erase(to_remove.begin(), to_remove.end());
   return was_modified;
 }
 
@@ -631,13 +630,13 @@ void PrivateAggregationBudgeter::ClearDataImpl(
           budget_entries = GetBudgetEntries(api, budgets);
       CHECK(budget_entries);
 
-      auto new_end = base::ranges::remove_if(
+      auto to_remove = std::ranges::remove_if(
           *budget_entries,
           [=](const proto::PrivateAggregationBudgetEntry& elem) {
             return elem.entry_start_timestamp() >= serialized_delete_begin &&
                    elem.entry_start_timestamp() <= serialized_delete_end;
           });
-      budget_entries->erase(new_end, budget_entries->end());
+      budget_entries->erase(to_remove.begin(), to_remove.end());
 
       CleanUpStaleBudgetEntries(budget_entries,
                                 earliest_window_in_larger_scope_start);

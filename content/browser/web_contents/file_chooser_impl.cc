@@ -29,7 +29,7 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
     std::vector<blink::mojom::FileChooserFileInfoPtr> files,
     base::FilePath base_dir) {
   DCHECK(!base_dir.empty());
-  auto new_end = base::ranges::remove_if(
+  auto to_remove = std::ranges::remove_if(
       files,
       [&base_dir](const base::FilePath& file_path) {
         if (base::IsLink(file_path))
@@ -42,7 +42,7 @@ std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
         return false;
       },
       [](const auto& file) { return file->get_native_file()->file_path; });
-  files.erase(new_end, files.end());
+  files.erase(to_remove.begin(), to_remove.end());
   return files;
 }
 
