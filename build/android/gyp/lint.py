@@ -546,7 +546,7 @@ def main():
            args.create_cache,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
-  build_utils.Touch(args.stamp)
+  server_utils.MaybeTouch(args.stamp)
 
 
 if __name__ == '__main__':

@@ -9,9 +9,7 @@ import pathlib
 import socket
 import platform
 import sys
-import subprocess
 import struct
-import time
 
 sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..'))
 from util import build_utils
@@ -79,8 +77,18 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   # Siso needs the stamp file to be created in order for the build step to
   # complete. If the task fails when the build server runs it, the build server
   # will delete the stamp file so that it will be run again next build.
-  pathlib.Path(stamp_file).touch()
+  build_utils.Touch(stamp_file)
   return True
+
+
+def MaybeTouch(stamp_file):
+  """Touch |stamp_file| if we are not running under the build_server."""
+  # If we are running under the build server, the stamp file has already been
+  # touched when the task was created. If we touch it again, siso will consider
+  # the target dirty.
+  if BUILD_SERVER_ENV_VARIABLE in os.environ:
+    return
+  build_utils.Touch(stamp_file)
 
 
 def SendMessage(sock: socket.socket, message: bytes):

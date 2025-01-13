@@ -298,7 +298,7 @@ def main(argv):
       auto_add_deps=args.auto_add_deps)
   logging.info('Check completed.')
 
-  build_utils.Touch(args.stamp)
+  server_utils.MaybeTouch(args.stamp)
 
 
 if __name__ == '__main__':
