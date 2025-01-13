@@ -50,16 +50,18 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
   SameSizeAsLayer();
   ~SameSizeAsLayer() override;
 
-  void* pointers[4];
+  raw_ptr<void> raw_pointers[2];
+  std::unique_ptr<void> unique_pointers[2];
 
   struct {
     LayerList children;
     gfx::Size bounds;
-    unsigned bitfields;
+    HitTestOpaqueness hit_test_opaqueness;
+    bool bitfields;
     SkColor4f background_color;
     TouchActionRegion touch_action_region;
     ElementId element_id;
-    raw_ptr<void> rare_inputs;
+    std::unique_ptr<void> rare_inputs;
   } inputs;
   gfx::Rect update_rect;
   int int_fields[7];
