@@ -32,7 +32,6 @@ class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
 class CurrentUserDetailsOptions;
-class DigitalCredentialProvider;
 class IdentityCredentialDisconnectOptions;
 class IdentityProviderAccount;
 class IdentityProviderConfig;
@@ -257,13 +256,6 @@ struct MODULES_EXPORT
                   blink::IdentityProviderRequestOptions> {
   static blink::mojom::blink::IdentityProviderRequestOptionsPtr Convert(
       const blink::IdentityProviderRequestOptions&);
-};
-
-template <>
-struct TypeConverter<blink::mojom::blink::DigitalCredentialProviderPtr,
-                     blink::DigitalCredentialProvider> {
-  static blink::mojom::blink::DigitalCredentialProviderPtr Convert(
-      const blink::DigitalCredentialProvider&);
 };
 
 template <>
