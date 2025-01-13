@@ -16,6 +16,7 @@ import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
@@ -24,6 +25,7 @@ import org.chromium.components.payments.Section;
 
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -58,6 +60,8 @@ public class WolvicPaymentUiService {
     private boolean mHasInitialized;
     private boolean mHasClosed;
     private boolean mHaveRequestedAutofillData = true;
+
+    private WebContentsObserver mPaymentWebContentsObserver;
 
     private List<PaymentApp> mPaymentApps;
 
@@ -265,6 +269,15 @@ public class WolvicPaymentUiService {
       if (paymentHandlerWebContents == null)
         return null;
       PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(paymentHandlerWebContents);
+
+      mPaymentWebContentsObserver = new WebContentsObserver(paymentHandlerWebContents) {
+          @Override
+          public void destroy() {
+            onDismiss();
+            paymentHandlerWebContents.removeObserver(this);
+          }
+      };
+
       ContentView webContentView =
              ContentView.createContentView(
                      activity, /* eventOffsetHandler= */ null, paymentHandlerWebContents);
@@ -281,13 +294,19 @@ public class WolvicPaymentUiService {
       mWebContents.notifyOnCreateNewPaymentHandler(paymentHandlerWebContents);
 
       mHider = () -> {
+        if (!paymentHandlerWebContents.isDestroyed()) {
           paymentHandlerWebContents.destroy();
+        }
       };
       return paymentHandlerWebContents;
     }
 
     private @Nullable WebContents createWebContents(boolean isOffTheRecord) {
       return WolvicWebContentsFactory.createWebContents(isOffTheRecord);
+    }
+
+    public void onDismiss() {
+      mDelegate.onUiAborted(AbortReason.ABORTED_BY_USER, ErrorStrings.USER_CANCELLED);
     }
 
     /**
