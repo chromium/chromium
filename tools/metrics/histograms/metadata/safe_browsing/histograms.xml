@@ -2481,22 +2481,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded{UserCategory}"
-    enum="BooleanSuccess" expires_after="2025-02-23">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logged when fetching the referrer chain for a pending event URL is not able
-    to find a matching navigation event, so the referrer chain is fetched for
-    non-pending event URLs instead as a fallback. Logs true if the fallback
-    fetch returns a non-empty chain.
-
-    {UserCategory}
-  </summary>
-  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
-</histogram>
-
 <histogram name="SafeBrowsing.RT.GetCache.FallbackThreatType"
     enum="SBThreatType" expires_after="2025-05-25">
   <owner>xinghuilu@chromium.org</owner>

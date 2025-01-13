@@ -1380,11 +1380,6 @@ TEST_F(RealTimeUrlLookupServiceTest,
                             /*referring_app_info=*/std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
-
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
