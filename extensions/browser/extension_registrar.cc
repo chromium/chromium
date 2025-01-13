@@ -78,6 +78,25 @@ void ExtensionRegistrar::AddExtension(
     scoped_refptr<const Extension> extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!Manifest::IsValidLocation(extension->location())) {
+    // TODO(devlin): We should *never* add an extension with an invalid
+    // location, but some bugs (e.g. crbug.com/692069) seem to indicate we do.
+    // Track down the cases when this can happen, and remove this
+    // DumpWithoutCrashing() (possibly replacing it with a CHECK).
+    DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
+    ManifestLocation location = extension->location();
+    int creation_flags = extension->creation_flags();
+    Manifest::Type type = extension->manifest()->type();
+    base::debug::Alias(&location);
+    base::debug::Alias(&creation_flags);
+    base::debug::Alias(&type);
+    NOTREACHED();
+  }
+
+  if (!delegate_->CanAddExtension(extension.get())) {
+    return;
+  }
+
   bool is_extension_loaded = false;
   const Extension* old = registry_->GetInstalledExtension(extension->id());
   if (old) {
@@ -123,6 +142,20 @@ void ExtensionRegistrar::AddExtension(
       UnregisterServiceWorkerWithRootScope(extension.get());
     }
     AddNewExtension(extension);
+  }
+
+  if (registry_->disabled_extensions().Contains(extension->id())) {
+    // Show the extension disabled error if a permissions increase or a remote
+    // installation is the reason it was disabled, and no other reasons exist.
+    int reasons = extension_prefs_->GetDisableReasons(extension->id());
+    const int kReasonMask = disable_reason::DISABLE_PERMISSIONS_INCREASE |
+                            disable_reason::DISABLE_REMOTE_INSTALL;
+    if (reasons & kReasonMask && !(reasons & ~kReasonMask)) {
+      delegate_->ShowExtensionDisabledError(
+          extension.get(),
+          extension_prefs_->HasDisableReason(
+              extension->id(), disable_reason::DISABLE_REMOTE_INSTALL));
+    }
   }
 }
 
@@ -459,6 +492,16 @@ void ExtensionRegistrar::BlockAllExtensions() {
 
     registry_->AddBlocked(extension.get());
     RemoveExtension(id, UnloadedExtensionReason::LOCK_ALL);
+  }
+}
+
+void ExtensionRegistrar::UnblockAllExtensions() {
+  const ExtensionSet to_unblock =
+      registry_->GenerateInstalledExtensionsSet(ExtensionRegistry::BLOCKED);
+
+  for (const auto& extension : to_unblock) {
+    registry_->RemoveBlocked(extension->id());
+    AddExtension(extension.get());
   }
 }
 

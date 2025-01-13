@@ -52,6 +52,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
                              scoped_refptr<const Extension> extension);
 
   // ExtensionRegistrar::Delegate:
+  bool CanAddExtension(const Extension* extension) override;
   void PreAddExtension(const Extension* extension,
                        const Extension* old_extension) override;
   void PostActivateExtension(scoped_refptr<const Extension> extension) override;
@@ -61,6 +62,8 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
       const ExtensionId& extension_id,
       const base::FilePath& path,
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
+  void ShowExtensionDisabledError(const Extension* extension,
+                                  bool is_remote_install) override;
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
   bool ShouldBlockExtension(const Extension* extension) override;

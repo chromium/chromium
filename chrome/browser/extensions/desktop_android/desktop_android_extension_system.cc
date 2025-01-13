@@ -101,6 +101,8 @@ class DesktopAndroidExtensionRegistrarDelegate
       scoped_refptr<const Extension> extension) override {}
   void PostDeactivateExtension(
       scoped_refptr<const Extension> extension) override {}
+  void ShowExtensionDisabledError(const Extension* extension,
+                                  bool is_remote_install) override {}
 
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
@@ -117,6 +119,7 @@ class DesktopAndroidExtensionRegistrarDelegate
     DCHECK_EQ(extension->id(), extension_id);
   }
 
+  bool CanAddExtension(const Extension* extension) override { return true; }
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
   bool ShouldBlockExtension(const Extension* extension) override {

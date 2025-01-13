@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 
 namespace extensions {
@@ -116,6 +117,10 @@ void ShellExtensionLoader::FinishExtensionReload(
   keep_alive_requester_.StopTrackingReload(old_extension_id);
 }
 
+bool ShellExtensionLoader::CanAddExtension(const Extension* extension) {
+  return true;
+}
+
 void ShellExtensionLoader::PreAddExtension(const Extension* extension,
                                            const Extension* old_extension) {
   if (old_extension)
@@ -155,6 +160,10 @@ void ShellExtensionLoader::LoadExtensionForReload(
                      weak_factory_.GetWeakPtr(), extension_id));
   did_schedule_reload_ = true;
 }
+
+void ShellExtensionLoader::ShowExtensionDisabledError(
+    const Extension* extension,
+    bool is_remote_install) {}
 
 bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
   return true;

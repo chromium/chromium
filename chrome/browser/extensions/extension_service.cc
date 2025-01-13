@@ -107,6 +107,7 @@
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/crash_keys.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -789,6 +790,11 @@ void ExtensionService::LoadExtensionForReload(
   }
 }
 
+void ExtensionService::ShowExtensionDisabledError(const Extension* extension,
+                                                  bool is_remote_install) {
+  AddExtensionDisabledError(this, extension, is_remote_install);
+}
+
 void ExtensionService::OnUnpackedReloadFailure(const Extension* extension,
                                                const base::FilePath& file_path,
                                                const std::string& error) {
@@ -1103,13 +1109,9 @@ void ExtensionService::BlockAllExtensions() {
 // as appropriate.
 void ExtensionService::UnblockAllExtensions() {
   block_extensions_ = false;
-  const ExtensionSet to_unblock =
-      registry_->GenerateInstalledExtensionsSet(ExtensionRegistry::BLOCKED);
 
-  for (const auto& extension : to_unblock) {
-    registry_->RemoveBlocked(extension->id());
-    AddExtension(extension.get());
-  }
+  extension_registrar_.UnblockAllExtensions();
+
   // While extensions are blocked, we won't display any external install
   // warnings. Now that they are unblocked, we should update the error.
   external_install_manager_->UpdateExternalExtensionAlert();
@@ -1527,46 +1529,7 @@ void ExtensionService::SetReadyAndNotifyListeners() {
 }
 
 void ExtensionService::AddExtension(const Extension* extension) {
-  if (!Manifest::IsValidLocation(extension->location())) {
-    // TODO(devlin): We should *never* add an extension with an invalid
-    // location, but some bugs (e.g. crbug.com/692069) seem to indicate we do.
-    // Track down the cases when this can happen, and remove this
-    // DumpWithoutCrashing() (possibly replacing it with a CHECK).
-    DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
-    ManifestLocation location = extension->location();
-    int creation_flags = extension->creation_flags();
-    Manifest::Type type = extension->manifest()->type();
-    base::debug::Alias(&location);
-    base::debug::Alias(&creation_flags);
-    base::debug::Alias(&type);
-    NOTREACHED();
-  }
-
-  // TODO(jstritar): We may be able to get rid of this branch by overriding the
-  // default extension state to DISABLED when the --disable-extensions flag
-  // is set (http://crbug.com/29067).
-  if (!extensions_enabled_ &&
-      !Manifest::ShouldAlwaysLoadExtension(extension->location(),
-                                           extension->is_theme()) &&
-      disable_flag_exempted_extensions_.count(extension->id()) == 0) {
-    return;
-  }
-
   extension_registrar_.AddExtension(extension);
-
-  if (registry_->disabled_extensions().Contains(extension->id())) {
-    // Show the extension disabled error if a permissions increase or a remote
-    // installation is the reason it was disabled, and no other reasons exist.
-    int reasons = extension_prefs_->GetDisableReasons(extension->id());
-    const int kReasonMask = disable_reason::DISABLE_PERMISSIONS_INCREASE |
-                            disable_reason::DISABLE_REMOTE_INSTALL;
-    if (reasons & kReasonMask && !(reasons & ~kReasonMask)) {
-      AddExtensionDisabledError(
-          this, extension,
-          extension_prefs_->HasDisableReason(
-              extension->id(), disable_reason::DISABLE_REMOTE_INSTALL));
-    }
-  }
 }
 
 void ExtensionService::AddComponentExtension(const Extension* extension) {
@@ -2297,6 +2260,19 @@ void ExtensionService::PreAddExtension(const Extension* extension,
   // Check if the extension's privileges have changed and mark the
   // extension disabled if necessary.
   CheckPermissionsIncrease(extension, !!old_extension);
+}
+
+bool ExtensionService::CanAddExtension(const Extension* extension) {
+  // TODO(jstritar): We may be able to get rid of this branch by overriding the
+  // default extension state to DISABLED when the --disable-extensions flag
+  // is set (http://crbug.com/29067).
+  if (!extensions_enabled_ &&
+      !Manifest::ShouldAlwaysLoadExtension(extension->location(),
+                                           extension->is_theme()) &&
+      disable_flag_exempted_extensions_.count(extension->id()) == 0) {
+    return false;
+  }
+  return true;
 }
 
 bool ExtensionService::CanEnableExtension(const Extension* extension) {

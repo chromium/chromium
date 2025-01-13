@@ -65,6 +65,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   ~TestExtensionRegistrarDelegate() override = default;
 
   // ExtensionRegistrar::Delegate:
+  MOCK_METHOD1(CanAddExtension, bool(const Extension*));
   MOCK_METHOD2(PreAddExtension,
                void(const Extension* extension,
                     const Extension* old_extension));
@@ -76,6 +77,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
                void(const ExtensionId& extension_id,
                     const base::FilePath& path,
                     LoadErrorBehavior load_error_behavior));
+  MOCK_METHOD2(ShowExtensionDisabledError, void(const Extension*, bool));
   MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
@@ -99,6 +101,8 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     registrar_.emplace(browser_context(), delegate());
 
     // Mock defaults.
+    ON_CALL(delegate_, CanAddExtension(extension_.get()))
+        .WillByDefault(Return(true));
     ON_CALL(delegate_, CanEnableExtension(extension_.get()))
         .WillByDefault(Return(true));
     ON_CALL(delegate_, CanDisableExtension(extension_.get()))

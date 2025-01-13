@@ -81,6 +81,15 @@ class ExtensionRegistrar : public ProcessManagerObserver {
         const base::FilePath& path,
         LoadErrorBehavior load_error_behavior) = 0;
 
+    // Informs the user that an extension was disabled after upgrading to higher
+    // permissions. If |is_remote_install| is true, the extension was disabled
+    // because it was installed remotely.
+    virtual void ShowExtensionDisabledError(const Extension* extension,
+                                            bool is_remote_install) = 0;
+
+    // Returns true if |extension| can be added.
+    virtual bool CanAddExtension(const Extension* extension) = 0;
+
     // Returns true if the extension is allowed to be enabled or disabled,
     // respectively.
     virtual bool CanEnableExtension(const Extension* extension) = 0;
@@ -160,6 +169,10 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Component, external component and allowlisted policy installed extensions
   // are exempt from being Blocked (see CanBlockExtension in .cc file).
   void BlockAllExtensions();
+
+  // All blocked extensions are reverted to their previous state, and are
+  // reloaded. Newly added extensions are no longer automatically blocked.
+  void UnblockAllExtensions();
 
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.
