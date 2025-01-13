@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(TabCapturePerformanceTest, MAYBE_Performance) {
   NavigateToTestPage(test_page_html_);
   const base::Value response = SendMessageToExtension(
       base::StringPrintf("{start:true, passThroughWebRTC:%s}",
-                         HasFlag(kTestThroughWebRTC) ? "true" : "false"));
+                         base::ToString(HasFlag(kTestThroughWebRTC))));
   ASSERT_TRUE(response.is_dict());
   const std::string* reason = response.GetDict().FindString("reason");
   ASSERT_TRUE(response.GetDict().FindBool("success").value_or(false))

@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1119,7 +1120,7 @@ class ExtensionWebRequestApiAuthRequiredTest
         R"({"testName": "%s", "runInIncognito": %s})";
 
     return base::StringPrintf(custom_arg_format, test_name,
-                              GetEnableIncognito() ? "true" : "false");
+                              base::ToString(GetEnableIncognito()));
   }
 };
 

@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
@@ -333,8 +334,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
                                           const char* message) {
     std::string command = base::StringPrintf(
         "assertions.canConnectAndSendMessages('%s', %s, %s)",
-        extension->id().c_str(),
-        extension->is_platform_app() ? "true" : "false",
+        extension->id().c_str(), base::ToString(extension->is_platform_app()),
         message ? base::StringPrintf("'%s'", message).c_str() : "undefined");
     int result = content::EvalJs(frame, command).ExtractInt();
     return static_cast<Result>(result);
@@ -596,7 +596,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
                                            bool include_tls_channel_id,
                                            const char* message) {
     std::string args = "'" + extension->id() + "', ";
-    args += include_tls_channel_id ? "true" : "false";
+    args += base::ToString(include_tls_channel_id);
     if (message)
       args += std::string(", '") + message + "'";
     return content::EvalJs(

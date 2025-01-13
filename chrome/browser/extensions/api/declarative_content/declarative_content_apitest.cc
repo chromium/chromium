@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -258,7 +259,7 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
             ExecuteScriptInBackgroundPage(
                 extension->id(),
                 base::StringPrintf(kSetIsBookmarkedRule,
-                                   match_is_bookmarked ? "true" : "false")));
+                                   base::ToString(match_is_bookmarked))));
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on add/remove bookmark.

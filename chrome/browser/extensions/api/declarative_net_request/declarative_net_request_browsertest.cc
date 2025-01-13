@@ -29,6 +29,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -4406,7 +4407,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Testing URL: %s, using referrer: %s",
                                     test_case.url.spec().c_str(),
-                                    test_case.use_referrer ? "true" : "false"));
+                                    base::ToString(test_case.use_referrer)));
 
     NavigateFrame(kFrameName1, test_case.url, test_case.use_referrer);
     EXPECT_EQ(test_case.expected_ext_1_badge_text,
@@ -4559,7 +4560,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
           last_loaded_extension_id(), kGetOnRuleMatchedDebugScript);
 
   std::string expected_event_availability =
-      GetLoadType() == ExtensionLoadType::UNPACKED ? "true" : "false";
+      base::ToString(GetLoadType() == ExtensionLoadType::UNPACKED);
 
   ASSERT_EQ(expected_event_availability, actual_event_availability);
 }

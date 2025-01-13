@@ -18,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -2648,7 +2649,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     if (test_case.set_self_as_opener) {
       maybe_specify_set_self_as_opener =
           base::StringPrintf(", setSelfAsOpener: %s",
-                             *test_case.set_self_as_opener ? "true" : "false");
+                             base::ToString(*test_case.set_self_as_opener));
     }
     std::string script = base::StringPrintf(
         R"( chrome.windows.create({url: '%s'%s}); )", test_case.url.c_str(),

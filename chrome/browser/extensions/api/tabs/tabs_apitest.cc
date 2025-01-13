@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
-
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
   std::string args = base::StringPrintf(
       R"({"isIncognito": %s, "windowId": %d})",
-      is_incognito_enabled ? "true" : "false",
+      base::ToString(is_incognito_enabled),
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
   EXPECT_TRUE(RunExtensionTest("tabs/basics/incognito",
