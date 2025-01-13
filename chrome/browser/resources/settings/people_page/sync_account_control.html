@@ -250,7 +250,9 @@
             hidden="[[!shouldShowSigninPausedButtons_(
                 syncStatus.signinPaused)]]">
           <cr-button class="cr-button-gap" on-click="onSignoutClick_">
-            $i18n{peopleSignOut}
+            [[getSigninPausedLabel_(
+              '$i18n{peopleSignOut}',
+              '$i18nPolymer{pendingSecondaryButton}')]]
           </cr-button>
           <cr-button class="action-button cr-button-gap"
               on-click="onSigninClick_">
