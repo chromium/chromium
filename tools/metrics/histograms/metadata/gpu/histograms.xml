@@ -1429,6 +1429,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.SharedImageFormat" enum="SharedImageFormatUMA"
+    expires_after="2026-02-01">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the SharedImageFormat type for a SharedImageBacking that's
+    initialized/registered.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SkiaBackendType" enum="SkiaBackendType"
     expires_after="2025-06-08">
   <owner>kylechar@chromium.org</owner>
