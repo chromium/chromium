@@ -257,6 +257,25 @@ Overlaps with many regular expression libraries in Chromium. When in doubt, use
 `third_party/re2`.
 ***
 
+### std::aligned_{storage,union} <sup>[banned]</sup>
+
+```c++
+std::aligned_storage<sizeof(T), alignof<T>>::type buf;
+```
+
+**Description:** Creates aligned, uninitialized storage to later hold one or
+more objects.
+
+**Documentation:**
+[`std::aligned_storage`](https://en.cppreference.com/w/cpp/types/aligned_storage)
+
+**Notes:**
+*** promo
+Deprecated in C++23. Generally, use `alignas(T) char buf[sizeof(T)];`. Aligned
+unions can be handled similarly, using the max alignment and size of the union
+members, either passed via a pack or computed inline.
+***
+
 ### std::bind <sup>[banned]</sup>
 
 ```c++

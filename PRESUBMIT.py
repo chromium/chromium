@@ -687,15 +687,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (r'^third_party/leveldatabase/.*\.(cc|h)$', ),
     ),
     BanRule(
-        'RunLoop::QuitCurrent',
-        (
-            'Please migrate away from RunLoop::QuitCurrent*() methods. Use member',
-            'methods of a specific RunLoop instance instead.',
-        ),
-        False,
-        (),
-    ),
-    BanRule(
         'base::ScopedMockTimeMessageLoopTaskRunner',
         (
             'ScopedMockTimeMessageLoopTaskRunner is deprecated. Prefer',
@@ -705,6 +696,15 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'with gab@ first if you think you need it)',
         ),
         False,
+        (),
+    ),
+    BanRule(
+        '\bstd::aligned_(storage|union)\b',
+        (
+            'std::aligned_storage and std::aligned_union are deprecated in',
+            'C++23. Use an aligned char array instead.'
+        ),
+        True,
         (),
     ),
     BanRule(
