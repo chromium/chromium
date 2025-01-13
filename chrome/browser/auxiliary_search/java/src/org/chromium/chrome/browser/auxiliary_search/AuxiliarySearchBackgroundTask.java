@@ -77,6 +77,10 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
 
         mTaskFinishedCount = 0;
         Profile profile = ProfileManager.getLastUsedRegularProfile();
+        // The AuxiliarySearchControllerFactory#setIsTablet() must be called before creating the
+        // controller which checks AuxiliarySearchControllerFactory#isEnabled(). This task won't be
+        // scheduled if the device isn't a tablet.
+        AuxiliarySearchControllerFactory.getInstance().setIsTablet(true);
         mAuxiliarySearchController =
                 AuxiliarySearchControllerFactory.getInstance()
                         .createAuxiliarySearchController(

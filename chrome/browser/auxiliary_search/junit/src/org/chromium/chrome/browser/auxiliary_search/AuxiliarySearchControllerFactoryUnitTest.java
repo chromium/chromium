@@ -140,6 +140,7 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     @Test
     @SmallTest
     public void testSetIsTablet() {
+        mFactory.resetIsTabletForTesting();
         mFactory.setIsTablet(false);
         assertFalse(mFactory.isTablet());
 
