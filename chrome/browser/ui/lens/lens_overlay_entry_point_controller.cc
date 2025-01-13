@@ -251,7 +251,8 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
   }
 
   if (!features::IsOmniboxEntrypointAlwaysVisible() &&
-      !location_bar_->HasFocus()) {
+      !location_bar_->Contains(
+          location_bar_->GetFocusManager()->GetFocusedView())) {
     page_action_controller->Hide(page_action_id);
     return;
   }
