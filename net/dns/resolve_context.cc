@@ -98,7 +98,7 @@ class RttBuckets : public base::BucketRanges {
   RttBuckets() : base::BucketRanges(kRttBucketCount + 1) {
     base::Histogram::InitializeBucketRanges(
         1,
-        base::checked_cast<base::HistogramBase::Sample>(
+        base::checked_cast<base::HistogramBase::Sample32>(
             kRttMax.InMilliseconds()),
         this);
   }
@@ -114,7 +114,7 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
   std::unique_ptr<base::SampleVector> histogram =
       std::make_unique<base::SampleVector>(GetRttBuckets());
   // Seed histogram with 2 samples at |rtt_estimate|.
-  histogram->Accumulate(base::checked_cast<base::HistogramBase::Sample>(
+  histogram->Accumulate(base::checked_cast<base::HistogramBase::Sample32>(
                             rtt_estimate.InMilliseconds()),
                         kNumSeeds);
   return histogram;
@@ -295,7 +295,7 @@ void ResolveContext::RecordRtt(size_t server_index,
 
   // Histogram-based method.
   stats->rtt_histogram->Accumulate(
-      base::saturated_cast<base::HistogramBase::Sample>(rtt.InMilliseconds()),
+      base::saturated_cast<base::HistogramBase::Sample32>(rtt.InMilliseconds()),
       1);
 }
 

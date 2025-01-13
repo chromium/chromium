@@ -914,7 +914,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
       HashValue(intermediate_hash));
   ssl_socket_data.ssl_info.public_key_hashes.push_back(HashValue(root_hash));
 
-  const base::HistogramBase::Sample kGTSRootR4HistogramID = 486;
+  const base::HistogramBase::Sample32 kGTSRootR4HistogramID = 486;
 
   socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
 
@@ -1001,7 +1001,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   ssl_socket_data.ssl_info.public_key_hashes.push_back(
       HashValue(gts_root_r4_hash));
 
-  const base::HistogramBase::Sample kGTSRootR3HistogramID = 485;
+  const base::HistogramBase::Sample32 kGTSRootR3HistogramID = 485;
 
   socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
 

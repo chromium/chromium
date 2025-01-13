@@ -38,8 +38,9 @@ void MatchCookieLineToVector(
     const std::string& line,
     const std::vector<std::unique_ptr<CanonicalCookie>>& cookies) {
   std::vector<CanonicalCookie> list;
-  for (const auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     list.push_back(*cookie);
+  }
   EXPECT_EQ(line, CanonicalCookie::BuildCookieLine(list));
 }
 
@@ -1734,8 +1735,9 @@ TEST(CanonicalCookieTest, GetEffectiveSameSite) {
     std::vector<CookieAccessSemantics> access_semantics = {
         CookieAccessSemantics::UNKNOWN, CookieAccessSemantics::LEGACY,
         CookieAccessSemantics::NONLEGACY};
-    if (test.access_semantics.has_value())
+    if (test.access_semantics.has_value()) {
       access_semantics = {*test.access_semantics};
+    }
 
     for (const auto& cookie : cookies) {
       for (const auto semantics : access_semantics) {
@@ -6022,8 +6024,8 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
   base::HistogramTester histograms;
   const char kFromStorageWithValidLengthHistogram[] =
       "Cookie.FromStorageWithValidLength";
-  const base::HistogramBase::Sample kInValid = 0;
-  const base::HistogramBase::Sample kValid = 1;
+  const base::HistogramBase::Sample32 kInValid = 0;
+  const base::HistogramBase::Sample32 kValid = 1;
 
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);

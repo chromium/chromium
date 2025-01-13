@@ -5817,7 +5817,7 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyUMA) {
   result.public_key_hashes.push_back(HashValue(intermediate_hash));
   result.public_key_hashes.push_back(HashValue(root_hash));
 
-  const base::HistogramBase::Sample kGTSRootR4HistogramID = 486;
+  const base::HistogramBase::Sample32 kGTSRootR4HistogramID = 486;
 
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5864,7 +5864,7 @@ TEST(CertVerifyProcTest, LogsOnlyMostSpecificTrustAnchorUMA) {
   result.public_key_hashes.push_back(HashValue(gts_root_r3_hash));
   result.public_key_hashes.push_back(HashValue(gts_root_r4_hash));
 
-  const base::HistogramBase::Sample kGTSRootR3HistogramID = 485;
+  const base::HistogramBase::Sample32 kGTSRootR3HistogramID = 485;
 
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5916,7 +5916,7 @@ TEST(CertVerifyProcTest, HasTrustAnchorVerifyOutOfDateUMA) {
       /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
   EXPECT_EQ(OK, error);
-  const base::HistogramBase::Sample kUnknownRootHistogramID = 0;
+  const base::HistogramBase::Sample32 kUnknownRootHistogramID = 0;
   histograms.ExpectUniqueSample(kTrustAnchorVerifyHistogram,
                                 kUnknownRootHistogramID, 1);
   histograms.ExpectUniqueSample(kTrustAnchorVerifyOutOfDateHistogram, true, 1);

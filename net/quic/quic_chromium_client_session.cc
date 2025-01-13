@@ -1141,10 +1141,10 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   if (stats.max_sequence_reordering == 0) {
     return;
   }
-  const base::HistogramBase::Sample kMaxReordering = 100;
-  base::HistogramBase::Sample reordering = kMaxReordering;
+  const base::HistogramBase::Sample32 kMaxReordering = 100;
+  base::HistogramBase::Sample32 reordering = kMaxReordering;
   if (stats.min_rtt_us > 0) {
-    reordering = static_cast<base::HistogramBase::Sample>(
+    reordering = static_cast<base::HistogramBase::Sample32>(
         100 * stats.max_time_reordering_us / stats.min_rtt_us);
   }
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.MaxReorderingTime", reordering,
@@ -1153,9 +1153,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.MaxReorderingTimeLongRtt",
                                 reordering, 1, kMaxReordering, 50);
   }
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Net.QuicSession.MaxReordering",
-      static_cast<base::HistogramBase::Sample>(stats.max_sequence_reordering));
+  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.MaxReordering",
+                          static_cast<base::HistogramBase::Sample32>(
+                              stats.max_sequence_reordering));
 }
 
 void QuicChromiumClientSession::Initialize() {
