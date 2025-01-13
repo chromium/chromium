@@ -55,29 +55,16 @@ class ProfileIdServiceFactoryTest : public testing::Test,
  public:
   ProfileIdServiceFactoryTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) &&               \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
     policy::BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetClientId(kFakeDeviceID);
 #else
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_machine_name(kFakeDeviceID);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
-    init_params->device_properties = crosapi::mojom::DeviceProperties::New();
-    init_params->device_properties->serial_number = kFakeDeviceID;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     store_.set_policy_data_for_testing(std::move(policy_data));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   kFakeDeviceID);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)  || BUILDFLAG(IS_CHROMEOS) &&
-        // !BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
