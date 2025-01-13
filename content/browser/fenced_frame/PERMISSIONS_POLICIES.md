@@ -332,13 +332,21 @@ kClientHintWidth, kClientHintUAMobile, kClientHintUAFullVersion,
 kClientHintUAPlatformVersion, kClientHintPrefersColorScheme,
 kClientHintUABitness, kClientHintViewportHeight, kClientHintUAFullVersionList,
 kClientHintUAWoW64, kClientHintSaveData, kClientHintPrefersReducedMotion,
-kClientHintUAFormFactor*
+kClientHintUAFormFactors*
 
 This allows a fenced frame to learn about the device it’s on, but no information
 will flow back to the embedder. Data is only sent at navigation time, as the
 client hints live in the HTTP request headers. This can be used for
 fingerprinting at navigation time (before network cutoff). **Note that this will
 require its own separate effort to enable**.
+### 🖐️ User-Agent Client Hints getHighEntropyValues(): fingerprinting risk
+*Feature: kClientHintUAHighEntropyValues*
+
+By default, the `navigator.userAgentData.getHighEntropyValues()` JS API can be
+called by embedded frames and may pose a fingerprinting risk, and unlike other
+Client Hints features, is unrelated to navigation. kClientHintUAHighEntropyValues
+can be used to limit which origins can collect high-entropy User-Agent
+client hints.
 
 ### ❌ Credentials Get: usability issues
 *Feature: kPublicKeyCredentialsGet, kOTPCredentials, kIdentityCredentialsGet*
