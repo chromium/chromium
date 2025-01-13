@@ -412,8 +412,6 @@ void GlicWindowController::Close() {
     return;
   }
   window_resize_animation_.reset();
-  glic_window_widget_->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
   glic_widget_observer_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
