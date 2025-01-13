@@ -57,7 +57,6 @@
 -chrome/chrome_elf/third_party_dlls/
 -chrome/elevation_service/internal/
 -chromecast/
--clank/
 -components/optimization_guide/internal/
 -ios/
 -ios_internal/
