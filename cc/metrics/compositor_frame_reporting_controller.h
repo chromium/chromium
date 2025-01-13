@@ -104,7 +104,11 @@ class CC_EXPORT CompositorFrameReportingController {
     tick_clock_ = tick_clock;
   }
 
-  std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>&
+  ReportersForTesting() {
+    return reporters_;
+  }
 
   void SetDroppedFrameCounter(DroppedFrameCounter* counter);
 
@@ -225,8 +229,9 @@ class CC_EXPORT CompositorFrameReportingController {
       scroll_jank_dropped_frame_tracker_;
   std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
 
-  std::unique_ptr<CompositorFrameReporter>
-      reporters_[PipelineStage::kNumPipelineStages];
+  std::array<std::unique_ptr<CompositorFrameReporter>,
+             PipelineStage::kNumPipelineStages>
+      reporters_;
 
   // Mapping of frame token to pipeline reporter for submitted compositor
   // frames.
