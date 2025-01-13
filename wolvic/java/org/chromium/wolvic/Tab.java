@@ -86,6 +86,22 @@ public class Tab {
         mWebContents.onShow();
     }
 
+    public static TabCompositorView createNewTab(@NonNull Context context, @NonNull WebContents webContents) {
+      // TODO(jfernandez): This code block is duplicated in Tabconstructor, so we may want to refactor it.
+      ActivityWindowAndroid windowAndroid = new ActivityWindowAndroid(context, false,
+             IntentRequestTracker.createFromActivity(ContextUtils.activityFromContext(context)));
+      TabCompositorView compositorView = new TabCompositorView(context);
+      compositorView.onNativeLibraryLoaded(windowAndroid);
+      windowAndroid.setAnimationPlaceholderView(compositorView);
+      ContentView webContentView =
+             ContentView.createContentView(
+                     context, /* eventOffsetHandler= */ null, webContents);
+      webContents.initialize("", ViewAndroidDelegate.createBasicDelegate(webContentView),
+                webContentView, windowAndroid, WebContents.createDefaultInternalsHolder());
+
+      return compositorView;
+    }
+
     public void destroy() {
         mWindowAndroid = null;
         mContentView = null;

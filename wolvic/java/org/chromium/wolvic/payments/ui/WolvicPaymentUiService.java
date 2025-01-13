@@ -259,12 +259,6 @@ public class WolvicPaymentUiService {
     public @Nullable WebContents showPaymentHandlerUI(GURL url) {
       if (mWebContents.getTopLevelNativeWindow() == null) return null;
 
-      Activity activity = mWebContents.getTopLevelNativeWindow().getActivity().get();
-      if (activity == null) return null;
-
-      ActivityWindowAndroid windowAndroid = new ActivityWindowAndroid(activity, false,
-              IntentRequestTracker.createFromActivity(activity));
-
       WebContents paymentHandlerWebContents = createWebContents(mIsOffTheRecord);
       if (paymentHandlerWebContents == null)
         return null;
@@ -278,20 +272,12 @@ public class WolvicPaymentUiService {
           }
       };
 
-      ContentView webContentView =
-             ContentView.createContentView(
-                     activity, /* eventOffsetHandler= */ null, paymentHandlerWebContents);
-      paymentHandlerWebContents.initialize(
-                VersionInfo.getProductVersion(),
-                ViewAndroidDelegate.createBasicDelegate(webContentView),
-                webContentView,
-                windowAndroid,
-                WebContents.createDefaultInternalsHolder());
+      mWebContents.notifyOnCreateNewPaymentHandler(paymentHandlerWebContents);
+
       paymentHandlerWebContents
                .getNavigationController()
                .loadUrl(new LoadUrlParams(url.getSpec()));
 
-      mWebContents.notifyOnCreateNewPaymentHandler(paymentHandlerWebContents);
 
       mHider = () -> {
         if (!paymentHandlerWebContents.isDestroyed()) {
