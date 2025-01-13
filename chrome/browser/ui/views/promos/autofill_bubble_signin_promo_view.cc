@@ -123,7 +123,7 @@ void AutofillBubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
 
   base::UmaHistogramEnumeration(
       base::StrCat({"Signin.SignInPromo.Dismissed", dismiss_action}),
-      access_point_, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      access_point_);
 }
 
 AutofillBubbleSignInPromoView::~AutofillBubbleSignInPromoView() = default;

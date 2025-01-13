@@ -146,7 +146,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninDisabledNotificationShown",
                 mSigninAccessPoint,
-                SigninAccessPoint.MAX);
+                SigninAccessPoint.MAX_VALUE);
         if (mSetTestToast) return;
         Toast.makeText(
                         mWindowAndroid.getActivity().get(),

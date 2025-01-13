@@ -163,8 +163,6 @@ NSString* GetPromoLabelString(
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.
       return nil;
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED();
   }
 }
 

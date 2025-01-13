@@ -1878,11 +1878,10 @@ using UserFeedbackDataCallback =
     // for which of the access points they are triggered.
     base::UmaHistogramEnumeration(
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.NewAccessPoint",
-        accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        accessPoint);
     base::UmaHistogramEnumeration(
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
-        self.signinCoordinator.accessPoint,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        self.signinCoordinator.accessPoint);
     // The goal of this histogram is to understand if the issue is related to
     // a double tap (duration less than 1s), or if `self.signinCoordinator`
     // is not visible anymore on the screen (duration more than 1s).

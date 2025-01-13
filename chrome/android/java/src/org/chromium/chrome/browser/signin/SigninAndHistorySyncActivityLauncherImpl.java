@@ -81,7 +81,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
+                    "Signin.SigninDisabledNotificationShown", accessPoint,
+                    SigninAccessPoint.MAX_VALUE);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         // TODO(crbug.com/376251506): Add generic error UI.

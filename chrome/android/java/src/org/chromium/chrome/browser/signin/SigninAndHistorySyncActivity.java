@@ -104,8 +104,10 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         super.triggerLayoutInflation();
 
         Intent intent = getIntent();
-        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
-        assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT,
+                                                   SigninAccessPoint.MAX_VALUE);
+        assert signinAccessPoint <= SigninAccessPoint.MAX_VALUE :
+          "Cannot find SigninAccessPoint!";
 
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();

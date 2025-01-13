@@ -283,8 +283,10 @@ public abstract class SyncConsentFragmentBase extends Fragment
         super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
-        mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
-        assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+        mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT,
+                                              SigninAccessPoint.MAX_VALUE);
+        assert mSigninAccessPoint <=
+            SigninAccessPoint.MAX_VALUE : "Cannot find SigninAccessPoint!";
 
         // TODO(crbug.com/40828116): remove usage of Profile.isChild() and the need for a bundle
         // argument in the FRE, but moving to a new API for determining device supervision status.

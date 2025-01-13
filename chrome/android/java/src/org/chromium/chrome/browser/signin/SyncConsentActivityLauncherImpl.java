@@ -104,7 +104,8 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
         }
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SyncDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
+                    "Signin.SyncDisabledNotificationShown", accessPoint,
+                     SigninAccessPoint.MAX_VALUE);
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         return false;

@@ -72,8 +72,7 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       base::UmaHistogramEnumeration(
           "Signin.SignIn.Completed",
-          event_details.GetSetPrimaryAccountAccessPoint().value(),
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+          event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
@@ -92,8 +91,7 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       base::UmaHistogramEnumeration(
           "Signin.SyncOptIn.Completed",
-          event_details.GetSetPrimaryAccountAccessPoint().value(),
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+          event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:

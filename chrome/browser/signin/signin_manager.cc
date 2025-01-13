@@ -142,9 +142,8 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
         access_point =
             signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
       }
-      base::UmaHistogramEnumeration(
-          "Signin.SigninManager.SigninAccessPoint", access_point,
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                    access_point);
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account.account_id, signin::ConsentLevel::kSignin, access_point);
     }

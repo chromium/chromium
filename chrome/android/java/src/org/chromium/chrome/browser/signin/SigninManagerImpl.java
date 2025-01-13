@@ -453,7 +453,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             RecordHistogram.recordEnumeratedHistogram(
                     "Signin.SigninCompletedAccessPoint",
                     mSignInState.getAccessPoint(),
-                    SigninAccessPoint.MAX);
+                    SigninAccessPoint.MAX_VALUE );
         }
 
         if (mSignInState.mCallback != null) {
@@ -602,7 +602,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninAbortedAccessPoint",
                 signInState.getAccessPoint(),
-                SigninAccessPoint.MAX);
+                SigninAccessPoint.MAX_VALUE);
 
         if (signInState.mCallback != null) {
             signInState.mCallback.onSignInAborted();

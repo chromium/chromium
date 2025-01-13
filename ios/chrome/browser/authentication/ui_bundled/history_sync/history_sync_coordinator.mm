@@ -62,16 +62,14 @@
     case history_sync::HistorySyncSkipReason::kSyncForbiddenByPolicies:
     case history_sync::HistorySyncSkipReason::kDeclinedTooOften:
       base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
-      base::UmaHistogramEnumeration(
-          "Signin.HistorySyncOptIn.Skipped", accessPoint,
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Skipped",
+                                    accessPoint);
       break;
     case history_sync::HistorySyncSkipReason::kAlreadyOptedIn:
       base::RecordAction(
           base::UserMetricsAction("Signin_HistorySync_AlreadyOptedIn"));
-      base::UmaHistogramEnumeration(
-          "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
-          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.AlreadyOptedIn",
+                                    accessPoint);
       break;
     case history_sync::HistorySyncSkipReason::kNone:
       // This method should not be called if the screen should be shown.
@@ -144,8 +142,8 @@
                                   first_run::kHistorySyncScreenStart);
   }
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
-  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started", _accessPoint,
-                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started",
+                                _accessPoint);
   _recordOptInEndAtStop = YES;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
@@ -163,9 +161,8 @@
     // This can also occur during the FRE, for instance if Chrome shuts down
     // when the screen is shown, or if FRE is dismissed due to policies change.
     base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Aborted"));
-    base::UmaHistogramEnumeration(
-        "Signin.HistorySyncOptIn.Aborted", _accessPoint,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Aborted",
+                                  _accessPoint);
     _recordOptInEndAtStop = NO;
   }
   [_mediator disconnect];
@@ -202,8 +199,7 @@
         first_run::kHistorySyncScreenCompletionWithSync);
   }
   base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Completed",
-                                _accessPoint,
-                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+                                _accessPoint);
   _recordOptInEndAtStop = NO;
 
   [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
@@ -219,8 +215,7 @@
         first_run::kHistorySyncScreenCompletionWithoutSync);
   }
   base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Declined",
-                                _accessPoint,
-                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+                                _accessPoint);
   _recordOptInEndAtStop = NO;
 
   [_delegate closeHistorySyncCoordinator:self declinedByUser:YES];

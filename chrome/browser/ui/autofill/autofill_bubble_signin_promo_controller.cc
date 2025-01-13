@@ -52,8 +52,7 @@ void AutofillBubbleSignInPromoController::OnSignInToChromeClicked(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
-  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_,
-                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());

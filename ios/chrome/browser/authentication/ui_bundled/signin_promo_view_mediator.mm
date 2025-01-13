@@ -140,7 +140,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
 
@@ -246,7 +245,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -350,7 +348,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -443,7 +440,6 @@ const char* DisplayedCountPreferenceKey(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
 }
@@ -535,7 +531,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
-    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
 }

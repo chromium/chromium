@@ -256,7 +256,7 @@ enum class AccessPoint : int {
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  ACCESS_POINT_MAX,  // This must be last.
+  kMaxValue = ACCESS_POINT_COLLABORATION_TAB_GROUP,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
