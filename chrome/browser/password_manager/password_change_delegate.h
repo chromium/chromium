@@ -61,6 +61,12 @@ class PasswordChangeDelegate {
   // invoked after this function is called as the object will soon be destroyed.
   virtual void Stop() = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Brings a tab where password change is ongoing. Does nothing if the tab
+  // doesn't exist anymore.
+  virtual void OpenPasswordChangeTab() = 0;
+#endif
+
   // Informs delegate about successful form submission.
   virtual void SuccessfulSubmissionDetected(
       content::WebContents* web_contents) = 0;

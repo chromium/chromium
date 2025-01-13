@@ -427,3 +427,28 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       PasswordBubbleViewBase::manage_password_bubble();
   ASSERT_FALSE(bubble);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
+  SetPrivacyNoticeAcceptedPref();
+
+  GURL main_url("https://example.com/");
+  GURL change_password_url =
+      embedded_test_server()->GetURL("/password/update_form_empty_fields.html");
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(change_password_url));
+  password_change_service()->StartPasswordChange(main_url, u"test", u"password",
+                                                 WebContents());
+
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_strip->count());
+
+  EXPECT_EQ(0, tab_strip->active_index());
+  password_change_service()
+      ->GetPasswordChangeDelegate(WebContents())
+      ->OpenPasswordChangeTab();
+
+  EXPECT_EQ(1, tab_strip->active_index());
+}
+#endif

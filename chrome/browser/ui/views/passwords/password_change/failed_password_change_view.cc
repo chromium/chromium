@@ -58,9 +58,22 @@ FailedPasswordChangeView::FailedPasswordChangeView(
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetAcceptButton());
-  // TODO(crbug.com/381054978): Handle button click.
+  SetAcceptCallback(
+      base::BindOnce(&FailedPasswordChangeBubbleController::FixManually,
+                     base::Unretained(controller_.get())));
 
   SetFootnoteView(CreateFooterView());
+
+  SetCloseCallback(base::BindRepeating(
+      [](FailedPasswordChangeView* view) {
+        // When dialog is closed explicitly finish password change flow to
+        // transition into a default password manager state.
+        if (view->GetWidget()->closed_reason() ==
+            views::Widget::ClosedReason::kCloseButtonClicked) {
+          view->controller_->FinishPasswordChange();
+        }
+      },
+      this));
 }
 
 FailedPasswordChangeView::~FailedPasswordChangeView() = default;

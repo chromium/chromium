@@ -19,6 +19,12 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
 namespace {
 
 using password_manager::PasswordForm;
@@ -83,13 +89,13 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
                   : PasswordChangeDelegate::State::kWaitingForAgreement);
   if (GetCurrentState() ==
       PasswordChangeDelegate::State::kWaitingForChangePasswordForm) {
-    OpenPasswordChangeTab();
+    StartPasswordChange();
   }
 }
 
 PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() = default;
 
-void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
+void PasswordChangeDelegateImpl::StartPasswordChange() {
   CHECK(originator_);
   content::WebContents* new_tab =
       std::move(open_password_change_tab_callback_)
@@ -146,6 +152,20 @@ void PasswordChangeDelegateImpl::Stop() {
                     this);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
+  if (executor_) {
+    auto* tab_interface = tabs::TabInterface::GetFromContents(executor_.get());
+    CHECK(tab_interface);
+
+    auto* tabs_strip =
+        tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
+    tabs_strip->ActivateTabAt(
+        tabs_strip->GetIndexOfWebContents(executor_.get()));
+  }
+}
+#endif
+
 void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected(
     content::WebContents* web_contents) {
   if (executor_ && executor_.get() == web_contents && form_manager_) {
@@ -185,7 +205,7 @@ void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
   profile->GetPrefs()->SetBoolean(
       password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
   UpdateState(PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-  OpenPasswordChangeTab();
+  StartPasswordChange();
 }
 
 void PasswordChangeDelegateImpl::UpdateState(

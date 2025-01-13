@@ -26,6 +26,12 @@ class FailedPasswordChangeBubbleController
   std::u16string GetBody() const;
   std::u16string GetAcceptButton() const;
 
+  // Opens a tab where password change is ongoing.
+  void FixManually();
+
+  // Marks password change flow as completed.
+  void FinishPasswordChange();
+
  private:
   base::WeakPtr<PasswordChangeDelegate> password_change_delegate_;
 };

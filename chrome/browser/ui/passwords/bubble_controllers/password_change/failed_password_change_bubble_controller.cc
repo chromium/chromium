@@ -41,3 +41,12 @@ std::u16string FailedPasswordChangeBubbleController::GetAcceptButton() const {
 void FailedPasswordChangeBubbleController::ReportInteractions() {
   // TODO(crbug.com/381053884): Report metrics.
 }
+
+void FailedPasswordChangeBubbleController::FixManually() {
+  password_change_delegate_->OpenPasswordChangeTab();
+  FinishPasswordChange();
+}
+
+void FailedPasswordChangeBubbleController::FinishPasswordChange() {
+  password_change_delegate_->Stop();
+}

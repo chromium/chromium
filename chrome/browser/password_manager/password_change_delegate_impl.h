@@ -53,6 +53,9 @@ class PasswordChangeDelegateImpl
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
   void Stop() override;
+#if !BUILDFLAG(IS_ANDROID)
+  void OpenPasswordChangeTab() override;
+#endif
   void SuccessfulSubmissionDetected(
       content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
@@ -65,8 +68,9 @@ class PasswordChangeDelegateImpl
   // content::WebContentsObserver Impl
   void WebContentsDestroyed() override;
 
-  // Opens the tab for password change and observes it.
-  void OpenPasswordChangeTab();
+  // Opens the tab for password change and start looking for change password
+  // form.
+  void StartPasswordChange();
 
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);

@@ -37,10 +37,16 @@ class FailedPasswordChangeViewTest : public PasswordBubbleViewTestBase {
   }
 
   void TearDown() override {
-    view_->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-    view_ = nullptr;
+    if (view_) {
+      CloseBubble();
+    }
     PasswordBubbleViewTestBase::TearDown();
+  }
+
+  void CloseBubble(views::Widget::ClosedReason reason =
+                       views::Widget::ClosedReason::kUnspecified) {
+    view_->GetWidget()->CloseWithReason(reason);
+    view_ = nullptr;
   }
 
   void CreateAndShowView() {
@@ -71,4 +77,33 @@ TEST_F(FailedPasswordChangeViewTest, BubbleLayout) {
   EXPECT_EQ(view()->GetOkButton()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_FAILED_ACTION));
+}
+
+TEST_F(FailedPasswordChangeViewTest, FixNowClick) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*password_change_delegate(), OpenPasswordChangeTab);
+  EXPECT_CALL(*password_change_delegate(), Stop);
+  EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
+
+  views::test::ButtonTestApi(view()->GetOkButton())
+      .NotifyClick(ui::test::TestEvent());
+}
+
+TEST_F(FailedPasswordChangeViewTest, SuppressingBubbleDoesNotStopTheFlow) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*password_change_delegate(), Stop).Times(0);
+  EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
+
+  CloseBubble();
+}
+
+TEST_F(FailedPasswordChangeViewTest, ClosingBubbleStopsTheFlow) {
+  CreateAndShowView();
+
+  EXPECT_CALL(*password_change_delegate(), Stop);
+  EXPECT_CALL(*model_delegate_mock(), OnBubbleHidden);
+
+  CloseBubble(views::Widget::ClosedReason::kCloseButtonClicked);
 }
