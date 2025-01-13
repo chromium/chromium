@@ -334,6 +334,13 @@ class ListPicker extends Picker {
     this.selectElement_.style.fontVariant = this.config_.baseStyle.fontVariant;
     if (this.config_.baseStyle.textAlign)
       this.selectElement_.style.textAlign = this.config_.baseStyle.textAlign;
+
+    // updateChildren_ takes longer when there are existing elements, so remove
+    // them to make it faster.
+    // TODO(crbug.com/388557894): Remove this after improving the performance
+    // of updateChildren_.
+    this.selectElement_.innerHTML = '';
+
     this.updateChildren_(this.selectElement_, this.config_);
     this.setMenuListOptionsBoundsInAXTree_();
   }
@@ -360,6 +367,8 @@ class ListPicker extends Picker {
   }
 
   /**
+   * TODO(crbug.com/388557894): Make this faster in the case that `parent` has
+   * a large number of children.
    * @param {!Element} parent Select element or optgroup element.
    * @param {!Object} config
    */
