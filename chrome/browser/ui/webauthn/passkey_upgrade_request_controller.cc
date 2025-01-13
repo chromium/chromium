@@ -7,14 +7,18 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -67,13 +71,34 @@ void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
 void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
   CHECK_EQ(enclave_state_, EnclaveState::kReady);
   CHECK(pending_upgrade_request_);
+  CHECK(pending_callback_);
+
   pending_upgrade_request_ = false;
 
-  // TODO(crbug.com/377758786): The profile password store is probably wrong in
-  // some cases. Find out how to query GPM specifically.
-  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  // When looking for passwords that might be eligible to be upgraded, only
+  // consider passwords stored in GPM.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile());
+  password_manager::PasswordStoreInterface* password_store = nullptr;
+  if (password_manager::features_util::IsOptedInForAccountStorage(
+          profile()->GetPrefs(), sync_service)) {
+    password_store = AccountPasswordStoreFactory::GetForProfile(
+                         profile(), ServiceAccessType::EXPLICIT_ACCESS)
+                         .get();
+  } else if (password_manager::sync_util::
+                 IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
+    password_store = ProfilePasswordStoreFactory::GetForProfile(
+                         profile(), ServiceAccessType::EXPLICIT_ACCESS)
+                         .get();
+  }
+
+  if (!password_store) {
+    FIDO_LOG(EVENT)
+        << "Passkey upgrade failed without available password store";
+    std::move(pending_callback_).Run(false);
+    return;
+  }
+
   GURL url = origin().GetURL();
   password_manager::PasswordFormDigest form_digest(
       password_manager::PasswordForm::Scheme::kHtml,

@@ -42,6 +42,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -887,7 +888,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     sync_harness_ = SyncServiceImplHarness::Create(
         browser()->profile(), kEmail, "password",
         SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
-    ASSERT_TRUE(sync_harness_->SetupSync());
+    if (sync_feature_enabled_) {
+      ASSERT_TRUE(sync_harness_->SetupSync());
+    } else {
+      // Sign in without full sync consent, opt into using account passwords.
+      ASSERT_TRUE(sync_harness_->SignInPrimaryAccount());
+    }
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/{syncer::UserSelectableType::kPasswords});
@@ -1098,6 +1104,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
                 crypto::ScopedFailingUserVerifyingKeyProvider>
       fake_uv_provider_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
+  bool sync_feature_enabled_ = true;
 };
 
 class EnclaveAuthenticatorWithPinBrowserTest
@@ -4142,12 +4149,27 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 class EnclaveAuthenticatorConditionalCreateBrowserTest
-    : public EnclaveAuthenticatorWithPinBrowserTest {
+    : public EnclaveAuthenticatorWithPinBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
   EnclaveAuthenticatorConditionalCreateBrowserTest() {
+    sync_feature_enabled_ = GetParam();
+
     scoped_feature_list_.InitAndEnableFeature(device::kWebAuthnPasskeyUpgrade);
     CHECK(base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
     CHECK(base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator));
+  }
+
+  bool use_account_password_store() { return !sync_feature_enabled_; }
+
+  password_manager::PasswordStoreInterface* password_store() {
+    return use_account_password_store()
+               ? AccountPasswordStoreFactory::GetForProfile(
+                     browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                     .get()
+               : ProfilePasswordStoreFactory::GetForProfile(
+                     browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                     .get();
   }
 
   // Creates a credential to ensure the enclave authenticator is in a usable
@@ -4183,10 +4205,6 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
   }
 
   void InjectPassword(base::Time last_used) {
-    password_manager::PasswordStoreInterface* password_store =
-        ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-            .get();
     password_manager::PasswordForm saved_form;
     saved_form.signon_realm = https_server_.GetURL("example.com", "/").spec();
     saved_form.url = https_server_.GetURL("example.com",
@@ -4194,13 +4212,17 @@ class EnclaveAuthenticatorConditionalCreateBrowserTest
     saved_form.username_value = u"bar@example.com";
     saved_form.password_value = u"hunter1";
     saved_form.date_last_used = last_used;
-    password_store->AddLogin(saved_form);
+    password_store()->AddLogin(saved_form);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorConditionalCreateBrowserTest,
+INSTANTIATE_TEST_SUITE_P(WithSyncFeatureEnabled,
+                         EnclaveAuthenticatorConditionalCreateBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
                        ConditionalCreate) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
