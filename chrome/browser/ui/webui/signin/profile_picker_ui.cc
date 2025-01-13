@@ -74,17 +74,18 @@ bool IsBrowserSigninAllowed() {
 
 std::string GetManagedDeviceDisclaimer() {
   std::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
-  int managed_id =
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION;
-  int managed_by_id =
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION;
   if (!manager) {
     return std::string();
   }
+
   if (manager->empty()) {
-    return l10n_util::GetStringUTF8(managed_id);
+    return l10n_util::GetStringUTF8(
+        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION);
   }
-  return l10n_util::GetStringFUTF8(managed_by_id, base::UTF8ToUTF16(*manager));
+
+  return l10n_util::GetStringFUTF8(
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION,
+      base::UTF8ToUTF16(*manager));
 }
 
 int GetMainViewTitleId() {
@@ -168,9 +169,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));
-
-  html_source->AddInteger("placeholderAvatarIndex",
-                          profiles::GetPlaceholderAvatarIndex());
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
