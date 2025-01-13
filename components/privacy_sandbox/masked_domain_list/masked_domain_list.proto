@@ -10,7 +10,7 @@ message Resource {
 
   enum Experiment {
     EXPERIMENT_UNKNOWN = 0;
-    EXPERIMENT_AFP = 1;
+    EXPERIMENT_EXTERNAL_REGULAR = 1;
   }
 
   optional string domain = 1;
