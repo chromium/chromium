@@ -586,6 +586,9 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   state.start_time = std::nullopt;
   state.page_index = -1;
   state.input_last_event.reset();
+
+  MaybeSetDrawingBrushAndCursor();
+
   return true;
 }
 
@@ -669,6 +672,9 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
   state.erasing = false;
   state.page_indices_with_erasures.clear();
   state.input_last_event_position.reset();
+
+  MaybeSetDrawingBrushAndCursor();
+
   return true;
 }
 
@@ -861,19 +867,17 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
-  // Do not adjust `current_tool_state_` if a drawing stroke is already
+  pending_drawing_brush_state_ = PendingDrawingBrushState{
+      SkColorSetRGB(color_r, color_g, color_b), size, brush_type.value()};
+
+  // Do not adjust current tool state if a drawing stroke is already
   // in-progress.  Changes to the tool state will only apply to subsequent
   // strokes.
-  if (is_erasing_stroke() || !drawing_stroke_state().start_time.has_value()) {
-    current_tool_state_.emplace<DrawingStrokeState>();
+  if (is_drawing_stroke() && drawing_stroke_state().start_time.has_value()) {
+    return;
   }
-  drawing_stroke_state().brush_type = brush_type.value();
 
-  PdfInkBrush& current_brush = GetDrawingBrush();
-  current_brush.SetColor(SkColorSetRGB(color_r, color_g, color_b));
-  current_brush.SetSize(size);
-
-  MaybeSetCursor();
+  MaybeSetDrawingBrushAndCursor();
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
@@ -1162,6 +1166,24 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   } else {
     stroke_id_generator_.ResetIdTo(InkStrokeId(0));
   }
+}
+
+void PdfInkModule::MaybeSetDrawingBrushAndCursor() {
+  if (!pending_drawing_brush_state_.has_value()) {
+    return;
+  }
+
+  current_tool_state_.emplace<DrawingStrokeState>();
+  drawing_stroke_state().brush_type = pending_drawing_brush_state_->type;
+
+  PdfInkBrush& current_brush = GetDrawingBrush();
+  current_brush.SetColor(pending_drawing_brush_state_->color);
+  current_brush.SetSize(pending_drawing_brush_state_->size);
+
+  pending_drawing_brush_state_.reset();
+
+  // If the brush could have changed, reflect that in the cursor as well.
+  MaybeSetCursor();
 }
 
 void PdfInkModule::MaybeSetCursor() {

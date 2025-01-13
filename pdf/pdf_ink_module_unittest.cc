@@ -1566,7 +1566,8 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
-  // While the stroke is still in progress, change the pen color.
+  // While the stroke is still in progress, change the pen color.  This has no
+  // immediate effect on the in-progress stroke.
   TestAnnotationBrushMessageParams red_pen_message_params{/*color_r=*/242,
                                                           /*color_g=*/139,
                                                           /*color_b=*/130};
@@ -1575,14 +1576,9 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
   // that the events are handled and the new stroke is added.
-  // TODO(crbug.com/381908888): The in-progress stroke is affected by the
-  // color change.  Update the expectation to show the in-progress stroke is
-  // still black once the brush management in PdfInkModule protects against
-  // such changes.
   static constexpr int kPageIndex = 0;
-  EXPECT_CALL(client(),
-              StrokeAdded(kPageIndex, InkStrokeId(0),
-                          InkStrokeBrushColorEq(SkColorSetRGB(242, 139, 130))));
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeBrushColorEq(SK_ColorBLACK)));
   blink::WebMouseEvent mouse_move_event =
       MouseEventBuilder()
           .SetType(blink::WebInputEvent::Type::kMouseMove)
@@ -1611,17 +1607,10 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Start drawing a stroke with a black pen.  The stroke will not finish
-  // until the mouse-up event.  The cursor image will be updated immediately
-  // each time the brush tool is changed, regardless of whether a stroke is
-  // in progress.
+  // until the mouse-up event.  The cursor image will be updated only when
+  // there is not a stroke in progress.
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
-  {
-    InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
-    EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(8, 8))));
-  }
+  EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
                                                   /*color_g=*/0,
                                                   /*color_b=*/0};
@@ -1633,19 +1622,22 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
           .Build();
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
 
-  // While the stroke is still in progress, change the pen size.
+  // While the stroke is still in progress, change the pen size.  This has no
+  // immediate effect on the in-progress stroke.
   SelectBrushTool(PdfInkBrush::Type::kPen, 6.0f, message_params);
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
-  // that the events are handled and the new stroke is added.
-  // TODO(crbug.com/381908888): The in-progress stroke and cursor image are
-  // affected by the size change.  Update the expectation to show the
-  // in-progress stroke is still thin once the brush management in
-  // PdfInkModule protects against such changes.
+  // that the events are handled and the new stroke is added.  The cursor image
+  // also gets updated once the stroke has finished.
   static constexpr int kPageIndex = 0;
-  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
-                                    InkStrokeBrushSizeEq(6.0f)));
+  {
+    InSequence seq;
+    EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                      InkStrokeBrushSizeEq(2.0f)));
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(8, 8))));
+  }
   blink::WebMouseEvent mouse_move_event =
       MouseEventBuilder()
           .SetType(blink::WebInputEvent::Type::kMouseMove)
@@ -1900,17 +1892,10 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Start drawing a stroke with a black pen.  The stroke will not finish
-  // until the mouse-up event.  The cursor image will be updated immediately
-  // each time the brush tool is changed, regardless of whether a stroke is
-  // in progress.
+  // until the mouse-up event.  The cursor image will be updated only if a
+  // stroke is not in progress.
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
-  {
-    InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
-    EXPECT_CALL(client(),
-                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
-  }
+  EXPECT_CALL(client(), UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
   TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
                                                       /*color_g=*/0,
                                                       /*color_b=*/0};
@@ -1932,15 +1917,19 @@ TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   VerifyAndClearExpectations();
 
   // Continue with mouse movement and then mouse up at a new location.  Notice
-  // that the events are handled and the new stroke is added.
-  // TODO(crbug.com/381908888): The in-progress stroke and cursor image are
-  // affected by the brush type change.  Update the expectation to show the
-  // in-progress stroke is still a pen once the brush management in
-  // PdfInkModule protects against such changes.
+  // that the events are handled and the new stroke is added.  The cursor gets
+  // updated to reflect the tool change to highlighter only after the stroke
+  // is completed.
   static constexpr int kPageIndex = 0;
-  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
-                                    InkStrokeDrawingBrushTypeEq(
-                                        PdfInkBrush::Type::kHighlighter)));
+  {
+    InSequence seq;
+    EXPECT_CALL(
+        client(),
+        StrokeAdded(kPageIndex, InkStrokeId(0),
+                    InkStrokeDrawingBrushTypeEq(PdfInkBrush::Type::kPen)));
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
+  }
   blink::WebMouseEvent mouse_move_event =
       MouseEventBuilder()
           .SetType(blink::WebInputEvent::Type::kMouseMove)

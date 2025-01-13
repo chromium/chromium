@@ -276,6 +276,14 @@ class PdfInkModule {
     std::optional<gfx::PointF> input_last_event_position;
   };
 
+  // Drawing brush state changes that are pending the completion of an
+  // in-progress stroke.
+  struct PendingDrawingBrushState {
+    SkColor color;
+    float size;
+    PdfInkBrush::Type type;
+  };
+
   // Returns whether the event was handled or not.
   bool OnMouseDown(const blink::WebMouseEvent& event);
   bool OnMouseUp(const blink::WebMouseEvent& event);
@@ -365,6 +373,8 @@ class PdfInkModule {
 
   void MaybeSetCursor();
 
+  void MaybeSetDrawingBrushAndCursor();
+
   const raw_ref<PdfInkModuleClient> client_;
 
   bool enabled_ = false;
@@ -378,10 +388,16 @@ class PdfInkModule {
   StrokeIdGenerator stroke_id_generator_;
 
   // Store a PdfInkBrush for each brush type so that the brush parameters are
-  // saved when swapping between brushes.
+  // saved when swapping between brushes.  The PdfInkBrushes should not be
+  // modified in the middle of an in-progress stroke.
   PdfInkBrush highlighter_brush_;
   PdfInkBrush pen_brush_;
   float eraser_size_ = 3.0f;
+
+  // The parameters that are to be applied to the drawing brushes when a new
+  // stroke is started.  These can be modified at any time, including in the
+  // middle of an in-progress stroke.
+  std::optional<PendingDrawingBrushState> pending_drawing_brush_state_;
 
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
