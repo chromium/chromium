@@ -1630,6 +1630,48 @@ export class BrowsingContextImpl {
     maxNodeCount: number | undefined,
     serializationOptions: Script.SerializationOptions | undefined,
   ): Promise<BrowsingContext.LocateNodesResult> {
+    if (locator.type === 'context') {
+      if (startNodes.length !== 0) {
+        throw new InvalidArgumentException('Start nodes are not supported');
+      }
+      const contextId = locator.value.context;
+      if (!contextId) {
+        throw new InvalidSelectorException('Invalid context');
+      }
+      const context = this.#browsingContextStorage.getContext(contextId);
+      const parent = context.parent;
+      if (!parent) {
+        throw new InvalidArgumentException('This context has no container');
+      }
+      try {
+        const {backendNodeId} = await parent.#cdpTarget.cdpClient.sendCommand(
+          'DOM.getFrameOwner',
+          {
+            frameId: contextId,
+          },
+        );
+        const {object} = await parent.#cdpTarget.cdpClient.sendCommand(
+          'DOM.resolveNode',
+          {
+            backendNodeId,
+          },
+        );
+        const locatorResult = await realm.callFunction(
+          `function () { return this; }`,
+          false,
+          {handle: object.objectId!},
+          [],
+          Script.ResultOwnership.None,
+          serializationOptions,
+        );
+        if (locatorResult.type === 'exception') {
+          throw new Error('Unknown exception');
+        }
+        return {nodes: [locatorResult.result as Script.NodeRemoteValue]};
+      } catch {
+        throw new InvalidArgumentException('Context does not exist');
+      }
+    }
     const locatorDelegate = await this.#getLocatorDelegate(
       realm,
       locator,
