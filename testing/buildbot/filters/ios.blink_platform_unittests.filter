@@ -1,9 +1,3 @@
 # TODO(crbug.com/41492456): chooses a different safe-to-break offset than is
 # chosen on other platforms.
 -ShapeResultTest.AddUnsafeToBreakRtl
-
-# TODO(crbug.com/379818888): These tests are failing on the ios-blink-dbg-fyi
-# bot.
--RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllExpectedModes
--RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllModesExceptH265L1T2AndL1T3
--RTCVideoEncoderFactoryTest.GetSupportedFormatsReturnsAllModesExceptH265L1T3
