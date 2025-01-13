@@ -235,8 +235,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
                           kPremul_SkAlphaType, sk_image->refColorSpace());
 
     // Copy from SkImage into SharedMemory owned by |registered|.
-    auto dst_mapping = registered.shared_image->Map()->GetMemoryForPlane(0);
-    if (!sk_image->readPixels(dst_info, dst_mapping.data(),
+    auto dst_mapping = registered.shared_image->Map();
+    if (!sk_image->readPixels(dst_info,
+                              dst_mapping->GetMemoryForPlane(0).data(),
                               dst_info.minRowBytes(), 0, 0)) {
       return false;
     }
