@@ -65,7 +65,10 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_HOUSE_NUMBER, HtmlFieldType::kStreetAddress},
-         {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress}});
+         {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress},
+         {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalName},
+         {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalNameInitial},
+         {NAME_LAST_CORE, HtmlFieldType::kFamilyName}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The
@@ -99,7 +102,9 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ALTERNATIVE_GIVEN_NAME, NAME_FIRST},
          {ALTERNATIVE_FAMILY_NAME, NAME_LAST},
          {ALTERNATIVE_FAMILY_NAME, NAME_LAST_SECOND},
-         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_CORE}});
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_CORE},
+         {NAME_LAST_PREFIX, NAME_MIDDLE},
+         {NAME_LAST_CORE, NAME_LAST}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
