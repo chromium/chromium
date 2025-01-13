@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/ui_base_test_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
