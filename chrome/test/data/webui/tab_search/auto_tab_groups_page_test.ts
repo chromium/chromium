@@ -425,6 +425,28 @@ suite('AutoTabGroupsPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('startTabGroupTutorial'));
   });
 
+  test('Learn more action activates on Enter', async () => {
+    loadTimeData.overrideValues({
+      showTabOrganizationFRE: true,
+    });
+
+    await autoTabGroupsPageSetup();
+
+    assertEquals(0, testApiProxy.getCallCount('openHelpPage'));
+
+    const notStarted = autoTabGroupsPage.shadowRoot!.querySelector(
+        'auto-tab-groups-not-started');
+    assertTrue(!!notStarted);
+    const links = notStarted.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.auto-tab-groups-link');
+    assertEquals(1, links.length);
+    const learnMore = links[0]!;
+    learnMore.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await microtasksFinished();
+
+    assertEquals(1, testApiProxy.getCallCount('openHelpPage'));
+  });
+
   test('Active tab missing from organization shows error', async () => {
     const errorString = 'error';
     const successString = 'success';

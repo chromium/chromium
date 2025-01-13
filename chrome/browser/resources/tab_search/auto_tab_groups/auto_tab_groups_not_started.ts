@@ -122,6 +122,12 @@ export class AutoTabGroupsNotStartedElement extends
     this.fire('learn-more-click');
   }
 
+  protected onLearnMoreKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onLearnMoreClick_();
+    }
+  }
+
   protected onModelStrategyChange_(
       e: CustomEvent<{value: TabOrganizationModelStrategy}>) {
     const modelStrategy = e.detail.value;
