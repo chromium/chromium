@@ -5,14 +5,19 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 
 #import "base/ios/crb_protocol_observers.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -49,6 +54,15 @@
 
   // Stored observers.
   DefaultBrowserBannerAppAgentObserverList* _observers;
+
+  // Main profile state to use for promo eligibility checking.
+  ProfileState* _mainProfileState;
+
+  // Number of times the promo has been displayed in this promo session.
+  int _sessionDisplayCount;
+
+  // Whether the promo is currently shown.
+  BOOL _promoCurrentlyShown;
 }
 
 - (instancetype)init {
@@ -102,6 +116,41 @@
   }
 }
 
+// Makes sure the promo is shown and alerts observers if this causes a state
+// change.
+- (void)ensurePromoShown {
+  if (!_promoCurrentlyShown) {
+    _promoCurrentlyShown = YES;
+    [_observers displayPromoFromAppAgent:self];
+  }
+}
+
+// Makes sure the promo is hidden and alerts observers if this causes a state
+// change.
+- (void)ensurePromoHidden {
+  if (_promoCurrentlyShown) {
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForProfile(
+            _mainProfileState.profile);
+    if (engagementTracker) {
+      engagementTracker->Dismissed(
+          feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature);
+    }
+    _promoCurrentlyShown = NO;
+    [_observers hidePromoFromAppAgent:self];
+  }
+}
+
+// Checks if the promo can be displayed on all currently active pages.
+- (BOOL)promoIsSuppressedOnCurrentURLs {
+  for (const auto& [webStateID, url] : _lastNavigatedURLs) {
+    if (IsUrlNtp(url) || google_util::IsGoogleSearchUrl(url)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -110,6 +159,7 @@
     return;
   }
   [profileState addObserver:self];
+  _mainProfileState = profileState;
 }
 
 #pragma mark - ProfileStateObserver
@@ -197,14 +247,35 @@
                        navigationContext:navigationContext]) {
     return;
   }
+
   _lastNavigatedURLs.insert_or_assign(
       webState->GetUniqueIdentifier(),
       navigationContext->GetUrl().GetWithoutRef());
 
-  if (google_util::IsGoogleSearchUrl(navigationContext->GetUrl())) {
-    [_observers hidePromoFromAppAgent:self];
+  if (_promoCurrentlyShown) {
+    // Check if session is over.
+    if (IsChromeLikelyDefaultBrowser() ||
+        [self promoIsSuppressedOnCurrentURLs] || _sessionDisplayCount >= 10) {
+      [self ensurePromoHidden];
+      return;
+    }
+    _sessionDisplayCount += 1;
   } else {
-    [_observers displayPromoFromAppAgent:self];
+    // Check if session should begin.
+    if (IsChromeLikelyDefaultBrowser() ||
+        [self promoIsSuppressedOnCurrentURLs]) {
+      return;
+    }
+
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForProfile(
+            _mainProfileState.profile);
+    if (engagementTracker &&
+        engagementTracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature)) {
+      _sessionDisplayCount = 1;
+      [self ensurePromoShown];
+    }
   }
 }
 
