@@ -849,7 +849,8 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
   task_environment_.FastForwardBy(base::Seconds(60));
 
   // No metrics should have been recorded, since we cancelled self compaction.
-  EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact").size(), 0);
+  EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
+            0);
 
   for (size_t i = 1; i < 5; i++) {
     Unmap(addrs[i], i * base::GetPageSize());
@@ -885,7 +886,10 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
           started_at),
       1, started_at);
 
-  for (size_t i = 0; i < 3; i++) {
+  // We should have 4 sections here, based on the sizes mapped above.
+  // |StartSelfCompaction| doesn't run right away, but rather schedules a task.
+  // So, we expect to have 4 tasks to run here.
+  for (size_t i = 0; i < 4; i++) {
     EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
     task_environment_.FastForwardBy(
         task_environment_.NextMainThreadPendingTaskDelay());
@@ -903,12 +907,12 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
     for (const auto& timing :
          {"Before", "After", "After1s", "After10s", "After60s"}) {
       histograms.ExpectTotalCount(
-          StrCat({"Memory.SelfCompact.Browser.", name, ".", timing}), 1);
+          StrCat({"Memory.SelfCompact2.Browser.", name, ".", timing}), 1);
     }
     for (const auto& timing :
          {"BeforeAfter", "After1s", "After10s", "After60s"}) {
       const auto metric =
-          StrCat({"Memory.SelfCompact.Browser.", name, ".Diff.", timing});
+          StrCat({"Memory.SelfCompact2.Browser.", name, ".Diff.", timing});
       base::HistogramTester::CountsMap diff_metrics;
       diff_metrics[StrCat({metric, ".Increase"})] = 1;
       diff_metrics[StrCat({metric, ".Decrease"})] = 1;
@@ -919,7 +923,7 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
 
   // We also check that no other histograms (other than the ones expected above)
   // were recorded.
-  EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact").size(),
+  EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
             45);
 
   for (size_t i = 1; i < 5; i++) {
@@ -928,4 +932,51 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
     Unmap(addrs[i], len);
   }
 }
+
+// Test that we still record metrics even when the feature is disabled.
+TEST_F(PreFreezeSelfCompactionTest, Disabled) {
+  // Although we are not actually compacting anything, the self compaction
+  // code will exit out before metrics are recorded in the case where compaction
+  // is not supported.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(kShouldFreezeSelf);
+
+  base::HistogramTester histograms;
+
+  PreFreezeBackgroundMemoryTrimmer::Instance().CompactSelf();
+
+  // Run metrics
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  // We check here for the names of each metric we expect to be recorded. We
+  // can't easily check for the exact values of these metrics unfortunately,
+  // since they depend on reading /proc/self/smaps_rollup.
+  for (const auto& name : {"Rss", "Pss", "PssAnon", "PssFile", "SwapPss"}) {
+    for (const auto& timing :
+         {"Before", "After", "After1s", "After10s", "After60s"}) {
+      histograms.ExpectTotalCount(
+          StrCat({"Memory.SelfCompact2.Browser.", name, ".", timing}), 1);
+    }
+    for (const auto& timing :
+         {"BeforeAfter", "After1s", "After10s", "After60s"}) {
+      const auto metric =
+          StrCat({"Memory.SelfCompact2.Browser.", name, ".Diff.", timing});
+      base::HistogramTester::CountsMap diff_metrics;
+      diff_metrics[StrCat({metric, ".Increase"})] = 1;
+      diff_metrics[StrCat({metric, ".Decrease"})] = 1;
+      EXPECT_THAT(histograms.GetTotalCountsForPrefix(metric),
+                  testing::IsSubsetOf(diff_metrics));
+    }
+  }
+
+  // We also check that no other histograms (other than the ones expected above)
+  // were recorded.
+  EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
+            45);
+}
+
 }  // namespace base::android

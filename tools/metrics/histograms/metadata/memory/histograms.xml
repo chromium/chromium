@@ -2070,7 +2070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Memory.SelfCompact{Process}.{Metric}.Diff.{Timing}.{Direction}"
+    name="Memory.SelfCompact2{Process}.{Metric}.Diff.{Timing}.{Direction}"
     units="MiB" expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
@@ -2087,7 +2087,7 @@ chromium-metrics-reviews@google.com.
   <token key="Direction" variants="DiffDirection"/>
 </histogram>
 
-<histogram name="Memory.SelfCompact{Process}.{Metric}.{Timing}" units="MiB"
+<histogram name="Memory.SelfCompact2{Process}.{Metric}.{Timing}" units="MiB"
     expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>

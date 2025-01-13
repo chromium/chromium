@@ -74,7 +74,7 @@ std::string GetPreFreezeMetricName(std::string_view name,
 std::string GetSelfCompactionMetricName(std::string_view name,
                                         std::string_view suffix) {
   const char* process_type = GetProcessType();
-  return StrCat({"Memory.SelfCompact.", process_type, ".", name, ".", suffix});
+  return StrCat({"Memory.SelfCompact2.", process_type, ".", name, ".", suffix});
 }
 
 class PrivateMemoryFootprintMetric
@@ -517,8 +517,8 @@ void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
     base::TimeTicks started_at) {
   TRACE_EVENT0("base", "StartSelfCompaction");
   metric->RecordBeforeMetrics();
-  SelfCompactionTask(std::move(task_runner), std::move(regions),
-                     std::move(metric), max_bytes, started_at);
+  MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
+                              std::move(metric), max_bytes, started_at);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
@@ -559,13 +559,17 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf() {
   TRACE_EVENT0("base", "CompactSelf");
   std::vector<debug::MappedMemoryRegion> regions;
 
-  std::string proc_maps;
-  if (!debug::ReadProcMaps(&proc_maps) || !ParseProcMaps(proc_maps, &regions)) {
-    return;
-  }
+  // We still start the task in the control group, in order to record metrics.
+  if (base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
+    std::string proc_maps;
+    if (!debug::ReadProcMaps(&proc_maps) ||
+        !ParseProcMaps(proc_maps, &regions)) {
+      return;
+    }
 
-  if (regions.size() == 0) {
-    return;
+    if (regions.size() == 0) {
+      return;
+    }
   }
 
   auto started_at = base::TimeTicks::Now();
@@ -646,10 +650,6 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
 
 // static
 void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
-  if (!base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
-    return;
-  }
-
   TRACE_EVENT0("base", "OnSelfFreeze");
 
   Instance().OnSelfFreezeInternal();
@@ -657,7 +657,9 @@ void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
 
 void PreFreezeBackgroundMemoryTrimmer::OnSelfFreezeInternal() {
   base::AutoLock locker(lock_);
-  RunPreFreezeTasks();
+  if (base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
+    RunPreFreezeTasks();
+  }
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, MayBlock()},
