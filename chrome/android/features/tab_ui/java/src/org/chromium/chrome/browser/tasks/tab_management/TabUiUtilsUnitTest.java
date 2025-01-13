@@ -12,7 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.ui.test.util.MockitoHelper.runWithValue;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -179,11 +179,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_Positive() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -207,11 +203,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_Negative() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_NEGATIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_NEGATIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -232,11 +224,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_NullTab() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -257,11 +245,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_NullTabGroupId() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -282,11 +266,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_NullSavedTabGroup() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -301,11 +281,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testDeleteSharedTabGroup_NullCollaborationId() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processDeleteSharedGroupAttempt(any(), any());
 
@@ -325,11 +301,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testLeaveTabGroup_Positive() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
 
@@ -356,11 +328,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testLeaveTabGroup_Negative() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_NEGATIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_NEGATIVE)
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
 
@@ -383,11 +351,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testLeaveTabGroup_NullTab() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
 
@@ -410,11 +374,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testLeaveTabGroup_NullSavedTabGroup() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
 
@@ -433,11 +393,7 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testLeaveTabGroup_NullCoreAccountInfo() {
-        doCallback(
-                        1,
-                        (Callback<Integer> resultCallback) ->
-                                resultCallback.onResult(
-                                        ActionConfirmationResult.CONFIRMATION_POSITIVE))
+        runWithValue(1, ActionConfirmationResult.CONFIRMATION_POSITIVE)
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
 
