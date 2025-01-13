@@ -178,16 +178,24 @@ void SetCompositeClipPathStatus(Node* node, bool is_compositable) {
   }
 }
 
-bool CanCompositeClipPathAnimation(const LayoutObject& layout_object) {
+Animation* GetCompositableClipPathAnimation(const LayoutObject& layout_object) {
   ClipPathPaintImageGenerator* generator =
       layout_object.GetFrame()->GetClipPathPaintImageGenerator();
   CHECK(generator);
 
   const Element* element = To<Element>(layout_object.GetNode());
-  const Animation* animation = generator->GetAnimationIfCompositable(element);
+  Animation* animation = generator->GetAnimationIfCompositable(element);
 
-  return animation && (animation->CheckCanStartAnimationOnCompositor(nullptr) ==
-                       CompositorAnimations::kNoFailure);
+  if (!animation) {
+    return nullptr;
+  }
+
+  if (animation->CheckCanStartAnimationOnCompositor(nullptr) !=
+      CompositorAnimations::kNoFailure) {
+    return nullptr;
+  }
+
+  return animation;
 }
 
 void PaintWorkletBasedClip(GraphicsContext& context,
@@ -269,10 +277,9 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
 
   CompositedPaintStatus status =
       CompositeClipPathStatus(layout_object.GetNode());
-
   switch (status) {
     case CompositedPaintStatus::kComposited:
-      DCHECK(CanCompositeClipPathAnimation(layout_object));
+      DCHECK(GetCompositableClipPathAnimation(layout_object));
       return true;
     case CompositedPaintStatus::kNoAnimation:
     case CompositedPaintStatus::kNotComposited:
@@ -335,8 +342,8 @@ void ClipPathClipper::ResolveClipPathStatus(const LayoutObject& layout_object,
     return;
   }
 
-  SetCompositeClipPathStatus(layout_object.GetNode(),
-                             CanCompositeClipPathAnimation(layout_object));
+  Animation* animation = GetCompositableClipPathAnimation(layout_object);
+  SetCompositeClipPathStatus(layout_object.GetNode(), animation);
 }
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
@@ -596,6 +603,10 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     }
 
     PaintWorkletBasedClip(context, layout_object, reference_box, layout_object);
+
+    Animation* animation = GetCompositableClipPathAnimation(layout_object);
+    CHECK(animation) << "Unable to find composited clip path animation";
+    animation->OnPaintWorkletImageCreated();
   } else {
     gfx::RectF reference_box = LocalReferenceBox(layout_object);
     bool is_first = true;

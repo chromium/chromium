@@ -18,12 +18,33 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
+
+class FakeClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
+ public:
+  FakeClipPathPaintImageGenerator() = default;
+
+  scoped_refptr<Image> Paint(float zoom,
+                             const gfx::RectF& reference_box,
+                             const gfx::SizeF& clip_area_size,
+                             const Node& node) override {
+    LayoutObject* layout_object = node.GetLayoutObject();
+    layout_object->GetMutableForPainting().FirstFragment().EnsureId();
+    return BitmapImage::Create();
+  }
+
+  Animation* GetAnimationIfCompositable(const Element* element) override {
+    return ClipPathPaintDefinition::GetAnimationIfCompositable(element);
+  }
+
+  void Shutdown() override {}
+};
 
 class ClipPathPaintDefinitionTest : public PageTestBase {
  public:
@@ -38,6 +59,11 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
     PageTestBase::SetUp();
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
+
+    FakeClipPathPaintImageGenerator* generator =
+        MakeGarbageCollected<FakeClipPathPaintImageGenerator>();
+    GetDocument().GetFrame()->SetClipPathPaintImageGeneratorForTesting(
+        generator);
   }
 
  private:

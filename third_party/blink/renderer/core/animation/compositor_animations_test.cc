@@ -2790,6 +2790,18 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
 
+  // The animation cannot be composited until the associated layout object
+  // has a UniqueObjectId.
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  // Normally the ID would be set at paint time by the native paint worklet.
+  // Since running in a test environment, we don't actually create the deferred
+  // paint image. Thus, we set it manually.
+  LayoutObject* layout_object = target->GetLayoutObject();
+  layout_object->GetMutableForPainting().FirstFragment().EnsureId();
+
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
                 GetDocument().View()->GetPaintArtifactCompositor()));

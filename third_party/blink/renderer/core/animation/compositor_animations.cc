@@ -168,28 +168,18 @@ void DefaultToUnsupportedProperty(
   }
 }
 
-// True if it is either a no-op background-color animation, or a no-op custom
-// property animation.
-bool IsNoOpPaintWorkletOrVariableAnimation(const PropertyHandle& property,
-                                      const LayoutObject* layout_object) {
-  // If the background color paint worklet was painted, a unique id will be
-  // generated. See BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams
-  // for details.
-  // Similar to that, if a CSS paint worklet was painted, a unique id will be
-  // generated. See CSSPaintValue::GetImage for details.
-  bool has_unique_id = layout_object->FirstFragment().HasUniqueId();
-  if (has_unique_id)
+// True if it is a no-op custom property animation.
+bool IsNoOpVariableAnimation(const PropertyHandle& property,
+                             const LayoutObject* layout_object) {
+  // If a CSS paint worklet was painted, a unique id will be generated. See
+  // CSSPaintValue::GetImage for details.
+  // TODO(kevers): Verify that we properly latch to the animation if initially
+  // outside the paint apron and scrolled into the viewport.
+  if (layout_object->FirstFragment().HasUniqueId()) {
     return false;
-  // Now the |has_unique_id| == false.
-  bool is_no_op_bgcolor_anim =
-      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kBackgroundColor;
-  bool is_no_op_clip_anim =
-      RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kClipPath;
-  bool is_no_op_variable_anim =
-      property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
-  return is_no_op_variable_anim || is_no_op_clip_anim || is_no_op_bgcolor_anim;
+  }
+
+  return property.GetCSSProperty().PropertyID() == CSSPropertyID::kVariable;
 }
 
 bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
@@ -440,24 +430,9 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     }
   }
 
-  if (CompositorPropertyAnimationsHaveNoEffect(target_element, effect,
+  if (CompositorPropertyAnimationsHaveNoEffect(target_element, animation_to_add,
+                                               effect,
                                                paint_artifact_compositor)) {
-#if DCHECK_IS_ON()
-    if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()))) {
-      ElementAnimations* element_animations =
-          target_element.GetElementAnimations();
-      DCHECK(element_animations &&
-             element_animations->CompositedBackgroundColorStatus() !=
-                 ElementAnimations::CompositedPaintStatus::kComposited);
-    }
-    if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
-      ElementAnimations* element_animations =
-          target_element.GetElementAnimations();
-      DCHECK(element_animations &&
-             element_animations->CompositedClipPathStatus() !=
-                 ElementAnimations::CompositedPaintStatus::kComposited);
-    }
-#endif
     reasons |= kAnimationHasNoVisibleChange;
   }
 
@@ -480,6 +455,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
 bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     const Element& target_element,
+    const Animation* animation_to_add,
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor) {
   LayoutObject* layout_object = target_element.GetLayoutObject();
@@ -529,6 +505,18 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     // properties.
     DCHECK(!any_compositor_properties_present);
     return true;
+  }
+
+  // Properties composited via native paint worklets do not necessarily have
+  // a paint property. In such cases, the unique ID is assigned at paint time
+  // when the deferred image for the paint worklet is constructed.  If no ID
+  // has been assigned yet, it may be because the element is outside the paint
+  // apron. The animation should not run on the compositor until painted.
+  if (animation_to_add && animation_to_add->GetNativePaintWorkletReasons() !=
+                              Animation::kNoPaintWorklet) {
+    if (!layout_object || !layout_object->FirstFragment().HasUniqueId()) {
+      return true;
+    }
   }
 
   return false;
@@ -1115,8 +1103,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
 
     // By default, it is a kInvalidElementId.
     CompositorElementId id;
-    if (!IsNoOpPaintWorkletOrVariableAnimation(
-            property, target_element.GetLayoutObject())) {
+    if (!IsNoOpVariableAnimation(property, target_element.GetLayoutObject())) {
       id = CompositorElementIdFromUniqueObjectId(
               target_element.GetLayoutObject()->UniqueId(),
               CompositorElementNamespaceForProperty(

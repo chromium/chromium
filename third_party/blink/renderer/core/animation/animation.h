@@ -303,7 +303,12 @@ class CORE_EXPORT Animation : public EventTarget,
                            // including keyframes or active interval.
     kPendingCancel,        // Animation has been canceled, but could restart
                            // conditions permitting.
-    kPendingRestart        // Animation is to be restarted.
+    kPendingRestart,       // Animation is to be restarted.
+    kPaintWorkletImageCreated,  // A compositable animation was held in limbo
+                                // awaiting paint of the paint worklet image. It
+                                // can now be started on the compositor.
+    kPendingDowngrade  // Paint is forcing the animation to downgrade to
+                       // run on the main thread.
   };
   void SetCompositorPending(CompositorPendingReason reason);
 
@@ -381,6 +386,11 @@ class CORE_EXPORT Animation : public EventTarget,
   }
   bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
 
+  // A native paint worklet animation has no visible effect until the deferred
+  // paint image has been generated. If the animation is not currently
+  // composited we need to restart it on the compositor.
+  void OnPaintWorkletImageCreated();
+
   bool WaitingOnDeferredStartTime() {
     return !start_time_ && (pending_play_ || pending_pause_);
   }
@@ -400,7 +410,7 @@ class CORE_EXPORT Animation : public EventTarget,
   };
 
   using NativePaintWorkletReasons = uint32_t;
-  NativePaintWorkletReasons GetNativePaintWorkletReasons();
+  NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -596,8 +606,10 @@ class CORE_EXPORT Animation : public EventTarget,
   // In the event of the keyframes changing, we need a new evaluation, of
   // the composited status for native paint worklet eligible properties.
   // A change in the playState can also necessitate a composited style update.
-  std::optional<NativePaintWorkletReasons> native_paint_worklet_reasons_;
-  std::optional<NativePaintWorkletReasons> prior_native_paint_worklet_reasons_;
+  mutable std::optional<NativePaintWorkletReasons>
+      native_paint_worklet_reasons_;
+  mutable std::optional<NativePaintWorkletReasons>
+      prior_native_paint_worklet_reasons_;
 
   // TODO(crbug.com/960944): Consider reintroducing kPause and cleanup use of
   // mutually exclusive pending_play_ and pending_pause_ flags.

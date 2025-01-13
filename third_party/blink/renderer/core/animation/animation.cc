@@ -2311,10 +2311,26 @@ void Animation::MarkPendingIfCompositorPropertyAnimationChanges(
   if (target && keyframe_effect->Model() && keyframe_effect->IsCurrent()) {
     compositor_property_animations_have_no_effect_ =
         CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
-            *target, *keyframe_effect->Model(), paint_artifact_compositor);
+            *target, this, *keyframe_effect->Model(),
+            paint_artifact_compositor);
   }
   if (compositor_property_animations_have_no_effect_ != had_no_effect)
     SetCompositorPending(CompositorPendingReason::kPendingEffectChange);
+}
+
+void Animation::OnPaintWorkletImageCreated() {
+  // If already queued up to make a compositing decision no further steps are
+  // required.
+  if (compositor_pending_) {
+    return;
+  }
+
+  if (!HasActiveAnimationsOnCompositor()) {
+    // We hit this state if target element is outside of the paint apron when
+    // the animation is created. Until painted, the animation has no visible
+    // effect. Once painted, we need to restart the animation on the compositor.
+    SetCompositorPending(CompositorPendingReason::kPaintWorkletImageCreated);
+  }
 }
 
 void Animation::StartAnimationOnCompositor(
@@ -2374,12 +2390,14 @@ void Animation::StartAnimationOnCompositor(
           timeline()->IsMonotonicallyIncreasing(), boundary_aligned);
 }
 
-Animation::NativePaintWorkletReasons Animation::GetNativePaintWorkletReasons() {
+Animation::NativePaintWorkletReasons Animation::GetNativePaintWorkletReasons()
+    const {
   if (native_paint_worklet_reasons_) {
     return native_paint_worklet_reasons_.value();
   }
   NativePaintWorkletReasons reasons = kNoPaintWorklet;
-  if (KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
+  if (const KeyframeEffect* keyframe_effect =
+          DynamicTo<KeyframeEffect>(effect())) {
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
         keyframe_effect->Affects(
             PropertyHandle(GetCSSPropertyBackgroundColor()))) {
@@ -2401,7 +2419,13 @@ void Animation::SetCompositorPending(CompositorPendingReason reason) {
   // Determine if we need to reset the cached state for a property that is
   // composited via a native paint worklet. If reset, it forces Paint to
   // re-evaluate whether to paint with a native paint worklet.
-  UpdateCompositedPaintStatus();
+  if (reason == CompositorPendingReason::kPaintWorkletImageCreated ||
+      reason == CompositorPendingReason::kPendingDowngrade) {
+    reason = CompositorPendingReason::kPendingRestart;
+    // Composited paint status has already be set so we can skip the update.
+  } else {
+    UpdateCompositedPaintStatus();
+  }
 
   if (RuntimeEnabledFeatures::
           CompositedAnimationsCancelledAsynchronouslyEnabled()) {
