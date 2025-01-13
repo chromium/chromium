@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_consumer.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -235,8 +236,9 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   if ([self activeWebStateTabGroup] == nullptr) {
     return ToolbarTabGroupState::kNormal;
   }
-  return IsTabGroupIndicatorEnabled() ? ToolbarTabGroupState::kTabGroup
-                                      : ToolbarTabGroupState::kNormal;
+  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
+             ? ToolbarTabGroupState::kTabGroup
+             : ToolbarTabGroupState::kNormal;
 }
 
 // Updates the blue dot in the Tab Grid button depending on the messages and the
