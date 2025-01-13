@@ -531,8 +531,6 @@ class AttributionDataHostManagerImpl::RegistrationContext {
         unmatched_field = "navigation_id";
       } else if (context_origin() != other.context_origin()) {
         unmatched_field = "context_origin";
-      } else if (last_input_event() != other.last_input_event()) {
-        unmatched_field = "last_input_event";
       } else if (is_within_fenced_frame() != other.is_within_fenced_frame()) {
         unmatched_field = "is_within_fenced_frame";
       } else if (render_frame_id() != other.render_frame_id()) {
@@ -1019,7 +1017,9 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
   std::vector<attribution_reporting::OsRegistrationItem> Buffer(
       std::vector<attribution_reporting::OsRegistrationItem> items,
       const RegistrationContext& registration_context) {
-    // Only navigation-tied OS registrations should be buffered.
+    // Only navigation-tied OS registrations should be buffered. The last input
+    // event for the first registration of the navigation is used for all
+    // subsequent registrations for the corresponding navigation.
     CHECK(registration_context.navigation_id().has_value());
     CHECK_EQ(registration_context.navigation_id().value(), navigation_id_);
     if (!context_.has_value()) {
