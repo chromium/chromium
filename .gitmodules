@@ -488,7 +488,7 @@
 	url = https://chromium.googlesource.com/external/github.com/protocolbuffers/protobuf-javascript
 [submodule "third_party/pthreadpool/src"]
 	path = third_party/pthreadpool/src
-	url = https://chromium.googlesource.com/external/github.com/Maratyszcza/pthreadpool
+	url = https://chromium.googlesource.com/external/github.com/google/pthreadpool
 [submodule "third_party/pyelftools"]
 	path = third_party/pyelftools
 	url = https://chromium.googlesource.com/chromiumos/third_party/pyelftools
