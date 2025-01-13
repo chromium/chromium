@@ -468,9 +468,6 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
       mojom::blink::AIPageContent::New();
   const auto start_time = base::TimeTicks::Now();
 
-  // Disallow throttling so content from offscreen frames is updated.
-  LocalFrameView::DisallowThrottlingScope disallow_throttling(*document.View());
-
   // Force activatable locks so content which is accessible via find-in-page is
   // styled/laid out and included when walking the tree below.
   //
