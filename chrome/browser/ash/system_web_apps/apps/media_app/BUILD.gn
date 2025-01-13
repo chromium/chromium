@@ -20,6 +20,7 @@ static_library("media_app") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/system_web_apps/types",
+    "//chromeos/ash/components/specialized_features",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//storage/browser",

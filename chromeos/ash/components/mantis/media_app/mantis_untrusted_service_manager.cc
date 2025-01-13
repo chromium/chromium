@@ -16,6 +16,8 @@
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
@@ -51,7 +53,9 @@ class InitializeProgressObserver : public PlatformModelProgressObserver {
 
 }  // namespace
 
-MantisUntrustedServiceManager::MantisUntrustedServiceManager() {
+MantisUntrustedServiceManager::MantisUntrustedServiceManager(
+    std::unique_ptr<specialized_features::FeatureAccessChecker> access_checker)
+    : access_checker_(std::move(access_checker)) {
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
       chromeos::mojo_services::kCrosMantisService, std::nullopt,
       cros_service_.BindNewPipeAndPassReceiver().PassPipe());
@@ -59,6 +63,18 @@ MantisUntrustedServiceManager::MantisUntrustedServiceManager() {
 }
 
 MantisUntrustedServiceManager::~MantisUntrustedServiceManager() = default;
+
+// static
+specialized_features::FeatureAccessConfig
+MantisUntrustedServiceManager::GetFeatureAccessConfig() {
+  specialized_features::FeatureAccessConfig access_config;
+  // TODO(crbug.com/362993438): Check region restriction.
+  access_config.capability_callback =
+      base::BindRepeating([](AccountCapabilities capabilities) {
+        return capabilities.can_use_generative_ai_photo_editing();
+      });
+  return access_config;
+}
 
 void MantisUntrustedServiceManager::OnQueryDone(
     base::OnceCallback<void(bool)> callback,
@@ -84,7 +100,13 @@ void MantisUntrustedServiceManager::IsAvailable(
     return;
   }
 
-  // TODO(crbug.com/362993438): Check age restriction and region restriction.
+  specialized_features::FeatureAccessFailureSet failure_set =
+      access_checker_->Check();
+  if (!failure_set.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (pref_service->GetInteger(ash::prefs::kGenAIPhotoEditingSettings) ==
       static_cast<int>(GenAIPhotoEditingSettings::kDisabled)) {
     std::move(callback).Run(false);

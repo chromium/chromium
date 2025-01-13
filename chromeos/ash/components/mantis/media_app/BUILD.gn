@@ -20,7 +20,9 @@ component("media_app") {
     "//base",
     "//chromeos/ash/components/mantis/mojom",
     "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/specialized_features",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
   ]
 }

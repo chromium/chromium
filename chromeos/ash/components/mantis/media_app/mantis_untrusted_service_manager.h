@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,11 +30,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   using CreateCallback =
       base::OnceCallback<void(mojo::StructPtr<CreateResult>)>;
 
-  MantisUntrustedServiceManager();
+  explicit MantisUntrustedServiceManager(
+      std::unique_ptr<specialized_features::FeatureAccessChecker>
+          access_checker);
   MantisUntrustedServiceManager(const MantisUntrustedServiceManager&) = delete;
   MantisUntrustedServiceManager& operator=(
       const MantisUntrustedServiceManager&) = delete;
   ~MantisUntrustedServiceManager();
+
+  static specialized_features::FeatureAccessConfig GetFeatureAccessConfig();
 
   void IsAvailable(PrefService* pref_service,
                    base::OnceCallback<void(bool)> callback);
@@ -57,6 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   mojo::UniqueReceiverSet<mantis::mojom::PlatformModelProgressObserver>
       progress_observers_;
 
+  std::unique_ptr<specialized_features::FeatureAccessChecker> access_checker_;
   std::unique_ptr<MantisUntrustedService> mantis_untrusted_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MantisUntrustedServiceManager> weak_ptr_factory_{this};
