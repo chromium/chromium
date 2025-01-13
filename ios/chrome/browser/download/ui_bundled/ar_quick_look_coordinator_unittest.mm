@@ -124,7 +124,7 @@ TEST_F(ARQuickLookCoordinatorTest, ValidUSDZFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kIOSPresentQLPreviewControllerHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentQLPreviewController::kSuccessful),
       1);
 }
@@ -143,7 +143,7 @@ TEST_F(ARQuickLookCoordinatorTest, InvalidUSDZFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kIOSPresentQLPreviewControllerHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentQLPreviewController::kInvalidFile),
       1);
 }
@@ -165,7 +165,7 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
 
   histogram_tester_.ExpectUniqueSample(
       kIOSPresentQLPreviewControllerHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentQLPreviewController::kSuccessful),
       1);
 
@@ -184,7 +184,7 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
 
   histogram_tester_.ExpectBucketCount(
       kIOSPresentQLPreviewControllerHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentQLPreviewController::kAnotherQLPreviewControllerIsPresented),
       1);
 }
@@ -217,7 +217,7 @@ TEST_F(ARQuickLookCoordinatorTest, AnotherViewControllerIsPresented) {
 
   histogram_tester_.ExpectUniqueSample(
       kIOSPresentQLPreviewControllerHistogram,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           PresentQLPreviewController::kAnotherViewControllerIsPresented),
       1);
 }

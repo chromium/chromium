@@ -139,7 +139,7 @@ TEST_F(SafariDownloadCoordinatorTest, ValidMobileConfigFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       1);
 }
@@ -155,7 +155,7 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidMobileConfigFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadMobileConfigFileUI,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       0);
 }
@@ -175,7 +175,7 @@ TEST_F(SafariDownloadCoordinatorTest, ValidCalendarFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadCalendarFileUI,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       1);
 }
@@ -191,7 +191,7 @@ TEST_F(SafariDownloadCoordinatorTest, InvalidCalendarFile) {
 
   histogram_tester_.ExpectUniqueSample(
       kUmaDownloadCalendarFileUI,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           SafariDownloadFileUI::kWarningAlertIsPresented),
       0);
 }

@@ -231,7 +231,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Other), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Other), 1);
 }
 
 // Tests downloadManagerTabHelper:didCreateDownload:webStateIsVisible: callback
@@ -423,7 +423,7 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   EXPECT_EQ(web::DownloadTask::State::kCancelled, task->GetState());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::NotStarted),
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::NotStarted),
       1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
                                      0);
@@ -491,16 +491,16 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileNetError", 0);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Completed),
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Completed),
       1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadedFileAction",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadedFileAction::NoActionOrOpenedViaExtension),
       1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadedFileAction",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadFileInBackground::SucceededWithoutBackgrounding),
       1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
@@ -546,7 +546,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileInBackground", 0);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Other), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Other), 1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
                                      0);
 }
@@ -592,12 +592,12 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadedFileAction", 0);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadFileInBackground::CanceledAfterAppQuit),
       1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Other), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Other), 1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
                                      0);
 }
@@ -832,10 +832,10 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
                                        -net::ERR_INTERNET_DISCONNECTED, 1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Failure), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure), 1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadFileInBackground::FailedWithoutBackgrounding),
       1);
   EXPECT_EQ(1,
@@ -868,10 +868,10 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
 
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
-      static_cast<base::HistogramBase::Sample>(DownloadFileResult::Failure), 1);
+      static_cast<base::HistogramBase::Sample32>(DownloadFileResult::Failure), 1);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadFileInBackground::FailedWithBackgrounding),
       1);
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUIGoogleDrive",
@@ -911,7 +911,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   task_ptr->SetDone(true);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           DownloadFileInBackground::SucceededWithBackgrounding),
       1);
 }

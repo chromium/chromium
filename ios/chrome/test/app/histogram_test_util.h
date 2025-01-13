@@ -48,7 +48,7 @@ class HistogramTester {
   // buckets have samples. If not, call `failure_block` with a descriptive text
   // of the error.
   BOOL ExpectUniqueSample(const std::string& name,
-                          base::HistogramBase::Sample sample,
+                          base::HistogramBase::Sample32 sample,
                           base::HistogramBase::Count expected_count,
                           FailureBlock failure_block) const;
 
@@ -58,7 +58,7 @@ class HistogramTester {
   // Returns true if the bucket contains `expected_count` samples. If not, call
   // `failure_block` with a descriptive text of the error.
   BOOL ExpectBucketCount(const std::string& name,
-                         base::HistogramBase::Sample sample,
+                         base::HistogramBase::Sample32 sample,
                          base::HistogramBase::Count expected_count,
                          FailureBlock failure_block) const;
 
@@ -88,7 +88,7 @@ class HistogramTester {
   // `expected_count`. The bucket's current value is determined from `samples`
   // and is modified based on the snapshot stored for histogram `name`.
   BOOL CheckBucketCount(const std::string& name,
-                        base::HistogramBase::Sample sample,
+                        base::HistogramBase::Sample32 sample,
                         base::Histogram::Count expected_count,
                         const base::HistogramSamples& samples,
                         FailureBlock failure_block) const;
@@ -109,12 +109,12 @@ class HistogramTester {
 };
 
 struct Bucket {
-  Bucket(base::HistogramBase::Sample min, base::HistogramBase::Count count)
+  Bucket(base::HistogramBase::Sample32 min, base::HistogramBase::Count count)
       : min(min), count(count) {}
 
   bool operator==(const Bucket& other) const;
 
-  base::HistogramBase::Sample min;
+  base::HistogramBase::Sample32 min;
   base::HistogramBase::Count count;
 };
 
