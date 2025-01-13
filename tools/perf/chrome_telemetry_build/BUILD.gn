@@ -39,14 +39,20 @@ if (is_android || is_fuchsia) {
 group("telemetry_chrome_test") {
   testonly = true
 
-  data_deps = [
-    ":telemetry_chrome_test_without_chrome",
-    "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)",
-  ]
+  data_deps = [ ":telemetry_chrome_test_without_chrome" ]
   data = []
 
-  if (is_android || is_fuchsia) {
-    data_deps += [ ":host_trace_processor_shell" ]
+  # Compile the host's version of trace_processor_shell for remote platforms.
+  if (is_android || is_fuchsia || is_chromeos) {
+    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($host_toolchain)" ]
+
+    # Android and Fuchsia require a symlink for the host version to be included
+    # in the isolate.
+    if (is_android || is_fuchsia) {
+      data_deps += [ ":host_trace_processor_shell" ]
+    }
+  } else {
+    data_deps += [ "//third_party/perfetto/src/trace_processor:trace_processor_shell($default_toolchain)" ]
   }
 
   if (!is_fuchsia && !is_android && !is_castos && !is_ios) {
