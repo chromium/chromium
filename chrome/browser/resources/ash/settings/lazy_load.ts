@@ -16,6 +16,13 @@
 
 import '/strings.m.js';
 /** Subpages */
+import './crostini_page/bruschetta_subpage.js';
+import './crostini_page/crostini_arc_adb.js';
+import './crostini_page/crostini_export_import.js';
+import './crostini_page/crostini_extra_containers.js';
+import './crostini_page/crostini_port_forwarding.js';
+import './crostini_page/crostini_shared_usb_devices.js';
+import './crostini_page/crostini_subpage.js';
 import './date_time_page/timezone_subpage.js';
 import './device_page/audio.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -34,6 +41,8 @@ import './device_page/power.js';
 import './device_page/storage.js';
 import './device_page/storage_external.js';
 import './device_page/stylus.js';
+import './guest_os/guest_os_shared_paths.js';
+import './guest_os/guest_os_shared_usb_devices.js';
 import './internal/storybook/storybook_subpage.js';
 import './internet_page/apn_subpage.js';
 import './internet_page/hotspot_subpage.js';
@@ -90,26 +99,6 @@ import './os_privacy_page/privacy_hub_geolocation_subpage.js';
 import './os_privacy_page/privacy_hub_microphone_subpage.js';
 import './os_privacy_page/privacy_hub_subpage.js';
 import './os_privacy_page/smart_privacy_subpage.js';
-// TODO(b/263414034) Determine if elements below adhere to the lazy loading
-// criteria and are needed here
-import './crostini_page/bruschetta_subpage.js';
-import './crostini_page/crostini_arc_adb.js';
-import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
-import './crostini_page/crostini_disk_resize_confirmation_dialog.js';
-import './crostini_page/crostini_disk_resize_dialog.js';
-import './crostini_page/crostini_export_import.js';
-import './crostini_page/crostini_extra_containers.js';
-import './crostini_page/crostini_extra_containers_create_dialog.js';
-import './crostini_page/crostini_import_confirmation_dialog.js';
-import './crostini_page/crostini_port_forwarding.js';
-import './crostini_page/crostini_port_forwarding_add_port_dialog.js';
-import './crostini_page/crostini_shared_usb_devices.js';
-import './crostini_page/crostini_subpage.js';
-import './guest_os/guest_os_confirmation_dialog.js';
-import './guest_os/guest_os_container_select.js';
-import './guest_os/guest_os_shared_paths.js';
-import './guest_os/guest_os_shared_usb_devices.js';
-import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 
 export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
