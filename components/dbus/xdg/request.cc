@@ -41,8 +41,13 @@ Request::Request(scoped_refptr<dbus::Bus> bus,
                  const std::string& method_name,
                  const DbusType& arguments,
                  DbusDictionary&& options,
-                 ResponseCallback callback)
-    : bus_(bus), callback_(std::move(callback)) {
+                 ResponseCallback callback,
+                 const std::string& test_portal_service_name)
+    : bus_(bus),
+      callback_(std::move(callback)),
+      portal_service_name_(test_portal_service_name.empty()
+                               ? kPortalServiceName
+                               : test_portal_service_name) {
   CHECK(bus_);
   CHECK(callback_);
 
@@ -51,7 +56,7 @@ Request::Request(scoped_refptr<dbus::Bus> bus,
       dbus::ObjectPath(base::nix::XdgDesktopPortalRequestPath(
           bus->GetConnectionName(), handle_token));
   auto* request_proxy =
-      bus->GetObjectProxy(kPortalServiceName, request_object_path_);
+      bus->GetObjectProxy(portal_service_name_, request_object_path_);
 
   // Connect to the "Response" signal before making the method call to avoid a
   // race condition.
@@ -79,17 +84,18 @@ Request::~Request() {
   }
 
   auto* request_proxy =
-      bus_->GetObjectProxy(kPortalServiceName, request_object_path_);
+      bus_->GetObjectProxy(portal_service_name_, request_object_path_);
   dbus::MethodCall method_call(kRequestInterface, "Close");
   request_proxy->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(
           [](scoped_refptr<dbus::Bus> bus, dbus::ObjectPath request_object_path,
-             dbus::Response*) {
-            bus->RemoveObjectProxy(kPortalServiceName, request_object_path,
+             std::string portal_service_name, dbus::Response*) {
+            bus->RemoveObjectProxy(portal_service_name, request_object_path,
                                    base::DoNothing());
           },
-          std::move(bus_), std::move(request_object_path_)));
+          std::move(bus_), std::move(request_object_path_),
+          std::move(portal_service_name_)));
 }
 
 void Request::OnMethodResponse(dbus::Response* response) {
@@ -127,11 +133,11 @@ void Request::OnMethodResponse(dbus::Response* response) {
   // expectation, and reconnect the signal handler to the returned object path
   // if not. In the wild, nearly all xdg-desktop-portal implementations are
   // version 0.9 or later.
-  bus_->RemoveObjectProxy(kPortalServiceName, request_object_path_,
+  bus_->RemoveObjectProxy(portal_service_name_, request_object_path_,
                           base::DoNothing());
   request_object_path_ = new_object_path;
   auto* new_request_proxy =
-      bus_->GetObjectProxy(kPortalServiceName, request_object_path_);
+      bus_->GetObjectProxy(portal_service_name_, request_object_path_);
   new_request_proxy->ConnectToSignal(
       kRequestInterface, kSignalResponse,
       base::BindRepeating(&Request::OnResponseSignal,
@@ -192,7 +198,7 @@ void Request::Finish(base::expected<DbusDictionary, ResponseError>&& result) {
     return;
   }
 
-  bus_->RemoveObjectProxy(kPortalServiceName, request_object_path_,
+  bus_->RemoveObjectProxy(portal_service_name_, request_object_path_,
                           base::DoNothing());
   bus_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();

@@ -132,15 +132,8 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(
       bus_, secret_proxy, kInterfaceSecret, kMethodRetrieveSecret,
       DbusUnixFd(std::move(write_fd)), std::move(options),
       base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecret,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  // Read the secret from the pipe.  This must happen asynchronously because the
-  // file may not become readable until the keyring is unlocked by typing a
-  // password.
-  read_watcher_ = base::FileDescriptorWatcher::WatchReadable(
-      read_fd_.get(),
-      base::BindRepeating(&SecretPortalKeyProvider::OnFdReadable,
-                          weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetSecretServiceName());
 }
 
 void SecretPortalKeyProvider::OnSignalConnected(
@@ -177,6 +170,14 @@ void SecretPortalKeyProvider::OnRetrieveSecret(
         return Finalize(InitStatus::kInvalidResponseCode);
     }
   }
+
+  // Read the secret from the pipe.  This must happen asynchronously because the
+  // file may not become readable until the keyring is unlocked by typing a
+  // password.
+  read_watcher_ = base::FileDescriptorWatcher::WatchReadable(
+      read_fd_.get(),
+      base::BindRepeating(&SecretPortalKeyProvider::OnFdReadable,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Though it is documented in the spec, xdg-desktop-portal does not currently
   // implement returning a token.
