@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -485,8 +486,9 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
         // Note: We still pass the data to |verify_job_|, even if there was a
         // read error, because some errors are ignorable. See
         // ContentVerifyJob::BytesRead() for more details.
-        verify_job_->BytesRead(static_cast<const char*>(buffer.data()),
-                               result->bytes_read, result->result);
+        verify_job_->BytesRead(
+            buffer.subspan(0u, static_cast<size_t>(result->bytes_read)),
+            result->result);
       }
     }
   }

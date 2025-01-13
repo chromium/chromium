@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -128,9 +129,9 @@ void VerifyContent(ContentVerifier* verifier,
       extension_id, extension_root, relative_path, verifier));
   CHECK(job);
   if (content) {
-    job->BytesRead(content->data(), content->size(), MOJO_RESULT_OK);
+    job->BytesRead(*content, MOJO_RESULT_OK);
   } else {
-    job->BytesRead("", 0u, MOJO_RESULT_NOT_FOUND);
+    job->BytesRead({}, MOJO_RESULT_NOT_FOUND);
   }
   job->DoneReading();
 }

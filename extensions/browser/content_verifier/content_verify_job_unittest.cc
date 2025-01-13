@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -135,8 +136,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
           auto read_data = resource_contents.value_or(std::string_view{});
           MojoResult read_result =
               resource_contents ? MOJO_RESULT_OK : MOJO_RESULT_NOT_FOUND;
-          verify_job->BytesRead(read_data.data(), read_data.size(),
-                                read_result);
+          verify_job->BytesRead(read_data, read_result);
           verify_job->DoneReading();
         },
         std::move(resource_contents));
@@ -186,7 +186,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
              base::DoNothing());
 
     for (const MojoResult read_error : read_errors) {
-      verify_job->BytesRead(nullptr, 0, read_error);
+      verify_job->BytesRead({}, read_error);
     }
     verify_job->DoneReading();
 
@@ -852,7 +852,7 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
             DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
             job->Start(content_verifier.get(), extension->version(),
                        extension->manifest_version(), base::DoNothing());
-            job->BytesRead(nullptr, 0u, read_result);
+            job->BytesRead({}, read_result);
             job->DoneReading();
             std::move(done_callback).Run();
           };
