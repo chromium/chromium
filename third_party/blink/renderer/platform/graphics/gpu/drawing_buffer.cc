@@ -447,40 +447,40 @@ bool DrawingBuffer::PrepareTransferableResource(
     out_resource->color_space = shared_image->color_space();
     out_resource->hdr_metadata = hdr_metadata_;
     out_resource->origin = shared_image->surface_origin();
-    return true;
+  } else {
+    // Populate the TransferableResource with a SharedImage for the software
+    // compositor.
+    RegisteredBitmap registered = CreateOrRecycleBitmap();
+    if (!registered.bitmap) {
+      return false;
+    }
+
+    ReadFramebufferIntoBitmapPixels(
+        static_cast<uint8_t*>(registered.bitmap->memory()));
+
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+        registered.shared_image, registered.sync_token, size_,
+        viz::SinglePlaneFormat::kBGRA_8888,
+        viz::TransferableResource::ResourceSource::kDrawingBuffer);
+    out_resource->color_space = back_color_buffer_->shared_image->color_space();
+    out_resource->hdr_metadata = hdr_metadata_;
+
+    // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
+    out_resource->origin = kBottomLeft_GrSurfaceOrigin;
+
+    // This holds a ref on the DrawingBuffer that will keep it alive until the
+    // mailbox is released (and while the release callback is running). It also
+    // owns the SharedBitmap.
+    *out_release_callback =
+        base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
+                       weak_factory_.GetWeakPtr(), std::move(registered));
+
+    contents_changed_ = false;
+    if (preserve_drawing_buffer_ == kDiscard) {
+      SetBufferClearNeeded(true);
+    }
   }
 
-  // Populate the TransferableResource with a SharedImage for the software
-  // compositor.
-  RegisteredBitmap registered = CreateOrRecycleBitmap();
-  if (!registered.bitmap) {
-    return false;
-  }
-
-  ReadFramebufferIntoBitmapPixels(
-      static_cast<uint8_t*>(registered.bitmap->memory()));
-
-  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-      registered.shared_image, registered.sync_token, size_,
-      viz::SinglePlaneFormat::kBGRA_8888,
-      viz::TransferableResource::ResourceSource::kDrawingBuffer);
-  out_resource->color_space = back_color_buffer_->shared_image->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
-
-  // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
-  out_resource->origin = kBottomLeft_GrSurfaceOrigin;
-
-  // This holds a ref on the DrawingBuffer that will keep it alive until the
-  // mailbox is released (and while the release callback is running). It also
-  // owns the SharedBitmap.
-  *out_release_callback =
-      base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
-                     weak_factory_.GetWeakPtr(), std::move(registered));
-
-  contents_changed_ = false;
-  if (preserve_drawing_buffer_ == kDiscard) {
-    SetBufferClearNeeded(true);
-  }
   return true;
 }
 
