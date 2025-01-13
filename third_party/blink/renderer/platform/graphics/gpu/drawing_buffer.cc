@@ -463,7 +463,7 @@ bool DrawingBuffer::PrepareTransferableResource(
   *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
       registered.shared_image, registered.sync_token, size_,
       viz::SinglePlaneFormat::kBGRA_8888,
-      viz::TransferableResource::ResourceSource::kImageLayerBridge);
+      viz::TransferableResource::ResourceSource::kDrawingBuffer);
   out_resource->color_space = back_color_buffer_->shared_image->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
 
