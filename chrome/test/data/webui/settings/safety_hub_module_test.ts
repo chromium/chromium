@@ -85,7 +85,7 @@ suite('SafetyHubModule', function() {
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
-        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
     flush();
 
     // User clicks the button of the 2nd item in the list.
@@ -139,7 +139,7 @@ suite('SafetyHubModule', function() {
     await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     testElement.buttonAriaLabelId =
-        'safetyCheckNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
     testElement.buttonTooltipText = text;
     flush();
 

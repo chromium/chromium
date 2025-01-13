@@ -662,13 +662,13 @@ export class SettingsSiteSettingsPageElement extends
         permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
     this.unusedSitePermissionsHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckUnusedSitePermissionsPrimaryLabel', permissions.length);
+            'safetyHubUnusedSitePermissionsPrimaryLabel', permissions.length);
     // TODO(crbug/342210522): Add test for this.
     this.unusedSitePermissionsSubheader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             this.safetyHubAbusiveNotificationRevocationEnabled_ ?
                 'safetyHubRevokedPermissionsSecondaryLabel' :
-                'safetyCheckUnusedSitePermissionsSecondaryLabel',
+                'safetyHubUnusedSitePermissionsSecondaryLabel',
             permissions.length);
   }
 

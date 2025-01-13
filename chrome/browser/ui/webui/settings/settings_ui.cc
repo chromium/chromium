@@ -425,34 +425,22 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString("securityKeysNewPIN",
                                             IDS_SETTINGS_SECURITY_KEYS_NEW_PIN);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckExtensionsReviewLabel",
+      "safetyHubExtensionsReviewLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewHeaderLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_HEADER_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewBlockAllToastLabel",
+      "safetyHubNotificationPermissionReviewBlockAllToastLabel",
       IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_BLOCK_ALL_TOAST_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewPrimaryLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsHeaderLabel",
-      IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_HEADER_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckNotificationPermissionReviewSecondaryLabel",
-      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsPrimaryLabel",
+      "safetyHubUnusedSitePermissionsPrimaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsSecondaryLabel",
+      "safetyHubUnusedSitePermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
       "safetyHubRevokedPermissionsSecondaryLabel",
       IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
-      "safetyCheckUnusedSitePermissionsToastBulkLabel",
+      "safetyHubUnusedSitePermissionsToastBulkLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL);
   plural_string_handler->AddLocalizedString(
       "safetyHubNotificationPermissionsPrimaryLabel",
