@@ -7,7 +7,8 @@
 #import <optional>
 
 #import "base/strings/utf_string_conversions.h"
-#import "components/grit/components_resources.h"
+#import "components/grit/management_resources.h"
+#import "components/grit/management_resources_map.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/proto/device_management_backend.pb.h"
@@ -95,9 +96,8 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
                              IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK);
 
   source->UseStringsJs();
-  source->AddResourcePath("management.css", IDR_MOBILE_MANAGEMENT_CSS);
-  source->AddResourcePath("management.js", IDR_MOBILE_MANAGEMENT_JS);
-  source->SetDefaultResource(IDR_MOBILE_MANAGEMENT_HTML);
+  source->AddResourcePaths(kManagementResources);
+  source->AddResourcePath("", IDR_MANAGEMENT_MANAGEMENT_HTML);
   return source;
 }
 

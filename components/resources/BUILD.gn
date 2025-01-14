@@ -42,6 +42,10 @@ group("resources") {
     "../user_actions_ui/resources:resources",
     "../version_ui/resources:resources",
   ]
+
+  if (is_ios) {
+    public_deps += [ "../management/resources:resources" ]
+  }
 }
 
 grit("components_resources") {
