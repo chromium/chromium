@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_INSTALL_COMMAND_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -24,7 +28,8 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/arc.mojom.h"
@@ -40,12 +45,15 @@ namespace web_app {
 class AppLock;
 class WebAppDataRetriever;
 
+using ScreenshotInfo = std::tuple<SkBitmap, std::optional<std::u16string>>;
+
 // Install web app from manifest for current `WebContents`.
 class FetchManifestAndInstallCommand
     : public WebAppCommand<NoopLock,
                            const webapps::AppId&,
                            webapps::InstallResultCode>,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public WebAppScreenshotFetcher {
  public:
   // Some platforms like Mac struggle with visibility of WebContents. Tests can
   // use this to ensure that the web contents visibility checks are skipped.
@@ -66,6 +74,13 @@ class FetchManifestAndInstallCommand
   void OnShutdown(base::PassKey<WebAppCommandManager>) const override;
   content::WebContents* GetInstallingWebContents(
       base::PassKey<WebAppCommandManager>) override;
+
+  // WebAppScreenshotFetcher overrides:
+  void GetScreenshot(
+      int index,
+      base::OnceCallback<void(SkBitmap, std::optional<std::u16string>)>
+          callback) override;
+  const std::vector<gfx::Size>& GetScreenshotSizes() override;
 
  protected:
   // WebAppCommand:
@@ -123,6 +138,13 @@ class FetchManifestAndInstallCommand
                           webapps::InstallResultCode code);
   void MeasureUserInstalledAppHistogram(webapps::InstallResultCode code);
 
+  // Start downloading screenshots if the manifest has them, so that the
+  // detailed install dialog can show them.
+  void StartPreloadingScreenshots();
+  void OnScreenshotFetched(int index,
+                           std::optional<std::u16string> label,
+                           const SkBitmap& bitmap);
+
   const webapps::WebappInstallSource install_surface_;
   const base::WeakPtr<content::WebContents> web_contents_;
   WebAppInstallDialogCallback dialog_callback_;
@@ -143,6 +165,13 @@ class FetchManifestAndInstallCommand
   bool valid_manifest_for_crafted_web_app_ = false;
   IconUrlSizeSet icons_from_manifest_;
   bool skip_page_favicons_on_initial_download_ = false;
+
+  std::vector<gfx::Size> screenshot_sizes_;
+  base::flat_map<int, ScreenshotInfo> screenshots_downloaded_;
+  base::flat_map<
+      int,
+      base::OnceCallback<void(SkBitmap, std::optional<std::u16string>)>>
+      pending_screenshot_callbacks_;
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

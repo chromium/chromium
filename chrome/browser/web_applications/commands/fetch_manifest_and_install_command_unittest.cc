@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/common/chrome_features.h"
@@ -151,6 +152,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
           mojom::UserDisplayMode::kBrowser) {
     return base::BindOnce(
         [](bool accept, mojom::UserDisplayMode user_display_mode,
+           std::optional<base::WeakPtr<WebAppScreenshotFetcher>>,
            content::WebContents* initiator_web_contents,
            std::unique_ptr<WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -325,7 +327,8 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   base::RunLoop dialog_runloop;
   auto dialog_callback = base::BindLambdaForTesting(
-      [&](content::WebContents* initiator_web_contents,
+      [&](std::optional<base::WeakPtr<WebAppScreenshotFetcher>>,
+          content::WebContents* initiator_web_contents,
           std::unique_ptr<WebAppInstallInfo> web_app_info,
           WebAppInstallationAcceptanceCallback acceptance_callback) {
         std::move(acceptance_callback).Run(true, std::move(web_app_info));

@@ -231,6 +231,8 @@ void PWAHandler::InstallFromManifestId(
       webapps::WebappInstallSource::DEVTOOLS, contents->GetWeakPtr(),
       base::BindOnce(
           [](const std::string& in_manifest_id,
+             std::optional<base::WeakPtr<web_app::WebAppScreenshotFetcher>>
+                 fetcher,
              content::WebContents* initiator_web_contents,
              std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
              web_app::WebAppInstallationAcceptanceCallback

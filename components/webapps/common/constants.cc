@@ -17,4 +17,10 @@ const double kMaximumScreenshotRatio = 2.3;
 
 const size_t kMaximumDescriptionLength = 300;
 
+const int kMinimumScreenshotSizeInPx = 320;
+
+const int kMaximumScreenshotSizeInPx = 3840;
+
+const int kMaximumNumOfScreenshots = 8;
+
 }  // namespace webapps

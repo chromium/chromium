@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -35,6 +36,7 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,6 +46,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -54,12 +57,14 @@
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
@@ -68,6 +73,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -80,6 +86,8 @@
 namespace {
 
 constexpr int kSpacingBetweenImages = 8;
+constexpr int kThrobberDiameterValue = 50;
+constexpr int kThrobberVerticalSpacing = 65;
 
 // Custom layout that sets host_size to be same as the child view's size.
 class ImageCarouselLayoutManager : public views::LayoutManagerBase {
@@ -95,7 +103,6 @@ class ImageCarouselLayoutManager : public views::LayoutManagerBase {
     views::View* const inner_container = host_view()->children().front();
 
     const gfx::Size item_size(inner_container->GetPreferredSize());
-
     layout.child_layouts.push_back({inner_container, true,
                                     gfx::Rect(gfx::Point(0, 0), item_size),
                                     views::SizeBounds(item_size)});
@@ -167,22 +174,12 @@ class ImageCarouselView : public views::View {
   METADATA_HEADER(ImageCarouselView, views::View)
 
  public:
-  explicit ImageCarouselView(std::vector<webapps::Screenshot> screenshots)
-      : screenshots_(std::move(screenshots)) {
-    DCHECK(screenshots_.size());
-
+  explicit ImageCarouselView(
+      base::WeakPtr<web_app::WebAppScreenshotFetcher> fetcher)
+      : fetcher_(fetcher) {
     // Use a fill layout to draw the buttons container on
     // top of the image carousel.
     SetUseDefaultFillLayout(true);
-
-    // Screenshots are sanitized by `InstallableManager::OnScreenshotFetched`
-    // and should all have the same aspect ratio.
-#if DCHECK_IS_ON()
-    for (const auto& screenshot : screenshots_) {
-      DCHECK(screenshot.image.width() * screenshots_[0].image.height() ==
-             screenshot.image.height() * screenshots_[0].image.width());
-    }
-#endif
 
     image_padding_ = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
@@ -190,11 +187,32 @@ class ImageCarouselView : public views::View {
 
     image_inner_container_ = image_container_->AddChildView(
         std::make_unique<views::BoxLayoutView>());
-    image_inner_container_->SetBetweenChildSpacing(image_padding_);
+    image_inner_container_->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    for (size_t i = 0; i < screenshots_.size(); i++) {
-      image_views_.push_back(image_inner_container_->AddChildView(
-          std::make_unique<views::ImageView>()));
+    // Create the loading icons that have the same width as the calculated
+    // downloaded size of the screenshots, with similar padding as when images
+    // are loaded.
+    for (const gfx::Size& screenshot_size : fetcher_->GetScreenshotSizes()) {
+      auto throbber_container_view = std::make_unique<views::BoxLayoutView>();
+      const int throbber_horizontal_inset = base::checked_cast<int>(
+          (GetScaledWidthBasedOnThrobberHeight(screenshot_size) -
+           kThrobberDiameterValue) /
+          2);
+
+      auto throbber = std::make_unique<views::Throbber>(kThrobberDiameterValue);
+      throbber->SetColorId(ui::kColorSysTertiaryContainer);
+      throbber->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(kThrobberVerticalSpacing, throbber_horizontal_inset));
+      throbber->Start();
+
+      throbber_container_view->AddChildView(std::move(throbber));
+      throbber_container_view->SetBorder(views::CreateThemedSolidBorder(
+          /*thickness=*/1, ui::kColorSysSecondaryContainer));
+      throbber_container_view->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, image_padding_));
+      image_inner_container_->AddChildView(std::move(throbber_container_view));
     }
 
     image_container_->SetLayoutManager(
@@ -231,73 +249,71 @@ class ImageCarouselView : public views::View {
         AddChildView(std::move(trailing_button_container));
   }
 
+  // Start fetching screenshots after the throbbers have been added to the
+  // widget.
   void AddedToWidget() override {
+    for (size_t i = 0; i < fetcher_->GetScreenshotSizes().size(); i++) {
+      fetcher_->GetScreenshot(
+          i, base::BindOnce(&ImageCarouselView::OnScreenshotFetched,
+                            base::Unretained(this), i));
+    }
+  }
+
+  void OnScreenshotFetched(int index,
+                           SkBitmap bitmap,
+                           std::optional<std::u16string> label) {
+    CHECK(index < static_cast<int>(image_inner_container_->children().size()));
     float current_scale =
         display::Screen::GetScreen()
             ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
             .value_or(1.0f);
-    for (size_t i = 0; i < screenshots_.size(); i++) {
-      image_views_[i]->SetImage(
-          ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
-              screenshots_[i].image, current_scale)));
-      if (screenshots_[i].label) {
-        image_views_[i]->GetViewAccessibility().SetName(
-            screenshots_[i].label.value());
-      }
+
+    auto image_view = std::make_unique<views::ImageView>();
+    ui::ImageModel screenshot = ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFromBitmap(bitmap, current_scale));
+    image_view->SetImage(screenshot);
+    image_view->SetProperty(views::kMarginsKey,
+                            gfx::Insets::TLBR(0, 0, 0, image_padding_));
+
+    // Use a fixed height that guarantees to fit the screenshot with max
+    // ratio and still show a clip for the next screenshot.
+    const gfx::Size current_image_size(screenshot.GetImage().Width(),
+                                       screenshot.GetImage().Height());
+    image_view->SetImageSize(
+        {GetScaledWidthBasedOnThrobberHeight(current_image_size),
+         GetFullThrobberHeight()});
+    if (label) {
+      image_view->GetViewAccessibility().SetName(label.value());
     }
+
+    // Destroy the `throbber view` and replace it with the image view.
+    image_inner_container_->RemoveChildViewT(
+        image_inner_container_->children()[index]);
+    image_inner_container_->AddChildViewAt(std::move(image_view), index);
+
+    InvalidateLayout();
   }
 
   void Layout(PassKey) override {
-    // Use a fixed height that guarantees to fit the screenshot with max ratio
-    // and still show a clip for the next screenshot.
-    const int fixed_height = base::checked_cast<int>(
-        base::checked_cast<float>(width() - image_padding_ * 2) /
-        webapps::kMaximumScreenshotRatio);
     image_container_->SetBounds(0, 0, width(), height());
 
-    // Only setup the initial visibility and screenshots size once based on
-    // container width & max screenshot ratio, the visibility is later updated
-    // by `OnScrollButtonClicked` based on image carousel animation.
+    // Only setup the initial visibility once based on container width & max
+    // screenshot ratio, the visibility is later updated by
+    // `OnScrollButtonClicked` based on image carousel animation.
     if (!trailing_button_visibility_set_up_) {
-      for (size_t i = 0; i < screenshots_.size(); i++) {
-        const int item_width =
-            base::checked_cast<int>(screenshots_[i].image.width() *
-                                    (base::checked_cast<float>(fixed_height) /
-                                     screenshots_[i].image.height()));
-        image_views_[i]->SetImageSize({item_width, fixed_height});
-      }
       image_carousel_full_width_ =
           image_inner_container_->GetPreferredSize().width();
       trailing_button_->SetVisible(image_carousel_full_width_ > width());
       trailing_button_visibility_set_up_ = true;
     }
 
-    leading_button_container_->SetBounds(kSpacingBetweenImages, 0,
-                                         web_app::kIconSize, fixed_height);
+    // Center both of the scroll buttons to the middle of the image container.
+    leading_button_container_->SetBounds(
+        kSpacingBetweenImages, 0, web_app::kIconSize, GetFullThrobberHeight());
 
     trailing_button_container_->SetBounds(
         width() - kSpacingBetweenImages - web_app::kIconSize, 0,
-        web_app::kIconSize, fixed_height);
-  }
-
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    int host_view = available_size.width().is_bounded()
-                        ? available_size.width().value()
-                        : width();
-    // Use a fixed height that guarantees to fit the screenshot with max ratio
-    // and still show a clip for the next screenshot.
-    const int fixed_height = base::checked_cast<int>(
-        base::checked_cast<float>(host_view - image_padding_ * 2) /
-        webapps::kMaximumScreenshotRatio);
-
-    int width = 0;
-    for (const auto& screenshot : screenshots_) {
-      width += base::checked_cast<int>(
-          screenshot.image.width() * (base::checked_cast<float>(fixed_height) /
-                                      screenshot.image.height()));
-    }
-    return gfx::Size(width, fixed_height);
+        web_app::kIconSize, GetFullThrobberHeight());
   }
 
  private:
@@ -334,11 +350,26 @@ class ImageCarouselView : public views::View {
         gfx::Rect(x, bounds.y(), bounds.width(), bounds.height()));
   }
 
-  std::vector<webapps::Screenshot> screenshots_;
+  // Return the scaled width based on whether it is limited by the fixed height
+  // of the throbber container, or the maximum w/h ratio of screenshots.
+  int GetScaledWidthBasedOnThrobberHeight(const gfx::Size& size) {
+    const int throbber_height = GetFullThrobberHeight();
+    int height_limited_width = base::checked_cast<int>(
+        size.width() *
+        (base::checked_cast<float>(throbber_height) / size.height()));
+    int clamped_width_per_screenshot_ratio = base::checked_cast<int>(
+        throbber_height * webapps::kMaximumScreenshotRatio);
+    return std::min(height_limited_width, clamped_width_per_screenshot_ratio);
+  }
+
+  int GetFullThrobberHeight() {
+    return 2 * kThrobberVerticalSpacing + kThrobberDiameterValue;
+  }
+
+  base::WeakPtr<web_app::WebAppScreenshotFetcher> fetcher_;
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
   raw_ptr<views::View> image_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> image_inner_container_ = nullptr;
-  std::vector<raw_ptr<views::ImageView>> image_views_;
   raw_ptr<views::View> leading_button_ = nullptr;
   raw_ptr<views::View> trailing_button_ = nullptr;
   raw_ptr<views::View> leading_button_container_ = nullptr;
@@ -364,7 +395,7 @@ void ShowWebAppDetailedInstallDialog(
     std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
-    std::vector<webapps::Screenshot> screenshots,
+    base::WeakPtr<web_app::WebAppScreenshotFetcher> fetcher,
     PwaInProductHelpState iph_state) {
   // Do not show the dialog if it is already being shown.
   const web_modal::WebContentsModalDialogManager* manager =
@@ -430,7 +461,7 @@ void ShowWebAppDetailedInstallDialog(
               &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  std::make_unique<ImageCarouselView>(screenshots),
+                  std::make_unique<ImageCarouselView>(fetcher),
                   views::BubbleDialogModelHost::FieldType::kControl))
           .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
           .Build();
