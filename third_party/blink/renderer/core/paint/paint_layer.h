@@ -499,7 +499,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool Has3DTransformedDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has3d_transformed_descendant_;
+    return has_3d_transformed_descendant_;
   }
 
   // See
@@ -694,7 +694,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Set on a stacking context layer that has 3D descendants anywhere
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
-  unsigned has3d_transformed_descendant_ : 1;
+  unsigned has_3d_transformed_descendant_ : 1 = false;
 
   unsigned self_needs_repaint_ : 1 = false;
   // This is marked along the PaintingContainer() chain, i.e. the 'descendant'
