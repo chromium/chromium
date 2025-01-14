@@ -2455,6 +2455,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.Existing{Protocol}SessionFoundTime"
+    units="ms" expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a service endpoint request is started to when an existing
+    {Protocol} session is found by IP-based matching. Recorded when an existing
+    {Protocol} session is found after the service endpoint request is updated or
+    finished.
+  </summary>
+  <token key="Protocol">
+    <variant name="Quic" summary="QUIC"/>
+    <variant name="Spdy" summary="SPDY"/>
+  </token>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.JobCompleteTime.{Result}" units="ms"
     expires_after="2025-07-13">
   <owner>bashi@chromium.org</owner>
@@ -2492,6 +2508,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The net error for an HttpStreamPool::Job. Recorded for each job that has a
     result upon destruction of the job.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.NewSpdySessionEstablishTime" units="ms"
+    expires_after="2025-07-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when a stream attempt is created to when a new SPDY session is
+    created from the attempt. Recorded when a new SPDY session is created as a
+    result of a stream attempt.
   </summary>
 </histogram>
 

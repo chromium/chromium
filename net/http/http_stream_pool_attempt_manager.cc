@@ -987,6 +987,9 @@ bool HttpStreamPool::AttemptManager::
           quic_task_result_ = OK;
           quic_task_.reset();
         }
+        base::UmaHistogramTimes(
+            "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
+            base::TimeTicks::Now() - dns_resolution_start_time_);
         HandleQuicSessionReady(
             StreamSocketCloseReason::kUsingExistingQuicSession);
         // Use PostTask() because we could reach here from RequestStream()
@@ -1014,6 +1017,9 @@ bool HttpStreamPool::AttemptManager::
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
+      base::UmaHistogramTimes(
+          "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
+          base::TimeTicks::Now() - dns_resolution_start_time_);
       HandleSpdySessionReady(
           StreamSocketCloseReason::kUsingExistingSpdySession);
       // Use PostTask() because we could reach here from RequestStream()
@@ -1818,6 +1824,10 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
           stream_key().destination(), stream_key().network_anonymization_key(),
           /*supports_spdy=*/true);
     }
+
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.NewSpdySessionEstablishTime",
+        base::TimeTicks::Now() - in_flight_attempt->start_time());
 
     HandleSpdySessionReady(StreamSocketCloseReason::kSpdySessionCreated);
     CreateSpdyStreamAndNotify();
