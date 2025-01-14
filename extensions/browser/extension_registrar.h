@@ -76,6 +76,22 @@ class ExtensionRegistrar : public ProcessManagerObserver {
     virtual void PostDeactivateExtension(
         scoped_refptr<const Extension> extension) = 0;
 
+    // Called before |extension| is uninstalled. Performs the operations
+    // necessary before |extension| is uninstalled.
+    virtual void PreUninstallExtension(
+        scoped_refptr<const Extension> extension) = 0;
+
+    // Called after |extension| is uninstalled. Performs the operations to
+    // clean up the extensions files, etc.
+    virtual void PostUninstallExtension(
+        scoped_refptr<const Extension> extension,
+        base::OnceClosure done_callback) = 0;
+
+    // Called after |extension| un-installation event has been notified to
+    // all observers.
+    virtual void PostNotifyUninstallExtension(
+        scoped_refptr<const Extension> extension) = 0;
+
     // Given an extension ID and/or path, loads that extension as a reload.
     virtual void LoadExtensionForReload(
         const ExtensionId& extension_id,
@@ -157,6 +173,24 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // first and retrieving a new Extension pointer afterwards.
   void ReloadExtension(const ExtensionId extension_id,
                        LoadErrorBehavior load_error_behavior);
+
+  // Uninstalls the specified extension. Callers should only call this method
+  // with extensions that exist. |reason| lets the caller specify why the
+  // extension is uninstalled.
+  // Note: this method synchronously removes the extension from the
+  // set of installed extensions stored in the ExtensionRegistry, but will
+  // asynchronously remove site-related data and the files stored on disk.
+  // Returns true if an uninstall was successfully triggered; this can fail if
+  // the extension cannot be uninstalled (such as a policy force-installed
+  // extension).
+  // |done_callback| is synchronously invoked once the site-related data and the
+  // files stored on disk are removed. If such a callback is not needed, pass in
+  // a null callback (base::NullCallback()).
+  bool UninstallExtension(
+      const std::string& extension_id,
+      UninstallReason reason,
+      std::u16string* error,
+      base::OnceClosure done_callback = base::NullCallback());
 
   // TODO(michaelpg): Add methods for blocklisting and blocking extensions.
 

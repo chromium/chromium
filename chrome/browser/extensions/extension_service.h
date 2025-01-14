@@ -541,6 +541,11 @@ class ExtensionService : public ExtensionServiceInterface,
   void PostActivateExtension(scoped_refptr<const Extension> extension) override;
   void PostDeactivateExtension(
       scoped_refptr<const Extension> extension) override;
+  void PreUninstallExtension(scoped_refptr<const Extension> extension) override;
+  void PostUninstallExtension(scoped_refptr<const Extension> extension,
+                              base::OnceClosure done_callback) override;
+  void PostNotifyUninstallExtension(
+      scoped_refptr<const Extension> extension) override;
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
       const base::FilePath& path,
