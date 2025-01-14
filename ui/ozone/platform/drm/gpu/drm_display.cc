@@ -584,16 +584,30 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
     DCHECK(crtc_connector_pair.connector);
 
+    // Check whether the DRM device supports the colorspace property
     ScopedDrmPropertyPtr color_space_property(
         drm_->GetProperty(crtc_connector_pair.connector.get(), kColorSpace));
     if (!color_space_property || !color_space_property->prop_id) {
-      PLOG(INFO) << "'" << kColorSpace << "' property doesn't exist.";
+      PLOG(INFO) << "Couldn't query supported color spaces by the DRM device";
+      return false;
+    }
+
+    // Get the current color space used by the DRM connector
+    uint64_t prop_value;
+    if (!GetConnectorPropertyValue(crtc_connector_pair.connector.get(),
+                                   color_space_property->prop_id,
+                                   &prop_value)) {
+      PLOG(INFO) << "Couldn't retrieve connector's color space configuration";
       return false;
     }
 
     const uint64_t enum_value_for_colorspace =
         GetEnumValueForName(*drm_, color_space_property->prop_id,
                             GetNameForColorspace(color_space));
+    if (prop_value == enum_value_for_colorspace) {
+      // The connector color space is already set to the desired value
+      return true;
+    }
 
     // TODO(b/342617770): Atomically set connector properties across all
     // connectors owned by DrmDisplay to prevent scenarios where SetProperty()

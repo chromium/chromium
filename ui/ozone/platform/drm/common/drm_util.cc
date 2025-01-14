@@ -549,6 +549,18 @@ ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
   return nullptr;
 }
 
+bool GetConnectorPropertyValue(const drmModeConnector* const connector,
+                               const uint32_t prop_id,
+                               uint64_t* const prop_value) {
+  for (int i = 0; i < connector->count_props; i++) {
+    if (connector->props[i] == prop_id) {
+      *prop_value = connector->prop_values[i];
+      return true;
+    }
+  }
+  return false;
+}
+
 bool HasColorCorrectionMatrix(const DrmWrapper& drm, drmModeCrtc* crtc) {
   ScopedDrmObjectPropertyPtr crtc_props =
       drm.GetObjectProperties(crtc->crtc_id, DRM_MODE_OBJECT_CRTC);
