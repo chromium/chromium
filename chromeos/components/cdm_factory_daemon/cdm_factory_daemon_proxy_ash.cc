@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -336,6 +337,9 @@ void CdmFactoryDaemonProxyAsh::EstablishDaemonConnection(
   mojo::PlatformChannel channel;
   mojo::ScopedMessagePipeHandle server_pipe =
       invitation.AttachMessagePipe(kCdmFactoryDaemonPipeName);
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());
