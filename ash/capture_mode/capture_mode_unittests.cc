@@ -6448,10 +6448,10 @@ INSTANTIATE_TEST_SUITE_P(
                                           scanner_enabled);
     });
 
-class AnnotatorCaptureModeIntegrationTests : public CaptureModeTestBase {
+class AnnotatorCaptureModeIntegrationTestsBase : public CaptureModeTestBase {
  public:
-  AnnotatorCaptureModeIntegrationTests() = default;
-  ~AnnotatorCaptureModeIntegrationTests() override = default;
+  AnnotatorCaptureModeIntegrationTestsBase() = default;
+  ~AnnotatorCaptureModeIntegrationTestsBase() override = default;
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
@@ -6498,11 +6498,43 @@ class AnnotatorCaptureModeIntegrationTests : public CaptureModeTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-class AnnotatorCaptureModeIntegrationTestsWithSource
-    : public AnnotatorCaptureModeIntegrationTests,
-      public ::testing::WithParamInterface<CaptureModeSource> {};
+class AnnotatorCaptureModeIntegrationTests
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
 
-TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AnnotatorCaptureModeIntegrationTests,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTests::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
+class AnnotatorCaptureModeIntegrationTestsWithSource
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CaptureModeSource, bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
   PressAndReleaseKey(ui::VKEY_RETURN);
@@ -6524,7 +6556,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayDockedMagnifier) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6588,7 +6620,7 @@ class EventTargetCatcher : public ui::EventHandler {
 
 }  // namespace
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayWidgetTargeting) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6645,7 +6677,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
 
 // Tests that auto hidden shelf can be brought back if user moves mouse to the
 // shelf activation area even while annotation is active.
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        BringBackAutoHiddenShelfWhileAnnotationIsOn) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   // Set `shelf` to always auto-hidden.
@@ -6712,7 +6744,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
 
 TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBounds) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   CaptureModeTestApi test_api;
   AnnotationsOverlayController* overlay_controller =
@@ -6733,7 +6765,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
 
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   const auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
@@ -6746,11 +6778,23 @@ TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
   VerifyOverlayWindow(overlay_window, capture_source, kUserRegion);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AnnotatorCaptureModeIntegrationTestsWithSource,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AnnotatorCaptureModeIntegrationTestsWithSource,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTestsWithSource::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
 // -----------------------------------------------------------------------------
 // CaptureModeSettingsTest:
