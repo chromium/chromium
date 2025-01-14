@@ -644,6 +644,8 @@ void TipsNotificationClient::MaybeLogTriggeredNotification() {
   TipsNotificationType type =
       static_cast<TipsNotificationType>(last_sent->GetValue()->GetInt());
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Triggered", type);
+  base::UmaHistogramEnumeration("IOS.Notification.Received",
+                                NotificationTypeForTipsNotificationType(type));
   local_state_->SetInteger(kTipsNotificationsLastTriggered, int(type));
   local_state_->ClearPref(kTipsNotificationsLastSent);
 }

@@ -2721,6 +2721,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Notification.Received" enum="NotificationType"
+    expires_after="2026-01-09">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs when a notification was received on a user's device. Will be logged
+    when the user opens the app, after the notification has been received.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.OptInPrompt.Action"
     enum="IOSNotificationsOptInActionOnPrompt" expires_after="2025-05-11">
   <owner>hiramahmood@google.com</owner>
