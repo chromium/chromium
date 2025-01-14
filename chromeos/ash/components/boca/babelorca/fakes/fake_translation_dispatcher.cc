@@ -4,9 +4,20 @@
 
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_translation_dispatcher.h"
 
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "components/live_caption/translation_util.h"
 
 namespace ash::babelorca {
+
+namespace {
+
+void InvokeFakeDispatch(captions::TranslateEventCallback callback,
+                        const std::string& result) {
+  std::move(callback).Run(base::ok(result));
+}
+
+}  // namespace
 
 FakeBabelOrcaTranslationDispatcher::FakeBabelOrcaTranslationDispatcher() =
     default;
@@ -19,13 +30,15 @@ void FakeBabelOrcaTranslationDispatcher::GetTranslation(
     const std::string& target_language,
     captions::TranslateEventCallback callback) {
   ++num_translation_calls_;
+  if (!dispatch_handler_.is_null()) {
+    dispatch_handler_.Run(base::BindOnce(&InvokeFakeDispatch,
+                                         std::move(callback),
+                                         injected_result_.value_or(result)));
+    return;
+  }
+
   std::move(callback).Run(
       captions::TranslateEvent(injected_result_.value_or(result)));
-}
-
-void FakeBabelOrcaTranslationDispatcher::InjectTranslationResult(
-    const std::string& translation) {
-  injected_result_ = translation;
 }
 
 }  // namespace ash::babelorca
