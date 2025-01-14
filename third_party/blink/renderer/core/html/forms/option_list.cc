@@ -71,9 +71,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
     }
 
     if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
-      if (current == select_) {
-        current = nullptr;
-      } else if (IsA<HTMLSelectElement>(current)) {
+      if (IsA<HTMLSelectElement>(current)) {
         current = ElementTraversal::PreviousAbsoluteSibling(*next, &select_);
       } else {
         current = ElementTraversal::Previous(*current, &select_);
