@@ -223,6 +223,10 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
 
+  default_html_style_->CompactRulesIfNeeded();
+  default_html_quirks_style_->CompactRulesIfNeeded();
+  default_print_style_->CompactRulesIfNeeded();
+
   CHECK(default_html_style_->ViewTransitionRules().empty())
       << "@view-transition is not implemented for the UA stylesheet.";
 
@@ -236,6 +240,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
     StyleSheetContents* stylesheet = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_VIEW_SOURCE_CSS));
     default_view_source_style_->AddRulesFromSheet(stylesheet, ScreenEval());
+    default_view_source_style_->CompactRulesIfNeeded();
   }
   return default_view_source_style_.Get();
 }
@@ -246,6 +251,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
         UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
     default_json_document_style_ = MakeGarbageCollected<RuleSet>();
     default_json_document_style_->AddRulesFromSheet(stylesheet, ScreenEval());
+    default_json_document_style_->CompactRulesIfNeeded();
   }
   return default_json_document_style_.Get();
 }
@@ -265,19 +271,24 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   switch (type) {
     case NamespaceType::kHTML:
       default_html_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_html_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kSVG:
       default_svg_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_svg_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMathML:
       default_mathml_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_mathml_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMediaControls:
       default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_media_controls_style_->CompactRulesIfNeeded();
       break;
   }
   // Add to print and forced color for all namespaces.
   default_print_style_->AddRulesFromSheet(rules, PrintEval());
+  default_print_style_->CompactRulesIfNeeded();
   if (default_forced_color_style_) {
     switch (type) {
       case NamespaceType::kMediaControls:
@@ -287,10 +298,12 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
         }
         default_forced_colors_media_controls_style_->AddRulesFromSheet(
             rules, ForcedColorsEval());
+        default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
         break;
       default:
         default_forced_color_style_->AddRulesFromSheet(rules,
                                                        ForcedColorsEval());
+        default_forced_color_style_->CompactRulesIfNeeded();
         break;
     }
   }
@@ -419,6 +432,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       }
       default_pseudo_element_style_->AddRulesFromSheet(ScrollButtonStyleSheet(),
                                                        ScreenEval());
+      default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
     case kPseudoIdMarker: {
@@ -432,6 +446,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       }
       default_pseudo_element_style_->AddRulesFromSheet(MarkerStyleSheet(),
                                                        ScreenEval());
+      default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
     default:
@@ -460,6 +475,7 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen(
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
       MediaQueryEvaluator(element.GetDocument().GetFrame()));
+  default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
 }
 
@@ -478,6 +494,7 @@ void CSSDefaultStyleSheets::RebuildFullscreenRuleSetIfMediaQueriesChanged(
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
       MediaQueryEvaluator(element.GetDocument().GetFrame()));
+  default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
 }
 
@@ -511,6 +528,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_color_style_->AddRulesFromSheet(SvgStyleSheet(),
                                                    ForcedColorsEval());
   }
+  default_forced_color_style_->CompactRulesIfNeeded();
 
   if (media_controls_style_sheet_) {
     CHECK(!default_forced_colors_media_controls_style_);
@@ -518,6 +536,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
         MakeGarbageCollected<RuleSet>();
     default_forced_colors_media_controls_style_->AddRulesFromSheet(
         MediaControlsStyleSheet(), ForcedColorsEval());
+    default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
   }
 
   return true;

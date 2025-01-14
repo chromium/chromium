@@ -796,6 +796,7 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
     if (rule_set_diff_) {
       rule_set_diff_->NewRuleSetCreated(rule_set_);
     }
+    rule_set_->CompactRulesIfNeeded();
   }
   return *rule_set_.Get();
 }

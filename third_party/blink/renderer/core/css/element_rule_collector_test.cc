@@ -40,6 +40,7 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
                          kRuleHasNoSpecialState, /*within_mixin=*/false);
+  rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
 
@@ -354,6 +355,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     ElementRuleCollector collector(context, StyleRecalcContext(),
                                    SelectorFilter(), result,
                                    EInsideLink::kNotInsideLink);
+    sheet->GetRuleSet().CompactRulesIfNeeded();
     collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr},
                                    /*part_names*/ nullptr);
 

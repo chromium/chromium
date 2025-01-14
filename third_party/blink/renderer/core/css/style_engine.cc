@@ -2908,6 +2908,10 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkPositionTryStylesDirty(changed_rule_sets);
   }
 
+  for (RuleSet* rule_set : changed_rule_sets) {
+    rule_set->CompactRulesIfNeeded();
+  }
+
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 }

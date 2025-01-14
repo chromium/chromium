@@ -119,7 +119,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       continue;
     }
 
-    const RuleSet& rule_set = *active_sheet.second;
+    RuleSet& rule_set = *active_sheet.second;
     if (!active_style_sheets_.empty() &&
         active_style_sheets_.back().second == active_sheet.second) {
       // Some frameworks generate a ton of identical <style> tags;
@@ -132,6 +132,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       // however, we'd need to make sure this doesn't change @layer ordering.
     } else {
       active_style_sheets_.push_back(active_sheet);
+      rule_set.CompactRulesIfNeeded();
       AddKeyframeRules(rule_set);
       AddFontFaceRules(rule_set);
       AddCounterStyleRules(rule_set);

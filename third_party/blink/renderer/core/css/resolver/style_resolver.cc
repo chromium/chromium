@@ -1052,6 +1052,7 @@ void StyleResolver::MatchUARules(const Element& element,
 
   MatchRequest match_request;
   auto func = [&match_request](RuleSet* rules) {
+    rules->AssertCompacted();
     match_request.AddRuleset(rules);
   };
   ForEachUARulesForElement(element, &collector, func);
@@ -2889,6 +2890,7 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromUnconnectedRuleSet(
                                  state.InsideLink());
   collector.SetMatchingRulesFromNoStyleSheet(true);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
+  rule_set->CompactRulesIfNeeded();
   MatchRequest match_request(rule_set, scope);
   collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
   collector.SortAndTransferMatchedRules(

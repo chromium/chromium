@@ -761,7 +761,15 @@ template <bool stop_at_first_match>
 DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     const MatchRequest& match_request,
     PartNames* part_names) {
+#if DCHECK_IS_ON()
   DCHECK(!match_request.IsEmpty());
+
+  // Now that we're about to read from the RuleSet, we're done adding more
+  // rules to the set and we should make sure it's compacted.
+  for (const auto bundle : match_request.AllRuleSets()) {
+    bundle.rule_set->AssertCompacted();
+  }
+#endif
 
   SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);

@@ -510,6 +510,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     }
   }
 
+  void AssertCompacted() const { DCHECK(!need_compaction_); }
+
   bool HasSlottedRules() const {
     return !slotted_pseudo_element_rules_.empty();
   }

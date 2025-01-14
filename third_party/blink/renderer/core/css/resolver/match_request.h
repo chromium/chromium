@@ -79,10 +79,6 @@ class CORE_EXPORT MatchRequest {
 
   void AddRuleset(RuleSet* rule_set) {
     DCHECK(!IsFull());
-
-    // Now that we're about to read from the RuleSet, we're done adding more
-    // rules to the set and we should make sure it's compacted.
-    rule_set->CompactRulesIfNeeded();
     rule_sets_[num_rule_sets_] = rule_set;
     ++num_rule_sets_;
   }
