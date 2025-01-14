@@ -21402,6 +21402,56 @@
             ]
         }
     ],
+    "SearchEnginePreconnectInterval": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith50_20250114",
+                    "params": {
+                        "preconnect_interval": "50"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnectInterval"
+                    ]
+                },
+                {
+                    "name": "EnabledWith40_20250114",
+                    "params": {
+                        "preconnect_interval": "40"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnectInterval"
+                    ]
+                },
+                {
+                    "name": "EnabledWith30_20250114",
+                    "params": {
+                        "preconnect_interval": "30"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnectInterval"
+                    ]
+                },
+                {
+                    "name": "EnabledWith20_20250114",
+                    "params": {
+                        "preconnect_interval": "20"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnectInterval"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchInCCT": [
         {
             "platforms": [
