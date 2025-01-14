@@ -45,7 +45,7 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
   if (passages.empty()) {
     std::move(callback).Run(
         /*passages=*/{}, /*embeddings=*/{},
-        passage_embeddings::ComputeEmbeddingsStatus::KSuccess);
+        passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
     return;
   }
 
@@ -83,7 +83,7 @@ void SchedulingEmbedder::SubmitWorkToEmbedder() {
       VLOG(2) << "Dropped pending query '" << jobs_.front().passages[0]
               << "'. Next query: '" << jobs_.at(1).passages[0] << "'";
       std::move(jobs_.front().callback)
-          .Run({}, {}, passage_embeddings::ComputeEmbeddingsStatus::KSkipped);
+          .Run({}, {}, passage_embeddings::ComputeEmbeddingsStatus::kSkipped);
       jobs_.pop_front();
     }
   }

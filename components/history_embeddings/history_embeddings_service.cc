@@ -413,7 +413,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     std::vector<Embedding> query_embeddings,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   bool succeeded =
-      status == passage_embeddings::ComputeEmbeddingsStatus::KSuccess;
+      status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
 

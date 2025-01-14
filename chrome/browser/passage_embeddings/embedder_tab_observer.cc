@@ -44,7 +44,7 @@ blink::mojom::InnerTextParamsPtr MakeInnerTextParams() {
 void OnGotEmbeddings(base::ElapsedTimer embeddings_computation_timer,
                      std::vector<mojom::PassageEmbeddingsResultPtr> results,
                      ComputeEmbeddingsStatus status) {
-  if (status != ComputeEmbeddingsStatus::KSuccess) {
+  if (status != ComputeEmbeddingsStatus::kSuccess) {
     return;
   }
   VLOG(3) << "Embeddings computed in "

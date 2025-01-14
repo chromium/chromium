@@ -148,7 +148,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
   if (!EmbedderReady()) {
     VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
             << "'; sp='" << sp_model_path_ << "'";
-    std::move(callback).Run({}, ComputeEmbeddingsStatus::KModelUnavailable);
+    std::move(callback).Run({}, ComputeEmbeddingsStatus::kModelUnavailable);
     return;
   }
 
@@ -181,7 +181,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
              std::vector<mojom::PassageEmbeddingsResultPtr> results) {
             auto status = results.empty()
                               ? ComputeEmbeddingsStatus::kExecutionFailure
-                              : ComputeEmbeddingsStatus::KSuccess;
+                              : ComputeEmbeddingsStatus::kSuccess;
             std::move(callback).Run(std::move(results), status);
           },
           std::move(callback)));
