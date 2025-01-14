@@ -14,7 +14,6 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -97,8 +96,8 @@ public class ScrimProperties {
     /* package */ static final WritableObjectPropertyKey<TouchEventDelegate> TOUCH_EVENT_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    /** A subset of {@link #ALL_KEYS} that are required to use the scrim. */
-    public static final PropertyKey[] REQUIRED_KEYS =
+    /** Property keys used to control the behavior of the scrim. */
+    public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TOP_MARGIN,
                 AFFECTS_STATUS_BAR,
@@ -107,17 +106,10 @@ public class ScrimProperties {
                 VISIBILITY_CALLBACK,
                 CLICK_DELEGATE,
                 ALPHA,
-                TOUCH_EVENT_DELEGATE
+                TOUCH_EVENT_DELEGATE,
+                BACKGROUND_COLOR,
+                BACKGROUND_DRAWABLE,
+                GESTURE_DETECTOR,
+                AFFECTS_NAVIGATION_BAR,
             };
-
-    /** All keys used for the scrim, including optional ones (see {@link #REQUIRED_KEYS}). */
-    public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(
-                    REQUIRED_KEYS,
-                    new PropertyKey[] {
-                        BACKGROUND_COLOR,
-                        BACKGROUND_DRAWABLE,
-                        GESTURE_DETECTOR,
-                        AFFECTS_NAVIGATION_BAR
-                    });
 }

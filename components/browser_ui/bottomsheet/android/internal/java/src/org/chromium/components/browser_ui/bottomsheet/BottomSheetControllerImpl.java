@@ -227,7 +227,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         (content1, content2) -> content1.getPriority() - content2.getPriority());
 
         PropertyModel scrimProperties =
-                new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.TOP_MARGIN, 0)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
@@ -359,7 +359,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     @Override
     public PropertyModel createScrimParams() {
-        return new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
+        return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                 .with(ScrimProperties.TOP_MARGIN, 0)
                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                 .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)

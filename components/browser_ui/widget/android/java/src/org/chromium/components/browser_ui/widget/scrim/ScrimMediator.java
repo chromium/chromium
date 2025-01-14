@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.scrim;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
@@ -122,9 +123,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
         mOverlayFadeInAnimator.setDuration(getAnimationDuration(animDurationMs));
 
-        if (model.getAllSetProperties().contains(ScrimProperties.GESTURE_DETECTOR)) {
-            mIsNewEventFilter = model.get(ScrimProperties.GESTURE_DETECTOR) != null;
-        }
+        mIsNewEventFilter = model.get(ScrimProperties.GESTURE_DETECTOR) != null;
         mOverlayFadeInAnimator.setFloatValues(mModel.get(ScrimProperties.ALPHA), 1f);
         runFadeAnimation(mOverlayFadeInAnimator);
     }
@@ -218,9 +217,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR) && mSystemUiScrimDelegate != null) {
             mSystemUiScrimDelegate.setStatusBarScrimFraction(alpha);
         }
-        if (mModel.getAllSetProperties().contains(ScrimProperties.AFFECTS_NAVIGATION_BAR)
-                && mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR)
-                && mSystemUiScrimDelegate != null) {
+        if (mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR) && mSystemUiScrimDelegate != null) {
             mSystemUiScrimDelegate.setNavigationBarScrimFraction(alpha);
         }
 
@@ -284,16 +281,17 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         if (mIsHidingOrHidden) return false;
-        if (!mModel.getAllSetProperties().contains(ScrimProperties.GESTURE_DETECTOR)) return false;
+        GestureDetector gestureDetector = mModel.get(ScrimProperties.GESTURE_DETECTOR);
+        if (gestureDetector == null) return false;
 
         // Make sure the first event that goes through the filter is an ACTION_DOWN, even in the
         // case where the filter is added while a gesture is already in progress.
         if (mIsNewEventFilter && e.getActionMasked() != MotionEvent.ACTION_DOWN) {
             MotionEvent downEvent = MotionEvent.obtain(e);
             downEvent.setAction(MotionEvent.ACTION_DOWN);
-            if (!mModel.get(ScrimProperties.GESTURE_DETECTOR).onTouchEvent(downEvent)) return false;
+            if (!gestureDetector.onTouchEvent(downEvent)) return false;
         }
         mIsNewEventFilter = false;
-        return mModel.get(ScrimProperties.GESTURE_DETECTOR).onTouchEvent(e);
+        return gestureDetector.onTouchEvent(e);
     }
 }

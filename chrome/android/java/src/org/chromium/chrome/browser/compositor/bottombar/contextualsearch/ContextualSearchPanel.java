@@ -857,7 +857,7 @@ public class ContextualSearchPanel extends OverlayPanel {
             mScrimCoordinator = mManagementDelegate.getScrimCoordinator();
             if (mScrimProperties == null) {
                 mScrimProperties =
-                        new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
+                        new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                 .with(ScrimProperties.TOP_MARGIN, 0)
                                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                                 .with(ScrimProperties.ANCHOR_VIEW, getCompositorViewHolder())
