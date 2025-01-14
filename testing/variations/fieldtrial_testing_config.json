@@ -23981,6 +23981,22 @@
             ]
         }
     ],
+    "UnoPhase2FastFollowsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UnoPhase2FollowUp",
+                        "UseHostedDomainForManagementCheckOnSignin"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPwa": [
         {
             "platforms": [
