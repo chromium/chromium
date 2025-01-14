@@ -71,8 +71,12 @@ public class LayerTitleCache {
     /** Responsible for building incognito or dark theme titles. */
     protected final TitleBitmapFactory mDarkTitleBitmapFactory;
 
-    /** Builds an instance of the LayerTitleCache. */
-    public LayerTitleCache(Context context, ResourceManager resourceManager) {
+    /**
+     * @param context The Android {@link Context}.
+     * @param resourceManager The manager for static resources to be used by native layers.
+     * @param tabStripHeightPx The height of the tab strip in pixels.
+     */
+    public LayerTitleCache(Context context, ResourceManager resourceManager, int tabStripHeightPx) {
         mContext = context;
         mResourceManager = resourceManager;
         Resources res = context.getResources();
@@ -84,8 +88,10 @@ public class LayerTitleCache {
         mSharedGroupAvatarPaddingPx =
                 res.getDimensionPixelSize(R.dimen.tablet_shared_group_avatar_padding);
         mFaviconSize = res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
-        mStandardTitleBitmapFactory = new TitleBitmapFactory(context, false);
-        mDarkTitleBitmapFactory = new TitleBitmapFactory(context, true);
+        mStandardTitleBitmapFactory =
+                new TitleBitmapFactory(context, /* incognito= */ false, tabStripHeightPx);
+        mDarkTitleBitmapFactory =
+                new TitleBitmapFactory(context, /* incognito= */ true, tabStripHeightPx);
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mBubbleOuterCircleSize =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_outer_size);
