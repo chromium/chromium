@@ -618,11 +618,6 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
-  // TODO(crbug.com/378688985): Move this close to TransferableResource::Make
-  external_resource.resource.origin =
-      video_frame->HasSharedImage()
-          ? video_frame->shared_image()->surface_origin()
-          : kTopLeft_GrSurfaceOrigin;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
@@ -849,6 +844,12 @@ void VideoResourceUpdater::CopyHardwarePlane(
       output_plane_resource_size, copy_si_format,
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kVideo);
+
+  // TODO(crbug.com/378688985): This is not correct value, but it was
+  // historically this way.  Correct value is in
+  // hardware_resource::shared_image::surface_origin(), which is always top
+  // left.
+  transferable_resource.origin = shared_image->surface_origin();
   transferable_resource.color_space = copy_color_space;
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
@@ -903,6 +904,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
       video_frame->acquire_sync_token(), size, shared_image->format(),
       video_frame->metadata().allow_overlay,
       viz::TransferableResource::ResourceSource::kVideo);
+  transfer_resource.origin = shared_image->surface_origin();
   transfer_resource.color_space = video_frame->ColorSpace();
   transfer_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
@@ -1374,6 +1376,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
           viz::TransferableResource::ResourceSource::kVideo);
     }
 
+    transferable_resource.origin = kTopLeft_GrSurfaceOrigin;
     transferable_resource.color_space = output_color_space;
     transferable_resource.hdr_metadata =
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
@@ -1405,6 +1408,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
       resource->resource_size(), output_si_format,
       resource->overlay_candidate(),
       viz::TransferableResource::ResourceSource::kVideo);
+  transferable_resource.origin = kTopLeft_GrSurfaceOrigin;
   transferable_resource.color_space = output_color_space;
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
