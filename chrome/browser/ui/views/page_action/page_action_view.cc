@@ -63,12 +63,6 @@ void PageActionView::OnPageActionModelWillBeDeleted(PageActionModel* model) {
   SetVisible(false);
 }
 
-std::unique_ptr<views::ActionViewInterface>
-PageActionView::GetActionViewInterface() {
-  return std::make_unique<PageActionViewInterface>(this,
-                                                   observation_.GetSource());
-}
-
 actions::ActionId PageActionView::GetActionId() const {
   return action_item_->GetActionId().value();
 }
@@ -165,30 +159,5 @@ void PageActionView::UpdateIconImage() {
 
 BEGIN_METADATA(PageActionView)
 END_METADATA
-
-PageActionViewInterface::PageActionViewInterface(PageActionView* action_view,
-                                                 PageActionModel* model)
-    : views::LabelButtonActionViewInterface(action_view),
-      action_view_(action_view),
-      model_(model) {}
-
-PageActionViewInterface::~PageActionViewInterface() = default;
-
-void PageActionViewInterface::ActionItemChangedImpl(
-    actions::ActionItem* action_item) {
-  // This method does nothing, because all ActionItem state is plumbed through
-  // PageActionController and PageActionModel. Doing so saves having to deal
-  // with conflicts (eg. ActionItem sets visibility, but PageActionController
-  // overrides it).
-}
-
-// These methods do nothing because `PageActionView` needs to add the
-// button trigger source (i.e, mouse, keyboard, gesture) to the action's
-// invocation context. The current action-view framework does not support this,
-// so the behaviour is implemented by `PageActionView`.
-void PageActionViewInterface::InvokeActionImpl(
-    actions::ActionItem* action_item) {}
-void PageActionViewInterface::LinkActionInvocationToView(
-    base::RepeatingClosure trigger_action_callback) {}
 
 }  // namespace page_actions

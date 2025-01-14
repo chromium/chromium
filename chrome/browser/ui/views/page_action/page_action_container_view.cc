@@ -13,14 +13,12 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/actions/action_view_controller.h"
 
 namespace page_actions {
 
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
-    IconLabelBubbleView::Delegate* icon_view_delegate)
-    : action_view_controller_(std::make_unique<views::ActionViewController>()) {
+    IconLabelBubbleView::Delegate* icon_view_delegate) {
   SetBetweenChildSpacing(kPageActionBetweenIconSpacing);
 
   // Right align to clip the leftmost items first when not enough space.
@@ -35,9 +33,6 @@ PageActionContainerView::PageActionContainerView(
         view->AddVisibleChangedCallback(base::BindRepeating(
             &PageActionContainerView::SetContainerInsideBorderInsets,
             base::Unretained(this))));
-
-    action_view_controller_->CreateActionViewRelationship(
-        view, action_item->GetAsWeakPtr());
   }
 
   SetContainerInsideBorderInsets();
