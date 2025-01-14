@@ -22,7 +22,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
@@ -187,7 +186,6 @@ public class AutofillUnitTest {
     @Test
     @SmallTest
     @Feature({"autofill"})
-    @DisabledTest(message = "https://crbug.com/1338184")
     public void testAutofillClickFirstSuggestion() {
         AutofillSuggestion[] suggestions = createTwoAutofillSuggestionArray();
         openAutofillPopupAndWaitUntilReady(suggestions);
