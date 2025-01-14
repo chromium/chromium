@@ -1316,8 +1316,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     if (!root_) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kNoRoot);
-      // TODO(b/368660753): make this fatal once root cause resolved.
-      RecordError(update_state, "Tree has no root.", /*is_fatal=*/false);
+      RecordError(update_state, "Tree has no root.", true);
       return false;
     }
 
