@@ -210,6 +210,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             if (url != null) {
                 String cookie = CookieManager.getInstance().getCookie(url);
                 Log.w(TAG, "GetCookie: " + cookie);
+                Toast.makeText(this, "Printing cookie values to adb logcat", Toast.LENGTH_SHORT)
+                        .show();
             } else {
                 Toast.makeText(this, "Error: Url is not set", Toast.LENGTH_SHORT).show();
             }
