@@ -2369,11 +2369,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 // Parameterized text-specific attributes.
 
-- (id)AXLineForIndex:(id)parameter {
-  // TODO: multiline is not supported on views.
-  return @0;
-}
-
 - (id)AXRangeForLine:(id)parameter {
   if (![parameter isKindOfClass:[NSNumber class]] || [parameter intValue] != 0)
     return nil;
@@ -3287,6 +3282,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [[self getAXValueAsString] substringWithRange:range];
 }
 
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
+  // TODO: multiline is not supported on views.
+  return 0;
+}
+
 - (NSAttributedString*)accessibilityAttributedStringForRange:(NSRange)range {
   if (!_node)
     return nil;
@@ -3294,11 +3294,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return [self AXAttributedStringForRange:[NSValue valueWithRange:range]];
 }
 
-- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
-  if (!_node)
-    return 0;
-
-  return [[self AXLineForIndex:@(index)] integerValue];
+- (id)AXLineForIndex:(id)parameter {
+  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!lineNumber) {
+    return nil;
+  }
+  return @([self accessibilityLineForIndex:[lineNumber intValue]]);
 }
 
 - (NSRange)accessibilityRangeForIndex:(NSInteger)index {

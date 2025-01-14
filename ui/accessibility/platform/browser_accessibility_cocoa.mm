@@ -1750,14 +1750,11 @@ bool ui::IsNSRange(id value) {
       textContent.substr(range.location, range.length));
 }
 
-- (id)AXLineForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  int lineIndex = [(NSNumber*)parameter intValue];
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index {
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
-  auto iterator =
-      std::lower_bound(lineStarts.begin(), lineStarts.end(), lineIndex);
-  return @(std::distance(lineStarts.begin(), iterator));
+  auto iterator = std::lower_bound(lineStarts.begin(), lineStarts.end(), index);
+  return std::distance(lineStarts.begin(), iterator);
 }
 
 - (id)AXRangeForLine:(id)parameter {
@@ -1807,11 +1804,6 @@ bool ui::IsNSRange(id value) {
     // here, but at the moment, test infrastructure still directly calls this
     // api endpoint.
     return nil;
-  }
-
-  if ([attribute
-          isEqualToString:NSAccessibilityLineForIndexParameterizedAttribute]) {
-    return [self AXLineForIndex:parameter];
   }
 
   if ([attribute

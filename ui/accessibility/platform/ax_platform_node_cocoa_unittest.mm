@@ -797,6 +797,17 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleRows) {
             [row node]->GetUniqueId());
 }
 
+// accessibilityLineForIndex
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLineForIndex) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  EXPECT_EQ([text_field accessibilityLineForIndex:0], 0);
+}
+
 // accessibilityStringForRange
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   Init(std::string(R"HTML(
