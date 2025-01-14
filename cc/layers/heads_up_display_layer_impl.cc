@@ -161,9 +161,7 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
       return;
     }
 
-    auto tracing_guid = shared_image->GetGUIDForTracing();
-    pmd->CreateSharedGlobalAllocatorDump(tracing_guid);
-    pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
+    shared_image->OnMemoryDump(pmd, buffer_dump_guid, importance);
   }
 
   raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
