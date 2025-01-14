@@ -20,7 +20,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/tablet_state.h"
-#include "ui/events/event.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
