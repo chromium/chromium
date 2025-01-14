@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -14,6 +15,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -164,7 +166,34 @@ bool CrossesIncognito(BrowserContext* context, const Event& event) {
          context != event.restrict_to_browser_context;
 }
 
+base::debug::CrashKeyString* GetEventNameCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_event_name", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a crash keys for dispatching an extension event over mojom.
+//
+// It is created each time an event is sent from the browser to the renderer
+// process via the EventDispatcher::DispatchEvent interface.
+//
+// All keys are logged every time this class is instantiated.
+class ScopedOOMCrashKey {
+ public:
+  explicit ScopedOOMCrashKey(const std::string& event_name)
+      : event_name_crash_key_(GetEventNameCrashKey(), event_name) {}
+  ~ScopedOOMCrashKey() = default;
+
+ private:
+  // Extension API event name.
+  base::debug::ScopedCrashKeyString event_name_crash_key_;
+};
+
+}  // namespace debug
 
 const char EventRouter::kRegisteredLazyEvents[] = "events";
 const char EventRouter::kRegisteredServiceWorkerEvents[] =
@@ -225,6 +254,7 @@ void EventRouter::RouteDispatchEvent(
   // The RenderProcessHost might be dead, but if the RenderProcessHost
   // is alive then the dispatcher must be connected.
   CHECK(!rph->IsInitializedAndNotDead() || dispatcher.is_connected());
+  debug::ScopedOOMCrashKey oom_crash_key(params->event_name);
   dispatcher->DispatchEvent(std::move(params), std::move(event_args),
                             std::move(callback));
 }
