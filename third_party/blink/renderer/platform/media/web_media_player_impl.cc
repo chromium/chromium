@@ -3833,6 +3833,9 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
   // we should plumb the pause reason from here all the way through to
   // `WebMediaPlayerImpl::Pause`, where the reset is done.
   client_->PausePlayback(pause_reason);
+
+  // NOTE: The reason MUST be set AFTER `PausePlayback()` is called, since it
+  // will call `Pause()` which clears the `visibility_pause_reason_`.
   visibility_pause_reason_ = pause_reason;
 }
 

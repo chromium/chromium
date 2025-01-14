@@ -3913,11 +3913,14 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
     StartPlaybackProgressTimer();
     playing_ = true;
   } else {  // Should not be playing right now
-    if (is_playing) {
+    // Always tell WMP about the pause since it may need to clear a pending
+    // automatic playback resumption.
+    if (web_media_player_ && ready_state_ >= kHaveMetadata) {
       web_media_player_->Pause();
-
-      if (pause_speech && ::features::IsTextBasedAudioDescriptionEnabled())
-        SpeechSynthesis()->Pause();
+    }
+    if (is_playing && pause_speech &&
+        ::features::IsTextBasedAudioDescriptionEnabled()) {
+      SpeechSynthesis()->Pause();
     }
 
     playback_progress_timer_.Stop();
