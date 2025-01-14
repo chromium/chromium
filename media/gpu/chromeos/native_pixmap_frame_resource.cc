@@ -392,6 +392,13 @@ void NativePixmapFrameResource::set_metadata(
   metadata_.tracking_token = original_tracking_token;
 }
 
+const base::UnguessableToken& NativePixmapFrameResource::tracking_token()
+    const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
+}
+
 base::TimeDelta NativePixmapFrameResource::timestamp() const {
   return timestamp_;
 }
