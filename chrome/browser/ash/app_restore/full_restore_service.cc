@@ -658,27 +658,27 @@ void FullRestoreService::MaybeShowRestoreNotification(
 
     InitInformedRestoreContentsData(dialog_type);
 
-      // Retrieves session service data from browser and app browsers, which
-      // will be used to display favicons and tab titles.
-      SessionServiceBase* service =
-          SessionServiceFactory::GetForProfileForSessionRestore(profile_);
-      SessionServiceBase* app_service =
-          AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
-      if (service && app_service) {
-        auto barrier = base::BarrierCallback<SessionWindows>(
-            /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
-                &FullRestoreService::OnGotAllSessionsAsh,
-                weak_ptr_factory_.GetWeakPtr()));
+    // Retrieves session service data from browser and app browsers, which
+    // will be used to display favicons and tab titles.
+    SessionServiceBase* service =
+        SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+    SessionServiceBase* app_service =
+        AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
+    if (service && app_service) {
+      auto barrier = base::BarrierCallback<SessionWindows>(
+          /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
+              &FullRestoreService::OnGotAllSessionsAsh,
+              weak_ptr_factory_.GetWeakPtr()));
 
-        service->GetLastSession(
-            base::BindOnce(&FullRestoreService::OnGotSessionAsh,
-                           weak_ptr_factory_.GetWeakPtr(), barrier));
-        app_service->GetLastSession(
-            base::BindOnce(&FullRestoreService::OnGotSessionAsh,
-                           weak_ptr_factory_.GetWeakPtr(), barrier));
-      } else {
-        OnGotAllSessionsAsh(/*all_session_windows=*/{});
-      }
+      service->GetLastSession(
+          base::BindOnce(&FullRestoreService::OnGotSessionAsh,
+                         weak_ptr_factory_.GetWeakPtr(), barrier));
+      app_service->GetLastSession(
+          base::BindOnce(&FullRestoreService::OnGotSessionAsh,
+                         weak_ptr_factory_.GetWeakPtr(), barrier));
+    } else {
+      OnGotAllSessionsAsh(/*all_session_windows=*/{});
+    }
 
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
