@@ -2124,7 +2124,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
@@ -2234,7 +2234,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.TopImpression"
-    enum="IOSMagicStackModuleType" expires_after="2025-05-11">
+    enum="IOSMagicStackModuleType" expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>
@@ -2371,7 +2371,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ApplicationResumeTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2393,7 +2393,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}AverageSuspendedMemory" units="MB"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2596,7 +2596,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}OptimizedTimeToFirstDraw" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2622,7 +2622,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}PeakMemoryUsage" units="MB"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2650,7 +2650,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}TimeToFirstDraw" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -3460,7 +3460,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PasswordBottomSheet.ExitReason"
-    enum="PasswordSuggestionBottomSheetExitReason" expires_after="2025-05-11">
+    enum="PasswordSuggestionBottomSheetExitReason" expires_after="2025-07-13">
   <owner>sugoi@chromium.org</owner>
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
@@ -3710,7 +3710,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo" enum="IOSPromosManagerPromo"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>

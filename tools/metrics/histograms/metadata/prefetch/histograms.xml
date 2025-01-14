@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2025-05-11">
+    enum="Boolean" expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

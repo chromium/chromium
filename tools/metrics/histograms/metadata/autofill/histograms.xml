@@ -1661,7 +1661,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 
 <histogram
     name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}"
-    enum="CreditCardSeamlessFill" expires_after="2025-05-11">
+    enum="CreditCardSeamlessFill" expires_after="2025-07-13">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2375,7 +2375,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 
 <histogram
     name="Autofill.Deduplication.{Scenario}.TypeOfQuasiDuplicateToken.{DuplicationRank}"
-    enum="AutofillSettingsVisibleTypes" expires_after="2025-05-11">
+    enum="AutofillSettingsVisibleTypes" expires_after="2025-07-13">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
