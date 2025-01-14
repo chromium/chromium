@@ -7216,8 +7216,6 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
 
   // Returns the expected overview bounds including the hotseat inset. See
   // `ShrinkBoundsByHotseatInset()`.
-  // TODO(sophiewen): Refactor this for both `SplitViewOverviewSessionTest`
-  // and `FasterSplitScreenSetupTest` and make this work for multi-display.
   gfx::Rect GetExpectedOverviewBounds() {
     aura::Window* root_window = Shell::GetPrimaryRootWindow();
     gfx::Rect overview_bounds(GetWorkAreaInScreen(root_window));

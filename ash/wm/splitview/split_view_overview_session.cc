@@ -160,7 +160,6 @@ void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
 void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   presentation_time_recorder_.reset();
 
-  // TODO(sophiewen): Only used by metrics. See if we can remove this.
   aura::Window* root_window = window->GetRootWindow();
   SplitViewController::Get(root_window)->NotifyWindowResized();
 

@@ -3528,7 +3528,6 @@ void OverviewGrid::AddDropTargetImpl(OverviewItemBase* dragged_item,
 
 void OverviewGrid::OnSkipButtonPressed() {
   // Destroys `this`.
-  // TODO(sophiewen): Consider adding another exit point metric.
   OverviewController::Get()->EndOverview(OverviewEndAction::kKeyEscapeOrBack);
 }
 

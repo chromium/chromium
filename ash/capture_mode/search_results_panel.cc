@@ -38,7 +38,6 @@ namespace ash {
 
 namespace {
 
-// TODO(sophiewen): Remove hardcoded values when we get UX specs.
 inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr int kPanelPaddingSize = 16;

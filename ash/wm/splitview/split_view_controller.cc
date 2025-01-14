@@ -2089,8 +2089,6 @@ bool SplitViewController::ShouldEndSplitViewAfterResizingAtEdge() {
   if (!InTabletSplitViewMode()) {
     // `SplitViewDivider::CleanUpWindowResizing()` may be called after a display
     // change, after which we have ended split view.
-    // TODO(sophiewen): Only call `SplitViewDivider::CleanUpWindowResizing()` if
-    // we actually ended resizing.
     return false;
   }
   const int divider_position = GetDividerPosition();

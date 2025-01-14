@@ -2342,9 +2342,6 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   window2.reset();
   histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
   histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
-
-  // TODO(sophiewen): Determine whether to stop recording if a partial split
-  // window swaps sides, e.g. from one third to two thirds.
 }
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore

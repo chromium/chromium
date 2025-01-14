@@ -834,7 +834,6 @@ float GetSnapRatioForWindow(aura::Window* window) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // TODO(sophiewen): Determine whether to enable the setting by default.
   registry->RegisterBooleanPref(prefs::kSnapWindowSuggestions, true);
 }
 
