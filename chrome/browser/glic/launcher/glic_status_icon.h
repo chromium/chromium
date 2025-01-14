@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_STATUS_ICON_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class GlicController;
 class StatusIcon;
@@ -19,7 +21,8 @@ class StatusTray;
 // notifying the GlicController when the UI needs to be shown in response to the
 // status icon being clicked or menu item being triggered.
 class GlicStatusIcon : public StatusIconObserver,
-                       public StatusIconMenuModel::Delegate {
+                       public StatusIconMenuModel::Delegate,
+                       public ui::NativeThemeObserver {
  public:
   explicit GlicStatusIcon(GlicController* controller, StatusTray* status_tray);
   ~GlicStatusIcon() override;
@@ -30,12 +33,18 @@ class GlicStatusIcon : public StatusIconObserver,
   // StatusIconMenuModel::Delegate
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
   void UpdateHotkey(const ui::Accelerator& hotkey);
 
  private:
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();
 
   raw_ptr<GlicController> controller_;
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observer_{this};
 
   // TODO(https://crbug.com/378139555): Figure out how to not dangle these
   // pointers (and other instances of StatusTray/StatusIcon*).

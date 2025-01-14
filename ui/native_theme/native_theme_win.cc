@@ -1679,13 +1679,20 @@ void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
 
 void NativeThemeWin::UpdateDarkModeStatus() {
   bool dark_mode_enabled = false;
+  bool system_dark_mode_enabled = false;
   if (hkcu_themes_regkey_.Valid()) {
     DWORD apps_use_light_theme = 1;
     hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme",
                                     &apps_use_light_theme);
     dark_mode_enabled = (apps_use_light_theme == 0);
+
+    DWORD system_uses_light_theme = 1;
+    hkcu_themes_regkey_.ReadValueDW(L"SystemUsesLightTheme",
+                                    &system_uses_light_theme);
+    system_dark_mode_enabled = (system_uses_light_theme == 0);
   }
   set_use_dark_colors(dark_mode_enabled);
+  set_use_dark_colors_for_system_integrated_ui(system_dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();

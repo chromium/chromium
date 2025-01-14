@@ -505,6 +505,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // colors, you probably shouldn't. Instead, use ColorProvider::GetColor().
   virtual bool ShouldUseDarkColors() const;
 
+  // Returns true when the system uses a light-on-dark color scheme. This method
+  // should only be used when building UI that is rendered on top of system UI.
+  // It should not be used for UI rendered inside the Chromium browser
+  // application.
+  virtual bool ShouldUseDarkColorsForSystemIntegratedUI() const;
+
   // Returns the user's current page colors.
   virtual PageColors GetPageColors() const;
 
@@ -549,6 +555,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   void set_use_dark_colors(bool should_use_dark_colors) {
     should_use_dark_colors_ = should_use_dark_colors;
+  }
+  void set_use_dark_colors_for_system_integrated_ui(
+      bool should_use_dark_colors_for_system_integrated_ui) {
+    should_use_dark_colors_for_system_integrated_ui_ = std::make_optional<bool>(
+        should_use_dark_colors_for_system_integrated_ui);
   }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
   void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
@@ -685,6 +696,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool should_use_system_accent_color_ = true;
 
   bool should_use_dark_colors_ = false;
+
+  // On some OSes, there are different settings for dark mode between
+  // applications and the system. This tracks the state of the system dark mode
+  // setting.
+  std::optional<bool> should_use_dark_colors_for_system_integrated_ui_ =
+      std::nullopt;
+
   const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;
   PageColors page_colors_ = PageColors::kOff;

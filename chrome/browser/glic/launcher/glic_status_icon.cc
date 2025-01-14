@@ -26,20 +26,30 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+namespace {
+gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
+  return gfx::CreateVectorIcon(
+      kGlicButtonIcon,
+      (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
+          ? SK_ColorWHITE
+          : SK_ColorBLACK);
+}
+}  // namespace
+
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
   // TODO(crbug.com/382287104): Use correct icon.
   // TODO(crbug.com/386839488): Chose color based on system theme.
-  gfx::ImageSkia status_tray_icon =
-      gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorBLACK);
-
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   status_icon_ = status_tray_->CreateStatusIcon(
-      StatusTray::GLIC_ICON, status_tray_icon,
+      StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
       l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
 #if BUILDFLAG(IS_LINUX)
   //  Set a vector icon for proper themeing on Linux.
   status_icon_->SetIcon(kGlicButtonIcon);
+#else
+  native_theme_observer_.Observe(native_theme);
 #endif
 #if BUILDFLAG(IS_MAC)
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
@@ -109,6 +119,10 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED();
     }
   }
+}
+
+void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  status_icon_->SetImage(GetIconForTheme(observed_theme));
 }
 
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
