@@ -17,9 +17,7 @@ std::unique_ptr<FormFieldParser> AutofillAiFieldParser::Parse(
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   CHECK_EQ(context.pattern_file, PatternFile::kAutofillAi);
   std::optional<FieldAndMatchInfo> match;
-  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      "AUTOFILL_AI", /*language_code=*/std::nullopt, context.pattern_file);
-  if (ParseField(context, scanner, patterns, &match, "AUTOFILL_AI")) {
+  if (ParseField(context, scanner, "AUTOFILL_AI", &match)) {
     return std::make_unique<AutofillAiFieldParser>(std::move(*match));
   }
 #endif

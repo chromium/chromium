@@ -24,16 +24,6 @@ namespace autofill {
 
 namespace {
 
-base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
-                                                   ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_file);
-}
-
-base::span<const MatchPatternRef> GetMatchPatterns(FieldType type,
-                                                   ParsingContext& context) {
-  return GetMatchPatterns(type, context.page_language, context.pattern_file);
-}
-
 // Removes a MatchAttribute from MatchParams.
 MatchParams WithoutAttribute(MatchParams p, MatchAttribute attribute) {
   p.attributes.erase(attribute);
@@ -60,30 +50,17 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
   const AutofillField* const initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
-  base::span<const MatchPatternRef> email_patterns =
-      GetMatchPatterns("EMAIL_ADDRESS", context);
-  base::span<const MatchPatternRef> address_patterns =
-      GetMatchPatterns("ADDRESS_LOOKUP", context);
-  base::span<const MatchPatternRef> address_ignore_patterns =
-      GetMatchPatterns("ADDRESS_NAME_IGNORED", context);
-  base::span<const MatchPatternRef> attention_ignore_patterns =
-      GetMatchPatterns("ATTENTION_IGNORED", context);
-  base::span<const MatchPatternRef> region_ignore_patterns =
-      GetMatchPatterns("REGION_IGNORED", context);
-
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
   bool has_trailing_non_labeled_fields = false;
   while (!scanner->IsEnd()) {
     const size_t cursor = scanner->SaveCursor();
     // Ignore "Address Lookup" field. http://crbug.com/427622
-    if (ParseField(context, scanner, address_patterns, nullptr,
-                   "ADDRESS_LOOKUP") ||
-        ParseField(context, scanner, address_ignore_patterns, nullptr,
-                   "ADDRESS_NAME_IGNORED")) {
+    if (ParseField(context, scanner, "ADDRESS_LOOKUP") ||
+        ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
       continue;
       // Ignore email addresses.
-    } else if (ParseField(context, scanner, email_patterns, nullptr, "kEmailRe",
+    } else if (ParseField(context, scanner, "EMAIL_ADDRESS", nullptr,
                           [](const MatchParams& p) {
                             return WithFieldType(p, FormControlType::kTextArea);
                           })) {
@@ -93,10 +70,8 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
                address_field->ParseCompany(context, scanner)) {
       has_trailing_non_labeled_fields = false;
       continue;
-    } else if (ParseField(context, scanner, attention_ignore_patterns, nullptr,
-                          "ATTENTION_IGNORED") ||
-               ParseField(context, scanner, region_ignore_patterns, nullptr,
-                          "REGION_IGNORED")) {
+    } else if (ParseField(context, scanner, "ATTENTION_IGNORED") ||
+               ParseField(context, scanner, "REGION_IGNORED")) {
       // We ignore the following:
       // * Attention.
       // * Province/Region/Other.
@@ -240,10 +215,7 @@ bool AddressFieldParser::ParseCompany(ParsingContext& context,
   if (company_)
     return false;
 
-  base::span<const MatchPatternRef> company_patterns =
-      GetMatchPatterns("COMPANY_NAME", context);
-  return ParseField(context, scanner, company_patterns, &company_,
-                    "COMPANY_NAME");
+  return ParseField(context, scanner, "COMPANY_NAME", &company_);
 }
 
 bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
@@ -421,16 +393,12 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   if (address1_ || street_address_)
     return false;
 
-  base::span<const MatchPatternRef> address_line1_patterns =
-      GetMatchPatterns("ADDRESS_LINE_1", context);
-
   // Address line 1 is skipped if a |street_name_|, |house_number_| combination
   // is present.
   if (!(street_name_ && house_number_) &&
-      !ParseField(context, scanner, address_line1_patterns, &address1_,
-                  "ADDRESS_LINE_1") &&
-      !ParseField(context, scanner, address_line1_patterns, &street_address_,
-                  "ADDRESS_LINE_1", [](const MatchParams& p) {
+      !ParseField(context, scanner, "ADDRESS_LINE_1", &address1_) &&
+      !ParseField(context, scanner, "ADDRESS_LINE_1", &street_address_,
+                  [](const MatchParams& p) {
                     return WithFieldType(p, FormControlType::kTextArea);
                   })) {
     return false;
@@ -439,23 +407,14 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   if (street_address_)
     return true;
 
-  base::span<const MatchPatternRef> address_line2_patterns =
-      GetMatchPatterns("ADDRESS_LINE_2", context);
-
-  if (!ParseField(context, scanner, address_line2_patterns, &address2_,
-                  "ADDRESS_LINE_2")) {
+  if (!ParseField(context, scanner, "ADDRESS_LINE_2", &address2_)) {
     return true;
   }
 
-  base::span<const MatchPatternRef> address_line_extra_patterns =
-      GetMatchPatterns("ADDRESS_LINE_EXTRA", context);
-
   // Optionally parse address line 3. This uses the same regexp as address 2
   // above.
-  if (!ParseField(context, scanner, address_line_extra_patterns, &address3_,
-                  "ADDRESS_LINE_EXTRA") &&
-      !ParseField(context, scanner, address_line2_patterns, &address3_,
-                  "ADDRESS_LINE_2")) {
+  if (!ParseField(context, scanner, "ADDRESS_LINE_EXTRA", &address3_) &&
+      !ParseField(context, scanner, "ADDRESS_LINE_2", &address3_)) {
     return true;
   }
 
@@ -464,8 +423,7 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   //
   // Since these are rare, don't bother considering unlabeled lines as extra
   // address lines.
-  while (ParseField(context, scanner, address_line_extra_patterns, nullptr,
-                    "ADDRESS_LINE_EXTRA")) {
+  while (ParseField(context, scanner, "ADDRESS_LINE_EXTRA")) {
     // Consumed a surplus line, try for another.
   }
   return true;
@@ -523,18 +481,13 @@ bool AddressFieldParser::ParseZipCode(ParsingContext& context,
   if (zip_)
     return false;
 
-  base::span<const MatchPatternRef> zip_code_patterns =
-      GetMatchPatterns("ZIP_CODE", context);
-  base::span<const MatchPatternRef> four_digit_zip_code_patterns =
-      GetMatchPatterns("ZIP_4", context);
-
-  if (!ParseField(context, scanner, zip_code_patterns, &zip_, "ZIP_CODE")) {
+  if (!ParseField(context, scanner, "ZIP_CODE", &zip_)) {
     return false;
   }
 
   // Look for a zip+4, whose field name will also often contain
   // the substring "zip".
-  ParseField(context, scanner, four_digit_zip_code_patterns, &zip4_, "ZIP_4");
+  ParseField(context, scanner, "ZIP_4", &zip4_);
   return true;
 }
 
@@ -543,9 +496,7 @@ bool AddressFieldParser::ParseCity(ParsingContext& context,
   if (city_)
     return false;
 
-  base::span<const MatchPatternRef> city_patterns =
-      GetMatchPatterns("CITY", context);
-  return ParseField(context, scanner, city_patterns, &city_, "CITY");
+  return ParseField(context, scanner, "CITY", &city_);
 }
 
 bool AddressFieldParser::ParseState(ParsingContext& context,
@@ -553,9 +504,7 @@ bool AddressFieldParser::ParseState(ParsingContext& context,
   if (state_)
     return false;
 
-  base::span<const MatchPatternRef> patterns_state =
-      GetMatchPatterns("STATE", context);
-  return ParseField(context, scanner, patterns_state, &state_, "STATE");
+  return ParseField(context, scanner, "STATE", &state_);
 }
 
 bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
@@ -569,10 +518,8 @@ bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> street_location_patterns =
-      GetMatchPatterns(ADDRESS_HOME_STREET_LOCATION, context);
-  return ParseField(context, scanner, street_location_patterns,
-                    &street_location_, "ADDRESS_HOME_STREET_LOCATION");
+  return ParseField(context, scanner, "ADDRESS_HOME_STREET_LOCATION",
+                    &street_location_);
 }
 
 bool AddressFieldParser::ParseStreetName(ParsingContext& context,
@@ -581,10 +528,8 @@ bool AddressFieldParser::ParseStreetName(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> street_name_patterns =
-      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, context);
-  return ParseField(context, scanner, street_name_patterns, &street_name_,
-                    "ADDRESS_HOME_STREET_NAME");
+  return ParseField(context, scanner, "ADDRESS_HOME_STREET_NAME",
+                    &street_name_);
 }
 
 bool AddressFieldParser::ParseHouseNumber(ParsingContext& context,
@@ -593,10 +538,8 @@ bool AddressFieldParser::ParseHouseNumber(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> house_number_patterns =
-      GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER, context);
-  return ParseField(context, scanner, house_number_patterns, &house_number_,
-                    "ADDRESS_HOME_HOUSE_NUMBER");
+  return ParseField(context, scanner, "ADDRESS_HOME_HOUSE_NUMBER",
+                    &house_number_);
 }
 
 bool AddressFieldParser::ParseApartmentNumber(ParsingContext& context,
@@ -607,10 +550,8 @@ bool AddressFieldParser::ParseApartmentNumber(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> apartment_number_patterns =
-      GetMatchPatterns(ADDRESS_HOME_APT_NUM, context);
-  return ParseField(context, scanner, apartment_number_patterns,
-                    &apartment_number_, "ADDRESS_HOME_APT_NUM");
+  return ParseField(context, scanner, "ADDRESS_HOME_APT_NUM",
+                    &apartment_number_);
 }
 
 bool AddressFieldParser::ParseBetweenStreetsOrLandmark(
@@ -623,11 +564,8 @@ bool AddressFieldParser::ParseBetweenStreetsOrLandmark(
     return false;
   }
 
-  base::span<const MatchPatternRef> between_streets_or_landmark_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_OR_LANDMARK", context);
-  return ParseField(context, scanner, between_streets_or_landmark_patterns,
-                    &between_streets_or_landmark_,
-                    "BETWEEN_STREETS_OR_LANDMARK");
+  return ParseField(context, scanner, "BETWEEN_STREETS_OR_LANDMARK",
+                    &between_streets_or_landmark_);
 }
 
 bool AddressFieldParser::ParseOverflowAndLandmark(ParsingContext& context,
@@ -639,10 +577,8 @@ bool AddressFieldParser::ParseOverflowAndLandmark(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
-      GetMatchPatterns("OVERFLOW_AND_LANDMARK", context);
-  return ParseField(context, scanner, overflow_and_landmark_patterns,
-                    &overflow_and_landmark_, "OVERFLOW_AND_LANDMARK");
+  return ParseField(context, scanner, "OVERFLOW_AND_LANDMARK",
+                    &overflow_and_landmark_);
 }
 
 bool AddressFieldParser::ParseOverflow(ParsingContext& context,
@@ -653,10 +589,7 @@ bool AddressFieldParser::ParseOverflow(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> overflow_patterns =
-      GetMatchPatterns("OVERFLOW", context);
-  return ParseField(context, scanner, overflow_patterns, &overflow_,
-                    "OVERFLOW");
+  return ParseField(context, scanner, "OVERFLOW", &overflow_);
 }
 
 bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
@@ -667,29 +600,21 @@ bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
     return false;
   }
 
-  base::span<const MatchPatternRef> between_streets_patterns =
-      GetMatchPatterns("BETWEEN_STREETS", context);
-  base::span<const MatchPatternRef> between_streets_line_1_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_1", context);
-  base::span<const MatchPatternRef> between_streets_line_2_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
-
   if (!between_streets_ && !between_streets_line_1_ &&
-      ParseField(context, scanner, between_streets_patterns, &between_streets_,
-                 "BETWEEN_STREETS")) {
+      ParseField(context, scanner, "BETWEEN_STREETS", &between_streets_)) {
     return true;
   }
 
   if (!between_streets_line_1_ &&
-      ParseField(context, scanner, between_streets_line_1_patterns,
-                 &between_streets_line_1_, "BETWEEN_STREETS_LINE_1")) {
+      ParseField(context, scanner, "BETWEEN_STREETS_LINE_1",
+                 &between_streets_line_1_)) {
     return true;
   }
 
   if (!between_streets_line_2_ &&
       (between_streets_ || between_streets_line_1_) &&
-      ParseField(context, scanner, between_streets_line_2_patterns,
-                 &between_streets_line_2_, "BETWEEN_STREETS_LINE_2")) {
+      ParseField(context, scanner, "BETWEEN_STREETS_LINE_2",
+                 &between_streets_line_2_)) {
     return true;
   }
   return false;
@@ -700,25 +625,22 @@ AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelSeparately(
     ParsingContext& context,
     AutofillScanner* scanner,
-    base::span<const MatchPatternRef> patterns,
-    std::optional<FieldAndMatchInfo>* match,
-    const char* regex_name) {
+    const char* regex_name,
+    std::optional<FieldAndMatchInfo>* match) {
   if (scanner->IsEnd())
     return RESULT_MATCH_NONE;
 
   std::optional<FieldAndMatchInfo> cur_match;
   size_t saved_cursor = scanner->SaveCursor();
-  bool parsed_name =
-      ParseField(context, scanner, patterns, &cur_match, regex_name,
-                 [](const MatchParams& p) {
-                   return WithoutAttribute(p, MatchAttribute::kLabel);
-                 });
+  bool parsed_name = ParseField(
+      context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
+        return WithoutAttribute(p, MatchAttribute::kLabel);
+      });
   scanner->RewindTo(saved_cursor);
-  bool parsed_label =
-      ParseField(context, scanner, patterns, &cur_match, regex_name,
-                 [](const MatchParams& p) {
-                   return WithoutAttribute(p, MatchAttribute::kName);
-                 });
+  bool parsed_label = ParseField(
+      context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
+        return WithoutAttribute(p, MatchAttribute::kName);
+      });
   // Only consider high quality label matches to avoid false positives.
   parsed_label =
       parsed_label && cur_match->match_info.matched_attribute ==
@@ -947,13 +869,8 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
   if (zip_)
     return RESULT_MATCH_NONE;
 
-  base::span<const MatchPatternRef> zip_code_patterns =
-      GetMatchPatterns("ZIP_CODE", context);
-  base::span<const MatchPatternRef> four_digit_zip_code_patterns =
-      GetMatchPatterns("ZIP_4", context);
-
-  ParseNameLabelResult result = ParseNameAndLabelSeparately(
-      context, scanner, zip_code_patterns, &zip_, "ZIP_CODE");
+  ParseNameLabelResult result =
+      ParseNameAndLabelSeparately(context, scanner, "ZIP_CODE", &zip_);
 
   if (result != RESULT_MATCH_NAME_LABEL || scanner->IsEnd())
     return result;
@@ -975,7 +892,7 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
   if (!found_non_zip4) {
     // Look for a zip+4, whose field name will also often contain
     // the substring "zip".
-    ParseField(context, scanner, four_digit_zip_code_patterns, &zip4_, "ZIP_4");
+    ParseField(context, scanner, "ZIP_4", &zip4_);
   }
   return result;
 }
@@ -988,12 +905,9 @@ AddressFieldParser::ParseNameAndLabelForDependentLocality(
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> dependent_locality_patterns =
-      GetMatchPatterns(ADDRESS_HOME_DEPENDENT_LOCALITY, context.page_language,
-                       context.pattern_file);
-  return ParseNameAndLabelSeparately(
-      context, scanner, dependent_locality_patterns, &dependent_locality_,
-      "ADDRESS_HOME_DEPENDENT_LOCALITY");
+  return ParseNameAndLabelSeparately(context, scanner,
+                                     "ADDRESS_HOME_DEPENDENT_LOCALITY",
+                                     &dependent_locality_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1002,10 +916,7 @@ AddressFieldParser::ParseNameAndLabelForCity(ParsingContext& context,
   if (city_)
     return RESULT_MATCH_NONE;
 
-  base::span<const MatchPatternRef> city_patterns =
-      GetMatchPatterns("CITY", context);
-  return ParseNameAndLabelSeparately(context, scanner, city_patterns, &city_,
-                                     "CITY");
+  return ParseNameAndLabelSeparately(context, scanner, "CITY", &city_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1014,10 +925,7 @@ AddressFieldParser::ParseNameAndLabelForState(ParsingContext& context,
   if (state_)
     return RESULT_MATCH_NONE;
 
-  base::span<const MatchPatternRef> patterns_state =
-      GetMatchPatterns("STATE", context);
-  return ParseNameAndLabelSeparately(context, scanner, patterns_state, &state_,
-                                     "STATE");
+  return ParseNameAndLabelSeparately(context, scanner, "STATE", &state_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1026,21 +934,15 @@ AddressFieldParser::ParseNameAndLabelForCountry(ParsingContext& context,
   if (country_)
     return RESULT_MATCH_NONE;
 
-  base::span<const MatchPatternRef> country_patterns =
-      GetMatchPatterns("COUNTRY", context);
-  base::span<const MatchPatternRef> country_location_patterns =
-      GetMatchPatterns("COUNTRY_LOCATION", context);
-
-  ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
-      context, scanner, country_patterns, &country_, "COUNTRY");
+  ParseNameLabelResult country_result =
+      ParseNameAndLabelSeparately(context, scanner, "COUNTRY", &country_);
   if (country_result != RESULT_MATCH_NONE)
     return country_result;
 
   // The occasional page (e.g. google account registration page) calls this a
   // "location". However, this only makes sense for select tags.
-  return ParseNameAndLabelSeparately(context, scanner,
-                                     country_location_patterns, &country_,
-                                     "COUNTRY_LOCATION");
+  return ParseNameAndLabelSeparately(context, scanner, "COUNTRY_LOCATION",
+                                     &country_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1055,11 +957,9 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsOrLandmark(
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> between_streets_or_landmark_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_OR_LANDMARK", context);
-  auto result = ParseNameAndLabelSeparately(
-      context, scanner, between_streets_or_landmark_patterns,
-      &between_streets_or_landmark_, "BETWEEN_STREETS_OR_LANDMARK");
+  auto result = ParseNameAndLabelSeparately(context, scanner,
+                                            "BETWEEN_STREETS_OR_LANDMARK",
+                                            &between_streets_or_landmark_);
 
   return result;
 }
@@ -1076,11 +976,8 @@ AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
-      GetMatchPatterns("OVERFLOW_AND_LANDMARK", context);
   auto result = ParseNameAndLabelSeparately(
-      context, scanner, overflow_and_landmark_patterns, &overflow_and_landmark_,
-      "OVERFLOW_AND_LANDMARK");
+      context, scanner, "OVERFLOW_AND_LANDMARK", &overflow_and_landmark_);
   return result;
 }
 
@@ -1095,10 +992,7 @@ AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> overflow_patterns =
-      GetMatchPatterns("OVERFLOW", context);
-  return ParseNameAndLabelSeparately(context, scanner, overflow_patterns,
-                                     &overflow_, "OVERFLOW");
+  return ParseNameAndLabelSeparately(context, scanner, "OVERFLOW", &overflow_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1111,10 +1005,7 @@ AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> landmark_patterns =
-      GetMatchPatterns("LANDMARK", context);
-  return ParseNameAndLabelSeparately(context, scanner, landmark_patterns,
-                                     &landmark_, "LANDMARK");
+  return ParseNameAndLabelSeparately(context, scanner, "LANDMARK", &landmark_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1129,10 +1020,8 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreets(
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> between_streets_patterns =
-      GetMatchPatterns("BETWEEN_STREETS", context);
-  return ParseNameAndLabelSeparately(context, scanner, between_streets_patterns,
-                                     &between_streets_, "BETWEEN_STREETS");
+  return ParseNameAndLabelSeparately(context, scanner, "BETWEEN_STREETS",
+                                     &between_streets_);
 }
 
 AddressFieldParser::ParseNameLabelResult
@@ -1148,19 +1037,11 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
   }
 
   if (!between_streets_line_1_) {
-    base::span<const MatchPatternRef> between_streets_patterns_line_1 =
-        GetMatchPatterns("BETWEEN_STREETS_LINE_1", context.page_language,
-                         context.pattern_file);
     return ParseNameAndLabelSeparately(
-        context, scanner, between_streets_patterns_line_1,
-        &between_streets_line_1_, "BETWEEN_STREETS_LINE_1");
+        context, scanner, "BETWEEN_STREETS_LINE_1", &between_streets_line_1_);
   } else if (!between_streets_line_2_) {
-    base::span<const MatchPatternRef> between_streets_patterns_line_2 =
-        GetMatchPatterns("BETWEEN_STREETS_LINE_2", context.page_language,
-                         context.pattern_file);
     return ParseNameAndLabelSeparately(
-        context, scanner, between_streets_patterns_line_2,
-        &between_streets_line_2_, "BETWEEN_STREETS_LINE_2");
+        context, scanner, "BETWEEN_STREETS_LINE_2", &between_streets_line_2_);
   }
 
   return RESULT_MATCH_NONE;
@@ -1176,10 +1057,8 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> admin_level2_patterns =
-      GetMatchPatterns("ADMIN_LEVEL_2", context);
-  return ParseNameAndLabelSeparately(context, scanner, admin_level2_patterns,
-                                     &admin_level2_, "ADMIN_LEVEL_2");
+  return ParseNameAndLabelSeparately(context, scanner, "ADMIN_LEVEL_2",
+                                     &admin_level2_);
 }
 
 bool AddressFieldParser::SetFieldAndAdvanceCursor(
@@ -1217,11 +1096,8 @@ bool AddressFieldParser::ParseFieldSpecificsForHouseNumberAndApt(
     return RESULT_MATCH_NONE;
   }
 
-  base::span<const MatchPatternRef> house_number_and_apt_patterns =
-      GetMatchPatterns("ADDRESS_HOME_HOUSE_NUMBER_AND_APT", context);
-  return ParseField(context, scanner, house_number_and_apt_patterns,
-                    &house_number_and_apt_,
-                    "ADDRESS_HOME_HOUSE_NUMBER_AND_APT");
+  return ParseField(context, scanner, "ADDRESS_HOME_HOUSE_NUMBER_AND_APT",
+                    &house_number_and_apt_);
 }
 
 bool AddressFieldParser::PossiblyAStructuredAddressForm() const {

@@ -2118,7 +2118,11 @@ void CaptureModeController::OnVideoFileSaved(
                               saved_video_file_path);
       }
 
-      auto reply = base::BindOnce(&RecordVideoFileSizeKB, is_gif, behavior);
+      // `behavior` could dangle here after the reply is received. Get the
+      // client metric component now, instead of after the reply is received,
+      // to prevent this.
+      auto reply = base::BindOnce(&RecordVideoFileSizeKB, is_gif,
+                                  behavior->GetClientMetricComponent());
       if (on_file_saved_callback_for_test_) {
         reply = std::move(reply).Then(
             base::BindOnce(std::move(on_file_saved_callback_for_test_),

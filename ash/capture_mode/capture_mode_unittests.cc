@@ -393,6 +393,25 @@ std::string SunfishScannerTestName(bool sunfish_enabled, bool scanner_enabled) {
                        "Scanner", scanner_enabled ? "Enabled" : "Disabled"});
 }
 
+std::string SourceSunfishScannerTestName(CaptureModeSource source,
+                                         bool sunfish_enabled,
+                                         bool scanner_enabled) {
+  std::string test_name;
+  switch (source) {
+    case CaptureModeSource::kFullscreen:
+      test_name = "Fullscreen";
+      break;
+    case CaptureModeSource::kRegion:
+      test_name = "Region";
+      break;
+    case CaptureModeSource::kWindow:
+      test_name = "Window";
+      break;
+  }
+  test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+  return test_name;
+}
+
 class CaptureModeTest
     : public CaptureModeTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -2726,9 +2745,9 @@ TEST_P(CaptureModeTest, RefreshCaptureRegionInOverviewForKWindow) {
   EXPECT_EQ(capture_region_in_overview, gfx::ToRoundedRect(target_bounds));
 }
 
-class CaptureModeSaveFileTest
-    : public CaptureModeTestBase,
-      public testing::WithParamInterface<CaptureModeType> {
+class CaptureModeSaveFileTest : public CaptureModeTestBase,
+                                public testing::WithParamInterface<
+                                    std::tuple<CaptureModeType, bool, bool>> {
  public:
   CaptureModeSaveFileTest() = default;
   CaptureModeSaveFileTest(
@@ -2736,15 +2755,23 @@ class CaptureModeSaveFileTest
   CaptureModeSaveFileTest& operator=(const CaptureModeSaveFileTest&) = delete;
   ~CaptureModeSaveFileTest() override = default;
 
+  // CaptureModeTestBase:
+  void SetUp() override {
+    auto [unused_type, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeTestBase::SetUp();
+  }
+
   void StartCaptureSessionWithParam() {
-    StartCaptureSession(CaptureModeSource::kFullscreen, GetParam());
+    StartCaptureSession(CaptureModeSource::kFullscreen,
+                        std::get<CaptureModeType>(GetParam()));
   }
 
   // Based on the `CaptureModeType`, it performs the capture and then returns
   // the path of the saved image or video files.
   base::FilePath PerformCapture() {
     auto* controller = CaptureModeController::Get();
-    switch (GetParam()) {
+    switch (std::get<CaptureModeType>(GetParam())) {
       case CaptureModeType::kImage:
         controller->PerformCapture();
         return WaitForCaptureFileToBeSaved();
@@ -2856,10 +2883,29 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeSaveFileTest,
-                         testing::Values(CaptureModeType::kImage,
-                                         CaptureModeType::kVideo));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeSaveFileTest,
+    testing::Combine(testing::Values(CaptureModeType::kImage,
+                                     CaptureModeType::kVideo),
+                     testing::Bool(),
+                     testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeSaveFileTest::ParamType>& info) {
+      auto type = std::get<CaptureModeType>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      std::string test_name;
+      switch (type) {
+        case CaptureModeType::kImage:
+          test_name = "Image";
+          break;
+        case CaptureModeType::kVideo:
+          test_name = "Video";
+          break;
+      }
+      test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+      return test_name;
+    });
 
 // Test fixture for verifying that the videos are recorded at the pixel size of
 // the targets being captured in all recording modes. This avoids having the
