@@ -6927,6 +6927,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, Shim_BlankWebview) {
 // Checks that content scripts work when a <webview> navigates across multiple
 // processes.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
@@ -7104,6 +7106,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, MAYBE_ContentScriptInOOPIF) {
 // unrelated <webview> tags share the same process due to the subframe process
 // reuse policy.
 IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SubframeProcessReuse) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
@@ -7268,6 +7272,8 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
 // that requires a dedicated process, while all other navigations should use
 // the default SiteInstance and an unlocked process.
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load an app with a <webview> guest that starts at a data: URL.
