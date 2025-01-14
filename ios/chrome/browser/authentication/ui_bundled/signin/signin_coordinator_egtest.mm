@@ -13,6 +13,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -542,6 +543,13 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   [self assertFakeSSOScreenIsVisible];
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+  // TODO(crbug.com/41493423): We should log Signin offered and
+  // Signin.SigninStartedAccessPoint.
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests that an add account operation triggered from the web is handled.
@@ -550,6 +558,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey simulateAddAccountFromWeb];
 
   [self assertFakeSSOScreenIsVisible];
+
+  // TODO(crbug.com/41493423): We should log signin started. Ideally that signin
+  // was offered, but this is probably not possible on the web.
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN];
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests to remove the last identity in the identity chooser.
@@ -726,7 +740,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that a signed-in user can open "Settings" screen from the NTP.
+// Tests that a signed-in user can open "Add Account" screen from the NTP.
 - (void)testOpenManageAddAccountFromNTPWhenSyncDisabledByPolicy {
   // Disable sync by policy.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
@@ -899,6 +913,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFakeAuthActivityViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::
+                              ACCESS_POINT_NTP_SIGNED_OUT_ICON];
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests that a signed-out user with the SyncDisabled policy can still open the

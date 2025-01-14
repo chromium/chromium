@@ -228,6 +228,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/history/ui_bundled:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/public/features",

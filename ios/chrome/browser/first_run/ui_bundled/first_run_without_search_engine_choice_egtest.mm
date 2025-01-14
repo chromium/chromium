@@ -14,6 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/unified_consent/pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -989,6 +990,13 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE];
+  // TODO(crbug.com/41493423): We should log Signin is started. Maybe also that
+  // it’s offered.
+  expecteds.signinSigninCompletedAccessPoint = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests if the user skip the Sign-in step, the History Sync Opt-in screen is

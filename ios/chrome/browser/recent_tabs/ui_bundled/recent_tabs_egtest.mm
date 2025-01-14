@@ -10,16 +10,19 @@
 #import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -279,6 +282,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that a promo to sign in is shown to a signed out user without device
 // accounts. Tapping the promo shows the auth activity then the history opt-in.
 - (void)testShowPromoIfSignedOutAndNoAccounts {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   OpenRecentTabsPanel();
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
@@ -305,6 +310,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::
+                              ACCESS_POINT_RECENT_TABS];
+  // TODO(crbug.com/41493423) Should log Signin.SignIn.Offered, and
+  // Signin.SigninStartedAccessPoint
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests that a promo to sign in is shown to a signed out user who has device

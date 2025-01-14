@@ -6,10 +6,14 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -153,9 +157,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 }
 
 - (void)verifySignedOut {
-  // Required to avoid any problem since the following test is not dependant to
-  // UI, and the previous action has to be totally finished before going through
-  // the assert.
+  // Required to avoid any problem since the following test is not dependant
+  // to UI, and the previous action has to be totally finished before going
+  // through the assert.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   ConditionBlock condition = ^bool {
@@ -199,6 +203,53 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 - (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type {
   return [SigninEarlGreyAppInterface isSelectedTypeEnabled:type];
+}
+
+- (void)assertExpectedSigninHistograms:(ExpectedSigninHistograms*)expecteds {
+  std::vector<std::pair<NSString*, int>> array = {
+      {@"Signin.SignIn.Offered", expecteds.signinSignInOffered},
+      {@"Signin.SignIn.Offered.WithDefault",
+       expecteds.signinSignInOfferedWithdefault},
+      {@"Signin.SignIn.Offered.NewAccountNoExistingAccount",
+       expecteds.signinSignInOfferedNewAccountNoExistingAccount},
+
+      {@"Signin.SigninStartedAccessPoint",
+       expecteds.signinSigninStartedAccessPoint},
+      {@"Signin.SigninStartedAccessPoint.WithDefault",
+       expecteds.signinSigninStartedAccessPointWithDefault},
+      {@"Signin.SigninStartedAccessPoint.NotDefault",
+       expecteds.signinSigninStartedAccessPointNotDefault},
+      {@"Signin.SigninStartedAccessPoint.NewAccountNoExistingAccount",
+       expecteds.signinSignStartedAccessPointNewAccountNoExistingAccount},
+      {@"Signin.SigninStartedAccessPoint.NewAccountExistingAccount",
+       expecteds.signinSignStartedAccessPointNewAccountExistingAccount},
+
+      {@"Signin.SigninCompletedAccessPoint",
+       expecteds.signinSigninCompletedAccessPoint},
+      {@"Signin.SigninCompletedAccessPoint.WithDefault",
+       expecteds.signinSigninCompletedAccessPointWithDefault},
+      {@"Signin.SigninCompletedAccessPoint.NotDefault",
+       expecteds.signinSigninCompletedAccessPointNotDefault},
+      {@"Signin.SigninCompletedAccessPoint.NewAccountNoExistingAccount",
+       expecteds.signinSigninCompletedAccessPointNewAccountNoExistingAccount},
+      {@"Signin.SigninCompletedAccessPoint.NewAccountExistingAccount",
+       expecteds.signinSigninCompletedAccessPointNewAccountExistingAccount},
+
+      {@"Signin.SignIn.Started", expecteds.signinSignInStarted},
+      {@"Signin.SyncOptIn.Started", expecteds.signinSyncOptInStarted},
+      {@"Signin.SyncOptIn.OpenedSyncSettings",
+       expecteds.signinSyncOptInOpenedSyncSettings},
+  };
+  signin_metrics::AccessPoint accessPoint = expecteds.accessPoint;
+  for (const std::pair<NSString*, int>& expected : array) {
+    NSString* histogram = expected.first;
+    int count = expected.second;
+    NSError* error =
+        [MetricsAppInterface expectCount:count
+                               forBucket:static_cast<int>(accessPoint)
+                            forHistogram:histogram];
+    chrome_test_util::GREYAssertErrorNil(error);
+  }
 }
 
 @end

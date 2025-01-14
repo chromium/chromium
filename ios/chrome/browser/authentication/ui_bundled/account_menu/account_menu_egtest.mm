@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
@@ -328,6 +329,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // The tear down needs to remove other view controllers, and it cannot be done
   // during the animation of the SSO view controler.
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  // TODO(crbug.com/41493423): Check whether the Add Account or Account Menu
+  // should be logged as Signin started histogram.
 }
 
 // Tests the enter passphrase button.

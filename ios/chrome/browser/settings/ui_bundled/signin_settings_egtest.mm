@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -283,6 +286,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // Tests sign-in and accept history sync opt-in from the settings when having
 // no account on the device.
 - (void)testSigninWithNoAccountOnDevice {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -330,12 +335,21 @@ using chrome_test_util::SettingsSignInRowMatcher;
   GREYAssertTrue(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be enabled.");
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+  // TODO(crbug.com/41493423): We should log that the signin was offered,
+  // completed and Signin.SigninStartedAccessPoint.
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests sign-in and accept history sync opt-in from the settings when having
 // no account on the device. Capabilities are not set to simulate unsuccessful
 // capabilities fetches.
 - (void)testSigninWithNoAccountOnDeviceWithUnknownCapabilities {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -392,6 +406,13 @@ using chrome_test_util::SettingsSignInRowMatcher;
   GREYAssertTrue(
       [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
       @"Tabs sync should be enabled.");
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+  // TODO(crbug.com/41493423): We should log that the signin was offered,
+  // completed and Signin.SigninStartedAccessPoint.
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // For a signed out user with device accounts, tests that the sign-in row is
@@ -419,6 +440,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // For a signed out user with no device accounts, tests that the sign-in row is
 // shown with the correct strings and opens the auth activity on tap.
 - (void)testSigninRowOpensAuthActivityIfSignedOutAndNoDeviceAccounts {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGreyUI openSettingsMenu];
 
   [[EarlGrey
@@ -432,6 +455,13 @@ using chrome_test_util::SettingsSignInRowMatcher;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kFakeAuthActivityViewIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS];
+  // TODO(crbug.com/41493423): We should log that the signin was offered,
+  // completed and Signin.SigninStartedAccessPoint.
+  expecteds.signinSignInStarted = 1;
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // For a signed out user with the SyncDisabled policy, tests that the sign-in

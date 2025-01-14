@@ -11,13 +11,16 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -327,6 +330,8 @@ void CompleteSigninFlow() {
 // Tests the sign-in screen without accounts where an account has to be added
 // before signing in.
 - (void)testSignInScreenWithoutAccount {
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   // Tap on the "Sign in" button.
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
@@ -365,6 +370,12 @@ void CompleteSigninFlow() {
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                    IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
       assertWithMatcher:grey_nil()];
+  ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
+      initWithAccessPoint:signin_metrics::AccessPoint::
+                              ACCESS_POINT_FORCED_SIGNIN];
+  // TODO(crbug.com/41493423): We should log Signin is started. Maybe also that
+  // it’s offered.
+  [SigninEarlGrey assertExpectedSigninHistograms:expecteds];
 }
 
 // Tests that accounts can be switched and that there is the button add a new

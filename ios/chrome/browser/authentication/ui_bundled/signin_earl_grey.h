@@ -10,12 +10,18 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
+@class ExpectedSigninHistograms;
+
 @protocol GREYMatcher;
 @class FakeSystemIdentity;
 
 namespace signin {
 enum class ConsentLevel;
 }
+
+namespace signin_metrics {
+enum class AccessPoint : int;
+}  // namespace signin_metrics
 
 class GURL;
 
@@ -125,6 +131,10 @@ class GURL;
 
 // Returns if the data type is enabled for the sync service.
 - (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
+
+// Checks that fore each histogram listed above as properties, it’s emitted the
+// number of time indicated in the property for `accessPoint`.
+- (void)assertExpectedSigninHistograms:(ExpectedSigninHistograms*)expecteds;
 
 @end
 
