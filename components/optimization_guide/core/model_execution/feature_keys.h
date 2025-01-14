@@ -85,7 +85,7 @@ inline std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-inline constexpr std::array<ModelBasedCapabilityKey, 15>
+inline constexpr std::array<ModelBasedCapabilityKey, 16>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -101,6 +101,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 15>
         ModelBasedCapabilityKey::kBlingPrototyping,
         ModelBasedCapabilityKey::kPasswordChangeSubmission,
         ModelBasedCapabilityKey::kScamDetection,
+        ModelBasedCapabilityKey::kPermissionsAi,
         ModelBasedCapabilityKey::kWritingAssistanceApi,
 };
 
