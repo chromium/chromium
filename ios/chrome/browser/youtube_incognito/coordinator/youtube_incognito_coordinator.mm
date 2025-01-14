@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -48,8 +49,25 @@ CGFloat const kHalfSheetCornerRadius = 20;
     [self presentViewController];
     return;
   }
-  // TODO(crbug.com/374935670): Show toast when the view was presented
-  // already.
+
+  id<SnackbarCommands> snackbarHandler =
+      static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
+  __weak __typeof(self) weakSelf = self;
+  // TODO(crbug.com/374935670): Add a11y strings.
+  [snackbarHandler
+      showSnackbarWithMessage:@"Opened in Chrome Incognito"
+                   buttonText:@"LEARN MORE"
+                messageAction:^{
+                  [weakSelf.tabOpener
+                      dismissModalsAndMaybeOpenSelectedTabInMode:
+                          ApplicationModeForTabOpening::NORMAL
+                                               withUrlLoadParams:
+                                                   UrlLoadParams::InNewTab(
+                                                       GetLearnMoreIncognitoUrl())
+                                                  dismissOmnibox:YES
+                                                      completion:nil];
+                }
+             completionAction:nil];
 }
 
 - (void)stop {
