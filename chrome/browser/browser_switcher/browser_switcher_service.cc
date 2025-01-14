@@ -143,6 +143,7 @@ void XmlDownloader::FetchXml() {
 
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = source.url;
+    request->site_for_cookies = net::SiteForCookies::FromUrl(source.url);
     request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
     request->credentials_mode = network::mojom::CredentialsMode::kInclude;
     request->priority = net::IDLE;
