@@ -168,14 +168,11 @@ PreloadProcessingMode GetPreloadProcessingMode() {
           {PreloadProcessingMode::kYield, "yield"},
       };
 
-  static const base::FeatureParam<PreloadProcessingMode>
-      kPreloadProcessingModeParam{
-          &features::kThreadedPreloadScanner, "preload-processing-mode",
-          PreloadProcessingMode::kImmediate, &kPreloadProcessingModeOptions};
-
   // Cache the value to avoid parsing the param string more than once.
   static const PreloadProcessingMode kPreloadProcessingModeValue =
-      kPreloadProcessingModeParam.Get();
+      base::GetFieldTrialParamByFeatureAsEnum(
+          features::kThreadedPreloadScanner, "preload-processing-mode",
+          PreloadProcessingMode::kImmediate, kPreloadProcessingModeOptions);
   return kPreloadProcessingModeValue;
 }
 
