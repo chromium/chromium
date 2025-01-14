@@ -22,6 +22,8 @@ features:
   per_profile: true
 supported_on:
 - chrome_os:128-
+future_on:
+- chrome.*
 owners:
 - file://chrome/browser/web_applications/isolated_web_apps/OWNERS
 - iwa-team@google.com

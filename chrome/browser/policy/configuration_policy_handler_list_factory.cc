@@ -2674,7 +2674,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kWindowManagementBlockedForUrls,
           prefs::kManagedWindowManagementBlockedForUrls,
           base::Value::Type::LIST)));
-#endif  // BUILDFLAG(IS_ANDROID)
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kIsolatedWebAppInstallForceList,
+      prefs::kIsolatedWebAppInstallForceList, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
@@ -2806,12 +2812,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kDocumentScanAPITrustedExtensions,
       prefs::kDocumentScanAPITrustedExtensions, /*allow_wildcards=*/false));
-  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kIsolatedWebAppInstallForceList,
-      prefs::kIsolatedWebAppInstallForceList, chrome_schema,
-      SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
-      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<NetworkAnnotationBlocklistHandler>());
 #if BUILDFLAG(USE_CUPS)
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
