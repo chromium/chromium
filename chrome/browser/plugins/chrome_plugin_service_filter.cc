@@ -91,14 +91,15 @@ void ChromePluginServiceFilter::AuthorizePlugin(
 }
 
 void ChromePluginServiceFilter::AuthorizeAllPlugins(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* main_render_frame_host,
     bool load_blocked,
     const std::string& identifier) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!main_render_frame_host->GetParent());
 
   // Authorize all plugins is intended for the granting access to only
   // the currently active page, so we iterate on the main frame.
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  main_render_frame_host->ForEachRenderFrameHost(
       [](content::RenderFrameHost* render_frame_host) {
         ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
             render_frame_host->GetProcess()->GetDeprecatedID(),
@@ -106,7 +107,7 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
       });
 
   if (load_blocked) {
-    web_contents->GetPrimaryMainFrame()
+    main_render_frame_host
         ->ForEachRenderFrameHost(
             [&identifier](content::RenderFrameHost* render_frame_host) {
               mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>

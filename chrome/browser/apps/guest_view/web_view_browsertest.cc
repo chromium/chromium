@@ -6385,14 +6385,10 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewPPAPITest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPlugin) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPlugin", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
 }
 #endif  // BUILDFLAG(ENABLE_PPAPI)
