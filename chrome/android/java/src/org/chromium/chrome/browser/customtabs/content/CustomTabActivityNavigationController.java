@@ -49,6 +49,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -358,6 +359,11 @@ public class CustomTabActivityNavigationController
                 mActivity.startActivity(intent, startActivityOptions);
                 finish(FinishReason.OPEN_IN_BROWSER);
             } else {
+                Toast.makeText(
+                                mActivity,
+                                R.string.custom_tab_cant_perform_action_toast,
+                                Toast.LENGTH_LONG)
+                        .show();
                 // Silently crash to investigate https://crbug.com/384992232
                 boolean isPdf = tab.isNativePage() && tab.getNativePage().isPdf();
                 String logMessage =
