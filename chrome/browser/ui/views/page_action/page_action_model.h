@@ -20,32 +20,58 @@ namespace page_actions {
 class PageActionController;
 class PageActionModelObserver;
 
+// Interface to PageActionModel, used for either the concrete implementation or
+// a mock for testing.
+class PageActionModelInterface {
+ public:
+  PageActionModelInterface() = default;
+  virtual ~PageActionModelInterface() = default;
+
+  virtual void AddObserver(PageActionModelObserver* observer) = 0;
+  virtual void RemoveObserver(PageActionModelObserver* observer) = 0;
+
+  virtual void SetActionItemProperties(
+      base::PassKey<PageActionController>,
+      const actions::ActionItem* action_item) = 0;
+  virtual void SetShowRequested(base::PassKey<PageActionController>,
+                                bool requested) = 0;
+  virtual void SetOverrideText(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_text) = 0;
+
+  virtual bool GetVisible() const = 0;
+  virtual const ui::ImageModel& GetImage() const = 0;
+  virtual const std::u16string GetText() const = 0;
+  virtual const std::u16string GetTooltipText() const = 0;
+};
+
 // PageActionModel represents the page action's state, scoped to a single tab.
-class PageActionModel {
+class PageActionModel : public PageActionModelInterface {
  public:
   PageActionModel();
   PageActionModel(const PageActionModel&) = delete;
   PageActionModel& operator=(const PageActionModel&) = delete;
-  ~PageActionModel();
+  ~PageActionModel() override;
 
-  void AddObserver(PageActionModelObserver* observer);
-  void RemoveObserver(PageActionModelObserver* observer);
+  void AddObserver(PageActionModelObserver* observer) override;
+  void RemoveObserver(PageActionModelObserver* observer) override;
 
   // Applies any relevant ActionItem properties to the model, including
   // visibility, text and icon properties.
   void SetActionItemProperties(base::PassKey<PageActionController>,
-                               const actions::ActionItem* action_item);
-
-  void SetShowRequested(base::PassKey<PageActionController>, bool requested);
-  void SetOverrideText(base::PassKey<PageActionController>,
-                       const std::optional<std::u16string>& override_text);
+                               const actions::ActionItem* action_item) override;
+  void SetShowRequested(base::PassKey<PageActionController>,
+                        bool requested) override;
+  void SetOverrideText(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_text) override;
 
   // The model distills all visibility properties into a single result.
-  bool GetVisible() const;
+  bool GetVisible() const override;
 
-  const ui::ImageModel& GetImage() const;
-  const std::u16string GetText() const;
-  const std::u16string GetTooltipText() const;
+  const ui::ImageModel& GetImage() const override;
+  const std::u16string GetText() const override;
+  const std::u16string GetTooltipText() const override;
 
  private:
   // Notifies observers of a model change.
