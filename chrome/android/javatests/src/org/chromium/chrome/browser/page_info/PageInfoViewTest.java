@@ -1846,7 +1846,9 @@ public class PageInfoViewTest {
                                     ControlsPosition.BOTTOM,
                                     0,
                                     0,
+                                    0,
                                     browserControlsManager.getTopControlsHeight(),
+                                    0,
                                     0);
                             return activity.getResources()
                                     .getDimension(R.dimen.page_info_popup_corners_radius);
@@ -1935,7 +1937,9 @@ public class PageInfoViewTest {
                                     ControlsPosition.BOTTOM,
                                     0,
                                     0,
+                                    0,
                                     browserControlsManager.getTopControlsHeight(),
+                                    0,
                                     0);
                             return activity.getModalDialogManagerSupplier();
                         });

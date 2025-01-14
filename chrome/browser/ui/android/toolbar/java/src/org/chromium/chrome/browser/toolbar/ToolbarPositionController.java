@@ -313,16 +313,32 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             progressBarLayoutParams.gravity = Gravity.BOTTOM;
         }
 
-        mBottomControlsStacker.requestLayerUpdate(false);
+        boolean animatingToTop = stateTransition == StateTransition.ANIMATE_TO_TOP;
+        boolean animatingToBottom = stateTransition == StateTransition.ANIMATE_TO_BOTTOM;
 
+        mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
         mCurrentPosition = newControlsPosition;
+        mBrowserControlsSizer.setAnimateBrowserControlsHeightChanges(
+                animatingToTop || animatingToBottom);
         mBrowserControlsSizer.setControlsPosition(
                 mCurrentPosition,
                 newTopHeight,
                 mBrowserControlsSizer.getTopControlsMinHeight(),
+                // If animating to top, set the initial offset of the animation to fully hide the
+                // toolbar. This is negative since it's relative to the top of the content.
+                animatingToTop
+                        ? -controlContainerHeight
+                        : mBrowserControlsSizer.getTopControlOffset(),
                 mBottomControlsStacker.getTotalHeight(),
-                mBottomControlsStacker.getTotalMinHeight());
+                mBottomControlsStacker.getTotalMinHeight(),
+                // If animating to bottom, set the initial offset of the animation to fully hide the
+                // toolbar. This is positive since it's relative to the bottom of the content.
+                animatingToBottom
+                        ? controlContainerHeight
+                        : mBrowserControlsSizer.getBottomControlOffset());
 
+        // Commit the new layer sizes and visibilities we calculated above to avoid inconsistency.
+        mBottomControlsStacker.requestLayerUpdate(false);
         FrameLayout.LayoutParams hairlineLayoutParams =
                 mControlContainer.mutateHairlineLayoutParams();
         hairlineLayoutParams.topMargin =

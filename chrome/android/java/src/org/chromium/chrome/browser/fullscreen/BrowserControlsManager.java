@@ -580,19 +580,42 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             @ControlsPosition int controlsPosition,
             int newTopControlsHeight,
             int newTopControlsMinHeight,
+            int newRendererTopControlsOffset,
             int newBottomControlsHeight,
-            int newBottomControlsMinHeight) {
+            int newBottomControlsMinHeight,
+            int newRendererBottomControlsOffset) {
         assert controlsPosition == ControlsPosition.TOP
                         || controlsPosition == ControlsPosition.BOTTOM
                 : "Cannot change to ControlPosition.NONE after initialization";
         if (mControlsPosition == controlsPosition) return;
-        mControlsPosition = controlsPosition;
-        setTopControlsHeight(newTopControlsHeight, newTopControlsMinHeight);
-        setBottomControlsHeight(newBottomControlsHeight, newBottomControlsMinHeight);
+        try (TraceEvent e = TraceEvent.scoped("BrowserControlsManager.setControlsPosition")) {
+            // Only one pending update to browser controls params can be in-flight at once, so we
+            // need to fully update all params before notifying that the params have changed via
+            // observer methods. If we don't, a partial update will get pushed that delays the final
+            // state from being recognized and prevents animations from running correctly.
+            mControlsPosition = controlsPosition;
+            mTopControlsHeight = newTopControlsHeight;
+            mTopControlsMinHeight = newTopControlsMinHeight;
+            mBottomControlsHeight = newBottomControlsHeight;
+            mBottomControlsMinHeight = newBottomControlsMinHeight;
+            if (canAnimateNativeBrowserControls()) {
+                mRendererTopControlOffset = newRendererTopControlsOffset;
+                mRendererBottomControlOffset = newRendererBottomControlsOffset;
+            } else {
+                mRendererTopControlOffset = 0;
+                mRendererBottomControlOffset = 0;
+            }
 
-        updateControlOffset();
-        notifyControlOffsetChanged();
-        notifyControlsPositionChanged();
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onTopControlsHeightChanged(newTopControlsHeight, newTopControlsMinHeight);
+                obs.onBottomControlsHeightChanged(
+                        newBottomControlsHeight, newBottomControlsMinHeight);
+            }
+
+            updateControlOffset();
+            notifyControlOffsetChanged();
+            notifyControlsPositionChanged();
+        }
     }
 
     @Override
