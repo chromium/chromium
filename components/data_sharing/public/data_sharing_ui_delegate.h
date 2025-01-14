@@ -30,7 +30,7 @@ class DataSharingUIDelegate {
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type DataSharingService for the given
   // DataSharingService.
-  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

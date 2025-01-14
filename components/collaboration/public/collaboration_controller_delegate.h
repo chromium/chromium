@@ -100,7 +100,7 @@ class CollaborationControllerDelegate {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of the CollaborationControllerDelegate.
-  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
