@@ -112,6 +112,9 @@ const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
 
+const char kFamilyManagementUrl[] =
+    "https://myaccount.google.com/family/details";
+
 const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
 
 // LINT.IfChange

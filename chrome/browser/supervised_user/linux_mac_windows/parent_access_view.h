@@ -17,6 +17,9 @@ class WebContents;
 class BrowserContext;
 }  // namespace content
 
+using WebContentsObserverCreationCallback =
+    base::OnceCallback<void(content::WebContents*)>;
+
 // Implements a View to display the Parent Access Widget (PACP).
 // The view contains a WebView which loads the PACP url.
 class ParentAccessView : public views::View {
@@ -29,16 +32,22 @@ class ParentAccessView : public views::View {
   // Creates and opens a view that displays the Parent Access widget (PACP).
   static base::WeakPtr<ParentAccessView> ShowParentAccessDialog(
       content::WebContents* web_contents,
-      const GURL& target_url);
+      const GURL& target_url,
+      WebContentsObserverCreationCallback web_contents_observer_creation_cb);
 
   base::WeakPtr<ParentAccessView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Closes the widget that hosts this view.
+  // Results in destructing the present view and its widget.
+  void CloseView();
+
  private:
   // Initialize ParentAccessView's web_view_ element.
   void Initialize(const GURL& pacp_url, int corner_radius);
   void ShowNativeView();
+  content::WebContents* GetWebViewContents();
 
   bool is_initialized_ = false;
   int corner_radius_ = 0;

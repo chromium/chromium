@@ -3450,6 +3450,10 @@ if (!is_android) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      sources += [ "../browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer_browsertest.cc" ]
+    }
+
     if (enable_nacl) {
       sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
     }

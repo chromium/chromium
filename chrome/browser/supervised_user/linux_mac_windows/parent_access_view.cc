@@ -26,7 +26,7 @@ constexpr int kDialogHeight = 450;
 
 constexpr char kPacpUrl[] =
     "https://families.google.com/"
-    "parentaccess/consent?callerid=5140b89c&continue=https://"
+    "parentaccess?callerid=5140b89c&continue=https://"
     "families.google.com";
 
 const GURL GetPacpUrl(const GURL& blocked_url) {
@@ -49,8 +49,10 @@ ParentAccessView::~ParentAccessView() = default;
 // static
 base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
     content::WebContents* web_contents,
-    const GURL& target_url) {
+    const GURL& target_url,
+    WebContentsObserverCreationCallback web_contents_observer_creation_cb) {
   CHECK(web_contents);
+  CHECK(web_contents_observer_creation_cb);
 
   auto dialog_delegate = std::make_unique<views::DialogDelegate>();
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -77,7 +79,27 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
 
   // Shows the dialog.
   view_weak_ptr->ShowNativeView();
+
+  // Starts observing the new dialog contents.
+  std::move(web_contents_observer_creation_cb)
+      .Run(view_weak_ptr->GetWebViewContents());
+
   return view_weak_ptr;
+}
+
+void ParentAccessView::CloseView() {
+  views::Widget* widget = GetWidget();
+  // TODO(crbug.com/38399752): Explore the option of owning and re-setting the
+  // widget.
+  if (widget) {
+    widget->Close();
+  }
+}
+
+content::WebContents* ParentAccessView::GetWebViewContents() {
+  CHECK(web_view_);
+  CHECK(is_initialized_);
+  return web_view_->web_contents();
 }
 
 void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
@@ -97,7 +119,7 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
 }
 
 void ParentAccessView::ShowNativeView() {
-  auto* widget = GetWidget();
+  views::Widget* widget = GetWidget();
   if (!widget) {
     return;
   }
