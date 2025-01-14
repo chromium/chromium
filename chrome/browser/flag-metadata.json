@@ -3218,11 +3218,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-isolated-web-app-automatic-updates",
-    "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-isolated-web-app-dev-mode",
     "owners": [ "rmcelrath@chromium.org", "reillyg@chromium.org", "iwa-team@google.com" ],
     "expiry_milestone": 140

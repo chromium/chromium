@@ -1100,63 +1100,6 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
       IsFalse());
 }
 
-struct FeatureFlagParam {
-  base::flat_map<base::test::FeatureRef, bool> feature_states;
-  bool expected_result;
-};
-
-class IsolatedWebAppUpdateManagerFeatureFlagTest
-    : public IsolatedWebAppUpdateManagerTest,
-      public ::testing::WithParamInterface<FeatureFlagParam> {
- public:
-  IsolatedWebAppUpdateManagerFeatureFlagTest() {
-    scoped_feature_list_.InitWithFeatureStates(GetParam().feature_states);
-  }
-
- protected:
-  void SetUp() override {
-    IsolatedWebAppUpdateManagerTest::SetUp();
-    // Disable manual overwrite of automatic update behavior and thus behave
-    // like it would outside of tests.
-    provider().SetEnableAutomaticIwaUpdates(
-        FakeWebAppProvider::AutomaticIwaUpdateStrategy::kDefault);
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(IsolatedWebAppUpdateManagerFeatureFlagTest,
-       DoesUpdateDiscoveryIfFeatureFlagsAreEnabled) {
-  CreateIwa1Bundle("1.0.0")->InstallChecked(profile());
-
-  EXPECT_THAT(
-      update_manager().GetNextUpdateDiscoveryTimeForTesting().has_value(),
-      Eq(GetParam().expected_result));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IsolatedWebAppUpdateManagerFeatureFlagTest,
-    ::testing::Values(
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, false},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                true}},
-            .expected_result = false},
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, true},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                false}},
-            .expected_result = false},
-        FeatureFlagParam{
-            .feature_states = {{features::kIsolatedWebApps, true},
-                               {features::kIsolatedWebAppAutomaticUpdates,
-                                true}},
-            .expected_result = true}));
-
-}  // namespace
-
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskSuccess) {
   base::HistogramTester histogram_tester;
   IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status =
@@ -1217,4 +1160,5 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskFails) {
                            IsolatedWebAppUpdateError::kUpdateApplyFailed, 1))));
 }
 
+}  // namespace
 }  // namespace web_app

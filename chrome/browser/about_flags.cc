@@ -5114,10 +5114,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
-    {"enable-isolated-web-app-automatic-updates",
-     flag_descriptions::kEnableIsolatedWebAppAutomaticUpdatesName,
-     flag_descriptions::kEnableIsolatedWebAppAutomaticUpdatesDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kIsolatedWebAppAutomaticUpdates)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-isolated-web-app-managed-guest-session-install",
      flag_descriptions::kEnableIsolatedWebAppManagedGuestSessionInstallName,

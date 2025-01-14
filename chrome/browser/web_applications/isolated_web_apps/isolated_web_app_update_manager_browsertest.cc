@@ -173,10 +173,6 @@ class ServiceWorkerVersionStartedRunningWaiter
 class IsolatedWebAppUpdateManagerBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppUpdateManagerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kIsolatedWebAppAutomaticUpdates);
-  }
   void AddNewBundleToUpdateServer(std::string_view app_name,
                                   std::string_view app_version,
                                   std::optional<std::vector<UpdateChannel>>
@@ -219,7 +215,6 @@ class IsolatedWebAppUpdateManagerBrowserTest
             .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
 };
 
@@ -1180,13 +1175,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatedWebAppAutomaticUpdates,
-         component_updater::kIwaKeyDistributionComponent},
-        {});
-  }
-
   const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id);
   }
@@ -1210,7 +1198,8 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      component_updater::kIwaKeyDistributionComponent};
 
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();

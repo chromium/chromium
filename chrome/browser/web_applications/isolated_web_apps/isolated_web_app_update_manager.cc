@@ -247,9 +247,7 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // Web Apps are not a thing in off the record profiles, but have
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
-          !profile.IsOffTheRecord() &&
-          base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates)),
+          !profile.IsOffTheRecord()),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
       task_queue_{*this} {}
 
