@@ -674,6 +674,15 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
     case IMPROVED_PREDICTION:
+    case PASSPORT_NAME_TAG:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY_TAG:
+    case PASSPORT_EXPIRATION_DATE_TAG:
+    case PASSPORT_ISSUE_DATE_TAG:
+    case PASSPORT_COUNTRY_OF_BIRTH_TAG:
+    case LOYALTY_CARD_PROGRAM:
+    case LOYALTY_CARD_PROVIDER:
+    case LOYALTY_CARD_MEMBER_ID:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }
