@@ -1086,7 +1086,9 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
     case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
-      } else {
+      } else if (!settings_.using_synchronous_renderer_compositor) {
+        // We cannot enforce this for WebView, as we cannot prevent the
+        // application from attempting to force draws when we are unable to.
         DUMP_WILL_BE_NOTREACHED()
             << consecutive_cant_draw_count_ << " consecutve draws"
             << " with DrawResult::kAbortedCantDraw result";
