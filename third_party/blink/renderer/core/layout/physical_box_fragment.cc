@@ -304,17 +304,14 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  children_.resize(builder->children_.size());
+  children_.ReserveInitialCapacity(builder->children_.size());
   PhysicalSize size = Size();
   const WritingModeConverter converter(
       {block_or_line_writing_mode, builder->Direction()}, size);
-  wtf_size_t i = 0;
   for (auto& child : builder->children_) {
-    children_[i].offset =
-        converter.ToPhysical(child.offset, child.fragment->Size());
-    // Fragments in |builder| are not used after |this| was constructed.
-    children_[i].fragment = child.fragment.Release();
-    ++i;
+    children_.emplace_back(
+        std::move(child.fragment),
+        converter.ToPhysical(child.offset, child.fragment->Size()));
   }
 
   if (HasItems()) {
