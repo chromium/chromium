@@ -314,8 +314,8 @@ bool BrowserFrameMac::WillExecuteCommand(
     // The specification for this private extensions API is incredibly vague.
     // For now, we avoid triggering chrome commands prior to giving the
     // firstResponder a chance to handle the event.
-    if (extensions::GlobalShortcutListener::GetInstance() &&
-        extensions::GlobalShortcutListener::GetInstance()
+    if (ui::GlobalAcceleratorListener::GetInstance() &&
+        ui::GlobalAcceleratorListener::GetInstance()
             ->IsShortcutHandlingSuspended()) {
       return false;
     }
