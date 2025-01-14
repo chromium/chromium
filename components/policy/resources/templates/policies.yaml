@@ -1326,7 +1326,9 @@ policies:
   1325: GenAIPhotoEditingSettings
   1326: PartitionedBlobUrlUsage
   1327: GlicEnabled
-
+  1328: DefaultControlledFrameSetting
+  1329: ControlledFrameAllowedForUrls
+  1330: ControlledFrameBlockedForUrls
 
 atomic_groups:
   1: Homepage
@@ -1385,3 +1387,4 @@ atomic_groups:
   54: BrowserEventReporting
   55: SmartCardConnectSettings
   56: WebRtc
+  57: ControlledFrameSettings

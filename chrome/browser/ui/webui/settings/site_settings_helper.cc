@@ -247,6 +247,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::LEGACY_COOKIE_SCOPE, nullptr},
     {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
      nullptr},
+    {ContentSettingsType::CONTROLLED_FRAME, nullptr},
 });
 
 static_assert(

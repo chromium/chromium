@@ -150,6 +150,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::LEGACY_COOKIE_SCOPE, 131},
     {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
      132},
+    {ContentSettingsType::CONTROLLED_FRAME, 133},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

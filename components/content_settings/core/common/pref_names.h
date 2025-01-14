@@ -79,6 +79,8 @@ inline constexpr char
         "profile.managed_default_content_settings.direct_sockets_pna";
 inline constexpr char kManagedDefaultLegacyCookieScope[] =
     "profile.managed_default_content_settings.legacy_cookie_scope";
+inline constexpr char kManagedDefaultControlledFrameSetting[] =
+    "profile.managed_default_content_settings.controlled_frame";
 
 // Preferences that are exclusively used to store managed content settings
 // patterns.
@@ -192,6 +194,10 @@ inline constexpr char kManagedSmartCardConnectAllowedForUrls[] =
 inline constexpr char kManagedSmartCardConnectBlockedForUrls[] =
     "profile.managed_smart_card_connect_blocked_for_urls";
 #endif
+inline constexpr char kManagedControlledFrameAllowedForUrls[] =
+    "profile.managed_controlled_frame_allowed_for_urls";
+inline constexpr char kManagedControlledFrameBlockedForUrls[] =
+    "profile.managed_controlled_frame_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

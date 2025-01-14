@@ -195,6 +195,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::LEGACY_COOKIE_SCOPE:
       case ContentSettingsType::
           ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER:
+      case ContentSettingsType::CONTROLLED_FRAME:
         break;
 
       default:

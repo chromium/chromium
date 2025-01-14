@@ -146,6 +146,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedSmartCardConnectBlockedForUrls,
          ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_BLOCK},
 #endif
+        {prefs::kManagedControlledFrameAllowedForUrls,
+         ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedControlledFrameBlockedForUrls,
+         ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -202,6 +206,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedSmartCardConnectAllowedForUrls,
     prefs::kManagedSmartCardConnectBlockedForUrls,
 #endif
+    prefs::kManagedControlledFrameAllowedForUrls,
+    prefs::kManagedControlledFrameBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -237,6 +243,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebPrintingSetting,
     prefs::kManagedDefaultDirectSocketsSetting,
     prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting,
+    prefs::kManagedDefaultControlledFrameSetting,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
@@ -350,6 +357,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultDirectSocketsSetting},
         {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
          prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting},
+        {ContentSettingsType::CONTROLLED_FRAME,
+         prefs::kManagedDefaultControlledFrameSetting},
 };
 
 // static
