@@ -2945,6 +2945,30 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NoCharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/utf8.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 0);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/no_charset.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 1);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       ISO2022JPDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/iso_2022_jp.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 1);
+  CheckCounter(WebFeature::kCharsetAutoDetectionISO2022JP, 1);
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // [ ] CrossOriginOpenerPolicySameOrigin
 // [ ] CrossOriginOpenerPolicySameOriginAllowPopups

@@ -10979,6 +10979,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5240" label="TopicsAPIImg"/>
   <int value="5241" label="MediaSessionEnterPictureInPicture"/>
   <int value="5242" label="V8AILanguageDetector_Detect_Method"/>
+  <int value="5243" label="CharsetAutoDetection"/>
+  <int value="5244" label="CharsetAutoDetectionISO2022JP"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
