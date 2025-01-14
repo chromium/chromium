@@ -164,10 +164,6 @@ class CC_EXPORT TextureLayer : public Layer {
       resource_holder_;
   ProtectedSequenceWritable<bool> needs_set_resource_;
 
-  typedef base::flat_map<viz::SharedBitmapId,
-                         scoped_refptr<CrossThreadSharedBitmap>>
-      BitMapMap;
-
   const base::WeakPtrFactory<TextureLayer> weak_ptr_factory_{this};
 };
 
