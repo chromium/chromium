@@ -1557,7 +1557,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
             int securityIconResource = 0;
-            if (!shouldNestSecurityIcon() || !isSecureLevel()) {
+            if (!shouldNestSecurityIcon() || !isSecureOrNeutralLevel()) {
                 securityIconResource =
                         mLocationBarDataProvider.getSecurityIconResource(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
@@ -1579,10 +1579,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         /** Returns whether the current security level is considered secure. */
-        private boolean isSecureLevel() {
+        private boolean isSecureOrNeutralLevel() {
             @ConnectionSecurityLevel
             int securityLevel = mLocationBarDataProvider.getSecurityLevel();
-            return securityLevel == ConnectionSecurityLevel.SECURE
+            return securityLevel == ConnectionSecurityLevel.NONE
+                    || securityLevel == ConnectionSecurityLevel.SECURE
                     || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
         }
 
