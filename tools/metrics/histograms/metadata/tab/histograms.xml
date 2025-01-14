@@ -97,12 +97,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
-    expires_after="2024-04-28">
+    expires_after="2025-05-11">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs discard candidates. This is recorded each time Chrome
     needs to urgently discard a tab.
+
+    Warning this historgram was expired between 2024-04-28 and 2025-01-18.
   </summary>
 </histogram>
 
@@ -1718,12 +1720,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.Discarding.DiscardToReloadTime.Proactive"
-    units="ms" expires_after="2024-04-28">
+    units="ms" expires_after="2025-05-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between a tab getting discarded to eventually being reloaded by
     the user. Recorded when the discard was triggered by Memory Saver Mode.
+
+    Warning this historgram was expired between 2024-04-28 and 2025-01-18.
   </summary>
 </histogram>
 
@@ -1738,13 +1742,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.Discarding.InactiveToReloadTime.Proactive"
-    units="ms" expires_after="2024-05-19">
+    units="ms" expires_after="2025-05-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between the time a tab switched from being active to inactive
     (that eventually gets discarded) until it gets reloaded. Recorded when the
     discard was triggered by Memory Saver Mode.
+
+    Warning this historgram was expired between 2024-05-19 and 2025-01-18.
   </summary>
 </histogram>
 
