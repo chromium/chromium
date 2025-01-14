@@ -68,9 +68,6 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
 
   // Returns the avatar linked to the profile.
   func avatarForProfile(profile: ProfileDetail?) -> Image? {
-    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-    else { return nil }
-
     guard let gaia = profile?.gaia
     else { return nil }
 
