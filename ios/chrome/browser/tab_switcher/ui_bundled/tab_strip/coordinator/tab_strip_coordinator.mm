@@ -274,6 +274,9 @@
       case TabGroupActionType::kDeleteTabGroup:
         [weakSelf deleteTabGroup:tabGroupItem];
         break;
+      case TabGroupActionType::kLeaveSharedTabGroup:
+        // TODO(crbug.com/375587197): Implement this.
+        break;
     }
   };
 

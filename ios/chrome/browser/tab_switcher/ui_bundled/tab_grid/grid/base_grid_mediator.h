@@ -146,6 +146,9 @@ class WebState;
 // Ungroups all tabs in `group`. The tabs in the group remain open.
 - (void)ungroupTabGroup:(const TabGroup*)group;
 
+// Leaves shared `group`. The group is closed locally.
+- (void)leaveSharedTabGroup:(const TabGroup*)group;
+
 // Returns whether this mediator can handle the drop of `tabGroupInfo`.
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo;
 

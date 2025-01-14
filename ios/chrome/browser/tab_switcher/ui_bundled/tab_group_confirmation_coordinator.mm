@@ -125,6 +125,8 @@
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP);
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
   }
 }
 
@@ -137,6 +139,9 @@
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(
           IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE);
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      return l10n_util::GetNSString(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_TITLE);
   }
 }
 
@@ -174,6 +179,11 @@
         return l10n_util::GetNSString(
             IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
       }
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      // TODO(crbug.com/375587197): Update the string once the coordinator has
+      // access to the leaved tab group.
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE, u"GROUP_NAME");
   }
 }
 

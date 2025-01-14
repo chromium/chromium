@@ -664,3 +664,23 @@ TEST_F(ActionFactoryTest, ShareTabGroup) {
   EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
+
+// Tests that the leave shared tab group action has the right title and image.
+TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
+
+  UIAction* action = [factory actionToLeaveSharedTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
+}

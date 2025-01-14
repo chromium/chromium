@@ -19,15 +19,18 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/data_sharing/public/data_sharing_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -474,6 +477,40 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
 
   groupWebStateList->DeleteGroup(group);
+}
+
+- (void)leaveSharedTabGroup:(const TabGroup*)group {
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(self.profile);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
+  CHECK(dataSharingService);
+  CHECK(tabGroupSyncService);
+
+  const base::Uuid savedGroupId =
+      tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  // Close the group locally to make the leave animation appear faster.
+  tab_groups::utils::CloseTabGroupLocally(group, _webStateList,
+                                          tabGroupSyncService);
+
+  // Asynchronously leave the group on the server.
+  __weak BaseGridMediator* weakSelf = self;
+  dataSharingService->LeaveGroup(
+      groupId,
+      base::BindOnce(^(
+          data_sharing::DataSharingService::PeopleGroupActionOutcome outcome) {
+        // If leaving the group on the server failed, restore the tab group
+        // locally.
+        if (outcome != data_sharing::DataSharingService::
+                           PeopleGroupActionOutcome::kSuccess) {
+          [weakSelf restoreTabGroupAfterLeaveFailure:savedGroupId];
+        }
+      }));
 }
 
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
@@ -1134,6 +1171,15 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   [self closeTabGroup:group.get() andDeleteGroup:YES];
 }
 
+- (void)leaveSharedTabGroup:(base::WeakPtr<const TabGroup>)group
+                 sourceView:(UIView*)sourceView {
+  DCHECK(IsTabGroupSyncEnabled());
+  [self.tabGroupsHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
+                                  group:group
+                             sourceView:sourceView];
+}
+
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
   [self closeTabGroup:group.get() andDeleteGroup:NO];
 }
@@ -1661,6 +1707,16 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                          withWebStateList:self.webStateList];
   [self.consumer replaceItem:groupIdentifier
          withReplacementItem:groupIdentifier];
+}
+
+// Restores the tab group if an error occurred while attempting to leave it.
+- (void)restoreTabGroupAfterLeaveFailure:(const base::Uuid)savedGroupId {
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
+  tabGroupSyncService->OpenTabGroup(
+      savedGroupId,
+      std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
+  // TODO(crbug.com/375587197): Show a snackbar here.
 }
 
 #pragma mark - TabGridPageMutator

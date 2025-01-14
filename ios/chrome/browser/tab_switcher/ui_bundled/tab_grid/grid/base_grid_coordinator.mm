@@ -445,6 +445,11 @@
         [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
       }
       break;
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      if (weakGroup) {
+        [self.mediator leaveSharedTabGroup:weakGroup.get()];
+      }
+      break;
   }
 
   if (_tabGroupCoordinator) {

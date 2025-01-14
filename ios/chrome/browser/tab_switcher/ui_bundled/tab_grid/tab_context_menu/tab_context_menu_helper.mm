@@ -396,7 +396,11 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
         }]];
     if (!incognito) {
       if (isTabGroupShared && userRole == data_sharing::MemberRole::kMember) {
-        // TODO(crbug.com/375587197): Add the "Leave group" destructive action.
+        [destructiveActions
+            addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+              [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
+                                                     sourceView:cell];
+            }]];
       } else {
         [destructiveActions
             addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
