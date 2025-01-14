@@ -28,6 +28,10 @@ public class DataSharingCreateUiConfig {
         default void onCancelClicked() {}
 
         default void getDataSharingUrl(GroupToken tokenSecret, Callback<String> url) {}
+
+        // This will always be called when user creates the group, ui closes, or
+        // session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingCreateUiConfig(Builder builder) {
