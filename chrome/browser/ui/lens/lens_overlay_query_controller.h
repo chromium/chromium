@@ -169,6 +169,10 @@ class LensOverlayQueryController {
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
+  base::TimeTicks partial_page_contents_request_start_time_for_testing() const {
+    return partial_page_contents_request_start_time_;
+  }
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -502,11 +506,15 @@ class LensOverlayQueryController {
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
-  // Returns whether or not the contextual search query should be held until
-  // the full page content upload is finished. This is only true if the page
-  // content upload is in progress and the partial page content upload will not
-  // yield detailed enough results.
-  bool ShouldHoldContextualSearchQuery();
+  // Returns whether or not the contextual search query should be sent now or
+  // held until the full page content upload is finished. This is only true if
+  // the page content upload is in progress and the partial page content upload
+  // will not yield detailed enough results.
+  bool ShouldSendContextualSearchQuery();
+
+  // Returns whether the partial page content contains enough text to yield
+  // detailed enough results.
+  bool IsPartialPageContentSubstantial();
 
   // The request id generator.
   std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;

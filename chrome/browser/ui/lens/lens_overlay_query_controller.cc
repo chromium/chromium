@@ -456,9 +456,9 @@ void LensOverlayQueryController::SendContextualTextQuery(
     return;
   }
 
-  // If there is a page content request in flight, wait for it to finish before
-  // sending the contextual text query.
-  if (ShouldHoldContextualSearchQuery()) {
+  // If the contextual search query shouldn't be sent now, hold it until the
+  // full page content upload is finished.
+  if (!ShouldSendContextualSearchQuery()) {
     pending_contextual_query_callback_ =
         base::BindOnce(&LensOverlayQueryController::SendContextualTextQuery,
                        weak_ptr_factory_.GetWeakPtr(), query_text,
@@ -1072,9 +1072,10 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
 }
 
 void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
-  if (!cluster_info_ || partial_content_.empty()) {
-    // Cannot send this request without cluster info. No need to send the
-    // request without content bytes.
+  if (!cluster_info_ || !IsPartialPageContentSubstantial()) {
+    // Cannot send this request without cluster info. Do not send the request
+    // if the partial page content is not substantial enough to yield deatialed
+    // results.
     return;
   }
 
@@ -1452,11 +1453,11 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
       std::make_optional(encoded_analytics_id));
 
   if (!(lens::features::IsLensOverlayContextualSearchboxEnabled() &&
-      !lens::features::GetLensOverlaySendImageSignalsForLensSuggest())) {
+        !lens::features::GetLensOverlaySendImageSignalsForLensSuggest())) {
     // Always include the image signals unless the contextual searchbox is
     // enabled and the image signals feature flag is disabled.
     suggest_inputs_.set_encoded_image_signals(
-          server_response.interaction_response().encoded_response());
+        server_response.interaction_response().encoded_response());
   }
   RunSuggestInputsCallback();
 }
@@ -1796,16 +1797,17 @@ void LensOverlayQueryController::OnInteractionEndpointFetcherCreated(
   interaction_endpoint_fetcher_ = std::move(endpoint_fetcher);
 }
 
-bool LensOverlayQueryController::ShouldHoldContextualSearchQuery() {
-  // If the page content request has already finished, the query can be sent.
-  if (!page_content_request_in_progress_) {
-    return false;
-  }
+bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
+  // Can send the query if the page content request has finished, or the partial
+  // page content is substantial enough to provide good results.
+  return !page_content_request_in_progress_ ||
+         IsPartialPageContentSubstantial();
+}
 
-  // If the partial page content is empty, the query needs to be held until the
-  // page content upload is finished.
+bool LensOverlayQueryController::IsPartialPageContentSubstantial() {
+  // If the partial page content is empty, exit early.
   if (partial_content_.empty()) {
-    return true;
+    return false;
   }
 
   // Get the average number of characters per page.
@@ -1815,9 +1817,9 @@ bool LensOverlayQueryController::ShouldHoldContextualSearchQuery() {
   }
   const int characters_per_page = total_characters / partial_content_.size();
 
-  // If the average is under the scanned pdf character per page heuristic, the
-  // query needs to wait for the page content upload.
-  return characters_per_page <
+  // If the average is over the scanned pdf character per page heuristic, the
+  // query is considered substantial.
+  return characters_per_page >
          lens::features::GetScannedPdfCharacterPerPageHeuristic();
 }
 }  // namespace lens
