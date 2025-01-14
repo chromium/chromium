@@ -382,8 +382,12 @@ TabStripRegionView::GetProductSpecificationsButton() {
 TabSearchButton* TabStripRegionView::GetTabSearchButton() {
   if (features::IsTabstripComboButtonEnabled()) {
     return tab_strip_combo_button_->tab_search_button();
-  } else {
+  } else if (tab_search_container_) {
+    // tab_search_container_ may be null if browser is not TYPE_NORMAL or
+    // ShouldShowNewTabButton(browser) otherwise returns false.
     return tab_search_container_->tab_search_button();
+  } else {
+    return nullptr;
   }
 }
 
