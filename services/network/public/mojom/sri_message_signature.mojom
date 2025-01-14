@@ -85,6 +85,9 @@ enum SRIMessageSignatureError {
   kSignatureInputHeaderKeyIdLength,
   kSignatureInputHeaderInvalidParameter,
   kSignatureInputHeaderMissingRequiredParameters,
+  kValidationFailedSignatureExpired,
+  kValidationFailedInvalidLength,
+  kValidationFailedSignatureMismatch,
 };
 
 // Contains the set of valid message signatures for a given response, along with

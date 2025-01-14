@@ -49,7 +49,7 @@ std::optional<std::string> ConstructSignatureBase(
 // that work, returning `true` if validation succeeds.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateSRIMessageSignaturesOverHeaders(
-    const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
+    mojom::SRIMessageSignaturesPtr& signatures,
     const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 

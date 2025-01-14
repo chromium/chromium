@@ -535,21 +535,23 @@ std::optional<std::string> ConstructSignatureBase(
 }
 
 bool ValidateSRIMessageSignaturesOverHeaders(
-    const std::vector<mojom::SRIMessageSignaturePtr>& message_signatures,
+    mojom::SRIMessageSignaturesPtr& message_signatures,
     const GURL& request_url,
     const net::HttpResponseHeaders& headers) {
   // If no signatures are present, validation automatically succeeds.
-  if (!message_signatures.size() || !request_url.is_valid()) {
+  if (!message_signatures->signatures.size() || !request_url.is_valid()) {
     return true;
   }
 
   // Loop through the signatures, validating each. Validation fails if any
   // given signature fails to validate.
-  for (const auto& message_signature : message_signatures) {
+  for (const auto& message_signature : message_signatures->signatures) {
     // Ensure the signature hasn't expired.
     if (message_signature->expires.has_value() &&
         message_signature->expires.value() <
             base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000) {
+      message_signatures->parsing_errors.push_back(
+          mojom::SRIMessageSignatureError::kValidationFailedSignatureExpired);
       return false;
     }
 
@@ -566,6 +568,8 @@ bool ValidateSRIMessageSignaturesOverHeaders(
         base::Base64Decode(encoded_key).value_or(std::vector<uint8_t>{});
     if (public_key.size() != kEd25519KeyLength ||
         message_signature->signature.size() != kEd25519SigLength) {
+      message_signatures->parsing_errors.push_back(
+          mojom::SRIMessageSignatureError::kValidationFailedInvalidLength);
       return false;
     }
 
@@ -574,6 +578,8 @@ bool ValidateSRIMessageSignaturesOverHeaders(
             reinterpret_cast<const uint8_t*>(signature_base->data()),
             signature_base->size(), message_signature->signature.data(),
             public_key.data())) {
+      message_signatures->parsing_errors.push_back(
+          mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch);
       return false;
     }
   }
@@ -597,8 +603,8 @@ MaybeBlockResponseForSRIMessageSignature(
   }
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
   if (!parsed_headers->signatures.size() ||
-      ValidateSRIMessageSignaturesOverHeaders(parsed_headers->signatures,
-                                              request_url, *response.headers)) {
+      ValidateSRIMessageSignaturesOverHeaders(parsed_headers, request_url,
+                                              *response.headers)) {
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;

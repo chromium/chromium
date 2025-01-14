@@ -995,10 +995,13 @@ class SRIMessageSignatureValidationTest : public testing::Test {
 TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
   auto headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
-  std::vector<mojom::SRIMessageSignaturePtr> signatures;
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(0u, parsed->signatures.size());
+  EXPECT_EQ(0u, parsed->parsing_errors.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
-                                                      *headers));
+  EXPECT_TRUE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  EXPECT_EQ(0u, parsed->parsing_errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
@@ -1007,8 +1010,9 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
   ASSERT_EQ(1u, parsed->signatures.size());
   EXPECT_EQ(0u, parsed->parsing_errors.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                      this->url(), *headers));
+  EXPECT_TRUE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  EXPECT_EQ(0u, parsed->parsing_errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
@@ -1029,8 +1033,11 @@ TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
   ASSERT_EQ(2u, parsed->signatures.size());
   EXPECT_EQ(0u, parsed->parsing_errors.size());
 
-  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                       this->url(), *headers));
+  EXPECT_FALSE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  ASSERT_EQ(1u, parsed->parsing_errors.size());
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
+            parsed->parsing_errors[0]);
 }
 
 TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
@@ -1046,8 +1053,9 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
   ASSERT_EQ(2u, parsed->signatures.size());
   EXPECT_EQ(0u, parsed->parsing_errors.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                      this->url(), *headers));
+  EXPECT_TRUE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  EXPECT_EQ(0u, parsed->parsing_errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
@@ -1061,16 +1069,22 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
   auto diff = kValidExpiringSignatureExpiresAt -
               base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 - 1;
   task_environment_.AdvanceClock(base::Seconds(diff));
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                      this->url(), *headers));
+  EXPECT_TRUE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  ASSERT_EQ(0u, parsed->parsing_errors.size());
+
   task_environment_.AdvanceClock(base::Seconds(1));
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                      this->url(), *headers));
+  EXPECT_TRUE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  ASSERT_EQ(0u, parsed->parsing_errors.size());
 
   // ...but not after expiration.
   task_environment_.AdvanceClock(base::Seconds(1));
-  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(parsed->signatures,
-                                                       this->url(), *headers));
+  EXPECT_FALSE(
+      ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+  ASSERT_EQ(1u, parsed->parsing_errors.size());
+  EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureExpired,
+            parsed->parsing_errors[0]);
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
@@ -1089,8 +1103,12 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     ASSERT_EQ(1u, parsed->signatures.size());
     EXPECT_EQ(0u, parsed->parsing_errors.size());
 
-    EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(
-        parsed->signatures, this->url(), *headers));
+    EXPECT_FALSE(
+        ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
+    EXPECT_EQ(1u, parsed->parsing_errors.size());
+    EXPECT_EQ(
+        mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
+        parsed->parsing_errors[0]);
   }
 }
 
