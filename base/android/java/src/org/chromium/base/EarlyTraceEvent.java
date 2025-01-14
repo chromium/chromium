@@ -15,7 +15,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
@@ -27,21 +27,20 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Support for early tracing, before the native library is loaded.
  *
- * Note that arguments are not currently supported for early events, but could
- * be added in the future.
+ * <p>Note that arguments are not currently supported for early events, but could be added in the
+ * future.
  *
- * Events recorded here are buffered in Java until the native library is available, at which point
- * they are flushed to the native side and regular java tracing (TraceEvent) takes over.
+ * <p>Events recorded here are buffered in Java until the native library is available, at which
+ * point they are flushed to the native side and regular java tracing (TraceEvent) takes over.
  *
- * Locking: This class is threadsafe. It is enabled when general tracing is, and then disabled when
- *          tracing is enabled from the native side. At this point, buffered events are flushed to
- *          the native side and then early tracing is permanently disabled after dumping the events.
+ * <p>Locking: This class is threadsafe. It is enabled when general tracing is, and then disabled
+ * when tracing is enabled from the native side. At this point, buffered events are flushed to the
+ * native side and then early tracing is permanently disabled after dumping the events.
  *
- * Like the TraceEvent, the event name of the trace events must be a string literal or a |static
+ * <p>Like the TraceEvent, the event name of the trace events must be a string literal or a |static
  * final String| class member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  */
 @JNINamespace("base::android")
-@NullUnmarked // Cannot accurately model due to enable() / disable()
 public class EarlyTraceEvent {
     /** Single trace event. */
     @VisibleForTesting
@@ -264,6 +263,8 @@ public class EarlyTraceEvent {
         }
     }
 
+    @EnsuresNonNullIf({"sEvents", "sAsyncEvents"})
+    @SuppressWarnings("NullAway")
     static boolean enabled() {
         return sState == STATE_ENABLED;
     }

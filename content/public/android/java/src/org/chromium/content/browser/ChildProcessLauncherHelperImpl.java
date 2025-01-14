@@ -40,7 +40,6 @@ import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
@@ -656,7 +655,6 @@ public final class ChildProcessLauncherHelperImpl {
         return sSandboxedChildConnectionAllocator;
     }
 
-    @NullUnmarked
     private ChildProcessLauncherHelperImpl(
             long nativePointer,
             String[] commandLine,
@@ -765,7 +763,6 @@ public final class ChildProcessLauncherHelperImpl {
         LauncherThread.post(() -> mLauncher.stop());
     }
 
-    @NullUnmarked
     @CalledByNative
     private void setPriority(
             int pid,
@@ -895,10 +892,10 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     /**
-     * Dumps the stack of the child process with |pid|  without crashing it.
+     * Dumps the stack of the child process with |pid| without crashing it.
+     *
      * @param pid Process id of the child process.
      */
-    @NullUnmarked
     @CalledByNative
     private void dumpProcessStack(int pid) {
         assert LauncherThread.runningOnLauncherThread();

@@ -249,7 +249,7 @@ public class BuildInfo {
         return mGmsVersionCode;
     }
 
-    @NullUnmarked // https://github.com/uber/NullAway/issues/98
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/98
     private BuildInfo() {
         sInitialized = true;
         Context appContext = ContextUtils.getApplicationContext();
