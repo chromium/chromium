@@ -441,9 +441,8 @@ void FreedesktopSecretKeyProvider::OnSearchItems(
   }
 
   if (results->value().empty()) {
-    // No items found, create a new one
-    CreateItem(base::MakeRefCounted<base::RefCountedString>(
-        base::Base64Encode(base::RandBytesAsVector(kSecretLengthBytes))));
+    // No items found, attempt KWallet migration.
+    TryKWalletMigration();
     return;
   }
 
@@ -478,6 +477,106 @@ void FreedesktopSecretKeyProvider::OnGetSecret(
   }
 
   DeriveKeyFromSecret(base::span(*secret_bytes));
+}
+
+void FreedesktopSecretKeyProvider::TryKWalletMigration() {
+  if (kwallet_candidate_index_ >= kKWalletCandidates.size()) {
+    // No KWallet
+    CreateItem(base::MakeRefCounted<base::RefCountedString>(
+        base::Base64Encode(base::RandBytesAsVector(kSecretLengthBytes))));
+    return;
+  }
+
+  const auto& service_and_path = kKWalletCandidates[kwallet_candidate_index_];
+  kwallet_proxy_ =
+      bus_->GetObjectProxy(service_and_path.kwallet_service,
+                           dbus::ObjectPath(service_and_path.kwallet_path));
+  dbus_utils::NameHasOwner(
+      bus_.get(), service_and_path.kwallet_service,
+      base::BindOnce(&FreedesktopSecretKeyProvider::OnNameHasOwnerForKWallet,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreedesktopSecretKeyProvider::OnNameHasOwnerForKWallet(
+    std::optional<bool> has_owner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!has_owner.value_or(false)) {
+    kwallet_candidate_index_++;
+    TryKWalletMigration();
+    return;
+  }
+
+  CallMethod(kwallet_proxy_, kKWalletInterface, kKWalletMethodIsEnabled,
+             DbusVoid(),
+             base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletIsEnabled,
+                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreedesktopSecretKeyProvider::OnKWalletIsEnabled(
+    base::expected<DbusBoolean, ErrorDetail> is_enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_enabled.has_value() || !is_enabled->value()) {
+    kwallet_candidate_index_++;
+    TryKWalletMigration();
+    return;
+  }
+  CallMethod(
+      kwallet_proxy_, kKWalletInterface, kKWalletMethodNetworkWallet,
+      DbusVoid(),
+      base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletNetworkWallet,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreedesktopSecretKeyProvider::OnKWalletNetworkWallet(
+    base::expected<DbusString, ErrorDetail> wallet_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!wallet_name.has_value()) {
+    kwallet_candidate_index_++;
+    TryKWalletMigration();
+    return;
+  }
+  CallMethod(kwallet_proxy_, kKWalletInterface, kKWalletMethodOpen,
+             MakeDbusParameters(std::move(*wallet_name), DbusInt64(0),
+                                DbusString(product_name_)),
+             base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletOpen,
+                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FreedesktopSecretKeyProvider::OnKWalletOpen(
+    base::expected<DbusInt32, ErrorDetail> handle_reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int32_t handle = handle_reply.has_value() ? handle_reply->value() : -1;
+  if (handle < 0) {
+    kwallet_candidate_index_++;
+    TryKWalletMigration();
+    return;
+  }
+  CallMethod(
+      kwallet_proxy_, kKWalletInterface, kKWalletMethodReadPassword,
+      MakeDbusParameters(DbusInt32(handle), DbusString(kKWalletFolder),
+                         DbusString(kKeyName), DbusString(product_name_)),
+      base::BindOnce(&FreedesktopSecretKeyProvider::OnKWalletReadPassword,
+                     weak_ptr_factory_.GetWeakPtr(), handle));
+}
+
+void FreedesktopSecretKeyProvider::OnKWalletReadPassword(
+    int32_t handle,
+    base::expected<DbusString, ErrorDetail> secret_reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CallMethod(kwallet_proxy_, kKWalletInterface, kKWalletMethodClose,
+             MakeDbusParameters(DbusInt32(handle), DbusBoolean(false),
+                                DbusString(product_name_)),
+             base::BindOnce([](base::expected<DbusInt32, ErrorDetail>) {}));
+
+  if (!secret_reply.has_value() || secret_reply->value().empty()) {
+    // No secret found. Try next candidate.
+    kwallet_candidate_index_++;
+    TryKWalletMigration();
+    return;
+  }
+
+  CreateItem(
+      base::MakeRefCounted<base::RefCountedString>(secret_reply->value()));
 }
 
 void FreedesktopSecretKeyProvider::CreateItem(

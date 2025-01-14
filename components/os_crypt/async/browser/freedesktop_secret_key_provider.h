@@ -79,6 +79,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, BasicHappyPath);
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
                            CreateCollectionAndItemWithUnlockPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           MigrateFromKWallet);
   friend class FreedesktopSecretKeyProviderCompatTest;
 
   template <typename T>
@@ -114,6 +116,13 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kMethodGet[] = "Get";
   static constexpr char kMethodPrompt[] = "Prompt";
 
+  static constexpr char kKWalletInterface[] = "org.kde.KWallet";
+  static constexpr char kKWalletMethodIsEnabled[] = "isEnabled";
+  static constexpr char kKWalletMethodNetworkWallet[] = "networkWallet";
+  static constexpr char kKWalletMethodOpen[] = "open";
+  static constexpr char kKWalletMethodReadPassword[] = "readPassword";
+  static constexpr char kKWalletMethodClose[] = "close";
+
   static constexpr char kDefaultAlias[] = "default";
 
   // These constants are duplicated from the sync backend.
@@ -136,14 +145,28 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kLabelProperty[] = "Label";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  constexpr static char kKeyName[] = "Chrome Safe Storage";
+  static constexpr char kKWalletFolder[] = "Chrome Keys";
+  static constexpr char kKeyName[] = "Chrome Safe Storage";
   static constexpr char kAppName[] = "chrome";
 #else
-  constexpr static char kKeyName[] = "Chromium Safe Storage";
+  static constexpr char kKWalletFolder[] = "Chromium Keys";
+  static constexpr char kKeyName[] = "Chromium Safe Storage";
   static constexpr char kAppName[] = "chromium";
 #endif
 
+  struct KwalletServiceAndPath {
+    const char* kwallet_service;
+    const char* kwallet_path;
+  };
+  static constexpr auto kKWalletCandidates =
+      std::to_array<KwalletServiceAndPath>({
+          {"org.kde.kwalletd6", "/modules/kwalletd6"},
+          {"org.kde.kwalletd5", "/modules/kwalletd5"},
+          {"org.kde.kwalletd", "/modules/kwalletd"},
+      });
+
   void OnServiceStarted(std::optional<bool> service_started);
+
   void OnReadAliasDefault(
       base::expected<DbusObjectPath, ErrorDetail> collection_path);
   void OnGetCollectionLabelResponse(
@@ -157,6 +180,17 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnSearchItems(
       base::expected<DbusArray<DbusObjectPath>, ErrorDetail> results);
   void OnGetSecret(base::expected<DbusSecret, ErrorDetail> secret_reply);
+
+  // KWallet migration
+  void TryKWalletMigration();
+  void OnNameHasOwnerForKWallet(std::optional<bool> has_owner);
+  void OnKWalletIsEnabled(base::expected<DbusBoolean, ErrorDetail> is_enabled);
+  void OnKWalletNetworkWallet(
+      base::expected<DbusString, ErrorDetail> wallet_name);
+  void OnKWalletOpen(base::expected<DbusInt32, ErrorDetail> handle_reply);
+  void OnKWalletReadPassword(
+      int32_t handle,
+      base::expected<DbusString, ErrorDetail> secret_reply);
 
   void UnlockDefaultCollection();
   void OpenSession();
@@ -172,6 +206,10 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   raw_ptr<dbus::ObjectProxy> default_collection_proxy_ = nullptr;
   raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;
   bool session_opened_ = false;
+
+  // For KWallet migration
+  raw_ptr<dbus::ObjectProxy> kwallet_proxy_ = nullptr;
+  size_t kwallet_candidate_index_ = 0;
 
   const bool use_for_encryption_;
   const std::string product_name_;
