@@ -328,13 +328,7 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillPageQueryRequest& query) {
   for (const auto& form : query.forms()) {
     LogBuffer form_buffer(LogBuffer::IsActive(true));
     for (const auto& field : form.fields()) {
-      form_buffer << Tag{"table"};
-      form_buffer << Tr{} << "Signature"
-                  << "Field name"
-                  << "Control type";
-      form_buffer << Tr{} << field.signature() << field.name()
-                  << field.control_type();
-      form_buffer << CTag{"table"};
+      form_buffer << "Signature: " << field.signature();
     }
     out << Tr{} << ("Form " + base::NumberToString(form.signature()))
         << std::move(form_buffer);

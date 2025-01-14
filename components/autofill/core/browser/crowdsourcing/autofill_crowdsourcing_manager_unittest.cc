@@ -1480,16 +1480,8 @@ TEST_P(AutofillQueryTest, Metadata) {
   ASSERT_EQ(query.forms_size(), 1);
   const auto& query_form = query.forms(0);
 
-  // There should be no encoded metadata for the form.
-  EXPECT_FALSE(query_form.has_metadata());
-
-  // There should be three fields, none of which have encoded metadata.
-  ASSERT_EQ(3, query_form.fields_size());
-  ASSERT_EQ(static_cast<int>(form.fields().size()), query_form.fields_size());
-  for (int i = 0; i < query_form.fields_size(); ++i) {
-    const auto& query_field = query_form.fields(i);
-    EXPECT_FALSE(query_field.has_metadata());
-  }
+  // There should be three fields.
+  EXPECT_EQ(3, query_form.fields_size());
 }
 
 // Note that we omit DEFAULT_URL from the test params. We don't actually want
