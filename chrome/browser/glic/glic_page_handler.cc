@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_page_handler.h"
 
+#include "base/callback_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -66,6 +68,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                             base::Unretained(this)));
     glic_service_->window_controller().AddStateObserver(this);
 
+    focus_changed_subscription_ = glic_service_->AddFocusedTabChangedCallback(
+        base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
+                            base::Unretained(this)));
+
     auto state = mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
     state->microphone_permission_enabled =
@@ -77,6 +83,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->panel_state =
         glic_service_->window_controller().GetPanelState().Clone();
+
+    state->focused_tab = CreateTabData(glic_service_->GetFocusedTab());
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();
@@ -221,6 +229,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
+    focus_changed_subscription_ = {};
   }
 
   void WebClientDisconnected() { Uninstall(); }
@@ -238,10 +247,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void OnFocusedTabChanged(const content::WebContents* focused_tab) {
+    web_client_->NotifyFocusedTabChanged(
+        CreateTabData(glic_service_->GetFocusedTab()));
+  }
+
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
+  base::CallbackListSubscription focus_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
 };

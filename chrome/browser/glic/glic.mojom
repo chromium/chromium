@@ -55,6 +55,8 @@ struct UserProfileInfo {
 // available before the web client is initialized.
 struct WebClientInitialState {
   PanelState panel_state;
+  // Initially focused tab.
+  TabData? focused_tab;
   bool microphone_permission_enabled;
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
@@ -205,6 +207,9 @@ interface WebClient {
   // The Tab Context permission has changed either by action within the web
   // client or by user action in the glic settings.
   NotifyTabContextPermissionStateChanged(bool enabled);
+
+  // The focused tab has changed.
+  NotifyFocusedTabChanged(TabData? tab_data);
 };
 
 // Information extracted from a tab.

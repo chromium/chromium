@@ -34,6 +34,7 @@ export declare interface HostRequestTypes {
       locationPermissionEnabled: boolean,
       tabContextPermissionEnabled: boolean,
       panelState: PanelState,
+      focusedTab: TabDataPrivate|undefined,
       chromeVersion: ChromeVersion,
     },
   };
@@ -186,6 +187,12 @@ export declare interface WebClientRequestTypes {
   glicWebClientNotifyTabContextPermissionStateChanged: {
     request: {
       enabled: boolean,
+    },
+    response: void,
+  };
+  glicWebClientNotifyFocusedTabChanged: {
+    request: {
+      focusedTab: TabDataPrivate|undefined,
     },
     response: void,
   };

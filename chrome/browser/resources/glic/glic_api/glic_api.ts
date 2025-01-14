@@ -141,6 +141,9 @@ export declare interface GlicBrowserHost {
   // Returns the state of the panel.
   getPanelState?(): Observable<PanelState>;
 
+  // Returns the state of the currently focused tab.
+  getFocusedTabState?(): Observable<TabData|undefined>;
+
   // Returns the state of the microphone permission.
   getMicrophonePermissionState?(): Observable<boolean>;
 

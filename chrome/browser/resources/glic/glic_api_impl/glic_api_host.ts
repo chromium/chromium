@@ -16,14 +16,14 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {PanelState as PanelStateMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {HostRequestTypes, RgbaImage, UserProfileInfoPrivate} from './request_types.js';
+import type {HostRequestTypes, RgbaImage, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
@@ -92,6 +92,15 @@ class WebClientImpl implements WebClientInterface {
           enabled: enabled,
         });
   }
+
+  notifyFocusedTabChanged(focusedTab: (TabDataMojo|null)): void {
+    const transfer: Transferable[] = [];
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyFocusedTabChanged', {
+          focusedTab: tabDataToClient(focusedTab, transfer),
+        },
+        transfer);
+  }
 }
 
 // Handles all requests to the host.
@@ -108,7 +117,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     }
   }
 
-  async glicBrowserWebClientCreated() {
+  async glicBrowserWebClientCreated({}, transfer: Transferable[]) {
     this.receiver = new WebClientReceiver(new WebClientImpl(this.sender));
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
@@ -116,6 +125,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
     return {
       panelState: panelStateToClient(initialState.panelState),
+      focusedTab: tabDataToClient(initialState.focusedTab, transfer),
       microphonePermissionEnabled: initialState.microphonePermissionEnabled,
       locationPermissionEnabled: initialState.locationPermissionEnabled,
       tabContextPermissionEnabled: initialState.tabContextPermissionEnabled,
@@ -441,6 +451,29 @@ function originToClient(origin: Origin): string {
     return `${originBase}:${origin.port}`;
   }
   return originBase;
+}
+
+function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
+    TabDataPrivate|undefined {
+  if (!tabData) {
+    return undefined;
+  }
+
+  let rawFavicon: RgbaImage|undefined = undefined;
+  if (tabData.favicon) {
+    rawFavicon = bitmapN32ToRGBAImage(tabData.favicon);
+    if (rawFavicon) {
+      transfer.push(rawFavicon.dataRGBA);
+    }
+  }
+
+  return {
+    tabId: tabIdToClient(tabData.tabId),
+    windowId: windowIdToClient(tabData.windowId),
+    url: urlToClient(tabData.url),
+    title: optionalToClient(tabData.title),
+    rawFavicon,
+  };
 }
 
 function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|

@@ -100,6 +100,15 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }) {
     this.host.getTabContextPermissionState().assignAndSignal(payload.enabled);
   }
+
+  glicWebClientNotifyFocusedTabChanged(payload: {
+    focusedTab: TabDataPrivate|undefined,
+  }) {
+    const tabData = !payload.focusedTab ?
+        undefined :
+        convertTabDataFromPrivate(payload.focusedTab);
+    this.host.getFocusedTabState().assignAndSignal(tabData);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -109,6 +118,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private webClientMessageHandler: WebClientMessageHandler;
   private chromeVersion?: ChromeVersion;
   private panelState?: ObservableValue<PanelState>;
+  private focusedTabState?: ObservableValue<TabData|undefined>;
   private permissionStateMicrophone?: ObservableValue<boolean>;
   private permissionStateLocation?: ObservableValue<boolean>;
   private permissionStateTabContext?: ObservableValue<boolean>;
@@ -136,6 +146,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const state = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', {});
     this.panelState = new ObservableValue<PanelState>(state.panelState);
+    this.focusedTabState =
+        new ObservableValue<TabData|undefined>(state.focusedTab);
     this.permissionStateMicrophone =
         new ObservableValue(state.microphonePermissionEnabled);
     this.permissionStateLocation =
@@ -234,6 +246,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getPanelState(): ObservableValue<PanelState> {
     return this.panelState!;
+  }
+
+  getFocusedTabState(): ObservableValue<TabData|undefined> {
+    return this.focusedTabState!;
   }
 
   getMicrophonePermissionState(): ObservableValue<boolean> {
