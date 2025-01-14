@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
-#include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"

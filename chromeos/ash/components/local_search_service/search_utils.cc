@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace ash::local_search_service {
 
