@@ -122,10 +122,6 @@ class CORE_EXPORT ScriptedIdleTaskController
   // Pending `IdleTask`s.
   HeapHashMap<CallbackId, Member<IdleTask>> idle_tasks_;
 
-  // `IdleTask`s for which `SchedulerTimeoutTask` ran while paused. They'll be
-  // rescheduled when unpaused.
-  Vector<CallbackId> idle_tasks_with_expired_timeout_;
-
   // `IdleTask`s for which `SchedulerIdleTask` ran while paused. They'll be
   // rescheduled when unpaused.
   Vector<CallbackId> idle_tasks_to_reschedule_;
