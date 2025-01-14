@@ -30,7 +30,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@MinAndroidSdkLevel(VERSION_CODES.S)
+@MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
 public class PdfPageTest {
     private static final long TIMEOUT_MS = 8000;
     private static final long POLLING_INTERVAL_MS = 500;
