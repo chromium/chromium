@@ -2113,6 +2113,9 @@ ci.thin_tester(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
+    # Remove from the gardening rotation due to instability.
+    # TODO(crbug.com/380912395): Add back to a gardening rotation when green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|x64|Intel",
         short_name = "asn",
@@ -2186,6 +2189,9 @@ ci.thin_tester(
         browser_config = targets.browser_config.RELEASE_X64,
         os_type = targets.os_type.WINDOWS,
     ),
+    # Remove from the gardening rotation due to instability.
+    # TODO(crbug.com/380912395): Add back to a gardening rotation when green.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|x64|Nvidia",
         short_name = "asn",
