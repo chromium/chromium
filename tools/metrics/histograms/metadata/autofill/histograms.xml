@@ -863,7 +863,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -873,7 +873,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.Address.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1150,7 +1150,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 
 <histogram
     name="Autofill.Autocomplete.PredictionCollisionType2.{PredictionType}.{AutocompleteState}"
-    enum="AutofillFieldType" expires_after="2025-05-11">
+    enum="AutofillFieldType" expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1705,7 +1705,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 
 <histogram
     name="Autofill.CreditCard.Seamless{AutofillSeamlessnessFillability}{AutofillSeamlessnessMeasurementTime}{AutofillSeamlessnessVisibility}.Bitmask"
-    enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2025-05-11">
+    enum="AutofillCreditCardSeamlessnessBitmask" expires_after="2025-07-13">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2305,7 +2305,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 
 <histogram
     name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
-    units="Rank" expires_after="2025-05-11">
+    units="Rank" expires_after="2025-07-13">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2707,7 +2707,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.FieldFillingStats{AutofillFormType}{FillingStatus}"
-    units="fields" expires_after="2025-05-11">
+    units="fields" expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3073,7 +3073,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.FormFillingScore{AutofillFormType}"
-    units="filling score" expires_after="2025-05-11">
+    units="filling score" expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3563,7 +3563,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.iOS.FormSubmission.IsProgrammatic" enum="Boolean"
-    expires_after="M135">
+    expires_after="2025-07-13">
   <owner>eic@google.com</owner>
   <owner>vincb@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -3757,7 +3757,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.Leipzig.FillingAssistanceCategory"
-    enum="AutofillCategoryResolvedFillingAssistance" expires_after="2025-05-11">
+    enum="AutofillCategoryResolvedFillingAssistance" expires_after="2025-07-13">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3768,7 +3768,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.Leipzig.FillingCorrectness.{Category}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2025-05-11">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2025-07-13">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -4616,7 +4616,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4840,7 +4840,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.ProfileImport.MigrateProfileEditedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2025-05-11">
+    enum="AutofillSettingsVisibleTypes" expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -5132,7 +5132,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.ProfileTokenQuality.{Type}" units="Percents"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5905,7 +5905,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.StoredProfileUsedCount.{Category}" units="Profiles"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -6247,7 +6247,7 @@ tools/metrics/histograms/update_autofill_enums.py -->
 </histogram>
 
 <histogram name="Autofill.SuggestionShown.OffTheRecord" units="units"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

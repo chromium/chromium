@@ -1268,7 +1268,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DockingPromo.Action" enum="IOSDockingPromoAction"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bwwilliams@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <owner>bling-team@google.com</owner>
@@ -2161,7 +2161,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.ParcelTracking" units="index"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2199,7 +2199,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.Shortcuts" units="index"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2208,7 +2208,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.TabResumption" units="index"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2569,7 +2569,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}ForegroundTimePerDay" units="s"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -2729,7 +2729,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.OptInPrompt.Action"
-    enum="IOSNotificationsOptInActionOnPrompt" expires_after="2025-05-11">
+    enum="IOSNotificationsOptInActionOnPrompt" expires_after="2025-07-13">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@chromium.org</owner>
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
@@ -2873,7 +2873,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Triggered"
-    enum="IOSTipsNotificationType" expires_after="2025-05-11">
+    enum="IOSTipsNotificationType" expires_after="2025-07-13">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2950,7 +2950,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.NTP.OverscrollAction" enum="IOSNTPOverscrollAction"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>guiperez@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3121,7 +3121,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.ActionType" enum="IOSOverflowMenuActionType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>The type of action the user took in the overflow/tools menu</summary>
@@ -3262,7 +3262,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.DestinationsOrderChangedProgrammatically"
-    enum="IOSOverflowMenuReorderingReason" expires_after="2025-05-11">
+    enum="IOSOverflowMenuReorderingReason" expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3272,7 +3272,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.OverflowMenuVisited" units="bitfield value"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3291,14 +3291,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.TimeOpen" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>The amount of time the overflow/tools menu is open.</summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.TimeOpen.ActionChosen" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3318,7 +3318,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.UserScrolledToEndAndStartedCustomization"
-    enum="Boolean" expires_after="2025-05-11">
+    enum="Boolean" expires_after="2025-07-13">
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3448,7 +3448,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PasswordBottomSheet.Activated" enum="Boolean"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>vincb@google.com</owner>
   <owner>tmartino@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -3699,7 +3699,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.EligiblePromosInQueueCount" units="count"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3747,7 +3747,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PromosManager.Promo.Type" enum="IOSPromosManagerPromoType"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>bwwilliams@google.com</owner>
   <owner>rkgibson@google.com</owner>
   <owner>huitingyu@google.com</owner>
@@ -4026,7 +4026,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Reauth.Password.BottomSheet" enum="ReauthenticationEvent"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>sugoi@chromium.org</owner>
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
@@ -4047,7 +4047,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ReconcileEULAPref" enum="Boolean"
-    expires_after="2025-03-11">
+    expires_after="2025-07-13">
   <owner>olivierrobin@google.com</owner>
   <owner>rohitrao@google.com</owner>
   <summary>
@@ -4173,7 +4173,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.AverageGreySnapshotSize" units="KB"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4206,7 +4206,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.DocumentsSize2" units="MB"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4229,7 +4229,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.LibrarySize" units="MB"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4241,7 +4241,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.OptimizationGuideModelDownloadedItems"
-    units="items" expires_after="2025-05-11">
+    units="items" expires_after="2025-07-13">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -4252,7 +4252,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.OptimizationGuideModelDownloadsSize"
-    units="MB" expires_after="2025-05-11">
+    units="MB" expires_after="2025-07-13">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -5439,7 +5439,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>
@@ -5476,7 +5476,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -5484,7 +5484,7 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2025-05-11">
+<histogram name="IOS.WhatsNew.TimeSpent" units="ms" expires_after="2025-07-13">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>Logs the time a user spent on What's New.</summary>

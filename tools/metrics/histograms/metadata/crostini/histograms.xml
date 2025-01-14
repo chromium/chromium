@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -595,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UpgradeDialogEvent" enum="CrostiniUpgradeDialogEvent"
-    expires_after="2025-05-12">
+    expires_after="2025-07-13">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

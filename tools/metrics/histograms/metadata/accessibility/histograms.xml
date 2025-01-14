@@ -817,7 +817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
-    enum="CrosDictationToggleDictationMethod" expires_after="2025-02-28">
+    enum="CrosDictationToggleDictationMethod" expires_after="2025-07-13">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1543,7 +1543,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.InactiveTime" units="ms"
-    expires_after="2025-02-28">
+    expires_after="2025-07-13">
   <owner>aleventhal@chromium.org</owner>
   <owner>abigailbklein@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
@@ -1908,7 +1908,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.MainNodeAnnotations.AnnotationResult"
-    enum="MainNodeAnnotationResult" expires_after="2025-02-28">
+    enum="MainNodeAnnotationResult" expires_after="2025-07-13">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1920,7 +1920,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
-    expires_after="2025-05-11">
+    expires_after="2025-07-13">
   <owner>aleventhal@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

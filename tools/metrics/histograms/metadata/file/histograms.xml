@@ -1457,7 +1457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Setup.OfficeWebAppOfflineInstallation"
-    enum="WebAppInstallResultCode" expires_after="2025-05-01">
+    enum="WebAppInstallResultCode" expires_after="2025-07-13">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
