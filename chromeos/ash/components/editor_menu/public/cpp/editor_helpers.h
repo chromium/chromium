@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_
-#define CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_
+#define CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_
 
 #include <string>
 
@@ -18,4 +18,4 @@ size_t COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP)
 
 }  // namespace chromeos::editor_helpers
 
-#endif  // CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_HELPERS_H_

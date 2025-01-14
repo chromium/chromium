@@ -8,7 +8,7 @@
 #include "ash/quick_insert/model/quick_insert_mode_type.h"
 #include "ash/quick_insert/quick_insert_category.h"
 #include "base/check_deref.h"
-#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"

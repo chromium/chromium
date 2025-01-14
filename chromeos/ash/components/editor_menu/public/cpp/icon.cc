@@ -1,13 +1,13 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/icon.h"
 
 #include <string_view>
 
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/vector_icon_types.h"

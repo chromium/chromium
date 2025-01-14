@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 
 namespace chromeos::editor_menu {
 

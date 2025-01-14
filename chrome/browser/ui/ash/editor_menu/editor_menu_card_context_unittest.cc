@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

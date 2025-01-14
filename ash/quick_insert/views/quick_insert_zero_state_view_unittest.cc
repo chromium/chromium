@@ -37,7 +37,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
