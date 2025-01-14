@@ -106,12 +106,11 @@ public interface TabGroupSyncService {
     void removeObserver(Observer observer);
 
     /**
-     * Creates a remote tab group with the given local group ID.
+     * Adds a given {@link SavedTabGroup} to the service.
      *
-     * @param localTabGroupId The local tab group ID.
-     * @return The sync ID of the group after it has been added to sync.
+     * @param savedTabGroup The {@link SavedTabGroup} to be added to the service.
      */
-    String createGroup(LocalTabGroupId localTabGroupId);
+    void addGroup(SavedTabGroup savedTabGroup);
 
     /**
      * Removes a remote tab group which is open locally.

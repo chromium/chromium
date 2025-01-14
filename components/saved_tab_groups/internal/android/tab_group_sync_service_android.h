@@ -43,10 +43,9 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   // Mutation methods (Java -> native).
   // Mutator methods that result in group metadata mutation.
-  ScopedJavaLocalRef<jstring> CreateGroup(
-      JNIEnv* env,
-      const JavaParamRef<jobject>& j_caller,
-      const JavaParamRef<jobject>& j_group_id);
+  void AddGroup(JNIEnv* env,
+                const JavaParamRef<jobject>& j_caller,
+                const JavaParamRef<jobject>& j_saved_tab_group);
 
   void RemoveGroupByLocalId(JNIEnv* env,
                             const JavaParamRef<jobject>& j_caller,

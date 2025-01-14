@@ -51,16 +51,34 @@ public class RemoteTabGroupMutationHelper {
      */
     public void createRemoteTabGroup(LocalTabGroupId groupId) {
         LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + groupId.tabGroupId);
-        // Create an empty group and set visuals. This will create a mapping in native as well.
-        mTabGroupSyncService.createGroup(groupId);
-        updateVisualData(groupId);
-
-        // Add tabs to the group.
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = groupId;
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
+        savedTabGroup.title = mTabGroupModelFilter.getTabGroupTitle(rootId);
+        if (savedTabGroup.title == null) {
+            savedTabGroup.title = new String();
+        }
+        savedTabGroup.color = mTabGroupModelFilter.getTabGroupColor(rootId);
+        if (savedTabGroup.color == TabGroupColorUtils.INVALID_COLOR_ID) {
+            savedTabGroup.color = TabGroupColorId.GREY;
+        }
+
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         for (int position = 0; position < tabs.size(); position++) {
-            addTab(groupId, tabs.get(position), position);
+            Tab tab = tabs.get(position);
+            SavedTabGroupTab savedTab = new SavedTabGroupTab();
+            savedTab.localId = tab.getId();
+            savedTab.syncGroupId = savedTabGroup.syncId;
+
+            Pair<GURL, String> urlAndTitle =
+                    TabGroupSyncUtils.getFilteredUrlAndTitle(tab.getUrl(), tab.getTitle());
+            savedTab.url = urlAndTitle.first;
+            savedTab.title = urlAndTitle.second;
+            savedTab.position = position;
+            savedTabGroup.savedTabs.add(savedTab);
         }
+
+        mTabGroupSyncService.addGroup(savedTabGroup);
     }
 
     /**
