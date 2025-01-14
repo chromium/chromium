@@ -150,8 +150,6 @@ public class BookmarkManagerCoordinatorTest {
     @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testCreateViewUNOPhase2FollowUpEnabled() {
         FrameLayout parent = new FrameLayout(mActivity);
-        assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
-        assertNotNull(mCoordinator.buildLegacyPromoView(parent));
         assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));

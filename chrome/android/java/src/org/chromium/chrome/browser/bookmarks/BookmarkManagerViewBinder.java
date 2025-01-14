@@ -12,6 +12,7 @@ import androidx.annotation.DimenRes;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.SectionHeaderData;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Responsible for binding views to their properties. */
 class BookmarkManagerViewBinder {
     static void bindPersonalizedPromoView(PropertyModel model, View view, PropertyKey key) {
+        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP);
         if (key == BookmarkManagerProperties.BOOKMARK_PROMO_HEADER) {
             PersonalizedSigninPromoView promoView =
                     view.findViewById(R.id.signin_promo_view_container);

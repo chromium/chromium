@@ -264,10 +264,10 @@ public class BookmarkManagerCoordinator
             mSigninPromoCoordinator =
                     new SigninPromoCoordinator(
                             context,
-                            mProfile,
+                            mProfile.getOriginalProfile(),
                             new BookmarkSigninPromoDelegate(
                                     context,
-                                    mProfile,
+                                    mProfile.getOriginalProfile(),
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
                                     mMediator::onPromoVisibilityChange,
                                     this::openSettings));

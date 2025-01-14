@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -24,17 +25,25 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the signin promo card. */
 public final class SigninPromoCoordinator {
+    private static boolean sPromoDisabledForTesting;
     private final Context mContext;
     private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
     private ImpressionTracker mImpressionTracker;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
+    /** Disables promo in tests. */
+    public static void disablePromoForTesting() {
+        sPromoDisabledForTesting = true;
+        ResettersForTesting.register(() -> sPromoDisabledForTesting = false);
+    }
+
     /**
      * Creates an instance of the {@link SigninPromoCoordinator}.
      *
      * @param context The Android {@link Context}.
-     * @param profile A {@link Profile} object to access identity services.
+     * @param profile A {@link Profile} object to access identity services. This must be the
+     *     original profile, not the incognito one.
      * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
@@ -68,7 +77,7 @@ public final class SigninPromoCoordinator {
 
     /** Determines whether the signin promo can be shown. */
     public boolean canShowPromo() {
-        return mMediator.canShowPromo();
+        return !sPromoDisabledForTesting && mMediator.canShowPromo();
     }
 
     /** Builds a promo view object for the corresponding access point. */
