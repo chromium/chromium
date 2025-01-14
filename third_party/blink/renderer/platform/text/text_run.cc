@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -113,10 +112,6 @@ unsigned TextRun::IndexOfSubRun(const TextRun& sub_run) const {
       return static_cast<unsigned>(start_index);
   }
   return std::numeric_limits<unsigned>::max();
-}
-
-void TextRun::SetDirectionFromText() {
-  SetDirection(BidiParagraph::BaseDirectionForStringOrLtr(ToStringView()));
 }
 
 }  // namespace blink
