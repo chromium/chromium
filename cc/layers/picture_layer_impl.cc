@@ -803,7 +803,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   // The |raster_source_| is initially null, so have to check for that for the
   // first frame.
   bool could_have_tilings = CanHaveTilings();
-  raster_source_.swap(raster_source);
+  raster_source_ = std::move(raster_source);
 
   raster_source_->set_debug_name(DebugName());
 
@@ -820,7 +820,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       RegisterAnimatedImages();
     }
   } else if (recording_updated) {
-    RegenerateDiscardableImageMap();
+    layer_tree_impl()->AddLayerNeedingUpdateDiscardableImageMap(this);
   }
 
   // The |new_invalidation| must be cleared before updating tilings since they
@@ -860,17 +860,25 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   }
 }
 
+void PictureLayerImpl::SetRasterSourceForTesting(
+    scoped_refptr<RasterSource> raster_source,
+    const Region& invalidation) {
+  LayerTreeImpl::DiscardableImageMapUpdater updater(layer_tree_impl());
+  Region invalidation_temp = invalidation;
+  UpdateRasterSource(std::move(raster_source), &invalidation_temp);
+}
+
 void PictureLayerImpl::RegenerateDiscardableImageMap() {
   CHECK(layer_tree_impl()->IsSyncTree());
-
   UnregisterAnimatedImages();
   if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
-    scoped_refptr<DiscardableImageMap> image_map =
-        display_list->GenerateDiscardableImageMap();
-    SetPaintWorkletInputs(image_map->paint_worklet_inputs());
-    layer_tree_impl()->UpdateImageDecodingHints(
-        image_map->TakeDecodingModeMap());
-    discardable_image_map_ = std::move(image_map);
+    DiscardableImageMap::DecodingModeMap decoding_mode_map;
+    DiscardableImageMap::PaintWorkletInputs paint_worklet_inputs;
+    discardable_image_map_ = display_list->GenerateDiscardableImageMap(
+        GetRasterInducingScrollOffsets(), &decoding_mode_map,
+        &paint_worklet_inputs);
+    SetPaintWorkletInputs(paint_worklet_inputs);
+    layer_tree_impl()->UpdateImageDecodingHints(decoding_mode_map);
   } else {
     SetPaintWorkletInputs({});
     discardable_image_map_ = nullptr;
@@ -2149,16 +2157,25 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
   const DisplayItemList::RasterInducingScrollMap& raster_inducing_scrolls =
       raster_source_->GetDisplayItemList()->raster_inducing_scrolls();
   Region invalidation;
+  bool needs_update_discardable_image_map = false;
   for (ElementId element_id : scrolls_to_invalidate) {
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
       UnionUpdateRect(it->second.visual_rect);
       has_non_animated_image_update_rect_ = true;
       invalidation.Union(it->second.visual_rect);
+      needs_update_discardable_image_map |= it->second.has_discardable_images;
     }
   }
 
   if (!invalidation.IsEmpty()) {
+    if (needs_update_discardable_image_map) {
+      // The new map should only have changed image rects, so we don't need to
+      // re-register animated images and update paint worklets.
+      discardable_image_map_ =
+          raster_source_->GetDisplayItemList()->GenerateDiscardableImageMap(
+              GetRasterInducingScrollOffsets());
+    }
     invalidation_.Union(invalidation);
     tilings_->Invalidate(invalidation);
   }
@@ -2197,8 +2214,7 @@ void PictureLayerImpl::UnregisterAnimatedImages() {
 }
 
 void PictureLayerImpl::SetPaintWorkletInputs(
-    const std::vector<DiscardableImageMap::PaintWorkletInputWithImageId>&
-        inputs) {
+    const DiscardableImageMap::PaintWorkletInputs& inputs) {
   // PaintWorklets are not supported when committing directly to the active
   // tree, so in that case the |inputs| should always be empty.
   DCHECK(layer_tree_impl()->IsPendingTree() || inputs.empty());

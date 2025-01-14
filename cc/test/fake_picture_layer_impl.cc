@@ -86,10 +86,9 @@ PictureLayerTiling* FakePictureLayerImpl::LowResTiling() const {
 void FakePictureLayerImpl::SetRasterSource(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {
-  Region invalidation_temp = invalidation;
   set_gpu_raster_max_texture_size(
       layer_tree_impl()->GetDeviceViewport().size());
-  UpdateRasterSource(raster_source, &invalidation_temp);
+  SetRasterSourceForTesting(raster_source, invalidation);
 }
 
 size_t FakePictureLayerImpl::GetNumberOfTilesWithResources() const {

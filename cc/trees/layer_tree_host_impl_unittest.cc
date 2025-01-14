@@ -15750,7 +15750,6 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
        InvalidLayerNotAddedToRasterQueue) {
   CreatePendingTree();
 
-  Region empty_invalidation;
   scoped_refptr<RasterSource> raster_source_with_tiles(
       FakeRasterSource::CreateFilled(gfx::Size(10, 10)));
 
@@ -15760,7 +15759,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       host_impl_->active_tree()->GetDeviceViewport().size());
   layer->SetDrawsContent(true);
   layer->tilings()->AddTiling(gfx::AxisTransform2d(), raster_source_with_tiles);
-  layer->UpdateRasterSource(raster_source_with_tiles, &empty_invalidation);
+  layer->SetRasterSourceForTesting(raster_source_with_tiles);
   layer->tilings()->tiling_at(0)->set_resolution(
       TileResolution::HIGH_RESOLUTION);
   layer->tilings()->tiling_at(0)->CreateAllTilesForTesting();
@@ -17603,11 +17602,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
   root->SetNeedsPushProperties();
 
   // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
-
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
   UpdateDrawProperties(host_impl_->pending_tree());
 
   // Since we have dirty PaintWorklets, committing will not cause tile
@@ -17652,10 +17649,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   root->SetNeedsPushProperties();
 
   // Add some PaintWorklets.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 
@@ -17698,10 +17694,9 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   root->SetNeedsPushProperties();
 
   // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws(
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds()));
-  Region empty_invalidation;
-  root->UpdateRasterSource(raster_source_with_pws, &empty_invalidation);
+  scoped_refptr<RasterSource> raster_source_with_pws =
+      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+  root->SetRasterSourceForTesting(raster_source_with_pws);
 
   UpdateDrawProperties(host_impl_->pending_tree());
 

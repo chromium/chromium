@@ -44,7 +44,8 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap();
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one pixel ref.
   {
@@ -108,7 +109,8 @@ TEST(RecordingSourceTest, EmptyImages) {
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap();
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators.
   {
@@ -154,7 +156,8 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap();
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators.
   {
@@ -199,7 +202,8 @@ TEST(RecordingSourceTest, DiscardableImages) {
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap();
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one image.
   {
@@ -267,7 +271,8 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
   scoped_refptr<RasterSource> raster_source =
       recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap();
+      raster_source->GetDisplayItemList()->GenerateDiscardableImageMap(
+          ScrollOffsetMap());
 
   // Tile sized iterators. These should find only one image.
   {
