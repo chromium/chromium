@@ -623,6 +623,9 @@ void TaskManagerView::Init() {
   tab_table->SetModel(table_model_.get());
   tab_table->SetGrouper(this);
   tab_table->SetSortOnPaint(true);
+  if (table_config_.layout_refresh) {
+    tab_table->SetMouseHoveringEnabled(true);
+  }
   tab_table->set_observer(this);
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);

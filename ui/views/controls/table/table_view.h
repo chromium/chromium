@@ -238,6 +238,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool GetSortOnPaint() const;
   void SetSortOnPaint(bool sort_on_paint);
 
+  // If enabled, hovering over a row causes the row's background color to
+  // change.
+  void SetMouseHoveringEnabled(bool enabled);
+
   // Returns the proper ax sort direction.
   ax::mojom::SortDirection GetFirstSortDescriptorDirection() const;
 
@@ -591,6 +595,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Customization for the header. Includes options such as padding.
   TableHeaderStyle header_style_;
+
+  // TODO(crbug.com/388086397): Enable by mouse hovering by default when color
+  // tokens are refined on all platforms.
+  bool hovering_enabled_ = false;
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;

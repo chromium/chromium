@@ -550,6 +550,13 @@ ax::mojom::SortDirection TableView::GetFirstSortDescriptorDirection() const {
   return ax::mojom::SortDirection::kDescending;
 }
 
+void TableView::SetMouseHoveringEnabled(bool enabled) {
+  if (hovering_enabled_ != enabled) {
+    hovering_enabled_ = enabled;
+    SchedulePaint();
+  }
+}
+
 void TableView::Layout(PassKey) {
   // When the scrollview's width changes we force recalculating column sizes.
   ScrollView* scroll_view = ScrollView::GetScrollViewForContents(this);
@@ -766,7 +773,7 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void TableView::OnMouseMoved(const ui::MouseEvent& event) {
-  if (!HasFocus()) {
+  if (!hovering_enabled_ || !HasFocus()) {
     return;
   }
 
@@ -781,8 +788,10 @@ void TableView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void TableView::OnMouseExited(const ui::MouseEvent& event) {
-  OnHoverChanged(hovered_row_, std::nullopt);
-  hovered_row_ = std::nullopt;
+  if (hovering_enabled_) {
+    OnHoverChanged(hovered_row_, std::nullopt);
+    hovered_row_ = std::nullopt;
+  }
 }
 
 void TableView::OnGestureEvent(ui::GestureEvent* event) {
@@ -1101,7 +1110,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
         hovered_row_.has_value() && hovered_row_.value() == i;
     if (is_selected) {
       canvas->FillRect(GetRowBounds(i), selected_bg_color);
-    } else if (is_hovered) {
+    } else if (hovering_enabled_ && is_hovered) {
       canvas->FillRect(GetRowBounds(i), hovered_bg_color);
     } else if (alternate_bg_color != default_bg_color && (i % 2)) {
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
@@ -1456,6 +1465,10 @@ void TableView::SchedulePaintForSelection() {
 
 void TableView::OnHoverChanged(std::optional<size_t> previous_hovered_row,
                                std::optional<size_t> new_hovered_row) {
+  if (!hovering_enabled_) {
+    return;
+  }
+
   const auto maybe_schedule_paint = [this](std::optional<size_t> row) {
     if (row.has_value() && row.value() < GetRowCount()) {
       SchedulePaintInRect(GetRowBounds(row.value()));
