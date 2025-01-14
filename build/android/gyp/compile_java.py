@@ -559,8 +559,14 @@ def _RunCompiler(changes,
         raise Exception('need java files for --print-javac-command-line.')
       metadata_parser.ParseAndWriteInfoFile(jar_info_path, java_files, kt_files)
 
-    CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
-                  options.additional_jar_files, options.kotlin_jar_path)
+    if options.enable_errorprone:
+      # There is no jar file when running errorprone and jar_path is actually
+      # just the stamp file for that target.
+      server_utils.MaybeTouch(jar_path)
+    else:
+      CreateJarFile(jar_path, classes_dir, metadata_parser.services_map,
+                    options.additional_jar_files, options.kotlin_jar_path)
+
 
     # Remove input srcjars that confuse Android Studio:
     # https://crbug.com/353326240
