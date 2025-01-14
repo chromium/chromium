@@ -21,7 +21,12 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #else
+#include "base/check.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -329,6 +334,37 @@ void ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
   TabModelList::AddTabModel(tab_model_.get());
   // This blocks until the navigation completes.
   ASSERT_TRUE(content::NavigateToURL(tab_model_->GetActiveWebContents(), url));
+#endif
+}
+
+content::RenderFrameHost* ExtensionPlatformBrowserTest::NavigateToURLInNewTab(
+    const GURL& url) {
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  return ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+#else
+  content::WebContents* active_web_contents = GetActiveWebContents();
+  TabModel* tab_model =
+      TabModelList::GetTabModelForWebContents(active_web_contents);
+  TabAndroid* parent = TabAndroid::FromWebContents(active_web_contents);
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  content::WebContents* new_web_contents = contents.release();
+  tab_model->CreateTab(parent, new_web_contents, /*select=*/true);
+  // Navigate and block until navigation finishes.
+  CHECK(content::NavigateToURL(new_web_contents, url));
+  return content::ConvertToRenderFrameHost(new_web_contents);
+#endif
+}
+
+int ExtensionPlatformBrowserTest::GetTabCount() {
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  return browser()->tab_strip_model()->count();
+#else
+  TabModel* tab_model =
+      TabModelList::GetTabModelForWebContents(GetActiveWebContents());
+  return tab_model->GetTabCount();
 #endif
 }
 

@@ -16,6 +16,7 @@
 class Profile;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -69,6 +70,12 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // Opens `url` in an incognito browser window with the incognito profile of
   // `profile`, blocking until the navigation finishes.
   void PlatformOpenURLOffTheRecord(Profile* profile, const GURL& url);
+
+  // Opens `url` in a new tab, blocking until the navigation finishes.
+  content::RenderFrameHost* NavigateToURLInNewTab(const GURL& url);
+
+  // Returns the number of tabs in the current window.
+  int GetTabCount();
 
   // Sets up `test_protocol_handler_` so that
   // chrome-extensions://<extension_id>/_test_resources/foo maps to
