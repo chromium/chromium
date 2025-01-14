@@ -55,6 +55,8 @@
 namespace cc {
 namespace {
 
+static_assert(std::is_same_v<unsigned char, uint8_t>);
+
 SkIRect MakeSrcRect(const PaintImage& image) {
   if (!image) {
     return SkIRect::MakeEmpty();
@@ -67,7 +69,37 @@ void WriteHeader(void* memory, uint8_t type, size_t serialized_size) {
   static_cast<uint32_t*>(memory)[0] = type | serialized_size << 8;
 }
 
+template <typename ValueType>
+size_t CountNonEmptyUniforms(
+    const std::vector<PaintShader::Uniform<ValueType>>& uniforms) {
+  return std::count_if(uniforms.begin(), uniforms.end(),
+                       [](const PaintShader::Uniform<ValueType>& u) {
+                         return !u.name.isEmpty();
+                       });
+}
+
 }  // namespace
+
+// Friend to `PaintOpWriter`. Can't be nested in the anonymous namespace.
+template <typename ValueType>
+size_t SerializeSizeSimpleValueUniforms(
+    const std::vector<PaintShader::Uniform<ValueType>>& uniforms) {
+  const size_t count = uniforms.size();
+  size_t name_sizes = 0u;
+  for (const auto& [name, value] : uniforms) {
+    if (name.isEmpty()) {
+      continue;
+    }
+    name_sizes += PaintOpWriter::SerializedSize(name);
+  }
+  // [ size_t [ [size_t data] data [size_t data] data ] ]
+  //     2u         key0      val0      key1     val1
+  return (PaintOpWriter::SerializedSize<size_t>() +
+          base::CheckedNumeric<size_t>(name_sizes) +
+          base::CheckedNumeric<size_t>(count) *
+              PaintOpWriter::SerializedSizeSimple<ValueType>())
+      .ValueOrDie();
+}
 
 // static
 size_t PaintOpWriter::SerializedSize(const PaintImage& image) {
@@ -128,6 +160,24 @@ size_t PaintOpWriter::SerializedSize(const SkHighContrastConfig& config) {
 // static:
 size_t PaintOpWriter::SerializedSize(const SkString& sk_string) {
   return SerializedSizeOfBytes(sk_string.size());
+}
+
+// static:
+size_t PaintOpWriter::SerializedSize(
+    const std::vector<PaintShader::FloatUniform>& uniforms) {
+  return SerializeSizeSimpleValueUniforms<SkScalar>(uniforms);
+}
+
+// static:
+size_t PaintOpWriter::SerializedSize(
+    const std::vector<PaintShader::Float2Uniform>& uniforms) {
+  return SerializeSizeSimpleValueUniforms<SkV2>(uniforms);
+}
+
+// static:
+size_t PaintOpWriter::SerializedSize(
+    const std::vector<PaintShader::Float4Uniform>& uniforms) {
+  return SerializeSizeSimpleValueUniforms<SkV4>(uniforms);
 }
 
 // static
@@ -497,11 +547,49 @@ void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
 }
 
 void PaintOpWriter::Write(const SkString& sk_string) {
-  static_assert(std::is_same_v<unsigned char, uint8_t>);
   size_t num_bytes = sk_string.size();
   WriteSize(num_bytes);
   WriteData(base::span<const uint8_t>(
       reinterpret_cast<const uint8_t*>(sk_string.data()), num_bytes));
+}
+
+void PaintOpWriter::Write(
+    const std::vector<PaintShader::FloatUniform>& uniforms) {
+  const size_t count = CountNonEmptyUniforms(uniforms);
+  WriteSize(count);
+  for (const auto& [name, value] : uniforms) {
+    if (name.isEmpty()) {
+      continue;
+    }
+    Write(name);
+    WriteSimple(value);
+  }
+}
+
+void PaintOpWriter::Write(
+    const std::vector<PaintShader::Float2Uniform>& uniforms) {
+  const size_t count = CountNonEmptyUniforms(uniforms);
+  WriteSize(count);
+  for (const auto& [name, value] : uniforms) {
+    if (name.isEmpty()) {
+      continue;
+    }
+    Write(name);
+    WriteSimpleMultiple(value.x, value.y);
+  }
+}
+
+void PaintOpWriter::Write(
+    const std::vector<PaintShader::Float4Uniform>& uniforms) {
+  const size_t count = CountNonEmptyUniforms(uniforms);
+  WriteSize(count);
+  for (const auto& [name, value] : uniforms) {
+    if (name.isEmpty()) {
+      continue;
+    }
+    Write(name);
+    WriteSimpleMultiple(value.x, value.y, value.z, value.w);
+  }
 }
 
 void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
@@ -684,6 +772,9 @@ void PaintOpWriter::Write(const PaintShader* shader,
   // using other fields.
 
   Write(shader->sksl_command_);
+  Write(shader->scalar_uniforms_);
+  Write(shader->float2_uniforms_);
+  Write(shader->float4_uniforms_);
 }
 
 void PaintOpWriter::Write(SkYUVColorSpace yuv_color_space) {

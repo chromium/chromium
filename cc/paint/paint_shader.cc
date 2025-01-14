@@ -228,7 +228,11 @@ sk_sp<PaintShader> PaintShader::MakePaintRecord(
 }
 
 // static:
-sk_sp<PaintShader> PaintShader::MakeSkSLCommand(std::string_view sksl) {
+sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
+    std::string_view sksl,
+    std::vector<FloatUniform> float_uniforms,
+    std::vector<Float2Uniform> float2_uniforms,
+    std::vector<Float4Uniform> float4_uniforms) {
   SkString cmd(sksl);
   auto [effect, error] = SkRuntimeEffect::MakeForShader(cmd);
   if (!effect) {
@@ -236,7 +240,10 @@ sk_sp<PaintShader> PaintShader::MakeSkSLCommand(std::string_view sksl) {
     return nullptr;
   }
   sk_sp<PaintShader> shader(new PaintShader(Type::kSkSLCommand));
-  shader->sksl_command_ = cmd;
+  shader->sksl_command_ = std::move(cmd);
+  shader->scalar_uniforms_ = std::move(float_uniforms);
+  shader->float2_uniforms_ = std::move(float2_uniforms);
+  shader->float4_uniforms_ = std::move(float4_uniforms);
   return shader;
 }
 
@@ -270,7 +277,10 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
                                                   shader->colors_.size()) +
           PaintOpWriter::SerializedSizeOfElements(shader->positions_.data(),
                                                   shader->positions_.size()) +
-          PaintOpWriter::SerializedSize(shader->sksl_command_))
+          PaintOpWriter::SerializedSize(shader->sksl_command_) +
+          PaintOpWriter::SerializedSize(shader->scalar_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float2_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float4_uniforms_))
       .ValueOrDie();
 }
 
@@ -528,7 +538,17 @@ sk_sp<SkShader> PaintShader::GetSkShader(
         // Fallback the the color shader.
         break;
       }
-      return effect->makeShader(/*uniforms=*/nullptr, /*children=*/{});
+      SkRuntimeShaderBuilder builder(effect);
+      for (const auto& [name, value] : scalar_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float2_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float4_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      return builder.makeShader();
     }
     case Type::kShaderCount:
       NOTREACHED();

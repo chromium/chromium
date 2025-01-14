@@ -61,6 +61,8 @@
 namespace cc {
 namespace {
 
+static_assert(std::is_same_v<unsigned char, uint8_t>);
+
 bool IsValidPaintShaderType(PaintShader::Type type) {
   return static_cast<uint8_t>(type) <
          static_cast<uint8_t>(PaintShader::Type::kShaderCount);
@@ -72,6 +74,34 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
 }
 
 }  // namespace
+
+// Being a friend to `PaintOpReader`, this cannot be in the anonymous namespace.
+template <typename ValueType>
+void ReadSimpleValueUniformsHelper(
+    PaintOpReader& reader,
+    std::vector<PaintShader::Uniform<ValueType>>* output_uniforms) {
+  size_t count = 0u;
+  reader.ReadSize(&count);
+  if (count == 0) {
+    return;
+  }
+  output_uniforms->reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    SkString name;
+    reader.Read(&name);
+    if (!reader.valid()) {
+      return;
+    }
+    CHECK(!name.isEmpty());
+    ValueType value;
+    reader.ReadSimple(&value);
+    if (!reader.valid()) {
+      return;
+    }
+    output_uniforms->push_back(
+        {.name = std::move(name), .value = std::move(value)});
+  }
+}
 
 PaintOpReader::PaintOpReader(const volatile void* memory,
                              size_t size,
@@ -746,6 +776,9 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadVectorContent(positions_size, ref.positions_);
 
   Read(&ref.sksl_command_);
+  Read(&ref.scalar_uniforms_);
+  Read(&ref.float2_uniforms_);
+  Read(&ref.float4_uniforms_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -919,7 +952,6 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
 }
 
 void PaintOpReader::Read(SkString* sk_string) {
-  static_assert(std::is_same_v<unsigned char, uint8_t>);
   size_t size = 0;
   // We always serialize the empty string's size (0u).
   ReadSize(&size);
@@ -932,6 +964,18 @@ void PaintOpReader::Read(SkString* sk_string) {
   uint8_t* scratch = CopyScratchSpace(size);
   *sk_string = SkString(reinterpret_cast<char*>(scratch), size);
   DidRead(size);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::FloatUniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkScalar>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::Float2Uniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkV2>(*this, uniforms);
+}
+
+void PaintOpReader::Read(std::vector<PaintShader::Float4Uniform>* uniforms) {
+  ReadSimpleValueUniformsHelper<SkV4>(*this, uniforms);
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {

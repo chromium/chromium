@@ -140,6 +140,10 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static constexpr size_t kDefaultAlignment = alignof(uint32_t);
 
  private:
+  template <typename ValueType>
+  friend size_t SerializeSizeSimpleValueUniforms(
+      const std::vector<PaintShader::Uniform<ValueType>>&);
+
   template <typename T>
   static constexpr size_t SerializedSizeSimple();
 
@@ -159,6 +163,12 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const PaintRecord& record);
   static size_t SerializedSize(const SkHighContrastConfig& config);
   static size_t SerializedSize(const SkString& sk_string);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::FloatUniform>& scalar_map);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::Float2Uniform>& float2_map);
+  static size_t SerializedSize(
+      const std::vector<PaintShader::Float4Uniform>& float4_map);
 
   // Serialization of raw/smart pointers is not supported by default.
   template <typename T>
@@ -277,6 +287,9 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
   void Write(const SkString& sk_string);
+  void Write(const std::vector<PaintShader::FloatUniform>& scalar_uniforms);
+  void Write(const std::vector<PaintShader::Float2Uniform>& float2_uniforms);
+  void Write(const std::vector<PaintShader::Float4Uniform>& float4_uniforms);
 
   void Write(SkClipOp op) { WriteEnum(op); }
   void Write(PaintCanvas::AnnotationType type) { WriteEnum(type); }

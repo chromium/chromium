@@ -109,6 +109,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkGradientShader::Interpolation* interpolation);
   void Read(scoped_refptr<SkottieWrapper>* skottie);
   void Read(SkString* sk_string);
+  void Read(std::vector<PaintShader::FloatUniform>* uniforms);
+  void Read(std::vector<PaintShader::Float2Uniform>* uniforms);
+  void Read(std::vector<PaintShader::Float4Uniform>* uniforms);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -182,6 +185,11 @@ class CC_PAINT_EXPORT PaintOpReader {
   }
 
  private:
+  template <typename ValueType>
+  friend void ReadSimpleValueUniformsHelper(
+      PaintOpReader&,
+      std::vector<PaintShader::Uniform<ValueType>>*);
+
   enum class DeserializationError {
     // Enum values must remain synchronized with PaintOpDeserializationError
     // in tools/metrics/histograms/metadata/gpu/enums.xml.
