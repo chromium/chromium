@@ -120,6 +120,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.ContextMenuOption.Shown"
+    enum="LensOverlayContextMenuOption" expires_after="2025-07-06">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a context menu option is shown in the Lens overlay. This
+    is triggered when the user selects a region of the page, or after the user
+    right-clicks to restore an already-used context menu. This histogram is
+    sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.InvocationResultedInSearch"
     enum="Boolean" expires_after="2025-07-06">
   <owner>jdonnelly@chromium.org</owner>
@@ -193,6 +207,17 @@ chromium-metrics-reviews@google.com.
     between the two.
   </summary>
   <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextMenuOption.Shown"
+    enum="LensOverlayContextMenuOption" expires_after="2025-07-06">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a context menu option is shown in the Lens overlay. This
+    is triggered when the user selects a region of the page, or after the user
+    right-clicks to restore an already-used context menu.
+  </summary>
 </histogram>
 
 <histogram

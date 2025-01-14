@@ -24,7 +24,7 @@ import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
+import {ContextMenuOption, recordContextMenuOptionShown, recordLensOverlayInteraction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
@@ -333,20 +333,20 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(
         document, 'show-selected-text-context-menu',
         (e: CustomEvent<SelectedTextContextMenuData>) => {
-          this.showSelectedTextContextMenu = true;
           this.selectedTextContextMenuX = e.detail.left;
           this.selectedTextContextMenuY = e.detail.bottom;
           this.highlightedText = e.detail.text;
           this.contentLanguage = e.detail.contentLanguage;
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
+          this.setShowSelectedTextContextMenu(true);
         });
     this.eventTracker_.add(
         document, 'restore-selected-text-context-menu', () => {
           // show-selected-text-context-menu or
           // update-selected-text-context-menu must be triggered first so that
           // instance variables are set.
-          this.showSelectedTextContextMenu = true;
+          this.setShowSelectedTextContextMenu(true);
         });
     this.eventTracker_.add(
         document, 'update-selected-text-context-menu',
@@ -359,7 +359,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
     this.eventTracker_.add(document, 'hide-selected-text-context-menu', () => {
-      this.showSelectedTextContextMenu = false;
+      this.setShowSelectedTextContextMenu(false);
       this.textSelectionStartIndex = -1;
       this.textSelectionEndIndex = -1;
     });
@@ -376,10 +376,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.showDetectedTextContextMenuOptions =
               this.detectedTextStartIndex !== -1 &&
               this.detectedTextEndIndex !== -1;
-          this.showSelectedRegionContextMenu =
+          this.setShowSelectedRegionContextMenu(
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
-              this.showDetectedTextContextMenuOptions;
+              this.showDetectedTextContextMenuOptions);
         });
     this.eventTracker_.add(
         document, 'restore-selected-region-context-menu', () => {
@@ -387,15 +387,15 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           // we are still waiting for the text layer to receive text. Check for
           // this condition by checking if the box has been set.
           if (this.selectedRegionContextMenuBox !== undefined) {
-            this.showSelectedRegionContextMenu =
+            this.setShowSelectedRegionContextMenu(
                 (!this.suppressCopyAndSaveAsImage &&
                  (this.enableCopyAsImage || this.enableSaveAsImage)) ||
-                this.showDetectedTextContextMenuOptions;
+                this.showDetectedTextContextMenuOptions);
           }
         });
     this.eventTracker_.add(
         document, 'hide-selected-region-context-menu', () => {
-          this.showSelectedRegionContextMenu = false;
+          this.setShowSelectedRegionContextMenu(false);
           this.detectedTextStartIndex = -1;
           this.detectedTextEndIndex = -1;
         });
@@ -957,7 +957,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       bubbles: true,
       composed: true,
     }));
-    this.showSelectedTextContextMenu = false;
+    this.setShowSelectedTextContextMenu(false);
   }
 
   private handleSelectText() {
@@ -976,14 +976,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText.replaceAll('\r\n', ' '), this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
-    this.showSelectedTextContextMenu = false;
+    this.setShowSelectedTextContextMenu(false);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
   }
 
   private handleCopyAsImage() {
     BrowserProxyImpl.getInstance().handler.copyImage(
         this.selectedRegionContextMenuBox);
-    this.showSelectedRegionContextMenu = false;
+    this.setShowSelectedRegionContextMenu(false);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kCopyAsImage);
     this.dispatchEvent(new CustomEvent('copied-as-image', {
       bubbles: true,
@@ -994,7 +994,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private handleSaveAsImage() {
     BrowserProxyImpl.getInstance().handler.saveAsImage(
         this.selectedRegionContextMenuBox);
-    this.showSelectedRegionContextMenu = false;
+    this.setShowSelectedRegionContextMenu(false);
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSaveAsImage);
   }
 
@@ -1025,6 +1025,50 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
                 CursorTooltipType.REGION_SEARCH,
           },
         }));
+  }
+
+  // Sets the text context menu to be visible or not, and logs the shown
+  // context menu options.
+  private setShowSelectedTextContextMenu(shouldShow: boolean) {
+    if (shouldShow && !this.showSelectedTextContextMenu) {
+      // If the context menu was not being shown earlier, but will be now, log
+      // the shown context menu options.
+      recordContextMenuOptionShown(
+          INVOCATION_SOURCE, ContextMenuOption.COPY_TEXT);
+      if (this.showTranslateContextMenuItem) {
+        recordContextMenuOptionShown(
+            INVOCATION_SOURCE, ContextMenuOption.TRANSLATE_TEXT);
+      }
+    }
+    this.showSelectedTextContextMenu = shouldShow;
+  }
+
+  // Sets the region context menu to be visible or not, and logs the shown
+  // context menu options.
+  private setShowSelectedRegionContextMenu(shouldShow: boolean) {
+    if (shouldShow && !this.showSelectedRegionContextMenu) {
+      // If the context menu was not being shown earlier, but will be now, log
+      // the shown context menu options.
+      if (this.showDetectedTextContextMenuOptions) {
+        recordContextMenuOptionShown(
+            INVOCATION_SOURCE, ContextMenuOption.SELECT_TEXT_IN_REGION);
+        if (this.showTranslateContextMenuItem) {
+          recordContextMenuOptionShown(
+              INVOCATION_SOURCE, ContextMenuOption.TRANSLATE_TEXT_IN_REGION);
+        }
+      }
+      if (!this.suppressCopyAndSaveAsImage) {
+        if (this.enableCopyAsImage) {
+          recordContextMenuOptionShown(
+              INVOCATION_SOURCE, ContextMenuOption.COPY_AS_IMAGE);
+        }
+        if (this.enableSaveAsImage) {
+          recordContextMenuOptionShown(
+              INVOCATION_SOURCE, ContextMenuOption.SAVE_AS_IMAGE);
+        }
+      }
+    }
+    this.showSelectedRegionContextMenu = shouldShow;
   }
 
   private onInitialFlashAnimationEnd() {
