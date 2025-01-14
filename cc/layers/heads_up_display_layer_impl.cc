@@ -15,7 +15,6 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -183,16 +182,12 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
       uint64_t tracing_process_id,
       int importance) const override {
     base::UnguessableToken resource_guid =
-        shared_image ? shared_image->Map()->GetSharedMemoryGuid()
-                     : shared_mapping.guid();
+        shared_image->Map()->GetSharedMemoryGuid();
     pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, resource_guid,
                                          importance);
   }
 
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink;
-
-  // Will be empty if `shared_image` is non-null.
-  base::WritableSharedMemoryMapping shared_mapping;
 };
 
 bool HeadsUpDisplayLayerImpl::WillDraw(
@@ -425,9 +420,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
     auto shared_image = backing->shared_image;
-    base::span<uint8_t> mem = shared_image
-                                  ? shared_image->Map()->GetMemoryForPlane(0)
-                                  : backing->shared_mapping;
+    base::span<uint8_t> mem = shared_image->Map()->GetMemoryForPlane(0);
     CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
     sk_sp<SkSurface> surface =
         SkSurfaces::WrapPixels(info, mem.data(), row_bytes, &props);
