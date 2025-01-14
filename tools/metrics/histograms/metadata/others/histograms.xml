@@ -4355,33 +4355,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Favicons.LargeIconService.DownloadedSize" units="pixels"
-    expires_after="never">
-<!-- expires-never: This metric is needed for informing future UX decisions on
-    mobile (how to display favicons / scrabble tiles). -->
-
-  <owner>jkrcal@chromium.org</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records the size (concretely the width) in pixel of the favicon downloaded
-    from Google favicon server (size 0 denotes that download has failed).
-  </summary>
-</histogram>
-
-<histogram name="Favicons.LargeIconService.FallbackSize" units="pixels"
-    expires_after="never">
-<!-- expires-never: This metric is needed for informing future UX decisions on
-    mobile (how to display favicons / scrabble tiles). -->
-
-  <owner>jkrcal@chromium.org</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records the size (concretely the width) in pixel of the favicon that is used
-    to generate a fallback style in the case when large enough favicon is not
-    available (size 0 denotes that no favicon is available at all).
-  </summary>
-</histogram>
-
 <histogram name="Feedback.ChromeOSApp.CanContactUser"
     enum="FeedbackAppContactUserConsentType" expires_after="2025-07-30">
   <owner>longbowei@google.com</owner>
