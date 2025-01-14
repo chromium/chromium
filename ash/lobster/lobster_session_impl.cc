@@ -265,8 +265,9 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
 }
 
 void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
-                                LobsterMode mode) {
-  client_->LoadUI(query, mode);
+                                LobsterMode mode,
+                                const gfx::Rect& caret_bounds) {
+  client_->LoadUI(query, mode, caret_bounds);
 }
 
 void LobsterSessionImpl::ShowUI() {

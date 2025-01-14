@@ -77,7 +77,9 @@ class MockLobsterClient : public LobsterClient {
               (override));
   MOCK_METHOD(void,
               LoadUI,
-              (std::optional<std::string> query, LobsterMode mode),
+              (std::optional<std::string> query,
+               LobsterMode mode,
+               const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void, ShowUI, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));

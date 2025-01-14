@@ -68,8 +68,9 @@ bool LobsterService::SubmitFeedback(const std::string& query,
 }
 
 void LobsterService::LoadUI(std::optional<std::string> query,
-                            ash::LobsterMode mode) {
-  bubble_coordinator_.LoadUI(profile_, query, mode);
+                            ash::LobsterMode mode,
+                            const gfx::Rect& caret_bounds) {
+  bubble_coordinator_.LoadUI(profile_, query, mode, caret_bounds);
 }
 
 void LobsterService::ShowUI() {

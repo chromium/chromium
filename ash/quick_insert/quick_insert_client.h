@@ -28,6 +28,7 @@ class FaviconService;
 }
 
 namespace gfx {
+class Rect;
 class Size;
 }
 
@@ -82,7 +83,8 @@ class ASH_EXPORT QuickInsertClient {
   virtual ShowEditorCallback CacheEditorContext() = 0;
 
   virtual ShowLobsterCallback CacheLobsterContext(
-      bool support_image_insertion) = 0;
+      bool support_image_insertion,
+      const gfx::Rect& caret_bounds) = 0;
 
   virtual void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

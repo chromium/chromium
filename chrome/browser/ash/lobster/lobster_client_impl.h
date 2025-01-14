@@ -39,7 +39,9 @@ class LobsterClientImpl : public ash::LobsterClient {
                       const std::string& image_bytes) override;
   void QueueInsertion(const std::string& image_bytes,
                       StatusCallback insert_status_callback) override;
-  void LoadUI(std::optional<std::string> query, ash::LobsterMode mode) override;
+  void LoadUI(std::optional<std::string> query,
+              ash::LobsterMode mode,
+              const gfx::Rect& caret_bounds) override;
   void ShowUI() override;
   void CloseUI() override;
 

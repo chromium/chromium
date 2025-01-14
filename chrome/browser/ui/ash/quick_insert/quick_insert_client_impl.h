@@ -66,7 +66,8 @@ class QuickInsertClientImpl
   bool IsEligibleForEditor() override;
   ShowEditorCallback CacheEditorContext() override;
   ShowLobsterCallback CacheLobsterContext(
-      bool support_image_insertion) override;
+      bool support_image_insertion,
+      const gfx::Rect& caret_bounds) override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(size_t max_files,

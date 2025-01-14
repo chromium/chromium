@@ -27,7 +27,8 @@ class ASH_EXPORT LobsterController {
    public:
     explicit Trigger(std::unique_ptr<LobsterClient> client,
                      LobsterEntryPoint entry_point,
-                     LobsterMode mode);
+                     LobsterMode mode,
+                     const gfx::Rect& caret_bounds);
     ~Trigger();
 
     void Fire(std::optional<std::string> query);
@@ -46,6 +47,8 @@ class ASH_EXPORT LobsterController {
     LobsterEntryPoint entry_point_;
 
     LobsterMode mode_;
+
+    gfx::Rect caret_bounds_;
   };
 
   LobsterController();
@@ -54,7 +57,8 @@ class ASH_EXPORT LobsterController {
   void SetClientFactory(LobsterClientFactory* client_factory);
 
   std::unique_ptr<Trigger> CreateTrigger(LobsterEntryPoint entry_point,
-                                         bool support_image_insertion);
+                                         bool support_image_insertion,
+                                         const gfx::Rect& caret_bounds);
 
  private:
   friend class Trigger;
@@ -62,7 +66,8 @@ class ASH_EXPORT LobsterController {
   void StartSession(std::unique_ptr<LobsterClient> client,
                     std::optional<std::string> query,
                     LobsterEntryPoint entry_point,
-                    LobsterMode mode);
+                    LobsterMode mode,
+                    const gfx::Rect& caret_bounds);
 
   // Not owned by this class.
   raw_ptr<LobsterClientFactory> client_factory_;

@@ -35,6 +35,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -47,6 +48,15 @@ namespace chromeos::editor_menu {
 
 namespace {
 
+gfx::Rect CalculateCaretBounds() {
+  const ui::InputMethod* input_method =
+      ash::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (input_method && input_method->GetTextInputClient()) {
+    return input_method->GetTextInputClient()->GetCaretBounds();
+  }
+  return gfx::Rect();
+}
+
 std::unique_ptr<LobsterManager> CreateLobsterManager() {
   ash::LobsterController* lobster_controller =
       ash::Shell::Get()->lobster_controller();
@@ -57,7 +67,7 @@ std::unique_ptr<LobsterManager> CreateLobsterManager() {
 
   std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger =
       lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kRightClickMenu,
-                                        true);
+                                        true, CalculateCaretBounds());
 
   if (!lobster_trigger) {
     return nullptr;

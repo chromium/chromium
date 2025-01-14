@@ -47,8 +47,9 @@ bool LobsterClientImpl::SubmitFeedback(const std::string& query,
 }
 
 void LobsterClientImpl::LoadUI(std::optional<std::string> query,
-                               ash::LobsterMode mode) {
-  service_->LoadUI(query, mode);
+                               ash::LobsterMode mode,
+                               const gfx::Rect& caret_bounds) {
+  service_->LoadUI(query, mode, caret_bounds);
 }
 
 void LobsterClientImpl::ShowUI() {

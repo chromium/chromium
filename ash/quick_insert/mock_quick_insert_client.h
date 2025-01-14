@@ -39,7 +39,7 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
   MOCK_METHOD(ShowEditorCallback, CacheEditorContext, (), (override));
   MOCK_METHOD(ShowLobsterCallback,
               CacheLobsterContext,
-              (bool support_image_insertion),
+              (bool support_image_insertion, const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void,
               GetSuggestedEditorResults,

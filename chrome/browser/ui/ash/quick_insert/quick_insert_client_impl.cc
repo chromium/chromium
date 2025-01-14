@@ -390,7 +390,8 @@ QuickInsertClientImpl::CacheEditorContext() {
 }
 
 QuickInsertClientImpl::ShowLobsterCallback
-QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
+QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion,
+                                           const gfx::Rect& caret_bounds) {
   if (!ash::features::IsLobsterEnabled()) {
     return base::NullCallback();
   }
@@ -404,8 +405,9 @@ QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
     return base::NullCallback();
   }
 
-  lobster_trigger_ = lobster_controller->CreateTrigger(
-      ash::LobsterEntryPoint::kQuickInsert, support_image_insertion);
+  lobster_trigger_ =
+      lobster_controller->CreateTrigger(ash::LobsterEntryPoint::kQuickInsert,
+                                        support_image_insertion, caret_bounds);
 
   if (!lobster_trigger_) {
     return base::NullCallback();

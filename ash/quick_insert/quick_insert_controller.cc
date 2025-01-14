@@ -623,7 +623,8 @@ void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   show_editor_callback_ = client_->CacheEditorContext();
   show_lobster_callback_ = client_->CacheLobsterContext(
       /*support_image_insertion=*/focused_text_input_client &&
-      focused_text_input_client->CanInsertImage());
+          focused_text_input_client->CanInsertImage(),
+      /*caret_bounds=*/GetCaretBounds());
   input_method::ImeKeyboard& keyboard = GetImeKeyboard();
 
   if (focused_text_input_client &&
