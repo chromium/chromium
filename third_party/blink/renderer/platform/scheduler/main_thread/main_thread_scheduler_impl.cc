@@ -2222,11 +2222,15 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 
 void MainThreadSchedulerImpl::OnPageFrozen(
     base::MemoryReductionTaskContext called_from) {
+  main_thread_only().renderer_frozen_metadata.emplace(
+      "MainThreadSchedulerImpl.RendererFrozen", /* is_frozen */ 1,
+      base::SampleMetadataScope::kProcess);
   memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
 }
 
 void MainThreadSchedulerImpl::OnPageResumed() {
+  main_thread_only().renderer_frozen_metadata.reset();
   memory_purge_manager_.OnPageResumed();
   UpdatePolicy();
 }
