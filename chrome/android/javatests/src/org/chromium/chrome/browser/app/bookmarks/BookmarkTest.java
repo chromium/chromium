@@ -1033,6 +1033,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/389733589 - the test is flaky")
     public void testPromoDraggability() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
 
