@@ -1418,17 +1418,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImage.ContentConsumed" enum="BooleanMatched"
-    expires_after="2025-07-13">
-  <owner>penghuang@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Whether or not the content of a SharedImage is consumed. False indicates the
-    content of a SharedImage is never used due to destroying the SharedImage or
-    writing new content to it before using it.
-  </summary>
-</histogram>
-
 <histogram name="GPU.SharedImage.SharedImageFormat" enum="SharedImageFormatUMA"
     expires_after="2026-02-01">
   <owner>hitawala@chromium.org</owner>

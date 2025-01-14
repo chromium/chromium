@@ -163,11 +163,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Returns the memory tracker this backing is registering memory with.
   const MemoryTracker* GetMemoryTracker() const;
 
-  // Notify backing a read access is succeeded
-  void OnReadSucceeded();
-  // Notify backing a write access is succeeded.
-  void OnWriteSucceeded();
-
   // This factory is registered when creating backing to help
   // create intermediate interop backing buffer
   // and share resource from gl backing buffer to dawn.
@@ -392,25 +387,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   mutable std::optional<base::Lock> lock_;
 
  private:
-  class ScopedWriteUMA {
-   public:
-    ScopedWriteUMA() = default;
-
-    ScopedWriteUMA(const ScopedWriteUMA&) = delete;
-    ScopedWriteUMA& operator=(const ScopedWriteUMA&) = delete;
-
-    ~ScopedWriteUMA() {
-      UMA_HISTOGRAM_BOOLEAN("GPU.SharedImage.ContentConsumed",
-                            content_consumed_);
-    }
-
-    bool content_consumed() const { return content_consumed_; }
-    void SetConsumed() { content_consumed_ = true; }
-
-   private:
-    bool content_consumed_ = false;
-  };
-
   const Mailbox mailbox_;
   const viz::SharedImageFormat format_;
   const gfx::Size size_;
@@ -439,9 +415,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   THREAD_CHECKER(factory_thread_checker_);
 
   bool have_context_ GUARDED_BY(lock_) = true;
-
-  // A scoped object for recording write UMA.
-  std::optional<ScopedWriteUMA> scoped_write_uma_ GUARDED_BY(lock_);
 
   // A vector of SharedImageRepresentations which hold references to this
   // backing. The first reference is considered the owner, and the vector is
