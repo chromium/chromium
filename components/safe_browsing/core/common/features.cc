@@ -262,8 +262,7 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
