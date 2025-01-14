@@ -9,6 +9,8 @@
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device {
@@ -87,6 +89,34 @@ void PRFInput::HashInputsIntoSalts() {
   if (this->input2) {
     this->salt2 = HashPRFValue(*(this->input2));
   }
+}
+
+std::vector<uint8_t> PRFInput::EvaluateHMAC(
+    base::span<const uint8_t> hmac_key,
+    const std::array<uint8_t, 32>& hmac_salt1,
+    const std::optional<std::array<uint8_t, 32>>& hmac_salt2) {
+  uint8_t hmac_result[SHA256_DIGEST_LENGTH];
+  unsigned hmac_out_length;
+  HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt1.data(),
+       hmac_salt1.size(), hmac_result, &hmac_out_length);
+  CHECK_EQ(hmac_out_length, sizeof(hmac_result));
+
+  std::vector<uint8_t> outputs;
+  outputs.insert(outputs.end(), std::begin(hmac_result), std::end(hmac_result));
+
+  if (hmac_salt2) {
+    HMAC(EVP_sha256(), hmac_key.data(), hmac_key.size(), hmac_salt2->data(),
+         hmac_salt2->size(), hmac_result, &hmac_out_length);
+    CHECK_EQ(hmac_out_length, sizeof(hmac_result));
+    outputs.insert(outputs.end(), std::begin(hmac_result),
+                   std::end(hmac_result));
+  }
+  return outputs;
+}
+
+std::vector<uint8_t> PRFInput::EvaluateHMAC(
+    base::span<const uint8_t> hmac_key) const {
+  return EvaluateHMAC(hmac_key, this->salt1, this->salt2);
 }
 
 }  // namespace device
