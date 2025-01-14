@@ -336,7 +336,7 @@ inline constexpr base::FilePath::CharType
 // The extension id of the google tts engine extension to use on-device natural
 // Google voices.
 inline constexpr char kTTSEngineExtensionId[] =
-    "ikdejfkifembbpolkdkogjlbpplbmkpn";
+    "kfgdcmdikpmgdjhgfpbfgkomboamacbb";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 // What causes an extension to be installed? Used in histograms, so don't
