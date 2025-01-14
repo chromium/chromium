@@ -217,6 +217,16 @@ blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
   return touch_event;
 }
 
+blink::WebTouchEvent CreatePenEvent(blink::WebInputEvent::Type type,
+                                    base::span<const gfx::PointF> points) {
+  blink::WebTouchEvent pen_event = CreateTouchEvent(type, points);
+  for (size_t i = 0; i < pen_event.touches_length; ++i) {
+    pen_event.touches[i].pointer_type =
+        blink::WebPointerProperties::PointerType::kPen;
+  }
+  return pen_event;
+}
+
 class FakeClient : public PdfInkModuleClient {
  public:
   FakeClient() = default;
@@ -852,6 +862,34 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     ValidateRunStrokeCheckTest(/*expect_stroke_success=*/false);
   }
 
+  void ApplyStrokeWithPenAtPoints(
+      base::span<const gfx::PointF> pen_start_points,
+      std::vector<base::span<const gfx::PointF>> all_pen_move_points,
+      base::span<const gfx::PointF> pen_end_points) {
+    ApplyStrokeWithPenAtPointsMaybeHandled(pen_start_points,
+                                           all_pen_move_points, pen_end_points,
+                                           /*expect_pen_events_handled=*/true);
+  }
+
+  // TODO(crbug.com/377733396): Consider refactoring to combine with
+  // RunStrokeCheckTest().
+  void RunStrokePenCheckTest(bool annotation_mode_enabled) {
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
+    EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
+
+    const std::vector<base::span<const gfx::PointF>> all_pen_move_points{
+        base::span_from_ref(kMouseMovePoint),
+    };
+    ApplyStrokeWithPenAtPointsMaybeHandled(
+        base::span_from_ref(kMouseDownPoint), all_pen_move_points,
+        base::span_from_ref(kMouseUpPoint),
+        /*expect_pen_events_handled=*/annotation_mode_enabled);
+
+    ValidateRunStrokeCheckTest(
+        /*expect_stroke_success=*/annotation_mode_enabled);
+  }
+
   void RunStrokeMissedEndEventCheckTest() {
     {
       // Start a drawing or erase action.
@@ -997,6 +1035,28 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
               ink_module().HandleInputEvent(touch_end_event));
   }
 
+  void ApplyStrokeWithPenAtPointsMaybeHandled(
+      base::span<const gfx::PointF> pen_start_points,
+      std::vector<base::span<const gfx::PointF>> all_pen_move_points,
+      base::span<const gfx::PointF> pen_end_points,
+      bool expect_pen_events_handled) {
+    blink::WebTouchEvent pen_start_event = CreatePenEvent(
+        blink::WebInputEvent::Type::kTouchStart, pen_start_points);
+    EXPECT_EQ(expect_pen_events_handled,
+              ink_module().HandleInputEvent(pen_start_event));
+    for (const auto& pen_move_points : all_pen_move_points) {
+      blink::WebTouchEvent pen_move_event = CreatePenEvent(
+          blink::WebInputEvent::Type::kTouchMove, pen_move_points);
+      EXPECT_EQ(expect_pen_events_handled,
+                ink_module().HandleInputEvent(pen_move_event));
+    }
+
+    blink::WebTouchEvent pen_end_event =
+        CreatePenEvent(blink::WebInputEvent::Type::kTouchEnd, pen_end_points);
+    EXPECT_EQ(expect_pen_events_handled,
+              ink_module().HandleInputEvent(pen_end_event));
+  }
+
   void ValidateRunStrokeCheckTest(bool expect_stroke_success) {
     EXPECT_EQ(expect_stroke_success ? 1 : 0, client().stroke_finished_count());
     const std::vector<int>& updated_thumbnail_page_indices =
@@ -1016,6 +1076,8 @@ TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
@@ -1025,6 +1087,8 @@ TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
@@ -1034,6 +1098,8 @@ TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
@@ -1043,6 +1109,8 @@ TEST_F(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
@@ -1052,6 +1120,8 @@ TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
@@ -1061,6 +1131,30 @@ TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
                    /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
   EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
                    /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithPenIfNotEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokePenCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
+}
+
+TEST_F(PdfInkModuleStrokeTest, AnnotationWithPenIfEnabled) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokePenCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kStylus));
 }
 
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
@@ -1500,6 +1594,55 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint),
                                touch_move_points,
                                base::span_from_ref(kMouseDownPoint));
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again with the mouse gets the same results.
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  // Still no visible strokes.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Nothing got erased, so the count stays at 2.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+}
+
+TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithPen) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokePenCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Check that there are now some visible strokes.
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAre(ElementsAreArray(kMousePoints)))));
+  EXPECT_EQ(1, client().stroke_finished_count());
+  const std::vector<int>& updated_thumbnail_page_indices =
+      client().updated_thumbnail_page_indices();
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+
+  // Stroke with the eraser tool.
+  SelectEraserToolOfSize(3.0f);
+  const std::vector<base::span<const gfx::PointF>> pen_move_points{
+      base::span_from_ref(kMouseMovePoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
+                             pen_move_points,
+                             base::span_from_ref(kMouseDownPoint));
+
+  // Now there are no visible strokes left.
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  // Erasing counts as another stroke action.
+  EXPECT_EQ(2, client().stroke_finished_count());
+  EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+
+  // Stroke again. The stroke that have already been erased should stay erased.
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint),
+                             pen_move_points,
+                             base::span_from_ref(kMouseDownPoint));
 
   // Still no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());

@@ -36,7 +36,9 @@
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_touch_point.h"
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
@@ -59,11 +61,20 @@ namespace chrome_pdf {
 
 namespace {
 
-// TODO(crbug.com/377733396): Determine if it possible to differentiate between
-// touch and pen. Defaulting to touch for now.
-constexpr auto kTouchOrPenToolType = ink::StrokeInput::ToolType::kTouch;
-
 constexpr ink::AffineTransform kIdentityTransform;
+
+ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
+    const blink::WebTouchEvent& event) {
+  // TODO(crbug.com/377733396): Investigate how multiple touches and pens should
+  // behave. For now, if there is any pen touch, set the tool type to pen.
+  for (size_t i = 0; i < event.touches_length; ++i) {
+    if (event.touches[i].pointer_type ==
+        blink::WebPointerProperties::PointerType::kPen) {
+      return ink::StrokeInput::ToolType::kStylus;
+    }
+  }
+  return ink::StrokeInput::ToolType::kTouch;
+}
 
 PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
     const ink::StrokeInputBatch& input_batch) {
@@ -195,7 +206,7 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
 
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kMouseDown: {
-      // TODO(crbug.com/353942909): Send a content focused message for certain
+      // TODO(crbug.com/377733396): Send a content focused message for certain
       // non-mouse inputs, too.
       base::Value::Dict message;
       message.Set("type", "contentFocused");
@@ -206,6 +217,7 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
       return OnMouseUp(static_cast<const blink::WebMouseEvent&>(event));
     case blink::WebInputEvent::Type::kMouseMove:
       return OnMouseMove(static_cast<const blink::WebMouseEvent&>(event));
+    // Touch and pen input events are blink::WebTouchEvent instances.
     case blink::WebInputEvent::Type::kTouchStart:
       return OnTouchStart(static_cast<const blink::WebTouchEvent&>(event));
     case blink::WebInputEvent::Type::kTouchEnd:
@@ -387,8 +399,9 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
+  ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
-             ? StartStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             ? StartStroke(position, event.TimeStamp(), tool_type)
              : StartEraseStroke(position);
 }
 
@@ -400,8 +413,9 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
+  ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
-             ? FinishStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             ? FinishStroke(position, event.TimeStamp(), tool_type)
              : FinishEraseStroke(position);
 }
 
@@ -413,8 +427,9 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
+  ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
-             ? ContinueStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             ? ContinueStroke(position, event.TimeStamp(), tool_type)
              : ContinueEraseStroke(position);
 }
 
