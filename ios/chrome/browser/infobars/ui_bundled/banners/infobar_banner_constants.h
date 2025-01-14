@@ -19,4 +19,7 @@ extern NSString* const kInfobarBannerOpenModalButtonIdentifier;
 // Banner icon size.
 extern const CGFloat kInfobarBannerIconSize;
 
+// The presented view maximum height.
+extern const CGFloat kInfobarBannerMaxHeight;
+
 #endif  // IOS_CHROME_BROWSER_INFOBARS_UI_BUNDLED_BANNERS_INFOBAR_BANNER_CONSTANTS_H_
