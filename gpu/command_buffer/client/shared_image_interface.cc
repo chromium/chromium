@@ -180,6 +180,17 @@ void SharedImageInterface::UpdateSharedImage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void SharedImageInterface::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  NOTREACHED();
+}
+
 SharedImageInterface::SharedImageMapping::SharedImageMapping() = default;
 SharedImageInterface::SharedImageMapping::SharedImageMapping(
     SharedImageInterface::SharedImageMapping&& mapped) = default;
