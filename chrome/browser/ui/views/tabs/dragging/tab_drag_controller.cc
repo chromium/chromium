@@ -61,6 +61,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
@@ -214,11 +215,12 @@ bool IsWindowDragUsingSystemDragDropAllowed() {
 void UpdateSystemDnDDragImage(TabDragContext* attached_context,
                               const gfx::ImageSkia& image) {
 #if BUILDFLAG(IS_LINUX)
+  VLOG(1) << __func__ << " image size=" << image.size().ToString();
   aura::Window* root_window =
       attached_context->GetWidget()->GetNativeWindow()->GetRootWindow();
   if (aura::client::GetDragDropClient(root_window)) {
     aura::client::GetDragDropClient(root_window)
-        ->UpdateDragImage(image, {image.height() / 2, image.width() / 2});
+        ->UpdateDragImage(image, {image.width() / 2, image.height() / 2});
   }
 #endif  // BUILDFLAG(IS_LINUX)
 }
@@ -1066,15 +1068,50 @@ bool TabDragController::ShouldDragWindowUsingSystemDnD() {
          !GetAttachedBrowserWidget()->IsMoveLoopSupported();
 }
 
-gfx::ImageSkia TabDragController::GetDragImageForSystemDnD() {
-  // The width has the same value, as the logo image is square-shaped.
-  const int drag_image_height = 50;
-  const gfx::Size drag_image_size(drag_image_height, drag_image_height);
-  gfx::ImageSkia drag_image =
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_PRODUCT_LOGO_256);
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      drag_image, skia::ImageOperations::RESIZE_BEST, drag_image_size);
+void TabDragController::RequestTabThumbnail() {
+  VLOG(1) << __func__;
+  WebContents* contents;
+  if (group_drag_data_.has_value()) {
+    contents = source_context_->GetTabStripModel()->GetActiveWebContents();
+    // If the group header was dragged while a tab not belonging to the
+    // group was active, we request a thumbnail of the group's first tab.
+    if (!IsDraggingTab(contents)) {
+      contents = drag_data_[first_tab_index()].contents;
+    }
+  } else {
+    contents = source_view_drag_data()->contents.get();
+  }
+  content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
+  if (rwhv) {
+    float scale = rwhv->GetDeviceScaleFactor();
+    // Passing an empty source rect means copying the whole surface, an
+    // empty target size means no scaling (as we don't know the surface
+    // size, it's easier to scale the bitmap to the correct size later).
+    rwhv->CopyFromSurface(
+        gfx::Rect(), gfx::Size(),
+        base::BindOnce(&TabDragController::OnTabThumbnailAvailable,
+                       weak_factory_.GetWeakPtr(), scale));
+  }
+}
+
+void TabDragController::OnTabThumbnailAvailable(float window_scale,
+                                                const SkBitmap& thumbnail) {
+  VLOG(1) << __func__ << " " << thumbnail.width() << "x" << thumbnail.height();
+  constexpr size_t kTargetHeightDip = 200;
+  constexpr int kRoundedCornerRadius = 4;
+
+  const float scale = static_cast<float>(kTargetHeightDip) / thumbnail.height();
+  drag_image_ = gfx::ImageSkia::CreateFromBitmap(thumbnail, window_scale);
+  const gfx::Size target_size =
+      gfx::ScaleToCeiledSize(drag_image_.size(), scale);
+  drag_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+      drag_image_, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+      target_size);
+  drag_image_ = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+      kRoundedCornerRadius, drag_image_);
+  if (current_state_ == DragState::kDraggingUsingSystemDnD) {
+    UpdateSystemDnDDragImage(attached_context_, drag_image_);
+  }
 }
 
 TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
@@ -1086,8 +1123,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
 
   if (system_drag_and_drop_session_running_) {
     // Show the drag image again.
-    gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
-    UpdateSystemDnDDragImage(attached_context_, drag_image);
+    UpdateSystemDnDDragImage(attached_context_, drag_image_);
 
     return Liveness::ALIVE;
   }
@@ -1112,10 +1148,14 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
       ui::ClipboardFormatType::CustomPlatformType(ui::kMimeTypeWindowDrag),
       pickle);
 
-  gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
-  data_provider->SetDragImage(
-      drag_image,
-      gfx::Vector2d(drag_image.height() / 2, drag_image.width() / 2));
+  // If the drag image is already available, set it right away. Else we'll get a
+  // call to OnTabThumbnailAvailable() and will update it after starting the DnD
+  // session.
+  if (!drag_image_.isNull()) {
+    VLOG(1) << __func__ << " setting drag image";
+    data_provider->SetDragImage(
+        drag_image_, {drag_image_.width() / 2, drag_image_.height() / 2});
+  }
 
   // Pull into a local to avoid use-after-free if RunShellDrag deletes |this|.
   base::OnceClosure drag_loop_done_callback =
@@ -1387,6 +1427,14 @@ void TabDragController::StartDrag() {
   // to hand off ownership.
   CHECK_EQ(source_context_->GetDragController(), this);
   attached_context_ = source_context_;
+
+  // Request a thumbnail to use as drag image if we'll use fallback tab
+  // dragging. Do this before calling AttachImpl() to minimize the delay between
+  // detaching the tabs and showing the drag icon, as capturing the tab
+  // thumbnail is asynchronous.
+  if (ShouldDragWindowUsingSystemDnD()) {
+    RequestTabThumbnail();
+  }
 
   AttachImpl();
 }

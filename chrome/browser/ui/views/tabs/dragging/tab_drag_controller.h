@@ -26,6 +26,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -439,8 +440,15 @@ class TabDragController : public views::WidgetObserver,
   // tabs outside of a tabstrip.
   bool ShouldDragWindowUsingSystemDnD();
 
-  // Returns the drag image to be used for the system drag and drop session.
-  gfx::ImageSkia GetDragImageForSystemDnD();
+  // Requests a tab thumbnail of the dragged tab to be used as a drag icon.
+  void RequestTabThumbnail();
+
+  // Stores a scaled version of `thumbnail` in `drag_image_`, and calls
+  // UpdateSystemDnDDragImage() if we're currently dragging using system DnD.
+  //
+  // `window_scale` is the scale of the window that `thumbnail` was captured
+  // from.
+  void OnTabThumbnailAvailable(float window_scale, const SkBitmap& thumbnail);
 
   // Starts a regular drag and drop session as a fallback if RunMoveLoop() is
   // not supported and no drag session is currently running. `context` is used
@@ -792,6 +800,9 @@ class TabDragController : public views::WidgetObserver,
   // all of its tabs being dragged, as that needs to happen after starting the
   // DnD session.
   base::OnceClosure drag_started_callback_;
+
+  // The tab thumbnail used as the drag icon for system-DnD-based tab dragging.
+  gfx::ImageSkia drag_image_;
 
 #if defined(USE_AURA)
   base::ScopedObservation<aura::client::DragDropClient,
