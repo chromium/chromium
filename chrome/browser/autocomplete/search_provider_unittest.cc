@@ -25,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -2522,7 +2523,7 @@ TEST_F(SearchProviderTest, FieldTrialTriggeredParsing) {
         "[\"foo\",[\"foo bar\"],[\"\"],[],"
         "{\"google:suggesttype\":[\"QUERY\"],"
         "\"google:fieldtrialtriggered\":" +
-            std::string(trigger ? "true" : "false") + "}]",
+            base::ToString(trigger) + "}]",
         std::string());
 
     // Check for the match and field trial triggered bits.

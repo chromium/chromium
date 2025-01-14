@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -118,7 +119,7 @@ class EnterpriseConnectorsResultShouldAllowDataUseTest
   }
 
   bool allowed() const { return !GetParam(); }
-  const char* bool_setting() const { return GetParam() ? "true" : "false"; }
+  std::string bool_setting() const { return base::ToString(GetParam()); }
   const char* default_action_setting() const {
     return GetParam() ? "block" : "allow";
   }

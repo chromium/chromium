@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1794,7 +1795,7 @@ class LoadingPredictorBrowserTestWithOptimizationGuide
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kLoadingPredictorUseOptimizationGuide,
           {{"use_predictions",
-            ShouldUseOptimizationGuidePredictions() ? "true" : "false"},
+            base::ToString(ShouldUseOptimizationGuidePredictions())},
            {"always_retrieve_predictions", "true"}}},
          {optimization_guide::features::kOptimizationHints, {}}},
         {});

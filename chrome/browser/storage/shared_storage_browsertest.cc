@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -820,7 +821,7 @@ class SharedStoragePrefBrowserTest
   SharedStoragePrefBrowserTest() {
     base::FieldTrialParams params;
     params["ExposeDebugMessageForSettingsStatus"] =
-        EnableDebugMessages() ? "true" : "false";
+        base::ToString(EnableDebugMessages());
     shared_storage_feature_.InitAndEnableFeatureWithParameters(
         blink::features::kSharedStorageAPI, params);
     fenced_frame_api_change_feature_.InitWithFeatureState(

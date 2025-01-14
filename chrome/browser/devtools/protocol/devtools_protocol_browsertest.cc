@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -690,7 +691,7 @@ class DIPSStatusDevToolsProtocolTest
     if (std::get<0>(GetParam())) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           features::kDIPS,
-          {{"delete", (std::get<1>(GetParam()) ? "true" : "false")},
+          {{"delete", base::ToString((std::get<1>(GetParam())))},
            {"triggering_action", std::get<2>(GetParam())}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kDIPS);

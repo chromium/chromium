@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -171,7 +172,7 @@ MATCHER_P3(MatchesRequestHandlerResult, complies, final_result, tag, "") {
 void PrintTo(const RequestHandlerResult& request_handler_result,
              std::ostream* os) {
   *os << "RequestHandlerResult: (";
-  *os << "complies: " << (request_handler_result.complies ? "true" : "false")
+  *os << "complies: " << base::ToString(request_handler_result.complies)
       << ", ";
 
   *os << "final_result: "

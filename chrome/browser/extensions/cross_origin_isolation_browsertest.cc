@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -528,10 +529,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
         const hasBackgroundPage = !!chrome.extension.getBackgroundPage();
         hasBackgroundPage === expectBackgroundPage;
       )";
-      EXPECT_EQ(true, content::EvalJs(host, base::StringPrintf(
-                                                kScript, expect_background_page
-                                                             ? "true"
-                                                             : "false")));
+      EXPECT_EQ(true, content::EvalJs(
+                          host, base::StringPrintf(
+                                    kScript,
+                                    base::ToString(expect_background_page))));
     };
 
     test_get_background_page(coi_background_render_frame_host, true);

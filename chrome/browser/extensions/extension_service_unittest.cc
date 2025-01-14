@@ -34,6 +34,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -842,7 +843,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     std::string msg = " while setting: ";
     msg += extension_id + " " + pref_path;
     msg += " = ";
-    msg += (value ? "true" : "false");
+    msg += base::ToString(value);
 
     SetPref(extension_id, pref_path, std::make_unique<base::Value>(value), msg);
   }

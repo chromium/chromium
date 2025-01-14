@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
@@ -109,9 +110,9 @@ class SupervisedUserExtensionsParentalControlsUiTest
   auto ChildClicksEnableExtensionIfExtensionDisabled(
       ui::ElementIdentifier kChildTab,
       bool expected_extension_enabled) {
-    return Steps(ExecuteJs(kChildTab,
-                           base::StringPrintf(
-                               R"js(
+    return Steps(
+        ExecuteJs(kChildTab, base::StringPrintf(
+                                 R"js(
                 () => {
                   const view_manager =
                     document.querySelector("extensions-manager").shadowRoot
@@ -144,8 +145,8 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   }
                 }
               )js",
-                               expected_extension_enabled ? "true" : "false")),
-                 Log("Child inspected extension toggle."));
+                                 base::ToString(expected_extension_enabled))),
+        Log("Child inspected extension toggle."));
   }
 
   // Installs programmatically (not through the UI) an extension for the given
@@ -246,7 +247,7 @@ class SupervisedUserExtensionsParentalControlsUiTest
                 }
               }
           )js",
-                      permissions_button_greyed_out ? "true" : "false")),
+                      base::ToString(permissions_button_greyed_out))),
         Log("Child inspected Location Permission button."));
   }
 

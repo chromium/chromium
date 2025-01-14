@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -2888,7 +2889,7 @@ void DoDynamicChangingFormFill_SelectUpdated(
       "a.com",
       base::StringPrintf(("/autofill/dynamic_form_select_options_change.html"
                           "?is_async=%s"),
-                         should_test_async_update ? "true" : "false"));
+                         base::ToString(should_test_async_update)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(test->browser(), url));
 
   // Check that the test page correctly parsed the GET parameters by checking
