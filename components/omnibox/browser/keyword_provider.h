@@ -61,7 +61,9 @@ class KeywordProvider : public AutocompleteProvider {
 
   // If `text` corresponds to an enabled, substituting keyword, returns that
   // keyword; returns the empty string otherwise.
-  std::u16string GetKeywordForText(const std::u16string& text) const;
+  std::u16string GetKeywordForText(
+      const std::u16string& text,
+      TemplateURLService* template_url_service) const;
 
   // Creates a fully marked-up AutocompleteMatch for a specific keyword.
   AutocompleteMatch CreateVerbatimMatch(const std::u16string& text,

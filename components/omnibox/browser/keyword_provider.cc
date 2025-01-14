@@ -91,15 +91,12 @@ KeywordProvider::KeywordProvider(AutocompleteProviderClient* client,
 }
 
 std::u16string KeywordProvider::GetKeywordForText(
-    const std::u16string& text) const {
-  TemplateURLService* url_service = GetTemplateURLService();
-  if (!url_service)
-    return std::u16string();
-
+    const std::u16string& text,
+    TemplateURLService* template_url_service) const {
   // We want the Search button to persist as long as the input begins with a
   // keyword. This is found by taking the input until the first white space.
   std::u16string keyword = AutocompleteInput::CleanUserInputKeyword(
-      url_service,
+      template_url_service,
       AutocompleteInput::SplitKeywordFromInput(text, true, nullptr));
 
   if (keyword.empty())
@@ -107,9 +104,9 @@ std::u16string KeywordProvider::GetKeywordForText(
 
   // Don't provide a keyword if it doesn't support replacement.
   const TemplateURL* const template_url =
-      url_service->GetTemplateURLForKeyword(keyword);
-  if (!template_url ||
-      !template_url->SupportsReplacement(url_service->search_terms_data())) {
+      template_url_service->GetTemplateURLForKeyword(keyword);
+  if (!template_url || !template_url->SupportsReplacement(
+                           template_url_service->search_terms_data())) {
     return std::u16string();
   }
 
