@@ -29,10 +29,22 @@ template <typename From, typename To>
 }
 
 [[maybe_unused]] std::string handle_float(domatolpm::Context* ctx [[maybe_unused]], const float& arg) {
+    if(std::isnan(arg)){
+        return "NaN";
+    }
+    if(std::isinf(arg)){
+        return "Infinity";
+    }
     return base::NumberToString(arg);
 }
 
 [[maybe_unused]] std::string handle_double(domatolpm::Context* ctx [[maybe_unused]], const double& arg) {
+    if(std::isnan(arg)){
+        return "NaN";
+    }
+    if(std::isinf(arg)){
+        return "Infinity";
+    }
     return base::NumberToString(arg);
 }
 
