@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -226,6 +227,26 @@ bool PermissionUtil::IsLowPriorityPermissionRequest(
     const PermissionRequest* request) {
   return request->request_type() == RequestType::kNotifications ||
          request->request_type() == RequestType::kGeolocation;
+}
+
+bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
+    PermissionPrompt::Delegate* delegate) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
+    return false;
+  }
+
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
+  return base::ranges::all_of(
+      requests, [](permissions::PermissionRequest* request) {
+        return (request->request_type() ==
+                    permissions::RequestType::kCameraStream ||
+                request->request_type() ==
+                    permissions::RequestType::kGeolocation ||
+                request->request_type() ==
+                    permissions::RequestType::kMicStream) &&
+               request->IsEmbeddedPermissionElementInitiated();
+      });
 }
 
 bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {

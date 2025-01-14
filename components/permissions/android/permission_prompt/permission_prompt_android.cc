@@ -59,6 +59,11 @@ PermissionPromptAndroid::GetPromptPosition() const {
   return std::nullopt;
 }
 
+EmbeddedPermissionPromptFlowModel::Variant
+PermissionPromptAndroid::GetEmbeddedPromptVariant() const {
+  return EmbeddedPermissionPromptFlowModel::Variant::kUninitialized;
+}
+
 void PermissionPromptAndroid::Closing() {
   delegate_->Dismiss();
 }

@@ -12,8 +12,7 @@ PermissionDialog::PermissionDialog(content::WebContents* web_contents,
                                    Delegate* delegate)
     : PermissionPromptAndroid(web_contents, delegate) {
   DCHECK(web_contents);
-
-  PermissionDialogDelegate::Create(web_contents, this);
+  CreatePermissionDialogDelegate();
 }
 
 PermissionDialog::~PermissionDialog() = default;

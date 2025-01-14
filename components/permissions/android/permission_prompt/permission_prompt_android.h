@@ -6,8 +6,11 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_PROMPT_ANDROID_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
@@ -47,28 +50,35 @@ class PermissionPromptAndroid : public PermissionPrompt {
   std::optional<permissions::feature_params::PermissionElementPromptPosition>
   GetPromptPosition() const override;
 
-  void Closing();
-  void Accept();
-  void AcceptThisTime();
-  void Deny();
+  virtual EmbeddedPermissionPromptFlowModel::Variant GetEmbeddedPromptVariant()
+      const;
+  virtual void Closing();
+  virtual void Accept();
+  virtual void AcceptThisTime();
+  virtual void Deny();
   void SetManageClicked();
   void SetLearnMoreClicked();
-  bool ShouldCurrentRequestUseQuietUI();
-  std::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
-      const;
+  virtual bool ShouldCurrentRequestUseQuietUI();
+  virtual std::optional<PermissionUiSelector::QuietUiReason>
+  ReasonForUsingQuietUi() const;
 
   // We show one permission at a time except for grouped mic+camera, for which
   // we still have a single icon and message text.
   size_t PermissionCount() const;
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
-
-  PermissionRequest::AnnotatedMessageText GetAnnotatedMessageText() const;
-
-  bool ShouldUseRequestingOriginFavicon() const;
-
+  virtual PermissionRequest::AnnotatedMessageText GetAnnotatedMessageText()
+      const;
+  virtual bool ShouldUseRequestingOriginFavicon() const;
   GURL GetRequestingOrigin() const;
   content::WebContents* web_contents() { return web_contents_; }
+
+ protected:
+  Delegate* delegate() const { return delegate_; }
+
+  void CreatePermissionDialogDelegate() {
+    PermissionDialogDelegate::Create(web_contents_, this);
+  }
 
  private:
   // PermissionPromptAndroid is owned by PermissionRequestManager, so it should

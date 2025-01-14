@@ -22,6 +22,7 @@ class PermissionDialog : public PermissionPromptAndroid {
 
   ~PermissionDialog() override;
 
+  // PermissionPrompt:
   PermissionPromptDisposition GetPromptDisposition() const override;
 };
 

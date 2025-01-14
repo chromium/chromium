@@ -85,6 +85,13 @@ class PermissionUtil {
   // acceptance data)
   static bool IsLowPriorityPermissionRequest(const PermissionRequest* request);
 
+  // Check whether the given permission request could prompt a secondary UI, it
+  // means:
+  // - The request is initiated from a permission element.
+  // - The request type is permission element supported type.
+  static bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
+      PermissionPrompt::Delegate* delegate);
+
   // Checks whether the given ContentSettingsType is a guard content setting,
   // meaning it does not support allow setting and toggles between "ask" and
   // "block" instead. This is primarily used for chooser-based permissions.
