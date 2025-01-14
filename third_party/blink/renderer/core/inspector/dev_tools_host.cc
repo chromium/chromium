@@ -171,19 +171,18 @@ String DevToolsHost::platform() const {
 void DevToolsHost::sendMessageToEmbedder(const String& message) {
   if (client_) {
     // Strictly convert, as we expect message to be serialized JSON.
-    auto value =
-        base::JSONReader::Read(message.Utf8(WTF::Utf8ConversionMode::kStrict));
-    if (!value || !value->is_dict()) {
+    auto value = base::JSONReader::ReadDict(
+        message.Utf8(WTF::Utf8ConversionMode::kStrict));
+    if (!value) {
       ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
       if (!script_state)
         return;
       V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
-          value ? "Message to embedder must deserialize to a dictionary value"
-                : "Message to embedder couldn't be JSON-deserialized");
+          "Message to embedder couldn't be deserialized as a JSON object");
       return;
     }
-    client_->SendMessageToEmbedder(std::move(*value).TakeDict());
+    client_->SendMessageToEmbedder(std::move(*value));
   }
 }
 
