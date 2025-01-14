@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.xsurface.feed;
 
 import androidx.annotation.IntDef;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * in terms of nanoseconds since system boot. One instance exists per feed surface and lasts for the
  * surface's lifetime.
  */
+@NullMarked
 public interface FeedLaunchReliabilityLogger {
     @IntDef({SurfaceType.UNSPECIFIED, SurfaceType.NEW_TAB_PAGE, SurfaceType.START_SURFACE})
     @Retention(RetentionPolicy.SOURCE)

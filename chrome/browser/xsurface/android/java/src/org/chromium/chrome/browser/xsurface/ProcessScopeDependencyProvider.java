@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.xsurface;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * Provides application-level dependencies for an external surface.
  */
+@NullMarked
 public interface ProcessScopeDependencyProvider {
     /**
      * Resolves a library name such as "foo" to an absolute path. The library name should be in the
@@ -130,7 +133,7 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the google API key. */
-    default String getGoogleApiKey() {
+    default @Nullable String getGoogleApiKey() {
         return null;
     }
 
@@ -190,7 +193,7 @@ public interface ProcessScopeDependencyProvider {
 
     /** @return the Color provider. */
     @Deprecated
-    default ColorProvider getColorProvider() {
+    default @Nullable ColorProvider getColorProvider() {
         return null;
     }
 
