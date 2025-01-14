@@ -59,6 +59,11 @@ PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
 
 bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  // Got the same version again. Do not run through rest of logic.
+  if (model_info && model_version_ == model_info->GetVersion()) {
+    return true;
+  }
+
   // Reset everything, so if the model info is invalid, the service controller
   // would stop accepting requests.
   embeddings_model_path_.clear();
