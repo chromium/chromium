@@ -603,8 +603,10 @@ public class ReorderDelegate {
                     new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            mInteractingTab.setIsForegrounded(/* isForegrounded= */ false);
-                            mInteractingTab = null;
+                            if (mInteractingTab != null) {
+                                mInteractingTab.setIsForegrounded(/* isForegrounded= */ false);
+                                mInteractingTab = null;
+                            }
                         }
                     });
         }
@@ -1000,12 +1002,16 @@ public class ReorderDelegate {
                             // Clear after the tabs have slid back to their ideal positions, so the
                             // z-indexing is retained during the animation.
                             for (StripLayoutView view : mInteractingViews) {
-                                view.setIsForegrounded(/* isForegrounded= */ false);
+                                if (view != null) {
+                                    view.setIsForegrounded(/* isForegrounded= */ false);
+                                }
                             }
                             mInteractingViews.clear();
 
-                            mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ false);
-                            mLastTabInGroup = null;
+                            if (mLastTabInGroup != null) {
+                                mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ false);
+                                mLastTabInGroup = null;
+                            }
                         }
                     });
 
