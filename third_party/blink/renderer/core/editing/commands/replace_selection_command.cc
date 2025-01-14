@@ -1388,7 +1388,14 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
           split_start = insertion_pos.ComputeContainerNode();
         Node* node_to_split_to =
             SplitTreeToNode(split_start, element_to_split_to->parentNode());
-        insertion_pos = Position::InParentBeforeNode(*node_to_split_to);
+        if (RuntimeEnabledFeatures::
+                ComputeInsertionPositionBasedOnAnchorTypeEnabled() &&
+            (insertion_pos.IsAfterChildren() ||
+             insertion_pos.IsAfterAnchor())) {
+          insertion_pos = Position::InParentAfterNode(*node_to_split_to);
+        } else {
+          insertion_pos = Position::InParentBeforeNode(*node_to_split_to);
+        }
       }
     }
   }
