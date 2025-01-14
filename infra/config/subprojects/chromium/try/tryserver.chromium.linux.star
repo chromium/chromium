@@ -493,6 +493,7 @@ try_.builder(
             "chrome/browser/.+(ui|browser)test.+",
             "chrome/browser/ui/views/.+test.+",
             "chrome/browser/ui/views/tabs/.+",
+            "testing/xvfb\\.py",
             "third_party/wayland/.+",
             "third_party/wayland-protocols/.+",
             "ui/ozone/platform/wayland/.+",
