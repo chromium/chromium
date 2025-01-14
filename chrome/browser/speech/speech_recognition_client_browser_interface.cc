@@ -74,7 +74,7 @@ void SpeechRecognitionClientBrowserInterface::
 }
 
 void SpeechRecognitionClientBrowserInterface::REMOVED_1() {
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
