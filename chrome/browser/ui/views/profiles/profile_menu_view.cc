@@ -603,7 +603,11 @@ void ProfileMenuView::BuildIdentity() {
 
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
-        ui::ImageModel::FromImage(account_info.account_image),
+        ui::ImageModel::FromImage(
+            profile_attributes->GetProfileManagementOidcTokens()
+                    .id_token.empty()
+                ? account_info.account_image
+                : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
         badge_image_model, menu_title_, menu_subtitle_, management_label);
   } else {
     std::string profile_user_display_name, profile_user_email;
@@ -841,6 +845,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       identity_manager->FindExtendedAccountInfo(primary_account_info);
   CoreAccountInfo account_info_for_signin_action = primary_account_info;
 
+  const bool is_dasherless_profile = entry.IsDasherlessManagement();
+
   IdentitySectionParams params;
   params.title = GetProfileIdentifier(entry);
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
@@ -869,6 +875,13 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.header_image = ui::ImageModel::FromVectorIcon(
           chrome::GetManagedUiIcon(profile), ui::kColorIcon);
     }
+  }
+
+  // Clarify Dasherless profile with subtitle while not adding the button.
+  if (is_dasherless_profile) {
+    params.subtitle =
+        l10n_util::GetStringUTF16(IDS_PROFILES_DASHER_FEATURE_DISABLED_TITLE);
+    return params;
   }
 
   if (web_app::AppBrowserController::IsWebApp(browser())) {
