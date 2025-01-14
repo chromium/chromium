@@ -57,8 +57,8 @@ public class ReorderDelegate {
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
     private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
 
-    static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
+    static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
 
     @IntDef({
@@ -718,7 +718,12 @@ public class ReorderDelegate {
             if (Math.abs(offset) <= threshold) return false;
 
             moveInteractingTabOutOfGroup(
-                    groupTitles, stripTabs, interactingTab, interactingGroupTitle, towardEnd);
+                    groupTitles,
+                    stripTabs,
+                    interactingTab,
+                    interactingGroupTitle,
+                    towardEnd,
+                    ActionType.REORDER);
             return true;
         }
 
@@ -748,15 +753,18 @@ public class ReorderDelegate {
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param interactingTab The tab to move out of group.
-     * @param groupTitle The title of the group the interacting tab is attempting to move out of.
+     * @param groupTitleToAnimate The title of the group the interacting tab is attempting to move
+     *     out of.Used for animation. Null if animation is not needed.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @param actionType The action type {@link ActionType} to determine which user prompt to show.
      */
     private void moveInteractingTabOutOfGroup(
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             StripLayoutTab interactingTab,
-            StripLayoutGroupTitle groupTitle,
-            boolean towardEnd) {
+            StripLayoutGroupTitle groupTitleToAnimate,
+            boolean towardEnd,
+            @ActionType int actionType) {
         final int tabId = interactingTab.getTabId();
         // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
         Runnable beforeSyncDialogRunnable = () -> stopReorderMode(groupTitles, stripTabs);
@@ -771,7 +779,7 @@ public class ReorderDelegate {
         StripTabModelActionListener listener =
                 new StripTabModelActionListener(
                         tab.getRootId(),
-                        ActionType.REORDER,
+                        actionType,
                         mGroupIdToHideSupplier,
                         mContainerView,
                         beforeSyncDialogRunnable,
@@ -786,9 +794,10 @@ public class ReorderDelegate {
 
         // Run indicator animations. Find the group title after handling the removal, since the
         // group may have been deleted OR the rootID may have changed.
-        if (StripLayoutUtils.arrayContains(groupTitles, groupTitle)) {
+        if (groupTitleToAnimate != null
+                && StripLayoutUtils.arrayContains(groupTitles, groupTitleToAnimate)) {
             animateGroupIndicatorForTabReorder(
-                    groupTitle, /* isMovingOutOfGroup= */ true, towardEnd);
+                    groupTitleToAnimate, /* isMovingOutOfGroup= */ true, towardEnd);
         }
     }
 
@@ -1105,23 +1114,13 @@ public class ReorderDelegate {
                 // Stop reorder and return if so.
                 boolean draggedLastTabInGroupWithPrompt = shouldShowUserPrompt(draggedTab);
                 if (draggedLastTabInGroupWithPrompt) {
-                    Tab tab = mModel.getTabById(draggedTab.getTabId());
-                    StripTabModelActionListener listener =
-                            new StripTabModelActionListener(
-                                    tab.getRootId(),
-                                    ActionType.DRAG_OFF_STRIP,
-                                    mGroupIdToHideSupplier,
-                                    mContainerView,
-                                    /* beforeSyncDialogRunnable= */ null,
-                                    /* onSuccess= */ null);
-                    mTabGroupModelFilter
-                            .getTabUngrouper()
-                            .ungroupTabs(
-                                    Collections.singletonList(tab),
-                                    /* trailing= */ false,
-                                    /* allowDialog= */ true,
-                                    listener);
-                    ReorderDelegate.this.stopReorderMode(groupTitles, stripTabs);
+                    moveInteractingTabOutOfGroup(
+                            groupTitles,
+                            stripTabs,
+                            draggedTab,
+                            /* groupTitleToAnimate= */ null,
+                            /* towardEnd= */ false,
+                            ActionType.DRAG_OFF_STRIP);
                     return;
                 }
 
