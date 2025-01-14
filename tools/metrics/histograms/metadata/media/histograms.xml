@@ -3282,16 +3282,6 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
-<histogram name="Media.EME.Widevine.LacrosBundledCdm"
-    enum="LacrosBundledWidevine" expires_after="2025-02-27">
-  <owner>jrummell@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Reports which Widevine CDM was used by Lacros. Only reported by the browser
-    process when registering available CDMs during startup.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.Widevine.SoftwareSecure.SystemCode"
     enum="CdmSystemCode" expires_after="2025-07-06">
   <owner>xhwang@chromium.org</owner>
