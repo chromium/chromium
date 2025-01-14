@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
