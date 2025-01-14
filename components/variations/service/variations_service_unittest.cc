@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/version_info/version_info.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "components/variations/service/variations_service.h"
 
 #include <stddef.h>
 
@@ -40,8 +39,10 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_seed_simulator.h"
+#include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -715,16 +716,23 @@ TEST_F(VariationsServiceTest, Observer) {
 
 TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
   struct {
+    // The command line overridden country, empty if the
+    // kVariationsOverrideCountry switch isn't passed in
+    const std::string override_country;
     // The old overridden country, empty string if the pref isn't set initially.
     const std::string permanent_overridden_country_before;
     // Comma separated list, NULL if the pref isn't set initially.
     const std::string permanent_consistency_country_before;
     const std::string expected_country;
   } test_cases[] = {
-      {"", "20.0.0.0,us", "us"},
-      {"us", "20.0.0.0,us", "us"},
-      {"ca", "20.0.0.0,us", "ca"},
-      {"ca", "", "ca"},
+      {"", "", "<VERSION>,us", "us"},
+      {"", "us", "<VERSION>,us", "us"},
+      {"", "ca", "<VERSION>,us", "ca"},
+      {"", "ca", "", "ca"},
+      {"gb", "", "<VERSION>,us", "gb"},
+      {"gb", "us", "<VERSION>,us", "gb"},
+      {"gb", "ca", "<VERSION>,us", "gb"},
+      {"gb", "ca", "", "gb"},
   };
 
   SyntheticTrialRegistry synthetic_trial_registry;
@@ -733,6 +741,11 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
         std::make_unique<web_resource::TestRequestAllowedNotifier>(
             &prefs_, network_tracker_),
         &prefs_, GetMetricsStateManager(), true, &synthetic_trial_registry);
+
+    if (!test.override_country.empty()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+          switches::kVariationsOverrideCountry, test.override_country);
+    }
 
     if (test.permanent_overridden_country_before.empty()) {
       prefs_.ClearPref(prefs::kVariationsPermanentOverriddenCountry);
@@ -744,19 +757,29 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
     if (test.permanent_consistency_country_before.empty()) {
       prefs_.ClearPref(prefs::kVariationsPermanentConsistencyCountry);
     } else {
+      std::string version_number(version_info::GetVersionNumber());
       base::Value::List list_value;
       for (const std::string& component :
            base::SplitString(test.permanent_consistency_country_before, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-        list_value.Append(component);
+        if (component == "<VERSION>") {
+          // Replace version placeholder
+          list_value.Append(version_number);
+        } else {
+          list_value.Append(component);
+        }
       }
       prefs_.SetList(prefs::kVariationsPermanentConsistencyCountry,
                      std::move(list_value));
     }
 
     VariationsSeed seed(CreateTestSeed());
+    // GetClientFilterableStateForVersion needs to be called before
+    // service.GetStoredPermanentCountry can be used in tests.
+    service.GetClientFilterableStateForVersion();
 
     EXPECT_EQ(test.expected_country, service.GetStoredPermanentCountry())
+        << test.override_country << ", "
         << test.permanent_overridden_country_before << ", "
         << test.permanent_consistency_country_before;
   }

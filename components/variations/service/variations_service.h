@@ -152,7 +152,8 @@ class VariationsService
 
   // Returns the permanent country code stored for this client.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
-  // br, in.
+  // br, in. This can only be called after field trials have been initialized or
+  // if OverrideStoredPermanentCountry() has been called.
   std::string GetStoredPermanentCountry() const;
 
   // Forces an override of the stored permanent country. Returns true

@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -387,6 +388,10 @@ VariationsFieldTrialCreatorBase::GetClientFilterableStateForVersion(
   state->session_consistency_country = GetLatestCountry();
   state->permanent_consistency_country = LoadPermanentConsistencyCountry(
       version, state->session_consistency_country);
+  // Update the stored permanent consistency country
+  permanent_consistency_country_ = state->permanent_consistency_country;
+  permanent_consistency_country_initialized_ = true;
+
   state->policy_restriction = GetVariationPolicyRestriction(local_state());
   return state;
 }
@@ -480,6 +485,14 @@ std::string VariationsFieldTrialCreatorBase::LoadPermanentConsistencyCountry(
   return latest_country;
 }
 
+std::string VariationsFieldTrialCreatorBase::GetPermanentConsistencyCountry()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(permanent_consistency_country_initialized_);
+
+  return permanent_consistency_country_;
+}
+
 void VariationsFieldTrialCreatorBase::StorePermanentCountry(
     const base::Version& version,
     const std::string& country) {
@@ -494,6 +507,8 @@ void VariationsFieldTrialCreatorBase::StoreVariationsOverriddenCountry(
     const std::string& country) {
   local_state()->SetString(prefs::kVariationsPermanentOverriddenCountry,
                            country);
+  permanent_consistency_country_ = country;
+  permanent_consistency_country_initialized_ = true;
 }
 
 void VariationsFieldTrialCreatorBase::OverrideVariationsPlatform(

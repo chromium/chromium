@@ -198,6 +198,12 @@ class VariationsFieldTrialCreatorBase {
       const base::Version& version,
       const std::string& latest_country);
 
+  // Returns the country code used for filtering permanent consistency studies.
+  // This can only be called after field trials have been initialized or if
+  // prefs::kVariationsPermanentOverriddenCountry has been overridden through
+  // StoreVariationsOverriddenCountry() in this session.
+  std::string GetPermanentConsistencyCountry() const;
+
   // Sets the stored permanent country pref for this client.
   void StorePermanentCountry(const base::Version& version,
                              const std::string& country);
@@ -339,6 +345,13 @@ class VariationsFieldTrialCreatorBase {
 
   // Configurations related to the limited entropy synthetic trial.
   raw_ptr<LimitedEntropySyntheticTrial> limited_entropy_synthetic_trial_;
+
+  // Holds the country code to use for filtering permanent consistency studies
+  std::string permanent_consistency_country_;
+
+  // Tracks whether |permanent_consistency_country_| has been initialized to
+  // ensure it contains a relevant value.
+  bool permanent_consistency_country_initialized_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
