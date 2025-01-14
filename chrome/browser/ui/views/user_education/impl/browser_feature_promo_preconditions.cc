@@ -156,8 +156,17 @@ UserNotActivePrecondition::UserNotActivePrecondition(
           kUserNotActivePrecondition,
           "The user is not actively trying sending input"),
       browser_view_(browser_view),
-      time_provider_(time_provider),
-      last_active_time_(time_provider_->GetCurrentTime()) {
+      time_provider_(time_provider) {
+  if (browser_view.GetWidget()) {
+    CreateEventMonitor();
+  } else {
+    browser_view_observation_.Observe(&browser_view);
+  }
+}
+
+UserNotActivePrecondition::~UserNotActivePrecondition() = default;
+
+void UserNotActivePrecondition::CreateEventMonitor() {
   // Note that null is a valid value for the second parameter here; if for
   // some reason there is no native window it simply falls back to
   // application-wide event-sniffing, which for this case is better than not
@@ -170,8 +179,6 @@ UserNotActivePrecondition::UserNotActivePrecondition(
        ui::EventType::kGestureBegin, ui::EventType::kGestureEnd,
        ui::EventType::kMouseMoved});
 }
-
-UserNotActivePrecondition::~UserNotActivePrecondition() = default;
 
 void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
   if (event.type() == ui::EventType::kMouseMoved) {
@@ -199,4 +206,14 @@ user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
   return elapsed < user_education::features::GetIdleTimeBeforeHeavyweightPromo()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
+}
+
+void UserNotActivePrecondition::OnViewAddedToWidget(
+    views::View* observed_view) {
+  browser_view_observation_.Reset();
+  CreateEventMonitor();
+}
+
+void UserNotActivePrecondition::OnViewIsDeleting(views::View* observed_view) {
+  browser_view_observation_.Reset();
 }

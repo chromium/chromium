@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -18,6 +19,8 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
@@ -57,6 +60,10 @@ class OmniboxNotOpenPrecondition
   const raw_ref<const BrowserView> browser_view_;
 };
 
+// Trying to show an IPH when the toolbar is collapsed (Responsive Toolbar) is
+// inadvisable, as the anchor may not be present, important UI for the feature
+// might not be present (including tutorial elements), and the UI might be too
+// small to properly accommodate a help bubble.
 class ToolbarNotCollapsedPrecondition
     : public user_education::FeaturePromoPreconditionBase {
  public:
@@ -109,7 +116,8 @@ class NoCriticalNoticeShowingPrecondition
 // Don't show heavyweight notices while the user is typing.
 class UserNotActivePrecondition
     : public user_education::FeaturePromoPreconditionBase,
-      public ui::EventObserver {
+      public ui::EventObserver,
+      public views::ViewObserver {
  public:
   explicit UserNotActivePrecondition(
       BrowserView& browser_view,
@@ -121,13 +129,21 @@ class UserNotActivePrecondition
       ComputedData& data) const override;
 
  private:
+  void CreateEventMonitor();
+
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override;
+
+  // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   const raw_ref<BrowserView> browser_view_;
   const raw_ref<const user_education::UserEducationTimeProvider> time_provider_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
   base::Time last_active_time_;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      browser_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_PRECONDITIONS_H_

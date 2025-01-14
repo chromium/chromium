@@ -313,11 +313,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
           .SetMustRemainVisible(false));
 }
 
-class BrowserNotActivePreconditionUiTest
+class UserNotActivePreconditionUiTest
     : public BrowserFeaturePromoPreconditionsUiTest {
  public:
-  BrowserNotActivePreconditionUiTest() = default;
-  ~BrowserNotActivePreconditionUiTest() override = default;
+  UserNotActivePreconditionUiTest() = default;
+  ~UserNotActivePreconditionUiTest() override = default;
 
   void SetUpOnMainThread() override {
     BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
@@ -367,13 +367,13 @@ class BrowserNotActivePreconditionUiTest
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest, ReturnsSuccess) {
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest, ReturnsSuccess) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
       CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        ReturnsBlockedAfterMouseClick) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
 #define MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip \
   ReturnsBlockedAfterMouseHoverOverTabstrip
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        MAYBE_ReturnsBlockedAfterMouseHoverOverTabstrip) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
       CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        ReturnsSuccessWhenHoveringOutsideTopContainer) {
   gfx::Point start;
   gfx::Point finish;
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
       CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserNotActivePreconditionUiTest,
+IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                        ReturnsBlockedAfterKeyPress) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId), Check([this]() {
