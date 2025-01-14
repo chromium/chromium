@@ -320,7 +320,7 @@ blink::SRIMessageSignaturesPtr ConvertToBlink(
     const SRIMessageSignaturesPtr& in) {
   CHECK(in);
   return blink::SRIMessageSignatures::New(ConvertToBlink(in->signatures),
-                                          ConvertToBlink(in->parsing_errors));
+                                          ConvertToBlink(in->errors));
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {

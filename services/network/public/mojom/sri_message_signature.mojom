@@ -95,5 +95,5 @@ enum SRIMessageSignatureError {
 // `Signature` headers.
 struct SRIMessageSignatures {
   array<SRIMessageSignature> signatures;
-  array<SRIMessageSignatureError> parsing_errors;
+  array<SRIMessageSignatureError> errors;
 };

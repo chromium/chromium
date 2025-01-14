@@ -43,11 +43,11 @@ bool ItemHasSingleBooleanParam(
 
 std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     const net::structured_headers::ParameterizedItem& component,
-    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
+    std::vector<mojom::SRIMessageSignatureError>& errors) {
   // https://wicg.github.io/signature-based-sri/#profile
   if (!component.item.is_string()) {
-    parsing_errors.push_back(mojom::SRIMessageSignatureError::
-                                 kSignatureInputHeaderInvalidComponentType);
+    errors.push_back(mojom::SRIMessageSignatureError::
+                         kSignatureInputHeaderInvalidComponentType);
     return std::nullopt;
   }
 
@@ -56,7 +56,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     // The "identity-digest" component requires a single `sf` parameter with
     // a `true` boolean value.
     if (!ItemHasSingleBooleanParam(component, "sf")) {
-      parsing_errors.push_back(
+      errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidHeaderComponentParameter);
       return std::nullopt;
@@ -69,7 +69,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     // Derived components require a single `req` parameter with a `true` boolean
     // value.
     if (!ItemHasSingleBooleanParam(component, "req")) {
-      parsing_errors.push_back(
+      errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderInvalidDerivedComponentParameter);
       return std::nullopt;
@@ -79,8 +79,8 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     result->params.push_back(Parameters::kRequest);
     return result;
   } else {
-    parsing_errors.push_back(mojom::SRIMessageSignatureError::
-                                 kSignatureInputHeaderInvalidComponentName);
+    errors.push_back(mojom::SRIMessageSignatureError::
+                         kSignatureInputHeaderInvalidComponentName);
     return std::nullopt;
   }
 }
@@ -222,17 +222,17 @@ std::string SerializeDerivedComponent(const GURL& request_url,
 bool ValidateHeaderPresence(
     const std::string& signature_header,
     const std::string& signature_input_header,
-    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
+    std::vector<mojom::SRIMessageSignatureError>& errors) {
   if (signature_header.empty() && signature_input_header.empty()) {
     // Neither `Signature` nor `Signature-Input` is present, punt on validation
     // without any errors.
     return false;
   } else if (signature_header.empty() && !signature_input_header.empty()) {
-    parsing_errors.emplace_back(
+    errors.emplace_back(
         mojom::SRIMessageSignatureError::kMissingSignatureHeader);
     return false;
   } else if (signature_input_header.empty() && !signature_header.empty()) {
-    parsing_errors.emplace_back(
+    errors.emplace_back(
         mojom::SRIMessageSignatureError::kMissingSignatureInputHeader);
     return false;
   }
@@ -242,14 +242,14 @@ bool ValidateHeaderPresence(
 bool ValidateDictionaryStructure(
     std::optional<net::structured_headers::Dictionary> signature_dictionary,
     std::optional<net::structured_headers::Dictionary> input_dictionary,
-    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
+    std::vector<mojom::SRIMessageSignatureError>& errors) {
   if (!signature_dictionary) {
-    parsing_errors.emplace_back(
+    errors.emplace_back(
         mojom::SRIMessageSignatureError::kInvalidSignatureHeader);
     return false;
   }
   if (!input_dictionary) {
-    parsing_errors.emplace_back(
+    errors.emplace_back(
         mojom::SRIMessageSignatureError::kInvalidSignatureInputHeader);
     return false;
   }
@@ -258,24 +258,24 @@ bool ValidateDictionaryStructure(
 
 bool ValidateSignatureValue(
     const net::structured_headers::DictionaryMember& signature_entry,
-    std::vector<mojom::SRIMessageSignatureError>& parsing_errors) {
+    std::vector<mojom::SRIMessageSignatureError>& errors) {
   // The value must be an unparameterized byte-sequence:
   if (signature_entry.second.member.empty() ||
       signature_entry.second.member_is_inner_list ||
       !signature_entry.second.member[0].item.is_byte_sequence()) {
-    parsing_errors.emplace_back(mojom::SRIMessageSignatureError::
-                                    kSignatureHeaderValueIsNotByteSequence);
+    errors.emplace_back(mojom::SRIMessageSignatureError::
+                            kSignatureHeaderValueIsNotByteSequence);
     return false;
   } else if (signature_entry.second.params.size() != 0u) {
-    parsing_errors.emplace_back(
+    errors.emplace_back(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsParameterized);
     return false;
   }
 
   std::string signature = signature_entry.second.member[0].item.GetString();
   if (signature.size() != kEd25519SigLength) {
-    parsing_errors.emplace_back(mojom::SRIMessageSignatureError::
-                                    kSignatureHeaderValueIsIncorrectLength);
+    errors.emplace_back(mojom::SRIMessageSignatureError::
+                            kSignatureHeaderValueIsIncorrectLength);
     return false;
   }
   return true;
@@ -292,7 +292,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
   std::string signature_input_header =
       headers.GetNormalizedHeader("Signature-Input").value_or("");
   if (!ValidateHeaderPresence(signature_header, signature_input_header,
-                              parsed_headers->parsing_errors)) {
+                              parsed_headers->errors)) {
     return parsed_headers;
   }
 
@@ -303,7 +303,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
   std::optional<net::structured_headers::Dictionary> input_dictionary =
       net::structured_headers::ParseDictionary(signature_input_header);
   if (!ValidateDictionaryStructure(signature_dictionary, input_dictionary,
-                                   parsed_headers->parsing_errors)) {
+                                   parsed_headers->errors)) {
     return parsed_headers;
   }
 
@@ -322,8 +322,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     auto message_signature = mojom::SRIMessageSignature::New();
     message_signature->label = signature_entry.first;
 
-    if (!ValidateSignatureValue(signature_entry,
-                                parsed_headers->parsing_errors)) {
+    if (!ValidateSignatureValue(signature_entry, parsed_headers->errors)) {
       continue;
     }
     std::string signature = signature_entry.second.member[0].item.GetString();
@@ -333,13 +332,13 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     // Grab the relevant `Signature-Input` entry, punting early if none exists
     // or if its value is not a non-empty parameterized inner-list.
     if (!input_dictionary->contains(signature_entry.first)) {
-      parsed_headers->parsing_errors.push_back(
+      parsed_headers->errors.push_back(
           mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel);
       continue;
     }
     auto input_entry = input_dictionary->at(signature_entry.first);
     if (!input_entry.member_is_inner_list) {
-      parsed_headers->parsing_errors.push_back(
+      parsed_headers->errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderValueNotInnerList);
       continue;
@@ -350,7 +349,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
       // entire header; if both valid and invalid signatures are delivered,
       // we'll retain the former while ignoring the latter).
       std::optional<mojom::SRIMessageSignatureComponentPtr> parsed_component =
-          ParseComponent(component, parsed_headers->parsing_errors);
+          ParseComponent(component, parsed_headers->errors);
       if (!parsed_component.has_value()) {
         message_signature.reset();
         break;
@@ -360,7 +359,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     }
 
     if (!message_signature || message_signature->components.empty()) {
-      parsed_headers->parsing_errors.push_back(
+      parsed_headers->errors.push_back(
           mojom::SRIMessageSignatureError::
               kSignatureInputHeaderValueMissingComponents);
       continue;
@@ -379,7 +378,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
         std::string value = param.second.GetString();
         std::optional<std::vector<uint8_t>> decoded = base::Base64Decode(value);
         if (!decoded || decoded->size() != kEd25519KeyLength) {
-          parsed_headers->parsing_errors.push_back(
+          parsed_headers->errors.push_back(
               mojom::SRIMessageSignatureError::
                   kSignatureInputHeaderKeyIdLength);
           message_signature.reset();
@@ -397,7 +396,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
         // invalidate the signature.
         //
         // https://www.iana.org/assignments/http-message-signature/http-message-signature.xhtml#signature-metadata-parameters
-        parsed_headers->parsing_errors.push_back(
+        parsed_headers->errors.push_back(
             mojom::SRIMessageSignatureError::
                 kSignatureInputHeaderInvalidParameter);
         message_signature.reset();
@@ -408,7 +407,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     if (message_signature) {
       // Check required fields, and punt the signature if any are missing.
       if (!message_signature->keyid || !message_signature->tag) {
-        parsed_headers->parsing_errors.push_back(
+        parsed_headers->errors.push_back(
             mojom::SRIMessageSignatureError::
                 kSignatureInputHeaderMissingRequiredParameters);
         continue;
@@ -550,7 +549,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
     if (message_signature->expires.has_value() &&
         message_signature->expires.value() <
             base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000) {
-      message_signatures->parsing_errors.push_back(
+      message_signatures->errors.push_back(
           mojom::SRIMessageSignatureError::kValidationFailedSignatureExpired);
       return false;
     }
@@ -568,7 +567,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
         base::Base64Decode(encoded_key).value_or(std::vector<uint8_t>{});
     if (public_key.size() != kEd25519KeyLength ||
         message_signature->signature.size() != kEd25519SigLength) {
-      message_signatures->parsing_errors.push_back(
+      message_signatures->errors.push_back(
           mojom::SRIMessageSignatureError::kValidationFailedInvalidLength);
       return false;
     }
@@ -578,7 +577,7 @@ bool ValidateSRIMessageSignaturesOverHeaders(
             reinterpret_cast<const uint8_t*>(signature_base->data()),
             signature_base->size(), message_signature->signature.data(),
             public_key.data())) {
-      message_signatures->parsing_errors.push_back(
+      message_signatures->errors.push_back(
           mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch);
       return false;
     }
