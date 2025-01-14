@@ -5,6 +5,8 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_WEBNN_TRACE_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_WEBNN_TRACE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 
