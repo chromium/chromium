@@ -505,7 +505,9 @@ class GpuIntegrationTest(
         cls._EnsureScreenOn()
         cls._CheckBrowserVersion()
         cls._VerifyBrowserFeaturesMatchExpectedValues()
-        cls._RetrieveAboutGpu()
+        # TODO(crbug.com/376498163): Re-enable this once the impact on Windows
+        # builds has been reduced.
+        # cls._RetrieveAboutGpu()
         return
       except Exception as e:  # pylint: disable=broad-except
         last_exception = e
@@ -864,7 +866,9 @@ class GpuIntegrationTest(
       self._HandlePass(test_name, expected_crashes, expected_results)
     finally:
       self.additionalTags[TEST_WAS_SLOW] = json.dumps(self._TestWasSlow())
-      self._ReportAboutGpu(test_name)
+      # TODO(crbug.com/376498163): Re-enable this once the impact on Windows
+      # builds has been reduced.
+      # self._ReportAboutGpu(test_name)
       self._OnAfterTest(args)
 
   def _OnAfterTest(self, args: ct.TestArgs) -> None:
