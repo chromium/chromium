@@ -3816,6 +3816,21 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.EnabledPermisisons.{Status}"
+    enum="PushNotificationOptInAccessPoint" expires_after="2025-12-20">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-gsu-pod@google.com</owner>
+  <summary>
+    Logs a user {Status} decision in reaction to a push notification permissions
+    prompt the current device.
+  </summary>
+  <token key="Status">
+    <variant name="Denied"/>
+    <variant name="Enabled"/>
+    <variant name="Error"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.PushNotification.IncomingNotificationProcessingTime"
     units="ms" expires_after="2025-05-24">
   <owner>danieltwhite@google.com</owner>

@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -123,6 +124,7 @@ using base::UserMetricsAction;
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
+  _optInAlertCoordinator.accessPoint = NotificationOptInAccessPoint::kSetUpList;
   _optInAlertCoordinator.clientIds = std::vector{
       PushNotificationClientId::kContent, PushNotificationClientId::kSports};
   _optInAlertCoordinator.alertMessage = l10n_util::GetNSString(

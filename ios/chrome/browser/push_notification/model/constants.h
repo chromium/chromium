@@ -8,6 +8,21 @@
 #import <Foundation/Foundation.h>
 #import <string>
 
+// Enum for the metric logging the source of the native Notification enable
+// alert. Entries should not be renumbered and numeric values should never be
+// reused.
+// LINT.IfChange(NotificationOptInAccessPoint)
+enum class NotificationOptInAccessPoint {
+  kTips = 1,
+  kSetUpList = 2,
+  kSendTabMagicStackPromo = 3,
+  kSafetyCheck = 4,
+  kFeed = 5,
+  kSettings = 6,
+  kMaxValue = kSettings,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
 // Enum for the NAU implementation for Content notifications. Change
 // NotificationActionType enum when this one changes.
 typedef NS_ENUM(NSInteger, NAUActionType) {
