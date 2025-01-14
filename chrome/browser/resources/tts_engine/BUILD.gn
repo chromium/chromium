@@ -8,14 +8,17 @@ assert(is_win || is_mac || is_linux)
 
 out_dir = "$root_out_dir/resources/tts_engine"
 
-copy("copy_tts_engine_files") {
-  sources = [ "//third_party/wasm_tts_engine/src/bindings_main.js" ]
-  outputs = [ "$out_dir/bindings_main.js" ]
+generate_grd("build_bindings_grdp") {
+  grd_prefix = "tts_engine"
+  out_grd = "$target_gen_dir/bindings_resources.grdp"
+  input_files_base_dir = rebase_path("//third_party/wasm_tts_engine/src", "//")
+  input_files = [ "bindings_main.js" ]
 }
 
 build_webui("build") {
   grd_prefix = "tts_engine"
   non_web_component_files = [ "background.ts" ]
   ts_out_dir = "$out_dir"
-  ts_extra_deps = [ ":copy_tts_engine_files" ]
+  extra_grdp_files = [ "$target_gen_dir/bindings_resources.grdp" ]
+  extra_grdp_deps = [ ":build_bindings_grdp" ]
 }
