@@ -20,7 +20,9 @@ declare_args() {
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
-  enable_validating_command_decoder = is_android
+  # desktop android devices exclusively use angle and thus should not use
+  # the validating command decoder
+  enable_validating_command_decoder = is_android && !is_desktop_android
 }
 
 declare_args() {
