@@ -4590,6 +4590,10 @@ public class AwContents implements SmartClipProvider {
             mViewEventSink.onWindowFocusChanged(hasWindowFocus);
             mStylusWritingController.onWindowFocusChanged(hasWindowFocus);
             Clipboard.getInstance().onWindowFocusChanged(hasWindowFocus);
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_AUTOFILL_HANDLE_FOCUS_CHANGE)
+                    && mAutofillProvider != null) {
+                mAutofillProvider.onWindowFocusChanged(hasWindowFocus);
+            }
         }
 
         @Override
