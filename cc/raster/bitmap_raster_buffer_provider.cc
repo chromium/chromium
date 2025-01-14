@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/shared_memory_mapping.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -36,12 +35,12 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-      pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, mapping.guid(),
-                                           importance);
+    pmd->CreateSharedMemoryOwnershipEdge(
+        buffer_dump_guid, mapping->GetSharedMemoryGuid(), importance);
   }
 
   raw_ptr<LayerTreeFrameSink> frame_sink;
-  base::WritableSharedMemoryMapping mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {
@@ -53,7 +52,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
                          uint64_t previous_content_id)
       : resource_size_(size),
         color_space_(color_space),
-        pixels_(backing->mapping.memory()),
+        pixels_(backing->mapping->GetMemoryForPlane(0).data()),
         resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id),
         backing_(backing) {}
@@ -131,13 +130,12 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     auto sii = frame_sink_->shared_image_interface();
     CHECK(sii) << "SharedImageInterface is null!";
 
-    auto shared_image_mapping = sii->CreateSharedImage(
+    backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
         {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
          gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "BitmapRasterBufferProvider"});
-    backing->shared_image = std::move(shared_image_mapping.shared_image);
     CHECK(backing->shared_image);
 
-    backing->mapping = std::move(shared_image_mapping.mapping);
+    backing->mapping = backing->shared_image->Map();
     backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
 
     resource.set_software_backing(std::move(backing));
