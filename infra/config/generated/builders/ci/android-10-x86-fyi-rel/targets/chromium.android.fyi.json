@@ -3305,8 +3305,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3324,17 +3323,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "android_webview_junit_tests",
@@ -3342,8 +3330,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3361,17 +3348,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_junit_tests",
@@ -3379,8 +3355,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3398,17 +3373,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_junit_tests",
@@ -3416,8 +3380,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3435,17 +3398,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_java_test_pagecontroller_junit_tests",
@@ -3453,8 +3405,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3472,17 +3423,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_junit_tests",
@@ -3490,8 +3430,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3508,17 +3447,6 @@
             "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -3570,8 +3498,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3588,17 +3515,6 @@
             "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -3647,8 +3563,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3666,17 +3581,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_junit_tests",
@@ -3684,8 +3588,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3703,17 +3606,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "junit_unit_tests",
@@ -3721,8 +3613,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3740,17 +3631,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "keyboard_accessory_junit_tests",
@@ -3758,8 +3638,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3777,17 +3656,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_base_junit_tests",
@@ -3795,8 +3663,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3813,17 +3680,6 @@
             "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -3873,8 +3729,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3892,17 +3747,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_junit_tests",
@@ -3910,8 +3754,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3929,17 +3772,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "paint_preview_junit_tests",
@@ -3947,8 +3779,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3966,17 +3797,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "password_check_junit_tests",
@@ -3984,8 +3804,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4003,17 +3822,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "password_manager_junit_tests",
@@ -4021,8 +3829,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4039,17 +3846,6 @@
             "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -4188,8 +3984,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4207,17 +4002,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "touch_to_fill_junit_tests",
@@ -4225,8 +4009,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4244,17 +4027,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_junit_tests",
@@ -4262,8 +4034,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4281,17 +4052,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "webapk_client_junit_tests",
@@ -4299,8 +4059,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4318,17 +4077,6 @@
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
-          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "webapk_shell_apk_h2o_junit_tests",
@@ -4336,8 +4084,7 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--use-persistent-shell"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4354,17 +4101,6 @@
             "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
-          },
-          "named_caches": [
-            {
-              "name": "android_29_google_apis_x86",
-              "path": ".android_emulator/android_29_google_apis_x86"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_29_google_apis_x86"
-            }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
