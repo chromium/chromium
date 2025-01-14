@@ -91,7 +91,9 @@ void AISummarizer::ModelExecutionCallback(
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
-    responder->OnStreaming(response->value());
+    responder->OnStreaming(
+        response->value(),
+        blink::mojom::ModelStreamingResponderAction::kReplace);
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);

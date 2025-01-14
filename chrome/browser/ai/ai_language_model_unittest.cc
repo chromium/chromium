@@ -618,18 +618,41 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
     base::RunLoop responder_run_loop;
     std::string response = std::string(kTestResponse);
-    EXPECT_CALL(mock_responder, OnStreaming(_))
+    EXPECT_CALL(mock_responder, OnStreaming(_, _))
         .Times(3)
-        .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, response.substr(0, 1));
-        }))
-        .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, IsAPIStreamingChunkByChunk() ? response.substr(1)
-                                                         : kTestResponse);
-        }))
-        .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, IsAPIStreamingChunkByChunk() ? "" : kTestResponse);
-        }));
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text, response.substr(0, 1));
+              EXPECT_EQ(
+                  IsAPIStreamingChunkByChunk()
+                      ? blink::mojom::ModelStreamingResponderAction::kAppend
+                      : blink::mojom::ModelStreamingResponderAction::kReplace,
+                  action);
+            }))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text, IsAPIStreamingChunkByChunk()
+                                    ? response.substr(1)
+                                    : kTestResponse);
+              EXPECT_EQ(
+                  IsAPIStreamingChunkByChunk()
+                      ? blink::mojom::ModelStreamingResponderAction::kAppend
+                      : blink::mojom::ModelStreamingResponderAction::kReplace,
+                  action);
+            }))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text,
+                blink::mojom::ModelStreamingResponderAction action) {
+              EXPECT_THAT(text,
+                          IsAPIStreamingChunkByChunk() ? "" : kTestResponse);
+              EXPECT_EQ(
+                  IsAPIStreamingChunkByChunk()
+                      ? blink::mojom::ModelStreamingResponderAction::kAppend
+                      : blink::mojom::ModelStreamingResponderAction::kReplace,
+                  action);
+            }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
