@@ -9586,6 +9586,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "FRESignInSecondaryActionLabelUpdateParam": "StaySignedOut"
+                    },
                     "enable_features": [
                         "FRESignInSecondaryActionLabelUpdate"
                     ]
