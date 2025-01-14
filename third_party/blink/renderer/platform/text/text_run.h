@@ -184,7 +184,6 @@ class PLATFORM_EXPORT TextRun final {
     len_ = len;
     is_8bit_ = false;
   }
-  void SetText(const String&);
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -194,10 +193,6 @@ class PLATFORM_EXPORT TextRun final {
   bool DirectionalOverride() const { return directional_override_; }
   void SetDirection(TextDirection direction) {
     direction_ = static_cast<unsigned>(direction);
-  }
-
-  void SetDirectionalOverride(bool override) {
-    directional_override_ = override;
   }
 
   // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control

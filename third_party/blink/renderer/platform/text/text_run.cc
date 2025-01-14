@@ -49,20 +49,6 @@ struct SameSizeAsTextRun {
 
 ASSERT_SIZE(TextRun, SameSizeAsTextRun);
 
-void TextRun::SetText(const String& string) {
-  len_ = string.length();
-  if (!len_) {
-    data_.characters8 = nullptr;
-    is_8bit_ = true;
-    return;
-  }
-  is_8bit_ = string.Is8Bit();
-  if (is_8bit_)
-    data_.characters8 = string.Characters8();
-  else
-    data_.characters16 = string.Characters16();
-}
-
 String TextRun::NormalizedUTF16() const {
   const UChar* source;
   String string_for8_bit_run;

@@ -235,9 +235,9 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     const String text_with_override =
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
-    TextRun run_with_override = run_info.run;
-    run_with_override.SetText(text_with_override);
-    run_with_override.SetDirectionalOverride(false);
+    TextRun run_with_override(text_with_override, run.Direction(),
+                              /* directional_override */ false);
+    run_with_override.SetNormalizeSpace(run.NormalizeSpace());
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
                         custom_font_not_ready_action, flags, draw_type);
   }
