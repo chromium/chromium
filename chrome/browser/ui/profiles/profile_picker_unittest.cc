@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -180,4 +181,12 @@ TEST_F(ProfilePickerParamsTest, CanReuse) {
       base::FilePath(FILE_PATH_LITERAL("Profile1")),
       ProfilePicker::FirstRunExitedCallback());
   EXPECT_TRUE(first_run_params.CanReusePickerWindow(first_run_params));
+  EXPECT_FALSE(params.CanReusePickerWindow(first_run_params));
+  EXPECT_FALSE(first_run_params.CanReusePickerWindow(params));
+
+  ProfilePicker::Params glic_manager_params =
+      ProfilePicker::Params::ForGlicManager(base::DoNothing());
+  EXPECT_TRUE(glic_manager_params.CanReusePickerWindow(glic_manager_params));
+  EXPECT_FALSE(params.CanReusePickerWindow(glic_manager_params));
+  EXPECT_FALSE(glic_manager_params.CanReusePickerWindow(params));
 }

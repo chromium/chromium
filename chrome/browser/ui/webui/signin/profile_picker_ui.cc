@@ -212,6 +212,11 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
     profile_picker_handler_->EnableStartupMetrics();
   }
 
+  if (web_ui->GetWebContents()->GetVisibleURL().query() ==
+      chrome::kChromeUIProfilePickerGlicQuery) {
+    // TODO(crbug.com/385726690): Enable Glic mode for the Ui.
+  }
+
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback
   // to the one obtained from `NavigationEntry::GetTitleForDisplay()` (which

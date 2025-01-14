@@ -63,6 +63,8 @@ class ProfilePicker {
   // An entry point that triggers the profile picker window to open.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
     kOnStartup = 0,
     kProfileMenuManageProfiles = 1,
@@ -95,8 +97,12 @@ class ProfilePicker {
     // Opens the add new profile view from the app menu.
     kAppMenuProfileSubMenuAddNewProfile = 15,
 
-    kMaxValue = kAppMenuProfileSubMenuAddNewProfile,
+    // Opens the Glic version of the Profile Picker
+    kGlicManager = 16,
+
+    kMaxValue = kGlicManager,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerEntryPoint)
 
   class Params final {
    public:
@@ -137,6 +143,14 @@ class ProfilePicker {
     static Params ForFirstRun(const base::FilePath& profile_path,
                               FirstRunExitedCallback first_run_exited_callback);
 
+    // Builds parameter with the `kForGlicManager` entry point.
+    //
+    // `picked_profile_callback` will be called when a Profile is selected
+    // (returning the loaded profile) or when the picker is closed (returning a
+    // nullptr profile).
+    static Params ForGlicManager(
+        base::OnceCallback<void(Profile*)> picked_profile_callback);
+
     // Calls `first_run_exited_callback_`, forwarding `exit_status`.See
     // `ForFirstRun()` for more details.
     //
@@ -144,6 +158,12 @@ class ProfilePicker {
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
     void NotifyFirstRunExited(FirstRunExitStatus exit_status);
+
+    // Calls `picked_profile_callback_`, forwarding the `profile`. See
+    // `ForGlicManager()` for more details.
+    // This method will be called if the view/controller are destroyed without a
+    // profile being picked - the `profile` will be null in this case.
+    void NotifyProfilePicked(Profile* profile);
 
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused
@@ -158,6 +178,7 @@ class ProfilePicker {
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
     FirstRunExitedCallback first_run_exited_callback_;
+    base::OnceCallback<void(Profile*)> picked_profile_callback_;
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be

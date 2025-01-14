@@ -443,6 +443,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerAction) -->
 
+<!-- LINT.IfChange(ProfilePickerEntryPoint) -->
+
 <enum name="ProfilePickerEntryPoint">
   <int value="0" label="On startup"/>
   <int value="1" label="Manage profile button in the profile menu"/>
@@ -460,7 +462,10 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="No usable profile for existing process"/>
   <int value="14" label="Manage profile item in the app menu"/>
   <int value="15" label="Add new profile item in the app menu"/>
+  <int value="16" label="Glic Manager"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>

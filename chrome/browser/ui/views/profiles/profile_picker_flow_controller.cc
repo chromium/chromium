@@ -88,6 +88,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
     case ProfilePicker::EntryPoint::kFirstRun:
+    case ProfilePicker::EntryPoint::kGlicManager:
       // Should not be used for this entry point.
       NOTREACHED();
   }
@@ -621,6 +622,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
       return;
     }
     case ProfilePicker::EntryPoint::kFirstRun:
+    case ProfilePicker::EntryPoint::kGlicManager:
       NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";
   }
