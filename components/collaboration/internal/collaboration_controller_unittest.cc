@@ -283,7 +283,7 @@ TEST_F(CollaborationControllerTest, PreviewDataFailures) {
 
   std::move(preview_callback)
       .Run(base::unexpected(data_sharing::DataSharingService::
-                                PeopleGroupActionFailure::kUnknown));
+                                DataPreviewActionFailure::kOtherFailure));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 }
 

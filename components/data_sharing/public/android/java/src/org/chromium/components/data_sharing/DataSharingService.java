@@ -65,10 +65,10 @@ public interface DataSharingService {
         public final SharedDataPreview sharedDataPreview;
 
         /** Result of the action, UNKNOWN if the action was successful. */
-        public final @PeopleGroupActionFailure int actionFailure;
+        public final @DataPreviewActionFailure int actionFailure;
 
         public SharedDataPreviewOrFailureOutcome(
-                SharedDataPreview sharedDataPreview, @PeopleGroupActionFailure int actionFailure) {
+                SharedDataPreview sharedDataPreview, @DataPreviewActionFailure int actionFailure) {
             this.sharedDataPreview = sharedDataPreview;
             this.actionFailure = actionFailure;
         }

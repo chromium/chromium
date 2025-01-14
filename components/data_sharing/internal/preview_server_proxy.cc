@@ -284,8 +284,8 @@ void PreviewServerProxy::GetSharedDataPreview(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            base::unexpected(DataSharingService::PeopleGroupActionFailure::
-                                 kPersistentFailure)));
+            base::unexpected(
+                DataSharingService::DataPreviewActionFailure::kOtherFailure)));
     return;
   }
   std::string data_type_str;
@@ -351,8 +351,14 @@ void PreviewServerProxy::HandleServerResponse(
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
     DLOG(ERROR) << "Got bad response (" << response->http_status_code
                 << ") for shared data preview!";
-    std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kTransientFailure));
+    DataSharingService::DataPreviewActionFailure failure =
+        DataSharingService::DataPreviewActionFailure::kOtherFailure;
+    if (response->http_status_code == net::HTTP_CONFLICT) {
+      failure = DataSharingService::DataPreviewActionFailure::kGroupFull;
+    } else if (response->http_status_code == net::HTTP_FORBIDDEN) {
+      failure = DataSharingService::DataPreviewActionFailure::kPermissionDenied;
+    }
+    std::move(callback).Run(base::unexpected(failure));
     return;
   }
 
@@ -400,7 +406,7 @@ void PreviewServerProxy::OnResponseJsonParsed(
   }
   if (!preview.shared_tab_group_preview) {
     std::move(callback).Run(base::unexpected(
-        DataSharingService::PeopleGroupActionFailure::kPersistentFailure));
+        DataSharingService::DataPreviewActionFailure::kOtherFailure));
   } else {
     std::move(callback).Run(std::move(preview));
   }

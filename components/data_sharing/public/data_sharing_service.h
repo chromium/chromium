@@ -40,6 +40,15 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
  public:
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //   org.chromium.components.data_sharing)
+  enum class DataPreviewActionFailure {
+    kUnknown = 0,
+    kPermissionDenied = 1,
+    kGroupFull = 2,
+    kOtherFailure = 3
+  };
+
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.data_sharing)
   enum class PeopleGroupActionFailure {
     kUnknown = 0,
     kTransientFailure = 1,
@@ -102,7 +111,7 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   using GroupsDataSetOrFailureOutcome =
       base::expected<std::set<GroupData>, PeopleGroupActionFailure>;
   using SharedDataPreviewOrFailureOutcome =
-      base::expected<SharedDataPreview, PeopleGroupActionFailure>;
+      base::expected<SharedDataPreview, DataPreviewActionFailure>;
   using ParseUrlResult = base::expected<GroupToken, ParseUrlStatus>;
 
 #if BUILDFLAG(IS_ANDROID)
