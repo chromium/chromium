@@ -1479,6 +1479,27 @@
     "expires": "Mar 14, 2025"
   },
   {
+    "prefix": "fledge-bidding-and-auction-private-aggregation",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "behamilton@google.com",
+      "pauljensen@chromium.org",
+      "qingxinwu@google.com"
+    ],
+    "bases": [
+      "external/wpt/fledge/tentative/server-response-private-aggregation.https.window.js"
+    ],
+    "args": [
+      "--private-aggregation-developer-mode",
+      "--enable-features=EnableBandAPrivateAggregation,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
+    ],
+    "expires": "Jul 14, 2025"
+  },
+  {
     "prefix": "async-script-scheduling-disabled",
     "owners": ["chikamune@chromium.org", "sisidovski@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
