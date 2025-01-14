@@ -40,6 +40,8 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION,
   kScamDetection =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+  kPermissionsAi =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -73,6 +75,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "PasswordChangeSubmission";
     case ModelBasedCapabilityKey::kScamDetection:
       return out << "ScamDetection";
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return out << "PermissionsAi";
   }
   return out;
 }
@@ -164,6 +168,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
         return ModelBasedCapabilityKey::kPasswordChangeSubmission;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
       return ModelBasedCapabilityKey::kScamDetection;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
+      return ModelBasedCapabilityKey::kPermissionsAi;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -209,6 +215,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kScamDetection:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
   }
 }
 

@@ -153,6 +153,8 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
           OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT;
     case ModelBasedCapabilityKey::kScamDetection:
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+    case ModelBasedCapabilityKey::kPermissionsAi:
+      return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
     // The below capabilities never support on-device execution.
     case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:

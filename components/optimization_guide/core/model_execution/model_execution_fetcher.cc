@@ -223,6 +223,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
     case ModelBasedCapabilityKey::kSummarize:
       // On-device only feature.
       NOTREACHED();

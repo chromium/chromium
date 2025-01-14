@@ -100,6 +100,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "PasswordChangeSubmission";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
       return "ScamDetection";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
+      return "PermissionsAi";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

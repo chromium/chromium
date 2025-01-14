@@ -28,6 +28,7 @@ proto_library("optimization_guide_proto") {
     "features/history_search_strings.proto",
     "features/model_prototyping.proto",
     "features/password_change_submission.proto",
+    "features/permissions_ai.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
     "features/scam_detection.proto",
