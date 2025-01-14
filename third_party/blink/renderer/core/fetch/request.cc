@@ -1257,24 +1257,6 @@ String Request::ContentType() const {
   return result;
 }
 
-mojom::blink::RequestContextType Request::GetRequestContextType() const {
-  if (!request_) {
-    return mojom::blink::RequestContextType::UNSPECIFIED;
-  }
-  return mojom::blink::RequestContextType::FETCH;
-}
-
-network::mojom::RequestDestination Request::GetRequestDestination() const {
-  if (!request_) {
-    return network::mojom::RequestDestination::kEmpty;
-  }
-  return request_->Destination();
-}
-
-network::mojom::RequestMode Request::GetRequestMode() const {
-  return request_->Mode();
-}
-
 void Request::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   Body::Trace(visitor);
