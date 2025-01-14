@@ -113,7 +113,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuIfno) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         onCreateContextMenuImpl(menu);
     }
 
