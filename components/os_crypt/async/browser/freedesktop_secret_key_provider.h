@@ -60,7 +60,9 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kInvalidSignalFormat = 4,
     kInvalidVariantFormat = 5,
     kNoResponse = 6,
-    kMaxValue = kNoResponse,
+    kPromptDismissed = 7,
+    kPromptFailedSignalConnection = 8,
+    kMaxValue = kPromptFailedSignalConnection,
   };
 
   FreedesktopSecretKeyProvider(bool use_for_encryption,
@@ -75,7 +77,12 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, BasicHappyPath);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           CreateCollectionAndItemWithUnlockPrompt);
   friend class FreedesktopSecretKeyProviderCompatTest;
+
+  template <typename T>
+  class Prompter;
 
   using DbusSecret = DbusStruct</*session=*/DbusObjectPath,
                                 /*parameters=*/DbusByteArray,
@@ -91,6 +98,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kSecretItemInterface[] = "org.freedesktop.Secret.Item";
   static constexpr char kSecretSessionInterface[] =
       "org.freedesktop.Secret.Session";
+  static constexpr char kSecretPromptInterface[] =
+      "org.freedesktop.Secret.Prompt";
 
   static constexpr char kMethodReadAlias[] = "ReadAlias";
   static constexpr char kMethodCreateCollection[] = "CreateCollection";
@@ -103,6 +112,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kPropertiesInterface[] =
       "org.freedesktop.DBus.Properties";
   static constexpr char kMethodGet[] = "Get";
+  static constexpr char kMethodPrompt[] = "Prompt";
 
   static constexpr char kDefaultAlias[] = "default";
 
@@ -139,11 +149,9 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnGetCollectionLabelResponse(
       base::expected<DbusVariant, ErrorDetail> variant);
   void OnCreateCollection(
-      base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>,
-                     ErrorDetail> create_collection_reply);
-  void OnUnlock(
-      base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
-                     ErrorDetail> unlocked_collection);
+      base::expected<DbusObjectPath, ErrorDetail> create_collection_reply);
+  void OnUnlock(base::expected<DbusArray<DbusObjectPath>, ErrorDetail>
+                    unlocked_collection);
   void OnOpenSession(base::expected<DbusParameters<DbusVariant, DbusObjectPath>,
                                     ErrorDetail> session_reply);
   void OnSearchItems(
@@ -153,10 +161,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void UnlockDefaultCollection();
   void OpenSession();
   void CreateItem(scoped_refptr<base::RefCountedMemory> secret);
-  void OnCreateItem(
-      scoped_refptr<base::RefCountedMemory> secret,
-      base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>,
-                     ErrorDetail> created_item);
+  void OnCreateItem(scoped_refptr<base::RefCountedMemory> secret,
+                    base::expected<DbusObjectPath, ErrorDetail> created_item);
   void DeriveKeyFromSecret(base::span<const uint8_t> secret);
   void FinalizeSuccess(Encryptor::Key key);
   void FinalizeFailure(InitStatus status, ErrorDetail detail);

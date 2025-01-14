@@ -36,6 +36,12 @@ constexpr char kCollectionPath[] =
 constexpr char kSessionPath[] = "/org/freedesktop/secrets/session/test_session";
 constexpr char kItemPath[] =
     "/org/freedesktop/secrets/collection/default/item0";
+constexpr char kCollectionPromptPath[] =
+    "/org/freedesktop/secrets/prompt/collection_prompt";
+constexpr char kUnlockPromptPath[] =
+    "/org/freedesktop/secrets/prompt/unlock_prompt";
+constexpr char kItemPromptPath[] =
+    "/org/freedesktop/secrets/prompt/item_prompt";
 
 constexpr char kFakeSecret[] = "c3VwZXJfc2VjcmV0X2tleQ==";
 
@@ -242,6 +248,222 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
         tag = returned_tag;
         key = std::move(returned_key);
       }));
+  EXPECT_EQ(tag, "v11");
+  EXPECT_TRUE(key.has_value());
+}
+
+TEST(FreedesktopSecretKeyProviderTest,
+     CreateCollectionAndItemWithUnlockPrompt) {
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  EXPECT_CALL(*mock_bus, AssertOnOriginThread()).WillRepeatedly([] {});
+
+  // Initialize object proxies
+  auto mock_dbus_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+  auto mock_service_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+      dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath));
+  EXPECT_CALL(
+      *mock_bus,
+      GetObjectProxy(
+          FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath)))
+      .WillRepeatedly(Return(mock_service_proxy.get()));
+  auto mock_collection_prompt_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(kCollectionPromptPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kCollectionPromptPath)))
+      .WillRepeatedly(Return(mock_collection_prompt_proxy.get()));
+  auto mock_unlock_prompt_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(kUnlockPromptPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kUnlockPromptPath)))
+      .WillRepeatedly(Return(mock_unlock_prompt_proxy.get()));
+  auto mock_item_prompt_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(kItemPromptPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kItemPromptPath)))
+      .WillRepeatedly(Return(mock_item_prompt_proxy.get()));
+  auto mock_session_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+      dbus::ObjectPath(kSessionPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kSessionPath)))
+      .WillRepeatedly(Return(mock_session_proxy.get()));
+  auto mock_collection_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+          dbus::ObjectPath(kCollectionPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kCollectionPath)))
+      .WillRepeatedly(Return(mock_collection_proxy.get()));
+  auto mock_item_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
+      dbus::ObjectPath(kItemPath));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                             dbus::ObjectPath(kItemPath)))
+      .WillRepeatedly(Return(mock_item_proxy.get()));
+
+  // NameHasOwner for Secret Service
+  EXPECT_CALL(*mock_dbus_proxy,
+              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                   MatchArgs(DbusString(
+                       FreedesktopSecretKeyProvider::kSecretServiceName)),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
+  // ReadAlias("default") returns no default collection
+  EXPECT_CALL(
+      *mock_service_proxy,
+      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+           FreedesktopSecretKeyProvider::kMethodReadAlias,
+           MatchArgs(DbusString(FreedesktopSecretKeyProvider::kDefaultAlias)),
+           _))
+      .WillOnce(RespondWith(DbusObjectPath(dbus::ObjectPath("/"))));
+
+  // CreateCollection returns a prompt
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   "CreateCollection", _, _))
+      .WillOnce(RespondWith(MakeDbusParameters(
+          DbusObjectPath(dbus::ObjectPath("/")),
+          DbusObjectPath(dbus::ObjectPath(kCollectionPromptPath)))));
+
+  EXPECT_CALL(*mock_collection_prompt_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
+                   FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
+      .WillOnce(RespondWith(DbusVoid()));
+
+  EXPECT_CALL(*mock_collection_prompt_proxy, DoConnectToSignal(_, _, _, _))
+      .WillOnce([](const std::string& interface_name,
+                   const std::string& signal_name,
+                   dbus::ObjectProxy::SignalCallback signal_callback,
+                   dbus::ObjectProxy::OnConnectedCallback* on_connected) {
+        // Connected successfully
+        std::move(*on_connected).Run(interface_name, signal_name, true);
+
+        // Trigger the signal callback with a non-empty collection path now
+        auto signal = dbus::Signal(interface_name, signal_name);
+        dbus::MessageWriter writer(&signal);
+        // Prompt completed: dismissed = false, return the newly created
+        // collection path
+        DbusParameters<DbusBoolean, DbusVariant> args(
+            DbusBoolean(false),
+            MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kCollectionPath))));
+        args.Write(&writer);
+        signal_callback.Run(&signal);
+      });
+
+  // Unlock collection returns a prompt
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodUnlock,
+                   MatchArgs(MakeDbusArray(
+                       DbusObjectPath(dbus::ObjectPath(kCollectionPath)))),
+                   _))
+      .WillOnce(RespondWith(MakeDbusParameters(
+          DbusArray<DbusObjectPath>(),
+          DbusObjectPath(dbus::ObjectPath(kUnlockPromptPath)))));
+
+  EXPECT_CALL(*mock_unlock_prompt_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
+                   FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
+      .WillOnce(RespondWith(DbusVoid()));
+
+  EXPECT_CALL(*mock_unlock_prompt_proxy, DoConnectToSignal(_, _, _, _))
+      .WillOnce([](const std::string& interface_name,
+                   const std::string& signal_name,
+                   dbus::ObjectProxy::SignalCallback signal_callback,
+                   dbus::ObjectProxy::OnConnectedCallback* on_connected) {
+        std::move(*on_connected).Run(interface_name, signal_name, true);
+
+        auto signal = dbus::Signal(interface_name, signal_name);
+        dbus::MessageWriter writer(&signal);
+        DbusParameters<DbusBoolean, DbusVariant> args(
+            DbusBoolean(false), MakeDbusVariant(MakeDbusArray(DbusObjectPath(
+                                    dbus::ObjectPath(kCollectionPath)))));
+        args.Write(&writer);
+        signal_callback.Run(&signal);
+      });
+
+  // OpenSession
+  EXPECT_CALL(*mock_service_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
+                   FreedesktopSecretKeyProvider::kMethodOpenSession, _, _))
+      .WillOnce(RespondWith(
+          MakeDbusParameters(MakeDbusVariant(DbusString("")),
+                             DbusObjectPath(dbus::ObjectPath(kSessionPath)))));
+
+  // SearchItems returns empty
+  EXPECT_CALL(*mock_collection_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
+                   FreedesktopSecretKeyProvider::kMethodSearchItems, _, _))
+      .WillOnce(RespondWith(DbusArray<DbusObjectPath>()));
+
+  // CreateItem
+  EXPECT_CALL(*mock_collection_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
+                   "CreateItem", _, _))
+      .WillOnce(RespondWith(MakeDbusParameters(
+          DbusObjectPath(dbus::ObjectPath("/")),
+          DbusObjectPath(dbus::ObjectPath(kItemPromptPath)))));
+
+  EXPECT_CALL(*mock_item_prompt_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretPromptInterface,
+                   FreedesktopSecretKeyProvider::kMethodPrompt, _, _))
+      .WillOnce(RespondWith(DbusVoid()));
+
+  EXPECT_CALL(*mock_item_prompt_proxy, DoConnectToSignal(_, _, _, _))
+      .WillOnce([&](const std::string& interface_name,
+                    const std::string& signal_name,
+                    dbus::ObjectProxy::SignalCallback signal_callback,
+                    dbus::ObjectProxy::OnConnectedCallback* on_connected) {
+        std::move(*on_connected).Run(interface_name, signal_name, true);
+
+        auto signal = dbus::Signal(interface_name, signal_name);
+        dbus::MessageWriter writer(&signal);
+        // Return a valid item path now
+        DbusParameters<DbusBoolean, DbusVariant> args(
+            DbusBoolean(false),
+            MakeDbusVariant(DbusObjectPath(dbus::ObjectPath(kItemPath))));
+        args.Write(&writer);
+        signal_callback.Run(&signal);
+      });
+
+  // CloseSession
+  EXPECT_CALL(*mock_session_proxy,
+              Call(FreedesktopSecretKeyProvider::kSecretSessionInterface,
+                   FreedesktopSecretKeyProvider::kMethodClose,
+                   MatchArgs(DbusVoid()), _))
+      .WillOnce(RespondWith(DbusVoid()));
+
+  FreedesktopSecretKeyProvider provider(/*use_for_encryption=*/true,
+                                        kProductName, mock_bus);
+  std::string tag;
+  std::optional<Encryptor::Key> key;
+  provider.GetKey(base::BindLambdaForTesting(
+      [&](const std::string& returned_tag,
+          std::optional<Encryptor::Key> returned_key) {
+        tag = returned_tag;
+        key = std::move(returned_key);
+      }));
+
   EXPECT_EQ(tag, "v11");
   EXPECT_TRUE(key.has_value());
 }

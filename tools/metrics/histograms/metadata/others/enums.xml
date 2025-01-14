@@ -97,6 +97,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="InvalidSignalFormat"/>
   <int value="5" label="InvalidVariantFormat"/>
   <int value="6" label="NoResponse"/>
+  <int value="7" label="PromptDismissed"/>
+  <int value="8" label="PromptFailedSignalConnection"/>
 </enum>
 
 <enum name="FreedesktopSecretKeyProviderInitStatus">

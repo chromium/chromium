@@ -126,6 +126,127 @@ const char* InitStatusToString(
 
 }  // namespace
 
+// A helper class to handle a Secret Service prompt. It is templated on the
+// return type expected from the prompt.
+template <typename T>
+class FreedesktopSecretKeyProvider::Prompter
+    : public base::RefCountedThreadSafe<Prompter<T>> {
+ public:
+  using PromptCallback = base::OnceCallback<void(
+      base::expected<T, FreedesktopSecretKeyProvider::ErrorDetail>)>;
+
+  static void Prompt(scoped_refptr<dbus::Bus> bus,
+                     dbus::ObjectProxy* object_proxy,
+                     const std::string& interface_name,
+                     const std::string& method_name,
+                     const DbusType& arguments,
+                     PromptCallback callback) {
+    auto handler =
+        base::MakeRefCounted<Prompter<T>>(std::move(bus), std::move(callback));
+    CallMethod(object_proxy, interface_name, method_name, arguments,
+               base::BindOnce(&Prompter::OnReply, handler));
+  }
+
+  Prompter(scoped_refptr<dbus::Bus> bus, PromptCallback callback)
+      : bus_(std::move(bus)), callback_(std::move(callback)) {}
+
+  Prompter(const Prompter&) = delete;
+  Prompter& operator=(const Prompter&) = delete;
+
+ private:
+  friend class base::RefCountedThreadSafe<Prompter<T>>;
+  using ErrorDetail = FreedesktopSecretKeyProvider::ErrorDetail;
+
+  ~Prompter() {
+    Finish(base::unexpected(ErrorDetail::kDestructedBeforeComplete));
+  }
+
+  void OnReply(
+      base::expected<DbusParameters<T, DbusObjectPath>, ErrorDetail> reply) {
+    if (!reply.has_value()) {
+      Finish(base::unexpected(reply.error()));
+      return;
+    }
+    auto& [value, prompt] = reply->value();
+    if (prompt.value().value() == "/") {
+      Finish(std::move(value));
+    } else {
+      prompt_path_ = prompt.value();
+      StartPrompt();
+    }
+  }
+
+  void StartPrompt() {
+    auto* prompt_proxy = bus_->GetObjectProxy(
+        FreedesktopSecretKeyProvider::kSecretServiceName, prompt_path_);
+    prompt_proxy->ConnectToSignal(
+        FreedesktopSecretKeyProvider::kSecretPromptInterface, "Completed",
+        base::BindRepeating(&Prompter::OnPromptCompletedSignal, this),
+        base::BindOnce(&Prompter::OnSignalConnected, this));
+    CallMethod(prompt_proxy,
+               FreedesktopSecretKeyProvider::kSecretPromptInterface,
+               FreedesktopSecretKeyProvider::kMethodPrompt, DbusString(""),
+               base::BindOnce(&Prompter::OnPromptResponse, this));
+  }
+
+  void OnPromptResponse(base::expected<DbusVoid, ErrorDetail> response) {
+    if (!response.has_value()) {
+      LOG(ERROR) << "Prompt call returned no response.";
+      Finish(base::unexpected(response.error()));
+    }
+  }
+
+  void OnSignalConnected(const std::string& interface_name,
+                         const std::string& signal_name,
+                         bool connected) {
+    if (!connected) {
+      LOG(ERROR) << "Failed to connect to Prompt.Completed signal.";
+      Finish(base::unexpected(ErrorDetail::kPromptFailedSignalConnection));
+    }
+  }
+
+  void OnPromptCompletedSignal(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    DbusParameters<DbusBoolean, DbusVariant> args;
+    if (!args.Read(&reader)) {
+      LOG(ERROR) << "Failed to read Prompt.Completed signal args.";
+      Finish(base::unexpected(ErrorDetail::kInvalidSignalFormat));
+      return;
+    }
+
+    auto& [dismissed, variant] = args.value();
+    if (dismissed.value()) {
+      Finish(base::unexpected(ErrorDetail::kPromptDismissed));
+      return;
+    }
+
+    T* value = variant.GetAs<T>();
+    if (!value) {
+      LOG(ERROR) << "Failed to parse prompt result.";
+      Finish(base::unexpected(ErrorDetail::kInvalidVariantFormat));
+      return;
+    }
+
+    Finish(base::ok(std::move(*value)));
+  }
+
+  void Finish(base::expected<T, ErrorDetail> result) {
+    if (!prompt_path_.value().empty()) {
+      bus_->RemoveObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
+                              prompt_path_, base::DoNothing());
+      prompt_path_ = dbus::ObjectPath();
+    }
+    if (callback_) {
+      std::move(callback_).Run(std::move(result));
+    }
+    bus_.reset();
+  }
+
+  scoped_refptr<dbus::Bus> bus_;
+  PromptCallback callback_;
+  dbus::ObjectPath prompt_path_;
+};
+
 FreedesktopSecretKeyProvider::FreedesktopSecretKeyProvider(
     bool use_for_encryption,
     const std::string& product_name,
@@ -205,10 +326,11 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
     DbusDictionary props = MakeDbusDictionary(
         kSecretCollectionLabelProperty, DbusString(kDefaultCollectionLabel));
 
-    CallMethod(service_proxy, kSecretServiceInterface, kMethodCreateCollection,
-               MakeDbusParameters(std::move(props), DbusString(kDefaultAlias)),
-               base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateCollection,
-                              weak_ptr_factory_.GetWeakPtr()));
+    Prompter<DbusObjectPath>::Prompt(
+        bus_, service_proxy, kSecretServiceInterface, kMethodCreateCollection,
+        MakeDbusParameters(std::move(props), DbusString(kDefaultAlias)),
+        base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateCollection,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -234,22 +356,20 @@ void FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse(
 }
 
 void FreedesktopSecretKeyProvider::OnCreateCollection(
-    base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>, ErrorDetail>
-        create_collection_reply) {
+    base::expected<DbusObjectPath, ErrorDetail> create_collection_reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!create_collection_reply.has_value()) {
     FinalizeFailure(InitStatus::kCreateCollectionFailed,
                     create_collection_reply.error());
     return;
   }
-  const auto& [collection_path, _] = create_collection_reply->value();
-  if (collection_path.value().value() == "/") {
+  if (create_collection_reply->value().value() == "/") {
     FinalizeFailure(InitStatus::kCreateCollectionFailed,
                     ErrorDetail::kEmptyObjectPaths);
     return;
   }
-  default_collection_proxy_ =
-      bus_->GetObjectProxy(kSecretServiceName, collection_path.value());
+  default_collection_proxy_ = bus_->GetObjectProxy(
+      kSecretServiceName, create_collection_reply->value());
   UnlockDefaultCollection();
 }
 
@@ -259,21 +379,21 @@ void FreedesktopSecretKeyProvider::UnlockDefaultCollection() {
 
   auto objects =
       MakeDbusArray(DbusObjectPath(default_collection_proxy_->object_path()));
-  CallMethod(service_proxy, kSecretServiceInterface, kMethodUnlock, objects,
-             base::BindOnce(&FreedesktopSecretKeyProvider::OnUnlock,
-                            weak_ptr_factory_.GetWeakPtr()));
+  Prompter<DbusArray<DbusObjectPath>>::Prompt(
+      bus_, service_proxy, kSecretServiceInterface, kMethodUnlock, objects,
+      base::BindOnce(&FreedesktopSecretKeyProvider::OnUnlock,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FreedesktopSecretKeyProvider::OnUnlock(
-    base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
-                   ErrorDetail> unlocked_collection) {
+    base::expected<DbusArray<DbusObjectPath>, ErrorDetail>
+        unlocked_collection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!unlocked_collection.has_value()) {
     FinalizeFailure(InitStatus::kUnlockFailed, unlocked_collection.error());
     return;
   }
-  const auto& [collection_paths, _] = unlocked_collection->value();
-  if (collection_paths.value().empty()) {
+  if (unlocked_collection->value().empty()) {
     FinalizeFailure(InitStatus::kUnlockFailed, ErrorDetail::kEmptyObjectPaths);
     return;
   }
@@ -377,24 +497,23 @@ void FreedesktopSecretKeyProvider::CreateItem(
       DbusByteArray(secret), DbusString(kMimePlain));
   auto* collection_proxy = bus_->GetObjectProxy(
       kSecretServiceName, default_collection_proxy_->object_path());
-  CallMethod(collection_proxy, kSecretCollectionInterface, kMethodCreateItem,
-             MakeDbusParameters(std::move(props), std::move(secret_struct),
-                                DbusBoolean(false)),
-             base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateItem,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(secret)));
+  Prompter<DbusObjectPath>::Prompt(
+      bus_, collection_proxy, kSecretCollectionInterface, kMethodCreateItem,
+      MakeDbusParameters(std::move(props), std::move(secret_struct),
+                         DbusBoolean(false)),
+      base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateItem,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(secret)));
 }
 
 void FreedesktopSecretKeyProvider::OnCreateItem(
     scoped_refptr<base::RefCountedMemory> secret,
-    base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>, ErrorDetail>
-        created_item) {
+    base::expected<DbusObjectPath, ErrorDetail> created_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!created_item.has_value()) {
     FinalizeFailure(InitStatus::kCreateItemFailed, created_item.error());
     return;
   }
-  const auto& [item_path, _] = created_item->value();
-  if (item_path.value().value().empty()) {
+  if (created_item->value().value().empty()) {
     FinalizeFailure(InitStatus::kCreateItemFailed,
                     ErrorDetail::kEmptyObjectPaths);
     return;
