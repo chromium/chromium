@@ -231,6 +231,13 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
   if (!browser_view_) {
     return false;
   }
+#if BUILDFLAG(IS_MAC)
+  // In content fullscreen, we do not show the download bubble and the toolbar
+  // is not visible. Therefore, we must show the ExclusiveAccessBubble notice.
+  if (fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
+    return true;
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsKioskSession()) {
     return false;
