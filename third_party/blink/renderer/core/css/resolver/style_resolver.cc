@@ -1301,6 +1301,22 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   return state.TakeStyle();
 }
 
+const ComputedStyle& StyleResolver::ResolveBaseStyle(
+    Element& element,
+    const ComputedStyle* parent_base_style,
+    const ComputedStyle* layout_parent_base_style,
+    const StyleRecalcContext& style_recalc_context) {
+  StyleRequest style_request;
+  style_request.parent_override = parent_base_style;
+  style_request.layout_parent_override = layout_parent_base_style;
+  StyleResolverState state(GetDocument(), element, &style_recalc_context,
+                           style_request);
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  ApplyBaseStyleNoCache(&element, style_recalc_context, style_request, state,
+                        cascade);
+  return *state.TakeStyle();
+}
+
 void StyleResolver::InitStyle(Element& element,
                               const StyleRequest& style_request,
                               const ComputedStyle& source_for_noninherited,

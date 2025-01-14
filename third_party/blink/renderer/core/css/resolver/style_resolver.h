@@ -72,6 +72,17 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                     const StyleRecalcContext&,
                                     const StyleRequest& = StyleRequest());
 
+  // Resolve base style for an element passing in the base styles for the parent
+  // and the layout parent. Normally, base styles are computed as part of
+  // ResolveStyle, inheriting from the parent's stored ComputedStyle, but for
+  // after-change computations, the after-change style inherits from the
+  // parent's after-change style, which is basically the parent's base style.
+  const ComputedStyle& ResolveBaseStyle(
+      Element&,
+      const ComputedStyle* parent_base_style,
+      const ComputedStyle* layout_parent_base_style,
+      const StyleRecalcContext&);
+
   // Return a reference to the initial style singleton.
   const ComputedStyle& InitialStyle() const;
 

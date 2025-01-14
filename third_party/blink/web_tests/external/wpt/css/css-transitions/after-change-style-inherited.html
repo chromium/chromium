@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<title>CSS Transitions Test: trigger transitions on inherited after-change styles</title>
+<link rel="help" href="https://drafts.csswg.org/css-transitions-1/#after-change-style">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #t1 :is(.outer, .inner) { transition: color 1000s steps(2, start); }
+  #t1 .outer { color: red; }
+  #t1 .inner { color: black; }
+  #t1 .outer.green { color: lime; }
+  #t1 .outer.green .inner { color: unset; }
+</style>
+<div id="t1">
+  <div class="outer">
+    <div>
+      <div class="inner"></div>
+    </div>
+  </div>
+</div>
+<script>
+  test(() => {
+    const outer = document.querySelector("#t1 .outer");
+    const inner = document.querySelector("#t1 .inner");
+    outer.offsetTop;
+    assert_equals(getComputedStyle(outer).color, "rgb(255, 0, 0)",
+                  ".outer initially red");
+    assert_equals(getComputedStyle(inner).color, "rgb(0, 0, 0)",
+                  ".inner initially black");
+    outer.classList.add("green");
+    assert_equals(getComputedStyle(outer).color, "rgb(128, 128, 0)",
+                  ".outer halfway between red and lime");
+    assert_equals(getComputedStyle(inner).color, "rgb(0, 128, 0)",
+                  ".inner halfway between black and lime");
+  }, "Start .inner transition based on inherited after-change color from .outer (lime)");
+</script>
+
+<style>
+  #t2 :is(.outer, .inner) { transition: background-color 1000s steps(2, start); }
+  #t2 .outer { background-color: red; }
+  #t2 .inner { background-color: black; }
+  #t2 .outer.green { background-color: lime; }
+  #t2 .outer.green div { background-color: inherit; }
+</style>
+<div id="t2">
+  <div class="outer">
+    <div>
+      <div class="inner"></div>
+    </div>
+  </div>
+</div>
+<script>
+  test(() => {
+    const outer = document.querySelector("#t2 .outer");
+    const inner = document.querySelector("#t2 .inner");
+    outer.offsetTop;
+    assert_equals(getComputedStyle(outer).backgroundColor, "rgb(255, 0, 0)",
+                  ".outer initially red");
+    assert_equals(getComputedStyle(inner).backgroundColor, "rgb(0, 0, 0)",
+                  ".inner initially black");
+    outer.classList.add("green");
+    assert_equals(getComputedStyle(outer).backgroundColor, "rgb(128, 128, 0)",
+                  ".outer halfway between red and lime");
+    assert_equals(getComputedStyle(inner).backgroundColor, "rgb(0, 128, 0)",
+                  ".inner halfway between black and lime");
+  }, "Start .inner transition based on inherited after-change background-color from .outer (lime)");
+</script>

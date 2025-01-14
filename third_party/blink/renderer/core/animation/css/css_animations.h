@@ -285,6 +285,15 @@ class CORE_EXPORT CSSAnimations final {
     const ComputedStyle& old_style;
     const ComputedStyle& base_style;
     const ComputedStyle* before_change_style;
+    // base_style may include animation effects for properties inherited from
+    // ancestor elements. Since after-change style should not include such
+    // effects, we may need to compute an ancestor chain of after-change styles
+    // when calculating transition updates. This is expensive, so we only do it
+    // for elements which can transition inherited properties when inherited
+    // properties are being animated in an ancestor. In that case we store the
+    // separately cascaded on-demand after-change style here. Otherwise, we use
+    // the base_style as the after_change_style.
+    const ComputedStyle* after_change_style;
     const TransitionMap* active_transitions;
     // If the performance of this HashSet shows up in profiles, we could
     // convert any non-custom CSS properties in it to use CSSBitset instead.
@@ -409,6 +418,31 @@ class CORE_EXPORT CSSAnimations final {
   static const ComputedStyle* CalculateBeforeChangeStyle(
       Element& animating_element,
       const ComputedStyle& base_style);
+
+  // Compute the after-change style for animating_element. Used by
+  // CalculateAfterChangeStyle if the base style can not be used for starting
+  // transitions. The after_change_root is the uppermost ancestor which may have
+  // a different computed value, for the property passed into
+  // CalculateAfterChangeStyle, for the after-change style than for the base
+  // style.
+  static const ComputedStyle& EnsureAfterChangeStyle(
+      Element& animating_element,
+      Element& after_change_root);
+
+  // The after-change style is defined as values of all properties on the
+  // element based on the information known at the start of that style change
+  // event, but using the computed values of the animation-* properties from the
+  // before-change style, excluding any styles from CSS Transitions in the
+  // computation, and inheriting from the after-change style of the parent.
+  // https://drafts.csswg.org/css-transitions/#after-change-style
+  //
+  // This method computes the after-change style for an element given by 'state'
+  // if the computed after-change value for 'transitioning-property' may be
+  // different from the base style value for that property. Otherwise it just
+  // returns the base style.
+  static const ComputedStyle& CalculateAfterChangeStyle(
+      TransitionUpdateState& state,
+      const PropertyHandle& transitioning_property);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:

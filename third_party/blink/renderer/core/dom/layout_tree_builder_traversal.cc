@@ -73,13 +73,16 @@ ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
   return FlatTreeTraversal::Parent(node);
 }
 
+bool LayoutTreeBuilderTraversal::IsLayoutParent(const Node& node) {
+  return !HasDisplayContentsStyle(node) && !node.IsColumnPseudoElement();
+}
+
 ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
   // TODO(crbug.com/332396355): consider to check for ::scroll-marker-group
   // from all call sites of this function, or move the check here.
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(node);
 
-  while (parent && (HasDisplayContentsStyle(*parent) ||
-                    parent->IsColumnPseudoElement())) {
+  while (parent && !IsLayoutParent(*parent)) {
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
   }
 

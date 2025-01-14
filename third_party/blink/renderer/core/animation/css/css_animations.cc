@@ -2266,6 +2266,12 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   if (is_animation_affecting) {
     return;
   }
+  if (!state.transition_data && !state.active_transitions) {
+    return;
+  }
+
+  const ComputedStyle& after_change_style =
+      CalculateAfterChangeStyle(state, property);
 
   const RunningTransition* interrupted_transition = nullptr;
   if (state.active_transitions) {
@@ -2274,7 +2280,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     if (active_transition_iter != state.active_transitions->end()) {
       const RunningTransition* running_transition =
           active_transition_iter->value;
-      if (ComputedValuesEqual(property, state.base_style,
+      if (ComputedValuesEqual(property, after_change_style,
                               *running_transition->to)) {
         if (!state.transition_data) {
           if (!running_transition->animation->FinishedInternal()) {
@@ -2295,7 +2301,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
                   ->IsAnimationStyleChange());
 
       if (ComputedValuesEqual(
-              property, state.base_style,
+              property, after_change_style,
               *running_transition->reversing_adjusted_start_value)) {
         interrupted_transition = running_transition;
       }
@@ -2304,8 +2310,9 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
 
   // In the default configuration (transition: all 0s) we continue and cancel
   // transitions but do not start them.
-  if (!state.transition_data)
+  if (!state.transition_data) {
     return;
+  }
 
   const PropertyRegistry* registry =
       state.animating_element.GetDocument().GetPropertyRegistry();
@@ -2329,15 +2336,15 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   if (ComputedValuesEqual(property, *state.before_change_style,
-                          state.base_style)) {
+                          after_change_style)) {
     return;
   }
 
   CSSInterpolationTypesMap map(registry, state.animating_element.GetDocument());
   CSSInterpolationEnvironment old_environment(map, *state.before_change_style,
-                                              state.base_style);
-  CSSInterpolationEnvironment new_environment(map, state.base_style,
-                                              state.base_style);
+                                              after_change_style);
+  CSSInterpolationEnvironment new_environment(map, after_change_style,
+                                              after_change_style);
   const InterpolationType* transition_type = nullptr;
   InterpolationValue start = nullptr;
   InterpolationValue end = nullptr;
@@ -2387,7 +2394,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
             state.animating_element.GetLayoutObject());
     const CSSValue* end_css_value =
         AnimationUtils::KeyframeValueFromComputedStyle(
-            property, state.base_style, document,
+            property, after_change_style, document,
             state.animating_element.GetLayoutObject());
     if (!start_css_value || !end_css_value) {
       // TODO(crbug.com/1425925): Handle newly registered custom properties
@@ -2462,14 +2469,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     CompositorKeyframeValue* from = CompositorKeyframeValueFactory::Create(
         property, *state.before_change_style, start_keyframe->Offset().value());
     CompositorKeyframeValue* to = CompositorKeyframeValueFactory::Create(
-        property, state.base_style, end_keyframe->Offset().value());
+        property, after_change_style, end_keyframe->Offset().value());
     start_keyframe->SetCompositorValue(from);
     end_keyframe->SetCompositorValue(to);
   }
 
   auto* model = MakeGarbageCollected<TransitionKeyframeEffectModel>(keyframes);
   state.update.StartTransition(
-      property, state.before_change_style, &state.base_style,
+      property, state.before_change_style, &after_change_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
       *MakeGarbageCollected<InertEffect>(
           model, timing, CSSTransitionProxy(AnimationTimeDelta())));
@@ -2617,6 +2624,7 @@ void CSSAnimations::CalculateTransitionUpdate(
                                    *old_style,
                                    *style_builder.GetBaseComputedStyle(),
                                    /*before_change_style=*/nullptr,
+                                   /*after_change_style=*/nullptr,
                                    active_transitions,
                                    listed_properties_maybe,
                                    transition_data};
@@ -2726,6 +2734,120 @@ const ComputedStyle* CSSAnimations::CalculateBeforeChangeStyle(
   StyleResolver& resolver = animating_element.GetDocument().GetStyleResolver();
   return resolver.BeforeChangeStyleForTransitionUpdate(
       animating_element, base_style, interpolations_map);
+}
+
+namespace {
+
+HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element,
+                                                     Element& root) {
+  HeapVector<Member<Element>> ancestors;
+  Element* ancestor = &element;
+  do {
+    ancestor = LayoutTreeBuilderTraversal::ParentElement(*ancestor);
+    ancestors.push_back(ancestor);
+  } while (ancestor != root);
+  return ancestors;
+}
+
+}  // namespace
+
+const ComputedStyle& CSSAnimations::EnsureAfterChangeStyle(
+    Element& animating_element,
+    Element& after_change_root) {
+  HeapVector<Member<Element>> ancestors =
+      CollectAncestorsToEnsure(animating_element, after_change_root);
+  Element* parent =
+      LayoutTreeBuilderTraversal::ParentElement(*ancestors.back());
+  const ComputedStyle* parent_style = nullptr;
+  const ComputedStyle* layout_parent_style = nullptr;
+  if (parent) {
+    parent_style = parent->GetComputedStyle();
+    if (LayoutTreeBuilderTraversal::IsLayoutParent(*parent)) {
+      layout_parent_style = parent_style;
+    } else if (Element* layout_parent =
+                   LayoutTreeBuilderTraversal::LayoutParentElement(*parent)) {
+      layout_parent_style = layout_parent->GetComputedStyle();
+    }
+  }
+
+  StyleResolver& resolver = animating_element.GetDocument().GetStyleResolver();
+  StyleRecalcContext context =
+      StyleRecalcContext::FromAncestors(*ancestors.back());
+  for (Element* ancestor : base::Reversed(ancestors)) {
+    const ComputedStyle& after_change_style = resolver.ResolveBaseStyle(
+        *ancestor, parent_style, layout_parent_style, context);
+    parent_style = &after_change_style;
+    if (LayoutTreeBuilderTraversal::IsLayoutParent(*ancestor)) {
+      layout_parent_style = parent_style;
+    }
+    if (after_change_style.IsContainerForSizeContainerQueries()) {
+      context.container = ancestor;
+    }
+  }
+  return resolver.ResolveBaseStyle(animating_element, parent_style,
+                                   layout_parent_style, context);
+}
+
+const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
+    TransitionUpdateState& state,
+    const PropertyHandle& property) {
+  if (!RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+    return state.base_style;
+  }
+  if (state.after_change_style) {
+    return *state.after_change_style;
+  }
+
+  bool is_inherited = property.GetCSSProperty().IsInherited();
+  if (!is_inherited && !state.base_style.HasExplicitInheritance()) {
+    // The property value cannot possibly have been inherited. The base_style is
+    // valid as an after-change style here.
+    return state.base_style;
+  }
+
+  // The outermost ancestor with animations.
+  Element* after_change_style_root = nullptr;
+  // Set to true if the after-change style needs to be cascaded separately
+  // because an ancestor is transitioning the relevant property without the
+  // property value changing anywhere in the ancestor chain.
+  bool needs_after_change_style = false;
+
+  for (Element* ancestor =
+           LayoutTreeBuilderTraversal::ParentElement(state.animating_element);
+       ancestor;
+       ancestor = LayoutTreeBuilderTraversal::ParentElement(*ancestor)) {
+    const ComputedStyle& ancestor_style = ancestor->ComputedStyleRef();
+    if (!needs_after_change_style &&
+        !ComputedValuesEqual(property, ancestor_style, state.base_style)) {
+      // The property was overridden in the child, no need to look further as no
+      // ancestor animations can affect the after-change style for this element.
+      break;
+    }
+    if (const CSSAnimationUpdate* pending_update =
+            GetPendingAnimationUpdate(*ancestor)) {
+      after_change_style_root = ancestor;
+      if (pending_update->HasActiveInterpolationsForProperty(property)) {
+        // The property value is animated by this ancestor.
+        needs_after_change_style = true;
+      }
+    }
+    if (!needs_after_change_style && !is_inherited &&
+        !ancestor_style.HasExplicitInheritance()) {
+      // The property value cannot possibly have been inherited as an animated
+      // value. No need to continue looking for ancestors.
+      break;
+    }
+  }
+
+  if (!needs_after_change_style) {
+    return state.base_style;
+  }
+
+  CHECK(after_change_style_root);
+  const ComputedStyle& after_change_style =
+      EnsureAfterChangeStyle(state.animating_element, *after_change_style_root);
+  state.after_change_style = &after_change_style;
+  return after_change_style;
 }
 
 void CSSAnimations::Cancel() {
