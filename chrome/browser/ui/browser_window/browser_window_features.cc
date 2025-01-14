@@ -127,7 +127,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsEnabledForProfile(browser->GetProfile())) {
+    if (GlicEnabling::IsProfileEligible(browser->GetProfile())) {
       glic_border_view_manager_ =
           std::make_unique<glic::GlicBorderViewManager>(browser);
       if (features::IsTabstripComboButtonEnabled()) {

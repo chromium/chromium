@@ -14,15 +14,16 @@ bool GlicEnabling::IsEnabledByFlags() {
 }
 
 // static
-bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
+bool GlicEnabling::IsProfileEligible(const Profile* profile) {
   CHECK(profile);
-  if (!IsEnabledByFlags()) {
-    return false;
-  }
-
   // Glic is supported only in regular profiles, i.e. disable in incognito,
   // guest, system profile, etc.
-  if (!profile->IsRegularProfile()) {
+  return IsEnabledByFlags() && profile->IsRegularProfile();
+}
+
+// static
+bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
+  if (!IsProfileEligible(profile)) {
     return false;
   }
 

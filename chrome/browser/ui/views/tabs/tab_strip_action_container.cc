@@ -246,17 +246,7 @@ TabStripActionContainer::TabStripActionContainer(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledForProfile(tab_strip_controller->GetProfile())) {
-    std::unique_ptr<glic::GlicButton> glic_button =
-        std::make_unique<glic::GlicButton>(tab_strip_controller);
-    glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                             views::LayoutAlignment::kCenter);
-    glic_button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
-
-    glic_button_ = AddChildView(std::move(glic_button));
-  }
+  UpdateGlicButton();
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -333,6 +323,27 @@ TabStripActionContainer::CreateAutoTabGroupButton(
                       views::LayoutAlignment::kCenter);
   return button;
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+void TabStripActionContainer::UpdateGlicButton() {
+  bool need_button =
+      GlicEnabling::IsEnabledForProfile(tab_strip_controller_->GetProfile());
+  if (!glic_button_ && need_button) {
+    std::unique_ptr<glic::GlicButton> glic_button =
+        std::make_unique<glic::GlicButton>(tab_strip_controller_);
+    glic_button->SetProperty(views::kCrossAxisAlignmentKey,
+                             views::LayoutAlignment::kCenter);
+    glic_button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+
+    glic_button_ = AddChildView(std::move(glic_button));
+  } else if (glic_button_ && !need_button) {
+    RemoveChildView(glic_button_);
+    glic_button_ = nullptr;
+  }
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 void TabStripActionContainer::OnToggleActionUIState(const Browser* browser,
                                                     bool should_show) {

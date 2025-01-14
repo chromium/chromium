@@ -30,6 +30,12 @@ class GlicFocusedTabManager;
 class GlicProfileManager;
 class GlicWindowController;
 
+// The GlicKeyedService is created for each eligible (i.e. non-incognito,
+// non-system, etc.) browser profile if Glic flags are enabled, regardless of
+// whether the profile is enabled or disabled at runtime (currently possible via
+// enterprise policy). This is required on disabled profiles since pieces of
+// this service are the ones that monitor this runtime preference for changes
+// and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService {
  public:
   explicit GlicKeyedService(content::BrowserContext* browser_context,

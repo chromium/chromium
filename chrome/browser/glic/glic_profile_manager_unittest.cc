@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,7 +24,19 @@ class MockGlicKeyedService : public GlicKeyedService {
   MOCK_METHOD(void, ClosePanel, (), (override));
 };
 
-TEST(GlicProfileManagerTest, OnUILaunching_SameProfile) {
+class GlicProfileManagerTest : public testing::Test {
+ public:
+  GlicProfileManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GlicProfileManagerTest, OnUILaunching_SameProfile) {
   content::BrowserTaskEnvironment task_environment;
   GlicProfileManager profile_manager;
   signin::IdentityTestEnvironment identity_test_environment;
@@ -38,7 +51,7 @@ TEST(GlicProfileManagerTest, OnUILaunching_SameProfile) {
   profile_manager.OnUILaunching(&service);
 }
 
-TEST(GlicProfileManagerTest, OnUILaunching_DifferentProfiles) {
+TEST_F(GlicProfileManagerTest, OnUILaunching_DifferentProfiles) {
   content::BrowserTaskEnvironment task_environment;
   GlicProfileManager profile_manager;
   signin::IdentityTestEnvironment identity_test_environment;

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
 #include "chrome/browser/media/audio_ducker.h"
@@ -480,6 +481,16 @@ void GlicWindowController::HandleWindowDragWithOffset(
 
 void GlicWindowController::HandleAttachmentToBrowserWindows(
     views::Widget* widget) {
+  content::BrowserContext* glic_browser_context =
+      GetGlicView()->web_view()->GetBrowserContext();
+
+  // The profile must have started off as Glic enabled since a Glic widget is
+  // open but it may have been disabled at runtime by policy. In this edge-case,
+  // prevent reattaching back to a window (as it no longer has a GlicButton).
+  if (!GlicEnabling::IsEnabledForProfile(
+          Profile::FromBrowserContext(glic_browser_context))) {
+    return;
+  }
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -488,8 +499,13 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
     if (!IsBrowserGlicCompatible(browser)) {
       continue;
     }
+
+    // If the profile is enabled, the Glic button must be available.
     auto* tab_strip_region_view =
         browser->window()->AsBrowserView()->tab_strip_region_view();
+    CHECK(tab_strip_region_view);
+    CHECK(tab_strip_region_view->GetGlicButton());
+
     gfx::Rect glic_button_rect =
         tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
 
@@ -516,14 +532,25 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   if (!glic_window_widget_) {
     return;
   }
+
+  // If the profile's been disabled (e.g. by policy) the window's Glic button
+  // will be removed so we can't anchor to it. We could work around this by
+  // keeping the button but disabling and making it invisible but this is an
+  // edge-case, not sure it's worth the effort.
+  if (!GlicEnabling::IsEnabledForProfile(browser->profile())) {
+    return;
+  }
+
+  GlicButton* glic_button = browser->window()
+                                ->AsBrowserView()
+                                ->tab_strip_region_view()
+                                ->GetGlicButton();
+  CHECK(glic_button);
+
   attached_browser_ = browser->AsWeakPtr();
   gfx::Rect glic_rect = glic_window_widget_->GetWindowBoundsInScreen();
   // TODO(andreaxg): Fix exact attachment position.
-  gfx::Rect glic_button_rect = browser->window()
-                                   ->AsBrowserView()
-                                   ->tab_strip_region_view()
-                                   ->GetGlicButton()
-                                   ->GetBoundsInScreen();
+  gfx::Rect glic_button_rect = glic_button->GetBoundsInScreen();
   gfx::Point top_right = glic_button_rect.top_right();
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
   glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
@@ -574,20 +601,17 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
 bool GlicWindowController::IsBrowserGlicCompatible(Browser* browser) {
   views::Widget* window_widget =
       browser->window()->AsBrowserView()->GetWidget();
-  auto* tab_strip_region_view =
-      browser->window()->AsBrowserView()->tab_strip_region_view();
   // A browser is not compatible if it:
-  // - is incognito
+  // - is from a glic-disabled profile
   // - is not visible
   // - is a glic-owned widget
   // - uses a different BrowserContext from glic
-  // - does not have a Glic Button
-  if (browser->profile()->IsOffTheRecord() || !browser->window()->IsVisible() ||
+  if (!GlicEnabling::IsEnabledForProfile(browser->profile()) ||
+      !browser->window()->IsVisible() ||
       window_widget == glic_window_widget_.get() ||
       window_widget == holder_widget_.get() ||
       browser->GetWebView()->GetBrowserContext() !=
-          GetGlicView()->web_view()->GetBrowserContext() ||
-      !tab_strip_region_view || !tab_strip_region_view->GetGlicButton()) {
+          GetGlicView()->web_view()->GetBrowserContext()) {
     return false;
   }
   return true;

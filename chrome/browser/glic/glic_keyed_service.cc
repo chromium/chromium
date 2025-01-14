@@ -30,7 +30,10 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
       cookie_synchronizer_(browser_context, identity_manager),
-      profile_manager_(profile_manager) {}
+      profile_manager_(profile_manager) {
+  CHECK(GlicEnabling::IsProfileEligible(
+      Profile::FromBrowserContext(browser_context)));
+}
 
 GlicKeyedService::~GlicKeyedService() = default;
 

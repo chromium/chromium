@@ -101,6 +101,10 @@ class TabStripActionContainer : public views::View,
   }
 
   glic::GlicButton* GetGlicButton() { return glic_button_; }
+#if BUILDFLAG(ENABLE_GLIC)
+  // Ensures the Glic button's existence matches the current configuration.
+  void UpdateGlicButton();
+#endif
 
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;

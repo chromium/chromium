@@ -9,6 +9,11 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -42,8 +47,17 @@ bool GlicProfileConfiguration::IsEnabledByPolicy() const {
 }
 
 void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
-  // TODO(crbug.com/382722218): Update UI in each window to remove/add Glic
-  // button.
+  // Note: the pref listener can sometimes fire even if the value from
+  // GetBoolean doesn't change (e.g. value was set from multiple sources). See
+  // GlicPolicyTest.PrefDisabledByPolicy for an example.
+  for (Browser* const browser : *BrowserList::GetInstance()) {
+    if (browser->profile() == &profile_.get()) {
+      TabStripRegionView* tab_strip_region_view =
+          browser->window()->AsBrowserView()->tab_strip_region_view();
+      CHECK(tab_strip_region_view);
+      tab_strip_region_view->GetTabStripActionContainer()->UpdateGlicButton();
+    }
+  }
   GlicBackgroundModeManager::GetInstance()->OnPolicyChanged();
 }
 

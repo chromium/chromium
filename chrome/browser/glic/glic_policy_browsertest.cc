@@ -126,21 +126,19 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
 
 // Ensure that when policy disables Glic, a browser window doesn't show the Glic
 // button.
-IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesGlicButton) {
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
   ASSERT_EQ(browser()->profile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
-  // The pref defaults to enabled. Ensure the button was created.
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  ASSERT_TRUE(prefs->GetBoolean(kGlicEnabledByPolicy));
-  EXPECT_TRUE(GetGlicButtonForBrowser(browser()));
+  // The pref defaults to enabled.
+  ASSERT_TRUE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
 
   // Disable the policy in the default profile.
   PolicyMap policies;
   policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(false), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_FALSE(prefs->GetBoolean(kGlicEnabledByPolicy));
+  ASSERT_FALSE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
 
   {
     // A new window in profile 1 shouldn't have the Glic button.
@@ -153,20 +151,70 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesGlicButton) {
     EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_2));
   }
 
-  // TODO(crbug.com/382722218): The button should be removed from and added to
-  // existing windows but this isn't implemented yet.
-
-  // Re-enable the policy. Ensure a new window gets the button again.
+  // Re-enable the policy. Ensure the button is recreated.
   policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true), nullptr);
   UpdateProviderPolicy(policies);
-  ASSERT_TRUE(prefs->GetBoolean(kGlicEnabledByPolicy));
+  ASSERT_TRUE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
 
   {
     // A new window in profile 1 should again get the Glic button now that the
     // policy is re-enabled.
     Browser* new_window_profile_1 = CreateBrowser(profile_1_);
     EXPECT_TRUE(GetGlicButtonForBrowser(new_window_profile_1));
+  }
+}
+
+// Ensure that when policy disables Glic, a browser window doesn't show the Glic
+// button.
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
+  ASSERT_EQ(browser()->profile(), profile_1_);
+  ASSERT_NE(profile_1_, profile_2_);
+
+  // Create two windows in each profile.
+  Browser* profile_1_window_1 = browser();
+  Browser* profile_1_window_2 = CreateBrowser(profile_1_);
+  Browser* profile_2_window_1 = CreateBrowser(profile_2_);
+  Browser* profile_2_window_2 = CreateBrowser(profile_2_);
+
+  // The pref defaults to enabled. Ensure the button was created in each window.
+  ASSERT_TRUE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1));
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2));
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
+  EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
+
+  // Disable the policy in the first profile.
+  PolicyMap policies;
+  policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+  ASSERT_FALSE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
+
+  {
+    // The windows in profile 1 should have lost their Glic button.
+    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_1));
+    EXPECT_FALSE(GetGlicButtonForBrowser(profile_1_window_2));
+
+    // The windows in profile 2 should have kept their Glic button.
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
+  }
+
+  // Re-enable the policy. Ensure the button is recreated.
+  policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true), nullptr);
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
+
+  {
+    // The windows in profile 1 should get back their Glic button.
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_1));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_1_window_2));
+
+    // The windows in profile 2 still have their Glic button.
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_1));
+    EXPECT_TRUE(GetGlicButtonForBrowser(profile_2_window_2));
   }
 }
 

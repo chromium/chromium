@@ -1026,9 +1026,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
 #if BUILDFLAG(ENABLE_GLIC)
-  // `IsEnabledForProfile` returns true if the feature is explicitly enabled by
-  // flags.
-  if (GlicEnabling::IsEnabledForProfile(browser_->profile())) {
+  // `IsProfileEligible` returns true if the feature flags are present and the
+  // profile can potentially enable the feature. If the feature is disabled the
+  // view will exist but never become visible.
+  if (GlicEnabling::IsProfileEligible(browser_->profile())) {
     glic_border_ = contents_container->AddChildView(
         views::Builder<glic::BorderView>()
             // https://crbug.com/387458471: By default the border view is
