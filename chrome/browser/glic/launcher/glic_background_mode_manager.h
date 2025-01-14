@@ -63,13 +63,10 @@ class GlicBackgroundModeManager
     return keep_alive_ != nullptr;
   }
 
-  // Tests need a way to manually exit background mode so that the test can
-  // complete.
-  void TerminateForTesting() { ExitBackgroundMode(); }
-
- private:
   void EnterBackgroundMode();
   void ExitBackgroundMode();
+
+ private:
   void EnableLaunchOnStartup(bool should_launch);
   void RegisterHotkey(ui::Accelerator updated_hotkey);
   void UnregisterHotkey();

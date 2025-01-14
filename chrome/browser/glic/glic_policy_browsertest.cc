@@ -77,7 +77,7 @@ class GlicPolicyTest : public PolicyTest {
   void TearDownOnMainThread() override {
     if (glic::GlicBackgroundModeManager* background_mode_manager =
             g_browser_process->GetFeatures()->glic_background_mode_manager()) {
-      background_mode_manager->TerminateForTesting();
+      background_mode_manager->ExitBackgroundMode();
     }
     profile_1_ = nullptr;
     profile_2_ = nullptr;
