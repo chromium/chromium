@@ -234,9 +234,16 @@ def main():
   constants.CheckOutputDirectory()
   output_dir = constants.GetOutDirectory()
 
+  if args.build:
+    _compile(output_dir, ['build.ninja'])
+
   # Query ninja for all __build_config_crbug_908819 targets.
   targets = _query_for_build_config_targets(output_dir)
   entries = [_TargetEntry(t) for t in targets]
+
+  if not entries:
+    logging.warning('No targets found. Run with --build')
+    sys.exit(1)
 
   if args.build:
     logging.warning('Building %d .build_config.json files...', len(entries))
