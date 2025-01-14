@@ -176,8 +176,7 @@ std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceWin(
     HWND& child_hwnd) {
   child_hwnd = NULL;
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseSwapChainForSoftwareRendering)) {
+  if (features::ShouldRemoveRedirectionBitmap()) {
     return std::make_unique<SoftwareOutputDeviceWinSwapChain>(hwnd, child_hwnd,
                                                               backing);
   }

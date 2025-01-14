@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -30,6 +31,10 @@ void CalculateWindowStylesFromInitParams(
   *style = WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
   *ex_style = 0;
   *class_style = CS_DBLCLKS;
+
+  if (features::ShouldRemoveRedirectionBitmap()) {
+    *ex_style |= WS_EX_NOREDIRECTIONBITMAP;
+  }
 
   // Set type-independent style attributes.
   if (params.child) {

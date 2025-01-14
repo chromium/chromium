@@ -50,7 +50,7 @@ extern const VIZ_COMMON_EXPORT base::FeatureParam<DelegatedCompositingMode>
 
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDCompSurfacesForDelegatedInk);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSwapChainForSoftwareRendering);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoveRedirectionBitmap);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
@@ -156,6 +156,7 @@ VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseDCompSurfacesForDelegatedInk();
+VIZ_COMMON_EXPORT bool ShouldRemoveRedirectionBitmap();
 #endif
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();

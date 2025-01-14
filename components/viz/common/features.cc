@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
@@ -24,6 +25,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace features {
 
@@ -129,9 +134,16 @@ BASE_FEATURE(kDCompSurfacesForDelegatedInk,
 
 // If enabled, Chromium will utilize DXGI SwapChains and DComp visuals as the
 // software output device rather than GDI bit block transfer to the redirection
-// surface.
-BASE_FEATURE(kUseSwapChainForSoftwareRendering,
-             "UseSwapChainForSoftwareRendering",
+// bitmap. Additionally, the redirection bitmap will be removed and replaced
+// with the native acrylic background effect on Win11. Since the browser window
+// appears before the GPU process is able to draw content into it, the acrylic
+// effect gives the user feedback that a window is present and content is
+// coming. Without the acrylic effect a transparent window will appear with a 1
+// pixel border that eats all mouse clicks; not a good user experience. Further,
+// the acylic effect will appear in uncovered regions of the window when the
+// user resizes the window.
+BASE_FEATURE(kRemoveRedirectionBitmap,
+             "RemoveRedirectionBitmap",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -673,6 +685,23 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
     return true;
   }
   return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
+}
+
+bool ShouldRemoveRedirectionBitmap() {
+  // Redirection bitmap should not be removed if Direct Composition is
+  // disabled. On devices with DComp disabled, ANGLE draws to the redirection
+  // bitmap via a blit swap chain. DWM_SYSTEMBACKDROP_TYPE is only available
+  // on Win11 22H2+, therefore limit the bitmap removal to those versions or
+  // higher so that an appropriate background replacement is available.
+  // Note: the DISABLE_DIRECT_COMPOSITION command line check is a workaround for
+  // https://crbug.com/40276881. Additionally, Direct Composition is only
+  // blocklisted for Windows 10 so this feature would not be enabled at the same
+  // time.
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             gpu::GpuDriverBugWorkaroundTypeToString(
+                 gpu::DISABLE_DIRECT_COMPOSITION)) &&
+         base::FeatureList::IsEnabled(kRemoveRedirectionBitmap);
 }
 #endif
 
