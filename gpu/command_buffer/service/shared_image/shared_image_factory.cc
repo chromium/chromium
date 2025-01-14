@@ -493,7 +493,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                  << "] size=" << size.ToString()
                  << " usage=" << CreateLabelForSharedImageUsage(usage)
                  << " format=" << format.ToString();
-        backing->OnWriteSucceeded();
       }
     }
   }
@@ -531,8 +530,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
              << "] with pixels size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
              << " format=" << format.ToString();
-
-    backing->OnWriteSucceeded();
   }
   return RegisterBacking(std::move(backing));
 }
@@ -589,8 +586,6 @@ bool SharedImageFactory::CreateSharedImage(
              << " usage=" << CreateLabelForSharedImageUsage(usage)
              << " format=" << format.ToString()
              << " gmb_type=" << GmbTypeToString(gmb_type);
-
-    backing->OnWriteSucceeded();
   }
   return RegisterBacking(std::move(backing), std::move(pool_id));
 }

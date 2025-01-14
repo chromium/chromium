@@ -46,6 +46,10 @@ public class DataSharingManageUiConfig {
         default void onLeaveGroup() {}
 
         default void getDataSharingUrl(GroupToken groupToken, Callback<String> url) {}
+
+        // This will always be called when user exits the managing the group,
+        // ui closes, or session is finished.
+        default void onSessionFinished() {}
     }
 
     private DataSharingManageUiConfig(Builder builder) {

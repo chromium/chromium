@@ -6800,10 +6800,10 @@ INSTANTIATE_TEST_SUITE_P(
 // CaptureModeSettingsTest:
 
 // Test fixture for CaptureMode settings view.
-class CaptureModeSettingsTest : public CaptureModeTestBase {
+class CaptureModeSettingsTestBase : public CaptureModeTestBase {
  public:
-  CaptureModeSettingsTest() = default;
-  ~CaptureModeSettingsTest() override = default;
+  CaptureModeSettingsTestBase() = default;
+  ~CaptureModeSettingsTestBase() override = default;
 
   // CaptureModeTestBase:
   void SetUp() override {
@@ -6830,7 +6830,32 @@ class CaptureModeSettingsTest : public CaptureModeTestBase {
   }
 };
 
-TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
+class CaptureModeSettingsTest
+    : public CaptureModeSettingsTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CaptureModeSettingsTest() = default;
+  ~CaptureModeSettingsTest() override = default;
+
+  // CaptureModeSettingsTestBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeSettingsTestBase::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CaptureModeSettingsTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeSettingsTest::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
+TEST_P(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -6857,7 +6882,7 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
             session->current_root());
 }
 
-TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
+TEST_P(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -6890,7 +6915,7 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
             session->current_root());
 }
 
-TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
+TEST_P(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
   struct {
     std::string trace;
     user_manager::UserType user_type;
@@ -6921,7 +6946,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
 
 // Tests that the capture mode settings menu is centered with respect to the
 // capture bar.
-TEST_F(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
+TEST_P(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
   auto* bar_widget = GetCaptureModeBarWidget();
   ASSERT_TRUE(bar_widget);
@@ -6935,7 +6960,7 @@ TEST_F(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
 
 // Tests that it's possbile to take a screenshot using the keyboard shortcut at
 // the login screen without any crashes. https://crbug.com/1266728.
-TEST_F(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
+TEST_P(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
   ClearLogin();
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
   WaitForCaptureFileToBeSaved();
@@ -6943,7 +6968,7 @@ TEST_F(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {
 
 // Tests that clicking on audio input buttons updates the state in the
 // controller, and persists between sessions.
-TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
+TEST_P(CaptureModeSettingsTest, AudioInputSettingsMenu) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
 
@@ -6975,7 +7000,7 @@ TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
             controller->GetEffectiveAudioRecordingMode());
 }
 
-TEST_F(CaptureModeSettingsTest, AccessibleName) {
+TEST_P(CaptureModeSettingsTest, AccessibleName) {
   StartImageRegionCapture();
   ClickOnView(GetSettingsButton(), GetEventGenerator());
   CaptureModeSettingsTestApi test_api;
@@ -6989,7 +7014,7 @@ TEST_F(CaptureModeSettingsTest, AccessibleName) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
+TEST_P(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
   auto* controller = CaptureModeController::Get();
 
   // Even if audio recording is set to enabled, the policy setting will
@@ -7016,7 +7041,7 @@ TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
   EXPECT_FALSE(test_api.GetMicrophoneOption());
 }
 
-TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, SelectFolderFromDialog) {
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
@@ -7061,7 +7086,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderFromDialog) {
 
 // Tests that folder selection dialog can be opened without crash while in
 // window capture mode.
-TEST_F(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
+TEST_P(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(0, 0, 200, 300)));
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
@@ -7073,7 +7098,7 @@ TEST_F(CaptureModeSettingsTest, SelectFolderInWindowCaptureMode) {
   EXPECT_TRUE(IsFolderSelectionDialogShown());
 }
 
-TEST_F(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
+TEST_P(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
   auto* controller = StartImageRegionCapture();
   const auto old_capture_folder = controller->GetCurrentCaptureFolder();
 
@@ -7099,7 +7124,7 @@ TEST_F(CaptureModeSettingsTest, DismissDialogWithoutSelection) {
             new_capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_folder(
@@ -7143,7 +7168,7 @@ TEST_F(CaptureModeSettingsTest, AcceptUpdatedCustomFolderFromDialog) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        InitializeSettingsViewWithUnavailableCustomFolder) {
   // Start a new session with a pre-configured unavailable custom folder.
   auto* controller = CaptureModeController::Get();
@@ -7190,7 +7215,7 @@ TEST_F(CaptureModeSettingsTest,
             save_to_menu_group->GetOptionLabelForTesting(kCustomFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_folder(
@@ -7231,7 +7256,7 @@ TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
+TEST_P(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
   // Start a new session with a pre-configured custom folder.
   ui::AXNodeData data;
   auto* controller = CaptureModeController::Get();
@@ -7260,7 +7285,7 @@ TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
-TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
+TEST_P(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   controller->SetCustomCaptureFolder(
@@ -7287,7 +7312,7 @@ TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
-TEST_F(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
+TEST_P(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
   const base::FilePath custom_path(
@@ -7324,7 +7349,13 @@ TEST_F(CaptureModeSettingsTest, SwitchWhichFolderToUserFromOptions) {
 // Tests that when there's no overlap betwwen capture label widget and settings
 // widget, capture label widget is shown/hidden correctly after open/close the
 // folder selection window.
-TEST_F(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
+TEST_P(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
+  auto [sunfish_enabled, scanner_enabled] = GetParam();
+  if (sunfish_enabled || scanner_enabled) {
+    // This test crashes when either Sunfish or Scanner is enabled.
+    // TODO: b/381965299 - Fix these test failures.
+    GTEST_SKIP();
+  }
   // Update the display size to make sure capture label widget will not
   // overlap with settings widget
   UpdateDisplay("800x600");
@@ -7373,7 +7404,7 @@ TEST_F(CaptureModeSettingsTest, CaptureLabelViewNotOverlapsWithSettingsView) {
 // label widget is shown/hidden correctly after open/close the folder selection
 // window, open/close settings menu. Regression test for
 // https://crbug.com/1279606.
-TEST_F(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
+TEST_P(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
   // Update display size to make capture label widget overlap with settings
   // widget.
   UpdateDisplay("1100x700");
@@ -7410,7 +7441,7 @@ TEST_F(CaptureModeSettingsTest, CaptureLabelViewOverlapsWithSettingsView) {
   controller->Stop();
 }
 
-TEST_F(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
+TEST_P(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
@@ -7455,7 +7486,7 @@ TEST_F(CaptureModeSettingsTest, PressingEnterSelectsFocusedItem) {
 }
 
 // Tests the basic keyboard navigation functions for the settings menu.
-TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
+TEST_P(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
@@ -7549,7 +7580,7 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
 
 // Tests that the disabled option in the settings menu will be skipped while
 // tabbing through.
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        KeyboardNavigationForSettingsMenuWithDisabledOption) {
   // Start a new session with a pre-configured unavailable custom folder.
   auto* controller = CaptureModeController::Get();
@@ -7607,7 +7638,7 @@ TEST_F(CaptureModeSettingsTest,
 // Tests that selecting the default `Downloads` folder as the custom folder via
 // keyboard navigation doesn't lead to a crash. Regression test for
 // https://crbug.com/1269373.
-TEST_F(CaptureModeSettingsTest,
+TEST_P(CaptureModeSettingsTest,
        KeyboardNavigationForRemovingCustomFolderOption) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
@@ -7668,7 +7699,7 @@ TEST_F(CaptureModeSettingsTest,
 // Tests that first time selecting a custom folder via keyboard navigation.
 // After the custom folder is selected, tabbing one more time will move focus
 // from the settings menu to the settings button.
-TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
+TEST_P(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
   auto* controller = CaptureModeController::Get();
   StartImageRegionCapture();
 
@@ -7726,7 +7757,7 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
 }
 
 // Tests the folder selection settings when it's recommended by policy.
-TEST_F(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
+TEST_P(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
   auto* controller = StartImageRegionCapture();
 
   // Set the pref to recommended values.
@@ -7760,7 +7791,7 @@ TEST_F(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
 }
 
 // Tests the folder selection settings when it's enforced by policy.
-TEST_F(CaptureModeSettingsTest, FolderSetByPolicy) {
+TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
   auto* controller = StartImageRegionCapture();
 
   // Set the pref to managed values.
@@ -7798,17 +7829,21 @@ TEST_F(CaptureModeSettingsTest, FolderSetByPolicy) {
 
 // Test fixture to verify screen capture histograms depending on the test
 // param (true for tablet mode, false for clamshell mode).
-class CaptureModeHistogramTest : public CaptureModeSettingsTest,
-                                 public ::testing::WithParamInterface<bool> {
+class CaptureModeHistogramTest
+    : public CaptureModeSettingsTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   CaptureModeHistogramTest() = default;
   ~CaptureModeHistogramTest() override = default;
 
-  // CaptureModeSettingsTest:
+  // CaptureModeSettingsTestBase:
   void SetUp() override {
-    CaptureModeSettingsTest::SetUp();
-    if (GetParam())
+    auto [unused_is_tablet, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    CaptureModeSettingsTestBase::SetUp();
+    if (std::get<0>(GetParam())) {
       SwitchToTabletMode();
+    }
   }
 
   void StartSessionForVideo() {
@@ -7822,10 +7857,11 @@ class CaptureModeHistogramTest : public CaptureModeSettingsTest,
 
   void OpenView(const views::View* view,
                 ui::test::EventGenerator* event_generator) {
-    if (GetParam())
+    if (std::get<0>(GetParam())) {
       TouchOnView(view, event_generator);
-    else
+    } else {
       ClickOnView(view, event_generator);
+    }
   }
 };
 
@@ -8033,6 +8069,18 @@ TEST_P(CaptureModeHistogramTest, CaptureModeSwitchToDefaultReasonMetric) {
       CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, CaptureModeHistogramTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHistogramTest,
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHistogramTest::ParamType>&
+           info) {
+      bool is_tablet_mode = std::get<0>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      std::string test_name = is_tablet_mode ? "Tablet" : "Clamshell";
+      test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+      return test_name;
+    });
 
 }  // namespace ash

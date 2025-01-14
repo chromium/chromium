@@ -84,10 +84,8 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
   AccessMode access_mode;
   if (mode == kReadAccessMode) {
     access_mode = AccessMode::kRead;
-    backing()->OnReadSucceeded();
   } else {
     access_mode = AccessMode::kWrite;
-    backing()->OnWriteSucceeded();
   }
 
   return std::make_unique<ScopedAccess>(
@@ -338,8 +336,6 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
       return nullptr;
     }
 
-    backing()->OnWriteSucceeded();
-
     return std::make_unique<ScopedGaneshWriteAccess>(
         base::PassKey<SkiaGaneshImageRepresentation>(), this,
         std::move(surfaces), std::move(end_state));
@@ -350,8 +346,6 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     LOG(ERROR) << "Unable to initialize GrPromiseImageTexture";
     return nullptr;
   }
-
-  backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedGaneshWriteAccess>(
       base::PassKey<SkiaGaneshImageRepresentation>(), this,
@@ -509,8 +503,6 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
     return nullptr;
   }
 
-  backing()->OnReadSucceeded();
-
   return std::make_unique<ScopedGaneshReadAccess>(
       base::PassKey<SkiaGaneshImageRepresentation>(), this,
       std::move(promise_image_textures), std::move(end_state));
@@ -590,8 +582,6 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
       return nullptr;
     }
 
-    backing()->OnWriteSucceeded();
-
     return std::make_unique<ScopedGraphiteWriteAccess>(
         base::PassKey<SkiaGraphiteImageRepresentation>(), this,
         std::move(surfaces));
@@ -602,8 +592,6 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
     LOG(ERROR) << "Unable to initialize graphite::BackendTextures";
     return nullptr;
   }
-
-  backing()->OnWriteSucceeded();
 
   return std::make_unique<ScopedGraphiteWriteAccess>(
       base::PassKey<SkiaGraphiteImageRepresentation>(), this,
@@ -732,8 +720,6 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
     return nullptr;
   }
 
-  backing()->OnReadSucceeded();
-
   return std::make_unique<ScopedGraphiteReadAccess>(
       base::PassKey<SkiaGraphiteImageRepresentation>(), this,
       graphite_textures);
@@ -804,8 +790,6 @@ OverlayImageRepresentation::BeginScopedReadAccess() {
     return nullptr;
   }
 
-  backing()->OnReadSucceeded();
-
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<OverlayImageRepresentation>(), this,
       std::move(acquire_fence));
@@ -870,10 +854,8 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
   AccessMode access_mode;
   if (usage & kWriteUsage) {
     access_mode = AccessMode::kWrite;
-    backing()->OnWriteSucceeded();
   } else {
     access_mode = AccessMode::kRead;
-    backing()->OnReadSucceeded();
   }
 
   return std::make_unique<ScopedAccess>(

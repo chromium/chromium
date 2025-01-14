@@ -1472,7 +1472,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     if (subtree_property_changed_.Read(*this)) {
       layer->NoteLayerPropertyChanged();
     }
-    layer->set_may_contain_video(may_contain_video());
+    layer->SetMayContainVideo(may_contain_video());
     layer->SetTouchActionRegion(inputs.touch_action_region);
     layer->SetContentsOpaque(inputs.contents_opaque);
     layer->SetContentsOpaqueForText(inputs.contents_opaque_for_text);
@@ -1515,8 +1515,6 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     subtree_property_changed_.Write(*this) = false;
     update_rect_.Write(*this) = gfx::Rect();
   }
-
-  layer->SetNeedsPushProperties();
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer_impl,

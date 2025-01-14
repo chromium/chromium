@@ -145,6 +145,10 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->has_non_animated_image_update_rect_ =
       has_non_animated_image_update_rect_;
 
+  // This hs to be cached before calling LayerImpl::PushPropertiesTo because it
+  // reset the flag.
+  bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
+
   LayerImpl::PushPropertiesTo(base_layer);
 
   // Twin relationships should never change once established.
@@ -157,33 +161,36 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   twin_layer_ = layer_impl;
   layer_impl->twin_layer_ = this;
 
-  layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
+  if (changed_other_props) {
+    layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
-  // Solid color layers have no tilings.
-  DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
-  // The pending tree should only have a high res (and possibly low res) tiling.
-  DCHECK_LE(tilings_->num_tilings(),
-            layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
+    // Solid color layers have no tilings.
+    DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
+    // The pending tree should only have a high res (and possibly low res)
+    // tiling.
+    DCHECK_LE(tilings_->num_tilings(),
+              layer_tree_impl()->create_low_res_tiling() ? 2u : 1u);
 
-  layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
-  layer_impl->UpdateRasterSourceInternal(
-      raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
-      discardable_image_map_.get());
-  DCHECK(invalidation_.IsEmpty());
+    layer_impl->set_gpu_raster_max_texture_size(gpu_raster_max_texture_size_);
+    layer_impl->UpdateRasterSourceInternal(
+        raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
+        discardable_image_map_.get());
+    DCHECK(invalidation_.IsEmpty());
 
-  // After syncing a solid color layer, the active layer has no tilings.
-  DCHECK(!raster_source_->IsSolidColor() ||
-         layer_impl->tilings_->num_tilings() == 0);
+    // After syncing a solid color layer, the active layer has no tilings.
+    DCHECK(!raster_source_->IsSolidColor() ||
+           layer_impl->tilings_->num_tilings() == 0);
 
-  layer_impl->raster_page_scale_ = raster_page_scale_;
-  layer_impl->raster_device_scale_ = raster_device_scale_;
-  layer_impl->raster_source_scale_ = raster_source_scale_;
-  layer_impl->raster_contents_scale_ = raster_contents_scale_;
-  layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
-  // Simply push the value to the active tree without any extra invalidations,
-  // since the pending tree tiles would have this handled. This is here to
-  // ensure the state is consistent for future raster.
-  layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+    layer_impl->raster_page_scale_ = raster_page_scale_;
+    layer_impl->raster_device_scale_ = raster_device_scale_;
+    layer_impl->raster_source_scale_ = raster_source_scale_;
+    layer_impl->raster_contents_scale_ = raster_contents_scale_;
+    layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
+    // Simply push the value to the active tree without any extra invalidations,
+    // since the pending tree tiles would have this handled. This is here to
+    // ensure the state is consistent for future raster.
+    layer_impl->lcd_text_disallowed_reason_ = lcd_text_disallowed_reason_;
+  }
 
   if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
     // Move tile updates over to the active layer so they get pushed to the
@@ -191,7 +198,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // updates, so replacement is safe.
     layer_impl->updated_tiles_ = std::move(updated_tiles_);
     updated_tiles_.clear();
-    layer_impl->SetNeedsPushProperties();
   }
 
   layer_impl->SanityCheckTilingState();
@@ -757,6 +763,9 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   DCHECK(raster_source->size().IsEmpty() || bounds() == raster_source->size())
       << " layer bounds " << bounds().ToString() << " raster_source size "
       << raster_source->size().ToString();
+
+  // TODO(vmiura): Only call SetNeedsPushProperties there is an actual change.
+  SetNeedsPushProperties();
 
   if (!raster_source_ || raster_source_->size() != raster_source->size()) {
     raster_source_size_changed_ = true;

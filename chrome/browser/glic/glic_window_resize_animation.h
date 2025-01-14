@@ -8,7 +8,12 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/mac/display_link_mac.h"
+#endif
 
 namespace views {
 class Widget;
@@ -39,6 +44,36 @@ class GlicWindowResizeAnimation {
   // Ensures that `finished_callback_` is not called if the instance is
   // destroyed after posting the task but before the task is run.
   void Finished();
+
+#if BUILDFLAG(IS_MAC)
+  // The mac implementation for window resize uses vsync-aligned frame-by-frame
+  // steps. It synchronizes between window server and chrome via
+  // CATransactionCoordinator.
+
+  // This is a linear animation curve. Each step of the animation is stored with
+  // an expected timestamp. Each frame of the animation removes at least one
+  // step from the animation curve, possibly multiple steps if chrome is unable
+  // to render in time.
+  void CreateAnimationCurve(gfx::Size start_size,
+                            gfx::Size final_size,
+                            base::TimeDelta duration);
+
+  // Vsync callbacks.
+  void Vsync(ui::VSyncParamsMac);
+
+  // Vectors of sizes and expected timestamps
+  struct AnimationStep {
+    gfx::Size size;
+    base::TimeTicks time;
+  };
+  std::vector<AnimationStep> animation_curve_;
+
+  scoped_refptr<ui::DisplayLinkMac> display_link_;
+  std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac_;
+#endif
+
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<GlicView> view_;
 
   FinishedCallback finished_callback_;
   base::WeakPtrFactory<GlicWindowResizeAnimation> weak_ptr_factory_{this};

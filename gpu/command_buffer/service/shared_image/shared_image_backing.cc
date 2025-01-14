@@ -400,19 +400,6 @@ bool SharedImageBacking::HasAnyRefs() const {
   return !refs_.empty();
 }
 
-void SharedImageBacking::OnReadSucceeded() {
-  AutoLock auto_lock(this);
-  if (scoped_write_uma_) {
-    scoped_write_uma_->SetConsumed();
-    scoped_write_uma_.reset();
-  }
-}
-
-void SharedImageBacking::OnWriteSucceeded() {
-  AutoLock auto_lock(this);
-  scoped_write_uma_.emplace();
-}
-
 size_t SharedImageBacking::GetEstimatedSize() const {
   AutoLock auto_lock(this);
   return estimated_size_;

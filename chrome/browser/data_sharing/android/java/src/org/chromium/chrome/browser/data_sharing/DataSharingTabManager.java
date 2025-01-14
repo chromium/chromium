@@ -408,6 +408,11 @@ public class DataSharingTabManager {
                                 DataSharingMetrics.JoinActionStateAndroid.ADD_MEMBER_SUCCESS);
                         assert groupData.getGroupId().equals(groupToken.collaborationId);
                     }
+
+                    @Override
+                    public void onSessionFinished() {
+                        // TODO(haileywang) : Implement this.
+                    }
                 };
         String tabGroupName = preview.title;
         if (TextUtils.isEmpty(tabGroupName)) {
@@ -684,6 +689,11 @@ public class DataSharingTabManager {
                         DataSharingMetrics.recordShareActionFlowState(
                                 DataSharingMetrics.ShareActionStateAndroid.BOTTOM_SHEET_DISMISSED);
                     }
+
+                    @Override
+                    public void onSessionFinished() {
+                        // TODO(haileywang) : Implement this.
+                    }
                 };
 
         String sessionId =
@@ -829,6 +839,11 @@ public class DataSharingTabManager {
                                         collaborationId, tabGroupSyncService);
                         tabGroupSyncService.onTabGroupUnShareComplete(
                                 existingGroup.localId, success);
+                    }
+
+                    @Override
+                    public void onSessionFinished() {
+                        // TODO(haileywang) : Implement this.
                     }
                 };
         DataSharingManageUiConfig manageConfig =
