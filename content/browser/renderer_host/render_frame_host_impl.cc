@@ -1624,7 +1624,8 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       // Error frames gets locked down `isolation_info_`,
       // `trust_token_redemption_policy_` and `trust_token_issuance_policy_`
       // plus an empty/uninitialized `coep_reporter_`.
-      result.isolation_info_ = net::IsolationInfo::CreateTransient();
+      result.isolation_info_ =
+          net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
       result.trust_token_redemption_policy_ =
           network::mojom::TrustTokenOperationPolicyVerdict::kForbid;
       result.trust_token_issuance_policy_ =

@@ -6275,7 +6275,8 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   std::unique_ptr<URLRequest> request(context->CreateRequest(
       https_test_server.GetURL(test_server_hostname, "/simple.html"),
       DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->set_isolation_info(IsolationInfo::CreateTransient());
+  request->set_isolation_info(
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt));
   request->Start();
   d.RunUntilComplete();
 
@@ -7403,7 +7404,8 @@ TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
   // Since transient IsolationInfos use opaque origins, need to create a single
   // consistent transient origin one for be used as the original and updated
   // info in the same test case.
-  IsolationInfo transient_isolation_info = IsolationInfo::CreateTransient();
+  IsolationInfo transient_isolation_info =
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   const struct {
     IsolationInfo info_before_redirect;

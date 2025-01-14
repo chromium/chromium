@@ -361,7 +361,7 @@ class FeedNetworkImpl::NetworkFetch {
       resource_request->trusted_params =
           network::ResourceRequest::TrustedParams();
       resource_request->trusted_params->isolation_info =
-          net::IsolationInfo::CreateTransient();
+          net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
     }
 
     SetRequestHeaders(!request_body_.empty(), *resource_request);

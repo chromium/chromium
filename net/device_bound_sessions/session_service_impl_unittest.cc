@@ -194,9 +194,10 @@ class SessionServiceImplTest : public TestWithTaskEnvironment {
           GURL(url_str),
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge", /*authorization=*/std::nullopt);
-      service_.RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                    IsolationInfo::CreateTransient(),
-                                    NetLogWithSource());
+      service_.RegisterBoundSession(
+          base::DoNothing(), std::move(fetch_param),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          NetLogWithSource());
     }
   }
 
@@ -244,9 +245,10 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
       /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                 IsolationInfo::CreateTransient(),
-                                 NetLogWithSource());
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource());
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -317,7 +319,8 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(), NetLogWithSource());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource());
 
   // The access observer was null, so no call is expected
 }
@@ -331,7 +334,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
   base::test::TestFuture<SessionKey> future;
   service().RegisterBoundSession(
       future.GetRepeatingCallback<const SessionKey&>(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(), NetLogWithSource());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource());
 
   SessionKey session_key = future.Take();
   EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
@@ -646,9 +650,10 @@ TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
     auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
         kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
         "challenge", /*authorization=*/std::nullopt);
-    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                   IsolationInfo::CreateTransient(),
-                                   NetLogWithSource());
+    service().RegisterBoundSession(
+        base::DoNothing(), std::move(fetch_param),
+        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+        NetLogWithSource());
   }
 
   EXPECT_FALSE(
@@ -664,7 +669,7 @@ TEST_F(SessionServiceImplTest, NetLogRegistration) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       NetLogWithSource::Make(NetLogSourceType::URL_REQUEST));
   EXPECT_EQ(
       observer.GetEntriesWithType(NetLogEventType::DBSC_REGISTRATION_REQUEST)
@@ -751,9 +756,10 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
   // Will invoke the store's save session method.
-  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                 IsolationInfo::CreateTransient(),
-                                 NetLogWithSource());
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource());
 
   auto site = SchemefulSite(kTestUrl);
   Session* session = service().GetSession(site, Session::Id(kSessionId));

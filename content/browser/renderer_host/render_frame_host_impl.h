@@ -5029,6 +5029,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is specific to a document and should be reset on every cross-document
   // commit.
   //
+  //
   // When a new frame is created:
   // 1) If the origin of the creator frame is known, then the new frame inherits
   //    the IsolationInfo from the creator frame, similarly to the last
@@ -5036,7 +5037,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // 2) If the origin of the creator frame is not known (e.g. in no-opener case)
   //    then the initial transient isolation info (i.e. the default value below)
   //    will be used.  This will match the opaque origin of such a frame.
-  net::IsolationInfo isolation_info_ = net::IsolationInfo::CreateTransient();
+  //
+  // The default value is a transient IsolationInfo with a nullopt nonce, until
+  // a navigation commits.
+  net::IsolationInfo isolation_info_ =
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   // Salt for generating frame-specific media device IDs.
   std::string media_device_id_salt_base_;

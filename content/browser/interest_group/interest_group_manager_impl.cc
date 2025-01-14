@@ -129,7 +129,7 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
   resource_request->request_initiator = frame_origin;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   resource_request->trusted_params->client_security_state =
       client_security_state.Clone();
   if (user_agent_override.has_value()) {

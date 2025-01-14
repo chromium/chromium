@@ -9111,8 +9111,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   // A nonced network request should initially succeed.
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9132,8 +9131,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   // NETWORK_ACCESS_REVOKED.
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9153,8 +9151,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   {
     auto params = mojom::URLLoaderFactoryParams::New();
     params->is_trusted = true;
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9172,8 +9169,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   }
   {
     auto params = mojom::URLLoaderFactoryParams::New();
-    params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce2);
+    params->isolation_info = net::IsolationInfo::CreateTransient(nonce2);
     std::unique_ptr<TestURLLoaderClient> client =
         FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
                      mojom::kBrowserProcessId, std::move(params));
@@ -9209,7 +9205,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9262,7 +9258,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9321,7 +9317,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(
@@ -9372,7 +9368,7 @@ TEST_F(NetworkContextTest,
       mojom::URLLoaderFactoryParams::New();
   params->process_id = mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
   HangingTestURLLoaderHeaderClient header_client(
       params->header_client.InitWithNewPipeAndPassReceiver());
   network_context->CreateURLLoaderFactory(

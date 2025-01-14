@@ -925,7 +925,8 @@ InterestGroupUpdateManager::OwnersToUpdate::GetIsolationInfoByJoiningOrigin(
   if (isolation_info_it != joining_origin_isolation_info_map_.end()) {
     return &isolation_info_it->second;
   } else {
-    net::IsolationInfo isolation_info = net::IsolationInfo::CreateTransient();
+    net::IsolationInfo isolation_info =
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
     const auto [it, success] = joining_origin_isolation_info_map_.insert(
         {joining_origin, std::move(isolation_info)});
     CHECK(success);
@@ -1029,7 +1030,8 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
   // NIK for all storage interest groups.
   net::IsolationInfo per_update_isolation_info;
   if (!base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
-    per_update_isolation_info = net::IsolationInfo::CreateTransient();
+    per_update_isolation_info =
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   }
 
   for (auto& [interest_group_key, update_url, joining_origin] :

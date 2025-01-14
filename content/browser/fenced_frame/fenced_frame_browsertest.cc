@@ -2660,7 +2660,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->trusted_params = network::ResourceRequest::TrustedParams();
     request->trusted_params->isolation_info =
-        net::IsolationInfo::CreateTransientWithNonce(nonce);
+        net::IsolationInfo::CreateTransient(nonce);
 
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         network::SimpleURLLoader::Create(std::move(request),

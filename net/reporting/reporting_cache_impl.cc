@@ -1039,7 +1039,7 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
   // uploaded. Enterprise endpoints are profile-bound and
   // not document-bound like web developer endpoints.
   if (endpoint.group_key.target_type == ReportingTargetType::kEnterprise) {
-    return IsolationInfo::CreateTransient();
+    return IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   }
   // V0 endpoint groups do not support credentials.
   if (!endpoint.group_key.reporting_source.has_value()) {

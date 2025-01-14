@@ -122,7 +122,7 @@ void AggregatableReportSender::SendReport(const GURL& url,
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("aggregation_service_report", R"(

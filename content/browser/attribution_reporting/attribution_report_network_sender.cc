@@ -183,7 +183,7 @@ void AttributionReportNetworkSender::SendReport(GURL url,
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("conversion_measurement_report", R"(

@@ -242,8 +242,8 @@ TEST_F(RegistrationTest, BasicSuccess) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -280,8 +280,8 @@ TEST_F(RegistrationTest, NoScopeJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -314,8 +314,8 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -347,8 +347,8 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -397,8 +397,8 @@ TEST_F(RegistrationTest, OneMissingPath) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -453,8 +453,8 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -498,8 +498,8 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -530,8 +530,8 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -564,8 +564,8 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -605,8 +605,8 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -640,8 +640,8 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -664,8 +664,8 @@ TEST_F(RegistrationTest, ReturnTextFile) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
@@ -681,8 +681,8 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
@@ -698,8 +698,8 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
@@ -714,8 +714,8 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
   RegistrationFetcherParam params = GetBasicParam(url);
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(callback.outcome(), std::nullopt);
@@ -730,8 +730,8 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(callback.outcome(), std::nullopt);
@@ -747,8 +747,8 @@ TEST_F(RegistrationTest, ServerError500) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(callback.outcome(), std::nullopt);
@@ -767,8 +767,8 @@ TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
@@ -827,8 +827,8 @@ TEST_F(RegistrationTest, FollowHttpsRedirect) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(followed);
@@ -852,8 +852,8 @@ TEST_F(RegistrationTest, DontFollowHttpRedirect) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_FALSE(followed);
@@ -871,8 +871,8 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
   RegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
 
   callback.WaitForCall();
   EXPECT_EQ(callback.outcome(), std::nullopt);
@@ -909,7 +909,7 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
@@ -945,7 +945,7 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   TestRegistrationCallback callback;
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
@@ -979,7 +979,7 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   TestRegistrationCallback callback;
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, std::nullopt);
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
       std::ref(unexportable_key_service()), context_.get(),
@@ -1018,8 +1018,8 @@ TEST_F(RegistrationTest, ContinueFalse) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
   std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
       callback.outcome();
@@ -1056,7 +1056,7 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
                  &unexportable_keys::UnexportableKeyService::SignSlowlyAsync));
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
@@ -1097,7 +1097,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure) {
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
       &RegistrationFetcher::StartFetchWithExistingKey, std::move(request_param),
-      std::ref(mock_service), context_.get(), IsolationInfo::CreateTransient(),
+      std::ref(mock_service), context_.get(),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
       /*net_log_source=*/std::nullopt, callback.callback()));
   callback.WaitForCall();
 
@@ -1119,8 +1120,8 @@ TEST_F(RegistrationTest, NetLogResultLogged) {
   TestRegistrationCallback callback;
   RegistrationFetcher::StartCreateTokenAndFetch(
       GetBasicParam(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(), /*net_log_source=*/std::nullopt,
-      callback.callback());
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      /*net_log_source=*/std::nullopt, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(
@@ -1139,7 +1140,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  auto isolation_info = IsolationInfo::CreateTransient();
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   auto request_param = RegistrationRequestParam::CreateForTesting(
       server_.base_url(), kSessionIdentifier, kChallenge);
   CreateKeyAndRunCallback(base::BindOnce(
