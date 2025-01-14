@@ -668,11 +668,7 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
 class DetachToBrowserTabDragControllerTest
     : public TabDragControllerTest,
       public ::testing::WithParamInterface<
-#if !BUILDFLAG(IS_CHROMEOS)
-          testing::tuple<bool, bool, const char*, bool>> {
-#else
           testing::tuple<bool, bool, const char*>> {
-#endif
  public:
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
@@ -691,15 +687,6 @@ class DetachToBrowserTabDragControllerTest
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(features::kTearOffWebAppTabOpensWebAppWindow);
     }
-#if !BUILDFLAG(IS_CHROMEOS)
-    if (std::get<3>(GetParam())) {
-      enabled_features.push_back(features::kAllowWindowDragUsingSystemDragDrop);
-    } else {
-      // We need to explicitly disable it to override potential field trials.
-      disabled_features.push_back(
-          features::kAllowWindowDragUsingSystemDragDrop);
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   DetachToBrowserTabDragControllerTest(
@@ -5449,17 +5436,15 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
-        /*input_source=*/::testing::Values("mouse"),
-        /*kAllowWindowDragUsingSystemDragDrop=*/::testing::Bool()));
+        /*input_source=*/::testing::Values("mouse")));
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
     ::testing::Combine(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
-        /*input_source=*/::testing::Values("mouse"),
-        /*kAllowWindowDragUsingSystemDragDrop=*/::testing::Bool()));
-#endif
+        /*input_source=*/::testing::Values("mouse")));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
@@ -5518,11 +5503,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
-        /*input_source=*/::testing::Values("mouse"),
-        /*kAllowWindowDragUsingSystemDragDrop=*/::testing::Bool()));
+        /*input_source=*/::testing::Values("mouse")));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachTabWithUrlControlledByWebApp,
@@ -5530,14 +5513,3 @@ INSTANTIATE_TEST_SUITE_P(
         /*kSplitTabStrip=*/::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
         /*input_source=*/::testing::Values("mouse")));
-
-#else
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
-    DetachTabWithUrlControlledByWebApp,
-    ::testing::Combine(
-        /*kSplitTabStrip=*/::testing::Bool(),
-        /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Bool(),
-        /*input_source=*/::testing::Values("mouse"),
-        /*kAllowWindowDragUsingSystemDragDrop=*/::testing::Bool()));
-#endif

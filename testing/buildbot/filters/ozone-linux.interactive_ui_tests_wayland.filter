@@ -11,13 +11,6 @@
 # implementation similar to what was introduced in https://crrev.com/c/4738688.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/*
 
-# Flaky. These are the variants where fallback tab dragging is disabled. As it
-# will soon be enabled by default, it's okay to disable these variants.
--TabDragging/DetachToBrowserTabDragControllerTest.Drag*ToSeparateWindow*/0
--TabDragging/DetachToBrowserTabDragControllerTest.Drag*ToSeparateWindow*/2
--TabDragging/DetachToBrowserTabDragControllerTest.Drag*ToSeparateWindow*/4
--TabDragging/DetachToBrowserTabDragControllerTest.Drag*ToSeparateWindow*/6
-
 # TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
 -BookmarkBarViewTest4.ContextMenus
 
