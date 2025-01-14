@@ -114,6 +114,14 @@ component("variations") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "android/variations_associated_data_android.cc",
+      "android/variations_seed_bridge.cc",
+      "android/variations_seed_bridge.h",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       "variations_crash_keys_chromeos.cc",
@@ -140,11 +148,7 @@ component("variations") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/variations_seed_bridge.cc",
-      "android/variations_seed_bridge.h",
-    ]
-    deps += [ "//components/variations/android:variations_seed_jni" ]
+    deps += [ "//components/variations/android:variations_jni" ]
   }
 
   if (is_chromeos) {
@@ -156,15 +160,6 @@ component("variations") {
 }
 
 if (is_android) {
-  static_library("variations_associated_data") {
-    sources = [ "android/variations_associated_data_android.cc" ]
-    deps = [
-      ":variations",
-      "//components/variations/android:variations_data_jni",
-      "//components/variations/net",
-    ]
-  }
-
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":variations_java" instead.
     visibility = [ ":*" ]

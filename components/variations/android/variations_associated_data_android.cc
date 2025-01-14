@@ -5,14 +5,12 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/base64.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "components/variations/net/variations_command_line.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/variations/android/variations_data_jni/VariationsAssociatedData_jni.h"
+#include "components/variations/android/variations_jni/VariationsAssociatedData_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -38,24 +36,6 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetFeedbackVariations(
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetVariationsString();
   return ConvertUTF8ToJavaString(env, values);
-}
-
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationsState(
-    JNIEnv* env) {
-  if (!base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
-    return nullptr;
-  }
-  std::vector<uint8_t> ciphertext;
-  const auto status =
-      variations::VariationsCommandLine::GetForCurrentProcess().EncryptToString(
-          &ciphertext);
-  base::UmaHistogramEnumeration("Variations.VariationsStateEncryptionStatus",
-                                status);
-  if (status != variations::VariationsStateEncryptionStatus::kSuccess) {
-    return nullptr;
-  }
-  std::string value = base::Base64Encode(ciphertext);
-  return ConvertUTF8ToJavaString(env, value);
 }
 
 ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
