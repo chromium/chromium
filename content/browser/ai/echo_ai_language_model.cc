@@ -19,12 +19,6 @@
 
 namespace content {
 
-namespace {
-constexpr char kResponsePrefix[] =
-    "On-device model is not available in Chromium, this API is just echoing "
-    "back the input:\n";
-}
-
 EchoAILanguageModel::EchoAILanguageModel() = default;
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
@@ -38,6 +32,11 @@ void EchoAILanguageModel::DoMockExecution(
     return;
   }
 
+  const std::string response =
+      "On-device model is not available in Chromium, this API is just echoing "
+      "back the input:\n" +
+      input;
+
   if (input.size() > EchoAIManagerImpl::kMaxContextSizeInTokens) {
     responder->OnError(blink::mojom::ModelStreamingResponseStatus::
                            kErrorPromptRequestTooLarge);
@@ -49,10 +48,7 @@ void EchoAILanguageModel::DoMockExecution(
     responder->OnContextOverflow();
   }
   current_tokens_ += input.size();
-  responder->OnStreaming(kResponsePrefix,
-                         blink::mojom::ModelStreamingResponderAction::kAppend);
-  responder->OnStreaming(input,
-                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnStreaming(response);
   responder->OnCompletion(
       blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
 }

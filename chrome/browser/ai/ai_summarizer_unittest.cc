@@ -174,14 +174,9 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
   AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming(_, _))
+  EXPECT_CALL(mock_responder, OnStreaming(_))
       .WillOnce(testing::Invoke(
-          [&](const std::string& text,
-              blink::mojom::ModelStreamingResponderAction action) {
-            EXPECT_THAT(text, "Test output");
-            EXPECT_EQ(action,
-                      blink::mojom::ModelStreamingResponderAction::kReplace);
-          }));
+          [&](const std::string& text) { EXPECT_THAT(text, "Test output"); }));
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
@@ -259,14 +254,10 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "Test output1");
-              EXPECT_EQ(action,
-                        blink::mojom::ModelStreamingResponderAction::kReplace);
-            }));
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Test output1");
+        }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
@@ -290,14 +281,10 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "Test output2");
-              EXPECT_EQ(action,
-                        blink::mojom::ModelStreamingResponderAction::kReplace);
-            }));
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Test output2");
+        }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(

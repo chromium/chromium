@@ -78,9 +78,7 @@ void AIWriter::ModelExecutionCallback(
   auto compose_response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ComposeResponse>(result.response->response);
   if (compose_response) {
-    responder->OnStreaming(
-        compose_response->output(),
-        blink::mojom::ModelStreamingResponderAction::kReplace);
+    responder->OnStreaming(compose_response->output());
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);
