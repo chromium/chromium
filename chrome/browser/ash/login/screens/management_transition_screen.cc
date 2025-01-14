@@ -72,7 +72,7 @@ void ManagementTransitionScreen::ShowImpl() {
   arc::ArcManagementTransition arc_management_transition =
       arc::GetManagementTransition(profile);
   std::string management_entity =
-      chrome::GetAccountManagerIdentity(profile).value_or(std::string());
+      GetAccountManagerIdentity(profile).value_or(std::string());
 
   if (view_)
     view_->Show(arc_management_transition, std::move(management_entity));

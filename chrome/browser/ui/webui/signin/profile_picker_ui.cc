@@ -73,7 +73,7 @@ bool IsBrowserSigninAllowed() {
 }
 
 std::string GetManagedDeviceDisclaimer() {
-  std::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
+  std::optional<std::string> manager = GetDeviceManagerIdentity();
   if (!manager) {
     return std::string();
   }

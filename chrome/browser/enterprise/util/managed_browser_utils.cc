@@ -292,7 +292,7 @@ jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
 
 // static
 std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env, Profile* profile) {
-  return chrome::GetManagementPageSubtitle(profile);
+  return GetManagementPageSubtitle(profile);
 }
 
 // static

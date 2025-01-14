@@ -139,7 +139,7 @@ class PolicyStoreObserver : public policy::CloudPolicyStore::Observer {
     std::string managed_device_disclaimer;
     if (state == PolicyStoreState::kSuccess ||
         state == PolicyStoreState::kSuccessAlreadyLoaded) {
-      std::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
+      std::optional<std::string> manager = GetDeviceManagerIdentity();
       managed_device_disclaimer =
           manager->empty()
               ? l10n_util::GetStringUTF8(IDS_FRE_MANAGED_DESCRIPTION)

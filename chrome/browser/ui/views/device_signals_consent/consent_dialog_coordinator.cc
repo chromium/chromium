@@ -119,11 +119,10 @@ void ConsentDialogCoordinator::RequestConsent(RequestConsentCallback callback) {
 }
 
 std::u16string ConsentDialogCoordinator::GetDialogBodyText() {
-  std::optional<std::string> manager =
-      chrome::GetAccountManagerIdentity(profile_);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile_);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = chrome::GetDeviceManagerIdentity();
+    manager = GetDeviceManagerIdentity();
   }
   return (manager && manager.value().length())
              ? l10n_util::GetStringFUTF16(

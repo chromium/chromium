@@ -1985,17 +1985,16 @@ void AppMenuModel::Build() {
   // On Chrome OS, similar UI is displayed in the system tray menu, instead of
   // this menu.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::ShouldDisplayManagedUi(browser_->profile())) {
+  if (ShouldDisplayManagedUi(browser_->profile())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
-                    chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-                    ui::ImageModel::FromVectorIcon(
-                        chrome::GetManagedUiIcon(browser_->profile()),
-                        ui::kColorMenuIcon, kDefaultIconSize));
+    AddItemWithIcon(
+        IDC_SHOW_MANAGEMENT_PAGE,
+        GetManagedUiMenuItemLabel(browser_->profile()),
+        ui::ImageModel::FromVectorIcon(GetManagedUiIcon(browser_->profile()),
+                                       ui::kColorMenuIcon, kDefaultIconSize));
 
-    SetAccessibleNameAt(
-        GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
-        chrome::GetManagedUiMenuItemTooltip(browser_->profile()));
+    SetAccessibleNameAt(GetIndexOfCommandId(IDC_SHOW_MANAGEMENT_PAGE).value(),
+                        GetManagedUiMenuItemTooltip(browser_->profile()));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

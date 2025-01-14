@@ -871,8 +871,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
                                     is_enterprise_managed);
 
   if (is_enterprise_managed) {
-    std::optional<std::string> manager =
-        chrome::GetAccountManagerIdentity(profile);
+    std::optional<std::string> manager = GetAccountManagerIdentity(profile);
     if (manager) {
       known_user.SetAccountManager(user_context.GetAccountId(), *manager);
     }

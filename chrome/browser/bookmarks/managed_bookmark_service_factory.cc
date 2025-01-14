@@ -58,7 +58,7 @@ std::string ManagedBookmarkServiceFactory::GetManagedBookmarksManager(
   if (connector->IsManaged() &&
       connector->IsProfilePolicy(policy::key::kManagedBookmarks)) {
     std::optional<std::string> account_manager =
-        chrome::GetAccountManagerIdentity(profile);
+        GetAccountManagerIdentity(profile);
     if (account_manager)
       return *account_manager;
   }

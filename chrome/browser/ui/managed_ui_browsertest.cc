@@ -85,7 +85,7 @@ class ManagedUiTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(
     ManagedUiTest,
     ShouldDisplayManagedUiNoPoliciesNotSupervisedReturnsFalse) {
-  EXPECT_FALSE(chrome::ShouldDisplayManagedUi(browser()->profile()));
+  EXPECT_FALSE(ShouldDisplayManagedUi(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -94,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(
   AddEnterpriseManagedPolicies();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(chrome::ShouldDisplayManagedUi(browser()->profile()));
+  EXPECT_FALSE(ShouldDisplayManagedUi(browser()->profile()));
 #else
-  EXPECT_TRUE(chrome::ShouldDisplayManagedUi(browser()->profile()));
+  EXPECT_TRUE(ShouldDisplayManagedUi(browser()->profile()));
 #endif
 }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, ShouldDisplayManagedUiSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   EXPECT_EQ(ExpectManagedUiForSupervisedUsers(),
-            chrome::ShouldDisplayManagedUi(profile.get()));
+            ShouldDisplayManagedUi(profile.get()));
 }
 
 // On ChromeOS we don't display the management UI for enterprise or supervised
@@ -143,32 +143,32 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelEnterprise) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                  ui::GetChromeOSDeviceName(), u"example.com"),
-      chrome::GetDeviceManagedUiHelpLabel(profile_with_domain.get()));
+      GetDeviceManagedUiHelpLabel(profile_with_domain.get()));
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            chrome::GetDeviceManagedUiHelpLabel(profile_with_hosted_domain));
+            GetDeviceManagedUiHelpLabel(profile_with_hosted_domain));
   // Enterprise management takes precedence over supervision in the management
   // UI.
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            chrome::GetDeviceManagedUiHelpLabel(profile_supervised.get()));
+            GetDeviceManagedUiHelpLabel(profile_supervised.get()));
 #else
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        u"example.com"),
-            chrome::GetDeviceManagedUiHelpLabel(profile_with_domain.get()));
+            GetDeviceManagedUiHelpLabel(profile_with_domain.get()));
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        u"hosteddomain.com"),
-            chrome::GetDeviceManagedUiHelpLabel(profile_with_hosted_domain));
+            GetDeviceManagedUiHelpLabel(profile_with_hosted_domain));
   // Enterprise management takes precedence over supervision in the management
   // UI.
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE),
-            chrome::GetDeviceManagedUiHelpLabel(profile_supervised.get()));
+            GetDeviceManagedUiHelpLabel(profile_supervised.get()));
 #endif
 }
 
@@ -181,13 +181,13 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelSupervised) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
 #else
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HELP_MANAGED_BY_YOUR_PARENT),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
 #endif
 }
 
@@ -199,10 +199,10 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelNotManaged) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                        ui::GetChromeOSDeviceName()),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
 #else
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE),
-            chrome::GetDeviceManagedUiHelpLabel(profile.get()));
+            GetDeviceManagedUiHelpLabel(profile.get()));
 #endif
 }
 
@@ -230,11 +230,11 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconEnterprise) {
       builder_supervised.Build();
 
   EXPECT_EQ(vector_icons::kBusinessChromeRefreshIcon.name,
-            chrome::GetManagedUiIcon(profile.get()).name);
+            GetManagedUiIcon(profile.get()).name);
   // Enterprise management takes precedence over supervision in the management
   // UI.
   EXPECT_EQ(vector_icons::kBusinessChromeRefreshIcon.name,
-            chrome::GetManagedUiIcon(profile_supervised.get()).name);
+            GetManagedUiIcon(profile_supervised.get()).name);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   EXPECT_EQ(vector_icons::kFamilyLinkIcon.name,
-            chrome::GetManagedUiIcon(profile.get()).name);
+            GetManagedUiIcon(profile.get()).name);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkUrlEnterprise) {
@@ -265,11 +265,11 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkUrlEnterprise) {
       builder_supervised.Build();
 
   EXPECT_EQ(GURL(chrome::kChromeUIManagementURL),
-            chrome::GetManagedUiUrl(profile.get()));
+            GetManagedUiUrl(profile.get()));
   // Enterprise management takes precedence over supervision in the management
   // UI.
   EXPECT_EQ(GURL(chrome::kChromeUIManagementURL),
-            chrome::GetManagedUiUrl(profile_supervised.get()));
+            GetManagedUiUrl(profile_supervised.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkUrlSupervised) {
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkUrlSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   EXPECT_EQ(GURL(supervised_user::kManagedByParentUiMoreInfoUrl),
-            chrome::GetManagedUiUrl(profile.get()));
+            GetManagedUiUrl(profile.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkNotManaged) {
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuLinkNotManaged) {
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
-  EXPECT_EQ(GURL(), chrome::GetManagedUiUrl(profile.get()));
+  EXPECT_EQ(GURL(), GetManagedUiUrl(profile.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
       builder_supervised.Build();
 
   const std::string unknown_device_manager = "";
-  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+  ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
       unknown_device_manager.c_str());
   {
     // Unmanaged profile
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::NONE);
     EXPECT_EQ(u"Managed by your parent",
-              chrome::GetManagedUiMenuItemLabel(profile_supervised.get()));
+              GetManagedUiMenuItemLabel(profile_supervised.get()));
   }
 
   {
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"Profile managed by example.com",
-              chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
+              GetManagedUiMenuItemLabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"Profile managed by hosteddomain.com",
-              chrome::GetManagedUiMenuItemLabel(profile_with_hosted_domain));
+              GetManagedUiMenuItemLabel(profile_with_hosted_domain));
   }
 
   {
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by your organization",
-              chrome::GetManagedUiMenuItemLabel(profile.get()));
+              GetManagedUiMenuItemLabel(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by your organization",
-              chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
+              GetManagedUiMenuItemLabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by your organization",
-              chrome::GetManagedUiMenuItemLabel(profile_with_hosted_domain));
+              GetManagedUiMenuItemLabel(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by your organization",
-              chrome::GetManagedUiMenuItemLabel(profile_supervised.get()));
+              GetManagedUiMenuItemLabel(profile_supervised.get()));
   }
 
   {
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser and profile are managed",
-              chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
+              GetManagedUiMenuItemLabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -397,19 +397,19 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser and profile are managed",
-              chrome::GetManagedUiMenuItemLabel(profile_with_hosted_domain));
+              GetManagedUiMenuItemLabel(profile_with_hosted_domain));
   }
 
   {
     // Simulate managed browser with known manager and profile.
     const std::string device_manager = "example.com";
-    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+    ScopedDeviceManagerForTesting device_manager_for_testing(
         device_manager.c_str());
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by example.com",
-              chrome::GetManagedUiMenuItemLabel(profile.get()));
+              GetManagedUiMenuItemLabel(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by example.com",
-              chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
+              GetManagedUiMenuItemLabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser and profile are managed",
-              chrome::GetManagedUiMenuItemLabel(profile_with_hosted_domain));
+              GetManagedUiMenuItemLabel(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Managed by example.com",
-              chrome::GetManagedUiMenuItemLabel(profile_supervised.get()));
+              GetManagedUiMenuItemLabel(profile_supervised.get()));
   }
 }
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
       builder_supervised.Build();
 
   const std::string unknown_device_manager = "";
-  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+  ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
       unknown_device_manager.c_str());
 
   {
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_domain.get()));
+              GetManagedUiMenuItemTooltip(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
+              GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
   }
 
   {
@@ -490,8 +490,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
-    EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile.get()));
+    EXPECT_EQ(std::u16string(), GetManagedUiMenuItemTooltip(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -499,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_domain.get()));
+              GetManagedUiMenuItemTooltip(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -507,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
+              GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -515,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_supervised.get()));
+              GetManagedUiMenuItemTooltip(profile_supervised.get()));
   }
 
   {
@@ -529,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
             IDS_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY_TOOLTIP, u"example.com"),
-        chrome::GetManagedUiMenuItemTooltip(profile_with_domain.get()));
+        GetManagedUiMenuItemTooltip(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -540,19 +539,18 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY_TOOLTIP,
                   u"hosteddomain.com"),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
+              GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
   }
 
   {
     // Simulate managed browser with known manager and profile.
     const std::string device_manager = "example.com";
-    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+    ScopedDeviceManagerForTesting device_manager_for_testing(
         device_manager.c_str());
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
-    EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile.get()));
+    EXPECT_EQ(std::u16string(), GetManagedUiMenuItemTooltip(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -561,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_domain.get()));
+              GetManagedUiMenuItemTooltip(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -572,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY_TOOLTIP,
                   u"example.com", u"hosteddomain.com"),
-              chrome::GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
+              GetManagedUiMenuItemTooltip(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -580,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemTooltipEnterprise) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(std::u16string(),
-              chrome::GetManagedUiMenuItemTooltip(profile_supervised.get()));
+              GetManagedUiMenuItemTooltip(profile_supervised.get()));
   }
 }
 
@@ -595,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabelSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   EXPECT_EQ(u"Managed by your parent",
-            chrome::GetManagedUiMenuItemLabel(profile.get()));
+            GetManagedUiMenuItemLabel(profile.get()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -616,14 +614,13 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconEnterprise) {
       builder_supervised.Build();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile.get()).empty());
-  EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile_supervised.get()).empty());
+  EXPECT_TRUE(GetManagedUiWebUIIcon(profile.get()).empty());
+  EXPECT_TRUE(GetManagedUiWebUIIcon(profile_supervised.get()).empty());
 #else
-  EXPECT_EQ("cr:domain", chrome::GetManagedUiWebUIIcon(profile.get()));
+  EXPECT_EQ("cr:domain", GetManagedUiWebUIIcon(profile.get()));
   // Enterprise management takes precedence over supervision in the management
   // UI.
-  EXPECT_EQ("cr:domain",
-            chrome::GetManagedUiWebUIIcon(profile_supervised.get()));
+  EXPECT_EQ("cr:domain", GetManagedUiWebUIIcon(profile_supervised.get()));
 #endif
 }
 
@@ -634,9 +631,9 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   if (ExpectManagedUiForSupervisedUsers()) {
-    EXPECT_EQ("cr20:kite", chrome::GetManagedUiWebUIIcon(profile.get()));
+    EXPECT_EQ("cr20:kite", GetManagedUiWebUIIcon(profile.get()));
   } else {
-    EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile.get()).empty());
+    EXPECT_TRUE(GetManagedUiWebUIIcon(profile.get()).empty());
   }
 }
 
@@ -665,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
       builder_supervised.Build();
 
   const std::string unknown_device_manager = "";
-  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+  ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
       unknown_device_manager.c_str());
   {
     // Simulate a managed profile
@@ -677,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">profile is managed</a> by "
         u"example.com",
-        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+        GetManagedUiWebUILabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -687,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">profile is managed</a> by "
         u"hosteddomain.com",
-        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+        GetManagedUiWebUILabel(profile_with_hosted_domain));
   }
 
   {
@@ -698,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile.get()));
+        GetManagedUiWebUILabel(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -708,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+        GetManagedUiWebUILabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -718,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+        GetManagedUiWebUILabel(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -728,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+        GetManagedUiWebUILabel(profile_supervised.get()));
   }
 
   {
@@ -739,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile.get()));
+        GetManagedUiWebUILabel(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -751,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization and your <a href=\"chrome://management\">profile is "
         u"managed</a> by example.com",
-        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+        GetManagedUiWebUILabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -763,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization and your <a href=\"chrome://management\">profile is "
         u"managed</a> by hosteddomain.com",
-        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+        GetManagedUiWebUILabel(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -773,13 +770,13 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by your "
         u"organization",
-        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+        GetManagedUiWebUILabel(profile_supervised.get()));
   }
 
   {
     // Simulate managed browser with known manager and profile.
     const std::string device_manager = "example.com";
-    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+    ScopedDeviceManagerForTesting device_manager_for_testing(
         device_manager.c_str());
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
@@ -787,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by "
         u"example.com",
-        chrome::GetManagedUiWebUILabel(profile.get()));
+        GetManagedUiWebUILabel(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -798,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser and profile are "
         u"managed</a> by example.com",
-        chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+        GetManagedUiWebUILabel(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -811,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
         u"example.com "
         u"and your <a href=\"chrome://management\">profile is "
         u"managed</a> by hosteddomain.com",
-        chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
+        GetManagedUiWebUILabel(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -821,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
     EXPECT_EQ(
         u"Your <a href=\"chrome://management\">browser is managed</a> by "
         u"example.com",
-        chrome::GetManagedUiWebUILabel(profile_supervised.get()));
+        GetManagedUiWebUILabel(profile_supervised.get()));
   }
 }
 
@@ -850,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
       builder_supervised.Build();
 
   const std::string unknown_device_manager = "";
-  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+  ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
       unknown_device_manager.c_str());
   {
     // Simulate a managed profile
@@ -860,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"Your profile is managed by example.com",
-              chrome::GetManagementPageSubtitle(profile_with_domain.get()));
+              GetManagementPageSubtitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -868,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"Your profile is managed by hosteddomain.com",
-              chrome::GetManagementPageSubtitle(profile_with_hosted_domain));
+              GetManagementPageSubtitle(profile_with_hosted_domain));
   }
 
   {
@@ -877,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile.get()));
+              GetManagementPageSubtitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -885,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile_with_domain.get()));
+              GetManagementPageSubtitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -893,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile_with_hosted_domain));
+              GetManagementPageSubtitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -901,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile_supervised.get()));
+              GetManagementPageSubtitle(profile_supervised.get()));
   }
 
   {
@@ -910,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile.get()));
+              GetManagementPageSubtitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -921,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
     EXPECT_EQ(
         u"Your browser is managed by your organization and your profile is "
         u"managed by example.com",
-        chrome::GetManagementPageSubtitle(profile_with_domain.get()));
+        GetManagementPageSubtitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -932,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
     EXPECT_EQ(
         u"Your browser is managed by your organization and your profile is "
         u"managed by hosteddomain.com",
-        chrome::GetManagementPageSubtitle(profile_with_hosted_domain));
+        GetManagementPageSubtitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -940,19 +937,19 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by your organization",
-              chrome::GetManagementPageSubtitle(profile_supervised.get()));
+              GetManagementPageSubtitle(profile_supervised.get()));
   }
 
   {
     // Simulate managed browser with known manager and profile.
     const std::string device_manager = "example.com";
-    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+    ScopedDeviceManagerForTesting device_manager_for_testing(
         device_manager.c_str());
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by example.com",
-              chrome::GetManagementPageSubtitle(profile.get()));
+              GetManagementPageSubtitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -961,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
             policy::EnterpriseManagementAuthority::CLOUD |
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser and profile are managed by example.com",
-              chrome::GetManagementPageSubtitle(profile_with_domain.get()));
+              GetManagementPageSubtitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -972,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
     EXPECT_EQ(
         u"Your browser is managed by example.com and your profile is "
         u"managed by hosteddomain.com",
-        chrome::GetManagementPageSubtitle(profile_with_hosted_domain));
+        GetManagementPageSubtitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -980,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementPageSubtitle) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(u"Your browser is managed by example.com",
-              chrome::GetManagementPageSubtitle(profile_supervised.get()));
+              GetManagementPageSubtitle(profile_supervised.get()));
   }
 }
 #endif  //  !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1010,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
       builder_supervised.Build();
 
   const std::string unknown_device_manager = "";
-  chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+  ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
       unknown_device_manager.c_str());
   {
     // Simulate a managed profile
@@ -1020,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"example.com manages your profile",
-              chrome::GetManagementBubbleTitle(profile_with_domain.get()));
+              GetManagementBubbleTitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -1028,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(u"hosteddomain.com manages your profile",
-              chrome::GetManagementBubbleTitle(profile_with_hosted_domain));
+              GetManagementBubbleTitle(profile_with_hosted_domain));
   }
 
   {
@@ -1037,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile.get()));
+              GetManagementBubbleTitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -1045,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_with_domain.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile_with_domain.get()));
+              GetManagementBubbleTitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -1053,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_with_hosted_domain),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile_with_hosted_domain));
+              GetManagementBubbleTitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -1061,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile_supervised.get()));
+              GetManagementBubbleTitle(profile_supervised.get()));
   }
 
   {
@@ -1070,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile.get()));
+              GetManagementBubbleTitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -1081,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
     EXPECT_EQ(
         l10n_util::GetStringUTF16(
             IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS),
-        chrome::GetManagementBubbleTitle(profile_with_domain.get()));
+        GetManagementBubbleTitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -1092,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
     EXPECT_EQ(
         l10n_util::GetStringUTF16(
             IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS),
-        chrome::GetManagementBubbleTitle(profile_with_hosted_domain));
+        GetManagementBubbleTitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -1100,20 +1097,20 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 profile_supervised.get()),
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED),
-              chrome::GetManagementBubbleTitle(profile_supervised.get()));
+              GetManagementBubbleTitle(profile_supervised.get()));
   }
 
   {
     // Simulate managed browser with known manager and profile.
     const std::string device_manager = "example.com";
-    chrome::ScopedDeviceManagerForTesting device_manager_for_testing(
+    ScopedDeviceManagerForTesting device_manager_for_testing(
         device_manager.c_str());
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(profile.get()),
         policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY, u"example.com"),
-              chrome::GetManagementBubbleTitle(profile.get()));
+              GetManagementBubbleTitle(profile.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_domain_management(
@@ -1123,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
                 policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY, u"example.com"),
-              chrome::GetManagementBubbleTitle(profile_with_domain.get()));
+              GetManagementBubbleTitle(profile_with_domain.get()));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_with_hosted_domain_management(
@@ -1134,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
     EXPECT_EQ(
         l10n_util::GetStringUTF16(
             IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS),
-        chrome::GetManagementBubbleTitle(profile_with_hosted_domain));
+        GetManagementBubbleTitle(profile_with_hosted_domain));
 
     policy::ScopedManagementServiceOverrideForTesting
         profile_supervised_management(
@@ -1143,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagementBubbleTitle) {
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
     EXPECT_EQ(l10n_util::GetStringFUTF16(
                   IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY, u"example.com"),
-              chrome::GetManagementBubbleTitle(profile_supervised.get()));
+              GetManagementBubbleTitle(profile_supervised.get()));
   }
 }
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
@@ -1158,9 +1155,9 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabelSupervised) {
     EXPECT_EQ(
         u"Your <a href=\"https://familylink.google.com/setting/resource/94\">"
         u"browser is managed</a> by your parent",
-        chrome::GetManagedUiWebUILabel(profile.get()));
+        GetManagedUiWebUILabel(profile.get()));
   } else {
-    EXPECT_TRUE(chrome::GetManagedUiWebUILabel(profile.get()).empty());
+    EXPECT_TRUE(GetManagedUiWebUILabel(profile.get()).empty());
   }
 }
 
@@ -1175,13 +1172,13 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
       u"Your <a target=\"_blank\" "
       u"href=\"chrome://management\">Chrome device is "
       u"managed</a> by example.com",
-      chrome::GetDeviceManagedUiWebUILabel());
+      GetDeviceManagedUiWebUILabel());
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetSessionManagerIdentity_Unmanaged) {
-  EXPECT_EQ(std::nullopt, chrome::GetSessionManagerIdentity());
+  EXPECT_EQ(std::nullopt, GetSessionManagerIdentity());
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetSessionManagerIdentity_Managed) {
@@ -1193,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetSessionManagerIdentity_Managed) {
   policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
       std::move(profile_policy_data));
 
-  std::optional<std::string> identity = chrome::GetSessionManagerIdentity();
+  std::optional<std::string> identity = GetSessionManagerIdentity();
   EXPECT_TRUE(identity.has_value());
   EXPECT_EQ("domain.com", *identity);
 }

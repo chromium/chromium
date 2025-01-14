@@ -409,7 +409,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                    message_id, chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
-  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
+  response.Set("pageSubtitle", GetManagementPageSubtitle(profile));
 
   response.Set("extensionReportingSubtitle",
                l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
@@ -633,11 +633,10 @@ bool ManagementUIHandler::UpdateBrowserManagedState() {
 #endif
 
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) const {
-  std::optional<std::string> manager =
-      chrome::GetAccountManagerIdentity(profile);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = chrome::GetDeviceManagerIdentity();
+    manager = GetDeviceManagerIdentity();
   }
 
   return manager.value_or(std::string());

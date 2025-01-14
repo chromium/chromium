@@ -321,7 +321,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("managementPage",
-                         chrome::GetDeviceManagedUiHelpLabel(profile));
+                         GetDeviceManagedUiHelpLabel(profile));
   html_source->AddString(
       "aboutUpgradeUpToDate",
 #if BUILDFLAG(IS_CHROMEOS_ASH)

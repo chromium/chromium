@@ -45,7 +45,7 @@ void ManagedUIHandler::InitializeInternal(content::WebUI* web_ui,
 }
 
 ManagedUIHandler::ManagedUIHandler(Profile* profile)
-    : profile_(profile), managed_(chrome::ShouldDisplayManagedUi(profile_)) {
+    : profile_(profile), managed_(ShouldDisplayManagedUi(profile_)) {
   pref_registrar_.Init(profile_->GetPrefs());
 }
 
@@ -114,18 +114,18 @@ void ManagedUIHandler::RemoveObservers() {
 
 base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
   base::Value::Dict update;
-  update.Set("managedByIcon", chrome::GetManagedUiWebUIIcon(profile_));
-  update.Set("managementPageUrl", chrome::GetManagedUiUrl(profile_).spec());
-  update.Set("browserManagedByOrg", chrome::GetManagedUiWebUILabel(profile_));
+  update.Set("managedByIcon", GetManagedUiWebUIIcon(profile_));
+  update.Set("managementPageUrl", GetManagedUiUrl(profile_).spec());
+  update.Set("browserManagedByOrg", GetManagedUiWebUILabel(profile_));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  update.Set("deviceManagedByOrg", chrome::GetDeviceManagedUiWebUILabel());
+  update.Set("deviceManagedByOrg", GetDeviceManagedUiWebUILabel());
 #endif
   update.Set("isManaged", managed_);
   return update;
 }
 
 void ManagedUIHandler::NotifyIfChanged() {
-  bool managed = chrome::ShouldDisplayManagedUi(profile_);
+  bool managed = ShouldDisplayManagedUi(profile_);
   if (managed == managed_) {
     return;
   }

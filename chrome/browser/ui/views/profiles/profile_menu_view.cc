@@ -576,7 +576,7 @@ void ProfileMenuView::BuildIdentity() {
         IsSyncPaused(profile)
             ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
             : base::UTF8ToUTF16(account_info.email);
-    auto account_manager = chrome::GetAccountManagerIdentity(profile);
+    auto account_manager = GetAccountManagerIdentity(profile);
     std::u16string management_label;
     ui::ImageModel badge_image_model;
 
@@ -873,7 +873,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.header_image = *custom_management_image;
     } else {
       params.header_image = ui::ImageModel::FromVectorIcon(
-          chrome::GetManagedUiIcon(profile), ui::kColorIcon);
+          GetManagedUiIcon(profile), ui::kColorIcon);
     }
   }
 

@@ -109,7 +109,7 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
       UserManager::Get()->IsUserNonCryptohomeDataEphemeral(user.GetAccountId());
   session->user_info.has_gaia_account = user.has_gaia_account();
   session->user_info.should_display_managed_ui =
-      profile && chrome::ShouldDisplayManagedUi(profile);
+      profile && ShouldDisplayManagedUi(profile);
   session->user_info.is_new_profile = profile->IsNewProfile();
   session->user_info.is_managed =
       profile->GetProfilePolicyConnector()->IsManaged();

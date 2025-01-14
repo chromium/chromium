@@ -59,8 +59,6 @@
 
 using signin::constants::kNoHostedDomainFound;
 
-namespace chrome {
-
 namespace {
 
 enum ManagementStringType : size_t {
@@ -188,7 +186,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 
 GURL GetManagedUiUrl(Profile* profile) {
   if (enterprise_util::IsBrowserManaged(profile)) {
-    return GURL(kChromeUIManagementURL);
+    return GURL(chrome::kChromeUIManagementURL);
   }
 
   if (ShouldDisplayManagedByParentUi(profile)) {
@@ -504,5 +502,3 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
 
   return GetEnterpriseAccountDomain(*profile);
 }
-
-}  // namespace chrome

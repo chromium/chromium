@@ -386,7 +386,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -401,7 +401,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, existing device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -416,7 +416,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -431,7 +431,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager and device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -470,7 +470,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -485,7 +485,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, existing device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -500,7 +500,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -513,7 +513,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager and device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(

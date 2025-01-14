@@ -1046,9 +1046,8 @@ void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
 
 void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
   std::string account_manager =
-      profile
-          ? chrome::GetAccountManagerIdentity(profile).value_or(std::string())
-          : std::string();
+      profile ? GetAccountManagerIdentity(profile).value_or(std::string())
+              : std::string();
   if (account_manager == last_enterprise_account_domain_manager_) {
     return;
   }
