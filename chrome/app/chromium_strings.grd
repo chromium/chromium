@@ -2102,6 +2102,17 @@ Permissions you've already given to websites and apps may apply to this account.
           A Chromium profile with this account already exists on this device
         </message>
 
+        <!-- Profile Picker Glic version-->
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Profile picker main view title for Glic version. 'Glic' has a special styling" translateable="false">
+          Choose a Chromium profile to use with <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Glic<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
+        </message>
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Profile picker main view subtitle for Glic version." translateable="false">
+          Select the Chromium profile linked to your Google Account to personalize your glic experience.
+        </message>
+        <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Text shown in the Profile Picker Glic version below the profiles list container that helps the user to create a new profile and sign in to it." translateable="false">
+          To add a new profile and use it with glic, sign in to Chromium with a different Google Account. <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>Learn how<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+
         <!-- First Run Experience -->
         <if expr="chromeos_lacros">
           <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE" desc="Title of the landing screen in first run experience for the primary profile. The screen promotes Chromium sync.">

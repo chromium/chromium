@@ -19,7 +19,7 @@ build_webui("build") {
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",
     "navigation_mixin.ts",
-    "policy_helper.ts",
+    "profile_picker_flags.ts",
     "profile_card.html.ts",
     "profile_card.ts",
     "profile_card_menu.html.ts",

@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {isGlicVersion} from './profile_picker_flags.js';
 import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
 
 export function getHtml(this: ProfilePickerMainViewElement) {
@@ -14,7 +15,7 @@ export function getHtml(this: ProfilePickerMainViewElement) {
         srcset="chrome://theme/current-channel-logo@1x 1x,
                 chrome://theme/current-channel-logo@2x 2x"
         role="presentation">
-    <h1 class="title">$i18n{mainViewTitle}</h1>
+    <h1 class="title">$i18nRaw{mainViewTitle}</h1>
     <div class="subtitle">$i18n{mainViewSubtitle}</div>
   </div>
   <div id="wrapper">
@@ -37,6 +38,9 @@ export function getHtml(this: ProfilePickerMainViewElement) {
       </cr-button>
     </div>
   </div>
+</div>
+<div id="footer-text" ?hidden="${!isGlicVersion()}">
+  $i18nRaw{glicAddProfileHelper}
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton"

@@ -45,6 +45,28 @@
   margin-bottom: 8px;
 }
 
+/* This style will be applied on parts of the Glic version of the title. */
+/* Check IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC string resource. */
+.glic-brand-style {
+  background: linear-gradient(74deg,
+      darkgrey 0%,
+      white 50%,
+      grey 100%);
+
+  background-clip: text;
+  color: transparent;
+}
+
+#footer-text {
+  font-size: 0.75rem;
+  line-height: 22px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  max-width: 370px;
+  text-align: center;
+}
+
 .subtitle {
   margin-top: 8px;
 }

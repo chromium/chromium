@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,4 +24,8 @@ export function isSignInProfileCreationSupported(): boolean {
 
 export function isAskOnStartupAllowed(): boolean {
   return loadTimeData.getBoolean('isAskOnStartupAllowed');
+}
+
+export function isGlicVersion(): boolean {
+  return loadTimeData.getBoolean('isGlicVersion');
 }

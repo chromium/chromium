@@ -24,7 +24,7 @@ import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_del
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {isAskOnStartupAllowed, isProfileCreationAllowed} from './policy_helper.js';
+import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
 
@@ -117,9 +117,11 @@ export class ProfilePickerMainViewElement extends
         'display-force-signin-error-dialog',
         (title: string, body: string, profilePath: string) =>
             this.showForceSigninErrorDialog(title, body, profilePath));
-    this.addWebUiListener(
-        'guest-mode-availability-updated',
-        this.maybeUpdateGuestMode_.bind(this));
+    if (!isGlicVersion()) {
+      this.addWebUiListener(
+          'guest-mode-availability-updated',
+          this.maybeUpdateGuestMode_.bind(this));
+    }
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
@@ -137,7 +139,9 @@ export class ProfilePickerMainViewElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.resizeObserver_!.disconnect();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
 
     if (this.dragDelegate_) {
       this.dragDelegate_.clearListeners();
@@ -160,6 +164,13 @@ export class ProfilePickerMainViewElement extends
   }
 
   private addResizeObserver_() {
+    if (isGlicVersion()) {
+      // In the Glic version, the separator is not needed. If added it will
+      // interfere with the special background in this mode. Also a footer text
+      // is shown, which already acts as a separator.
+      return;
+    }
+
     const profilesContainer = this.$.profilesContainer;
     this.resizeObserver_ = new ResizeObserver(() => {
       this.shadowRoot!.querySelector('.footer')!.classList.toggle(

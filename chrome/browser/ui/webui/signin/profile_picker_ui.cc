@@ -88,14 +88,17 @@ std::string GetManagedDeviceDisclaimer() {
       base::UTF8ToUTF16(*manager));
 }
 
-int GetMainViewTitleId() {
+int GetMainViewTitleId(bool is_glic_version) {
+  if (is_glic_version) {
+    return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC;
+  }
+
   return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
                                 : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
 }
 
-void AddStrings(content::WebUIDataSource* html_source) {
+void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
   constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"mainViewSubtitle", IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE},
       {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
       {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
       {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
@@ -136,10 +139,16 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"ok", IDS_OK},
       {"signInButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
+      {"glicAddProfileHelper", IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddLocalizedString("mainViewTitle", GetMainViewTitleId());
+  html_source->AddLocalizedString("mainViewTitle",
+                                  GetMainViewTitleId(is_glic_version));
+  html_source->AddLocalizedString(
+      "mainViewSubtitle", is_glic_version
+                              ? IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC
+                              : IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE);
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
@@ -154,7 +163,28 @@ void AddStrings(content::WebUIDataSource* html_source) {
                          GetManagedDeviceDisclaimer());
 }
 
-void AddPolicies(content::WebUIDataSource* html_source) {
+void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
+  html_source->AddBoolean("isGlicVersion", is_glic_version);
+
+  // TODO(crbug.com/385726690): Check if we want to show the locked profiles or
+  // not.
+  html_source->AddBoolean("isForceSigninEnabled",
+                          signin_util::IsForceSigninEnabled());
+
+  // In glic version, disable all other policies:
+  // - Profile Creation and signing in are not allowed.
+  // - Additional action button should not be shown: Guest and AskOnStartup.
+  if (is_glic_version) {
+    html_source->AddBoolean("isAskOnStartupAllowed", false);
+    html_source->AddBoolean("askOnStartup", false);
+    html_source->AddBoolean("profilesReorderingEnabled", false);
+    html_source->AddBoolean("signInProfileCreationFlowSupported", false);
+    html_source->AddBoolean("isBrowserSigninAllowed", false);
+    html_source->AddBoolean("isGuestModeEnabled", false);
+    html_source->AddBoolean("isProfileCreationAllowed", false);
+    return;
+  }
+
   bool ask_on_startup_allowed =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
@@ -212,20 +242,19 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
     profile_picker_handler_->EnableStartupMetrics();
   }
 
-  if (web_ui->GetWebContents()->GetVisibleURL().query() ==
-      chrome::kChromeUIProfilePickerGlicQuery) {
-    // TODO(crbug.com/385726690): Enable Glic mode for the Ui.
-  }
+  bool is_glic_version = web_ui->GetWebContents()->GetVisibleURL().query() ==
+                         chrome::kChromeUIProfilePickerGlicQuery;
 
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback
   // to the one obtained from `NavigationEntry::GetTitleForDisplay()` (which
   // ends up being the URL) when we try to get it on startup for a11y purposes.
-  web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
+  web_ui->OverrideTitle(
+      l10n_util::GetStringUTF16(GetMainViewTitleId(is_glic_version)));
 
   // Add all resources.
-  AddStrings(html_source);
-  AddPolicies(html_source);
+  AddStrings(html_source, is_glic_version);
+  AddFlags(html_source, is_glic_version);
   AddResourcePaths(html_source);
 
   webui::SetupWebUIDataSource(html_source, kProfilePickerResources,
