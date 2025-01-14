@@ -126,6 +126,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
     [self pasteboardDidChange:nil];
 
+    // Similar logic as `omnibox_view_controller.mm`.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(applicationDidBecomeActive:)
+               name:UIApplicationDidBecomeActiveNotification
+             object:nil];
+
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
           @[ UITraitPreferredContentSizeCategory.class ]);
@@ -139,6 +146,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
   NOTREACHED();
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setText:(NSAttributedString*)text
@@ -1032,6 +1043,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {
   _pasteboardHasStrings = pasteboard.hasStrings;
+}
+
+- (void)applicationDidBecomeActive:(NSNotification*)notification {
+  [self pasteboardDidChange:nil];
 }
 
 // Resets Omnibox's the font and attributed text when a UITrait is modified.
