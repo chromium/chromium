@@ -34,9 +34,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -204,13 +206,26 @@ class GifsButton : public views::LabelButton {
                          : kGifsButtonIconSize + kGifsButtonIconLabelSpacing),
         max_height);
   }
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    views::LabelButton::PaintButtonContents(canvas);
+
+    if (is_checked_ &&
+        GetState() == views::Button::ButtonState::STATE_HOVERED) {
+      SkPath mask;
+      mask.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
+                        kGifsButtonCornerRadius, kGifsButtonCornerRadius);
+      canvas->ClipPath(mask, true);
+      canvas->DrawColor(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));
+    }
+  }
 
   void UpdateBackground() {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        GetState() == views::Button::ButtonState::STATE_HOVERED
-            ? cros_tokens::kCrosSysHoverOnSubtle
-            : (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
-                           : cros_tokens::kCrosSysSystemOnBase),
+        (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                     : (GetState() == views::Button::ButtonState::STATE_HOVERED
+                            ? cros_tokens::kCrosSysHoverOnSubtle
+                            : cros_tokens::kCrosSysSystemOnBase)),
         kGifsButtonCornerRadius));
   }
 
