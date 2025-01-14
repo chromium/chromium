@@ -7014,12 +7014,6 @@ const FeatureEntry kFeatureEntries[] = {
          "")},
 #endif
 
-    {"legacy-tech-report-enable-cookie-issue-reports",
-     flag_descriptions::kLegacyTechReportEnableCookieIssueReportsName,
-     flag_descriptions::kLegacyTechReportEnableCookieIssueReportsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kLegacyTechReportEnableCookieIssueReports)},
-
     {
         "zero-copy-tab-capture",
         flag_descriptions::kEnableZeroCopyTabCaptureName,

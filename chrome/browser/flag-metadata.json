@@ -5566,11 +5566,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "legacy-tech-report-enable-cookie-issue-reports",
-    "owners": ["sandormajor@chromium.org", "zmin@chromium.org", "parastoog@chromium.org"],
-    "expiry_milestone": 129
-  },
-  {
     "name": "lens-clearcut-background-upload-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140

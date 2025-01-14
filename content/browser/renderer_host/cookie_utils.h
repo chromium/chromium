@@ -28,7 +28,6 @@ void SplitCookiesIntoAllowedAndBlocked(
 // TODO(crbug.com/40632967): Remove when no longer needed.
 void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
-    NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details);
 
 }  // namespace content

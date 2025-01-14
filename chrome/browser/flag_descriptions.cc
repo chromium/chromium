@@ -2418,12 +2418,6 @@ const char kLanguageDetectionAPIName[] = "Language detection web platform API";
 const char kLanguageDetectionAPIDescription[] =
     "When enabled, JS can use the web platform's language detection API";
 
-const char kLegacyTechReportEnableCookieIssueReportsName[] =
-    "Enable reporting of Cookie Issues for legacy technology report";
-const char kLegacyTechReportEnableCookieIssueReportsDescription[] =
-    "When enabled, usage of third-party cookies (on allowlisted pages) is "
-    "uploaded for enterprise users as part of a legacy technology report.";
-
 const char kLegacyTechReportTopLevelUrlName[] =
     "Using top level navigation URL for legacy technology report";
 const char kLegacyTechReportTopLevelUrlDescription[] =
