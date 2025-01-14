@@ -13,10 +13,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
@@ -31,7 +33,7 @@ import java.util.Optional;
 
 /**
  * An observer class that listens for changes in UI components that are attached to the bottom of
- * the screen, bordering the OS navigation bar. This class then aggregates that information and
+ * the screen, bordering the navigation bar area. This class then aggregates that information and
  * notifies its own observers of properties of the UI currently bordering ("attached to") the
  * navigation bar.
  */
@@ -74,6 +76,7 @@ public class BottomAttachedUiObserver
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private int mBottomControlsHeight;
+    private int mBottomControlsMinHeight;
     private @Nullable @ColorInt Integer mBottomControlsColor;
     private boolean mUseBottomControlsColor;
 
@@ -320,28 +323,58 @@ public class BottomAttachedUiObserver
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
-        updateBrowserControlsVisibility(
+        boolean hasOtherVisibleBottomControls =
                 // MiniPlayerMediator#shrinkBottomControls() sets the height to 1 and minHeight to 0
                 // when hiding, instead of setting the height to 0.
                 // TODO(b/320750931): Clean up once the MiniPlayerMediator has been improved.
                 mBottomControlsHeight > 1
-                        && bottomOffset < mBottomControlsHeight
                         && mBottomControlsStacker.hasVisibleLayersOtherThan(
-                                BottomControlsStacker.LayerType.BOTTOM_CHIN));
+                                BottomControlsStacker.LayerType.BOTTOM_CHIN);
+
+        if (!hasOtherVisibleBottomControls) {
+            updateUseBottomControlsColor(false);
+            return;
+        }
+
+        boolean useBrowserControlsColor = bottomOffset < mBottomControlsHeight;
+
+        // When bottom chin constraint exists, the chin will have the same coloring mechanism as
+        // the OS navigation bar as if E2E is disabled.
+        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT)) {
+            boolean hasScrollablePortion =
+                    bottomOffset < mBottomControlsHeight - mBottomControlsMinHeight;
+            boolean chinNotScrollable =
+                    mBottomControlsStacker.isLayerNonScrollable(LayerType.BOTTOM_CHIN);
+            boolean hasOtherNonScrollableLayer =
+                    mBottomControlsStacker.hasMultipleNonScrollableLayer();
+            boolean hasFixedBrowserControlsAttached =
+                    chinNotScrollable && hasOtherNonScrollableLayer;
+
+            useBrowserControlsColor = hasScrollablePortion || hasFixedBrowserControlsAttached;
+        }
+
+        updateUseBottomControlsColor(useBrowserControlsColor);
     }
 
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
         mBottomControlsHeight = bottomControlsHeight;
+        mBottomControlsMinHeight = bottomControlsMinHeight;
 
         // MiniPlayerMediator#shrinkBottomControls() sets the height to 1 and minHeight to 0 when
         // hiding, instead of setting the height to 0.
         // TODO(b/320750931): Clean up once the MiniPlayerMediator has been improved.
-        updateBrowserControlsVisibility(
+        updateUseBottomControlsColor(
                 mBottomControlsHeight > 1
                         && mBottomControlsStacker.hasVisibleLayersOtherThan(
                                 BottomControlsStacker.LayerType.BOTTOM_CHIN));
+
+        // BottomChin constraint does not impact this method, since when control's height changes,
+        // #hasVisibleLayersOtherThan(BOTTOM_CHIN) already covers whether bottom chin will have
+        // a colored layer attached.
     }
 
     @Override
@@ -350,7 +383,7 @@ public class BottomAttachedUiObserver
         updateBottomAttachedColor();
     }
 
-    private void updateBrowserControlsVisibility(boolean useBottomControlsColor) {
+    private void updateUseBottomControlsColor(boolean useBottomControlsColor) {
         if (useBottomControlsColor == mUseBottomControlsColor) {
             return;
         }
