@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/base64.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 @interface WebMenuRunner (PrivateAPI)
@@ -177,15 +178,21 @@
   [_menu cancelTrackingWithoutAnimation];
 
   // Starting with macOS 14, menus were reimplemented with Cocoa (rather than
-  // with the old Carbon). However, with that reimplementation came a bug
-  // whereupon using -cancelTrackingWithoutAnimation does not consistently
-  // immediately cancel the tracking, and leaves associated state remaining
-  // uncleared for an indeterminate amount of time. If a new tracking session is
-  // begun before that state is cleared, an NSInternalInconsistencyException is
-  // thrown. See the discussion on https://crbug.com/1497774 and FB13320260.
-  // Therefore, on macOS 14+, clear out that state so that a new tracking
-  // session can begin immediately.
-  if (@available(macOS 14, *)) {
+  // with the old Carbon). However, in macOS 14, with that reimplementation came
+  // a bug whereupon using -cancelTrackingWithoutAnimation did not consistently
+  // immediately cancel the tracking, and left associated state remaining
+  // uncleared for an indeterminate amount of time. If a new tracking session
+  // began before that state was cleared, an NSInternalInconsistencyException
+  // was thrown. See the discussion on https://crbug.com/40939221 and
+  // FB13320260.
+  //
+  // On macOS 14, therefore, when cancelling synchronously, clear out that state
+  // so that a new tracking session can begin immediately.
+  //
+  // With macOS 15, these global state methods moved from being class methods on
+  // NSPopupMenuWindow to being instance methods on NSMenuTrackingSession, so
+  // this workaround is inapplicable.
+  if (base::mac::MacOSMajorVersion() == 14) {
     // When running a menu tracking session, the instances of
     // NSMenuTrackingSession make calls to class methods of NSPopupMenuWindow:
     //
