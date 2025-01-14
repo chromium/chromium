@@ -195,6 +195,10 @@ class ExtensionsBrowserClient {
       content::BrowserContext* context) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Returns true if `browser_context` is the active one.
+  virtual bool IsActiveContext(
+      content::BrowserContext* browser_context) const = 0;
+
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(

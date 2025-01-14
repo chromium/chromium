@@ -322,6 +322,15 @@ bool ChromeExtensionsBrowserClient::AreExtensionsDisabledForContext(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+bool ChromeExtensionsBrowserClient::IsActiveContext(
+    content::BrowserContext* browser_context) const {
+  // Since we are creating one instance per profile / user, we should be fine
+  // comparing against the active user. That said - if we ever change that,
+  // this code will need to be changed.
+  return static_cast<Profile*>(browser_context)
+      ->IsSameOrParent(ProfileManager::GetActiveUserProfile());
+}
+
 std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   return ash::ProfileHelper::GetUserIdHashFromProfile(

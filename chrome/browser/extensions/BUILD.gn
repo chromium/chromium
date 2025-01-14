@@ -105,12 +105,6 @@ source_set("extensions") {
       "api/bookmarks/bookmarks_api_watcher.h",
       "api/bookmarks_core/bookmarks_function.cc",
       "api/bookmarks_core/bookmarks_function.h",
-      "api/braille_display_private/braille_controller.h",
-      "api/braille_display_private/braille_controller_brlapi.h",
-      "api/braille_display_private/braille_display_private_api.cc",
-      "api/braille_display_private/braille_display_private_api.h",
-      "api/braille_display_private/stub_braille_controller.cc",
-      "api/braille_display_private/stub_braille_controller.h",
       "api/chrome_device_permissions_prompt.h",
       "api/chrome_extensions_api_client.cc",
       "api/chrome_extensions_api_client.h",
@@ -1439,19 +1433,6 @@ source_set("extensions") {
         "//chrome/browser/ui/aura/accessibility",
         "//ui/aura",
       ]
-    }
-
-    if (use_brlapi) {
-      sources += [
-        "api/braille_display_private/braille_controller_brlapi.cc",
-        "api/braille_display_private/brlapi_connection.cc",
-        "api/braille_display_private/brlapi_connection.h",
-        "api/braille_display_private/brlapi_keycode_map.cc",
-        "api/braille_display_private/brlapi_keycode_map.h",
-      ]
-      deps += [ "//third_party/libbrlapi" ]
-    } else {
-      sources += [ "api/braille_display_private/braille_controller_stub.cc" ]
     }
 
     if (enterprise_data_controls) {

@@ -4489,6 +4489,7 @@ if (!is_android) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
+        "//chrome/browser/extensions/api/braille_display_private:controller",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",
         "//chrome/browser/ui/global_error:test_support",
