@@ -241,6 +241,15 @@ class FormFieldParser {
       const char* regex_name = "",
       MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
+  // This is just a wrapper which doesn't require `patterns` and looks them up
+  // using `regex_name`.
+  static bool ParseField(
+      ParsingContext& context,
+      AutofillScanner* scanner,
+      const char* regex_name,
+      std::optional<FieldAndMatchInfo>* match = nullptr,
+      MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
+
   // Attempts to parse a field with an empty label. Returns true
   // on success and fills |match| with a pointer to the field.
   static bool ParseEmptyLabel(ParsingContext& context,
