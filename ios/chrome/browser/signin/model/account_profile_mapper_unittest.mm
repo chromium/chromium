@@ -321,6 +321,48 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
   account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
 
+// Tests that `OnIdentityListChanged()` is called on the appropriate profile
+// when identities are added/removed.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       IdentityListNotification) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  const std::string kTestProfile1Name("11111111-1111-1111-1111-111111111111");
+  const std::string kTestProfile2Name("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
+  base::test::TestFuture<ProfileIOS*> profile_initialized;
+  profile_manager_->CreateProfileAsync(
+      kTestProfile1Name, profile_initialized.GetCallback(), base::DoNothing());
+  ASSERT_TRUE(profile_initialized.Wait());
+  profile_manager_->CreateProfileAsync(
+      kTestProfile2Name, profile_initialized.GetCallback(), base::DoNothing());
+  ASSERT_TRUE(profile_initialized.Wait());
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  testing::StrictMock<MockObserver> mock_personal_observer;
+  account_profile_mapper_->AddObserver(&mock_personal_observer,
+                                       kPersonalProfileName);
+
+  // The matching observer (for the personal profile) should get notified.
+  EXPECT_CALL(mock_personal_observer, OnIdentityListChanged());
+  system_identity_manager_->AddIdentity(gmail_identity1);
+
+  // *Only* the matching observer should get notified.
+  testing::StrictMock<MockObserver> mock_test1_observer;
+  account_profile_mapper_->AddObserver(&mock_test1_observer, kTestProfile1Name);
+  testing::StrictMock<MockObserver> mock_test2_observer;
+  account_profile_mapper_->AddObserver(&mock_test2_observer, kTestProfile2Name);
+
+  EXPECT_CALL(mock_personal_observer, OnIdentityListChanged());
+  EXPECT_CALL(mock_test1_observer, OnIdentityListChanged()).Times(0);
+  EXPECT_CALL(mock_test2_observer, OnIdentityListChanged()).Times(0);
+  system_identity_manager_->AddIdentity(gmail_identity2);
+}
+
 // Tests that `OnIdentityRefreshTokenUpdated()` is called when the refresh
 // token is updated. This should be done to the observer of the identity.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
@@ -800,7 +842,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity1);
   system_identity_manager_->AddIdentity(google_identity);
 
-  // Two profile should be registered, the personal one and a managed one, each
+  // Two profiles should be registered, the personal one and a managed one, each
   // with the appropriate account assigned to it.
   ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
@@ -820,6 +862,14 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   NSArray* expected_identities_managed = @[ google_identity ];
   ASSERT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(original_managed_profile_name));
+
+  // The observer for the original personal profile (which will become a
+  // managed profile) should get notified - regression test for
+  // crbug.com/389733584.
+  testing::StrictMock<MockObserver> mock_observer;
+  account_profile_mapper_->AddObserver(&mock_observer,
+                                       original_personal_profile_name);
+  EXPECT_CALL(mock_observer, OnIdentityListChanged());
 
   // Simulate that the user signs in with the managed account, and chooses to
   // take existing local data along, i.e. convert the personal profile into a

@@ -713,7 +713,7 @@ void AccountProfileMapper::NotifyIdentityListChanged(
     for (const std::string& profile_name : profile_names_to_notify) {
       auto it = observer_lists_per_profile_name_.find(profile_name);
       if (it == observer_lists_per_profile_name_.end()) {
-        return;
+        continue;
       }
       for (Observer& observer : it->second) {
         observer.OnIdentityListChanged();
