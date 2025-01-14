@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -37,50 +38,63 @@ class SegmentVisitor {
   SegmentVisitor(SVGPathBuilder& path_builder, const gfx::SizeF& size)
       : builder(path_builder), box_size(size) {}
 
-  void operator()(const StyleShape::MoveToSegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegMoveToAbs);
-  }
-
-  void operator()(const StyleShape::MoveBySegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegMoveToRel);
-  }
-
-  void operator()(const StyleShape::LineToSegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToAbs);
-  }
-
-  void operator()(const StyleShape::LineBySegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToRel);
-  }
-
-  void operator()(const StyleShape::HLineToSegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToHorizontalAbs);
-  }
-
-  void operator()(const StyleShape::HLineBySegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToHorizontalRel);
-  }
-
-  void operator()(const StyleShape::VLineToSegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToVerticalAbs);
-  }
-
-  void operator()(const StyleShape::VLineBySegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegLineToVerticalRel);
-  }
-
-  void operator()(const StyleShape::ArcToSegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegArcAbs);
-  }
-  void operator()(const StyleShape::ArcBySegment& segment) {
-    Emit(segment, SVGPathSegType::kPathSegArcRel);
+  template <typename T>
+  void operator()(const T& segment) {
+    Emit(segment, T::kSegType);
   }
   void operator()(const StyleShape::CloseSegment&) {
     builder.EmitSegment({.command = SVGPathSegType::kPathSegClosePath});
   }
 
  private:
-  void Emit(const StyleShape::SegmentWithTargetPoint& segment,
+  gfx::PointF PointForControlPoint(
+      const StyleShape::ControlPoint& control_point,
+      gfx::PointF start,
+      gfx::PointF end) const {
+    gfx::PointF point = PointForLengthPoint(control_point.point, box_size);
+    switch (control_point.origin) {
+      case StyleShape::ControlPoint::Origin::kReferenceBox:
+        return point;
+      case StyleShape::ControlPoint::Origin::kSegmentStart:
+        return point + start.OffsetFromOrigin();
+      case StyleShape::ControlPoint::Origin::kSegmentEnd:
+        return point + end.OffsetFromOrigin();
+    }
+  }
+
+  template <size_t NumControlPoints, SVGPathSegType T>
+  void Emit(const StyleShape::CurveSegment<NumControlPoints, T>& segment,
+            SVGPathSegType command) {
+    gfx::PointF segment_start = builder.CurrentPoint();
+    gfx::PointF target_point =
+        PointForLengthPoint(segment.target_point, box_size);
+    bool is_absolute = IsAbsolutePathSegType(command);
+    gfx::PointF segment_end =
+        is_absolute ? target_point
+                    : (segment_start + target_point.OffsetFromOrigin());
+
+    gfx::PointF point1 = PointForControlPoint(segment.control_points.at(0),
+                                              segment_start, segment_end);
+    PathSegmentData data{.command = ToAbsolutePathSegType(command),
+                         .target_point = segment_end};
+
+    if (T == SVGPathSegType::kPathSegCurveToCubicSmoothAbs ||
+        T == SVGPathSegType::kPathSegCurveToCubicSmoothRel) {
+      data.point2 = point1;
+    } else {
+      data.point1 = point1;
+    }
+
+    if (NumControlPoints == 2) {
+      data.point2 = PointForControlPoint(segment.control_points.at(1),
+                                         segment_start, segment_end);
+    }
+
+    builder.EmitSegment(data);
+  }
+
+  template <SVGPathSegType T>
+  void Emit(const StyleShape::SegmentWithTargetPoint<T>& segment,
             SVGPathSegType command) {
     builder.EmitSegment(
         {.command = command,
@@ -100,7 +114,8 @@ class SegmentVisitor {
                           FloatValueForLength(segment.y, box_size.height())}});
   }
 
-  void Emit(const StyleShape::ArcSegment& segment, SVGPathSegType command) {
+  template <SVGPathSegType T>
+  void Emit(const StyleShape::ArcSegment<T>& segment, SVGPathSegType command) {
     PathSegmentData arc_data{
         .command = command,
         .target_point = PointForLengthPoint(segment.target_point, box_size),

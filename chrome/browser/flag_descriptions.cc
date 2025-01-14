@@ -3010,8 +3010,15 @@ const char kPermissionPredictionsV3Name[] = "Permission Predictions V3";
 const char kPermissionPredictionsV3Description[] =
     "Use the Permission Predictions Service V3 to surface permission requests "
     "using a quieter UI when the likelihood of the user granting the "
-    "permission is predicted to be low. Requires "
-    "and `Safe Browsing` to be enabled.";
+    "permission is predicted to be low. Requires and `Safe Browsing` to be "
+    "enabled.";
+
+const char kPermissionsAIv1Name[] = "PermissionsAI";
+const char kPermissionsAIv1Description[] =
+    "Use the Permission Predictions Service and Gemini Nano v2 to surface "
+    "permission requests using a quieter UI when the likelihood of the user "
+    "granting the permission is predicted to be low. Requires and `Safe "
+    "Browsing` to be enabled.";
 
 const char kPermissionQuietChipName[] = "Quiet Permission Chip Experiment";
 const char kPermissionQuietChipDescription[] =

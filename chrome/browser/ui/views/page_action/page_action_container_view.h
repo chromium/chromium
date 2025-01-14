@@ -11,10 +11,6 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
-namespace views {
-class ActionViewController;
-}  // namespace views
-
 namespace page_actions {
 
 class PageActionController;
@@ -53,7 +49,6 @@ class PageActionContainerView : public views::BoxLayoutView {
   void SetContainerInsideBorderInsets();
 
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
-  std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::list<base::CallbackListSubscription>
       page_action_views_visible_subscriptions_;
 };

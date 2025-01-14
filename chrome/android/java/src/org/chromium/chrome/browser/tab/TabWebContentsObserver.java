@@ -381,7 +381,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void destroy() {
+        public void onDestroy() {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
@@ -398,7 +398,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                     null,
                     mLastUrl,
                     mTab.isIncognito());
-            super.destroy();
         }
     }
 }

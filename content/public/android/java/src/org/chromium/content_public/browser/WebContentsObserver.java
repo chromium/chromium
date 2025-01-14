@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.TerminationStatus;
 import org.chromium.blink.mojom.ViewportFit;
@@ -24,10 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public abstract class WebContentsObserver {
     private @Nullable WebContents mWebContents;
+    private boolean mHasBeenDestroyed;
 
-    public WebContentsObserver(WebContents webContents) {
-        mWebContents = webContents;
-        webContents.addObserver(this);
+    public WebContentsObserver(@NonNull WebContents webContents) {
+        observe(webContents);
     }
 
     /** Return the web contents associated with the observer. */
@@ -243,12 +244,46 @@ public abstract class WebContentsObserver {
     /** Called when a MediaSession is created for the WebContents. */
     public void mediaSessionCreated(MediaSession mediaSession) {}
 
-    /** Stop observing the web contents and clean up associated references. */
-    public void destroy() {
-        if (mWebContents == null) return;
-        final WebContents webContents = mWebContents;
-        mWebContents = null;
-        webContents.removeObserver(this);
+    /**
+     * Notified when {@link #destroy()} has been triggered. This can be the result of the {@link
+     * #getWebContents()} being destroyed, or because an embedder has triggered {@link #onDestroy()}
+     * manually.
+     *
+     * <p>As an embedder, this method should be overridden and not called directly.
+     */
+    protected void onDestroy() {}
+
+    /**
+     * To be called when this object should no longer observe any WebContents and also to carry out
+     * any cleanup handled in {@link #onDestroy}.
+     *
+     * <p>Only the first call to {@link #destroy()}} will trigger {@link #onDestroy()} and
+     * unregister this observer from the linked {@link #getWebContents()} (if one had been
+     * registered).
+     */
+    public final void destroy() {
+        if (mHasBeenDestroyed) return;
+        mHasBeenDestroyed = true;
+
+        onDestroy();
+
+        observe(null);
+    }
+
+    /**
+     * Updates the {@link WebContents} that this class is observing, and if null, stops observing
+     * any updates.
+     *
+     * @param webContents The WebContents to observe (or null to stop observing).
+     */
+    public final void observe(@Nullable WebContents webContents) {
+        if (mWebContents == webContents) return;
+        if (mWebContents != null) mWebContents.removeObserver(this);
+        mWebContents = webContents;
+        if (mWebContents != null) {
+            assert !mHasBeenDestroyed;
+            mWebContents.addObserver(this);
+        }
     }
 
     protected WebContentsObserver() {}

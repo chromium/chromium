@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '8b8ff96b13811514271cecdfabf58cc1fd115a11',
+  'skia_revision': '123e9e755027e173fc3dc63ea0a9fd28d1dc81ce',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -296,7 +296,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '3cd0a262ce17171069d69eb839a0ab9f284c329c',
+  'pdfium_revision': 'aacaea19d27cf8eca108348fe1e94dc03fc4aee8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': 'ad31f7ef5295293b73ada2c9da59fb550429061e',
+  'chromium_variations_revision': 'c9db27d92e6a8f2428ca22f77ecc7942b35902f2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -1934,7 +1934,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'f546ee068c26d106ab017af1c442e99eb70074e7',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '9a9142793a90d65cd1424f6826be89ec15bfa233',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2436,7 +2436,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'efc96bb32403e5bd6200905cfb2b855d6e33959a',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'bec70ee1a566e6bd0c856dc4a46396692c2e6ec1',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',

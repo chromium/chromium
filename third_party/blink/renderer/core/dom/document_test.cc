@@ -2035,6 +2035,27 @@ class TestPaymentLinkHandler
 };
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(DocumentTest, PaymentLinkNotHandled_PaymentRel) {
+  TestPaymentLinkHandler test_payment_link_handler;
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_,
+      base::BindRepeating(&TestPaymentLinkHandler::Bind,
+                          base::Unretained(&test_payment_link_handler)));
+
+  ScopedPaymentLinkDetectionForTest payment_link_detection(true);
+
+  // Link elements with rel='payment' won't trigger payment link handling.
+  SetHtmlInnerHTML(R"HTML(
+    <head>
+      <link rel="payment" href="upi://payment_link_1">
+    </head>
+  )HTML");
+
+  // Check that the payment link was not handled.
+  EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 0);
+}
+
 TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
   TestPaymentLinkHandler test_payment_link_handler;
   base::RunLoop run_loop;
@@ -2050,7 +2071,7 @@ TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
 
   SetHtmlInnerHTML(R"HTML(
     <head>
-      <link rel="payment" href="upi://payment_link_1">
+      <link rel="facilitated-payment" href="upi://payment_link_1">
     </head>
   )HTML");
 
@@ -2078,8 +2099,8 @@ TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
 
   SetHtmlInnerHTML(R"HTML(
     <head>
-      <link rel="payment" href="upi://payment_link_1">
-      <link rel="payment" href="upi://payment_link_2">
+      <link rel="facilitated-payment" href="upi://payment_link_1">
+      <link rel="facilitated-payment" href="upi://payment_link_2">
     </head>
   )HTML");
 

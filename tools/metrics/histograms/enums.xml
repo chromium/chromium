@@ -10689,7 +10689,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
   <int value="4974" label="UsedDeviceScaleAdjustment"/>
   <int value="4975" label="OBSOLETE_DisableThirdPartyStoragePartitioning2"/>
-  <int value="4976" label="LinkRelPayment"/>
+  <int value="4976" label="LinkRelFacilitatedPayment"/>
   <int value="4977" label="OBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method"/>
   <int value="4978" label="OBSOLETE_V8ModelGenericSession_Destroy_Method"/>
   <int value="4979" label="OBSOLETE_V8AITextSession_Execute_Method"/>
@@ -17320,6 +17320,7 @@ from previous Chrome versions.
   <int value="-1261972671" label="OmniboxDocumentProvider:disabled"/>
   <int value="-1261263046"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:disabled"/>
+  <int value="-1261165904" label="PermissionsAIv1:enabled"/>
   <int value="-1261110018" label="AllowDisableTouchpadHapticFeedback:disabled"/>
   <int value="-1260211490" label="FastPairLowPower:disabled"/>
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
@@ -22654,6 +22655,7 @@ from previous Chrome versions.
   <int value="867061581" label="AllowWindowDragUsingSystemDragDrop:enabled"/>
   <int value="867512869" label="mark-non-secure-as"/>
   <int value="868009556" label="AutofillUpstream:enabled"/>
+  <int value="868791094" label="PermissionsAIv1:disabled"/>
   <int value="868879861" label="TpcdMetadataGrants:disabled"/>
   <int value="869531646" label="enable-session-crashed-bubble"/>
   <int value="869770301" label="MessagesForAndroidPasswords:enabled"/>

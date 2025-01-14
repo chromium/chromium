@@ -141,7 +141,7 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
   // An UnguessableToken that identifies unique frames regardless of wrapping.
   // The returned UnguessableToken is guaranteed to be non-empty.
-  const base::UnguessableToken& tracking_token() const;
+  virtual const base::UnguessableToken& tracking_token() const = 0;
 
   virtual base::TimeDelta timestamp() const = 0;
   virtual void set_timestamp(base::TimeDelta timestamp) = 0;

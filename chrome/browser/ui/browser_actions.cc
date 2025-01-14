@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -214,19 +215,8 @@ void BrowserActions::InitializeBrowserActions() {
           if (!browser) {
             return;
           }
-
-          LensOverlayController* controller = browser->GetActiveTabInterface()
-                                                  ->GetTabFeatures()
-                                                  ->lens_overlay_controller();
-
-          // Toggle the Lens overlay. There's no need to show or hide the side
-          // panel as the overlay controller will handle that.
-          if (controller->IsOverlayActive()) {
-            controller->CloseUIAsync(
-                lens::LensOverlayDismissalSource::kToolbar);
-          } else {
-            controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
-          }
+          lens::LensOverlayEntryPointController::InvokeAction(
+              browser->GetActiveTabInterface(), context);
         },
         browser->AsWeakPtr());
     const gfx::VectorIcon& icon =

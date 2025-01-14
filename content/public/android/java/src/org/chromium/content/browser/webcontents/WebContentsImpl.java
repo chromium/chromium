@@ -286,7 +286,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public void clearJavaWebContentsObservers() {
         // Clear all the Android specific observers.
         if (mObserverProxy != null) {
-            mObserverProxy.destroy();
+            mObserverProxy.webContentsDestroyed();
             mObserverProxy = null;
         }
     }

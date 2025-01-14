@@ -502,29 +502,26 @@ class VideoResourceUpdater::HardwarePlaneResource
         context_provider_(context_provider) {
     DCHECK(context_provider_);
     auto* sii = SharedImageInterface();
-    if (format.is_single_plane()) {
-      // TODO(crbug.com/40239769): Set `overlay_candidate_` for multiplanar
-      // formats.
-      overlay_candidate_ =
-          use_gpu_memory_buffer_resources &&
-          sii->GetCapabilities().supports_scanout_shared_images &&
-          CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
-    }
+    // TODO(crbug.com/40239769): Set `overlay_candidate` for multiplanar
+    // formats.
+    const bool overlay_candidate =
+        format.is_single_plane() && use_gpu_memory_buffer_resources &&
+        sii->GetCapabilities().supports_scanout_shared_images &&
+        CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
+
     // These SharedImages will be sent over to the display compositor as
     // TransferableResources. RasterInterface which in turn uses RasterDecoder
     // writes the contents of video frames into SharedImages.
     gpu::SharedImageUsageSet shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-    if (overlay_candidate_) {
+    if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     shared_image_ = sii->CreateSharedImage(
         {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
-    // Determine if a platform-specific target is needed.
-    texture_target_ = shared_image_->GetTextureTarget();
     RasterInterface()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }
@@ -539,10 +536,9 @@ class VideoResourceUpdater::HardwarePlaneResource
                                                std::move(shared_image_));
   }
 
-  const gpu::Mailbox& mailbox() const { return shared_image_->mailbox(); }
-
-  GLenum texture_target() const { return texture_target_; }
-  bool overlay_candidate() const { return overlay_candidate_; }
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
+    return shared_image_;
+  }
 
  private:
   gpu::SharedImageInterface* SharedImageInterface() {
@@ -559,8 +555,6 @@ class VideoResourceUpdater::HardwarePlaneResource
 
   const raw_ptr<viz::RasterContextProvider> context_provider_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  GLenum texture_target_ = GL_TEXTURE_2D;
-  bool overlay_candidate_ = false;
 };
 
 VideoResourceUpdater::SoftwarePlaneResource*
@@ -826,10 +820,10 @@ void VideoResourceUpdater::CopyHardwarePlane(
   auto* ri = RasterInterface();
   ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
 
-  ri->CopySharedImage(shared_image->mailbox(), hardware_resource->mailbox(),
-                      /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
-                      output_plane_resource_size.width(),
-                      output_plane_resource_size.height());
+  ri->CopySharedImage(
+      shared_image->mailbox(), hardware_resource->shared_image()->mailbox(),
+      /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
+      output_plane_resource_size.width(), output_plane_resource_size.height());
 
   // Wait (if the existing token isn't null) and replace it with a new one.
   //
@@ -840,7 +834,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
-      hardware_resource->mailbox(), GL_TEXTURE_2D, sync_token,
+      hardware_resource->shared_image(), GL_TEXTURE_2D, sync_token,
       output_plane_resource_size, copy_si_format,
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kVideo);
@@ -1111,9 +1105,10 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
   SkImageInfo info = SkImageInfo::Make(plane_size.width(), plane_size.height(),
                                        color_type, kPremul_SkAlphaType);
   SkPixmap pixmap = SkPixmap(info, source_pixels, bytes_per_row);
-  ri->WritePixels(hardware_resource->mailbox(), /*dst_x_offset=*/0,
-                  /*dst_y_offset=*/0, hardware_resource->texture_target(),
-                  pixmap);
+  ri->WritePixels(
+      hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
+      /*dst_y_offset=*/0, hardware_resource->shared_image()->GetTextureTarget(),
+      pixmap);
 
   return true;
 }
@@ -1263,7 +1258,8 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkYUVAInfo info =
       SkYUVAInfo(video_size, plane_config, subsampling, color_space);
   SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
-  RasterInterface()->WritePixelsYUV(resource->mailbox(), yuv_pixmap);
+  RasterInterface()->WritePixelsYUV(resource->shared_image()->mailbox(),
+                                    yuv_pixmap);
 
   return true;
 }
@@ -1370,9 +1366,11 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
       gpu::SyncToken sync_token;
       RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
       transferable_resource = viz::TransferableResource::MakeGpu(
-          hardware_resource->mailbox(), hardware_resource->texture_target(),
-          sync_token, hardware_resource->resource_size(), output_si_format,
-          hardware_resource->overlay_candidate(),
+          hardware_resource->shared_image(),
+          hardware_resource->shared_image()->GetTextureTarget(), sync_token,
+          hardware_resource->resource_size(), output_si_format,
+          hardware_resource->shared_image()->usage().Has(
+              gpu::SHARED_IMAGE_USAGE_SCANOUT),
           viz::TransferableResource::ResourceSource::kVideo);
     }
 
@@ -1404,9 +1402,9 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
   RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
-      resource->mailbox(), resource->texture_target(), sync_token,
-      resource->resource_size(), output_si_format,
-      resource->overlay_candidate(),
+      resource->shared_image(), resource->shared_image()->GetTextureTarget(),
+      sync_token, resource->resource_size(), output_si_format,
+      resource->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kVideo);
   transferable_resource.origin = kTopLeft_GrSurfaceOrigin;
   transferable_resource.color_space = output_color_space;
@@ -1497,10 +1495,8 @@ bool VideoResourceUpdater::OnMemoryDump(
           resource->AsSoftware()->GetSharedMemoryGuid();
       pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shm_guid, kImportance);
     } else {
-      base::trace_event::MemoryAllocatorDumpGuid guid =
-          gpu::GetSharedImageGUIDForTracing(resource->AsHardware()->mailbox());
-      pmd->CreateSharedGlobalAllocatorDump(guid);
-      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+      resource->AsHardware()->shared_image()->OnMemoryDump(pmd, dump->guid(),
+                                                           kImportance);
     }
   }
 

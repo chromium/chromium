@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -25,20 +26,18 @@ namespace cssvalue {
 // Each command’s starting point is the previous command’s ending point.
 class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
  public:
-  CSSValueID GetType() const { return type_; }
-  CSSValueID GetEndPointOrigin() const { return end_point_origin_; }
+  using Type = SVGPathSegType;
+  Type GetType() const { return type_; }
   const CSSValue& GetEndPoint() const { return *end_point_; }
+  bool IsAbsolute() const { return IsAbsolutePathSegType(type_); }
 
   String CSSText() const;
   bool operator==(const CSSShapeCommand& other) const;
   virtual void Trace(Visitor* visitor) const { visitor->Trace(end_point_); }
 
-  CSSShapeCommand(CSSValueID type, CSSValueID origin, const CSSValue& end_point)
-      : type_(type), end_point_origin_(origin), end_point_(end_point) {
-    CHECK(type == CSSValueID::kMove || type == CSSValueID::kLine ||
-          type == CSSValueID::kHline || type == CSSValueID::kVline ||
-          type == CSSValueID::kArc);
-    CHECK(origin == CSSValueID::kTo || origin == CSSValueID::kBy);
+  CSSShapeCommand(Type type, const CSSValue& end_point)
+      : type_(type), end_point_(end_point) {
+    CHECK(type != Type::kPathSegClosePath);
   }
 
   static const CSSShapeCommand* Close() {
@@ -46,34 +45,27 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   }
 
   // This should be private, but can't because of MakeGarbageCollected.
-  CSSShapeCommand() : type_(CSSValueID::kClose) {}
+  CSSShapeCommand() : type_(Type::kPathSegClosePath) {}
 
  private:
-  // Either kMove or kLine.
-  CSSValueID type_;
-
-  // Either kBy or kTo.
-  // See https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
-  // https://drafts.csswg.org/css-shapes-2/#valdef-shape-to is relative to the
-  // reference box, https://drafts.csswg.org/css-shapes-2/#valdef-shape-by is
-  // relative to the end of the previous command.
-  CSSValueID end_point_origin_;
+  Type type_;
   Member<const CSSValue> end_point_;
 };
 
 class CSSShapeArcCommand : public CSSShapeCommand {
  public:
-  CSSShapeArcCommand(CSSValueID origin,
+  CSSShapeArcCommand(Type type,
                      const CSSValue& end_point,
                      const CSSPrimitiveValue& angle,
                      const CSSValuePair& radius,
                      CSSValueID size,
                      CSSValueID sweep)
-      : CSSShapeCommand(CSSValueID::kArc, origin, end_point),
+      : CSSShapeCommand(type, end_point),
         angle_(angle),
         radius_(radius),
         size_(size),
         sweep_(sweep) {
+    CHECK(type == Type::kPathSegArcAbs || type == Type::kPathSegArcRel);
     CHECK(sweep == CSSValueID::kCw || sweep == CSSValueID::kCcw);
     CHECK(size == CSSValueID::kLarge || size == CSSValueID::kSmall);
   }
@@ -97,6 +89,44 @@ class CSSShapeArcCommand : public CSSShapeCommand {
   Member<const CSSValuePair> radius_;
   CSSValueID size_;
   CSSValueID sweep_;
+};
+
+using CSSShapeControlPoint = std::pair<CSSValueID, Member<const CSSValuePair>>;
+
+template <wtf_size_t NumControlPoints>
+class CSSShapeCurveCommand : public CSSShapeCommand {
+ public:
+  CSSShapeCurveCommand<1>(Type type,
+                          const CSSValuePair& end_point,
+                          const CSSShapeControlPoint control_point)
+      : CSSShapeCommand(type, end_point), control_points_{control_point} {}
+  CSSShapeCurveCommand(Type type,
+                       const CSSValuePair& end_point,
+                       const CSSShapeControlPoint control_point1,
+                       const CSSShapeControlPoint control_point2)
+      : CSSShapeCommand(type, end_point),
+        control_points_{control_point1, control_point2} {}
+
+  bool operator==(const CSSShapeCurveCommand<NumControlPoints>& other) const {
+    return CSSShapeCommand::operator==(other) &&
+           control_points_ == other.control_points_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    CSSShapeCommand::Trace(visitor);
+    visitor->Trace(control_points_.at(0).second);
+    if (NumControlPoints == 2) {
+      visitor->Trace(control_points_.at(1).second);
+    }
+  }
+
+  const std::array<CSSShapeControlPoint, NumControlPoints>& GetControlPoints()
+      const {
+    return control_points_;
+  }
+
+ private:
+  std::array<CSSShapeControlPoint, NumControlPoints> control_points_;
 };
 
 class CSSShapeValue : public CSSValue {

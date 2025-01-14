@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 #include <cmath>
+#include <cstddef>
+#include <initializer_list>
 #include <memory>
 #include <utility>
 
@@ -86,6 +88,7 @@
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -6737,6 +6740,49 @@ const CSSValuePair* ConsumeShapeCommandEndPoint(CSSParserTokenStream& args,
   }
 }
 
+const CSSValuePair* ConsumeShapeCommandControlPoint(
+    CSSParserTokenStream& args,
+    const CSSParserContext& context,
+    CSSValueID end_point_origin,
+    CSSValueID& control_point_origin) {
+  const CSSValuePair* control_point = nullptr;
+  if (end_point_origin == CSSValueID::kTo) {
+    control_point =
+        ConsumePosition(args, context, UnitlessQuirk::kForbid, std::nullopt);
+    if (!control_point) {
+      return nullptr;
+    }
+    if (control_point->First().IsIdentifierValue() ||
+        control_point->Second().IsIdentifierValue()) {
+      control_point_origin = CSSValueID::kOrigin;
+      return control_point;
+    }
+  } else {
+    control_point = ConsumeCoordinatePair(args, context);
+    if (!control_point) {
+      return nullptr;
+    }
+  }
+
+  if (args.Peek().Id() != CSSValueID::kFrom) {
+    control_point_origin = end_point_origin == CSSValueID::kTo
+                               ? CSSValueID::kOrigin
+                               : CSSValueID::kStart;
+    return control_point;
+  }
+
+  args.ConsumeIncludingWhitespace();
+  if (args.AtEnd()) {
+    return nullptr;
+  }
+  control_point_origin = args.ConsumeIncludingWhitespace().Id();
+  if (IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kOrigin>(
+          control_point_origin)) {
+    return control_point;
+  }
+  return nullptr;
+}
+
 // https://drafts.csswg.org/css-shapes-2/#funcdef-shape
 cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
     CSSParserTokenStream& args,
@@ -6785,7 +6831,14 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         if (const CSSValuePair* end_point =
                 ConsumeShapeCommandEndPoint(args, context, end_point_origin)) {
           commands.push_back(MakeGarbageCollected<const CSSShapeCommand>(
-              command_type, end_point_origin, *end_point));
+              command_type == CSSValueID::kLine
+                  ? (end_point_origin == CSSValueID::kTo
+                         ? CSSShapeCommand::Type::kPathSegLineToAbs
+                         : CSSShapeCommand::Type::kPathSegLineToRel)
+                  : (end_point_origin == CSSValueID::kTo
+                         ? CSSShapeCommand::Type::kPathSegMoveToAbs
+                         : CSSShapeCommand::Type::kPathSegMoveToRel),
+              *end_point));
         } else {
           return nullptr;
         }
@@ -6822,10 +6875,106 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
 
         if (end_point) {
           commands.push_back(MakeGarbageCollected<const CSSShapeCommand>(
-              command_type, end_point_origin, *end_point));
+              command_type == CSSValueID::kHline
+                  ? (end_point_origin == CSSValueID::kTo
+                         ? CSSShapeCommand::Type::kPathSegLineToHorizontalAbs
+                         : CSSShapeCommand::Type::kPathSegLineToHorizontalRel)
+                  : (end_point_origin == CSSValueID::kTo
+                         ? CSSShapeCommand::Type::kPathSegLineToVerticalAbs
+                         : CSSShapeCommand::Type::kPathSegLineToVerticalRel),
+              *end_point));
         } else {
           return nullptr;
         }
+        break;
+      }
+
+      case CSSValueID::kCurve: {
+        const CSSValuePair* end_point =
+            ConsumeShapeCommandEndPoint(args, context, end_point_origin);
+        if (!end_point) {
+          return nullptr;
+        }
+
+        if (args.ConsumeIncludingWhitespace().Id() != CSSValueID::kWith) {
+          return nullptr;
+        }
+
+        CSSValueID control_point_origin_1 = CSSValueID::kInvalid;
+
+        const CSSValuePair* control_point_1 = ConsumeShapeCommandControlPoint(
+            args, context, end_point_origin, control_point_origin_1);
+        if (!control_point_1) {
+          return nullptr;
+        }
+
+        if (ConsumeSlashIncludingWhitespace(args)) {
+          CSSValueID control_point_origin_2 = CSSValueID::kInvalid;
+          if (const CSSValuePair* control_point_2 =
+                  ConsumeShapeCommandControlPoint(args, context,
+                                                  end_point_origin,
+                                                  control_point_origin_2)) {
+            commands.push_back(
+                MakeGarbageCollected<cssvalue::CSSShapeCurveCommand<2>>(
+                    end_point_origin == CSSValueID::kTo
+                        ? CSSShapeCommand::Type::kPathSegCurveToCubicAbs
+                        : CSSShapeCommand::Type::kPathSegCurveToCubicRel,
+                    *end_point,
+                    cssvalue::CSSShapeControlPoint(control_point_origin_1,
+                                                   control_point_1),
+                    cssvalue::CSSShapeControlPoint(control_point_origin_2,
+                                                   control_point_2)));
+
+          } else {
+            return nullptr;
+          }
+        } else {
+          commands.push_back(
+              MakeGarbageCollected<cssvalue::CSSShapeCurveCommand<1>>(
+                  end_point_origin == CSSValueID::kTo
+                      ? CSSShapeCommand::Type::kPathSegCurveToQuadraticAbs
+                      : CSSShapeCommand::Type::kPathSegCurveToQuadraticRel,
+                  *end_point,
+                  cssvalue::CSSShapeControlPoint(control_point_origin_1,
+                                                 control_point_1)));
+        }
+
+        break;
+      }
+
+      case CSSValueID::kSmooth: {
+        const CSSValuePair* end_point =
+            ConsumeShapeCommandEndPoint(args, context, end_point_origin);
+        if (!end_point) {
+          return nullptr;
+        }
+
+        CSSValueID control_point_origin = CSSValueID::kInvalid;
+        if (args.Peek().Id() == CSSValueID::kWith) {
+          args.ConsumeIncludingWhitespace();
+          if (const CSSValuePair* control_point =
+                  ConsumeShapeCommandControlPoint(
+                      args, context, end_point_origin, control_point_origin)) {
+            commands.push_back(
+                MakeGarbageCollected<cssvalue::CSSShapeCurveCommand<1>>(
+                    end_point_origin == CSSValueID::kTo
+                        ? CSSShapeCommand::Type::kPathSegCurveToCubicSmoothAbs
+                        : CSSShapeCommand::Type::kPathSegCurveToCubicSmoothRel,
+                    *end_point,
+                    cssvalue::CSSShapeControlPoint(control_point_origin,
+                                                   control_point)));
+
+          } else {
+            return nullptr;
+          }
+        } else {
+          commands.push_back(MakeGarbageCollected<cssvalue::CSSShapeCommand>(
+              end_point_origin == CSSValueID::kTo
+                  ? CSSShapeCommand::Type::kPathSegCurveToQuadraticSmoothAbs
+                  : CSSShapeCommand::Type::kPathSegCurveToQuadraticSmoothRel,
+              *end_point));
+        }
+
         break;
       }
 
@@ -6925,11 +7074,14 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
           size = CSSValueID::kSmall;
         }
         if (sweep == CSSValueID::kInvalid) {
-          sweep = CSSValueID::kCw;
+          sweep = CSSValueID::kCcw;
         }
 
         commands.push_back(MakeGarbageCollected<cssvalue::CSSShapeArcCommand>(
-            end_point_origin, *end_point, *angle, *radius, size, sweep));
+            end_point_origin == CSSValueID::kTo
+                ? CSSShapeCommand::Type::kPathSegArcAbs
+                : CSSShapeCommand::Type::kPathSegArcRel,
+            *end_point, *angle, *radius, size, sweep));
         break;
       }
 

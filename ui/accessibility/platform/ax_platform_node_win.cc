@@ -5809,11 +5809,6 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
   if (riid == IID_IAccessible2) {
     for (WinAccessibilityAPIUsageObserver& observer :
          GetWinAccessibilityAPIUsageObserverList()) {
-      if (!features::IsAccessibilityRestrictiveIA2AXModesEnabled()) {
-        observer.OnAdvancedIAccessible2Used();
-        continue;
-      }
-
       if (GetDelegate()->IsWebContent()) {
         observer.OnAdvancedIAccessible2Used();
       } else {
@@ -8408,12 +8403,10 @@ void AXPlatformNodeWin::NotifyObserverForMSAAUsage() const {
 
 void AXPlatformNodeWin::NotifyAddAXModeFlagsForIA2(
     const uint32_t ax_modes) const {
-  if (features::IsAccessibilityRestrictiveIA2AXModesEnabled()) {
-    // Non-web content is always enabled, if a client isn't looking for web
-    // content, don't enable.
-    if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
-      return;
-    }
+  // Non-web content is always enabled, if a client isn't looking for web
+  // content, don't enable.
+  if (!GetDelegate() || !GetDelegate()->IsWebContent()) {
+    return;
   }
 
   AXPlatformNode::NotifyAddAXModeFlags(ax_modes);

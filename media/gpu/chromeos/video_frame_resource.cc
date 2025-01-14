@@ -152,6 +152,12 @@ void VideoFrameResource::set_metadata(const VideoFrameMetadata& metadata) {
   GetMutableVideoFrame()->set_metadata(metadata);
 }
 
+const base::UnguessableToken& VideoFrameResource::tracking_token() const {
+  CHECK(metadata().tracking_token.has_value());
+  CHECK(!metadata().tracking_token->is_empty());
+  return *metadata().tracking_token;
+}
+
 base::TimeDelta VideoFrameResource::timestamp() const {
   return frame_->timestamp();
 }

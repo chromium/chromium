@@ -336,7 +336,7 @@ TEST_F(MlEmbedderTest, GeneratesEmbeddings) {
         PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
     auto [passages, embeddings, status] = future.Get();
 
-    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
     EXPECT_EQ(passages[0], "foo");
     EXPECT_EQ(passages[1], "bar");
     EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
@@ -353,7 +353,7 @@ TEST_F(MlEmbedderTest, GeneratesEmbeddings) {
         PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
     auto [passages, embeddings, status] = future.Get();
 
-    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
     EXPECT_EQ(passages[0], "foo");
     EXPECT_EQ(passages[1], "bar");
     EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
@@ -370,7 +370,7 @@ TEST_F(MlEmbedderTest, GeneratesEmbeddings) {
         PassageKind::PAGE_VISIT_PASSAGE, {"foo", "bar"}, future.GetCallback());
     auto [passages, embeddings, status] = future.Get();
 
-    EXPECT_EQ(status, ComputeEmbeddingsStatus::KSuccess);
+    EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
     EXPECT_EQ(passages[0], "foo");
     EXPECT_EQ(passages[1], "bar");
     EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
@@ -394,7 +394,7 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
                                          {"foo", "bar"}, future.GetCallback());
   auto [passages, embeddings, status] = future.Get();
 
-  EXPECT_EQ(status, ComputeEmbeddingsStatus::KModelUnavailable);
+  EXPECT_EQ(status, ComputeEmbeddingsStatus::kModelUnavailable);
   EXPECT_TRUE(passages.empty());
   EXPECT_TRUE(embeddings.empty());
   histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);

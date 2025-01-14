@@ -97,14 +97,6 @@ bool IsAccessibilityLanguageDetectionEnabled() {
       ::features::kEnableAccessibilityLanguageDetection);
 }
 
-BASE_FEATURE(kEnableAccessibilityRestrictiveIA2AXModes,
-             "AccessibilityRestrictiveIA2AXModes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityRestrictiveIA2AXModesEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityRestrictiveIA2AXModes);
-}
-
 BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
              "ExtensionManifestV3NetworkSpeechSynthesis",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -3140,15 +3140,17 @@ TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
 // Tests the behavior of screen recording with the presence of HDCP secure
 // content on the screen in all capture mode sources (fullscreen, region, and
 // window) depending on the test param.
-class CaptureModeHdcpTest
-    : public CaptureModeTestBase,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class CaptureModeHdcpTest : public CaptureModeTestBase,
+                            public ::testing::WithParamInterface<
+                                std::tuple<CaptureModeSource, bool, bool>> {
  public:
   CaptureModeHdcpTest() = default;
   ~CaptureModeHdcpTest() override = default;
 
   // CaptureModeTestBase:
   void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
     CaptureModeTestBase::SetUp();
     window_ = CreateTestWindow(gfx::Rect(200, 200));
     // Create a child window with protected content. This simulates the real
@@ -3172,7 +3174,8 @@ class CaptureModeHdcpTest
 
   // Enters the capture mode session.
   void StartSessionForVideo() {
-    StartCaptureSession(GetParam(), CaptureModeType::kVideo);
+    StartCaptureSession(std::get<CaptureModeSource>(GetParam()),
+                        CaptureModeType::kVideo);
   }
 
   // Attempts video recording from the capture mode source set by the test
@@ -3181,7 +3184,7 @@ class CaptureModeHdcpTest
     auto* controller = CaptureModeController::Get();
     ASSERT_TRUE(controller->IsActive());
 
-    switch (GetParam()) {
+    switch (std::get<CaptureModeSource>(GetParam())) {
       case CaptureModeSource::kFullscreen:
       case CaptureModeSource::kRegion:
         controller->StartVideoRecordingImmediatelyForTesting();
@@ -3259,7 +3262,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
   // except when we're capturing a different |window_|.
   auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -3313,7 +3316,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   // Recording should be able to start (since the protected window is on the
   // first display) unless the protected window itself is the one being
   // recorded.
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     EXPECT_FALSE(controller->is_recording_in_progress());
   } else {
     WaitForRecordingToStart();
@@ -3333,11 +3336,21 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeHdcpTest,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHdcpTest,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHdcpTest::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
 TEST_P(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
@@ -5596,10 +5609,10 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 
 }  // namespace
 
-class ProjectorCaptureModeIntegrationTests : public CaptureModeTestBase {
+class ProjectorCaptureModeIntegrationTestsBase : public CaptureModeTestBase {
  public:
-  ProjectorCaptureModeIntegrationTests() = default;
-  ~ProjectorCaptureModeIntegrationTests() override = default;
+  ProjectorCaptureModeIntegrationTestsBase() = default;
+  ~ProjectorCaptureModeIntegrationTestsBase() override = default;
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
@@ -5651,14 +5664,46 @@ class ProjectorCaptureModeIntegrationTests : public CaptureModeTestBase {
   base::HistogramTester histogram_tester_;
 };
 
+class ProjectorCaptureModeIntegrationTests
+    : public ProjectorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // ProjectorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    ProjectorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProjectorCaptureModeIntegrationTests,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        ProjectorCaptureModeIntegrationTests::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
 class ProjectorCaptureModeIntegrationTestsWithSource
-    : public ProjectorCaptureModeIntegrationTests,
-      public ::testing::WithParamInterface<CaptureModeSource> {};
+    : public ProjectorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CaptureModeSource, bool, bool>> {
+ public:
+  // ProjectorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    ProjectorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
 
 // static
-constexpr gfx::Rect ProjectorCaptureModeIntegrationTests::kUserRegion;
+constexpr gfx::Rect ProjectorCaptureModeIntegrationTestsBase::kUserRegion;
 
-TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
+TEST_P(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   // With the most recent source type set to kImage, starting capture mode for
   // the projector workflow will still force it to kVideo.
   auto* controller = CaptureModeController::Get();
@@ -5687,7 +5732,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
 
 // Tests that a fullscreen screenshot can be taken via the keyboard shortcut
 // while a Projector-initiated session is active without ending the session.
-TEST_F(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
+TEST_P(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
   StartProjectorModeSession();
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
   WaitForCaptureFileToBeSaved();
@@ -5700,7 +5745,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
 }
 
 // Tests that the settings view is simplified in projector mode.
-TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
+TEST_P(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();
   auto* event_generator = GetEventGenerator();
@@ -5723,7 +5768,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
             controller->GetEffectiveAudioRecordingMode());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
+TEST_P(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
   auto* controller = CaptureModeController::Get();
   auto* delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -5736,7 +5781,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
   EXPECT_FALSE(projector_helper_.CanStartProjectorSession());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        AudioCaptureDisabledByPolicyAfterSessionStarts) {
   auto* controller = CaptureModeController::Get();
   auto* delegate =
@@ -5763,7 +5808,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 // Tests the keyboard navigation for projector mode. The `image_toggle_button_`
 // in `CaptureModeTypeView` and the `Off` audio input option in
 // `CaptureModeSettingsView` are not available in projector mode.
-TEST_F(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
+TEST_P(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
   auto* controller = CaptureModeController::Get();
   // Use `kFullscreen` here to minimize the number of tabs to reach the setting
   // button.
@@ -5798,7 +5843,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, KeyboardNavigationBasic) {
             settings_test_api.GetMicrophoneOption());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
+TEST_P(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
@@ -5810,7 +5855,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   EXPECT_TRUE(GetVideoToggleButton()->selected());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
+TEST_P(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -5849,7 +5894,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
                                      /*expected_count=*/4);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionNeverStartsWhenCaptureModeIsBlocked) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -5866,7 +5911,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionNeverStartsWhenVideoRecordingIsOnGoing) {
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
@@ -5893,7 +5938,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 // that include the capture mode type, capture mode source and capture mode
 // audio settings will not be overridden by the projector-initiated capture mode
 // session.
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        RestoreCaptureSessionConfigurationsInNormalCaptureSession) {
   // Start an image capture mode session in window mode.
   auto* controller =
@@ -5961,7 +6006,7 @@ struct {
 
 }  // namespace
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionAbortedBeforeCountDownStarts) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -6007,7 +6052,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                                      /*expected_count=*/9);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorSessionAbortedAfterCountDownStarts) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
@@ -6054,7 +6099,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                                      /*expected_count=*/9);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
+TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -6079,7 +6124,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        AnnotationsOverlayDockedMagnifier) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
@@ -6119,7 +6164,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 
 TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBounds) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi test_api;
   AnnotationsOverlayController* overlay_controller =
@@ -6141,7 +6186,7 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
 
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   const auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
@@ -6223,7 +6268,7 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource, ProjectorBehavior) {
 // projector mode.
 TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        NotShowRecordingInToteOrNotificationForProjectorMode) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi().StopVideoRecording();
   WaitForCaptureFileToBeSaved();
@@ -6236,7 +6281,7 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
 // from projector in both clamshell and tablet mode.
 TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorCaptureConfigurationMetrics) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   constexpr char kProjectorCaptureConfigurationHistogramBase[] =
       "CaptureConfiguration";
   ash::CaptureModeTestApi test_api;
@@ -6280,7 +6325,7 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
 // entering from projector in both clamshell and tablet mode.
 TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
        ProjectorScreenRecordingLengthMetrics) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   constexpr char kProjectorRecordTimeHistogramBase[] = "ScreenRecordingLength";
   ash::CaptureModeTestApi test_api;
 
@@ -6311,7 +6356,7 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
 
 // Tests that metrics are recorded correctly for capture region adjustment
 // entering from projector in both clamshell and tablet mode.
-TEST_F(ProjectorCaptureModeIntegrationTests,
+TEST_P(ProjectorCaptureModeIntegrationTests,
        ProjectorCaptureRegionAdjustmentTest) {
   constexpr char kProjectorCaptureRegionAdjustmentHistogramBase[] =
       "CaptureRegionAdjusted";
@@ -6377,7 +6422,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
 
 // Tests that if the user is in projector mode, then presses the shortcut to
 // start default capture mode, it is ignored.
-TEST_F(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
+TEST_P(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
   StartProjectorModeSession();
   VerifyActiveBehavior(BehaviorType::kProjector);
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
@@ -6385,16 +6430,28 @@ TEST_F(ProjectorCaptureModeIntegrationTests, SwitchToDefaultCaptureMode) {
   VerifyActiveBehavior(BehaviorType::kProjector);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProjectorCaptureModeIntegrationTestsWithSource,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProjectorCaptureModeIntegrationTestsWithSource,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
 
-class AnnotatorCaptureModeIntegrationTests : public CaptureModeTestBase {
+    [](const testing::TestParamInfo<
+        ProjectorCaptureModeIntegrationTestsWithSource::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
+
+class AnnotatorCaptureModeIntegrationTestsBase : public CaptureModeTestBase {
  public:
-  AnnotatorCaptureModeIntegrationTests() = default;
-  ~AnnotatorCaptureModeIntegrationTests() override = default;
+  AnnotatorCaptureModeIntegrationTestsBase() = default;
+  ~AnnotatorCaptureModeIntegrationTestsBase() override = default;
 
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
@@ -6441,11 +6498,43 @@ class AnnotatorCaptureModeIntegrationTests : public CaptureModeTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-class AnnotatorCaptureModeIntegrationTestsWithSource
-    : public AnnotatorCaptureModeIntegrationTests,
-      public ::testing::WithParamInterface<CaptureModeSource> {};
+class AnnotatorCaptureModeIntegrationTests
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
 
-TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AnnotatorCaptureModeIntegrationTests,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTests::ParamType>& info) {
+      bool sunfish_enabled = std::get<0>(info.param);
+      bool scanner_enabled = std::get<1>(info.param);
+      return SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+    });
+
+class AnnotatorCaptureModeIntegrationTestsWithSource
+    : public AnnotatorCaptureModeIntegrationTestsBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CaptureModeSource, bool, bool>> {
+ public:
+  // AnnotatorCaptureModeIntegrationTestsBase:
+  void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
+    AnnotatorCaptureModeIntegrationTestsBase::SetUp();
+  }
+};
+
+TEST_P(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
   PressAndReleaseKey(ui::VKEY_RETURN);
@@ -6467,7 +6556,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayDockedMagnifier) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6531,7 +6620,7 @@ class EventTargetCatcher : public ui::EventHandler {
 
 }  // namespace
 
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        AnnotationsOverlayWidgetTargeting) {
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
 
@@ -6588,7 +6677,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
 
 // Tests that auto hidden shelf can be brought back if user moves mouse to the
 // shelf activation area even while annotation is active.
-TEST_F(AnnotatorCaptureModeIntegrationTests,
+TEST_P(AnnotatorCaptureModeIntegrationTests,
        BringBackAutoHiddenShelfWhileAnnotationIsOn) {
   auto* root_window = Shell::GetPrimaryRootWindow();
   // Set `shelf` to always auto-hidden.
@@ -6655,7 +6744,7 @@ TEST_F(AnnotatorCaptureModeIntegrationTests,
 
 TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
        AnnotationsOverlayWidgetBounds) {
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   CaptureModeTestApi test_api;
   AnnotationsOverlayController* overlay_controller =
@@ -6676,7 +6765,7 @@ TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
 
-  const auto capture_source = GetParam();
+  const auto capture_source = std::get<CaptureModeSource>(GetParam());
   StartRecordingFromSource(capture_source);
   const auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
@@ -6689,11 +6778,23 @@ TEST_P(AnnotatorCaptureModeIntegrationTestsWithSource,
   VerifyOverlayWindow(overlay_window, capture_source, kUserRegion);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AnnotatorCaptureModeIntegrationTestsWithSource,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AnnotatorCaptureModeIntegrationTestsWithSource,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+
+    [](const testing::TestParamInfo<
+        AnnotatorCaptureModeIntegrationTestsWithSource::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
 // -----------------------------------------------------------------------------
 // CaptureModeSettingsTest:

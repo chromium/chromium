@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
@@ -1146,6 +1147,11 @@ views::View* ToolbarView::GetDefaultExtensionDialogAnchorView() {
 PageActionIconView* ToolbarView::GetPageActionIconView(
     PageActionIconType type) {
   return location_bar()->page_action_icon_controller()->GetIconView(type);
+}
+
+page_actions::PageActionView* ToolbarView::GetPageActionView(
+    actions::ActionId action_id) {
+  return location_bar()->page_action_container()->GetPageActionView(action_id);
 }
 
 AppMenuButton* ToolbarView::GetAppMenuButton() {

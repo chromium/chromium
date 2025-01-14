@@ -198,21 +198,21 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
   size_t enterprise_count = 0;
   if (input.GetFeaturedKeywordMode() !=
       AutocompleteInput::FeaturedKeywordMode::kFalse) {
-    TemplateURLService::TemplateURLVector matches;
-    template_url_service_->AddMatchingKeywords(input.text(), false, &matches);
-    for (TemplateURL* match : matches) {
-      if (match->starter_pack_id() > 0 &&
-          match->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+    TemplateURLService::TemplateURLVector turls;
+    template_url_service_->AddMatchingKeywords(input.text(), false, &turls);
+    for (TemplateURL* turl : turls) {
+      if (turl->starter_pack_id() > 0 &&
+          turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
         // Don't add the expanded set of starter pack engines unless the feature
         // is enabled.
         if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-            match->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+            turl->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
           continue;
         }
-        AddStarterPackMatch(*match, input);
-      } else if (match->featured_by_policy() &&
+        AddStarterPackMatch(*turl, input);
+      } else if (turl->featured_by_policy() &&
                  enterprise_count < kMaxEnterpriseSuggestions) {
-        AddFeaturedEnterpriseSearchMatch(*match, input);
+        AddFeaturedEnterpriseSearchMatch(*turl, input);
         enterprise_count++;
       }
     }

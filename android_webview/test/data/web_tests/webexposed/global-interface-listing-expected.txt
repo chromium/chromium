@@ -6665,6 +6665,7 @@ interface OffscreenCanvasRenderingContext2D
     method fillRect
     method fillText
     method fillTextCluster
+    method getContextAttributes
     method getImageData
     method getLineDash
     method getTextureFormat

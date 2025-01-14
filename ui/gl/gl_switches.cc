@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_switches.h"
 
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_display_manager.h"
 #include "ui/gl/startup_trace.h"
@@ -265,7 +266,11 @@ BASE_FEATURE(kDefaultANGLEMetal,
 // Default to using ANGLE's Vulkan backend.
 BASE_FEATURE(kDefaultANGLEVulkan,
              "DefaultANGLEVulkan",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Track current program's shaders at glUseProgram() call for crash report
 // purpose. Only effective on Windows because the attached shaders may only
@@ -277,7 +282,11 @@ BASE_FEATURE(kTrackCurrentShaders,
 // Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
 BASE_FEATURE(kVulkanFromANGLE,
              "VulkanFromANGLE",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 bool IsDefaultANGLEVulkan() {
   // Force on if DefaultANGLEVulkan feature is enabled from command line.

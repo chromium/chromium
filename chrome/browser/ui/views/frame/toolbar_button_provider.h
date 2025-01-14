@@ -24,6 +24,10 @@ class Rect;
 class Size;
 }  // namespace gfx
 
+namespace page_actions {
+class PageActionView;
+}  // namespace page_actions
+
 namespace views {
 class AccessiblePaneView;
 class View;
@@ -46,6 +50,12 @@ class ToolbarButtonProvider {
   // Gets the specified page action icon.
   virtual PageActionIconView* GetPageActionIconView(
       PageActionIconType type) = 0;
+
+  // Page actions are currently undergoing a migration. The following method
+  // should be used for the new path, and will eventually replace
+  // `GetPageActionIconView`.
+  virtual page_actions::PageActionView* GetPageActionView(
+      actions::ActionId action_id) = 0;
 
   // Gets the app menu button.
   virtual AppMenuButton* GetAppMenuButton() = 0;

@@ -45,7 +45,7 @@ ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
 
   DocumentScanAPIHandler::Get(browser_context())
       ->SimpleScan(
-          mime_types,
+          extension_, mime_types,
           base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 
   return RespondLater();

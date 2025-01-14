@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SHAPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SHAPE_H_
 
+#include <cstddef>
 #include <optional>
 #include <variant>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -22,38 +24,91 @@ namespace blink {
 // values.
 class StyleShape final : public BasicShape {
  public:
-  enum class TargetPointOrigin { kReferenceBox, kPreviousSegment };
   using CloseSegment = std::monostate;
+  template <SVGPathSegType Type>
   struct SegmentWithTargetPoint {
+    static constexpr SVGPathSegType kSegType = Type;
     LengthPoint target_point;
     bool operator==(const SegmentWithTargetPoint& other) const = default;
   };
-  struct MoveToSegment : public SegmentWithTargetPoint {};
-  struct MoveBySegment : public SegmentWithTargetPoint {};
-  struct LineToSegment : public SegmentWithTargetPoint {};
-  struct LineBySegment : public SegmentWithTargetPoint {};
+  struct MoveToSegment
+      : public SegmentWithTargetPoint<SVGPathSegType::kPathSegMoveToAbs> {};
+  struct MoveBySegment
+      : public SegmentWithTargetPoint<SVGPathSegType::kPathSegMoveToRel> {};
+  struct LineToSegment
+      : public SegmentWithTargetPoint<SVGPathSegType::kPathSegLineToAbs> {};
+  struct LineBySegment
+      : public SegmentWithTargetPoint<SVGPathSegType::kPathSegLineToRel> {};
   struct HLineSegment {
     Length x;
     bool operator==(const HLineSegment& other) const = default;
   };
-  struct HLineBySegment : public HLineSegment {};
-  struct HLineToSegment : public HLineSegment {};
+  struct HLineToSegment : public HLineSegment {
+    static constexpr SVGPathSegType kSegType =
+        SVGPathSegType::kPathSegLineToHorizontalAbs;
+  };
+  struct HLineBySegment : public HLineSegment {
+    static constexpr SVGPathSegType kSegType =
+        SVGPathSegType::kPathSegLineToHorizontalRel;
+  };
 
   struct VLineSegment {
     Length y;
     bool operator==(const VLineSegment& other) const = default;
   };
-  struct VLineBySegment : public VLineSegment {};
-  struct VLineToSegment : public VLineSegment {};
-  struct ArcSegment : public SegmentWithTargetPoint {
+  struct VLineToSegment : public VLineSegment {
+    static constexpr SVGPathSegType kSegType =
+        SVGPathSegType::kPathSegLineToVerticalAbs;
+  };
+  struct VLineBySegment : public VLineSegment {
+    static constexpr SVGPathSegType kSegType =
+        SVGPathSegType::kPathSegLineToVerticalRel;
+  };
+  struct ControlPoint {
+    enum class Origin { kSegmentStart, kSegmentEnd, kReferenceBox };
+    Origin origin;
+    LengthPoint point;
+    bool operator==(const ControlPoint& other) const = default;
+  };
+
+  template <size_t NumControlPoints, SVGPathSegType Type>
+  struct CurveSegment : SegmentWithTargetPoint<Type> {
+    static constexpr size_t GetNumControlPoints() { return NumControlPoints; }
+    std::array<ControlPoint, NumControlPoints> control_points;
+    bool operator==(const CurveSegment<NumControlPoints, Type>& other) const =
+        default;
+  };
+  struct CubicCurveToSegment
+      : public CurveSegment<2, SVGPathSegType::kPathSegCurveToCubicAbs> {};
+  struct CubicCurveBySegment
+      : public CurveSegment<2, SVGPathSegType::kPathSegCurveToCubicRel> {};
+  struct QuadraticCurveToSegment
+      : public CurveSegment<1, SVGPathSegType::kPathSegCurveToQuadraticAbs> {};
+  struct QuadraticCurveBySegment
+      : public CurveSegment<1, SVGPathSegType::kPathSegCurveToQuadraticRel> {};
+  struct SmoothCubicCurveToSegment
+      : public CurveSegment<1, SVGPathSegType::kPathSegCurveToCubicSmoothAbs> {
+  };
+  struct SmoothCubicCurveBySegment
+      : public CurveSegment<1, SVGPathSegType::kPathSegCurveToCubicSmoothRel> {
+  };
+  struct SmoothQuadraticCurveToSegment
+      : public SegmentWithTargetPoint<
+            SVGPathSegType::kPathSegCurveToQuadraticSmoothAbs> {};
+  struct SmoothQuadraticCurveBySegment
+      : public SegmentWithTargetPoint<
+            SVGPathSegType::kPathSegCurveToQuadraticSmoothRel> {};
+
+  template <SVGPathSegType Type>
+  struct ArcSegment : public SegmentWithTargetPoint<Type> {
     double angle;
     LengthSize radius;
     bool large;
     bool sweep;
     bool operator==(const ArcSegment& other) const = default;
   };
-  struct ArcToSegment : public ArcSegment {};
-  struct ArcBySegment : public ArcSegment {};
+  struct ArcToSegment : public ArcSegment<SVGPathSegType::kPathSegArcAbs> {};
+  struct ArcBySegment : public ArcSegment<SVGPathSegType::kPathSegArcRel> {};
 
   using Segment = std::variant<MoveToSegment,
                                MoveBySegment,
@@ -63,6 +118,14 @@ class StyleShape final : public BasicShape {
                                HLineBySegment,
                                VLineToSegment,
                                VLineBySegment,
+                               CubicCurveToSegment,
+                               CubicCurveBySegment,
+                               QuadraticCurveToSegment,
+                               QuadraticCurveBySegment,
+                               SmoothCubicCurveToSegment,
+                               SmoothCubicCurveBySegment,
+                               SmoothQuadraticCurveToSegment,
+                               SmoothQuadraticCurveBySegment,
                                ArcToSegment,
                                ArcBySegment,
                                CloseSegment>;

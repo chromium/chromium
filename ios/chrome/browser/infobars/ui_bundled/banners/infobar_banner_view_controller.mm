@@ -203,15 +203,17 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   labelsStackView.accessibilityLabel = [self accessibilityLabel];
 
   // Button setup.
-  self.infobarButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [self.infobarButton setTitle:self.buttonText forState:UIControlStateNormal];
-  self.infobarButton.titleLabel.font = [[UIFontMetrics defaultMetrics]
+  UIFont* titleLabelFont = [[UIFontMetrics defaultMetrics]
       scaledFontForFont:[UIFont
                             preferredFontForTextStyle:UIFontTextStyleHeadline]
        maximumPointSize:kButtonMaxFontSize];
+  self.infobarButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [self.infobarButton setTitle:self.buttonText forState:UIControlStateNormal];
+  self.infobarButton.titleLabel.font = titleLabelFont;
   self.infobarButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-  self.infobarButton.titleLabel.numberOfLines = 0;
-  self.infobarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+  self.infobarButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  self.infobarButton.titleLabel.numberOfLines = static_cast<NSInteger>(
+      floor(kInfobarBannerMaxHeight / titleLabelFont.lineHeight));
   [self.infobarButton addTarget:self
                          action:@selector(bannerInfobarButtonWasPressed:)
                forControlEvents:UIControlEventTouchUpInside];

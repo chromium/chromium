@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 
 #include <algorithm>
@@ -758,67 +753,63 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
   const LocalFrameToken accessing_main_frame_token =
       accessing_main_frame.GetLocalFrameToken();
 
-  auto it = coop_access_monitor_.begin();
-  while (it != coop_access_monitor_.end()) {
-    if ((*it)->accessing_main_frame != accessing_main_frame_token) {
-      ++it;
-      continue;
-    }
+  WTF::EraseIf(
+      coop_access_monitor_, [&](const Member<CoopAccessMonitor>& monitor) {
+        if (monitor->accessing_main_frame != accessing_main_frame_token) {
+          return false;
+        }
 
-    String property_name_as_string = property_name;
-    if ((*it)->is_in_same_virtual_coop_related_group &&
-        (property_name_as_string == "postMessage" ||
-         property_name_as_string == "closed")) {
-      ++it;
-      continue;
-    }
+        String property_name_as_string = property_name;
+        if (monitor->is_in_same_virtual_coop_related_group &&
+            (property_name_as_string == "postMessage" ||
+             property_name_as_string == "closed")) {
+          return false;
+        }
 
-    // TODO(arthursonzogni): Send the blocked-window-url.
+        // TODO(arthursonzogni): Send the blocked-window-url.
 
-    auto location = CaptureSourceLocation(
-        ExecutionContext::From(isolate->GetCurrentContext()));
-    // TODO(crbug.com/349583610): Update to use SourceLocation typemap.
-    auto source_location = network::mojom::blink::SourceLocation::New(
-        location->Url() ? location->Url() : "", location->LineNumber(),
-        location->ColumnNumber());
+        auto location = CaptureSourceLocation(
+            ExecutionContext::From(isolate->GetCurrentContext()));
+        // TODO(crbug.com/349583610): Update to use SourceLocation typemap.
+        auto source_location = network::mojom::blink::SourceLocation::New(
+            location->Url() ? location->Url() : "", location->LineNumber(),
+            location->ColumnNumber());
 
-    accessing_window->GetFrameConsole()->AddMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kError,
-            CoopReportOnlyErrorMessage(property_name), location->Clone()));
+        accessing_window->GetFrameConsole()->AddMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kError,
+                CoopReportOnlyErrorMessage(property_name), location->Clone()));
 
-    CoopAccessMonitor* monitor = *it;
+        // If the reporting document hasn't specified any network report
+        // endpoint(s), then it is likely not interested in receiving
+        // ReportingObserver's reports.
+        //
+        // TODO(arthursonzogni): Reconsider this decision later, developers
+        // might be interested.
+        if (monitor->endpoint_defined) {
+          if (monitor->reporter.is_bound()) {
+            monitor->reporter->QueueAccessReport(
+                monitor->report_type, property_name, std::move(source_location),
+                std::move(monitor->reported_window_url));
+          }
+          // Send a coop-access-violation report.
+          if (network::IsAccessFromCoopPage(monitor->report_type)) {
+            ReportingContext::From(accessing_main_frame.DomWindow())
+                ->QueueReport(MakeGarbageCollected<Report>(
+                    ReportType::kCoopAccessViolation,
+                    accessing_main_frame.GetDocument()->Url().GetString(),
+                    MakeGarbageCollected<CoopAccessViolationReportBody>(
+                        std::move(location), monitor->report_type,
+                        String(property_name), monitor->reported_window_url)));
+          }
+        }
 
-    // If the reporting document hasn't specified any network report
-    // endpoint(s), then it is likely not interested in receiving
-    // ReportingObserver's reports.
-    //
-    // TODO(arthursonzogni): Reconsider this decision later, developers might be
-    // interested.
-    if (monitor->endpoint_defined) {
-      if (monitor->reporter.is_bound()) {
-        monitor->reporter->QueueAccessReport(
-            monitor->report_type, property_name, std::move(source_location),
-            std::move(monitor->reported_window_url));
-      }
-      // Send a coop-access-violation report.
-      if (network::IsAccessFromCoopPage(monitor->report_type)) {
-        ReportingContext::From(accessing_main_frame.DomWindow())
-            ->QueueReport(MakeGarbageCollected<Report>(
-                ReportType::kCoopAccessViolation,
-                accessing_main_frame.GetDocument()->Url().GetString(),
-                MakeGarbageCollected<CoopAccessViolationReportBody>(
-                    std::move(location), monitor->report_type,
-                    String(property_name), monitor->reported_window_url)));
-      }
-    }
-
-    // CoopAccessMonitor are used once and destroyed. This avoids sending
-    // multiple reports for the same access.
-    (*it)->reporter.reset();
-    it = coop_access_monitor_.erase(it);
-  }
+        // CoopAccessMonitor are used once and destroyed. This avoids sending
+        // multiple reports for the same access.
+        monitor->reporter.reset();
+        return true;
+      });
 }
 
 void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
@@ -1120,14 +1111,11 @@ void DOMWindow::Trace(Visitor* visitor) const {
 
 void DOMWindow::DisconnectCoopAccessMonitor(
     const LocalFrameToken& accessing_main_frame) {
-  auto it = coop_access_monitor_.begin();
-  while (it != coop_access_monitor_.end()) {
-    if ((*it)->accessing_main_frame == accessing_main_frame) {
-      it = coop_access_monitor_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  WTF::EraseIf(
+      coop_access_monitor_,
+      [&accessing_main_frame](const Member<CoopAccessMonitor>& monitor) {
+        return monitor->accessing_main_frame == accessing_main_frame;
+      });
 }
 
 }  // namespace blink

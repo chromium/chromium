@@ -13,3 +13,5 @@ NSString* const kInfobarBannerOpenModalButtonIdentifier =
     @"kInfobarBannerOpenModalButtonIdentifier";
 
 const CGFloat kInfobarBannerIconSize = 28.0f;
+
+const CGFloat kInfobarBannerMaxHeight = 230.0f;

@@ -356,8 +356,7 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
   const bool is_journeys_suggestion_row =
       match.type == AutocompleteMatchType::HISTORY_CLUSTER;
   const bool is_instant_keyword_row =
-      match.type == AutocompleteMatchType::STARTER_PACK ||
-      match.type == AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
+      AutocompleteMatch::IsFeaturedSearchType(match.type);
   if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
       is_instant_keyword_row) {
     // When a PEDAL suggestion has been split out to its own row, apply a square

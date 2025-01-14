@@ -51,10 +51,10 @@ enum class EmbeddingsModelInfoStatus {
 // The status of an embeddings generation attempt.
 enum class ComputeEmbeddingsStatus {
   // Embeddings are generated successfully.
-  KSuccess = 0,
+  kSuccess = 0,
 
   // The model files required for generation are not available.
-  KModelUnavailable = 1,
+  kModelUnavailable = 1,
 
   // Failure occurred during model execution.
   kExecutionFailure = 2,
@@ -62,7 +62,7 @@ enum class ComputeEmbeddingsStatus {
   // The generation request was skipped. This could happen if the embeddings
   // request for a user query, which may have been obsolete (by a newer user
   // query) by the time the embedder is free.
-  KSkipped = 3,
+  kSkipped = 3,
 };
 
 }  // namespace passage_embeddings

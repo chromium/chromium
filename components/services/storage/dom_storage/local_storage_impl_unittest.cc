@@ -1017,13 +1017,7 @@ TEST_F(LocalStorageImplTest, CorruptionOnDisk) {
   EXPECT_EQ(value, result);
 }
 
-// TODO(crbug.com/388544206): Flaky on Mac13.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RecreateOnCommitFailure DISABLED_RecreateOnCommitFailure
-#else
-#define MAYBE_RecreateOnCommitFailure RecreateOnCommitFailure
-#endif
-TEST_F(LocalStorageImplTest, MAYBE_RecreateOnCommitFailure) {
+TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   std::optional<base::RunLoop> open_loop;
   std::optional<base::RunLoop> destruction_loop;
   size_t num_database_open_requests = 0;
@@ -1096,12 +1090,14 @@ TEST_F(LocalStorageImplTest, MAYBE_RecreateOnCommitFailure) {
   size_t values_written = 0;
   while (area1.is_connected()) {
     // Every write needs to be different to make sure there actually is a
+    // change to commit.
     value[0]++;
-    area1->Put(key, value, std::nullopt, "source", base::DoNothing());
-    // Can't rely on the return callback for `Put()` since there should be an
-    // error.
+    area1->Put(key, value, std::nullopt, "source",
+               base::BindLambdaForTesting([&](bool success) {
+                 EXPECT_TRUE(success);
+                 values_written++;
+               }));
     area1.FlushForTesting();
-    ++values_written;
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
     context()->FlushStorageKeyForTesting(blink::StorageKey(

@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.xsurface;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implemented internally.
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * A renderer that can handle mixing externally-provided views with native Android views
  * in a RecyclerView.
  */
+@NullMarked
 public interface HybridListRenderer {
     /**
      * Binds a contentmanager with this renderer.
@@ -105,7 +108,7 @@ public interface HybridListRenderer {
     default void onManualRefreshStarted() {}
 
     /** Returns helper to manager the list layout. @{@link ListLayoutHelper} instance. */
-    default ListLayoutHelper getListLayoutHelper() {
+    default @Nullable ListLayoutHelper getListLayoutHelper() {
         return null;
     }
 
@@ -114,7 +117,7 @@ public interface HybridListRenderer {
      * RecyclerView, which may be null before attach and after detach, this is guaranteed to be
      * valid between the call to bind() and unbind().
      */
-    default RecyclerView.Adapter<?> getAdapter() {
+    default RecyclerView.@Nullable Adapter<?> getAdapter() {
         return null;
     }
 }

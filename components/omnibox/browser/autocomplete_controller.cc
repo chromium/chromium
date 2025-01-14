@@ -1589,83 +1589,69 @@ void AutocompleteController::UpdateAssociatedKeywords(
   if (!keyword_provider_)
     return;
 
-  // Determine if the user's input is an exact keyword match.
-  std::u16string exact_keyword =
-      keyword_provider_->GetKeywordForText(input_.text());
+  // The keyword matching the user's input.
+  std::u16string input_text_keyword = keyword_provider_->GetKeywordForText(
+      input_.text(), template_url_service_);
+  TemplateURL* input_text_keyword_turl =
+      template_url_service_->GetTemplateURLForKeyword(input_text_keyword);
 
+  // Cache added keywords to avoid showing duplicate keywords.
   std::set<std::u16string> keywords;
+
+  auto add_keyword = [&](AutocompleteMatch& match,
+                         const std::u16string& keyword_text,
+                         const std::u16string& keyword) {
+    // There shouldn't be duplicate keywords.
+    CHECK(!keywords.count(keyword));
+    keywords.insert(keyword);
+    match.associated_keyword = std::make_unique<AutocompleteMatch>(
+        keyword_provider_->CreateVerbatimMatch(keyword_text, keyword, input_));
+  };
+
   for (AutocompleteMatch& match : *result) {
-    std::u16string keyword(
+    // Clear any keyword the match may have from previous passes.
+    match.associated_keyword.reset();
+
+    // If this match is in keyword mode (e.g. the user tabbed into a keyword
+    // then continued typing), don't attach a keyword chip to it.
+    std::u16string explicit_keyword(
         match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
-    if (!keyword.empty()) {
-      keywords.insert(keyword);
+    if (!explicit_keyword.empty() && !keywords.count(explicit_keyword)) {
+      // Also prevent other matches showing a keyword chip for the keyword the
+      // user is already in.
+      keywords.insert(explicit_keyword);
       continue;
     }
 
-    // When the user has typed an exact keyword, we want tab-to-search on the
-    // default match to select that keyword, even if the match
-    // inline-autocompletes to a different keyword.  (This prevents inline
-    // autocompletions from blocking a user's attempts to use an explicitly-set
-    // keyword of their own creation.)  So use |exact_keyword| if it's
-    // available.
-    if (!exact_keyword.empty() && !keywords.count(exact_keyword)) {
-      // Prevent starter-pack keywords from attaching to non-starter-pack
-      // matches. Those will have a dedicated UI with an explicit match
-      // selection to enter keyword mode.
-      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
-        TemplateURL* turl =
-            template_url_service_->GetTemplateURLForKeyword(exact_keyword);
-        // Note, starter pack matches that removed the '@' from the beginning of
-        // the keyword are still allowed to attach because those don't get the
-        // special UX, by design.
-        if (turl && turl->starter_pack_id() != 0 &&
-            turl->keyword().starts_with(u'@')) {
-          continue;
-        }
-      }
-
-      keywords.insert(exact_keyword);
-      // If the match has an answer, it will look strange to try to display
-      // it along with a keyword hint. Prefer the keyword hint, and revert
-      // to a typical search.
-      match.answer_template.reset();
-      match.answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
-      match.associated_keyword = std::make_unique<AutocompleteMatch>(
-          keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
-                                                 input_));
-#if BUILDFLAG(IS_ANDROID)
-      match.UpdateJavaAnswer();
-#endif
+    // When the input text matches a keyword, tab-to-search on the default
+    // match should select that keyword, even if the match inline-autocompletes
+    // to a different keyword.
+    if (!input_text_keyword.empty() && !keywords.count(input_text_keyword) &&
+        input_text_keyword_turl->starter_pack_id() == 0 &&
+        !input_text_keyword_turl->featured_by_policy()) {
+      add_keyword(match, input_text_keyword, input_text_keyword);
       continue;
     }
 
-    // Otherwise, set a match's associated keyword based on the match's
-    // fill_into_edit, which should take inline autocompletions into account.
-    keyword = keyword_provider_->GetKeywordForText(match.fill_into_edit);
+    // The keyword for the match text.
+    std::u16string match_text_keyword = keyword_provider_->GetKeywordForText(
+        match.fill_into_edit, template_url_service_);
+    TemplateURL* match_text_keyword_turl =
+        template_url_service_->GetTemplateURLForKeyword(match_text_keyword);
 
-    if (!keyword.empty()) {
-      // Prevent starter-pack keywords from attaching to non-starter-pack
-      // matches.
-      if (kIsDesktop && match.type != AutocompleteMatchType::STARTER_PACK) {
-        TemplateURL* turl =
-            template_url_service_->GetTemplateURLForKeyword(keyword);
-        if (turl && turl->starter_pack_id() != 0 &&
-            turl->keyword().starts_with(u'@')) {
-          continue;
-        }
-      }
+    // Featured keyword matches should always have their corresponding keyword
+    // or they won't work.
+    if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
+      CHECK(!match_text_keyword.empty());
+      add_keyword(match, match.fill_into_edit, match_text_keyword);
+      continue;
+    }
 
-      // Only add the keyword if the match does not have a duplicate keyword
-      // with a more relevant match.
-      if (!keywords.count(keyword) ||
-          (kIsDesktop && AutocompleteMatch::IsFeaturedSearchType(match.type))) {
-        keywords.insert(keyword);
-        match.associated_keyword = std::make_unique<AutocompleteMatch>(
-            keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
-                                                   keyword, input_));
-      } else {
-        match.associated_keyword.reset();
-      }
+    // Add keyword hints for typical matches.
+    if (!match_text_keyword.empty() && !keywords.count(match_text_keyword) &&
+        match_text_keyword_turl->starter_pack_id() == 0 &&
+        !match_text_keyword_turl->featured_by_policy()) {
+      add_keyword(match, match.fill_into_edit, match_text_keyword);
     }
   }
 }

@@ -10593,6 +10593,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/devtools/devtools_interactive_browsertest.cc",
       "../browser/download/download_interactive_uitest.cc",
       "../browser/focus_ring_browsertest.cc",
+      "../browser/media/webrtc/conditional_focus_interactive_uitest.cc",
       "../browser/media/webrtc/display_media_access_handler_interactive_uitest.cc",
       "../browser/media/webrtc/media_stream_permission_interactive_uitest.cc",
       "../browser/media/webrtc/webrtc_interactive_uitest.cc",
@@ -11019,7 +11020,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (toolkit_views) {
       sources += [
-        "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",
         "../browser/ui/toolbar/app_menu_model_interactive_uitest.cc",
         "../browser/ui/user_education/show_promo_in_page_interactive_uitest.cc",

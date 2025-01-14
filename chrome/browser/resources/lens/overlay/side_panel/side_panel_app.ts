@@ -37,6 +37,7 @@ export interface LensSidePanelAppElement {
     ghostLoader: SidePanelGhostLoaderElement,
     networkErrorPage: HTMLDivElement,
     searchbox: SearchboxElement,
+    searchboxContainer: HTMLElement,
     searchboxGhostLoader: SearchboxGhostLoaderElement,
   };
 }
@@ -188,13 +189,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
     ];
-
-    this.eventTracker_.add(this.$.searchbox, 'focusin', () => {
-      this.onSearchboxFocusIn_();
-    });
-    this.eventTracker_.add(this.$.searchbox, 'focusout', () => {
-      this.onSearchboxFocusOut_();
-    });
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
       this.showErrorState = false;
@@ -276,7 +270,16 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         'kLensSidePanelSearchBoxFocusedEventId');
   }
 
-  private onSearchboxFocusOut_() {
+  private onSearchboxFocusOut_(event: FocusEvent) {
+    // Ignore the blurred event if focus left one child element to enter another
+    // child element.
+    if (event.relatedTarget instanceof Node &&
+        this.$.searchboxContainer.contains(event.relatedTarget)) {
+      // TODO(380467089): This workaround wouldn't be needed if the ghost loader
+      // was part of the searchbox element. Remove this workaround once they are
+      // combined.
+      return;
+    }
     this.isBackArrowVisible = this.wasBackArrowAvailable;
     this.isSearchboxFocused = false;
     this.autocompleteRequestStarted = false;

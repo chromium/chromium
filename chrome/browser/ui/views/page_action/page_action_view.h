@@ -29,8 +29,6 @@ class PageActionView : public IconLabelBubbleView,
   PageActionView& operator=(const PageActionView&) = delete;
   ~PageActionView() override;
 
-  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
-
   // Sets the controller for this view, and attaches this view in the
   // controller.
   void OnNewActiveController(PageActionController* controller);
@@ -70,27 +68,6 @@ class PageActionView : public IconLabelBubbleView,
   // ActionItem updates. This ensures that updates aren't unnecessarily
   // propagated to every tab's controller.
   base::CallbackListSubscription action_item_controller_subscription_;
-};
-
-// TODO(crbug.com/376285151): This class is overriding all of the behaviour
-// from its base classes with stub implementations. `PageActionView` can now
-// be disconnected from the ActionItem-View framework altogether.
-class PageActionViewInterface : public views::LabelButtonActionViewInterface {
- public:
-  explicit PageActionViewInterface(PageActionView* action_view,
-                                   PageActionModel* model);
-  PageActionViewInterface(const PageActionViewInterface&) = delete;
-  PageActionViewInterface& operator=(const PageActionViewInterface&) = delete;
-  ~PageActionViewInterface() override;
-
-  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
-  void InvokeActionImpl(actions::ActionItem* action_item) override;
-  void LinkActionInvocationToView(
-      base::RepeatingClosure trigger_action_callback) override;
-
- private:
-  raw_ptr<PageActionView> action_view_;
-  raw_ptr<PageActionModel> model_;
 };
 
 }  // namespace page_actions

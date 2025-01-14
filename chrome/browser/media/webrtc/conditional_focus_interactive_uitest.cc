@@ -64,7 +64,7 @@ enum class Tab { kUnknownTab, kCapturingTab, kCapturedTab };
 
 // Essentially depends on InProcessBrowserTest, but WebRtcTestBase provides
 // detection of JS errors.
-class ConditionalFocusBrowserTest : public WebRtcTestBase {
+class ConditionalFocusInteractiveUiTest : public WebRtcTestBase {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
@@ -200,7 +200,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
 #define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
   CapturedTabFocusedIfNoExplicitCallToFocus
 #endif
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
                        MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kNoValue);
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 #define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
   CapturedTabFocusedIfExplicitlyCallingFocus
 #endif
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
                        MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);
@@ -224,14 +224,14 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 
 // This class only uses the values of FocusEnumValue that lead to the capturing
 // application keeping focus.
-class ConditionalFocusBrowserTestWithFocusCapturingApplication
-    : public ConditionalFocusBrowserTest,
+class ConditionalFocusInteractiveUiTestWithFocusCapturingApplication
+    : public ConditionalFocusInteractiveUiTest,
       public testing::WithParamInterface<FocusEnumValue> {
  public:
-  ConditionalFocusBrowserTestWithFocusCapturingApplication()
+  ConditionalFocusInteractiveUiTestWithFocusCapturingApplication()
       : focus_behavior_(GetParam()) {}
 
-  ~ConditionalFocusBrowserTestWithFocusCapturingApplication() override =
+  ~ConditionalFocusInteractiveUiTestWithFocusCapturingApplication() override =
       default;
 
  protected:
@@ -240,7 +240,7 @@ class ConditionalFocusBrowserTestWithFocusCapturingApplication
 
 INSTANTIATE_TEST_SUITE_P(
     _,
-    ConditionalFocusBrowserTestWithFocusCapturingApplication,
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
     testing::Values(FocusEnumValue::kFocusCapturingApplication,
                     FocusEnumValue::kNoFocusChange));
 
@@ -252,8 +252,9 @@ INSTANTIATE_TEST_SUITE_P(
 #define MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus \
   CapturedTabNotFocusedIfExplicitlyCallingNoFocus
 #endif
-IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
-                       MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus) {
+IN_PROC_BROWSER_TEST_P(
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
+    MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus) {
   SetUpTestTabs();
   Capture(0, focus_behavior_);
   // Whereas calls to Wait() in previous tests served to minimize flakiness,
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
 #endif
 IN_PROC_BROWSER_TEST_P(
-    ConditionalFocusBrowserTestWithFocusCapturingApplication,
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
     MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus) {
   SetUpTestTabs();
   Capture(15000, focus_behavior_);
@@ -283,7 +284,8 @@ IN_PROC_BROWSER_TEST_P(
 // conditional focus window before focus occurs. Rather, that is just the
 // hard-limit that is employed in case the application attempts abuse by
 // blocking the main thread for too long.
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusTriggeredByMicrotask) {
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
+                       FocusTriggeredByMicrotask) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kNoValue);
   // Recall that the test fixture set the conditional focus window to 5s.
@@ -292,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusTriggeredByMicrotask) {
   EXPECT_EQ(ActiveTab(), Tab::kCapturedTab);
 }
 
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
                        UserFocusChangeSuppressesFocusDecision) {
   SetUpTestTabs();
 
@@ -313,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }
 
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
                        ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes) {
   // Setup.
   SetUpTestTabs();
@@ -325,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
           "is closed.");
 }
 
-IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusBeforeCapture) {
+IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest, FocusBeforeCapture) {
   // Setup.
   SetUpTestTabs();
   CallSetFocusBehaviorBeforeCapture(FocusEnumValue::kFocusCapturedSurface);
@@ -338,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusBeforeCapture) {
 #else
 #define MAYBE_NoFocusBeforeCapture NoFocusBeforeCapture
 #endif
-IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
-                       MAYBE_NoFocusBeforeCapture) {
+IN_PROC_BROWSER_TEST_P(
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
+    MAYBE_NoFocusBeforeCapture) {
   // Setup.
   SetUpTestTabs();
   CallSetFocusBehaviorBeforeCapture(focus_behavior_);
@@ -358,8 +361,9 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
 #define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
   NoFocusAfterCaptureOverrideFocusBeforeCapture
 #endif
-IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
-                       MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture) {
+IN_PROC_BROWSER_TEST_P(
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
+    MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture) {
   // Setup.
   SetUpTestTabs();
   CallSetFocusBehaviorBeforeCapture(FocusEnumValue::kFocusCapturedSurface,
@@ -379,8 +383,9 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
 #define MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture \
   FocusAfterCaptureOverrideNoFocusBeforeCapture
 #endif
-IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
-                       MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture) {
+IN_PROC_BROWSER_TEST_P(
+    ConditionalFocusInteractiveUiTestWithFocusCapturingApplication,
+    MAYBE_FocusAfterCaptureOverrideNoFocusBeforeCapture) {
   // Setup.
   SetUpTestTabs();
   CallSetFocusBehaviorBeforeCapture(focus_behavior_,

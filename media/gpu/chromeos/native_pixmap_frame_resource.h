@@ -93,6 +93,7 @@ class NativePixmapFrameResource : public FrameResource {
   const VideoFrameMetadata& metadata() const override;
   VideoFrameMetadata& metadata() override;
   void set_metadata(const VideoFrameMetadata& metadata) override;
+  const base::UnguessableToken& tracking_token() const override;
   gfx::ColorSpace ColorSpace() const override;
   void set_color_space(const gfx::ColorSpace& color_space) override;
   const std::optional<gfx::HDRMetadata>& hdr_metadata() const override;

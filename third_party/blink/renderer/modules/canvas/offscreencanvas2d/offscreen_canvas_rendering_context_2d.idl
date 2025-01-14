@@ -11,6 +11,8 @@
     // back-reference to the canvas
     [ImplementedAs=offscreenCanvasForBinding] readonly attribute OffscreenCanvas canvas;
 
+    [RuntimeEnabled=OffscreenCanvasGetContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
+
 };
 
 OffscreenCanvasRenderingContext2D includes BaseRenderingContext2D;

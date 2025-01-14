@@ -8,6 +8,7 @@
 #import <cmath>
 
 #import "base/check.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_banner_positioner.h"
 
 namespace {
@@ -15,8 +16,6 @@ namespace {
 const CGFloat kContainerHorizontalPadding = 8;
 // The presented view maximum width.
 const CGFloat kContainerMaxWidth = 398;
-// The presented view maximum height.
-const CGFloat kContainerMaxHeight = 230;
 // Minimum height or width frame change that should warrant a resizing of the
 // container view in response to a relayout.
 const CGFloat kMinimumSizeChange = 0.5;
@@ -71,7 +70,7 @@ const CGFloat kMinimumSizeChange = 0.5;
                 withHorizontalFittingPriority:UILayoutPriorityRequired
                       verticalFittingPriority:1]
           .height;
-  bannerFrame.size.height = std::min(kContainerMaxHeight, bannerHeight);
+  bannerFrame.size.height = std::min(kInfobarBannerMaxHeight, bannerHeight);
 
   return bannerFrame;
 }

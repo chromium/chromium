@@ -201,7 +201,7 @@ TEST_F(LensOverlayGen204ControllerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
                                          kLatencyRequestTypeQueryParameter,
                                          &request_type_param));
-  ASSERT_EQ(request_type_param, "fpof.100,sct.200");
+  ASSERT_EQ(request_type_param, "fpof.100,sctr.200");
 
   // Check that the visual input type param is present.
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,

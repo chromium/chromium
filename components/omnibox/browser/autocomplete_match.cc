@@ -133,28 +133,28 @@ int GetDeduplicationProviderPreferenceScore(
   const AutocompleteProvider::Type type = provider->type();
 
   constexpr auto kProviderPrefMap =
-    base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
-      // Prefer live document suggestions. We check provider type instead
-      // of match type in order to distinguish live suggestions from the
-      // document provider from stale suggestions from the shortcuts
-      // providers, because the latter omits changing metadata such as last
-      // access date.
-      {AutocompleteProvider::TYPE_DOCUMENT, 2},
-      // Prefer bookmark suggestions, as:
-      // 1) Their titles may be explicitly set.
-      // 2) They may display enhanced information such as the bookmark
-      //    folders path.
-      {AutocompleteProvider::TYPE_BOOKMARK, 1},
-      // Don't let bookmarks override builtins, as that interferes with
-      // starter pack matches when user has bookmarked their destination.
-      {AutocompleteProvider::TYPE_BUILTIN, kIsDesktop ? 1 : 0},
-      // Prefer non-shorcut matches over shortcuts, the latter of which may
-      // have stale or missing URL titles (the latter from what-you-typed
-      // matches).
-      {AutocompleteProvider::TYPE_SHORTCUTS, -1},
-      // Prefer non-fuzzy matches over fuzzy matches.
-      {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
-  });
+      base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
+          // Prefer live document suggestions. We check provider type instead
+          // of match type in order to distinguish live suggestions from the
+          // document provider from stale suggestions from the shortcuts
+          // providers, because the latter omits changing metadata such as last
+          // access date.
+          {AutocompleteProvider::TYPE_DOCUMENT, 2},
+          // Prefer bookmark suggestions, as:
+          // 1) Their titles may be explicitly set.
+          // 2) They may display enhanced information such as the bookmark
+          //    folders path.
+          {AutocompleteProvider::TYPE_BOOKMARK, 1},
+          // Don't let bookmarks override builtins, as that interferes with
+          // starter pack matches when user has bookmarked their destination.
+          {AutocompleteProvider::TYPE_BUILTIN, kIsDesktop ? 1 : 0},
+          // Prefer non-shorcut matches over shortcuts, the latter of which may
+          // have stale or missing URL titles (the latter from what-you-typed
+          // matches).
+          {AutocompleteProvider::TYPE_SHORTCUTS, -1},
+          // Prefer non-fuzzy matches over fuzzy matches.
+          {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
+      });
   const auto it = kProviderPrefMap.find(type);
   return it != kProviderPrefMap.end() ? it->second : 0;
 }
@@ -1237,13 +1237,7 @@ bool AutocompleteMatch::HasInstantKeyword(
   }
   TemplateURL* turl =
       associated_keyword->GetTemplateURL(template_url_service, false);
-  if (!turl) {
-    return false;
-  }
-  // Note, starter pack keywords with '@' prefix removed do not get
-  // the special instant keyword UX, by design.
-  return (turl->starter_pack_id() != 0 || turl->featured_by_policy()) &&
-         turl->keyword().starts_with(u'@');
+  return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
 }
 
 void AutocompleteMatch::GetKeywordUIState(

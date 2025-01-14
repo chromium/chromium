@@ -246,8 +246,7 @@ public class ConnectionInfoView implements OnClickListener {
                         }
 
                         @Override
-                        public void destroy() {
-                            super.destroy();
+                        public void onDestroy() {
                             dismiss(DialogDismissalCause.UNKNOWN);
                         }
                     };

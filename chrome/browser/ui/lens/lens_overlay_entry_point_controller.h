@@ -18,9 +18,13 @@
 class BrowserWindowInterface;
 class CommandUpdater;
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace lens {
 
@@ -43,6 +47,10 @@ class LensOverlayEntryPointController : public FullscreenObserver,
 
   // Whether the entry points should be enabled.
   bool IsEnabled();
+
+  // Invokes the entrypoint action.
+  static void InvokeAction(tabs::TabInterface* active_tab,
+                           const actions::ActionInvocationContext& context);
 
  private:
   // FullscreenObserver:
