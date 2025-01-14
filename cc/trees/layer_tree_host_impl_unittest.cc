@@ -10960,7 +10960,7 @@ TEST_P(LayerTreeHostImplTest, MayContainVideo) {
   auto* root =
       SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(), big_size);
   auto* video_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  video_layer->set_may_contain_video(true);
+  video_layer->SetMayContainVideo(true);
   CopyProperties(root, video_layer);
   UpdateDrawProperties(host_impl_->active_tree());
   EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));

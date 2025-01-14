@@ -209,7 +209,6 @@ void SurfaceLayer::PushDirtyPropertiesTo(
         stretch_content_to_fill_bounds_.Read(*this));
     layer_impl->SetSurfaceHitTestable(surface_hit_testable_.Read(*this));
     layer_impl->SetHasPointerEventsNone(has_pointer_events_none_.Read(*this));
-    layer_impl->set_may_contain_video(may_contain_video_.Read(*this));
 
     if (callback_layer_tree_host_changed_.Read(*this)) {
       // Anytime SetLayerTreeHost is called and

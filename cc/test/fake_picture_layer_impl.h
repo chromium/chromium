@@ -87,13 +87,25 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   size_t append_quads_count() { return append_quads_count_; }
 
   const Region& invalidation() const { return invalidation_; }
-  void set_invalidation(const Region& region) { invalidation_ = region; }
+  void set_invalidation(const Region& region) {
+    if (invalidation_ == region) {
+      return;
+    }
+    invalidation_ = region;
+    SetNeedsPushProperties();
+  }
 
   gfx::Rect viewport_rect_for_tile_priority_in_content_space() {
     return viewport_rect_for_tile_priority_in_content_space_;
   }
 
-  void set_fixed_tile_size(const gfx::Size& size) { fixed_tile_size_ = size; }
+  void set_fixed_tile_size(const gfx::Size& size) {
+    if (fixed_tile_size_ == size) {
+      return;
+    }
+    fixed_tile_size_ = size;
+    SetNeedsPushProperties();
+  }
 
   void CreateAllTiles();
   void SetAllTilesReady();

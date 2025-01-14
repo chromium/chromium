@@ -52,7 +52,11 @@ class CC_EXPORT PictureLayerImpl
   PictureLayerImpl& operator=(const PictureLayerImpl&) = delete;
 
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
+    if (is_backdrop_filter_mask_ == is_backdrop_filter_mask) {
+      return;
+    }
     is_backdrop_filter_mask_ = is_backdrop_filter_mask;
+    SetNeedsPushProperties();
   }
   bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
 
@@ -94,7 +98,11 @@ class CC_EXPORT PictureLayerImpl
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;
 
   void set_gpu_raster_max_texture_size(gfx::Size gpu_raster_max_texture_size) {
+    if (gpu_raster_max_texture_size_ == gpu_raster_max_texture_size) {
+      return;
+    }
     gpu_raster_max_texture_size_ = gpu_raster_max_texture_size;
+    SetNeedsPushProperties();
   }
 
   gfx::Size gpu_raster_max_texture_size() {
