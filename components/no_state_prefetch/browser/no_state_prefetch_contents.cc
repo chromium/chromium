@@ -72,8 +72,9 @@ class NoStatePrefetchContentsFactoryImpl
 void SetPreloadingTriggeringOutcome(
     content::PreloadingAttempt* attempt,
     content::PreloadingTriggeringOutcome outcome) {
-  if (!attempt)
+  if (!attempt) {
     return;
+  }
 
   attempt->SetTriggeringOutcome(outcome);
 }
@@ -148,8 +149,9 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
       RenderFrameHost* render_frame_host) override {
     auto* client =
         paint_preview::PaintPreviewClient::FromWebContents(web_contents);
-    if (client)
+    if (client) {
       client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
+    }
   }
 
  private:
@@ -205,8 +207,9 @@ NoStatePrefetchContents::Factory* NoStatePrefetchContents::CreateFactory() {
 }
 
 void NoStatePrefetchContents::SetPreloadingFailureReason(FinalStatus status) {
-  if (!attempt_)
+  if (!attempt_) {
     return;
+  }
 
   switch (status) {
     case FINAL_STATUS_USED:
@@ -266,8 +269,9 @@ void NoStatePrefetchContents::StartPrerendering(
   DCHECK(!no_state_prefetch_contents_);
   DCHECK_EQ(1U, alias_urls_.size());
 
-  if (session_storage_namespace)
+  if (session_storage_namespace) {
     session_storage_namespace_id_ = session_storage_namespace->id();
+  }
   bounds_ = bounds;
 
   DCHECK(load_start_time_.is_null());
@@ -358,8 +362,9 @@ std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
 
 void NoStatePrefetchContents::NotifyPrefetchStart() {
   DCHECK_EQ(FINAL_STATUS_UNKNOWN, final_status_);
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPrefetchStart(this);
+  }
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStopLoading() {
@@ -368,14 +373,16 @@ void NoStatePrefetchContents::NotifyPrefetchStopLoading() {
   // later on or not. kReady doesn't mean it is a success.
   SetPreloadingTriggeringOutcome(attempt_.get(),
                                  content::PreloadingTriggeringOutcome::kReady);
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPrefetchStopLoading(this);
+  }
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStop() {
   DCHECK_NE(FINAL_STATUS_UNKNOWN, final_status_);
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnPrefetchStop(this);
+  }
   observer_list_.Clear();
 }
 
@@ -392,8 +399,9 @@ bool NoStatePrefetchContents::CheckURL(const GURL& url) {
 }
 
 bool NoStatePrefetchContents::AddAliasURL(const GURL& url) {
-  if (!CheckURL(url))
+  if (!CheckURL(url)) {
     return false;
+  }
 
   alias_urls_.push_back(url);
   return true;
@@ -447,8 +455,9 @@ void NoStatePrefetchContents::DidStartNavigation(
     return;
   }
 
-  if (!CheckURL(navigation_handle->GetURL()))
+  if (!CheckURL(navigation_handle->GetURL())) {
     return;
+  }
 
   // Usually, this event fires if the user clicks or enters a new URL.
   // Neither of these can happen in the case of an invisible prerender.
@@ -460,8 +469,9 @@ void NoStatePrefetchContents::DidStartNavigation(
 
 void NoStatePrefetchContents::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // If it's a redirect on the top-level resource, the name needs to be
   // remembered for future matching, and if it redirects to an https resource,
@@ -472,8 +482,9 @@ void NoStatePrefetchContents::DidRedirectNavigation(
 void NoStatePrefetchContents::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (render_frame_host->IsInPrimaryMainFrame())
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     has_finished_loading_ = true;
+  }
 }
 
 void NoStatePrefetchContents::DidFinishNavigation(
@@ -499,8 +510,9 @@ void NoStatePrefetchContents::DidFinishNavigation(
   // TODO(davidben): We do not correctly patch up history for renderer-initated
   // navigations which add history entries. http://crbug.com/305660.
   for (const auto& redirect : navigation_handle->GetRedirectChain()) {
-    if (!AddAliasURL(redirect))
+    if (!AddAliasURL(redirect)) {
       return;
+    }
   }
 }
 
@@ -527,22 +539,26 @@ void NoStatePrefetchContents::Destroy(FinalStatus final_status) {
 void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
   if (process_pid_ == base::kNullProcessId) {
     RenderFrameHost* rfh = GetPrimaryMainFrame();
-    if (!rfh)
+    if (!rfh) {
       return;
+    }
 
     content::RenderProcessHost* rph = rfh->GetProcess();
-    if (!rph)
+    if (!rph) {
       return;
+    }
 
     base::ProcessHandle handle = rph->GetProcess().Handle();
-    if (handle == base::kNullProcessHandle)
+    if (handle == base::kNullProcessHandle) {
       return;
+    }
 
     process_pid_ = rph->GetProcess().Pid();
   }
 
-  if (process_pid_ == base::kNullProcessId)
+  if (process_pid_ == base::kNullProcessId) {
     return;
+  }
 
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestPrivateMemoryFootprint(
@@ -554,13 +570,15 @@ void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
 void NoStatePrefetchContents::DidGetMemoryUsage(
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> global_dump) {
-  if (!success)
+  if (!success) {
     return;
+  }
 
   for (const memory_instrumentation::GlobalMemoryDump::ProcessDump& dump :
        global_dump->process_dumps()) {
-    if (dump.pid() != process_pid_)
+    if (dump.pid() != process_pid_) {
       continue;
+    }
 
     // If |final_status_| == |FINAL_STATUS_USED|, then destruction will be
     // handled by the entity that set final_status_.
@@ -580,8 +598,9 @@ RenderFrameHost* NoStatePrefetchContents::GetPrimaryMainFrame() {
 }
 
 std::optional<base::Value::Dict> NoStatePrefetchContents::GetAsDict() const {
-  if (!no_state_prefetch_contents_)
+  if (!no_state_prefetch_contents_) {
     return std::nullopt;
+  }
   base::Value::Dict dict;
   dict.Set("url", prefetch_url_.spec());
   base::TimeTicks current_time = base::TimeTicks::Now();

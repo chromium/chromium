@@ -208,11 +208,13 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
   // content::WebContentsObserver implementation:
   void DidStartLoading() override { did_start_loading_ = true; }
   void DidStopLoading() override {
-    if (!did_start_loading_)
+    if (!did_start_loading_) {
       return;
+    }
     number_of_loads_--;
-    if (number_of_loads_ == 0)
+    if (number_of_loads_ == 0) {
       loop_.Quit();
+    }
   }
 
   // TabStripModelObserver implementation:
@@ -220,12 +222,14 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kReplaced)
+    if (change.type() != TabStripModelChange::kReplaced) {
       return;
+    }
 
     auto* replace = change.GetReplace();
-    if (replace->old_contents != web_contents())
+    if (replace->old_contents != web_contents()) {
       return;
+    }
 
     // Switch to observing the new WebContents.
     Observe(replace->new_contents);
@@ -260,8 +264,9 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
  public:
   NewTabNavigationOrSwapObserver() {
     BrowserList::AddObserver(this);
-    for (const Browser* browser : *BrowserList::GetInstance())
+    for (const Browser* browser : *BrowserList::GetInstance()) {
       browser->tab_strip_model()->AddObserver(this);
+    }
   }
 
   NewTabNavigationOrSwapObserver(const NewTabNavigationOrSwapObserver&) =
@@ -283,8 +288,9 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted || swap_observer_)
+    if (change.type() != TabStripModelChange::kInserted || swap_observer_) {
       return;
+    }
 
     content::WebContents* new_tab = change.GetInsert()->contents[0].contents;
     swap_observer_ =
@@ -1617,8 +1623,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
            content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
     // Don't count spare RenderProcessHosts.
-    if (!iter.GetCurrentValue()->HostHasNotBeenUsed())
+    if (!iter.GetCurrentValue()->HostHasNotBeenUsed()) {
       ++host_count;
+    }
 
     content::RenderProcessHostWatcher process_exit_observer(
         iter.GetCurrentValue(),
@@ -1880,9 +1887,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrerenderNoSSLReferrer) {
 class SpeculationNoStatePrefetchBrowserTest
     : public NoStatePrefetchBrowserTest {
  public:
-  void SetUp() override {
-    NoStatePrefetchBrowserTest::SetUp();
-  }
+  void SetUp() override { NoStatePrefetchBrowserTest::SetUp(); }
 
   void InsertSpeculation(const GURL& prefetch_url,
                          FinalStatus expected_final_status,
