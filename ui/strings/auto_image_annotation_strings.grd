@@ -5,7 +5,7 @@ each locale. Specifically, these are accessibility UI strings that are used by c
 need to be translated for each locale. Note that some accessibility strings remain in blink_strings.grd; those strings need to be part of Android webview. -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/auto_image_annotation_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>

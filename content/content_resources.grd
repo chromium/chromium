@@ -7,7 +7,7 @@ Other resources that belong in this file:
 * Aliased resources (see shared_resources_data_source.cc).
 * (Optional) Resources for non-Android DevUI pages.
 -->
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/content_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>

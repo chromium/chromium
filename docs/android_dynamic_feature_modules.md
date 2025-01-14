@@ -643,10 +643,7 @@ follows:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<grit
-    current_release="1"
-    latest_public_release="0"
-    output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output
         filename="values-am/android_foo_strings.xml"
