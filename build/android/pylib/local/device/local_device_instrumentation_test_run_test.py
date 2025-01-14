@@ -19,8 +19,10 @@ from pylib.base import base_test_result
 from pylib.base import mock_environment
 from pylib.base import mock_test_instance
 from pylib.local.device import local_device_instrumentation_test_run
+from pylib.local.device import local_device_test_run
 
 import mock  # pylint: disable=import-error
+from unittest.mock import MagicMock
 
 
 class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
@@ -195,6 +197,17 @@ class LocalDeviceInstrumentationTestRunShardingTest(unittest.TestCase):
         self.test8
     ]
 
+    # Mock these methods called in RunTests
+    self._env.ResetCurrentTry = MagicMock(side_effect = self.reset_try)
+    self._env.IncrementCurrentTry = MagicMock(side_effect = self.increment_try)
+    self._obj._GetTests = MagicMock(return_value=self.test_list)
+
+  def reset_try(self):
+    self._env.current_try = 0
+
+  def increment_try(self):
+    self._env.current_try += 1
+
   def test_GroupTestsIntoBatchesAndOthers(self):
     expected_batched_tests = {
         'batch1': [self.test1_batch1, self.test4_batch1, self.test5_batch1]
@@ -213,8 +226,8 @@ class LocalDeviceInstrumentationTestRunShardingTest(unittest.TestCase):
   def test_GroupTests(self):
     expected_tests = [
         [self.test1_batch1, self.test4_batch1],
-        self.test3_multiprocess, self.test8, self.test2, self.test7,
-        self.test6,
+        self.test3_multiprocess, self.test8, self.test2,
+        self.test7, self.test6,
         [self.test5_batch1],
         self.test3
     ]
@@ -224,8 +237,8 @@ class LocalDeviceInstrumentationTestRunShardingTest(unittest.TestCase):
   def test_GroupTestsAfterSharding(self):
     expected_tests = [
         [self.test1_batch1, self.test4_batch1, self.test5_batch1],
-        self.test3_multiprocess, self.test8, self.test2, self.test7,
-        self.test6, self.test3
+        self.test3_multiprocess, self.test8, self.test2,
+        self.test7, self.test6, self.test3
     ]
     actual_tests = self._obj._GroupTestsAfterSharding(self.test_list)
     self.assertEqual(actual_tests, expected_tests)
@@ -264,6 +277,54 @@ class LocalDeviceInstrumentationTestRunShardingTest(unittest.TestCase):
   def test_CreateShardsForDevices(self):
     actual_tests = self._obj._CreateShardsForDevices(self.test_list)
     self.assertEqual(actual_tests, self.test_list)
+
+  def test_deterministic_sharding_grouped_tests(self):
+    self._env.devices = [1]
+    # 1 try and just the last try of mock_RunTestsOnDevice call is asserted
+    self._env.max_tries = 1
+
+    expected_shards = [
+        [self.test1_batch1, self.test4_batch1, self.test5_batch1],
+        self.test3_multiprocess, self.test8, self.test2,
+        self.test7, self.test6, self.test3
+    ]
+
+    # Mock pMap to call the provided function
+    def mock_pMap(func, *args):
+      for _ in self._env.devices:
+        func(*args)
+      return MagicMock()
+
+    # Store test collection arg as actual_shards
+    def get_actual_shards():
+      actual_shards = []
+      # mock_RunTestsOnDevice must be called for call_args to not be None
+      mock_RunTestsOnDevice.assert_called()
+      tc = mock_RunTestsOnDevice.call_args.args[0]
+      for group in tc:
+        actual_shards.append(group)
+        tc.test_completed()
+      return actual_shards
+
+    mock_RunTestsOnDevice = MagicMock(
+        autospec='local_device_test_run.LocalDeviceTestRun._RunTestsOnDevice')
+    # Monkey patch needed to call mock. Decorator patch calls original method
+    # instead of mock possibly due to decorator or pMap on original method.
+    (local_device_test_run.LocalDeviceTestRun
+        ._RunTestsOnDevice) = mock_RunTestsOnDevice
+
+    with mock.patch.object(
+        self._env.parallel_devices, "pMap", side_effect=mock_pMap
+    ):
+      self._obj.RunTests(results=[])
+      actual_shards = get_actual_shards()
+      self.assertEqual(actual_shards, expected_shards)
+
+      # Check "Retry shards with patch" has deterministic test ordering
+      self._obj.RunTests(results=[])
+      actual_shards = get_actual_shards()
+      self.assertEqual(actual_shards, expected_shards)
+
 
 def create_test(annotation_dict, class_name, method_name):
   # Helper function to generate test dict

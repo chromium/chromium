@@ -46,101 +46,101 @@ class LocalDeviceTestRun(test_run.TestRun):
     self._installed_packages = []
     env.SetPreferredAbis(test_instance.GetPreferredAbis())
 
+  @local_device_environment.handle_shard_failures
+  def _RunTestsOnDevice(self, dev, tests, results, exit_now):
+    # This is performed here instead of during setup because restarting the
+    # device clears app compatibility flags, which will happen if a device
+    # needs to be recovered.
+    SetAppCompatibilityFlagsIfNecessary(self._installed_packages, dev)
+    consecutive_device_errors = 0
+    for test in tests:
+      if not test:
+        logging.warning('No tests in shard. Continuing.')
+        tests.test_completed()
+        continue
+      if exit_now.isSet():
+        thread.exit()
+
+      result = None
+      rerun = None
+      try:
+        result, rerun = crash_handler.RetryOnSystemCrash(
+            lambda d, t=test: self._RunTest(d, t),
+            device=dev)
+        consecutive_device_errors = 0
+        if isinstance(result, base_test_result.BaseTestResult):
+          results.AddResult(result)
+        elif isinstance(result, list):
+          results.AddResults(result)
+        else:
+          raise Exception(
+              'Unexpected result type: %s' % type(result).__name__)
+      except device_errors.CommandTimeoutError as e:
+        exception_recorder.register(e)
+        # Test timeouts don't count as device errors for the purpose
+        # of bad device detection.
+        consecutive_device_errors = 0
+
+        if isinstance(test, list):
+          result_log = ''
+          if len(test) > 1:
+            result_log = ('The test command timed out when running multiple '
+                          'tests including this test. It does not '
+                          'necessarily mean this specific test timed out.')
+            # Ensure instrumentation tests not batched at env level retries.
+            for t in test:
+              # |dict| type infers it's an instrumentation test.
+              if isinstance(t, dict) and t['annotations']:
+                t['annotations'].pop('Batch', None)
+
+          results.AddResults(
+              base_test_result.BaseTestResult(
+                  self._GetUniqueTestName(t),
+                  base_test_result.ResultType.TIMEOUT,
+                  log=result_log) for t in test)
+        else:
+          results.AddResult(
+              base_test_result.BaseTestResult(
+                  self._GetUniqueTestName(test),
+                  base_test_result.ResultType.TIMEOUT))
+      except device_errors.DeviceUnreachableError as e:
+        exception_recorder.register(e)
+        # If the device is no longer reachable then terminate this
+        # _RunTestsOnDevice call.
+        raise
+      except base_error.BaseError as e:
+        exception_recorder.register(e)
+        # If we get a device error but believe the device is still
+        # reachable, attempt to continue using it.
+        if isinstance(tests, test_collection.TestCollection):
+          rerun = test
+
+        consecutive_device_errors += 1
+        if consecutive_device_errors >= 3:
+          # We believe the device is still reachable and may still be usable,
+          # but if it fails repeatedly, we shouldn't attempt to keep using
+          # it.
+          logging.error('Repeated failures on device %s. Abandoning.',
+                        str(dev))
+          raise
+
+        logging.exception(
+            'Attempting to continue using device %s despite failure (%d/3).',
+            str(dev), consecutive_device_errors)
+
+      finally:
+        if isinstance(tests, test_collection.TestCollection):
+          if rerun:
+            tests.add(rerun)
+          tests.test_completed()
+
+    logging.info('Finished running tests on this device.')
+
   #override
   def RunTests(self, results, raw_logs_fh=None):
     tests = self._GetTests()
 
     exit_now = threading.Event()
-
-    @local_device_environment.handle_shard_failures
-    def run_tests_on_device(dev, tests, results):
-      # This is performed here instead of during setup because restarting the
-      # device clears app compatibility flags, which will happen if a device
-      # needs to be recovered.
-      SetAppCompatibilityFlagsIfNecessary(self._installed_packages, dev)
-      consecutive_device_errors = 0
-      for test in tests:
-        if not test:
-          logging.warning('No tests in shard. Continuing.')
-          tests.test_completed()
-          continue
-        if exit_now.isSet():
-          thread.exit()
-
-        result = None
-        rerun = None
-        try:
-          result, rerun = crash_handler.RetryOnSystemCrash(
-              lambda d, t=test: self._RunTest(d, t),
-              device=dev)
-          consecutive_device_errors = 0
-          if isinstance(result, base_test_result.BaseTestResult):
-            results.AddResult(result)
-          elif isinstance(result, list):
-            results.AddResults(result)
-          else:
-            raise Exception(
-                'Unexpected result type: %s' % type(result).__name__)
-        except device_errors.CommandTimeoutError as e:
-          exception_recorder.register(e)
-          # Test timeouts don't count as device errors for the purpose
-          # of bad device detection.
-          consecutive_device_errors = 0
-
-          if isinstance(test, list):
-            result_log = ''
-            if len(test) > 1:
-              result_log = ('The test command timed out when running multiple '
-                            'tests including this test. It does not '
-                            'necessarily mean this specific test timed out.')
-              # Ensure instrumentation tests not batched at env level retries.
-              for t in test:
-                # |dict| type infers it's an instrumentation test.
-                if isinstance(t, dict) and t['annotations']:
-                  t['annotations'].pop('Batch', None)
-
-            results.AddResults(
-                base_test_result.BaseTestResult(
-                    self._GetUniqueTestName(t),
-                    base_test_result.ResultType.TIMEOUT,
-                    log=result_log) for t in test)
-          else:
-            results.AddResult(
-                base_test_result.BaseTestResult(
-                    self._GetUniqueTestName(test),
-                    base_test_result.ResultType.TIMEOUT))
-        except device_errors.DeviceUnreachableError as e:
-          exception_recorder.register(e)
-          # If the device is no longer reachable then terminate this
-          # run_tests_on_device call.
-          raise
-        except base_error.BaseError as e:
-          exception_recorder.register(e)
-          # If we get a device error but believe the device is still
-          # reachable, attempt to continue using it.
-          if isinstance(tests, test_collection.TestCollection):
-            rerun = test
-
-          consecutive_device_errors += 1
-          if consecutive_device_errors >= 3:
-            # We believe the device is still reachable and may still be usable,
-            # but if it fails repeatedly, we shouldn't attempt to keep using
-            # it.
-            logging.error('Repeated failures on device %s. Abandoning.',
-                          str(dev))
-            raise
-
-          logging.exception(
-              'Attempting to continue using device %s despite failure (%d/3).',
-              str(dev), consecutive_device_errors)
-
-        finally:
-          if isinstance(tests, test_collection.TestCollection):
-            if rerun:
-              tests.add(rerun)
-            tests.test_completed()
-
-      logging.info('Finished running tests on this device.')
 
     def stop_tests(_signum, _frame):
       logging.critical('Received SIGTERM. Stopping test execution.')
@@ -192,11 +192,13 @@ class LocalDeviceTestRun(test_run.TestRun):
               tc = test_collection.TestCollection(
                   self._CreateShardsForDevices(grouped_tests))
               self._env.parallel_devices.pMap(
-                  run_tests_on_device, tc, try_results).pGet(None)
+                  self._RunTestsOnDevice,
+                  tc, try_results, exit_now).pGet(None)
             else:
-              self._env.parallel_devices.pMap(run_tests_on_device,
+              self._env.parallel_devices.pMap(self._RunTestsOnDevice,
                                               grouped_tests,
-                                              try_results).pGet(None)
+                                              try_results,
+                                              exit_now).pGet(None)
           except TestsTerminated:
             for unknown_result in try_results.GetUnknown():
               try_results.AddResult(
