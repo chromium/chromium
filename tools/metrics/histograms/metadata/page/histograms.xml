@@ -3483,7 +3483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation2{PreloadingTriggerType}"
+    name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation3{PreloadingTriggerType}"
     units="ms" expires_after="2025-05-11">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>

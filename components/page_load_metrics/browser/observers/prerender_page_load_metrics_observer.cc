@@ -39,10 +39,8 @@ void RecordShiftedTimeHistogram(const std::string& histogram_name,
       60146, 60181, 60224, 60278, 60345, 60428, 60531, 60658,  60816, 61012,
       61255, 61556, 61929, 62391, 62964, 63674, 64555, 65647,  67000, 68678,
       70758, 73336, 76532, 80494, 85406, 91495, 99043, 108400, 120000};
-  static const std::vector<base::HistogramBase::Sample> samples =
-      base::CustomHistogram::ArrayToCustomEnumRanges(ranges);
   base::HistogramBase* time_histogram = base::CustomHistogram::FactoryGet(
-      histogram_name, samples, base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram_name, ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
   time_histogram->Add(time.InMilliseconds());
 }
 
@@ -89,7 +87,7 @@ const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
 
 // Lead time brought by prerender
 const char kDomContentLoadedToActivation[] =
-    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2";
+    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3";
 
 }  // namespace internal
 

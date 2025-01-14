@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
 
   std::string histogram_name = prerender_helper_.GenerateHistogramName(
-      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2",
+      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
       content::PreloadingTriggerType::kSpeculationRule, "");
   histogram_tester().ExpectTotalCount(histogram_name, 1);
   // We shift the duration by the 1 minute when recording the metric.
@@ -765,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
   std::string histogram_name = prerender_helper_.GenerateHistogramName(
-      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2",
+      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
       content::PreloadingTriggerType::kSpeculationRule, "");
   histogram_tester().ExpectTotalCount(histogram_name, 1);
   // We shift the duration by the 1 minute when recording the metric.
