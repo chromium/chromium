@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -202,15 +203,16 @@ PrivateAggregationHost::PrivateAggregationHost(
 }
 
 PrivateAggregationHost::~PrivateAggregationHost() {
-  CHECK_GE(pipes_with_timeout_count_, 0);
-  for (int i = 0; i < pipes_with_timeout_count_; ++i) {
-    RecordTimeoutResultHistogram(TimeoutResult::kStillScheduledOnShutdown);
-  }
-
   for (const auto& [id, context_ptr] : receiver_set_.GetAllContexts()) {
+    ReceiverContext& context = CHECK_DEREF(context_ptr);
+
     base::UmaHistogramLongTimes(
         "PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown",
-        context_ptr->pipe_duration_timer.Elapsed());
+        context.pipe_duration_timer.Elapsed());
+
+    if (context.timeout_timer) {
+      RecordTimeoutResultHistogram(TimeoutResult::kStillScheduledOnShutdown);
+    }
   }
 }
 
@@ -293,7 +295,6 @@ bool PrivateAggregationHost::BindNewReceiver(
     ReceiverContext* receiver_context_raw_ptr = receiver_set_.GetContext(id);
     CHECK(receiver_context_raw_ptr);
 
-    pipes_with_timeout_count_++;
     receiver_context_raw_ptr->timeout_timer =
         std::make_unique<base::OneShotTimer>();
 
@@ -514,7 +515,6 @@ void PrivateAggregationHost::CloseCurrentPipe(PipeResult pipe_result) {
 
   if (receiver_set_.current_context().timeout_timer) {
     CHECK(receiver_set_.current_context().timeout_timer->IsRunning());
-    pipes_with_timeout_count_--;
     RecordTimeoutResultHistogram(TimeoutResult::kCanceledDueToError);
   }
 
@@ -529,7 +529,6 @@ void PrivateAggregationHost::OnTimeoutBeforeDisconnect(mojo::ReceiverId id) {
   SendReportOnTimeoutOrDisconnect(*receiver_context,
                                   /*remaining_timeout=*/base::TimeDelta());
 
-  pipes_with_timeout_count_--;
   RecordTimeoutResultHistogram(
       TimeoutResult::kOccurredBeforeRemoteDisconnection);
 
@@ -545,7 +544,6 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
   }
 
   CHECK(current_context.timeout_timer->IsRunning());
-  pipes_with_timeout_count_--;
 
   RecordTimeoutResultHistogram(
       TimeoutResult::kOccurredAfterRemoteDisconnection);
