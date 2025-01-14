@@ -853,7 +853,6 @@
 <translation id="15916883652754430">系統語音設定</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統重設 <ph name="DEVICE_TYPE" />。請先備份檔案再重新啟動。</translation>
 <translation id="1592126057537046434">快速解答功能的翻譯</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{系統已將權限從 <ph name="BEGIN_BOLD" />1 個久未造訪的網站<ph name="END_BOLD" />中移除}other{系統已將權限從 <ph name="BEGIN_BOLD" />{NUM_SITES} 個久未造訪的網站<ph name="END_BOLD" />中移除}}</translation>
 <translation id="1593594475886691512">正在格式化...</translation>
 <translation id="159359590073980872">圖片快取</translation>
 <translation id="1593926297800505364">儲存付款方式</translation>
@@ -2686,7 +2685,6 @@
 <translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
 <translation id="2856776373509145513">建立新容器</translation>
-<translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
 <translation id="2860710618359053450">將下巴往右移動</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
@@ -3085,6 +3083,7 @@
 <translation id="3159978855457658359">編輯裝置名稱</translation>
 <translation id="3160928651883997588">VPN 偏好設定</translation>
 <translation id="3161522574479303604">所有語言</translation>
+<translation id="3162070126914310576">貴機構單位已達到初始註冊上限，因此目前無法註冊這部裝置。請向管理員尋求協助。</translation>
 <translation id="3162766632262775911">一律允許使用 V8 最佳化工具</translation>
 <translation id="3162853326462195145">學校帳戶</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
@@ -5723,7 +5722,6 @@
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
 <translation id="504953514574706691">已從建議群組中排除分頁</translation>
 <translation id="5049614114599109018">使用輸入歷史記錄</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{這個網站最近傳送了大量通知。你可以禁止這個網站再傳送通知。}other{這些網站最近傳送了大量通知，你可以禁止這些網站再傳送通知。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下載未經驗證的檔案</translation>
 <translation id="5051836348807686060">你選取的語言不支援拼字檢查功能</translation>
@@ -9048,6 +9046,7 @@
 <translation id="746861123368584540">已載入擴充功能</translation>
 <translation id="7469612367552312334">開啟 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件存取及共享記憶體 (RAM)</translation>
+<translation id="7470284766345262333">這個帳戶未與 Google 建立關聯，因此無法使用 Chrome 同步等功能</translation>
 <translation id="7470424110735398630">可以查看剪貼簿</translation>
 <translation id="747114903913869239">錯誤：無法為擴充功能解碼</translation>
 <translation id="7471520329163184433">減速</translation>
@@ -9633,7 +9632,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看帳戶</translation>
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{查看傳送大量通知的網站 (1 個)}other{查看傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="788453346724465748">正在載入帳戶資訊...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
@@ -10293,7 +10291,6 @@
 <translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="833986336429795709">請選擇要用來開啟這個連結的應用程式</translation>
 <translation id="8340547030807793004">可對 <ph name="DEVICE" /> 執行的其他動作</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 (1 個)<ph name="END_BOLD" />}other{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 ({NUM_SITES} 個)<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取集合</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
@@ -11012,7 +11009,6 @@
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
 <translation id="8849262417389398097">第 <ph name="CHECKED" /> 個，共 <ph name="CHECKING" /> 個</translation>
-<translation id="8849541329228110748">凡是可存取你網際網路流量的使用者，都能看到你造訪哪些網站</translation>
 <translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
 <translation id="8853586775156634952">這張卡片只會儲存在這部裝置上</translation>

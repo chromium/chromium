@@ -851,7 +851,6 @@
 <translation id="15916883652754430">පද්ධති හඬ සැකසීම්</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ඔබගේ <ph name="DEVICE_TYPE" /> යළි සකසනු ඇති ADB නිදොස් කිරීම අබල කර ඇත. යළි ඇරඹීමට පෙර ඔබේ ගොනු උපස්ථ කරන්න</translation>
 <translation id="1592126057537046434">ඉක්මන් පිළිතුරු පරිවර්තනය</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{ඔබ කලකින් නොපැමිණි <ph name="BEGIN_BOLD" />1 අඩවියකින්<ph name="END_BOLD" /> අවසර ඉවත් කර ඇත}one{ඔබ කලකින් නොපැමිණි <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}කින්<ph name="END_BOLD" /> අවසර ඉවත් කර ඇත}other{ඔබ කලකින් නොපැමිණි <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}කින්<ph name="END_BOLD" /> අවසර ඉවත් කර ඇත}}</translation>
 <translation id="1593594475886691512">ෆෝමැට් කරයි...</translation>
 <translation id="159359590073980872">රූප කැෂේ මතකය</translation>
 <translation id="1593926297800505364">ගෙවීමේ ක්‍රමය සුරකින්න</translation>
@@ -2688,7 +2687,6 @@
 <translation id="2855243985454069333">සියලුම සමමුහූර්ත උපාංගවලින් ඉතිහාසය මකයි</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> සමඟ පුරන්න</translation>
 <translation id="2856776373509145513">නව බහාලුමක් තනන්න</translation>
-<translation id="2856907950922663165">URL සංකේතනය ක්‍රියාවිරහිත කරන්න ද?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> වෙත මුරපද ආයාත කරන්න</translation>
 <translation id="2860710618359053450">හනුව දකුණට චලනය කරන්න</translation>
 <translation id="2861301611394761800">පද්ධති යාවත්කාලය සම්පූර්ණයි. කරුණාකර පරිගණකය නැවත අරඹන්න.</translation>
@@ -5729,7 +5727,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="504561833207953641">පවතින බ්‍රවුසර සැසිය තුළ විවෘත කිරීම.</translation>
 <translation id="504953514574706691">යෝජිත සමූයෙන් පටිත්ත බැහැර කර ඇත</translation>
 <translation id="5049614114599109018">ආදාන ඉතිහාසය භාවිතා කරන්න</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{මෙම අඩවිය මෑතක දී බොහෝ දැනුම්දීම් එවා ඇත. අනාගත දැනුම්දීම් යැවීමෙන් ඔබට එය නතර කළ හැක.}one{මෙම අඩවි මෑතක දී බොහෝ දැනුම්දීම් එවා ඇත. අනාගත දැනුම්දීම් යැවීමෙන් ඔබට ඒවා නතර කළ හැක.}other{මෙම අඩවි මෑතක දී බොහෝ දැනුම්දීම් එවා ඇත. අනාගත දැනුම්දීම් යැවීමෙන් ඔබට ඒවා නතර කළ හැක.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">අසත්‍යාපිත ගොනුව බා ගන්න</translation>
 <translation id="5051836348807686060">අක්‍ෂර වින්‍යාස පරීක්‍ෂාව ඔබේ තෝරාගත් භාෂා සඳහා සහය නොදක්වයි</translation>
@@ -9643,7 +9640,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ගිණුම බලන්න</translation>
 <translation id="7883792253546618164">ඕනෑම වේලාවකදී දායකත්වයෙන් ඉවත් වන්න.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{බොහෝ දැනුම්දීම් එවූ 1 අඩවියක් සමාලෝචනය කරන්න}one{බොහෝ දැනුම්දීම් එවූ අඩවි {NUM_SITES}ක් සමාලෝචනය කරන්න}other{බොහෝ දැනුම්දීම් එවූ අඩවි {NUM_SITES}ක් සමාලෝචනය කරන්න}}</translation>
 <translation id="788453346724465748">ගිණුම් තොරතුරු පූරණය කරමින්...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{අයිතමයක්}one{අයිතම #}other{අයිතම #}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10302,7 +10298,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8339288417038613756">සංදර්ශකය සහ පාඨ ප්‍රමාණය</translation>
 <translation id="833986336429795709">මෙම සබැඳිය විවෘත කිරීම සඳහා යෙදුම තෝරන්න</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> සඳහා තවත් ක්‍රියා</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />1 අඩවියක්<ph name="END_BOLD" /> සමාලෝචනය කරන්න}one{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}ක්<ph name="END_BOLD" /> සමාලෝචන කරන්න}other{මෑත දී බොහෝ දැනුම්දීම් එවූ <ph name="BEGIN_BOLD" />අඩවි {NUM_SITES}ක්<ph name="END_BOLD" /> සමාලෝචන කරන්න}}</translation>
 <translation id="8342221978608739536">උත්සාහ නොකරන ලදී</translation>
 <translation id="8342861492835240085">එකතුවක් තෝරන්න</translation>
 <translation id="8345848587667658367">ඔබට දැන් ඔබගේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය, දැනුම්දීම් සහ යෙදුම් බැලිය හැකිය</translation>
@@ -11022,7 +11017,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8849001918648564819">සඟවා ඇත</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> නම් වූ eSIM පැතිකඩ ඉවත් කිරීම අවලංගු කරන්න</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" />න් <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">ඔබේ අන්තර්ජාල ගමනාගමනයට ප්‍රවේශය ඇති අයට ඔබ පිවිසෙන අඩවි මොනවා දැයි බැලිය හැක</translation>
 <translation id="8850251000316748990">තවත් බලන්න...</translation>
 <translation id="885246833287407341">API කාර්ය විස්තාර</translation>
 <translation id="8853586775156634952">මෙම කාඩ්පත මෙම උපාංගයට පමණක් සුරකිනු ලැබේ</translation>

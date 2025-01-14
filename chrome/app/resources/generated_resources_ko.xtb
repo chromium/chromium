@@ -794,6 +794,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1549966883323105187">더 빠르게 저장된 비밀번호로 이동</translation>
 <translation id="1550656959113606473">기본 Chrome</translation>
+<translation id="1552065819535218588">Chrome에서 더 이상 <ph name="URL" />의 알림을 스팸으로 표시하지 않습니다</translation>
 <translation id="1552301827267621511">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 검색에 <ph name="SEARCH_PROVIDER_DOMAIN" /> 서비스를 사용하도록 변경했습니다.</translation>
 <translation id="1552752544932680961">확장 프로그램 관리</translation>
 <translation id="1553538517812678578">무제한</translation>
@@ -854,7 +855,6 @@
 <translation id="15916883652754430">시스템 음성 설정</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />에서 ADB 디버깅이 사용 중지되었으며 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 다시 시작하기 전에 파일을 백업하세요.</translation>
 <translation id="1592126057537046434">빠른 답변 번역</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{한동안 방문하지 않은 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />의 권한이 삭제됨}other{한동안 방문하지 않은 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />의 권한이 삭제됨}}</translation>
 <translation id="1593594475886691512">포맷 중...</translation>
 <translation id="159359590073980872">이미지 캐시</translation>
 <translation id="1593926297800505364">결제 수단 저장</translation>
@@ -2701,7 +2701,6 @@
 <translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />로 로그인</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
-<translation id="2856907950922663165">URL 암호화를 사용 중지하시겠습니까?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호 가져오기</translation>
 <translation id="2860710618359053450">턱을 오른쪽으로 움직이기</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
@@ -3100,6 +3099,7 @@
 <translation id="3159978855457658359">기기 이름 수정</translation>
 <translation id="3160928651883997588">VPN 환경설정</translation>
 <translation id="3161522574479303604">모든 언어</translation>
+<translation id="3162070126914310576">조직 단위의 초기 등록 한도에 도달하여 이 기기를 지금 등록할 수 없습니다. 관리자에게 문의하여 도움을 받으세요.</translation>
 <translation id="3162766632262775911">V8 옵티마이저 사용이 항상 허용됨</translation>
 <translation id="3162853326462195145">학교 계정</translation>
 <translation id="3162899666601560689">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 있습니다.</translation>
@@ -5742,7 +5742,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
 <translation id="504953514574706691">추천 그룹에서 탭이 제외됨</translation>
 <translation id="5049614114599109018">입력 기록 사용</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{최근 많은 알림을 보낸 사이트 1개입니다. 이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{최근 많은 알림을 보낸 사이트입니다. 이러한 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">확인되지 않은 파일 다운로드</translation>
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
@@ -9072,6 +9071,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="746861123368584540">확장 프로그램 로드됨</translation>
 <translation id="7469612367552312334">사용 • 일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요.</translation>
 <translation id="7470131554696493512">Thunderbolt 또는 USB4 액세서리가 메모리(RAM)에 액세스하고 공유하지 못하도록 차단</translation>
+<translation id="7470284766345262333">이 계정은 Google과 연결되어 있지 않으므로 Chrome 동기화와 같은 기능을 사용할 수 없습니다.</translation>
 <translation id="7470424110735398630">클립보드 보기가 허용됨</translation>
 <translation id="747114903913869239">오류: 확장 프로그램을 디코딩할 수 없음</translation>
 <translation id="7471520329163184433">더 느리게</translation>
@@ -9658,7 +9658,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">계정 보기</translation>
 <translation id="7883792253546618164">언제든지 수신 거부할 수 있습니다.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{알림을 많이 보낸 사이트 1개 검토}other{알림을 많이 보낸 사이트 {NUM_SITES}개 검토}}</translation>
 <translation id="788453346724465748">계정 정보 로드 중…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{항목 1개}other{항목 #개}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10318,7 +10317,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8339288417038613756">디스플레이 및 텍스트 크기</translation>
 <translation id="833986336429795709">이 링크를 열려면 앱을 선택하세요.</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />의 작업 메뉴 더보기</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 1개<ph name="END_BOLD" />를 검토합니다.}other{최근에 알림을 많이 보낸 <ph name="BEGIN_BOLD" />사이트 {NUM_SITES}개<ph name="END_BOLD" />를 검토합니다.}}</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
@@ -11037,7 +11035,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8849001918648564819">숨김</translation>
 <translation id="8849219423513870962">이름이 <ph name="PROFILE_NAME" />인 eSIM 프로필 삭제 취소</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">내 인터넷 트래픽에 대한 액세스 권한이 있는 사람이 내가 방문하는 웹사이트를 볼 수 있습니다.</translation>
 <translation id="8850251000316748990">더보기...</translation>
 <translation id="885246833287407341">API 함수 인수</translation>
 <translation id="8853586775156634952">이 카드는 이 기기에만 저장됩니다.</translation>

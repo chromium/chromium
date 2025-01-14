@@ -790,6 +790,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> қолданбасы <ph name="VOLUME_NAME" /> құрылғысына кіруге рұқсат сұрауда. Ол файлдарыңызды өзгертуі немесе жоюы мүмкін.</translation>
 <translation id="1549966883323105187">Сақталған құпия сөздерді жылдамырақ алыңыз</translation>
 <translation id="1550656959113606473">Әдепкі Chrome</translation>
+<translation id="1552065819535218588">Chrome браузері <ph name="URL" /> сайтынан келетін хабарландыруларды спам деп белгілеуді тоқтатады</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтімі іздеуді <ph name="SEARCH_PROVIDER_DOMAIN" /> пайдалануға ауыстырды.</translation>
 <translation id="1552752544932680961">Кеңейтімді басқару</translation>
 <translation id="1553538517812678578">шектелмеген</translation>
@@ -850,7 +851,6 @@
 <translation id="15916883652754430">Жүйелік дауыс параметрлері</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB түзетуін өшірді, енді <ph name="DEVICE_TYPE" /> құрылғысы бастапқы күйге қайтарылады. Қайта қоспас бұрын, файлдардың сақтық көшірмесін жасаңыз.</translation>
 <translation id="1592126057537046434">Жылдам жауаптар ұсынған аударма</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Сіз біраз уақыттан бері кірмеген <ph name="BEGIN_BOLD" />1 сайттан<ph name="END_BOLD" /> рұқсаттар өшірілді}other{Сіз біраз уақыттан бері кірмеген <ph name="BEGIN_BOLD" />{NUM_SITES} сайттан<ph name="END_BOLD" /> рұқсаттар өшірілді}}</translation>
 <translation id="1593594475886691512">Пішімделуде…</translation>
 <translation id="159359590073980872">Кескін кэші</translation>
 <translation id="1593926297800505364">Төлеу әдісін сақтау</translation>
@@ -2683,7 +2683,6 @@
 <translation id="2855243985454069333">Тарихты барлық синхрондалған құрылғыдан жояды.</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> арқылы кіру</translation>
 <translation id="2856776373509145513">Жаңа контейнер жасау</translation>
-<translation id="2856907950922663165">URL шифрлауын өшіру қажет пе?</translation>
 <translation id="2859741939921354763">Құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау</translation>
 <translation id="2860710618359053450">Иегіңізді оңға қисайтыңыз.</translation>
 <translation id="2861301611394761800">Жүйе жаңартылып болды. Жүйені қайта іске қосыңыз.</translation>
@@ -3082,6 +3081,7 @@
 <translation id="3159978855457658359">Құрылғы атауын өзгерту</translation>
 <translation id="3160928651883997588">VPN параметрлері</translation>
 <translation id="3161522574479303604">Барлық тіл</translation>
+<translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3162766632262775911">V8 оңтайландырғышын пайдалануға әрдайым рұқсаты бар</translation>
 <translation id="3162853326462195145">Оқу аккаунты</translation>
 <translation id="3162899666601560689">Сайттар шолуды жақсарту (мысалы, аккаунттан шығармау не сатып алу себетіңіздегі нәрселерді есте сақтау) үшін cookie файлдарын пайдалана алады.</translation>
@@ -5722,7 +5722,6 @@
 <translation id="504561833207953641">Бұрыннан бар браузер сеансында ашылуда.</translation>
 <translation id="504953514574706691">Қойынды ұсынылған топтан шығарылды.</translation>
 <translation id="5049614114599109018">Енгізу тарихын пайдалану</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Бұл сайт соңғы кезде көп хабарландыру жіберді. Оның болашақ хабарландыруларды жіберуін тоқтатуға болады.}other{Бұл сайттар соңғы кезде көп хабарландыру жіберді. Олардың болашақ хабарландыруларды жіберуін тоқтатуға болады.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Тексерілмеген файлды жүктеп алу</translation>
 <translation id="5051836348807686060">Таңдалған тілдер үшін емлені тексеру функциясы қолданылмайды.</translation>
@@ -9047,6 +9046,7 @@
 <translation id="746861123368584540">Кеңейтім жүктелді.</translation>
 <translation id="7469612367552312334">Қосылған • Браузерді қолдану тарихынан іздеу және кірген сайттарды табу үшін кәдімгі тілді пайдаланыңыз.</translation>
 <translation id="7470131554696493512">Thunderbolt немесе USB4 керек-жарақтарына жадты (RAM) пайдалануға және бөлісуге тыйым салу</translation>
+<translation id="7470284766345262333">Бұл аккаунт Google-мен байланысты емес, сол себепті Chrome Sync сияқты функциялар қолжетімді емес.</translation>
 <translation id="7470424110735398630">Буфердегі контентті көруге рұқсаты барлар</translation>
 <translation id="747114903913869239">Қате: кеңейтімді шифрсыздандыру мүмкін емес</translation>
 <translation id="7471520329163184433">Баяуырақ</translation>
@@ -9632,7 +9632,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Аккаунтты көру</translation>
 <translation id="7883792253546618164">Кез келген уақытта жазылымнан бас тарта аласыз.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Көп хабарландыру жіберген 1 сайтты қарап шығу}other{Көп хабарландыру жіберген {NUM_SITES} сайтты қарап шығу}}</translation>
 <translation id="788453346724465748">Аккаунт туралы ақпарат жүктелуде…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}other{# элемент}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10291,7 +10290,6 @@
 <translation id="8339288417038613756">Дисплей және мәтін өлшемі</translation>
 <translation id="833986336429795709">Бұл сілтемені ашу үшін қолданбаны таңдаңыз</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> құрылғысына қатысты басқа әрекеттер</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> тексеріңіз}other{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> тексеріңіз}}</translation>
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
 <translation id="8345848587667658367">Енді телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландырулар мен қолданбаларды көре аласыз</translation>
@@ -11010,7 +11008,6 @@
 <translation id="8849001918648564819">Жасырын</translation>
 <translation id="8849219423513870962">"<ph name="PROFILE_NAME" />" атты eSIM профилін өшіруден бас тарту</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" />/<ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">Интернет трафигіңізге кіретін адамдар қандай веб-беттерге кіретініңізді көре алады.</translation>
 <translation id="8850251000316748990">Жаю…</translation>
 <translation id="885246833287407341">API функциясының айнымалылары</translation>
 <translation id="8853586775156634952">Бұл карта осы құрылғыға ғана сақталады.</translation>

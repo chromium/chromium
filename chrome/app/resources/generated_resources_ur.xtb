@@ -793,6 +793,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> تک رسائی حاصل کرنا چاہتی ہے۔ یہ آپ کی فائلوں میں ترمیم یا انہیں حذف کر سکتی ہے۔</translation>
 <translation id="1549966883323105187">اپنے محفوظ کردہ پاس ورڈز کو تیزی سے حاصل کریں</translation>
 <translation id="1550656959113606473">‏ڈیفالٹ Chrome</translation>
+<translation id="1552065819535218588">‏‫Chrome اسپام کے بطور <ph name="URL" /> کی اطلاعات کو جھنڈا لگانا بند کر دے گا</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> کے استعمال کے لیے "<ph name="EXTENSION_NAME" />" ایکسٹینشن نے تلاش کو تبدیل کر دیا</translation>
 <translation id="1552752544932680961">ایکسٹینشن کا نظم کریں</translation>
 <translation id="1553538517812678578">لا محدود</translation>
@@ -853,7 +854,6 @@
 <translation id="15916883652754430">سسٹم کی آواز کی ترتیبات</translation>
 <translation id="1592074621872221573">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے جو آپ کے <ph name="DEVICE_TYPE" /> کو ری سیٹ کر دے گا۔ ری اسٹارٹ کرنے سے پہلے اپنی فائلز کا بیک اپ لیں۔</translation>
 <translation id="1592126057537046434">فوری جوابات کا ترجمہ</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> سے اجازتیں ہٹائی گئیں جسے آپ نے کچھ وقت سے ملاحظہ نہیں کیا ہے}other{ٓ<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> سے اجازتیں ہٹائی گئیں جنہیں آپ نے کچھ وقت سے ملاحظہ نہیں کیا ہے}}</translation>
 <translation id="1593594475886691512">فارمیٹ کیا جا رہا ہے…</translation>
 <translation id="159359590073980872">تصویر کیش</translation>
 <translation id="1593926297800505364">ادائیگی کا طریقہ محفوظ کریں</translation>
@@ -2688,7 +2688,6 @@
 <translation id="2855243985454069333">مطابقت پذیر کردہ تمام آلات سے سرگزشت حذف ہو جاتی ہے</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> کے ساتھ سائن ان کریں</translation>
 <translation id="2856776373509145513">ایک نیا کنٹینر تخلیق کریں</translation>
-<translation id="2856907950922663165">‏URL کی مرموز کاری کو آف کریں؟</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> میں پاس ورڈز درآمد کریں</translation>
 <translation id="2860710618359053450">جبڑا دائیں جانب لے جائیں</translation>
 <translation id="2861301611394761800">سسٹم اپ ڈیٹ مکمل ہوگیا۔ براہ کرم سسٹم کو دوبارہ شروع کریں۔</translation>
@@ -3087,6 +3086,7 @@
 <translation id="3159978855457658359">آلے کے نام میں ترمیم کریں</translation>
 <translation id="3160928651883997588">‏VPN کی ترجیحات</translation>
 <translation id="3161522574479303604">سبھی زبانیں</translation>
+<translation id="3162070126914310576">اس آلے کو ابھی اندراج نہیں کیا جا سکتا کیونکہ آپ کا تنظیم یونٹ اپنے اندراج کی ابتدائی حد کو پہنچ گیا ہے۔ مدد کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3162766632262775911">‏V8 کو بہتر بنانے والا استعمال کرنے کے لیے ہمیشہ اجازت ہے</translation>
 <translation id="3162853326462195145">اسکول کا اکاؤنٹ</translation>
 <translation id="3162899666601560689">سائٹس آپ کے براؤزنگ کے تجربہ کو، مثال کے طور پر، آپ کو سائن ان رکھنے یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنے کے لیے، بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں</translation>
@@ -5727,7 +5727,6 @@
 <translation id="504561833207953641">موجودہ براؤزر کے سیشن میں کھل رہا ہے۔</translation>
 <translation id="504953514574706691">ٹیب کو تجویز کردہ گروپ سے خارج کر دیا گیا</translation>
 <translation id="5049614114599109018">ان پٹ کی سرگزشت استعمال کریں</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{اس سائٹ نے بہت ساری اطلاعات بھیجی ہیں۔ آپ اسے مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}other{ان سائٹس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں۔ آپ انہیں مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">غیر تصدیق شدہ فائل ڈاؤن لوڈ کریں</translation>
 <translation id="5051836348807686060">املا کی جانچ آپ کی منتخب زبانوں کے لیے تعاون یافتہ نہیں ہے</translation>
@@ -9055,6 +9054,7 @@
 <translation id="746861123368584540">ایکسٹینشن لوڈ ہو گیا</translation>
 <translation id="7469612367552312334">آن • اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں اور ان سائٹس کو تلاش کریں جن کو آپ نے ملاحظہ کیا</translation>
 <translation id="7470131554696493512">‏Thunderbolt یا USB4 لوازمات کو میموری (RAM) تک رسائی اور اشتراک سے مسدود کریں</translation>
+<translation id="7470284766345262333">‏یہ اکاؤنٹ Google کے ساتھ وابستہ نہیں ہے اس لیے Chrome Sync جیسی خصوصیات دستیاب نہیں ہیں</translation>
 <translation id="7470424110735398630">آپ کے کلپ بورڈ کو دیکھنے کی اجازت ہے</translation>
 <translation id="747114903913869239">خرابی: ایکسٹینشن کو ڈیکوڈ کرنے سے قاصر</translation>
 <translation id="7471520329163184433">آہستہ</translation>
@@ -9640,7 +9640,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">اکاؤنٹ دیکھیں</translation>
 <translation id="7883792253546618164">کسی بھی وقت اَن سبسکرائب کریں۔</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{1 سائٹ کا جائزہ لیں جس نے بہت ساری اطلاعات بھیجی ہیں}other{{NUM_SITES} سائٹس کا جائزہ لیں جس نے بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="788453346724465748">اکاؤنٹ کی معلومات لوڈ ہورہی ہے...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ایک آئٹم}other{# آئٹمز}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10299,7 +10298,6 @@
 <translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
 <translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
@@ -11018,7 +11016,6 @@
 <translation id="8849001918648564819">پوشیدہ</translation>
 <translation id="8849219423513870962">‏<ph name="PROFILE_NAME" /> نام والی eSIM پروفائل کو ہٹانا منسوخ کریں</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> از <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">آپ کے انٹرنیٹ ٹریفک تک رسائی کے حامل افراد آپ کی ملاحظہ کی جانے والی ویب سائٹس دیکھ سکتے ہیں</translation>
 <translation id="8850251000316748990">مزید دیکھیں...</translation>
 <translation id="885246833287407341">‏API فنکشن آرگیومینٹس</translation>
 <translation id="8853586775156634952">یہ کارڈ صرف اس آلہ میں محفوظ کیا جائے گا</translation>

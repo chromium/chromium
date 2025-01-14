@@ -791,6 +791,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> daxil olmaq istəyir. Fayllarınızı dəyişə və ya silə bilər.</translation>
 <translation id="1549966883323105187">Yadda saxlanmış parollara tez daxil olun</translation>
 <translation id="1550656959113606473">Defolt Chrome</translation>
+<translation id="1552065819535218588">Chrome <ph name="URL" /> ünvanından gələn bildirişləri spam kimi işarələməyi dayandıracaq</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" artırması axtarış sistemini <ph name="SEARCH_PROVIDER_DOMAIN" /> seçiminə dəyişib</translation>
 <translation id="1552752544932680961">Artırmanı idarə edin</translation>
 <translation id="1553538517812678578">Limitsiz</translation>
@@ -849,7 +850,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="15916883652754430">Sistem səs ayarları</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB sazlamasını deaktiv edib, bu da <ph name="DEVICE_TYPE" /> cihazınızı sıfırlayacaq. Yenidən başlamazdan əvvəl fayllarınızı yedəkləyin.</translation>
 <translation id="1592126057537046434">Cəld Cavabların tərcüməsi</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Müəyyən müddət ziyarət etmədiyiniz <ph name="BEGIN_BOLD" />1 saytdan<ph name="END_BOLD" /> icazələr silinib}other{Müəyyən müddət ziyarət etmədiyiniz <ph name="BEGIN_BOLD" />{NUM_SITES} saytdan<ph name="END_BOLD" /> icazələr silinib}}</translation>
 <translation id="1593594475886691512">Format olunur...</translation>
 <translation id="159359590073980872">Təsvir keşi</translation>
 <translation id="1593926297800505364">Ödəniş üsulunu yadda saxlayın</translation>
@@ -2685,7 +2685,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2855243985454069333">Bütün sinxronlaşdırılmış cihazlardan tarixçəni silir</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ilə daxil olun</translation>
 <translation id="2856776373509145513">Yeni konteyner yaradın</translation>
-<translation id="2856907950922663165">URL şifrələmə deaktiv edilsin?</translation>
 <translation id="2859741939921354763">Parolları <ph name="BRAND" /> bölməsinə import edin</translation>
 <translation id="2860710618359053450">Çənənizi sağa çevirin</translation>
 <translation id="2861301611394761800">Sistem güncəlləməsi tamamdır. Lütfən, sistemi yenidən başladın.</translation>
@@ -3084,6 +3083,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3159978855457658359">Cihazın adına düzəliş edin</translation>
 <translation id="3160928651883997588">VPN Tərcihləri</translation>
 <translation id="3161522574479303604">Bütün dillər</translation>
+<translation id="3162070126914310576">Təşkilat qrupunuz ilkin qeydiyyat limitinə çatdığı üçün hazırda bu cihazı qeydiyyatdan keçirmək mümkün deyil. Kömək üçün administrator ilə əlaqə saxlayın.</translation>
 <translation id="3162766632262775911">V8 optimallaşdırıcısından istifadə icazəsi verilib</translation>
 <translation id="3162853326462195145">Məktəb hesabı</translation>
 <translation id="3162899666601560689">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər</translation>
@@ -5725,7 +5725,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="504561833207953641">Mövcud brauzer sessiyasında açılır.</translation>
 <translation id="504953514574706691">Tab təklif olunan qrupdan çıxarılıb</translation>
 <translation id="5049614114599109018">Daxiletmə Tarixçəsini istifadə edin</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Bu sayt son vaxtlar çox sayda bildiriş göndərib. Onun gələcəkdə bildirişlər göndərməsini dayandıra bilərsiniz.}other{Bu saytlar son vaxtlar çox sayda bildiriş göndərib. Onların gələcəkdə bildirişlər göndərməsini dayandıra bilərsiniz.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Doğrulanmamış faylı endirin</translation>
 <translation id="5051836348807686060">Seçdiyiniz dillərdə orfoqrafik yoxlanış dəstəklənmir</translation>
@@ -9053,6 +9052,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="746861123368584540">Artırma yüklənib</translation>
 <translation id="7469612367552312334">Aktiv • Brauzer tarixçəsində axtarmaq və daxil olduğunuz saytları tapmaq üçün gündəlik danışıqdan istifadə edin</translation>
 <translation id="7470131554696493512">Thunderbolt və ya USB4 aksesuarlarının yaddaşa (RAM) daxil olub, paylaşmasını bloklayın</translation>
+<translation id="7470284766345262333">Bu hesab Google ilə əlaqəli olmadığı üçün Chrome sinxronizasiyası kimi funksiyalar əlçatan deyil</translation>
 <translation id="7470424110735398630">Mübadilə buferinizə baxmaq icazəsi verilib</translation>
 <translation id="747114903913869239">Xəta: Artırmanı deşifrələmək mümkün deyil</translation>
 <translation id="7471520329163184433">Daha yavaş</translation>
@@ -9638,7 +9638,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Hesaba Baxın</translation>
 <translation id="7883792253546618164">İstədiyiniz vaxt abunəlikdən çıxın.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Çox sayda bildiriş göndərən 1 saytı nəzərdən keçirin}other{Çox sayda bildiriş göndərən {NUM_SITES} saytı nəzərdən keçirin}}</translation>
 <translation id="788453346724465748">Hesab məlumatı yüklənir...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}other{# element}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10297,7 +10296,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8339288417038613756">Displey və mətn ölçüsü</translation>
 <translation id="833986336429795709">Bu linki açmaq üçün tətbiq seçin</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> üçün digər əməliyyatlar</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Bu yaxınlarda çox sayda bildiriş göndərən <ph name="BEGIN_BOLD" />1 saytı<ph name="END_BOLD" /> nəzərdən keçirin}other{Bu yaxınlarda çox sayda bildiriş göndərən <ph name="BEGIN_BOLD" />{NUM_SITES} saytı<ph name="END_BOLD" /> nəzərdən keçirin}}</translation>
 <translation id="8342221978608739536">Sınaqdan keçirilmədi</translation>
 <translation id="8342861492835240085">Kolleksiya seçin</translation>
 <translation id="8345848587667658367">İndi telefonunuzun son fotolarına, mediasına, bildirişlərinə və tətbiqlərinə baxa bilərsiniz</translation>
@@ -11014,7 +11012,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> adlı eSIM profilinin silinməsini ləğv edin</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">İnternet trafikinizə girişi olan tərəflər daxil olduğunuz veb-saytları görə bilər</translation>
 <translation id="8850251000316748990">Daha çoxuna baxın...</translation>
 <translation id="885246833287407341">API funksiya arqumentləri</translation>
 <translation id="8853586775156634952">Bu kart yalnız bu cihazda yadda saxlanılacaq</translation>

@@ -1204,6 +1204,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3156511682997763015">Avança 10 segons</translation>
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158539265159265653">Disc</translation>
+<translation id="3162070126914310576">Aquest dispositiu no es pot inscriure ara mateix perquè la teva unitat organitzativa ha arribat al límit d'inscripció inicial. Contacta amb l'administrador per obtenir assistència.</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
 <translation id="316638481603975524">Poden demanar permís per instal·lar aplicacions web</translation>
 <translation id="3168744840365648658">Equips de ràdio</translation>
@@ -1324,7 +1325,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3369192424181595722">Error de rellotge</translation>
 <translation id="3371064404604898522">Estableix Chrome com a navegador predeterminat</translation>
 <translation id="337363190475750230">No administrat</translation>
-<translation id="3375754925484257129">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="3377144306166885718">El servidor ha utilitzat una versió obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Hi ha hagut un error en analitzar la política</translation>
 <translation id="3377642479079205807">Fi</translation>
@@ -2381,6 +2381,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5244521145258281926">Botó Gestiona el Compte de Google: activa'l per gestionar la teva informació, la privadesa i la seguretat al teu Compte de Google</translation>
 <translation id="5244732203286792411">S'està carregant...
     Aquest procés pot tardar un minut.</translation>
+<translation id="5248543496748975054">El número de la targeta no s'ha emplenat?</translation>
 <translation id="5250209940322997802">"Connecteu-vos a la xarxa"</translation>
 <translation id="52517543715119994">Més informació sobre les funcions de Chrome</translation>
 <translation id="5251803541071282808">Núvol</translation>

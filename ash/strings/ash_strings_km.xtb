@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">ប្ដូរ​ទៅ​អ្នកប្រើប្រាស់​បន្ទាប់</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
 <translation id="1954252331066828794">បានបញ្ចប់ការថតវីដេអូអេក្រង់</translation>
+<translation id="1956087014741188812">ផ្អាកគ្រាប់ចុចម៉ៅស៍</translation>
 <translation id="1957958912175573503">កំណត់​ភាសា​របស់អ្នក</translation>
 <translation id="1961239773406905488">ការមើលកាមេរ៉ា​សាកល្បង​ត្រូវបានលាក់</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">កំពុងស្កេនរកឧបករណ៍...</translation>
 <translation id="2257486738914982088">មានអ្វីមួយខុសប្រក្រតី ពេលកំពុងទាញយក <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">ឯកសារ​ដែល​បាន​ណែនាំ</translation>
+<translation id="2266607665880926261">បានផ្អាកគ្រាប់ចុចម៉ៅស៍</translation>
 <translation id="2268130516524549846">ប៊្លូធូសត្រូវបានបិទ</translation>
 <translation id="2268731132310444948">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ នៅពេលបើកដំណើរការកម្មវិធី​ចាប់ផ្ដើមរួច អ្នកនឹងទទួលបានរបារស្វែងរកដែលប្រសើរជាងមុន។ អ្នកអាចចាប់ផ្ដើមវាយបញ្ចូល ដើម្បីស្វែងរកឯកសារ កម្មវិធីរបស់អ្នក និងអ្វីៗជាច្រើនទៀត។ អ្នកក៏អាច​ទទួលបាន​ចម្លើយ​ចំពោះសំណួរ​ដែលទាក់ទងនឹង <ph name="PRODUCT_NAME" /> របស់អ្នក​ផងដែរ។</translation>
 <translation id="2268813581635650749">ចាកចេញទាំងអស់</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">ពង្រីកនៅលើអេក្រង់</translation>
 <translation id="2878884018241093801">មិនមានធាតុថ្មីៗទេ</translation>
 <translation id="2880541185262491188">បានព្យាយាម​បញ្ចូល​កូដ PIN ច្រើន​ដងពេក។ សូម​រង់ចាំ <ph name="TIME_LEFT" /> រួចព្យាយាម​ម្ដងទៀត</translation>
+<translation id="2883271196820422439">បន្តគ្រាប់ចុចម៉ៅស៍ឡើងវិញ</translation>
 <translation id="2885950158625301909">ស្វែងយល់បន្ថែម</translation>
 <translation id="2891209721153296020">"ដក​ការ​ជ្រើសរើស"</translation>
 <translation id="2894949423239620203">ខ្សែអាចប៉ះពាល់ដល់ប្រតិបត្តិការ</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">ហតស្ប៉ត <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត និង​មេឌៀ​ថ្មីៗ​លើ​ទូរសព្ទរបស់​អ្នក</translation>
 <translation id="3542066395059568317">អ្នកនឹងមើលឃើញការណែនាំ ដើម្បីឱ្យអ្នកអាចបន្តត្រង់ចំណុចដែលអ្នកបានចាកចេញ។ អ្នកអាចចុចកណ្ដុរខាងស្ដាំ ដើម្បីដកការណែនាំចេញបាន។</translation>
+<translation id="3545224667633138205">បានបន្តគ្រាប់ចុចម៉ៅស៍ឡើងវិញ</translation>
 <translation id="3552189655002856821">បានបិទ Wi-Fi</translation>
 <translation id="3554215588514239132">បង្ហាញ ឬ​លាក់​ផ្ទាំងឧបករណ៍អ្នក​អភិវឌ្ឍន៍</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ត្រូវបានដៅ</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">មិនអាច​ផ្ទុក​ធាតុ​បានទេ។ សូមព្យាយាម​ម្ដងទៀត នៅពេលមាន​អ៊ីនធឺណិត។</translation>
 <translation id="3735740477244556633">តម្រៀបតាម</translation>
 <translation id="3738664582935948253">ឥឡូវ​នេះ អ្នក​អាច​បង្ហាញ​ការ​ចុច និង​ផ្លូវកាត់​ក្ដារចុច​នៅ​ក្នុង​ការ​ថត​វីដេអូ​អេក្រង់​​បាន</translation>
+<translation id="3741482431277446954">ប៊ូតុងម៉ៅស៍ខាងស្ដាំ</translation>
 <translation id="3742055079367172538">រូបថតអេក្រង់ត្រូវបានថតយក</translation>
 <translation id="3743775386021959186">មុខងារផ្ដោតអារម្មណ៍ត្រូវបានបើក, នៅសល់ <ph name="REMAINING_TIME" />ទៀត</translation>
 <translation id="3750403286520637847">លាក់ការណែនាំអំពីអាកាសធាតុ</translation>
@@ -1830,6 +1835,7 @@
 <translation id="7118268675952955085">រូបថត​អេក្រង់</translation>
 <translation id="7118597077555700347">បើក <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">ជ្រើសរើស​ពាក្យ ឬ​អក្សរ​បន្ទាប់</translation>
+<translation id="7124556000457919678">នៅពេលបើក សូមផ្អាក និងបន្តគ្រាប់ចុចម៉ៅស៍ឡើងវិញ</translation>
 <translation id="7126996685418858413">បានបើកកាល​ពីសប្ដាហ៍មុន</translation>
 <translation id="7130207228079676353">ទំនងបំផុត</translation>
 <translation id="7131634465328662194">អ្នក​នឹង​ចាកចេញ​ពី​គណនី​ដោយ​ស្វ័យ​ប្រវត្តិ។</translation>
@@ -1850,6 +1856,7 @@
 <translation id="7198435252016571249">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងក្រោម។ ខុសគ្នា​ជាមួយនឹង​ផ្ទៃប្រព័ន្ធ។</translation>
 <translation id="7219573373513695352">មិនមាន​ឧបករណ៍​ដែល​បានភ្ជាប់ទេ</translation>
 <translation id="7229029500464092426">បានប្រើអង្គចងចាំ <ph name="AVAILABLE_MEMORY" /> | សរុប <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">ប៊ូតុងម៉ៅស៍ទាំងសងខាង</translation>
 <translation id="7244725679040769470">នៅសល់​ថ្ម <ph name="PERCENTAGE" />%។ សូម​ភ្ជាប់ឧបករណ៍​របស់អ្នក​ទៅ​ថាមពល។</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />។ Chromebook នេះ​ត្រូវចាប់ផ្ដើមឡើងវិញ ដើម្បី​អនុវត្តកំណែថ្មី។ សកម្មភាពនេះអាចចំណាយពេលរហូតដល់ 1 នាទី។</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2151,6 +2158,7 @@
 <translation id="8203224998425013577">បង្ហាញរូប​អារម្មណ៍ និង GIF ច្រើនទៀត</translation>
 <translation id="8203795194971602413">ចុចកណ្ដុរខាងស្ដាំ</translation>
 <translation id="8205469348819768313">កំពុងព្យាយាមប្រើគ្រាប់ចុច Page Down ឬ? ប្រើ</translation>
+<translation id="8213376797713070611">ប៊ូតុងម៉ៅស៍ខាងឆ្វេង</translation>
 <translation id="8214996719228530800">បណ្តាញ Canary</translation>
 <translation id="8219451629189078428">Chromebook របស់អ្នកត្រូវបន្តបើក និងភ្ជាប់ទៅថាមពលនៅអំឡុងពេលនេះ។ ត្រូវប្រាកដថា ខ្សែសាក ឬឆ្នាំងសាកត្រូវបានដោតត្រឹមត្រូវ ទាំងនៅលើ Chromebook របស់អ្នក និង​ព្រីភ្លើង។ សូមកុំបិទ Chromebook ​របស់អ្នក។</translation>
 <translation id="8220076512072059941">បញ្ចូល <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2376,6 +2384,7 @@
 <translation id="9034924485347205037">ឯកសារ Linux</translation>
 <translation id="9047624247355796468">បើក​ការកំណត់​សម្រាប់ <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">មិនអាចប្រើ​ប៊្លូធូសបានទេ</translation>
+<translation id="9050999376345823055">ចុច "." ដើម្បីលែង</translation>
 <translation id="906458777597946297">ពង្រីកផ្ទាំង</translation>
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9070640332319875144">ការ​កំណត់​ជំនួយការ</translation>

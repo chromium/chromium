@@ -854,7 +854,6 @@
 <translation id="15916883652754430">सिस्टीम व्हॉइस सेटिंग्ज</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ने ADB डीबगिंग बंद केले आहे, त्यामुळे तुमचे <ph name="DEVICE_TYPE" /> रीसेट होईल. रीस्टार्ट करण्याआधी तुमच्या फाइलचा बॅकअप घ्या.</translation>
 <translation id="1592126057537046434">क्विक आन्सर्सचे भाषांतर</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{तुम्ही अलीकडे भेट न दिलेली <ph name="BEGIN_BOLD" />एक साइट<ph name="END_BOLD" /> यावरून परवानग्या काढून टाकल्या}other{तुम्ही अलीकडे भेट न दिलेल्या <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> यांवरून परवानग्या काढून टाकल्या}}</translation>
 <translation id="1593594475886691512">स्वरूपन करत आहे...</translation>
 <translation id="159359590073980872">इमेज कॅशे </translation>
 <translation id="1593926297800505364">पेमेंट पद्धत सेव्ह करा</translation>
@@ -2699,7 +2698,6 @@
 <translation id="2855243985454069333">सर्व सिंक केलेल्या डिव्हाइसवरून इतिहास हटवते</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> वापरून साइन इन करा</translation>
 <translation id="2856776373509145513">नवीन कंटेनर तयार करा</translation>
-<translation id="2856907950922663165">URL एन्क्रिप्शन बंद करायचे आहे का?</translation>
 <translation id="2859741939921354763">पासवर्ड <ph name="BRAND" /> वर इंपोर्ट करा</translation>
 <translation id="2860710618359053450">जबडा उजवीकडे हलवा</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूर्ण. कृपया सिस्टम रीस्टार्ट करा.</translation>
@@ -5740,7 +5738,6 @@
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
 <translation id="504953514574706691">सुचवलेल्या गटामधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5049614114599109018">इनपुट इतिहास वापरा</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{या साइटने अलीकडे खूप सूचना पाठवल्या आहेत. तुम्ही तिला भविष्यात सूचना पाठवण्यापासून थांबवू शकता.}other{या साइटनी अलीकडे खूप सूचना पाठवल्या आहेत. तुम्ही त्यांना भविष्यात सूचना पाठवण्यापासून थांबवू शकता.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">पडताळणी न केलेली फाइल डाउनलोड करा</translation>
 <translation id="5051836348807686060">तुम्ही निवडलेल्या भाषांसाठी स्पेल चेक सपोर्ट करत नाही</translation>
@@ -9658,7 +9655,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">खाते पहा</translation>
 <translation id="7883792253546618164">सदस्यत्व कधीही रद्द करा.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{खूप सूचना पाठवलेल्या एका साइटचे पुनरावलोकन करा}other{खूप सूचना पाठवलेल्या {NUM_SITES} साइटचे पुनरावलोकन करा}}</translation>
 <translation id="788453346724465748">खाते माहिती लोड करत आहे...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{आयटम}other{# आयटम}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10318,7 +10314,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8339288417038613756">डिस्प्ले आणि मजकुराचा आकार</translation>
 <translation id="833986336429795709">ही लिंक उघडण्यासाठी, अ‍ॅप निवडा</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> साठी आणखी कृती</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{अलीकडे खूप सूचना पाठवलेल्या <ph name="BEGIN_BOLD" />एका साइट<ph name="END_BOLD" /> चे पुनरावलोकन करा}other{अलीकडे खूप सूचना पाठवलेल्या <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> चे पुनरावलोकन करा}}</translation>
 <translation id="8342221978608739536">वापरून पहिले नाही</translation>
 <translation id="8342861492835240085">संकलन निवडा</translation>
 <translation id="8345848587667658367">तुम्ही आता तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहू शकता</translation>
@@ -11038,7 +11033,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> हे नाव असलेली eSIM प्रोफाइल काढून टाकणे रद्द करा</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> पैकी <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">तुम्ही कोणत्या वेबसाइटना भेट देता हे तुमच्या इंटरनेट ट्रॅफिकचा अ‍ॅक्सेस असलेल्यांना दिसू शकते</translation>
 <translation id="8850251000316748990">आणखी पहा...</translation>
 <translation id="885246833287407341">API फंक्शन arguments</translation>
 <translation id="8853586775156634952">हे कार्ड फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>

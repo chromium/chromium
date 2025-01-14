@@ -1204,6 +1204,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3156511682997763015">Ymlaen 10 eiliad</translation>
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158539265159265653">Disc</translation>
+<translation id="3162070126914310576">Nid oes modd cofrestru'r ddyfais hon ar hyn o bryd oherwydd bod eich uned sefydliadol wedi cyrraedd ei therfyn cofrestru cychwynnol. Cysylltwch â'ch gweinyddwr am gymorth.</translation>
 <translation id="3162559335345991374">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
 <translation id="316638481603975524">Yn gallu gofyn am osod apiau gwe</translation>
 <translation id="3168744840365648658">Offer Radio</translation>
@@ -1324,7 +1325,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3369192424181595722">Gwall cloc</translation>
 <translation id="3371064404604898522">Gosod Chrome fel porwr diofyn</translation>
 <translation id="337363190475750230">Wedi'i ddad-ddarparu</translation>
-<translation id="3375754925484257129">Rhedeg gwiriad diogelwch Chrome</translation>
 <translation id="3377144306166885718">Gwnaeth y gweinydd ddefnyddio fersiwn o TLS sydd wedi darfod.</translation>
 <translation id="3377188786107721145">Gwall dosrannu polisi</translation>
 <translation id="3377642479079205807">Tenau</translation>
@@ -1938,6 +1938,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Mae uwchlwytho ffeil i Microsoft OneDrive wedi'i seibio</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Mae'r polisi hwn yn rheoli ymddygiad diofyn y polisïau a ganlyn: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Yn agor ffenestr naid i'w dilysu ar wefan eich banc</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
 <translation id="4406896451731180161">canlyniadau chwilio</translation>
@@ -2380,6 +2381,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5244521145258281926">Rheoli Cyfrif Google, gweithredwch i reoli eich gwybodaeth, preifatrwydd a diogelwch yn eich Cyfrif Google</translation>
 <translation id="5244732203286792411">Wrthi'n llwytho...
     Gall hyn gymryd munud.</translation>
+<translation id="5248543496748975054">Rhif y cerdyn heb ei lenwi?</translation>
 <translation id="5250209940322997802">"Cysylltu â rhwydwaith"</translation>
 <translation id="52517543715119994">Dysgu am nodweddion Chrome</translation>
 <translation id="5251803541071282808">Cwmwl</translation>
@@ -3995,6 +3997,7 @@ Manylion ychwanegol:
 <translation id="8116925261070264013">Wedi'i ddistewi</translation>
 <translation id="8118489163946903409">Dull talu</translation>
 <translation id="8118506371121007279">Rhoi adborth</translation>
+<translation id="8120720167840853945">Nid yw'r polisi hwn yn rheoli ymddygiad diofyn unrhyw bolisïau eraill.</translation>
 <translation id="8127301229239896662">Ni osodwyd "<ph name="SOFTWARE_NAME" />" yn iawn ar eich cyfrifiadur na'ch rhwydwaith. Gofynnwch i'ch gweinyddwr TG ddatrys y broblem hon.</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8133495915926741232">Dewiswch pa gategorïau eang o bynciau y gellir eu defnyddio i helpu i bersonoleiddio hysbysebion. Bydd diffodd categori ehangach hefyd yn rhwystro ei bynciau cysylltiedig. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

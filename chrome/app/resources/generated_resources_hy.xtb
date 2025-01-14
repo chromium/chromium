@@ -855,7 +855,6 @@
 <translation id="15916883652754430">Ձայնի համակարգային կարգավորումներ</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը, ինչի արդյունքում ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Վերագործարկելուց առաջ պահուստավորեք ձեր ֆայլերը։</translation>
 <translation id="1592126057537046434">Արագ պատասխաններ․ թարգմանություն</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Թույլտվությունները հեռացվեցին <ph name="BEGIN_BOLD" />1 կայքից<ph name="END_BOLD" />, որը դուք որոշ ժամանակ չեք այցելել}one{Թույլտվությունները հեռացվեցին <ph name="BEGIN_BOLD" />{NUM_SITES} կայքից<ph name="END_BOLD" />, որը դուք որոշ ժամանակ չեք այցելել}other{Թույլտվությունները հեռացվեցին <ph name="BEGIN_BOLD" />{NUM_SITES} կայքերից<ph name="END_BOLD" />, որոնք դուք որոշ ժամանակ չեք այցելել}}</translation>
 <translation id="1593594475886691512">Ձևաչափում…</translation>
 <translation id="159359590073980872">Պատկերների քեշ</translation>
 <translation id="1593926297800505364">Պահել վճարման եղանակը</translation>
@@ -2686,7 +2685,6 @@
 <translation id="2855243985454069333">Ջնջել պատմությունը բոլոր համաժամացված սարքերից</translation>
 <translation id="2855812646048059450">Մուտք գործել <ph name="CREDENTIAL_PROVIDER" />-ի միջոցով</translation>
 <translation id="2856776373509145513">Նոր կոնտեյների ստեղծում</translation>
-<translation id="2856907950922663165">Անջատե՞լ URL-ների գաղտնագրումը</translation>
 <translation id="2859741939921354763">Ներմուծել գաղտնաբառերը <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Ծնոտն աջ տարեք</translation>
 <translation id="2861301611394761800">Համակարգի թարմացումն ավարտված է: Վերագործարկեք համակարգը:</translation>
@@ -5727,7 +5725,6 @@
 <translation id="504561833207953641">Բացվում է դիտարկիչի ընթացիկ աշխատաշրջանում։</translation>
 <translation id="504953514574706691">Ներդիրը հեռացվեց առաջարկվող խմբից</translation>
 <translation id="5049614114599109018">Օգտագործել ներածման պատմությունը</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Այս կայքը վերջերս շատ ծանուցումներ է ուղարկել։ Դուք կարող եք արգելել դրան դա անել։}one{Այս կայքը վերջերս շատ ծանուցումներ է ուղարկել։ Դուք կարող եք արգելել դրան դա անել։}other{Այս կայքերը վերջերս շատ ծանուցումներ են ուղարկել։ Դուք կարող եք արգելել դրանց դա անել։}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Ներբեռնել չստուգված ֆայլը</translation>
 <translation id="5051836348807686060">Ուղղագրության ստուգումը չի աջակցվում ձեր ընտրած լեզուների համար</translation>
@@ -9640,7 +9637,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Դիտել հաշիվը</translation>
 <translation id="7883792253546618164">Դուք ցանկացած պահի կարող եք չեղարկել բաժանորդագրությունը։</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Ստուգեք 1 կայք, որը բազմաթիվ ծանուցումներ է ուղարկել}one{Ստուգեք {NUM_SITES} կայք, որը բազմաթիվ ծանուցումներ է ուղարկել}other{Ստուգեք {NUM_SITES} կայքեր, որոնք բազմաթիվ ծանուցումներ են ուղարկել}}</translation>
 <translation id="788453346724465748">Հաշվի տվյալները բեռնվում են...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10299,7 +10295,6 @@
 <translation id="8339288417038613756">Էկրանի և տեքստի չափսը</translation>
 <translation id="833986336429795709">Հղումը բացելու համար ընտրեք հավելված</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> սարքի հետ կապված այլ գործողություններ</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Ստուգեք <ph name="BEGIN_BOLD" />1 կայք<ph name="END_BOLD" />, որը վերջերս բազմաթիվ ծանուցումներ է ուղարկել}one{Ստուգեք <ph name="BEGIN_BOLD" />{NUM_SITES} կայք<ph name="END_BOLD" />, որը վերջերս բազմաթիվ ծանուցումներ է ուղարկել}other{Ստուգեք <ph name="BEGIN_BOLD" />{NUM_SITES} կայքեր<ph name="END_BOLD" />, որոնք վերջերս բազմաթիվ ծանուցումներ են ուղարկել}}</translation>
 <translation id="8342221978608739536">Չեմ փորձել</translation>
 <translation id="8342861492835240085">Ընտրել հավաքածու</translation>
 <translation id="8345848587667658367">Այժմ դուք կարող եք դիտել ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումներն ու հավելվածները</translation>
@@ -11019,7 +11014,6 @@
 <translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8849219423513870962">Չեղարկել eSIM պրոֆիլի (<ph name="PROFILE_NAME" />) հեռացումը</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />՝ <ph name="CHECKING" />-ից</translation>
-<translation id="8849541329228110748">Օգտատերերը, որոնց տեսանելի է ձեր ինտերնետային թրաֆիկը, կկարողանան տեսնել, թե ինչ վեբ էջեր եք այցելում</translation>
 <translation id="8850251000316748990">Ավելին…</translation>
 <translation id="885246833287407341">API-ի ֆունկցիայի փոփոխականներ</translation>
 <translation id="8853586775156634952">Այս քարտը կպահվի միայն այս սարքում</translation>

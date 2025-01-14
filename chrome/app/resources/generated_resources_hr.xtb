@@ -856,7 +856,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="15916883652754430">Glasovne postavke sustava</translation>
 <translation id="1592074621872221573">Web-lokacija <ph name="MANAGER" /> onemogućila je ADB otklanjanje pogrešaka, čime će se vaš uređaj <ph name="DEVICE_TYPE" /> vratiti na zadano. Sigurnosno kopirajte datoteke prije ponovnog pokretanja.</translation>
 <translation id="1592126057537046434">Prijevod za brze odgovore</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Dopuštenja su uklonjena s <ph name="BEGIN_BOLD" />jedne web-lokacije<ph name="END_BOLD" /> koju neko vrijeme niste posjetili}one{Dopuštenja su uklonjena s <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacije<ph name="END_BOLD" /> koju neko vrijeme niste posjetili}few{Dopuštenja su uklonjena s <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacije<ph name="END_BOLD" /> koje neko vrijeme niste posjetili}other{Dopuštenja su uklonjena s <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacija<ph name="END_BOLD" /> koje neko vrijeme niste posjetili}}</translation>
 <translation id="1593594475886691512">Formatiranje...</translation>
 <translation id="159359590073980872">Predmemorija slike</translation>
 <translation id="1593926297800505364">Spremanje načina plaćanja</translation>
@@ -2690,7 +2689,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2855243985454069333">Briše povijest sa svih sinkroniziranih uređaja</translation>
 <translation id="2855812646048059450">Prijavite se putem usluge <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Izrada novog spremnika</translation>
-<translation id="2856907950922663165">Želite li isključiti šifriranje URL-a?</translation>
 <translation id="2859741939921354763">Uvoz zaporki na uslugu <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Pomicanje čeljusti udesno</translation>
 <translation id="2861301611394761800">Ažuriranje sustava dovršeno. Ponovno pokrenite sustav.</translation>
@@ -3089,6 +3087,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3159978855457658359">Uredite naziv uređaja</translation>
 <translation id="3160928651883997588">Preferencije za VPN</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
+<translation id="3162070126914310576">Ovaj uređaj ne može se prijaviti odmah jer je vaša organizacijska jedinica dosegla početno ograničenje prijave. Za pomoć kontaktirajte svojeg administratora.</translation>
 <translation id="3162766632262775911">Uvijek je dopuštena upotreba alata za optimizaciju V8</translation>
 <translation id="3162853326462195145">Školski račun</translation>
 <translation id="3162899666601560689">Web-lokacije mogu upotrebljavati kolačiće za poboljšanje vašeg doživljaja pregledavanja, primjerice da biste ostali prijavljeni ili da bi stavke u vašoj košarici ostale zapamćene</translation>
@@ -5730,7 +5729,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="504561833207953641">Otvaranje u postojećoj sesiji preglednika.</translation>
 <translation id="504953514574706691">Kartica je izuzeta iz predložene grupe</translation>
 <translation id="5049614114599109018">Koristi povijest unosa</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Ova je web-lokacija nedavno poslala mnogo obavijesti. Možete spriječiti da ubuduće šalje obavijesti.}one{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}few{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}other{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}}</translation>
 <translation id="5050330054928994520">Pretvaranje teksta u govor</translation>
 <translation id="5051461727068120271">Preuzimanje nepotvrđene datoteke</translation>
 <translation id="5051836348807686060">Provjera pravopisa nije podržana za jezike koje ste odabrali</translation>
@@ -9061,6 +9059,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="746861123368584540">Proširenje se učitalo</translation>
 <translation id="7469612367552312334">Uključeno • Koristite svakodnevni jezik da biste pretraživali svoju povijest pregledavanja i pronašli web-lokacije koje ste posjetili</translation>
 <translation id="7470131554696493512">Onemogući Thunderbolt ili USB4 uređajima pristup memoriji (RAM) i njezino dijeljenje</translation>
+<translation id="7470284766345262333">Ovaj račun nije povezan s Googleom, stoga značajke kao što je Chrome sinkronizacija nisu dostupne</translation>
 <translation id="7470424110735398630">Dopušten je pregled međuspremnika</translation>
 <translation id="747114903913869239">Pogreška: Nije moguće dekodirati proširenje</translation>
 <translation id="7471520329163184433">Sporije</translation>
@@ -9646,7 +9645,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Prikaz računa</translation>
 <translation id="7883792253546618164">Pretplatu otkažite kad god želite.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Pregledajte jednu web-lokaciju koja je poslala mnogo obavijesti}one{Pregledajte {NUM_SITES} web-lokaciju koja je poslala mnogo obavijesti}few{Pregledajte {NUM_SITES} web-lokacije koje su poslale mnogo obavijesti}other{Pregledajte {NUM_SITES} web-lokacija koje su poslale mnogo obavijesti}}</translation>
 <translation id="788453346724465748">Učitavanje podataka o računu...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{stavku}one{# stavku}few{# stavke}other{# stavki}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10306,7 +10304,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8339288417038613756">Veličina prikaza i teksta</translation>
 <translation id="833986336429795709">Da biste otvorili tu vezu, odaberite aplikaciju</translation>
 <translation id="8340547030807793004">Više radnji za uređaj <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Pregledajte <ph name="BEGIN_BOLD" />jednu web-lokaciju<ph name="END_BOLD" /> koja je nedavno poslala mnogo obavijesti}one{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokaciju<ph name="END_BOLD" /> koja je nedavno poslala mnogo obavijesti}few{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacije<ph name="END_BOLD" /> koje su nedavno poslale mnogo obavijesti}other{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} web-lokacija<ph name="END_BOLD" /> koje su nedavno poslale mnogo obavijesti}}</translation>
 <translation id="8342221978608739536">Nisam pokušao/pokušala</translation>
 <translation id="8342861492835240085">Odaberite zbirku</translation>
 <translation id="8345848587667658367">Sada možete pregledati nedavne fotografije, medije, obavijesti i aplikacije telefona</translation>
@@ -11027,7 +11024,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8849001918648564819">Skriveno</translation>
 <translation id="8849219423513870962">Otkazivanje uklanjanja eSIM profila <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> od <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Oni koji imaju pristup vašem internetskom prometu mogu vidjeti koje web-lokacije posjećujete</translation>
 <translation id="8850251000316748990">Pogledajte više...</translation>
 <translation id="885246833287407341">Argumenti za funkciju API-ja</translation>
 <translation id="8853586775156634952">Ova će se kartica spremiti samo na vaš uređaj</translation>

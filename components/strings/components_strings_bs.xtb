@@ -1206,6 +1206,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3156511682997763015">Premotaj 10 s unaprijed</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Ovaj uređaj ne može se prijaviti odmah jer je vaša organizacijska jedinica dosegla početno ograničenje prijave. Za pomoć kontaktirajte svojeg administratora.</translation>
 <translation id="3162559335345991374">WiFi koji koristite može tražiti da posjetite njegovu stranicu za prijavu.</translation>
 <translation id="316638481603975524">Mogu zatražiti da instaliraju web aplikacije</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
@@ -1326,7 +1327,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3369192424181595722">Greška sa satom</translation>
 <translation id="3371064404604898522">Postavi Chrome kao zadani preglednik</translation>
 <translation id="337363190475750230">Poništeno dodjeljivanje</translation>
-<translation id="3375754925484257129">Pokrenite sigurnosnu provjeru Chromea</translation>
 <translation id="3377144306166885718">Server je koristio zastarjelu verziju TLS-a.</translation>
 <translation id="3377188786107721145">Greška prilikom raščlanjivanja pravila</translation>
 <translation id="3377642479079205807">Tanko</translation>
@@ -2384,6 +2384,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5244521145258281926">Upravljaj Google računom, aktivirajte da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
 <translation id="5244732203286792411">Učitavanje…
     Ovo može malo potrajati.</translation>
+<translation id="5248543496748975054">Broj kartice nije unesen?</translation>
 <translation id="5250209940322997802">"Povežite se s mrežom"</translation>
 <translation id="52517543715119994">Saznajte više o funkcijama Chromea</translation>
 <translation id="5251803541071282808">Oblak</translation>

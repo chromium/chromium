@@ -1204,6 +1204,7 @@
 <translation id="3156511682997763015">10 ሰከንዶች ወደፊት</translation>
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3158539265159265653">ዲስክ</translation>
+<translation id="3162070126914310576">ድርጅትዎ የመጀመሪያው የምዝገባ ገደብ ላይ ስለደረሰ ይህ መሣሪያ በአሁኑ ጊዜ ሊመዘገብ አይችልም። ለእርዳታ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="3162559335345991374">እየተጠቀሙ ያሉት Wi-Fi በመለያ መግቢያ ገጹን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="316638481603975524">የድር መተግበሪያዎችን ለመጫን መጠየቅ ይቻላል</translation>
 <translation id="3168744840365648658">የሬዲዮ መሣሪያዎች</translation>
@@ -1323,7 +1324,6 @@
 <translation id="3369192424181595722">የሰዓት ስህተት</translation>
 <translation id="3371064404604898522">Chromeን እንደ ነባሪ አሳሽ ያስቀምጡት</translation>
 <translation id="337363190475750230">አቅርቦት ተቋርጧል</translation>
-<translation id="3375754925484257129">የChrome ደህንነት ፍተሻን ያሂዱ</translation>
 <translation id="3377144306166885718">አገልጋዩ ጊዜ ያለፈበት የTLS ስሪት ተጠቅመዋል።</translation>
 <translation id="3377188786107721145">የመምሪያ ትንተና ስህተት</translation>
 <translation id="3377642479079205807">ቀጭን</translation>
@@ -1937,6 +1937,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">ወደ Microsoft OneDrive የሚደረግ የፋይል ሰቀላ ባለበት ቆሟል</translation>
 <translation id="4390472908992056574">ከፈፍ</translation>
+<translation id="4395550503472021297">ይህ መመሪያ የሚከተሉትን መመሪያዎች ነባሪ ባህሪ እየተቆጣጠረ ነው፦ <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">በባንክዎ ድር ጣቢያ ላይ ለማረጋገጥ ብቅ ባይ ይከፍታል</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4406896451731180161">የፍለጋ ውጤቶች</translation>
@@ -2379,6 +2380,7 @@
 <translation id="5244521145258281926">የGoogle መለያ ያስተዳድሩ፣ በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ለማስተዳደር ያግብሩ</translation>
 <translation id="5244732203286792411">በመጫን ላይ...
     ይህ ትንሽ ጊዜ ሊወስድ ይችላል።</translation>
+<translation id="5248543496748975054">የካርድ ቁጥር አልተሞላም?</translation>
 <translation id="5250209940322997802">«ከአውታረ መረብ ጋር ይገናኙ»</translation>
 <translation id="52517543715119994">ስለChrome ባህሪዎች ይወቁ</translation>
 <translation id="5251803541071282808">ደመና</translation>
@@ -3995,6 +3997,7 @@
 <translation id="8116925261070264013">ድምፀ ከል ተደርጓል</translation>
 <translation id="8118489163946903409">የመክፈያ ዘዴ</translation>
 <translation id="8118506371121007279">ግብረመልስ ይስጡ</translation>
+<translation id="8120720167840853945">ይህ መመሪያ የማናቸውም ሌሎች መመሪያዎች ነባሪ ባህሪን እየተቆጣጠረ አይደለም።</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» በእርስዎ ኮምፒውተር ወይም አውታረ መረብ ላይ በአግባቡ አልተጫነም። አስተዳዳሪዎ ይህን ችግር እንዲፈታ ይጠይቁ።</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8133495915926741232">የትኛዎቹን ሰፊ የርዕሰ ጉዳዮች ምድቦች ማስታወቂያዎችን ግላዊ ለማድረግ እንደሚረዱ መምረጥ ይችላሉ። ሰፊ ምድብን ማጥፋት እንዲሁም ተዛማጅ ርዕሶቹን ያግዳል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>

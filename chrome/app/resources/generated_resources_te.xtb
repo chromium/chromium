@@ -855,7 +855,6 @@
 <translation id="15916883652754430">సిస్టమ్ వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేసింది, దీని కారణంగా <ph name="DEVICE_TYPE" /> రీసెట్ అవుతుంది. రీస్టార్ట్ చేయడానికి ముందు, మీ ఫైళ్లను బ్యాకప్ చేయండి.</translation>
 <translation id="1592126057537046434">త్వరిత సమాధానాల నిర్వచనం</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{మీరు చాలా కాలంగా సందర్శించని <ph name="BEGIN_BOLD" />1 సైట్<ph name="END_BOLD" /> నుండి అనుమతులు తీసివేయబడ్డాయి}other{మీరు చాలా కాలంగా సందర్శించని <ph name="BEGIN_BOLD" />{NUM_SITES} సైట్‌ల<ph name="END_BOLD" /> నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
 <translation id="1593594475886691512">ఆకృతీకరిస్తోంది...</translation>
 <translation id="159359590073980872">చిత్రం కాష్</translation>
 <translation id="1593926297800505364">చెల్లింపు పద్దతిని సేవ్ చేయండి</translation>
@@ -2698,7 +2697,6 @@
 <translation id="2855243985454069333">సింక్ అయి ఉన్న పరికరాలన్నిటి నుండి హిస్టరీని తొలగిస్తుంది</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />తో సైన్ ఇన్ చేయండి</translation>
 <translation id="2856776373509145513">కొత్త కంటైనర్‌ను క్రియేట్ చేయండి</translation>
-<translation id="2856907950922663165">URL ఎన్‌క్రిప్షన్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />‌కు పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
 <translation id="2860710618359053450">దవడను కుడివైపుకి కదల్చడం</translation>
 <translation id="2861301611394761800">సిస్టమ్ అప్‌డేట్ పూర్తయ్యింది. దయచేసి సిస్టమ్‌ని పునఃప్రారంభించండి.</translation>
@@ -5741,7 +5739,6 @@
 <translation id="504561833207953641">ఇప్పటికే ఉన్న బ్రౌజర్ సెషన్‌లో తెరుస్తోంది.</translation>
 <translation id="504953514574706691">సూచించబడిన గ్రూప్ నుండి ట్యాబ్ మినహాయించబడింది</translation>
 <translation id="5049614114599109018">ఇన్‌పుట్ హిస్టరీని ఉపయోగించండి</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{ఈ సైట్ ఇటీవల చాలా నోటిఫికేషన్‌లను పంపింది. భవిష్యత్తు నోటిఫికేషన్‌లను పంపకుండా మీరు దానిని ఆపివేయవచ్చు.}other{ఈ సైట్‌లు ఇటీవల చాలా నోటిఫికేషన్‌లను పంపించాయి. భవిష్యత్తులో నోటిఫికేషన్‌లను పంపకుండా మీరు వాటిని ఆపివేయవచ్చు.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">వెరిఫై కాని ఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5051836348807686060">మీరు ఎంచుకున్న భాషలకు స్పెల్‌చెక్ మద్దతు లేదు</translation>
@@ -9656,7 +9653,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ఖాతాను చూడండి</translation>
 <translation id="7883792253546618164">ఏ సమయంలో అయినా సబ్‌స్క్రిప్షన్‌ను తీసివేయండి.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{చాలా నోటిఫికేషన్‌లను పంపిన 1 సైట్‌ను రివ్యూ చేయండి}other{చాలా నోటిఫికేషన్‌లను పంపిన {NUM_SITES} సైట్‌లను రివ్యూ చేయండి}}</translation>
 <translation id="788453346724465748">ఖాతా సమాచారం లోడ్ అవుతోంది...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ఐటెమ్}other{# ఐటెమ్‌లు}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10313,7 +10309,6 @@
 <translation id="8339288417038613756">డిస్‌ప్లే, టెక్స్ట్ సైజ్</translation>
 <translation id="833986336429795709">ఈ లింక్‌ను తెరవడానికి, ఒక యాప్‌ను ఎంచుకోండి</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> కోసం మరిన్ని చర్యలు</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన <ph name="BEGIN_BOLD" />1 సైట్‌ని<ph name="END_BOLD" /> రివ్యూ చేయండి}other{ఇటీవల చాలా నోటిఫికేషన్‌లను పంపిన <ph name="BEGIN_BOLD" />{NUM_SITES} సైట్‌లను<ph name="END_BOLD" /> రివ్యూ చేయండి}}</translation>
 <translation id="8342221978608739536">ట్రై చేయలేదు</translation>
 <translation id="8342861492835240085">సేకరణను ఎంచుకోండి</translation>
 <translation id="8345848587667658367">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, ఇంకా యాప్‌లను చూడవచ్చు</translation>
@@ -11032,7 +11027,6 @@
 <translation id="8849001918648564819">దాచబడింది</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> పేరు గల eSIM ప్రొఫైల్ తీసివేతను రద్దు చేయండి</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" />లో <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">మీ ఇంటర్నెట్ ట్రాఫిక్‌కు యాక్సెస్ ఉన్నవారు మీరు చూసే వెబ్‌సైట్‌లను చూడగలరు</translation>
 <translation id="8850251000316748990">మరిన్ని చూడండి...</translation>
 <translation id="885246833287407341">API ఫంక్షన్ తర్కాలు</translation>
 <translation id="8853586775156634952">ఈ పరికరంలో మాత్రమే ఈ కార్డ్ సేవ్ అవుతుంది</translation>

@@ -856,7 +856,6 @@
 <translation id="15916883652754430">सिस्टम की आवाज़ की सेटिंग</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. इससे आपका <ph name="DEVICE_TYPE" /> रीसेट हो जाएगा. डिवाइस को रीस्टार्ट करने से पहले अपनी फ़ाइलों का बैक अप लें.</translation>
 <translation id="1592126057537046434">'हाज़िर जवाब' का अनुवाद</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{उस <ph name="BEGIN_BOLD" />1 साइट<ph name="END_BOLD" /> को दी गई अनुमतियां हटाई गईं जिस पर आपने कुछ समय से विज़िट नहीं किया है}one{उस <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> को दी गई अनुमतियां हटाई गईं जिस पर आपने कुछ समय से विज़िट नहीं किया है}other{उन <ph name="BEGIN_BOLD" />{NUM_SITES} साइटों<ph name="END_BOLD" /> को दी गई अनुमतियां हटाई गईं जिन पर आपने कुछ समय से विज़िट नहीं किया है}}</translation>
 <translation id="1593594475886691512">फ़ॉर्मेट किया जा रहा है...</translation>
 <translation id="159359590073980872">इमेज कैश</translation>
 <translation id="1593926297800505364">भुगतान का तरीका सेव करें</translation>
@@ -2701,7 +2700,6 @@
 <translation id="2855243985454069333">सिंक किए गए सभी डिवाइसों से ब्राउज़िंग इतिहास मिटा देता है</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> से साइन इन करें</translation>
 <translation id="2856776373509145513">नया कंटेनर बनाएं</translation>
-<translation id="2856907950922663165">क्या आपको यूआरएल को एन्क्रिप्ट करने की सुविधा बंद करनी है?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> में पासवर्ड इंपोर्ट करें</translation>
 <translation id="2860710618359053450">जबड़े को दाईं ओर ले जाएं</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा हुआ. कृपया सिस्टम को रीस्टार्ट करें.</translation>
@@ -5742,7 +5740,6 @@
 <translation id="504561833207953641">मौजूदा ब्राउज़र सत्र में खुल रहा है.</translation>
 <translation id="504953514574706691">सुझाए गए ग्रुप से टैब को हटाया गया</translation>
 <translation id="5049614114599109018">इनपुट इतिहास का इस्तेमाल करें</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{इस साइट ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इसे सूचनाएं भेजने से रोका जा सकता है.}one{इन साइटों ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इन्हें सूचनाएं भेजने से रोका जा सकता है.}other{इन साइटों ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इन्हें सूचनाएं भेजने से रोका जा सकता है.}}</translation>
 <translation id="5050330054928994520">TTS (लिखाई को बोली में बदलना)</translation>
 <translation id="5051461727068120271">बिना पुष्टि वाली फ़ाइल डाउनलोड करें</translation>
 <translation id="5051836348807686060">आपकी चुनी गई भाषा के लिए स्पेलिंग जाँचने की सुविधा काम नहीं करती है</translation>
@@ -9658,7 +9655,6 @@
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7881483672146086348">खाता देखें</translation>
 <translation id="7883792253546618164">जब चाहें, तब सदस्यता छोड़ें.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{उस 1 साइट की समीक्षा करें जिसने हाल ही में बहुत सारी सूचनाएं भेजी हैं}one{उस {NUM_SITES} साइट की समीक्षा करें जिसने हाल ही में बहुत सारी सूचनाएं भेजी हैं}other{उन {NUM_SITES} साइटों की समीक्षा करें जिन्होंने हाल ही में बहुत सारी सूचनाएं भेजी हैं}}</translation>
 <translation id="788453346724465748">खाते की जानकारी लोड हो रही है...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{एक आइटम}one{# आइटम}other{# आइटम}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10318,7 +10314,6 @@
 <translation id="8339288417038613756">डिसप्ले और टेक्स्ट का साइज़</translation>
 <translation id="833986336429795709">यह लिंक खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> से जुड़ी और कार्रवाइयां</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{उस <ph name="BEGIN_BOLD" />1 साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}one{उस <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}other{उन <ph name="BEGIN_BOLD" />{NUM_SITES} साइटों<ph name="END_BOLD" /> की समीक्षा करें जिन्होंने हाल ही में कई सूचनाएं भेजी हैं}}</translation>
 <translation id="8342221978608739536">कोशिश नहीं की गई</translation>
 <translation id="8342861492835240085">कोई संग्रह चुनें</translation>
 <translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
@@ -11038,7 +11033,6 @@
 <translation id="8849001918648564819">छिपा हुआ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> नाम की ई-सिम प्रोफ़ाइल को हटाने की प्रक्रिया रद्द करें</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> में से <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोग यह देख सकते हैं कि आपने किन वेबसाइटों पर विज़िट किया है</translation>
 <translation id="8850251000316748990">ज़्यादा देखें...</translation>
 <translation id="885246833287407341">एपीआई फ़ंक्शन के तर्क</translation>
 <translation id="8853586775156634952">इस कार्ड को सिर्फ़ इस डिवाइस पर सेव किया जाएगा</translation>

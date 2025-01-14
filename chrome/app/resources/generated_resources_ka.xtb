@@ -854,7 +854,6 @@
 <translation id="15916883652754430">სისტემის ხმის პარამეტრები</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />-მა გათიშა ADB გამართვა, რაც <ph name="DEVICE_TYPE" />-ის გადაყენებას გამოიწვევს. გადატვირთვამდე შექმენით თქვენი ფაილების სარეზერვო ასლები.</translation>
 <translation id="1592126057537046434">სწრაფი პასუხები — თარგმნა</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{ნებართვები გაუუქმდა <ph name="BEGIN_BOLD" />1 საიტს<ph name="END_BOLD" />, რომელიც დიდი ხანია, არ მოგინახულებიათ}other{ნებართვები გაუუქმდა <ph name="BEGIN_BOLD" />{NUM_SITES} საიტს<ph name="END_BOLD" />, რომლებიც დიდი ხანია, არ მოგინახულებიათ}}</translation>
 <translation id="1593594475886691512">ფორმატირება…</translation>
 <translation id="159359590073980872">გამოსახულების ქეში</translation>
 <translation id="1593926297800505364">გადახდის მეთოდის შენახვა</translation>
@@ -2687,7 +2686,6 @@
 <translation id="2855243985454069333">ისტორიის წაშლა ყველა სინქრონიზებული მოწყობილობიდან</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />-ით შესვლა</translation>
 <translation id="2856776373509145513">შექმენით ახალი კონტეინერი</translation>
-<translation id="2856907950922663165">გსურთ, გამორთოთ URL-ების დაშიფვრა?</translation>
 <translation id="2859741939921354763">შეასრულეთ პაროლების იმპორტირება <ph name="BRAND" />-ში</translation>
 <translation id="2860710618359053450">ყბა მოაქციეთ მარჯვნივ</translation>
 <translation id="2861301611394761800">სისტემის განახლება დასრულებულია. გთხოვთ გადატვირთეთ სისტემა.</translation>
@@ -5730,7 +5728,6 @@
 <translation id="504561833207953641">მიმდინარეობს ბრაუზერის არსებულ სესიაში გახსნა.</translation>
 <translation id="504953514574706691">ჩანართი გამორიცხულია შემოთავაზებული ჯგუფიდან</translation>
 <translation id="5049614114599109018">შეყვანის ისტორიის გამოყენება</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{ამ საიტმა ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან. სურვილისამებრ, შეგიძლიათ აღუკვეთოთ მას შეტყობინებების გამოგზავნა მომავალში.}other{ამ საიტებმა ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან. სურვილისამებრ, შეგიძლიათ აღუკვეთოთ მათ შეტყობინებების გამოგზავნა მომავალში.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">დაუდასტურებელი ფაილის ჩამოტვირთვა</translation>
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
@@ -9645,7 +9642,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ანგარიშის ნახვა</translation>
 <translation id="7883792253546618164">გამოწერის გაუქმება ნებისმიერ დროს შეგიძლიათ.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{შეამოწმეთ 1 საიტი, რომელმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}other{შეამოწმეთ {NUM_SITES} საიტი, რომლებმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა}}</translation>
 <translation id="788453346724465748">მიმდინარეობს ანგარიშის ინფორმაციის ჩატვირთვა...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10304,7 +10300,6 @@
 <translation id="8339288417038613756">ეკრანისა და ტექსტის ზომა</translation>
 <translation id="833986336429795709">აირჩიეთ აპი ამ ბმულის გასახსნელად</translation>
 <translation id="8340547030807793004">სხვა ქმედებები „<ph name="DEVICE" />“-სთვის</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{შეამოწმეთ <ph name="BEGIN_BOLD" />1 საიტი<ph name="END_BOLD" />, რომელმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან}other{შეამოწმეთ <ph name="BEGIN_BOLD" />{NUM_SITES} საიტი<ph name="END_BOLD" />, რომლებმაც ზედმეტად ბევრი შეტყობინება გამოგზავნა ახლახან}}</translation>
 <translation id="8342221978608739536">არ მიცდია</translation>
 <translation id="8342861492835240085">აირჩიეთ კოლექცია</translation>
 <translation id="8345848587667658367">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და აპები</translation>
@@ -11023,7 +11018,6 @@
 <translation id="8849001918648564819">დამალული</translation>
 <translation id="8849219423513870962">აღარ ამოიშალოს eSIM პროფილი სახელად <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKING" />-დან <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">ისინი, ვისაც თქვენს ინტერნეტ-ტრაფიკზე აქვს წვდომა, შეძლებენ ნახონ, რომელ ვებგვერდებს სტუმრობთ</translation>
 <translation id="8850251000316748990">მეტის ნახვა…</translation>
 <translation id="885246833287407341">API ფუნქციების არგუმენტები</translation>
 <translation id="8853586775156634952">ეს ბარათი შეინახება მხოლოდ ამ მოწყობილობაზე</translation>

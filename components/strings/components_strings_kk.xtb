@@ -1204,6 +1204,7 @@
 <translation id="3156511682997763015">10 секунд алға айналдыру</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3158539265159265653">Диск</translation>
+<translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
 <translation id="316638481603975524">Веб-қолданбаларды орнатуға рұқсат сұрауы мүмкін</translation>
 <translation id="3168744840365648658">Радиожабдық</translation>
@@ -1323,7 +1324,6 @@
 <translation id="3369192424181595722">Сағат қатесі</translation>
 <translation id="3371064404604898522">Chrome-ды әдепкі браузер етіп орнату</translation>
 <translation id="337363190475750230">Өшірілді</translation>
-<translation id="3375754925484257129">Chrome қауіпсіздік тексерісін іске қосу</translation>
 <translation id="3377144306166885718">Сервер ескірген TLS нұсқасын пайдаланған.</translation>
 <translation id="3377188786107721145">Саясат талдау қатесі</translation>
 <translation id="3377642479079205807">Жіңішке</translation>
@@ -1937,6 +1937,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Файлды Microsoft OneDrive қызметіне жүктеп салу кідіртілді</translation>
 <translation id="4390472908992056574">Жиек</translation>
+<translation id="4395550503472021297">Бұл саясат келесі саясаттардың әдепкі әрекетін басқарады: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Банк веб-сайтында растауға арналған қалқымалы терезені ашады</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
@@ -2379,6 +2380,7 @@
 <translation id="5244521145258281926">Google аккаунтын басқару, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін белсендіріңіз</translation>
 <translation id="5244732203286792411">Жүктелуде…
     Бір минут уақыт алуы мүмкін.</translation>
+<translation id="5248543496748975054">Карта нөмірі толтырылмады ма?</translation>
 <translation id="5250209940322997802">"Желіге қосылу"</translation>
 <translation id="52517543715119994">Chrome функциялары туралы білу</translation>
 <translation id="5251803541071282808">Бұлт</translation>
@@ -3994,6 +3996,7 @@
 <translation id="8116925261070264013">Дыбысы өшірулі</translation>
 <translation id="8118489163946903409">Төлеу әдісі</translation>
 <translation id="8118506371121007279">Пікір білдіру</translation>
+<translation id="8120720167840853945">Бұл саясат басқа кез келген саясаттың әдепкі әрекетін басқармайды.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" компьютеріңізде не желіңізде дұрыс орнатылмаған. АТ әкімшіңізден мәселені шешуін сұраңыз.</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8133495915926741232">Жарнамаларды жекелендіру үшін тақырыптардың қандай жалпылама санаттарын пайдалануға болатынын таңдаңыз. Жалпылама санат өшірілсе, оған қатысты тақырыптар да блокталады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>

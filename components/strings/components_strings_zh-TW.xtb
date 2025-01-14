@@ -1202,6 +1202,7 @@
 <translation id="3156511682997763015">快轉 10 秒</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158539265159265653">光碟</translation>
+<translation id="3162070126914310576">貴機構單位已達到初始註冊上限，因此目前無法註冊這部裝置。請向管理員尋求協助。</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 網路可能會要求您造訪登入網頁。</translation>
 <translation id="316638481603975524">可以要求安裝網頁應用程式</translation>
 <translation id="3168744840365648658">無線電設備</translation>
@@ -1322,7 +1323,6 @@
 <translation id="3369192424181595722">時鐘錯誤</translation>
 <translation id="3371064404604898522">將 Chrome 設為預設瀏覽器</translation>
 <translation id="337363190475750230">已取消佈建</translation>
-<translation id="3375754925484257129">執行 Chrome 安全檢查</translation>
 <translation id="3377144306166885718">伺服器的傳輸層安全標準 (TLS) 版本已過時。</translation>
 <translation id="3377188786107721145">政策解析錯誤</translation>
 <translation id="3377642479079205807">細</translation>
@@ -2378,6 +2378,7 @@
 <translation id="5244521145258281926">「管理 Google 帳戶」按鈕，啟動後即可管理 Google 帳戶的資訊、隱私權和安全性</translation>
 <translation id="5244732203286792411">載入中...
     請稍候。</translation>
+<translation id="5248543496748975054">尚未填寫卡號嗎？</translation>
 <translation id="5250209940322997802">「連線至網路」</translation>
 <translation id="52517543715119994">瞭解 Chrome 功能</translation>
 <translation id="5251803541071282808">雲端</translation>

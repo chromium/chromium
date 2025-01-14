@@ -850,7 +850,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="15916883652754430">Cilësimet e zërit të sistemit</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së, gjë që do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" />. Rezervo skedarët përpara se të fillosh.</translation>
 <translation id="1592126057537046434">Përkthimi i "Përgjigjeve të shpejta"</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Lejet u hoqën nga <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> që nuk e ke vizituar për pak kohë.}other{Lejet u hoqën nga <ph name="BEGIN_BOLD" />{NUM_SITES} sajte<ph name="END_BOLD" /> që nuk i ke vizituar për pak kohë}}</translation>
 <translation id="1593594475886691512">Po formaton...</translation>
 <translation id="159359590073980872">Memoria specifike e imazhit</translation>
 <translation id="1593926297800505364">Ruaj mënyrën e pagesës</translation>
@@ -2684,7 +2683,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2855812646048059450">Identifikohu me <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Krijo një kontejner të ri</translation>
-<translation id="2856907950922663165">Të çaktivizohet enkriptimi i URL-ve?</translation>
 <translation id="2859741939921354763">Importo fjalëkalimet te "<ph name="BRAND" />"</translation>
 <translation id="2860710618359053450">Zhvendose nofullën në të djathtë</translation>
 <translation id="2861301611394761800">Përditësimi i sistemit përfundoi. Rinis sistemin.</translation>
@@ -5723,7 +5721,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="504561833207953641">Po hapet në sesionin ekzistues të shfletuesit.</translation>
 <translation id="504953514574706691">Skeda u përjashtua nga grupi i sugjeruar</translation>
 <translation id="5049614114599109018">Përdor historikun e hyrjeve</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Ky sajt ka dërguar shumë njoftime së fundi. Mund ta ndalosh që të mos dërgojë njoftime në të ardhmen.}other{Këto sajte kanë dërguar shumë njoftime së fundi. Mund t'i ndalosh që të mos dërgojnë njoftime në të ardhmen.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Shkarko skedarin e paverifikuar</translation>
 <translation id="5051836348807686060">Kontrolli drejtshkrimor nuk mbështetet për gjuhët që zgjodhe</translation>
@@ -9636,7 +9633,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Shiko llogarinë</translation>
 <translation id="7883792253546618164">Çregjistrohu në çdo kohë.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Rishiko 1 sajt që ka dërguar shumë njoftime}other{Rishiko {NUM_SITES} sajte që kanë dërguar shumë njoftime}}</translation>
 <translation id="788453346724465748">Informacionet e llogarisë po ngarkohen...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{një artikull}other{# artikuj}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10295,7 +10291,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8339288417038613756">Madhësia e ekranit dhe e tekstit</translation>
 <translation id="833986336429795709">Për të hapur këtë lidhje, zgjidh një aplikacion</translation>
 <translation id="8340547030807793004">Më shumë veprime për <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Rishiko <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> që ka dërguar së fundi shumë njoftime}other{Rishiko <ph name="BEGIN_BOLD" />{NUM_SITES} sajte<ph name="END_BOLD" /> që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="8342221978608739536">Nuk e provova</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
@@ -11014,7 +11009,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8849001918648564819">E fshehur</translation>
 <translation id="8849219423513870962">Anulo heqjen e profilit të kartës eSIM me emrin <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> nga <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Ata që kanë qasje në trafikun tënd të internetit mund të shikojnë se cilat uebsajte viziton ti</translation>
 <translation id="8850251000316748990">Shiko më shumë...</translation>
 <translation id="885246833287407341">Argumentet e funksionit API</translation>
 <translation id="8853586775156634952">Kjo kartë do të ruhet vetëm në këtë pajisje</translation>

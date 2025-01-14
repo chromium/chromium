@@ -705,6 +705,7 @@
 <translation id="2215539479425228550">ការឡើងភ្នំ និង​ការតោង​ឡើងផ្ទាំងថ្ម</translation>
 <translation id="2215727959747642672">ការកែឯកសារ</translation>
 <translation id="2215963164070968490">ឆ្កែ</translation>
+<translation id="2219376942605837404">បញ្ចូលផ្ទាំងទៅតារាងប្រៀបធៀប</translation>
 <translation id="2219658597883514593">ចាប់ផ្ដើម​មេរៀន​ឡើងវិញ</translation>
 <translation id="2219735899272417925">តម្រូវ​ឱ្យ​កំណត់​ឧបករណ៍​ឡើងវិញ</translation>
 <translation id="2221227930294879156">ព្រឹត្តិការណ៍​អាហារ និង​ភេសជ្ជៈ</translation>
@@ -1156,6 +1157,7 @@
 <translation id="306573536155379004">ហ្គេម​បានចាប់ផ្ដើម។</translation>
 <translation id="3067505415088964188">តម្លៃទាប</translation>
 <translation id="3068118691172921711">ឯកសារដែលអ្នកបង្ហោះទៅ <ph name="CLOUD_PROVIDER" /> នឹងចាប់ផ្ដើមក្នុងរយៈពេល 1 នាទីទៀត</translation>
+<translation id="3068976060094139647">អ្នកអាច​បំពេញ​កាតនេះបាន​ដោយ​ស្វ័យប្រវត្តិ ដោយសារ​គណនីរបស់អ្នក​ត្រូវបានភ្ជាប់​ជាមួយ Google Pay។</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{ទំនិញ {ITEMS}}other{ទំនិញ {ITEMS}}}</translation>
 <translation id="3076865167425975822">ប្រព័ន្ធ​ប្រតិបត្តិការ</translation>
 <translation id="3080254622891793721">ក្រាហ្វិក</translation>
@@ -1209,6 +1211,7 @@
 <translation id="3156511682997763015">ខាទៅមុខ 10 វិនាទី</translation>
 <translation id="3157931365184549694">ស្តារ</translation>
 <translation id="3158539265159265653">ថាស</translation>
+<translation id="3162070126914310576">មិនអាចចុះឈ្មោះឧបករណ៍នេះនៅពេលនេះបានទេ ដោយសារអង្គភាពក្នុងស្ថាប័នរបស់អ្នកបានឈានដល់ដែនកំណត់នៃការចុះឈ្មោះដំបូងរបស់វា។ សូមទាក់ទងទៅអ្នកគ្រប់គ្រងរបស់អ្នក ដើម្បីទទួលបានជំនួយ។</translation>
 <translation id="3162559335345991374">Wi-Fi ដែលអ្នកកំពុងប្រើអាចតម្រូវឲ្យអ្នកទៅកាន់ទំព័រចុះឈ្មោះរបស់វា។</translation>
 <translation id="316638481603975524">អាចស្នើសុំដំឡើងកម្មវិធីវេប</translation>
 <translation id="3168744840365648658">បរិក្ខារ​វិទ្យុ</translation>
@@ -1329,7 +1332,6 @@
 <translation id="3369192424181595722">កំហុសម៉ោង</translation>
 <translation id="3371064404604898522">កំណត់ Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
 <translation id="337363190475750230">បានផ្តាច់ការផ្តល់ជូន</translation>
-<translation id="3375754925484257129">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព Chrome</translation>
 <translation id="3377144306166885718">ម៉ាស៊ីនមេបានប្រើ​កំណែ TLS ដែលលែងប្រើ។</translation>
 <translation id="3377188786107721145">កំហុសឆ្គងការវិភាគគោលការណ៍</translation>
 <translation id="3377642479079205807">ស្តើង</translation>
@@ -1792,6 +1794,7 @@
 <translation id="4151403195736952345">ប្រើលំនាំដើមសកល (ចាប់យក)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{ទំព័រទី 1}other{ទំព័រទី {COUNT}}}</translation>
 <translation id="4154277373259957087">ឥឡូវនេះ Chrome នឹង​ផ្ទៀងផ្ទាត់​ថាជាអ្នក មុននឹងបំពេញ​វិធីបង់ប្រាក់។ អ្នកអាច​ធ្វើបច្ចុប្បន្នភាពលក្ខណៈនេះបានគ្រប់ពេល​នៅក្នុង<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />។</translation>
+<translation id="415440494507469262">បញ្ចូលផ្ទាំងទៅតារាងប្រៀបធៀប</translation>
 <translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4165422751765527461">បើក​អត្ថបទមជ្ឈមណ្ឌល​ជំនួយ​នៅក្នុង​ផ្ទាំងថ្មី</translation>
 <translation id="4165986682804962316">ការកំណត់គេហទំព័រ</translation>
@@ -1944,6 +1947,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">ការបង្ហោះឯកសារទៅ Microsoft OneDrive ត្រូវបានផ្អាក</translation>
 <translation id="4390472908992056574">គែមខាងលើ</translation>
+<translation id="4395550503472021297">គោលការណ៍នេះកំពុងគ្រប់គ្រងឥរិយាបថលំនាំដើមនៃគោលការណ៍ខាងក្រោមនេះ៖ <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">បើកផ្ទាំងលោតឡើង ដើម្បីផ្ទៀងផ្ទាត់នៅលើគេហទំព័រធនាគាររបស់អ្នក</translation>
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4406896451731180161">លទ្ធផលស្វែងរក</translation>
@@ -2387,6 +2391,7 @@
 <translation id="5244521145258281926">គ្រប់គ្រង​គណនី Google, បើកដំណើរការ ដើម្បីគ្រប់គ្រង​ព័ត៌មាន ឯកជនភាព និង​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="5244732203286792411">កំពុង​ផ្ទុក...
     អាចចំណាយពេលមួយនាទី។</translation>
+<translation id="5248543496748975054">មិនបានបំពេញលេខកាតឬ?</translation>
 <translation id="5250209940322997802">"ភ្ជាប់​ទៅ​បណ្ដាញ"</translation>
 <translation id="52517543715119994">ស្វែងយល់អំពី​មុខងារ Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3397,6 +3402,7 @@
 <translation id="706960991003274248">តារាងប្រៀបធៀបត្រូវបានរក្សាទុកទៅក្នុងគណនីរបស់អ្នក <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">ការ​កំណត់ប្រព័ន្ធ</translation>
 <translation id="70705239631109039">ការតភ្ជាប់របស់អ្នក​មិនមានសុវត្ថិភាពពេញលេញទេ</translation>
+<translation id="7071122206197538392">តារាងប្រៀបធៀបថ្មី</translation>
 <translation id="7075452647191940183">សំណើមាន​ទំហំធំពេក</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4004,6 +4010,7 @@
 <translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="8118489163946903409">វិធីបង់ប្រាក់</translation>
 <translation id="8118506371121007279">ផ្ដល់មតិកែលម្អ</translation>
+<translation id="8120720167840853945">គោលការណ៍នេះមិនកំពុងគ្រប់គ្រងឥរិយាបថលំនាំដើមនៃគោលការណ៍ផ្សេងទៀតទេ។</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" មិនបានដំឡើងត្រឹមត្រូវនៅលើកុំព្យូទ័រ ឬបណ្តាញរបស់អ្នកទេ។ សូមស្នើឱ្យអ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកដោះស្រោយបញ្ហានេះ។</translation>
 <translation id="8131740175452115882">អះអាង</translation>
 <translation id="8133495915926741232">ជ្រើសរើស​ប្រភេទ​ប្រធានបទ​ទូលំទូលាយ​ដែល​អាច​ត្រូវ​បាន​ប្រើ​ដើម្បី​ជួយ​កំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ការបិទប្រភេទកាន់តែទូលំទូលាយក៏នឹង​ទប់ស្កាត់ប្រធានបទ​ទាក់ទងរបស់វាផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -4108,6 +4115,7 @@
 <translation id="8298115750975731693">Wi-Fi ដែលអ្នកកំពុងប្រើ (<ph name="WIFI_NAME" />) អាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
 <translation id="8301894345671534559">បញ្ចូល​​​កូដ</translation>
 <translation id="8303854710873047864">ផ្នែក "<ph name="SECTION" />" ត្រូវបានបង្ហាញ</translation>
+<translation id="8304912090860925649">តារាងប្រៀបធៀបថ្មី</translation>
 <translation id="830498451218851433">បត់​ពាក់កណ្ដាល</translation>
 <translation id="8308653357438598313">ការផ្សាយវីដេអូ​បន្តផ្ទាល់</translation>
 <translation id="8311895354659782580">បញ្ជី​អចលន​ទ្រព្យ</translation>

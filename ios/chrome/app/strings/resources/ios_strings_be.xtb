@@ -1150,6 +1150,7 @@
 <translation id="6160780110287872296">Спампаваць файл?</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6168647875670665004">Прапановы артыкулаў</translation>
+<translation id="6169031022444660352">Каб выдаліць усе захаваныя ўліковыя даныя, спачатку задайце код доступу на вашай прыладзе.</translation>
 <translation id="6173499589275053515">Пароль захаваны ў вашым Уліковым запісе Google (<ph name="EMAIL" />)</translation>
 <translation id="6187302354554850004">Апошняя сінхранізацыя: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Дата стварэння: <ph name="DATE" /></translation>
@@ -1201,6 +1202,7 @@
 <translation id="6355820205320395730">Ненадзейныя паролі лёгка падабраць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Падпісацца на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Выберыце пошукавую сістэму са спіса.</translation>
+<translation id="6368102751067608420">Выдаленне ўсіх даных менеджара пароляў</translation>
 <translation id="6374469231428023295">Паўтарыць спробу</translation>
 <translation id="6387994324662817823">Паролі захоўваюцца ў Менеджары пароляў Google толькі на гэтай прыладзе.</translation>
 <translation id="6404422529625928907">Адкрыць на Google Дыску</translation>
@@ -1245,6 +1247,7 @@
 <translation id="6518861084553706202">Укладкі будуць закрыты, а сярод выдаленых даных могуць быць паролі, гісторыя прагляду сайтаў, файлы cookie і іншае.</translation>
 <translation id="6523575793810663688">Паказаць</translation>
 <translation id="6524082013156754186">Захаваць ва ўліковым запісе</translation>
+<translation id="6524918542306337007">Рэжым інкогніта недаступны</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
 <translation id="6536759809440150308">Адкрыць групу "<ph name="GROUP_TITLE" />", групу з колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>

@@ -855,7 +855,6 @@
 <translation id="15916883652754430">Поставки за глас на системот</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> го оневозможи отстранувањето грешки на ADB, а тоа ќе го ресетира вашиот <ph name="DEVICE_TYPE" />. Направете бекап на датотеките пред рестартирањето.</translation>
 <translation id="1592126057537046434">Превод на „Брзи одговори“</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Дозволите се отстранети од <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> што не сте го посетиле некое време}one{Дозволите се отстранети од <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> што не сте ги посетиле некое време}other{Дозволите се отстранети од <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> што не сте ги посетиле некое време}}</translation>
 <translation id="1593594475886691512">Се форматира...</translation>
 <translation id="159359590073980872">Кеш на слика</translation>
 <translation id="1593926297800505364">Зачувај го начинот на плаќање</translation>
@@ -2700,7 +2699,6 @@
 <translation id="2855243985454069333">Ќе се избрише историјата од сите синхронизирани уреди</translation>
 <translation id="2855812646048059450">Најавување со <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
-<translation id="2856907950922663165">Да се исклучи шифрирањето URL-адреси?</translation>
 <translation id="2859741939921354763">Увезување лозинки на <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Помрднете ја вилицата надесно</translation>
 <translation id="2861301611394761800">Ажурирањето на системот заврши. Рестартирајте го системот.</translation>
@@ -5742,7 +5740,6 @@
 <translation id="504561833207953641">Се отвора во постојната сесија на прелистувачот.</translation>
 <translation id="504953514574706691">Картичката е изоставена од предложената група</translation>
 <translation id="5049614114599109018">Користи ја историјата на внесување</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Сајтов испрати многу известувања неодамна. Можете да го спречите да испраќа известувања во иднина.}one{Сајтовиве испратија многу известувања неодамна. Можете да ги спречите да испраќаат известувања во иднина.}other{Сајтовиве испратија многу известувања неодамна. Можете да ги спречите да испраќаат известувања во иднина.}}</translation>
 <translation id="5050330054928994520">Од текст во говор</translation>
 <translation id="5051461727068120271">Преземи непотврдена датотека</translation>
 <translation id="5051836348807686060">Проверката на правопис не е поддржана за јазиците што ги избравте</translation>
@@ -9659,7 +9656,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Прикажи сметка</translation>
 <translation id="7883792253546618164">Отпишете се во секое време.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Прегледајте 1 сајт што испрати многу известувања}one{Прегледајте {NUM_SITES} сајт што испратија многу известувања}other{Прегледајте {NUM_SITES} сајтови што испратија многу известувања}}</translation>
 <translation id="788453346724465748">Се вчитуваат податоци за сметката…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10321,7 +10317,6 @@
 <translation id="8339288417038613756">Големина на екран и текст</translation>
 <translation id="833986336429795709">Изберете апликација за да го отворите линков</translation>
 <translation id="8340547030807793004">Повеќе дејства за <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> кој неодамна испрати многу известувања}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> кои неодамна испратија многу известувања}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтови<ph name="END_BOLD" /> кои неодамна испратија многу известувања}}</translation>
 <translation id="8342221978608739536">Не го пробав</translation>
 <translation id="8342861492835240085">Изберете колекција</translation>
 <translation id="8345848587667658367">Сега можете да ги прегледувате неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот</translation>
@@ -11041,7 +11036,6 @@
 <translation id="8849001918648564819">Скриен</translation>
 <translation id="8849219423513870962">Откажете го отстранувањето на профилот на eSIM наречен <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> од <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Лицата што имаат пристап до вашиот интернет-сообраќај може да гледаат кои веб-страници ги отворате</translation>
 <translation id="8850251000316748990">Прикажи повеќе…</translation>
 <translation id="885246833287407341">Аргументи за функцијата API</translation>
 <translation id="8853586775156634952">Картичкава ќе се зачува само на овој уред</translation>

@@ -855,7 +855,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="15916883652754430">Configurações de voz do sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do adb, o que redefinirá seu <ph name="DEVICE_TYPE" />. Faça backup dos seus arquivos antes de reiniciar.</translation>
 <translation id="1592126057537046434">Tradução das Respostas rápidas</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Permissões removidas de <ph name="BEGIN_BOLD" />um site<ph name="END_BOLD" /> que você não acessa há algum tempo}one{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que você não acessa há algum tempo}other{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que você não acessa há algum tempo}}</translation>
 <translation id="1593594475886691512">Formatando...</translation>
 <translation id="159359590073980872">Cache de imagem</translation>
 <translation id="1593926297800505364">Salvar forma de pagamento</translation>
@@ -2699,7 +2698,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
-<translation id="2856907950922663165">Desativar a criptografia de URL?</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Mover a mandíbula para a direita</translation>
 <translation id="2861301611394761800">A atualização do sistema foi concluída. Reinicie o sistema.</translation>
@@ -5742,7 +5740,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="504561833207953641">Abrindo em uma sessão de navegador existente.</translation>
 <translation id="504953514574706691">A guia foi excluída do grupo sugerido</translation>
 <translation id="5049614114599109018">Usar o histórico de entrada</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}one{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}other{Estes sites enviaram muitas notificações recentemente. Você pode impedir que eles enviem outras.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Baixar arquivo não verificado</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é compatível com os idiomas selecionados</translation>
@@ -9661,7 +9658,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Ver conta</translation>
 <translation id="7883792253546618164">É possível cancelar a inscrição a qualquer momento.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Analise 1 site que enviou muitas notificações}one{Analise {NUM_SITES} site que enviou muitas notificações}other{Analise {NUM_SITES} sites que enviaram muitas notificações}}</translation>
 <translation id="788453346724465748">Carregando informações da conta…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{um item}one{# item}other{# itens}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10321,7 +10317,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8339288417038613756">Tamanho de exibição e de texto</translation>
 <translation id="833986336429795709">Para abrir este link, escolha um app</translation>
 <translation id="8340547030807793004">Mais ações para o dispositivo <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Revise <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou muitas notificações recentemente}one{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que enviou muitas notificações recentemente}other{Revise <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram muitas notificações recentemente}}</translation>
 <translation id="8342221978608739536">Não tentei</translation>
 <translation id="8342861492835240085">Selecione uma coleção</translation>
 <translation id="8345848587667658367">Agora, você pode ver apps, mídias, notificações e fotos recentes do seu smartphone</translation>
@@ -11041,7 +11036,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8849219423513870962">Cancelar a remoção do perfil <ph name="PROFILE_NAME" /> do eSIM</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">As pessoas com acesso ao seu tráfego da Internet podem saber os sites que você visita</translation>
 <translation id="8850251000316748990">Ver mais…</translation>
 <translation id="885246833287407341">Argumentos de função da API</translation>
 <translation id="8853586775156634952">O cartão será salvo apenas neste dispositivo</translation>

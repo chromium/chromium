@@ -1204,6 +1204,7 @@
 <translation id="3156511682997763015">10초 앞으로 이동</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158539265159265653">디스크</translation>
+<translation id="3162070126914310576">조직 단위의 초기 등록 한도에 도달하여 이 기기를 지금 등록할 수 없습니다. 관리자에게 문의하여 도움을 받으세요.</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="316638481603975524">웹 앱 설치를 요청할 수 있음</translation>
 <translation id="3168744840365648658">라디오 장비</translation>
@@ -1324,7 +1325,6 @@
 <translation id="3369192424181595722">시계 오류</translation>
 <translation id="3371064404604898522">Chrome을 기본 브라우저로 설정</translation>
 <translation id="337363190475750230">사용 중단됨</translation>
-<translation id="3375754925484257129">Chrome 안전 확인 실행</translation>
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>
 <translation id="3377188786107721145">정책 파싱 오류</translation>
 <translation id="3377642479079205807">가늘게</translation>
@@ -1938,6 +1938,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive에 대한 파일 업로드가 일시중지됨</translation>
 <translation id="4390472908992056574">브림</translation>
+<translation id="4395550503472021297">이 정책은 <ph name="POLICIES" /> 정책의 기본 동작을 제어합니다.</translation>
 <translation id="4397978002248035985">은행 웹사이트에서 인증하라는 팝업이 열립니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
@@ -2380,6 +2381,7 @@
 <translation id="5244521145258281926">Google 계정 관리 버튼, Google 계정에서 정보, 개인 정보 보호, 보안 설정을 관리하려면 활성화하세요.</translation>
 <translation id="5244732203286792411">로드 중입니다.
     시간이 조금 걸릴 수 있습니다.</translation>
+<translation id="5248543496748975054">카드 번호가 입력되지 않았나요?</translation>
 <translation id="5250209940322997802">'네트워크에 연결'</translation>
 <translation id="52517543715119994">Chrome 기능 자세히 알아보기</translation>
 <translation id="5251803541071282808">클라우드</translation>
@@ -3995,6 +3997,7 @@
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8118489163946903409">결제 수단</translation>
 <translation id="8118506371121007279">의견 보내기</translation>
+<translation id="8120720167840853945">이 정책은 다른 정책의 기본 동작을 제어하지 않습니다.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8133495915926741232">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요. 더 광범위한 카테고리를 사용 중지하면 관련 주제도 차단됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

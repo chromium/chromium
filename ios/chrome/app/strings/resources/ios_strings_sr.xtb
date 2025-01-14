@@ -1248,6 +1248,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6518861084553706202">Картице ће бити затворене, а избрисани подаци могу да обухватају лозинке, историју прегледања, колачиће и друго.</translation>
 <translation id="6523575793810663688">Покажи ми како</translation>
 <translation id="6524082013156754186">Сачувај на налогу</translation>
+<translation id="6524918542306337007">Режим без архивирања није доступан</translation>
 <translation id="6527303717912515753">Дели</translation>
 <translation id="6532106788206463496">Сачувај промене</translation>
 <translation id="6536759809440150308">Отворите групу <ph name="GROUP_TITLE" />, број картица у групи је <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>

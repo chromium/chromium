@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 个密码}other{{COUNT} 个密码}}</translation>
 <translation id="1102759278139578486">无法下载主要节点标注文件。请稍后再试。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">您将立即失去对此标签页分组的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="1106350001632362876">提高阈值</translation>
 <translation id="1107482171728500359">共享麦克风</translation>
 <translation id="110850812463801904">手动连接到 OneDrive</translation>
@@ -788,6 +789,7 @@
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1549966883323105187">更快地获取您已保存的密码</translation>
 <translation id="1550656959113606473">默认 Chrome</translation>
+<translation id="1552065819535218588">Chrome 将停止将来自 <ph name="URL" /> 的通知标记为垃圾通知</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">管理扩展程序</translation>
 <translation id="1553538517812678578">无限制</translation>
@@ -848,7 +850,6 @@
 <translation id="15916883652754430">系统语音设置</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 调试，这会重置您的 <ph name="DEVICE_TYPE" />。请先备份您的文件，然后再重启设备。</translation>
 <translation id="1592126057537046434">快速解答翻译</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{已撤消您有段时间未访问过的 <ph name="BEGIN_BOLD" />1 个网站<ph name="END_BOLD" />的权限}other{已撤消您有段时间未访问过的 <ph name="BEGIN_BOLD" />{NUM_SITES} 个网站<ph name="END_BOLD" />的权限}}</translation>
 <translation id="1593594475886691512">正在格式化…</translation>
 <translation id="159359590073980872">图片缓存</translation>
 <translation id="1593926297800505364">保存付款方式</translation>
@@ -1686,6 +1687,7 @@
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2173801458090845390">向此设备添加申请 ID</translation>
 <translation id="2175384018164129879">管理搜索引擎和网站搜索(&amp;M)</translation>
+<translation id="2175526076681939329">使用主键</translation>
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="217631816678106981">请勿粘贴</translation>
@@ -2678,7 +2680,6 @@
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
-<translation id="2856907950922663165">关闭网址加密？</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">将下巴向右移动</translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
@@ -3077,6 +3078,7 @@
 <translation id="3159978855457658359">修改设备名称</translation>
 <translation id="3160928651883997588">VPN 偏好设置</translation>
 <translation id="3161522574479303604">所有语言</translation>
+<translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
 <translation id="3162766632262775911">始终允许使用 V8 优化工具</translation>
 <translation id="3162853326462195145">学校账号</translation>
 <translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
@@ -3404,6 +3406,7 @@
 <translation id="3407392651057365886">预加载更多网页。其他网站请求访问的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="3407967630066378878">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3408555740610481810">正在使用摄像头和麦克风</translation>
+<translation id="3409157109901479672">左侧</translation>
 <translation id="3409513286451883969">将所选内容翻译为<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="3412265149091626468">跳到所选部分</translation>
 <translation id="3413122095806433232">CA 证书颁发者：<ph name="LOCATION" /></translation>
@@ -4688,6 +4691,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> 位成员</translation>
 <translation id="4290898381118933198">滑动即可浏览各个页面</translation>
 <translation id="4291265871880246274">登录对话框</translation>
+<translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="4294392694389031609">“<ph name="FILE_NAME" />”已从下载记录中删除，但仍保留在您的设备上</translation>
 <translation id="4295072614469448764">应用已可在您的终端上使用，且可能在启动器中显示图标。</translation>
@@ -5716,7 +5720,6 @@
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
 <translation id="504953514574706691">已从建议的分组中排除标签页</translation>
 <translation id="5049614114599109018">使用输入历史记录</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{这个网站最近发送了很多通知。您可以阻止它继续发送通知。}other{这些网站最近发送了很多通知。您可以阻止它们继续发送通知。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">下载未经验证的文件</translation>
 <translation id="5051836348807686060">所选语言不支持拼写检查</translation>
@@ -5856,6 +5859,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，用<ph name="DEFAULT_SEARCH_ENGINE_NAME" />执行搜索</translation>
 <translation id="5139823398361067371">为您的安全密钥输入 PIN 码。如果您不知道 PIN 码，则需重置此安全密钥。</translation>
 <translation id="5139955368427980650">打开(&amp;O)</translation>
+<translation id="5140742218917419811">要使用的键</translation>
 <translation id="5141421572306659464">主账号</translation>
 <translation id="5141957579434225843">例如，使用 oà、oè、uỳ 而非 òa、òe、ùy</translation>
 <translation id="5143374789336132547">“<ph name="EXTENSION_NAME" />”扩展程序更改了您点击“主页”按钮后系统显示的页面。</translation>
@@ -5874,6 +5878,7 @@
 <translation id="5149602533174716626">复制视频帧(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
 <translation id="5151354047782775295">请释放磁盘空间，否则系统可能会自动删除某些数据</translation>
+<translation id="5153074793829217329">使用键盘或数字键盘控制鼠标光标</translation>
 <translation id="5153234146675181447">移除手机</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
@@ -7962,6 +7967,7 @@
 <translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
+<translation id="6689948774466767379">鼠标键</translation>
 <translation id="6690659332373509948">无法解析文件：<ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">前进(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 页}other{{COUNT} 页}}</translation>
@@ -9043,6 +9049,7 @@
 <translation id="746861123368584540">扩展程序已加载完毕</translation>
 <translation id="7469612367552312334">已开启 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件访问和共享内存 (RAM)</translation>
+<translation id="7470284766345262333">此账号未与 Google 关联，因此无法使用 Chrome 同步等功能</translation>
 <translation id="7470424110735398630">允许查看您的剪贴板</translation>
 <translation id="747114903913869239">错误：无法对扩展程序进行解码</translation>
 <translation id="7471520329163184433">减速</translation>
@@ -9628,7 +9635,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看账号</translation>
 <translation id="7883792253546618164">可随时退订。</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{查看 1 个发送了很多通知的网站}other{查看 {NUM_SITES} 个发送了很多通知的网站}}</translation>
 <translation id="788453346724465748">正在加载账号信息…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 项内容}other{# 项内容}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
@@ -10049,6 +10055,7 @@
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8169177848833352618">很抱歉，此机器不符合安装 Bruschetta 的要求。错误代码为 <ph name="ERROR" />。</translation>
+<translation id="8172303073969862496">右侧</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8176332201990304395">粉色和白色</translation>
 <translation id="8176529144855282213">如需开启麦克风使用权限，请开启设备上的实体麦克风开关</translation>
@@ -10288,7 +10295,6 @@
 <translation id="8339288417038613756">显示大小和文字大小</translation>
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
 <translation id="8340547030807793004">显示可对“<ph name="DEVICE" />”执行的更多操作</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />1 个网站<ph name="END_BOLD" />}other{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 个网站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
@@ -11007,7 +11013,6 @@
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> 个（共 <ph name="CHECKING" /> 个）</translation>
-<translation id="8849541329228110748">对您的互联网流量有访问权限的各方可以看到您访问的网页</translation>
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函数参数</translation>
 <translation id="8853586775156634952">此卡的信息将仅保存到此设备上</translation>

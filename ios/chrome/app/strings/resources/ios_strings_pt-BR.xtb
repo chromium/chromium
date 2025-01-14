@@ -1150,6 +1150,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6160780110287872296">Baixar o arquivo?</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6168647875670665004">Artigos sugeridos</translation>
+<translation id="6169031022444660352">Para excluir todas as credenciais salvas, defina uma senha no dispositivo.</translation>
 <translation id="6173499589275053515">Senha salva na sua Conta do Google <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Criado em <ph name="DATE" /></translation>
@@ -1201,6 +1202,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6355820205320395730">Senhas fracas são fáceis de adivinhar. Você precisa criar senhas fortes. <ph name="BEGIN_LINK" />Confira mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Selecione um mecanismo de pesquisa na lista.</translation>
+<translation id="6368102751067608420">Para excluir todos os dados do Gerenciador de senhas</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6387994324662817823">As senhas são salvas no Gerenciador de senhas do Google somente neste dispositivo.</translation>
 <translation id="6404422529625928907">Abrir no Google Drive</translation>
@@ -1245,6 +1247,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6518861084553706202">As guias serão fechadas, e os dados excluídos podem incluir senhas, histórico de navegação, cookies e muito mais.</translation>
 <translation id="6523575793810663688">Me ajude a fazer isso</translation>
 <translation id="6524082013156754186">Salvar na conta</translation>
+<translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6532106788206463496">Salvar alterações</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>

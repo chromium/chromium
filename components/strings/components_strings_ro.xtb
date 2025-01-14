@@ -1204,6 +1204,7 @@
 <translation id="3156511682997763015">Derulează înainte cu 10 secunde</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158539265159265653">Disc</translation>
+<translation id="3162070126914310576">Dispozitivul nu poate fi înregistrat acum deoarece unitatea organizațională a atins limita inițială pentru înregistrări. Contactează administratorul pentru asistență.</translation>
 <translation id="3162559335345991374">Rețeaua Wi-Fi pe care o folosești poate solicita accesarea paginii de conectare.</translation>
 <translation id="316638481603975524">Poate să solicite instalarea aplicațiilor web</translation>
 <translation id="3168744840365648658">Echipamente radio</translation>
@@ -1324,7 +1325,6 @@
 <translation id="3369192424181595722">Eroare de ceas</translation>
 <translation id="3371064404604898522">Setează Chrome ca browser prestabilit</translation>
 <translation id="337363190475750230">Scos din uz</translation>
-<translation id="3375754925484257129">Rulează verificarea de siguranță pentru Chrome</translation>
 <translation id="3377144306166885718">Serverul a folosit o versiune TLS învechită.</translation>
 <translation id="3377188786107721145">Eroare la analizarea politicii</translation>
 <translation id="3377642479079205807">Subțire</translation>
@@ -1938,6 +1938,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Încărcarea fișierelor în Microsoft OneDrive a fost întreruptă</translation>
 <translation id="4390472908992056574">Bordură</translation>
+<translation id="4395550503472021297">Această politică stabilește comportamentul prestabilit al următoarelor politici: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Deschide o fereastră pop-up pentru confirmare pe site-ul băncii</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
@@ -2380,6 +2381,7 @@
 <translation id="5244521145258281926">Butonul Gestionează Contul Google, activează pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="5244732203286792411">Se încarcă…
     Încărcarea poate dura câteva secunde.</translation>
+<translation id="5248543496748975054">Numărul cardului nu este completat?</translation>
 <translation id="5250209940322997802">„Conectează-te la rețea”</translation>
 <translation id="52517543715119994">Află despre funcțiile Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3996,6 +3998,7 @@ Detalii suplimentare:
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8118489163946903409">Metodă de plată</translation>
 <translation id="8118506371121007279">Trimite feedback</translation>
+<translation id="8120720167840853945">Această politică nu stabilește comportamentul prestabilit al altor politici.</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />” nu a fost instalat corect pe computer sau în rețea. Contactează administratorul IT pentru a remedia această problemă.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8133495915926741232">Alege categoriile vaste de subiecte care pot fi folosite pentru a personaliza anunțurile. Dacă dezactivezi o categorie mai vastă, vei bloca și subiectele conexe. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

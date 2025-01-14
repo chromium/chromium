@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 лозинка}one{{COUNT} лозинка}few{{COUNT} лозинке}other{{COUNT} лозинки}}</translation>
 <translation id="1102759278139578486">Преузимање фајлова са коментарима о главном чвору није успело. Пробајте поново касније.</translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Одмах ћете изгубити приступ овој групи картица и она ће бити избрисана са свих уређаја</translation>
 <translation id="1106350001632362876">Повећајте граничну вредност</translation>
 <translation id="1107482171728500359">Дели микрофон</translation>
 <translation id="110850812463801904">Ручно повежите са OneDrive-ом</translation>
@@ -853,7 +854,6 @@
 <translation id="15916883652754430">Гласовна подешавања система</translation>
 <translation id="1592074621872221573">Сајт <ph name="MANAGER" /> је онемогућио ADB отклањање грешака, због чега ће се <ph name="DEVICE_TYPE" /> ресетовати. Направите резервне копије датотека пре рестартовања.</translation>
 <translation id="1592126057537046434">Превод за брзе одговоре</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Дозволе су уклоњене са <ph name="BEGIN_BOLD" />1 сајта<ph name="END_BOLD" /> који дуго нисте посетили}one{Дозволе су уклоњене са <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> који дуго нисте посетили}few{Дозволе су уклоњене са <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> које дуго нисте посетили}other{Дозволе су уклоњене са <ph name="BEGIN_BOLD" />{NUM_SITES} сајтова<ph name="END_BOLD" /> које дуго нисте посетили}}</translation>
 <translation id="1593594475886691512">Форматирање...</translation>
 <translation id="159359590073980872">Кеш слике</translation>
 <translation id="1593926297800505364">Сачувајте начин плаћања</translation>
@@ -1692,6 +1692,7 @@
 <translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2173801458090845390">Додајте ИД захтева на овај уређај</translation>
 <translation id="2175384018164129879">&amp;Управљајте претраживачима и претрагом сајта</translation>
+<translation id="2175526076681939329">Користи примарне тастере</translation>
 <translation id="217576141146192373">Додавање штампача није успело. Проверите конфигурацију штампача и пробајте поново.</translation>
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="217631816678106981">Не лепи</translation>
@@ -2685,7 +2686,6 @@
 <translation id="2855243985454069333">Брише историју са свих синхронизованих уређаја</translation>
 <translation id="2855812646048059450">Пријавите се на <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Направите нови контејнер</translation>
-<translation id="2856907950922663165">Желите да искључите шифровање URL-ова?</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Померите вилицу удесно</translation>
 <translation id="2861301611394761800">Ажурирање система је довршено. Рестартујте систем.</translation>
@@ -3414,6 +3414,7 @@
 <translation id="3407392651057365886">Више страница се предучитава. Странице могу да буду предучитане преко Google сервера када то траже други сајтови.</translation>
 <translation id="3407967630066378878">Да бисте подесили отисак прста, нека дете додирне сензор за отисак прста на левој страни <ph name="DEVICE_TYPE" /> уређаја. Подаци о отиску прста детета се безбедно чувају на овом <ph name="DEVICE_TYPE" /> уређају и увек остају на њему.</translation>
 <translation id="3408555740610481810">Камера и микрофон се користе</translation>
+<translation id="3409157109901479672">Лева страна</translation>
 <translation id="3409513286451883969">Преведи избор на: <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Пређи на избор</translation>
 <translation id="3413122095806433232">CA издаваоци: <ph name="LOCATION" /></translation>
@@ -4699,6 +4700,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> члан</translation>
 <translation id="4290898381118933198">Превуците да бисте прелазили с једне странице на другу</translation>
 <translation id="4291265871880246274">Дијалог за пријављивање</translation>
+<translation id="4292613336957320546">Убрзање</translation>
 <translation id="429312253194641664">Сајт пушта медијски садржај</translation>
 <translation id="4294392694389031609">Фајл <ph name="FILE_NAME" /> је избрисан из историје преузимања, али је и даље на уређају</translation>
 <translation id="4295072614469448764">Апликација је доступна на терминалу. Можда имате и икону у Покретачу.</translation>
@@ -5728,7 +5730,6 @@
 <translation id="504561833207953641">Отвара се у постојећој сесији прегледача.</translation>
 <translation id="504953514574706691">Картица је изузета из предложене групе</translation>
 <translation id="5049614114599109018">Користи историју уноса</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Овај сајт је недавно послао много обавештења. Можете да спречите тај сајт да шаље будућа обавештења.}one{Ови сајтови су недавно послали много обавештења. Можете да спречите те сајтове да шаљу будућа обавештења.}few{Ови сајтови су недавно послали много обавештења. Можете да спречите те сајтове да шаљу будућа обавештења.}other{Ови сајтови су недавно послали много обавештења. Можете да спречите те сајтове да шаљу будућа обавештења.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Преузми неверификовани фајл</translation>
 <translation id="5051836348807686060">Провера правописа није подржана за језике које сте изабрали</translation>
@@ -5868,6 +5869,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> претрага</translation>
 <translation id="5139823398361067371">Унесите PIN за безбедносни кључ. Ако не знате PIN, треба да ресетујете безбедносни кључ.</translation>
 <translation id="5139955368427980650">&amp;Отвори</translation>
+<translation id="5140742218917419811">Тастери које треба да користите</translation>
 <translation id="5141421572306659464">Примарни налог</translation>
 <translation id="5141957579434225843">На пример, користите oà, oè, uỳ уместо òa, òe, ùy</translation>
 <translation id="5143374789336132547">Додатак „<ph name="EXTENSION_NAME" />“ је променио страницу која се приказује када кликнете на дугме Почетак.</translation>
@@ -5886,6 +5888,7 @@
 <translation id="5149602533174716626">Копирај&amp; кадар видеа</translation>
 <translation id="5150254825601720210">Назив SSL сервера Netscape сертификата</translation>
 <translation id="5151354047782775295">Ослободите простор на диску или ће одређени подаци можда аутоматски бити избрисани</translation>
+<translation id="5153074793829217329">Користите тастатуру или нумеричку тастатуру за контролу курсора миша</translation>
 <translation id="5153234146675181447">Заборављање телефона</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Напредна подешавања за <ph name="PRINTING_DESTINATION" /></translation>
@@ -7981,6 +7984,7 @@
 <translation id="6689714331348768690">Позовите дете <ph name="SUPERVISED_USER_NAME" /> да дође до рачунара. Дете ће прочитати неколико фраза на овом екрану да бисмо направили гласовни модел.
     <ph name="BR" />
     Ако је детету <ph name="SUPERVISED_USER_NAME" /> потребна помоћ са читањем, нека понавља за вама. Шапућите даље од микрофона да би Помоћник научио дететов, а не ваш глас.</translation>
+<translation id="6689948774466767379">Тастери миша</translation>
 <translation id="6690659332373509948">Није могуће рашчланити датотеку: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">Напре&amp;д</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} странице}other{{COUNT} страница}}</translation>
@@ -9648,7 +9652,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Прикажи налог</translation>
 <translation id="7883792253546618164">Опозовите пријаву било када.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Прегледајте 1 сајт који је послао много обавештења}one{Прегледајте {NUM_SITES} сајт који је послао много обавештења}few{Прегледајте {NUM_SITES} сајта који су послали много обавештења}other{Прегледајте {NUM_SITES} сајтова који су послали много обавештења}}</translation>
 <translation id="788453346724465748">Учитавају се информације о налогу…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ставка}one{# ставка}few{# ставке}other{# ставки}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10069,6 +10072,7 @@
 <translation id="8168435359814927499">Садржај</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додај картицу на листу за читање}one{Додај картице на листу за читање}few{Додај картице на листу за читање}other{Додај картице на листу за читање}}</translation>
 <translation id="8169177848833352618">Нажалост, ова машина не испуњава услове за инсталирање Bruschetta-е. Кôд грешке је <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Десна страна</translation>
 <translation id="8174047975335711832">Информације о уређају</translation>
 <translation id="8176332201990304395">Ружичаста и бела</translation>
 <translation id="8176529144855282213">Да бисте укључили приступ микрофону, укључите физички прекидач за микрофон на уређају</translation>
@@ -10308,7 +10312,6 @@
 <translation id="8339288417038613756">Величина приказа и текста</translation>
 <translation id="833986336429795709">Изаберите апликацију да бисте отворили овај линк</translation>
 <translation id="8340547030807793004">Још радњи за <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}few{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> која су недавно послала много обавештења}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтова<ph name="END_BOLD" /> који су недавно послали много обавештења}}</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
 <translation id="8342861492835240085">Изаберите колекцију</translation>
 <translation id="8345848587667658367">Сада можете да прегледате недавне слике, медије, обавештења и апликације на телефону</translation>
@@ -11029,7 +11032,6 @@
 <translation id="8849001918648564819">Скривено</translation>
 <translation id="8849219423513870962">Откажите уклањање eSIM профила <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> од <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Они који имају приступ вашем интернет саобраћају могу да виде које веб-сајтове посећујете</translation>
 <translation id="8850251000316748990">Прикажи више...</translation>
 <translation id="885246833287407341">Променљиве за API функцију</translation>
 <translation id="8853586775156634952">Ова картица ће се сачувати само на овом уређају</translation>

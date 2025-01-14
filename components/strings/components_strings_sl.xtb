@@ -1204,6 +1204,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3156511682997763015">Preskok naprej za 10 sekund</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Te naprave trenutno ni mogoče včlaniti, ker je vaša organizacijska enota dosegla začetno omejitev včlanitev. Za pomoč se obrnite na skrbnika.</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="316638481603975524">Lahko zahteva namestitev spletnih aplikacij</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
@@ -1324,7 +1325,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3369192424181595722">Napaka ure</translation>
 <translation id="3371064404604898522">Nastavi Chrome kot privzeti brskalnik</translation>
 <translation id="337363190475750230">Nepripravljen</translation>
-<translation id="3375754925484257129">Zaženi varnostno preverjanje v Chromu</translation>
 <translation id="3377144306166885718">Strežnik je uporabljal zastarelo različico standarda TLS.</translation>
 <translation id="3377188786107721145">Napaka pri razčlenjevanju pravilnika</translation>
 <translation id="3377642479079205807">Tanko</translation>
@@ -1938,6 +1938,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Nalaganje datotek v Microsoft OneDrive je bilo začasno zaustavljeno</translation>
 <translation id="4390472908992056574">Polna podlaga</translation>
+<translation id="4395550503472021297">Ta pravilnik nadzira privzeto delovanje teh pravilnikov: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Odpre pojavno okno za preverjanje na spletnem mestu banke</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4406896451731180161">rezultati iskanja</translation>
@@ -2380,6 +2381,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5244521145258281926">Upravljanje računa Google, aktivirajte, če želite upravljati podatke, zasebnost in varnost v računu Google</translation>
 <translation id="5244732203286792411">Nalaganje …
     To lahko traja kakšno minuto.</translation>
+<translation id="5248543496748975054">Številka kartice ni izpolnjena?</translation>
 <translation id="5250209940322997802">»Vzpostavite povezavo z omrežjem«</translation>
 <translation id="52517543715119994">Več o funkcijah Chroma</translation>
 <translation id="5251803541071282808">Oblak</translation>
@@ -3996,6 +3998,7 @@ Dodatne podrobnosti:
 <translation id="8116925261070264013">Prezrto</translation>
 <translation id="8118489163946903409">Plačilno sredstvo</translation>
 <translation id="8118506371121007279">Pošiljanje povratnih informacij</translation>
+<translation id="8120720167840853945">Ta pravilnik ne nadzira privzetega delovanja drugih pravilnikov.</translation>
 <translation id="8127301229239896662">Programska oprema »<ph name="SOFTWARE_NAME" />« ni bila pravilno nameščena v računalniku ali omrežju. Obrnite se na skrbnika za IT glede odpravljanja te težave.</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8133495915926741232">Izberite, katere širše kategorije tem se lahko uporabljajo za lažje osebno prilagajanje oglasov. Če izklopite širšo kategorijo, bodo blokirane tudi njene sorodne teme. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>

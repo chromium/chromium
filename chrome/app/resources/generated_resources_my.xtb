@@ -793,6 +793,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> သည် <ph name="VOLUME_NAME" /> သို့ ဝင်ရောက်သုံးခွင့် ရလိုသည်။ ၎င်းသည် သင့်ဖိုင်များအား ပြင်ဆင်ခြင်း သို့မဟုတ် ဖျက်ပစ်ခြင်းများ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1549966883323105187">သိမ်းထားသော စကားဝှက်များသို့ ပိုမြန်စွာ သွားနိုင်သည်</translation>
 <translation id="1550656959113606473">မူရင်း Chrome</translation>
+<translation id="1552065819535218588">Chrome သည် <ph name="URL" /> မှ အကြောင်းကြားချက်များကို စပမ်းအဖြစ် အလံပြတော့မည်မဟုတ်ပါ</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> အသုံးပြုရန် <ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲက ရှာဖွေမှုစနစ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="1552752544932680961">အိတ်စတန်းရှင်း စီမံမည်</translation>
 <translation id="1553538517812678578">အကန့်အသတ်မရှိ</translation>
@@ -853,7 +854,6 @@
 <translation id="15916883652754430">စနစ်၏အသံ ဆက်တင်များ</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်မည့် ADB အမှားရှာပြင်ခြင်းကို ပိတ်ထားသည်။ ပြန်မစတင်မီ သင့်ဖိုင်များကို အရန်သိမ်းပါ။</translation>
 <translation id="1592126057537046434">‘အမြန်အဖြေများ’ ဘာသာပြန်ဆိုခြင်း</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{လတ်တလော သင်ဝင်မကြည့်ဖြစ်သော <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် ၁ ခု<ph name="END_BOLD" /> ထံမှ ခွင့်ပြုချက်များ ဖယ်ရှားလိုက်သည်}other{လတ်တလော သင်ဝင်မကြည့်ဖြစ်သော <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် {NUM_SITES} ခု<ph name="END_BOLD" /> ထံမှ ခွင့်ပြုချက်များ ဖယ်ရှားလိုက်သည်}}</translation>
 <translation id="1593594475886691512">ဖိုင်စီနေ...</translation>
 <translation id="159359590073980872">ပုံ ကက်ရှ်</translation>
 <translation id="1593926297800505364">ငွေပေးချေနည်းလမ်းကို သိမ်းဆည်းပါ</translation>
@@ -2698,7 +2698,6 @@
 <translation id="2855243985454069333">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ဖျက်သည်</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2856776373509145513">ကွန်တိန်နာအသစ် ပြုလုပ်ခြင်း</translation>
-<translation id="2856907950922663165">URL အသွင်ဝှက်ခြင်းကို ပိတ်မလား။</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> သို့ စကားဝှက်များ ထည့်သွင်းရန်</translation>
 <translation id="2860710618359053450">မေးရိုးကို ညာဘက်သို့ ရွဲ့ပါ</translation>
 <translation id="2861301611394761800">စနစ် မွမ်းမံမှု ပြီးဆုံးသွားပြီ။ ကျေးဇူးပြုပြီး စနစ်ကို ပြန်ဖွင့်ပါ။</translation>
@@ -5739,7 +5738,6 @@
 <translation id="504561833207953641">လက်ရှိ ဘရောင်ဇာစက်ရှင်တွင် ဖွင့်နေသည်</translation>
 <translation id="504953514574706691">တဘ်ကို အကြံပြုထားသော အုပ်စုမှ ဖယ်ရှားလိုက်သည်</translation>
 <translation id="5049614114599109018">ထည့်သွင်းသည့်မှတ်တမ်းကို အသုံးပြုရန်</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{ဤဝဘ်ဆိုက်က အကြောင်းကြားချက်များစွာကို မကြာသေးမီက ပို့ထားသည်။ ၎င်းကို နောက်ထပ်အကြောင်းကြားချက်များ မပို့ရန် ရပ်နိုင်သည်။}other{ဤဝဘ်ဆိုက်များက အကြောင်းကြားချက်များစွာကို မကြာသေးမီက ပို့ထားသည်။ ၎င်းတို့ကို နောက်ထပ်အကြောင်းကြားချက်များ မပို့ရန် ရပ်နိုင်သည်။}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">အတည်ပြုမထားသောဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="5051836348807686060">သင်ရွေးချယ်ထားသော ဘာသာစကားများအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ပံ့ပိုးမထားပါ</translation>
@@ -9652,7 +9650,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">အကောင့်ကို ကြည့်ရန်</translation>
 <translation id="7883792253546618164">မှာယူမှုကို အချိန်မရွေး ရပ်ဆိုင်းနိုင်သည်။</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{မကြာသေးမီက အကြောင်းကြားချက်များစွာ ပို့ထားသည့် ဝဘ်ဆိုက် ၁ ခု ကို ပြန်ကြည့်ရန်}other{မကြာသေးမီက အကြောင်းကြားချက်များစွာ ပို့ထားသည့် ဝဘ်ဆိုက် {NUM_SITES} ခု ကို ပြန်ကြည့်ရန်}}</translation>
 <translation id="788453346724465748">အကောင့်အချက်အလက်ကို ဖွင့်နေသည်...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10311,7 +10308,6 @@
 <translation id="8339288417038613756">ပြသမှုနှင့် စာသား အရွယ်အစား</translation>
 <translation id="833986336429795709">ဤလင့်ခ်ကို ဖွင့်ရန် အက်ပ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် ၁ ခု<ph name="END_BOLD" /> ကို ပြန်ကြည့်ရန်}other{မကြာသေးမီက အကြောင်းကြားချက်များစွာပို့ထားသည့် <ph name="BEGIN_BOLD" />ဝဘ်ဆိုက် {NUM_SITES} ခု<ph name="END_BOLD" /> ကို ပြန်ကြည့်ရန်}}</translation>
 <translation id="8342221978608739536">စမ်းမထားပါ</translation>
 <translation id="8342861492835240085">သိမ်းဆည်းထားသည်များကို ရွေးရန်</translation>
 <translation id="8345848587667658367">သင့်ဖုန်း၏ လတ်တလော ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ယခု ကြည့်နိုင်ပြီ</translation>
@@ -11030,7 +11026,6 @@
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ဟု အမည်ပေးထားသော eSIM ပရိုဖိုင်ကို မဖယ်ရှားတော့ရန်</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> အနက် <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">သင့်အင်တာနက်စီးဆင်းမှုကို ကြည့်နိုင်သူများသည် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များကို မြင်နိုင်သည်</translation>
 <translation id="8850251000316748990">ပိုကြည့်ရန်...</translation>
 <translation id="885246833287407341">API လုပ်ဆောင်ချက် အကြောင်းပြချက်များ</translation>
 <translation id="8853586775156634952">ဤကတ်ကို ယခုစက်တစ်ခုတွင်သာ သိမ်းပါမည်</translation>

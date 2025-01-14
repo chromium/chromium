@@ -1204,6 +1204,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3156511682997763015">Avanti di 10 secondi</translation>
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158539265159265653">Disco</translation>
+<translation id="3162070126914310576">Al momento non è possibile registrare questo dispositivo perché l'unità organizzativa ha raggiunto il limite di registrazione iniziale. Per ricevere assistenza, contatta l'amministratore.</translation>
 <translation id="3162559335345991374">La rete Wi-Fi in uso potrebbe richiedere la visita della relativa pagina di accesso.</translation>
 <translation id="316638481603975524">Può chiedere di installare le app web</translation>
 <translation id="3168744840365648658">Apparecchiature radio</translation>
@@ -1321,7 +1322,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3369192424181595722">Errore dell'orologio</translation>
 <translation id="3371064404604898522">Imposta Chrome come browser predefinito</translation>
 <translation id="337363190475750230">Deprovisioning effettuato</translation>
-<translation id="3375754925484257129">Esegui il controllo di sicurezza di Chrome</translation>
 <translation id="3377144306166885718">Il server usava una versione obsoleta di TLS.</translation>
 <translation id="3377188786107721145">Errore di analisi del criterio</translation>
 <translation id="3377642479079205807">Sottile</translation>
@@ -2377,6 +2377,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5244521145258281926">Pulsante Gestisci l'Account Google, attiva per gestire le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
 <translation id="5244732203286792411">Caricamento in corso…
     Questa operazione potrebbe richiedere un minuto.</translation>
+<translation id="5248543496748975054">Il numero della carta non è stato inserito?</translation>
 <translation id="5250209940322997802">"Collegati alla rete"</translation>
 <translation id="52517543715119994">Scopri di più sulle funzionalità di Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>

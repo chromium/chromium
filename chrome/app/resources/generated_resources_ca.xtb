@@ -854,7 +854,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="15916883652754430">Configuració de la veu del sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ha desactivat la depuració d'ADB, cosa que restablirà el dispositiu <ph name="DEVICE_TYPE" />. Crea una còpia de seguretat dels fitxers abans de reiniciar.</translation>
 <translation id="1592126057537046434">Traducció de Respostes ràpides</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{S'han suprimit els permisos d’<ph name="BEGIN_BOLD" />1 lloc web<ph name="END_BOLD" /> que fa temps que no visites}other{S'han suprimit els permisos de <ph name="BEGIN_BOLD" />{NUM_SITES} llocs web<ph name="END_BOLD" /> que fa temps que no visites}}</translation>
 <translation id="1593594475886691512">S'està formatant...</translation>
 <translation id="159359590073980872">Memòria cau d'imatges</translation>
 <translation id="1593926297800505364">Desa la forma de pagament</translation>
@@ -2687,7 +2686,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
 <translation id="2855812646048059450">Inicia la sessió amb <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Crea un contenidor nou</translation>
-<translation id="2856907950922663165">Vols desactivar l'encriptació d'URL?</translation>
 <translation id="2859741939921354763">Importa les contrasenyes a <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Moure la mandíbula cap a la dreta</translation>
 <translation id="2861301611394761800">Actualització del sistema completada. Reinicieu el sistema.</translation>
@@ -3086,6 +3084,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3159978855457658359">Edita el nom del dispositiu</translation>
 <translation id="3160928651883997588">Preferències de VPN</translation>
 <translation id="3161522574479303604">Tots els idiomes</translation>
+<translation id="3162070126914310576">Aquest dispositiu no es pot inscriure ara mateix perquè la teva unitat organitzativa ha arribat al límit d'inscripció inicial. Contacta amb l'administrador per obtenir assistència.</translation>
 <translation id="3162766632262775911">Sempre tenen permís per utilitzar l'optimitzador de V8</translation>
 <translation id="3162853326462195145">Compte de centre educatiu</translation>
 <translation id="3162899666601560689">Els llocs web poden fer servir galetes per millorar la teva experiència de navegació, per exemple, per mantenir la teva sessió iniciada o per recordar els elements que tens al carretó electrònic</translation>
@@ -5725,7 +5724,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="504561833207953641">S'està obrint a la sessió actual del navegador.</translation>
 <translation id="504953514574706691">La pestanya s'ha exclòs del grup suggerit</translation>
 <translation id="5049614114599109018">Utilitza l'historial d'entrades</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Aquest lloc web ha enviat moltes notificacions recentment. Pots impedir que enviï notificacions en el futur.}other{Aquests llocs web han enviat moltes notificacions recentment. Pots impedir que enviïn notificacions en el futur.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Baixa el fitxer no verificat</translation>
 <translation id="5051836348807686060">El corrector ortogràfic no és compatible amb els idiomes que has seleccionat</translation>
@@ -9054,6 +9052,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="746861123368584540">L'extensió s'ha carregat</translation>
 <translation id="7469612367552312334">Activat • Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat</translation>
 <translation id="7470131554696493512">Impedeix que els accessoris Thunderbolt o USB4 accedeixin a la memòria (RAM) i la comparteixin</translation>
+<translation id="7470284766345262333">Aquest compte no està associat a Google, de manera que hi ha funcions que no estan disponibles, com Sincronització de Chrome</translation>
 <translation id="7470424110735398630">Amb permís per veure el porta-retalls</translation>
 <translation id="747114903913869239">Error: no s'ha pogut descodificar l'extensió</translation>
 <translation id="7471520329163184433">Més lent</translation>
@@ -9639,7 +9638,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Mostra el compte</translation>
 <translation id="7883792253546618164">Pots cancel·lar la subscripció en qualsevol moment.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Revisa 1 lloc web que ha enviat moltes notificacions}other{Revisa {NUM_SITES} llocs web que han enviat moltes notificacions}}</translation>
 <translation id="788453346724465748">S'està carregant informació del compte...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 element}other{# elements}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -10300,7 +10298,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8339288417038613756">Mida de la pantalla i del text</translation>
 <translation id="833986336429795709">Tria una aplicació per obrir aquest enllaç</translation>
 <translation id="8340547030807793004">Més accions per a <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 lloc web<ph name="END_BOLD" /> que ha enviat moltes notificacions recentment}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} llocs web<ph name="END_BOLD" /> que han enviat moltes notificacions recentment}}</translation>
 <translation id="8342221978608739536">No ho he provat</translation>
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
 <translation id="8345848587667658367">Ara pots consultar les aplicacions, les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
@@ -11019,7 +11016,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8849001918648564819">Amagat</translation>
 <translation id="8849219423513870962">Cancel·la la supressió del perfil d'eSIM anomenat <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Les persones que tenen accés al teu trànsit d'Internet poden veure els llocs web que visites</translation>
 <translation id="8850251000316748990">Mostra'n més...</translation>
 <translation id="885246833287407341">Arguments de les funcions de l'API</translation>
 <translation id="8853586775156634952">Aquesta targeta només es desarà en aquest dispositiu</translation>

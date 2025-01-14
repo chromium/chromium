@@ -797,6 +797,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1549788673239553762">Aplikacija <ph name="APP_NAME" /> želi dostopati do <ph name="VOLUME_NAME" />. Morda bo spreminjala ali izbrisala vaše datoteke.</translation>
 <translation id="1549966883323105187">Hitreje dostopajte do shranjenih gesel</translation>
 <translation id="1550656959113606473">Privzeti Chrome</translation>
+<translation id="1552065819535218588">Chrome ne bo več označeval obvestil spletnega mesta <ph name="URL" /> kot vsiljenih</translation>
 <translation id="1552301827267621511">Razširitev »<ph name="EXTENSION_NAME" />« je spremenila ponudnika iskanja; poslej se uporablja <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Upravljanje razširitve</translation>
 <translation id="1553538517812678578">neomejeno</translation>
@@ -857,7 +858,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="15916883652754430">Sistemske nastavitve za govor</translation>
 <translation id="1592074621872221573">Domena <ph name="MANAGER" /> je onemogočila odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB), zaradi česar bo naprava <ph name="DEVICE_TYPE" /> ponastavljena. Pred vnovičnim zagonom varnostno kopirajte datoteke.</translation>
 <translation id="1592126057537046434">Prevod hitrih odgovorov</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Dovoljenja so bila odstranjena na <ph name="BEGIN_BOLD" />1 spletnem mestu<ph name="END_BOLD" />, ki ga že nekaj časa niste obiskali.}one{Dovoljenja so bila odstranjena na <ph name="BEGIN_BOLD" />{NUM_SITES} spletnem mestu<ph name="END_BOLD" />, ki jih že nekaj časa niste obiskali.}two{Dovoljenja so bila odstranjena na <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mestih<ph name="END_BOLD" />, ki jih že nekaj časa niste obiskali.}few{Dovoljenja so bila odstranjena na <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mestih<ph name="END_BOLD" />, ki jih že nekaj časa niste obiskali.}other{Dovoljenja so bila odstranjena na <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mestih<ph name="END_BOLD" />, ki jih že nekaj časa niste obiskali.}}</translation>
 <translation id="1593594475886691512">Formatiranje ...</translation>
 <translation id="159359590073980872">Predpomnilnik za slike</translation>
 <translation id="1593926297800505364">Shranjevanje plačilnega sredstva</translation>
@@ -2702,7 +2702,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2855243985454069333">Izbriše zgodovino iz vseh sinhroniziranih naprav</translation>
 <translation id="2855812646048059450">Prijava s ponudnikom <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Ustvarjanje novega vsebnika</translation>
-<translation id="2856907950922663165">Želite izklopiti šifriranje URL-jev?</translation>
 <translation id="2859741939921354763">Uvoz gesel v izdelek <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Premik čeljusti desno</translation>
 <translation id="2861301611394761800">Posodobitev sistema je končana. Znova zaženite sistem.</translation>
@@ -3101,6 +3100,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3159978855457658359">Urejanje imena naprave</translation>
 <translation id="3160928651883997588">Nastavitve za VPN</translation>
 <translation id="3161522574479303604">Vsi jeziki</translation>
+<translation id="3162070126914310576">Te naprave trenutno ni mogoče včlaniti, ker je vaša organizacijska enota dosegla začetno omejitev včlanitev. Za pomoč se obrnite na skrbnika.</translation>
 <translation id="3162766632262775911">Uporaba orodja za optimiziranje V8 je vedno dovoljena</translation>
 <translation id="3162853326462195145">Šolski račun</translation>
 <translation id="3162899666601560689">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, in sicer tako, da na primer poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.</translation>
@@ -5744,7 +5744,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="504561833207953641">Odpiranje v obstoječi seji brskalnika.</translation>
 <translation id="504953514574706691">Zavihek je izključen iz predlagane skupine</translation>
 <translation id="5049614114599109018">Uporabi zgodovino vnosov</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{To spletno mesto je v zadnjem času poslalo veliko obvestil. Onemogočite mu lahko pošiljanje obvestil v prihodnje.}one{Ta spletna mesta so v zadnjem času poslala veliko obvestil. Onemogočite jim lahko pošiljanje obvestil v prihodnje.}two{Ta spletna mesta so v zadnjem času poslala veliko obvestil. Onemogočite jim lahko pošiljanje obvestil v prihodnje.}few{Ta spletna mesta so v zadnjem času poslala veliko obvestil. Onemogočite jim lahko pošiljanje obvestil v prihodnje.}other{Ta spletna mesta so v zadnjem času poslala veliko obvestil. Onemogočite jim lahko pošiljanje obvestil v prihodnje.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">Prenesi nepreverjeno datoteko</translation>
 <translation id="5051836348807686060">Preverjanje črkovanja za izbrane jezike ni podprto</translation>
@@ -9083,6 +9082,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="746861123368584540">Razširitev je naložena.</translation>
 <translation id="7469612367552312334">Vklopljeno • Uporabite pogovorni jezik za iskanje po zgodovini brskanja in iskanje obiskanih spletnih mest</translation>
 <translation id="7470131554696493512">Blokiranje dostopa dodatne opreme Thunderbolt ali USB4 do pomnilnika (RAM-a) in njegovega deljenja</translation>
+<translation id="7470284766345262333">Ta račun ni povezan z Googlom, zato funkcije, kot je sinhronizacija za Chrome, niso na voljo</translation>
 <translation id="7470424110735398630">Dovoljen je ogled odložišča</translation>
 <translation id="747114903913869239">Napaka: Razširitve ni bilo mogoče dekodirati</translation>
 <translation id="7471520329163184433">Počasneje</translation>
@@ -9668,7 +9668,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Prikaz računa</translation>
 <translation id="7883792253546618164">Odjavite se lahko kadar koli.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Preglejte 1 spletno mesto, ki je nedavno poslalo veliko obvestil}one{Preglejte {NUM_SITES} spletno mesto, ki je nedavno poslalo veliko obvestil}two{Preglejte {NUM_SITES} spletni mesti, ki sta nedavno poslali veliko obvestil}few{Preglejte {NUM_SITES} spletna mesta, ki so nedavno poslala veliko obvestil}other{Preglejte {NUM_SITES} spletnih mest, ki so nedavno poslala veliko obvestil}}</translation>
 <translation id="788453346724465748">Nalaganje podatkov o računu …</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{element}one{# element}two{# elementa}few{# elementi}other{# elementov}}</translation>
 <translation id="7886605625338676841">e-SIM</translation>
@@ -10328,7 +10327,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8339288417038613756">Velikost prikaza in besedila</translation>
 <translation id="833986336429795709">Če želite odpreti to povezavo, izberite aplikacijo</translation>
 <translation id="8340547030807793004">Več dejanj za <ph name="DEVICE" /></translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Preglejte <ph name="BEGIN_BOLD" />1 spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}one{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}two{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletni mesti<ph name="END_BOLD" />, ki sta v zadnjem času poslali veliko obvestil}few{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletna mesta<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}other{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mest<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}}</translation>
 <translation id="8342221978608739536">Nisem poskusil(-a)</translation>
 <translation id="8342861492835240085">Izberi zbirko</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
@@ -11050,7 +11048,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8849001918648564819">Skrito</translation>
 <translation id="8849219423513870962">Prekliči odstranitev profila za eSIM z imenom <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> od <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Subjekti z dostopom do vašega internetnega prometa lahko vidijo, katera spletna mesta obiščete</translation>
 <translation id="8850251000316748990">Več ...</translation>
 <translation id="885246833287407341">Argumenti funkcije API-ja</translation>
 <translation id="8853586775156634952">Ta kartica bo shranjena samo v to napravo</translation>

@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">切换到下一个用户</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954252331066828794">已完成屏幕录制</translation>
+<translation id="1956087014741188812">暂停使用鼠标键</translation>
 <translation id="1957958912175573503">设置语言</translation>
 <translation id="1961239773406905488">已隐藏相机预览画面</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">正在查找设备...</translation>
 <translation id="2257486738914982088">下载“<ph name="FILENAME" />”时出了点问题</translation>
 <translation id="2258734398699965611">建议的文件</translation>
+<translation id="2266607665880926261">已暂停使用鼠标键</translation>
 <translation id="2268130516524549846">蓝牙已停用</translation>
 <translation id="2268731132310444948">导览第 <ph name="STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步。启用启动器后，您将看到一个增强的搜索栏。您只需输入搜索内容，即可搜索文件、应用等内容。也可查阅 <ph name="PRODUCT_NAME" /> 相关问题的解答。</translation>
 <translation id="2268813581635650749">全部退出</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">放大屏幕</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
 <translation id="2880541185262491188">尝试输入 PIN 码的次数过多。请等待 <ph name="TIME_LEFT" />，然后重试</translation>
+<translation id="2883271196820422439">恢复使用鼠标键</translation>
 <translation id="2885950158625301909">了解详情</translation>
 <translation id="2891209721153296020">“取消选择”</translation>
 <translation id="2894949423239620203">数据线可能会影响性能</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3540893133818942399">取消设置查看手机中的近期照片和媒体内容</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
+<translation id="3545224667633138205">已恢复使用鼠标键</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554215588514239132">显示或隐藏开发者工具面板</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">无法加载内容。请在联网后重试。</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3738664582935948253">现在，您可在录制的屏幕内容中显示点击操作和键盘快捷键</translation>
+<translation id="3741482431277446954">鼠标右键</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隐藏天气信息建议</translation>
@@ -1828,6 +1833,7 @@
 <translation id="7118268675952955085">屏幕截图</translation>
 <translation id="7118597077555700347">打开<ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">选择下一个单词或字母</translation>
+<translation id="7124556000457919678">处于开启状态时暂停和恢复使用鼠标键</translation>
 <translation id="7126996685418858413">过去一周内打开过</translation>
 <translation id="7130207228079676353">很可能会点击的应用</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
@@ -1849,6 +1855,7 @@
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
 <translation id="7219573373513695352">未连接任何设备</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">鼠标的两个按钮</translation>
 <translation id="7244725679040769470">电量剩余 <ph name="PERCENTAGE" />%。请为设备接通电源。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2150,6 +2157,7 @@
 <translation id="8203224998425013577">显示更多表情符号和 GIF</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
 <translation id="8205469348819768313">要使用 Page Down 键吗？请使用</translation>
+<translation id="8213376797713070611">鼠标左键</translation>
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
 <translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2375,6 +2383,7 @@
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9050012935252397793">蓝牙不可用</translation>
+<translation id="9050999376345823055">按“.”即可释放</translation>
 <translation id="906458777597946297">最大化窗口</translation>
 <translation id="9065203028668620118">修改</translation>
 <translation id="9070640332319875144">Google 助理设置</translation>

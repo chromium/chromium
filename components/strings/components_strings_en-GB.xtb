@@ -1324,7 +1324,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3369192424181595722">Clock error</translation>
 <translation id="3371064404604898522">Set Chrome as the default browser</translation>
 <translation id="337363190475750230">Deprovisioned</translation>
-<translation id="3375754925484257129">Run Chrome safety check</translation>
 <translation id="3377144306166885718">The server used an obsolete version of TLS.</translation>
 <translation id="3377188786107721145">Policy parse error</translation>
 <translation id="3377642479079205807">Thin</translation>
@@ -1938,6 +1937,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">File upload to Microsoft OneDrive has been paused</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">This policy is controlling the default behaviour of the following policies: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
@@ -3996,6 +3996,7 @@ Additional details:
 <translation id="8116925261070264013">Muted</translation>
 <translation id="8118489163946903409">Payment method</translation>
 <translation id="8118506371121007279">Give feedback</translation>
+<translation id="8120720167840853945">This policy is not controlling the default behaviour of any other policies.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

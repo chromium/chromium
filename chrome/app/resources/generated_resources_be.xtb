@@ -856,7 +856,6 @@
 <translation id="15916883652754430">Галасавыя налады сістэмы</translation>
 <translation id="1592074621872221573">Сайт <ph name="MANAGER" /> выключыў адладку ADB, што прывядзе да скіду налад прылады <ph name="DEVICE_TYPE" />. Зрабіце рэзервовыя копіі файлаў перад яе перазапускам.</translation>
 <translation id="1592126057537046434">Пераклад з дапамогай Хуткіх адказаў</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Дазволы выдалены для <ph name="BEGIN_BOLD" />1 сайта<ph name="END_BOLD" />, які вы даўно не наведвалі}one{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія вы даўно не наведвалі}few{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія вы даўно не наведвалі}many{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія вы даўно не наведвалі}other{Дазволы выдалены для <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія вы даўно не наведвалі}}</translation>
 <translation id="1593594475886691512">Ідзе фармаціраванне...</translation>
 <translation id="159359590073980872">Кэш відарысаў</translation>
 <translation id="1593926297800505364">Захаваць спосаб аплаты</translation>
@@ -2687,7 +2686,6 @@
 <translation id="2855243985454069333">Гісторыя будзе выдалена з усіх сінхранізаваных прылад</translation>
 <translation id="2855812646048059450">Увайсці праз <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Стварэнне новага кантэйнера</translation>
-<translation id="2856907950922663165">Выключыць шыфраванне URL-адрасоў?</translation>
 <translation id="2859741939921354763">Імпартаваць паролі ў <ph name="BRAND" /></translation>
 <translation id="2860710618359053450">Змясціце сківіцу ўправа</translation>
 <translation id="2861301611394761800">Абнаўленне сістэмы завершана. Перазапусціце сістэму.</translation>
@@ -5727,7 +5725,6 @@
 <translation id="504561833207953641">Ідзе адкрыццё ў бягучым сеансе браўзера.</translation>
 <translation id="504953514574706691">Укладка выключана з прапанаванай групы</translation>
 <translation id="5049614114599109018">Выкарыстоўваць гісторыю ўводу</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{За апошні час гэты сайт адправіў шмат апавяшчэнняў. Можна забараніць яму адпраўляць апавяшчэнні.}one{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}few{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}many{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}other{За апошні час гэтыя сайты адправілі шмат апавяшчэнняў. Можна забараніць ім адпраўляць апавяшчэнні.}}</translation>
 <translation id="5050330054928994520">Сінтэз маўлення</translation>
 <translation id="5051461727068120271">Спампаваць неправераны файл</translation>
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
@@ -9647,7 +9644,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Праглядзець уліковы запіс</translation>
 <translation id="7883792253546618164">Адпісацца можна ў любы час.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Праглядзіце 1 сайт, які адпраўляў шмат апавяшчэнняў}one{Праглядзіце {NUM_SITES} сайт, якія адпраўлялі шмат апавяшчэнняў}few{Праглядзіце {NUM_SITES} сайты, якія адпраўлялі шмат апавяшчэнняў}many{Праглядзіце {NUM_SITES} сайтаў, якія адпраўлялі шмат апавяшчэнняў}other{Праглядзіце {NUM_SITES} сайта, якія адпраўлялі шмат апавяшчэнняў}}</translation>
 <translation id="788453346724465748">Ідзе загрузка інфармацыі пра ўліковы запіс...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
@@ -10306,7 +10302,6 @@
 <translation id="8339288417038613756">Маштаб і памер тэксту</translation>
 <translation id="833986336429795709">Каб адкрыць гэту спасылку, выберыце праграму</translation>
 <translation id="8340547030807793004">Іншыя дзеянні з прыладай "<ph name="DEVICE" />"</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Праглядзіце <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}one{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}few{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайты<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}many{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}other{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}}</translation>
 <translation id="8342221978608739536">Не давялося праверыць</translation>
 <translation id="8342861492835240085">Выберыце калекцыю</translation>
 <translation id="8345848587667658367">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні, медыяфайлы, фота і праграмы з тэлефона</translation>
@@ -11028,7 +11023,6 @@
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8849219423513870962">Скасаваць выдаленне профілю eSIM-карты "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> з <ph name="CHECKING" /></translation>
-<translation id="8849541329228110748">Тыя, у каго ёсць доступ да вашага інтэрнэт-трафіка, могуць бачыць, якія вэб-старонкі вы наведваеце</translation>
 <translation id="8850251000316748990">Яшчэ...</translation>
 <translation id="885246833287407341">Аргументы функцыі API</translation>
 <translation id="8853586775156634952">Гэта картка захаваецца толькі на гэту прыладу</translation>

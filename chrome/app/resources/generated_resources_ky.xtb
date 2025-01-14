@@ -794,6 +794,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> колдонмосу <ph name="VOLUME_NAME" /> дегенге мүмкүнчүлүк алгысы келет. Ал файлдарыңызды өзгөртүп же жок кылышы мүмкүн.</translation>
 <translation id="1549966883323105187">Сакталган сырсөздөрүңүзгө тезирээк мүмкүнчүлүк алыңыз</translation>
 <translation id="1550656959113606473">Демейки Chrome</translation>
+<translation id="1552065819535218588">Chrome <ph name="URL" /> жөнөткөн билдирмелерди спам катары белгилебей калат</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтүүсү эми издөө үчүн <ph name="SEARCH_PROVIDER_DOMAIN" /> колдонула тургандай кылып өзгөртүп койду</translation>
 <translation id="1552752544932680961">Кеңейтүүнү башкаруу</translation>
 <translation id="1553538517812678578">чексиз</translation>
@@ -854,7 +855,6 @@
 <translation id="15916883652754430">Системанын үнүнүн параметрлери</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB аркылуу мүчүлүштүктөрдү оңдоону өчүрдү, андыктан <ph name="DEVICE_TYPE" /> түзмөгүңүз баштапкы абалга келет. Өчүрүп күйгүзүүдөн мурун файлдарыңыздын камдык көчүрмөсүн сактаңыз.</translation>
 <translation id="1592126057537046434">Ыкчам жоопторду которуу</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Акыркы убакта кирбеген <ph name="BEGIN_BOLD" />1 сайттын<ph name="END_BOLD" /> уруксаты өчүрүлдү}other{Акыркы убакта кирбеген <ph name="BEGIN_BOLD" />{NUM_SITES} сайттын<ph name="END_BOLD" /> уруксаты өчүрүлдү}}</translation>
 <translation id="1593594475886691512">Форматталууда…</translation>
 <translation id="159359590073980872">Сүрөт кеши</translation>
 <translation id="1593926297800505364">Төлөм ыкмасын сактоо</translation>
@@ -2699,7 +2699,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2855243985454069333">Шайкештирилген бардык түзмөктөрүңүздөгү таржымал өчүрүлөт</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> менен кирүү</translation>
 <translation id="2856776373509145513">Жаңы контейнер түзүү</translation>
-<translation id="2856907950922663165">URL'ди шифрлөөнү өчүрөсүзбү?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> кызматына сырсөздөрдү өткөрүп алуу</translation>
 <translation id="2860710618359053450">Жаакты оңго жылдыруу</translation>
 <translation id="2861301611394761800">Система жаңырды. Системаны өчүрүп күйгүзүңүз.</translation>
@@ -3098,6 +3097,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3159978855457658359">Түзмөктүн аталышын өзгөртүү</translation>
 <translation id="3160928651883997588">VPN параметрлери</translation>
 <translation id="3161522574479303604">Бардык тилдер</translation>
+<translation id="3162070126914310576">Бул түзмөктү азыр каттоого болбойт, анткени уюмуңуз баштапкы каттоо чегине жетти. Жардам алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="3162766632262775911">V8 оптималдаштыргычын колдонууга ар дайым уруксат берилген</translation>
 <translation id="3162853326462195145">Мектептин аккаунту</translation>
 <translation id="3162899666601560689">Серептөөнү ыңгайлаштыруу, мисалы, аккаунттан чыгарбоо же арабадагы сатып алган нерселериңизди эстеп калуу үчүн сайттар cookie файлдарын колдоно алышат</translation>
@@ -5741,7 +5741,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="504561833207953641">Терезе же өтмөк серепчинин учурдагы сеансында ачылат.</translation>
 <translation id="504953514574706691">Өтмөк сунушталган топтон чыгарылды</translation>
 <translation id="5049614114599109018">Киргизүү таржымалын иштетүү</translation>
-<translation id="5050063070033073713">{NUM_SITES,plural, =1{Бул сайт акыркы убакта өтө көп билдирмелерди жөнөттү. Билдирмелерди жөнөтүүнү токтотуп койсоңуз болот.}other{Бул сайттар акыркы убакта өтө көп билдирмелерди жөнөтүштү. Билдирмелерди жөнөтүүнү токтотуп койсоңуз болот.}}</translation>
 <translation id="5050330054928994520">Кеп синтезатору</translation>
 <translation id="5051461727068120271">Ырасталбаган файлды өчүрүү</translation>
 <translation id="5051836348807686060">Сиз тандаган тилдерде орфография текшерилбейт</translation>
@@ -9071,6 +9070,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="746861123368584540">Кеңейтүү жүктөлдү</translation>
 <translation id="7469612367552312334">Күйүк • Көрүлгөн вебсайттардан жөнөкөй сөздөр менен керектүү сайттарды таба аласыз</translation>
 <translation id="7470131554696493512">Thunderbolt же USB4 аксессуарларына эстутумду (RAM) колдонууга тыюу салуу</translation>
+<translation id="7470284766345262333">Бул аккаунт Google менен байланышкан эмес, андыктан Chrome шайкештирүү сыяктуу функциялар иштебейт</translation>
 <translation id="7470424110735398630">Алмашуу буфериңизди көрө алат</translation>
 <translation id="747114903913869239">Ката: Кеңейтүүнү коддон чыгара албайт</translation>
 <translation id="7471520329163184433">Жайыраак</translation>
@@ -9656,7 +9656,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Аккаунтту көрүү</translation>
 <translation id="7883792253546618164">Жазылууну каалаган убакта токтотууга болот.</translation>
-<translation id="7884372232153418877">{NUM_SITES,plural, =1{Өтө көп билдирмелерди жөнөткөн 1 сайтты карап чыгуу}other{Өтө көп билдирмелерди жөнөткөн {NUM_SITES} сайтты карап чыгуу}}</translation>
 <translation id="788453346724465748">Аккаунттун маалыматы жүктөлүүдө...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{нерсе}other{# нерсе}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
@@ -10315,7 +10314,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8339288417038613756">Дисплей жана текст өлчөмү</translation>
 <translation id="833986336429795709">Бул шилтемени ачуудан мурда колдонмону тандаңыз</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> боюнча башка аракеттер</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> карап чыгуу}other{Жакында өтө көп билдирмелерди жөнөткөн <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> карап чыгуу}}</translation>
 <translation id="8342221978608739536">Колдонуп көргөн жокмун</translation>
 <translation id="8342861492835240085">Жыйнакты тандаңыз</translation>
 <translation id="8345848587667658367">Телефонуңуздагы акыркы сүрөттөрдү, медиа файлдарды, билдирмелерди жана колдонмолорду көрө аласыз</translation>
@@ -11034,7 +11032,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8849001918648564819">Жашырылды</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> деп аталган eSIM-картанын профилинин өчүрүүнү жокко чыгаруу</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> ичинен <ph name="CHECKED" /></translation>
-<translation id="8849541329228110748">Интернет трафигиңизге кирүү мүмкүнчүлүгү болгондор кайсы вебсайттарга баш бакканыңызды көрө алат</translation>
 <translation id="8850251000316748990">Дагы…</translation>
 <translation id="885246833287407341">API функциясынын аргументтери</translation>
 <translation id="8853586775156634952">Бул карта ушул түзмөккө гана сакталат</translation>

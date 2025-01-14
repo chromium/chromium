@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">攀岩与登山</translation>
 <translation id="2215727959747642672">文件修改</translation>
 <translation id="2215963164070968490">狗</translation>
+<translation id="2219376942605837404">向比较表格添加标签页</translation>
 <translation id="2219658597883514593">重启教程</translation>
 <translation id="2219735899272417925">需要重置设备</translation>
 <translation id="2221227930294879156">餐饮活动</translation>
@@ -1151,6 +1152,7 @@
 <translation id="306573536155379004">游戏已开始。</translation>
 <translation id="3067505415088964188">价格低</translation>
 <translation id="3068118691172921711">系统将在 1 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
+<translation id="3068976060094139647">您可以自动填充此卡的信息，因为您的账号已关联到 Google Pay。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 项}other{{ITEMS} 项}}</translation>
 <translation id="3076865167425975822">操作系统</translation>
 <translation id="3080254622891793721">图形</translation>
@@ -1204,6 +1206,7 @@
 <translation id="3156511682997763015">快进 10 秒</translation>
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158539265159265653">光碟</translation>
+<translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
 <translation id="316638481603975524">可以请求安装 Web 应用</translation>
 <translation id="3168744840365648658">无线电设备</translation>
@@ -1322,7 +1325,6 @@
 <translation id="3369192424181595722">时钟错误</translation>
 <translation id="3371064404604898522">将 Chrome 设为默认浏览器</translation>
 <translation id="337363190475750230">已取消配置</translation>
-<translation id="3375754925484257129">运行 Chrome 安全检查</translation>
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>
 <translation id="3377188786107721145">策略解析错误</translation>
 <translation id="3377642479079205807">细</translation>
@@ -1782,6 +1784,7 @@
 <translation id="4151403195736952345">使用全局默认设置（检测）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 页}other{第 {COUNT} 页}}</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
+<translation id="415440494507469262">向比较表格添加标签页</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新标签页中打开帮助中心文章</translation>
 <translation id="4165986682804962316">网站设置</translation>
@@ -1934,6 +1937,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">已暂停向 Microsoft OneDrive 上传文件</translation>
 <translation id="4390472908992056574">帽檐式</translation>
+<translation id="4395550503472021297">此政策正在控制以下政策的默认行为：<ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">打开在银行网站上进行验证的弹出式窗口</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
@@ -2376,6 +2380,7 @@
 <translation id="5244521145258281926">“管理 Google 账号”按钮，激活它即可在您的 Google 账号中管理您的信息、隐私设置和安全设置</translation>
 <translation id="5244732203286792411">正在加载…
     请稍等片刻。</translation>
+<translation id="5248543496748975054">未填充卡号？</translation>
 <translation id="5250209940322997802">“连接到网络”</translation>
 <translation id="52517543715119994">了解各项 Chrome 功能</translation>
 <translation id="5251803541071282808">云端</translation>
@@ -3385,6 +3390,7 @@
 <translation id="706960991003274248">比较表格会保存到您的账号 <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">系统设置</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
+<translation id="7071122206197538392">新建比较表格</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -3991,6 +3997,7 @@
 <translation id="8116925261070264013">已静音</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8118506371121007279">提供反馈</translation>
+<translation id="8120720167840853945">此政策没有控制任何其他政策的默认行为。</translation>
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8133495915926741232">选择可用于帮助展示个性化广告的大类主题。如果停用某个更宽泛的类别，系统也会屏蔽其相关主题。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -4095,6 +4102,7 @@
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8301894345671534559">输入验证码</translation>
 <translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
+<translation id="8304912090860925649">新建比较表格</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="8308653357438598313">实时视频直播</translation>
 <translation id="8311895354659782580">房地产信息</translation>

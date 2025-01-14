@@ -1151,6 +1151,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6160780110287872296">Vil du laste ned filen?</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6168647875670665004">Artikkelforslag</translation>
+<translation id="6169031022444660352">For å slette all lagret legitimasjon må du først konfigurere en adgangskode på enheten.</translation>
 <translation id="6173499589275053515">Passordet er lagret i Google-kontoen din, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
@@ -1202,6 +1203,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6355820205320395730">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Følg <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Velg en søkemotor på listen.</translation>
+<translation id="6368102751067608420">For å slette alle dataene i passordlagringen</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
 <translation id="6387994324662817823">Passord lagres i Google Passordlagring kun på denne enheten.</translation>
 <translation id="6404422529625928907">Åpne i Google Disk</translation>
@@ -1246,6 +1248,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6518861084553706202">Faner lukkes og data slettes. Dette kan omfatte passord, nettleserloggen, informasjonskapsler med mer.</translation>
 <translation id="6523575793810663688">Vis meg hvordan</translation>
 <translation id="6524082013156754186">Lagre i kontoen</translation>
+<translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6532106788206463496">Lagre endringene</translation>
 <translation id="6536759809440150308">Åpne <ph name="GROUP_TITLE" />, gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>

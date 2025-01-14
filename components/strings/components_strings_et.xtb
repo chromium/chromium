@@ -1204,6 +1204,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3156511682997763015">Keri 10 sekundit edasi</translation>
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3158539265159265653">Ketas</translation>
+<translation id="3162070126914310576">Seda seadet ei saa praegu registreerida, kuna teie organisatsiooniüksuse esialgne registreerimiste limiit on täis. Abi saamiseks võtke ühendust oma administraatoriga.</translation>
 <translation id="3162559335345991374">WiFi-võrk, mida kasutate, võib nõuda sisselogimislehe külastamist.</translation>
 <translation id="316638481603975524">Võib küsida veebirakenduste installimist</translation>
 <translation id="3168744840365648658">Raadioseadmed</translation>
@@ -1324,7 +1325,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3369192424181595722">Kella viga</translation>
 <translation id="3371064404604898522">Määra Chrome vaikebrauseriks</translation>
 <translation id="337363190475750230">Eraldatud</translation>
-<translation id="3375754925484257129">Käita Chrome'i ohutuskontroll</translation>
 <translation id="3377144306166885718">Server kasutas TLS-i aegunud versiooni.</translation>
 <translation id="3377188786107721145">Viga reegli sõelumisel</translation>
 <translation id="3377642479079205807">Kitsas</translation>
@@ -1938,6 +1938,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4384395682990721132">A4 × 3</translation>
 <translation id="4387692837058041921">Faili üleslaadimine Microsoft OneDrive'i peatati</translation>
 <translation id="4390472908992056574">Serv</translation>
+<translation id="4395550503472021297">See reegel juhib järgmiste reeglite vaikekäitumist: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Avab hüpikakna, kus kinnitada panga veebisait</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4406896451731180161">otsingutulemused</translation>
@@ -2380,6 +2381,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5244521145258281926">Nupp Google'i konto haldamine, aktiveerige nupp oma Google'i kontol teabe, privaatsuse ja turvalisuse haldamiseks</translation>
 <translation id="5244732203286792411">Laadimine …
     See võib võtta minuti.</translation>
+<translation id="5248543496748975054">Kas kaardinumbrit pole sisestatud?</translation>
 <translation id="5250209940322997802">„Looge võrguühendus”</translation>
 <translation id="52517543715119994">Teave Chrome'i funktsioonide kohta</translation>
 <translation id="5251803541071282808">Pilv</translation>
@@ -3996,6 +3998,7 @@ Lisateave:
 <translation id="8116925261070264013">Vaigistatud</translation>
 <translation id="8118489163946903409">Makseviis</translation>
 <translation id="8118506371121007279">Tagasiside andmine</translation>
+<translation id="8120720167840853945">See reegel ei juhi ühegi muu reegli vaikekäitumist.</translation>
 <translation id="8127301229239896662">Tarkvara „<ph name="SOFTWARE_NAME" />” ei installitud teie arvutisse või võrku korralikult. Paluge IT-administraatoril see probleem lahendada.</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8133495915926741232">Valige, milliseid üldiseid teemade kategooriaid võib kasutada reklaamide isikupärastamise hõlbustamiseks. Üldisema kategooria väljalülitamine blokeerib ka sellega seotud teemad. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

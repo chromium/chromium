@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Пређите на следећег корисника</translation>
 <translation id="1951012854035635156">Помоћник</translation>
 <translation id="1954252331066828794">Снимање екрана је довршено</translation>
+<translation id="1956087014741188812">Паузирајте коришћење тастера миша</translation>
 <translation id="1957958912175573503">Подесите језик</translation>
 <translation id="1961239773406905488">Преглед камере је сакривен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Скенирање уређаја...</translation>
 <translation id="2257486738914982088">Дошло је до проблема при преузимању фајла <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени фајлови</translation>
+<translation id="2266607665880926261">Коришћење тастера миша је паузирано</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
 <translation id="2268731132310444948"><ph name="STEP" />. корак обиласка од <ph name="TOTAL_STEPS" />. Када се Покретач активира, добићете траку за побољшану претрагу. Можете да почнете да уносите текст да бисте потражили фајлове, апликације и друго. Можете и да добијете одговоре на питања о <ph name="PRODUCT_NAME" />-у.</translation>
 <translation id="2268813581635650749">Одјави све</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Увећај приказ на екрану</translation>
 <translation id="2878884018241093801">Нема недавних ставки</translation>
 <translation id="2880541185262491188">Превише покушаја уноса PIN-а. Сачекајте <ph name="TIME_LEFT" />, па пробајте поново</translation>
+<translation id="2883271196820422439">Наставите коришћење тастера миша</translation>
 <translation id="2885950158625301909">Сазнајте више</translation>
 <translation id="2891209721153296020">„Поништите избор“</translation>
 <translation id="2894949423239620203">Кабл може да утиче на учинак</translation>
@@ -586,7 +589,7 @@
 <translation id="304417730895741346">Закачене и отворене апликације налазе се на полици. Да бисте закачили апликацију за полицу, кликните десним тастером на њу или додирните тачпед са два прста.</translation>
 <translation id="3045488863354895414">Добар дан,</translation>
 <translation id="3047761520276763270">Пробајте да кажете:</translation>
-<translation id="3053407068093039599">Укључите или искључите приступ камери</translation>
+<translation id="3053407068093039599">Укључи или искључи приступ камери</translation>
 <translation id="3055162170959710888">Данас користите овај уређај већ <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Није подржано</translation>
 <translation id="3068622547379332530">Верзија <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> хотспот</translation>
 <translation id="3540893133818942399">Одбаците подешавање прегледа недавних слика и медија на телефону</translation>
 <translation id="3542066395059568317">Видећете препоруке да бисте могли да наставите тамо где сте стали. Можете да кликнете десним тастером да бисте уклонили препоруке.</translation>
+<translation id="3545224667633138205">Коришћење тастера миша је настављено</translation>
 <translation id="3552189655002856821">WiFi је искључен</translation>
 <translation id="3554215588514239132">Прикажи или сакриј окно Алатке за програмере</translation>
 <translation id="3554637740840164787">Ставка <ph name="ITEM_TITLE" /> је закачена</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Учитавање ставки није успело. Пробајте поново када будете онлајн.</translation>
 <translation id="3735740477244556633">Сортирај према</translation>
 <translation id="3738664582935948253">Сада можете да омогућите приказ кликова и тастерских пречица на снимцима екрана</translation>
+<translation id="3741482431277446954">Десни тастер миша</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3743775386021959186">Фокус је укључен, преостало је <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Сакриј предлог за време</translation>
@@ -1831,6 +1836,7 @@
 <translation id="7118268675952955085">снимак екрана</translation>
 <translation id="7118597077555700347">Отворите резултат <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Изабери следећу реч или слово</translation>
+<translation id="7124556000457919678">Када је укључено, паузирајте и наставите коришћење тастера миша</translation>
 <translation id="7126996685418858413">Отварано протекле недеље</translation>
 <translation id="7130207228079676353">НАЈВЕРОВАТНИЈЕ</translation>
 <translation id="7131634465328662194">Одјавићемо вас аутоматски.</translation>
@@ -1852,6 +1858,7 @@
 <translation id="7198435252016571249">Камера је уклопљена у доњи десни угао. Неусаглашеност са површином система.</translation>
 <translation id="7219573373513695352">Ниједан уређај није повезан</translation>
 <translation id="7229029500464092426">Искоришћена меморија <ph name="AVAILABLE_MEMORY" /> | Укупно <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Оба тастера миша</translation>
 <translation id="7244725679040769470">Преостало је <ph name="PERCENTAGE" /> % батерије.
 Прикључите уређај на напајање.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
@@ -2154,6 +2161,7 @@
 <translation id="8203224998425013577">Прикажи више емоџија и GIF-ова</translation>
 <translation id="8203795194971602413">Десни клик</translation>
 <translation id="8205469348819768313">Покушавате да користите Page Down? Користите</translation>
+<translation id="8213376797713070611">Леви тастер миша</translation>
 <translation id="8214996719228530800">Canary канал</translation>
 <translation id="8219451629189078428">Chromebook треба да остане укључен и повезан на извор напајања током тог периода. Уверите се да су каблови пуњача или адаптера исправно прикључени, и у Chromebook и у утичницу Не искључујте Chromebook.</translation>
 <translation id="8220076512072059941">Додајте <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2379,6 +2387,7 @@
 <translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9047624247355796468">Отворите подешавања за <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth није доступан</translation>
+<translation id="9050999376345823055">Притисните „.“ да бисте отпустили</translation>
 <translation id="906458777597946297">Повећавање прозора</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9070640332319875144">Подешавања Помоћника</translation>

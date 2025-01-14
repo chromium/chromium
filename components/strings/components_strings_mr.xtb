@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain सह Password Manager वापरण्यासाठी, Chromium पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="1652887625750064647">AI सर्वोत्तम जुळणी</translation>
+<translation id="1653465303147789530">ॲप्स स्विच न करता <ph name="PAYMENT_METHOD" /> वापरून पेमेंट करा</translation>
 <translation id="1656024727720460136">हे पेज वाचणे सोपे करण्यासाठी Chrome ने ते सुलभ केले आहे. Chrome ने मूळ पेज सुरक्षित कनेक्शनवरून पुन्हा मिळवले आहे.</translation>
 <translation id="1656489000284462475">घेणे</translation>
 <translation id="1658111267661135323">टीव्ही आणि व्हिडिओ</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">तुमचा मजकूर आणि पेजवरील आशय हे Google कडे पाठवले जातात आणि ते या वैशिष्‍ट्यामध्ये सुधारणा करण्यासाठी वापरले जाऊ शकतात.
   <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">आणखी जलद पेमेंट करण्यासाठी एक वेळ सुरक्षा तपासणी पूर्ण करा</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमीकरण एरर</translation>
 <translation id="1973785048533660168">कारकुनी आणि प्रशासकीय नोकऱ्या</translation>
@@ -1325,7 +1327,6 @@
 <translation id="3369192424181595722">घड्याळ एरर</translation>
 <translation id="3371064404604898522">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="337363190475750230">तरतूद रद्द केली</translation>
-<translation id="3375754925484257129">Chrome सुरक्षितता तपासणी रन करा</translation>
 <translation id="3377144306166885718">सर्व्हरने TLS ची ऑब्सोलीट आवृत्ती वापरली.</translation>
 <translation id="3377188786107721145">धोरण पार्स एरर</translation>
 <translation id="3377642479079205807">बारीक</translation>
@@ -1586,6 +1587,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" यासाठी सर्वोत्तम जुळण्या</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
+<translation id="3791118028061680614">अ‍ॅप्स स्विच न करता पेमेंट करा</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इं)</translation>
 <translation id="3792826587784915501">कल्ट आणि इंडी चित्रपट</translation>
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
