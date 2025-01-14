@@ -1867,6 +1867,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForLoadStop(GURL("chrome://profile-picker"));
   // Open the other profile.
   OpenProfileFromPicker(other_path, /*open_settings=*/false);
+  // Attempt to open the profile twice, within the same picker. Simulates double
+  // clicking on a profile card, not having any undesired effect.
+  // Check: crbug.com/389726677.
+  OpenProfileFromPicker(other_path, /*open_settings=*/false);
+
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   WaitForFirstNonEmptyPaint(

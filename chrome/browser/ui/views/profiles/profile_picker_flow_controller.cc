@@ -729,7 +729,19 @@ void ProfilePickerFlowController::OnSwitchToProfileComplete(bool open_settings,
 
   MaybeOpenPageInBrowser(browser, selected_profile_target_url_, open_settings);
   // Closes the Profile Picker.
-  ExitFlow();
+  //
+  // Making sure the flow has not already exited here is needed, because
+  // potentially this specific flow can be run twice by the time the host was
+  // cleared; e.g. by clicking quickly multiple times when picking a Profile
+  // from the Profile Picker view.
+  // Depending on the state of the first call, subsequent calls may result in
+  // `BeginFirstWebContentsProfiling()` recording multiple metrics.
+  // TODO(crbug.com/389887233): Investigate further how often this happens to
+  // consider having a better architecture to avoid those issues with multiple
+  // flow-exiting calls being executed at the same time.
+  if (!HasFlowExited()) {
+    ExitFlow();
+  }
 }
 
 base::queue<ProfileManagementFlowController::Step>

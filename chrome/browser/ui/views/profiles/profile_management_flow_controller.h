@@ -121,6 +121,9 @@ class ProfileManagementFlowController {
 
   bool IsStepInitialized(Step step) const;
 
+  // Checks whether the flow has already attempted to exit.
+  bool HasFlowExited() const;
+
   // Closes the flow, calling `clear_host_callback_`, which would cause the
   // `host()` to be deleted.
   void ExitFlow();
