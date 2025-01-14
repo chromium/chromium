@@ -45,7 +45,6 @@
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -445,11 +444,6 @@ RunAttributionInteropSimulation(
     enabled_features.emplace_back(
         network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
-  }
-
-  if (run.config.needs_aggregatable_named_budgets) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionAggregatableNamedBudgets);
   }
 
   base::test::ScopedFeatureList scoped_feature_list;

@@ -11,14 +11,12 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 
@@ -45,9 +43,7 @@ bool IsValid(const AggregatableNamedBudgetDefs::BudgetMap& budgets) {
 // static
 base::expected<AggregatableNamedBudgetDefs, SourceRegistrationError>
 AggregatableNamedBudgetDefs::FromJSON(const base::Value* v) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableNamedBudgets) ||
-      !v) {
+  if (!v) {
     return AggregatableNamedBudgetDefs();
   }
 
