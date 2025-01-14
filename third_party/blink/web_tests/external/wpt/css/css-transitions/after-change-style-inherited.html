@@ -64,3 +64,47 @@
                   ".inner halfway between black and lime");
   }, "Start .inner transition based on inherited after-change background-color from .outer (lime)");
 </script>
+
+<style>
+  #t3 .trans {
+    transition: 1000s steps(2, start);
+    transition-property: color, word-spacing;
+  }
+
+  #t3 .a2 { color: red; }
+  #t3 .a3 { color: black; }
+  #t3 .a2.green { color: lime; }
+  #t3 .a2.green .a3 { color: unset; }
+
+  #t3 .a1 { word-spacing: 17px; }
+  #t3 .a3 { word-spacing: 0px; }
+  #t3 .a1.wide { word-spacing: 100px; }
+  #t3 .a1.wide .a3 { word-spacing: unset; }
+</style>
+<div id="t3">
+  <div class="trans a1">
+    <div style="color:pink">
+      <div class="trans a2">
+          <div class="trans a3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const a1 = document.querySelector("#t3 .a1");
+  const a2 = document.querySelector("#t3 .a2");
+  const a3 = document.querySelector("#t3 .a3");
+
+  test(() => {
+    assert_equals(getComputedStyle(a3).color, "rgb(0, 0, 0)", ".a3 color initially black");
+    assert_equals(getComputedStyle(a3).wordSpacing, "0px", ".a3 word-spacing initially 0px");
+  }, "Initial computed styles");
+
+  test(() => {
+    a1.classList.add("wide");
+    a2.classList.add("green");
+    assert_equals(getComputedStyle(a3).color, "rgb(0, 128, 0)", ".a3 color transitioning between black and lime");
+    assert_equals(getComputedStyle(a3).wordSpacing, "50px", ".a3 word-spacing transitioning between 0px and 100px");
+  }, "Start inner transitions based on inherited after-change color and word-spacing from two different ancestors");
+</script>
