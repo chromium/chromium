@@ -666,7 +666,9 @@ public class ToolbarPhoneTest {
                             ControlsPosition.BOTTOM,
                             0,
                             0,
+                            0,
                             browserControlsManager.getTopControlsHeight(),
+                            0,
                             0);
                     mToolbar.onUrlFocusChange(true);
                     assertFalse(mToolbar.isAnimationRunningForTesting());
@@ -683,6 +685,8 @@ public class ToolbarPhoneTest {
                     browserControlsManager.setControlsPosition(
                             ControlsPosition.TOP,
                             browserControlsManager.getBottomControlsHeight(),
+                            0,
+                            0,
                             0,
                             0,
                             0);

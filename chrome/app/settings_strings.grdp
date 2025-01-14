@@ -4643,7 +4643,18 @@
   <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
     View and manage your activity
   </message>
-
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_1" translateable="false" desc="First point in the 'when on' column of the 'tab access' collapsible section.">
+    [Placeholder String 1]
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_WHEN_ON_2" translateable="false" desc="Second point in the 'when on' column of the 'tab access' collapsible section.">
+    [Placeholder String 2]
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_1" translateable="false" desc="First point in the 'things to consider' column of the 'tab access' collapsible section.">
+    [Placeholder String 3]
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_CONSIDER_2" translateable="false" desc="Second point in the 'things to consider' column of the 'tab access' collapsible section.">
+    [Placeholder String 4]
+  </message>
 
 
   <!-- Security settings toast confirmation -->

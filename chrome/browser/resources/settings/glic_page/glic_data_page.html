@@ -1,4 +1,5 @@
-<style include="settings-shared"></style>
+<style include="cr-shared-style settings-shared settings-columned-section">
+</style>
 
 <settings-toggle-button
     id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
@@ -15,8 +16,44 @@
 <settings-toggle-button
     id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
     label="$i18n{glicTabAccessToggle}"
-    sub-label="$i18n{glicTabAccessToggleSublabel}" icon="settings:tab">
+    sub-label="$i18n{glicTabAccessToggleSublabel}" icon="settings:tab"
+    on-settings-boolean-control-change="onTabAccessToggleChange_">
+  <cr-expand-button id="tabAccessExpandButton" no-hover slot="more-actions"
+      expanded="{{tabAccessToggleExpanded_}}">
+  </cr-expand-button>
 </settings-toggle-button>
+<cr-collapse id="tabAccessInfoCollapse" opened="[[tabAccessToggleExpanded_]]">
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <!-- TODO(crbug.com/379166610) Placeholder until we decide on final
+              icons. -->
+          <cr-icon icon="settings20:lightbulb" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:lightbulb" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{glicTabAccessWhenOn2}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:lightbulb" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{glicTabAccessConsider1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:lightbulb" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{glicTabAccessConsider2}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</cr-collapse>
 
 <cr-link-row
     label="$i18n{glicActivityButton}"

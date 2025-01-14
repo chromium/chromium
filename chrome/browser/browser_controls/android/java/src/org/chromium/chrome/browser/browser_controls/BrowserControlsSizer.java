@@ -42,16 +42,25 @@ public interface BrowserControlsSizer extends BrowserControlsVisibilityManager {
      *
      * @param controlsPosition The new position.
      * @param newTopControlsHeight The new height of the top controls after the position change.
-     * @param newTopControlsHeight The new min height of the top controls after the position change.
+     * @param newTopControlsMinHeight The new min height of the top controls after the position
+     *     change.
+     * @param newRendererTopControlsOffset The new offset of the top controls with respect to the
+     *     top of the content. This will only be respected if the current page supports browser
+     *     controls animation, i.e. isn't a native page.
      * @param newBottomControlsHeight The new height of the bottom controls after the position
      *     change.
-     * @param newBottomControlsHeight The new min height of the bottom controls after the position
-     *     change.
+     * @param newBottomControlsMinHeight The new min height of the bottom controls after the
+     *     position change.
+     * @param newRendererBottomControlsOffset The new offset of the bottom controls with respect to
+     *     the bottom of the content. This will only be respected if the current page supports
+     *     browser controls animation, i.e. isn't a native page.
      */
     void setControlsPosition(
             @ControlsPosition int controlsPosition,
             int newTopControlsHeight,
             int newTopControlsMinHeight,
+            int newRendererTopControlsOffset,
             int newBottomControlsHeight,
-            int newBottomControlsMinHeight);
+            int newBottomControlsMinHeight,
+            int newRendererBottomControlsOffset);
 }

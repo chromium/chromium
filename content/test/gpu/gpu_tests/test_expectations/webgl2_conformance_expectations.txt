@@ -538,6 +538,7 @@ crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-c
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-3d-mipmap-levels-intel-bug.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
+crbug.com/389733590 [ angle-d3d11 win nvidia ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 
 ## Win / AMD ##

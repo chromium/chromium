@@ -271,7 +271,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // The latest incognito tab is displayed.
@@ -281,7 +281,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // If the supervised user was previously on an incognito tab, the disabled
@@ -300,7 +300,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // Create new incognito tabs.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 2");
 
   // Open a new regular tab.
@@ -311,7 +311,7 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [self signInWithSupervisedAccount];
 
   // All incognito tabs should be destroyed.
-  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey incognitoTabCount],
                   @"Incognito tab count should be 0");
 
   // The user should stay on the new tab page.

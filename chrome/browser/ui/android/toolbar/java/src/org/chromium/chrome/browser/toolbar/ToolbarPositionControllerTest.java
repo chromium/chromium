@@ -62,8 +62,10 @@ public class ToolbarPositionControllerTest {
                 @ControlsPosition private int mControlsPosition = ControlsPosition.TOP;
                 private int mTopControlsHeight;
                 private int mTopControlsMinHeight;
+                private int mRendererTopControlsOffset;
                 private int mBottomControlsHeight;
                 private int mBottomControlsMinHeight;
+                private int mRendererBottomControlsOffset;
 
                 @Override
                 public void setBottomControlsHeight(
@@ -87,12 +89,16 @@ public class ToolbarPositionControllerTest {
 
                 @Override
                 public void setControlsPosition(
-                        int controlsPosition,
+                        @ControlsPosition int controlsPosition,
                         int newTopControlsHeight,
                         int newTopControlsMinHeight,
+                        int newRendererTopControlsOffset,
                         int newBottomControlsHeight,
-                        int newBottomControlsMinHeight) {
+                        int newBottomControlsMinHeight,
+                        int newRendererBottomControlsOffset) {
                     mControlsPosition = controlsPosition;
+                    mRendererTopControlsOffset = newRendererTopControlsOffset;
+                    mRendererBottomControlsOffset = newRendererBottomControlsOffset;
                     setTopControlsHeight(newTopControlsHeight, newTopControlsMinHeight);
                     setBottomControlsHeight(newBottomControlsHeight, newBottomControlsMinHeight);
                 }
@@ -145,7 +151,7 @@ public class ToolbarPositionControllerTest {
 
                 @Override
                 public int getTopControlOffset() {
-                    return 0;
+                    return mRendererTopControlsOffset;
                 }
 
                 @Override
@@ -180,7 +186,7 @@ public class ToolbarPositionControllerTest {
 
                 @Override
                 public int getBottomControlOffset() {
-                    return 0;
+                    return mRendererBottomControlsOffset;
                 }
 
                 @Override
@@ -260,7 +266,8 @@ public class ToolbarPositionControllerTest {
         mContext = ContextUtils.getApplicationContext();
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
-        mBrowserControlsSizer.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0);
+        mBrowserControlsSizer.setControlsPosition(
+                ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0, 0, 0);
         mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
         mProgressBarLayoutParams.gravity = Gravity.TOP;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
@@ -401,9 +408,11 @@ public class ToolbarPositionControllerTest {
 
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertEquals(-TOOLBAR_HEIGHT, mBrowserControlsSizer.getTopControlOffset());
         assertControlsAtTop();
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(false);
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlOffset());
         assertControlsAtBottom();
 
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
