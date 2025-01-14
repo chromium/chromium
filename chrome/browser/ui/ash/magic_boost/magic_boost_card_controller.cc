@@ -78,6 +78,9 @@ void MagicBoostCardController::OnDismiss(bool is_other_command_executed) {
   // If context menu is dismissed and the opt-in widget is active (i.e. keyboard
   // focus is on a button), we should not close the widget.
   if (opt_in_widget_ && !opt_in_widget_->IsActive()) {
+    views::AsViewClass<MagicBoostOptInCard>(opt_in_widget_->GetContentsView())
+        ->OnAnchorMenuDismissed();
+
     opt_in_widget_.reset();
   }
 }

@@ -47,6 +47,9 @@ class PreTargetHandlerView : public views::View,
   views::View* GetRootView() override;
   std::vector<views::View*> GetTraversableViewsByUpDownKeys() override;
 
+  // Called when the menu to which this handler view is anchored gets closed.
+  void OnAnchorMenuDismissed();
+
   void ResetPreTargetHandler();
 
  private:
