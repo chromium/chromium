@@ -617,14 +617,9 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
   // server cert db.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   // Migration pref should be true now.
@@ -688,14 +683,9 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
   // is no longer used.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server.GetURL("/simple.html")));
-  // TODO(https://crbug.com/40928765): This should not be
-  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
-  // additional certs provided to the verifier need some additional flag to
-  // indicate which ones are policy provided and which are user added.
   ssl_test_util::CheckSecurityState(
       chrome_test_utils::GetActiveWebContents(this),
-      ssl_test_util::CertError::NONE,
-      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::CertError::NONE, security_state::SECURE,
       ssl_test_util::AuthState::NONE);
 
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",

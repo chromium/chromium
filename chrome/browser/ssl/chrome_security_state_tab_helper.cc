@@ -50,11 +50,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
@@ -165,22 +160,9 @@ void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
+// TODO(crbug.com/40928765): Remove this feature entirely by removing
+// security_state::SECURE_WITH_POLICY_INSTALLED_CERT.
 bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(profile);
-  // Note: Checking whether the service was created for this profile and whether
-  // we are observing cert changes is more complicated than needed - we could
-  // just check the value of the pref (via UsedPolicyCertificates), which
-  // defaults to false and will only be set to true if the service was created
-  // for this profile and was observing cert changes at least at some point.
-  if (service && service->IsObservingCertChanges() &&
-      policy::PolicyCertService::UsedPolicyCertificates(profile)) {
-    return true;
-  }
-#endif
   return false;
 }
 
