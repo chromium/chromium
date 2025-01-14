@@ -10,6 +10,7 @@ out_dir = "$root_out_dir/resources/tts_engine"
 
 generate_grd("build_bindings_grdp") {
   grd_prefix = "tts_engine"
+  resource_path_prefix = "tts_engine"
   out_grd = "$target_gen_dir/bindings_resources.grdp"
   input_files_base_dir = rebase_path("//third_party/wasm_tts_engine/src", "//")
   input_files = [ "bindings_main.js" ]
@@ -17,6 +18,7 @@ generate_grd("build_bindings_grdp") {
 
 build_webui("build") {
   grd_prefix = "tts_engine"
+  grd_resource_path_prefix = "tts_engine"
   non_web_component_files = [ "background.ts" ]
   ts_out_dir = "$out_dir"
   extra_grdp_files = [ "$target_gen_dir/bindings_resources.grdp" ]
