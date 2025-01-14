@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.InsetObserver;
@@ -88,6 +89,7 @@ public class BottomControlsMediatorTest {
     @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
     @Mock InsetObserver mInsetObserver;
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
@@ -103,6 +105,7 @@ public class BottomControlsMediatorTest {
         doReturn(SYSTEM_BARS_WINDOW_INSETS).when(mInsetObserver).getLastRawWindowInsets();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
+        doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
@@ -175,7 +178,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mEdgeToEdgeStateProvider,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
@@ -207,7 +210,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mEdgeToEdgeStateProvider,
+                        mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);

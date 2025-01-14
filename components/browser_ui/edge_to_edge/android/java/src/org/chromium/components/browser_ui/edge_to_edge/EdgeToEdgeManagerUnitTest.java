@@ -5,8 +5,10 @@
 package org.chromium.components.browser_ui.edge_to_edge;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -103,6 +105,32 @@ public class EdgeToEdgeManagerUnitTest {
                 edgeToEdgeManager
                         .getEdgeToEdgeSystemBarColorHelper()
                         .getEdgeToEdgeDelegateHelperForTesting());
+    }
+
+    @Test
+    public void testContentFitsWindowInsetsSupplier() {
+        OneshotSupplierImpl<SystemBarColorHelper> systemBarColorHelperSupplier =
+                new OneshotSupplierImpl<>();
+        EdgeToEdgeManager edgeToEdgeManager =
+                new EdgeToEdgeManager(
+                        mActivity,
+                        mEdgeToEdgeStateProvider,
+                        systemBarColorHelperSupplier,
+                        /* shouldDrawEdgeToEdge= */ true);
+        assertTrue(
+                "The manager should have been initialized with the content fitting the window"
+                        + " insets.",
+                edgeToEdgeManager.getContentFitsWindowInsetsSupplier().get());
+
+        edgeToEdgeManager.setContentFitsWindowInsets(false);
+        assertFalse(
+                "The content should not be fitting the window.",
+                edgeToEdgeManager.getContentFitsWindowInsetsSupplier().get());
+
+        edgeToEdgeManager.setContentFitsWindowInsets(true);
+        assertTrue(
+                "The content should be fitting the window.",
+                edgeToEdgeManager.getContentFitsWindowInsetsSupplier().get());
     }
 
     @Test

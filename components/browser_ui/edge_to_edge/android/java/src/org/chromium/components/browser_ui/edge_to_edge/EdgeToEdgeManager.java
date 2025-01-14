@@ -8,10 +8,14 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.ui.util.TokenHolder;
 
 public class EdgeToEdgeManager {
+    private final ObservableSupplierImpl<Boolean> mContentFitsWindowInsetsSupplier =
+            new ObservableSupplierImpl<>();
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
     private final @NonNull EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
@@ -31,6 +35,9 @@ public class EdgeToEdgeManager {
             @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             @NonNull OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
             boolean shouldDrawEdgeToEdge) {
+        // TODO(crbug.com/389790022) Pass in shouldContentFitWindow from the ctor args.
+        mContentFitsWindowInsetsSupplier.set(true);
+
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mEdgeToEdgeSystemBarColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
@@ -66,5 +73,28 @@ public class EdgeToEdgeManager {
      */
     public EdgeToEdgeSystemBarColorHelper getEdgeToEdgeSystemBarColorHelper() {
         return mEdgeToEdgeSystemBarColorHelper;
+    }
+
+    /**
+     * Sets whether the content should fit within the system's window insets, or if the content
+     * should be drawn edge-to-edge (into the window insets).
+     */
+    public void setContentFitsWindowInsets(boolean contentFitsWindow) {
+        mContentFitsWindowInsetsSupplier.set(contentFitsWindow);
+    }
+
+    /**
+     * Returns true if the content should fit within the system's window insets, false if the
+     * content should be drawn edge-to-edge (into the window insets).
+     */
+    public boolean getContentFitsWindowInsets() {
+        return mContentFitsWindowInsetsSupplier.get();
+    }
+
+    /**
+     * Returns the supplier informing whether the contents fit within the system's window insets.
+     */
+    public ObservableSupplier<Boolean> getContentFitsWindowInsetsSupplier() {
+        return mContentFitsWindowInsetsSupplier;
     }
 }

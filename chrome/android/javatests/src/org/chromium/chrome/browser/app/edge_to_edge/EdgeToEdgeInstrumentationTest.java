@@ -67,6 +67,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
+    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
     ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
 })
@@ -496,6 +497,39 @@ public class EdgeToEdgeInstrumentationTest {
         assertEquals(
                 "Navigation bar should stay transparent for the bottom chin even when not"
                         + "opted in.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.enterTabSwitcher(mActivity);
+        assertEquals(
+                "Should still be drawing toEdge in the Tab Switcher.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.leaveTabSwitcher(mActivity);
+        assertEquals(
+                "Should stay toEdge upon leaving the Tab Switcher.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
+    })
+    public void testNavigationBarColor_BottomChinAndKeyNativeDisabled() {
+        optOutOfToEdge();
+        assertEquals(
+                "Navigation bar should have the right color when transitioning away from edge to"
+                        + " edge,",
+                mActivity.getActivityTab().getBackgroundColor(),
+                mActivity.getWindow().getNavigationBarColor());
+
+        goToEdge();
+        assertEquals(
+                "Navigation bar should be transparent in edge to edge.",
                 Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
 

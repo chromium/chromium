@@ -1993,7 +1993,7 @@ public class RootUiCoordinator
                             mActivity,
                             mWindowAndroid,
                             mActivityTabProvider,
-                            mEdgeToEdgeManager.getEdgeToEdgeStateProvider(),
+                            mEdgeToEdgeManager,
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
                             mFullscreenManager);
