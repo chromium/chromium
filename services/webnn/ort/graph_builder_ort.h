@@ -166,6 +166,7 @@ class GraphBuilderOrt {
   void AddArgMinMaxOperation(const mojom::ArgMinMax& arg_min_max);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
   void AddClampOperation(const mojom::Clamp& clamp);
+  void AddConcatOperation(const mojom::Concat& concat);
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddExpandOperation(const mojom::Expand& expand);
   void AddGatherOperation(const mojom::Gather& gather);

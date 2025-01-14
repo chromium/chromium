@@ -65,6 +65,7 @@ constexpr char kOpTypeReciprocal[] = "Reciprocal";
 constexpr char kOpTypeCast[] = "Cast";
 
 constexpr char kOpTypeClamp[] = "Clip";
+constexpr char kOpTypeConcat[] = "Concat";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeExpand[] = "Expand";
 constexpr char kOpTypeGather[] = "Gather";
@@ -736,6 +737,29 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
   model_builder_.AddNode(kOpTypeClamp, node_name, input_names, output_names);
+}
+
+void GraphBuilderOrt::AddConcatOperation(const mojom::Concat& concat) {
+  const std::string node_name = GetNodeName(concat.label);
+
+  std::vector<std::string> input_names_string;
+  input_names_string.reserve(concat.input_operand_ids.size());
+  std::vector<const char*> input_names;
+  input_names.reserve(concat.input_operand_ids.size());
+  for (uint64_t input_operand_id : concat.input_operand_ids) {
+    input_names_string.push_back(GetOperandName(input_operand_id));
+    input_names.push_back(input_names_string.back().c_str());
+  }
+
+  const std::string output_name = GetOperandName(concat.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttrPtr attr_axis = model_builder_.CreateAttribute(
+      /*name=*/"axis", base::checked_cast<int64_t>(concat.axis));
+  std::array<OrtOpAttr*, 1> attributes = {attr_axis.Release()};
+
+  model_builder_.AddNode(kOpTypeConcat, node_name, input_names, output_names,
+                         attributes);
 }
 
 void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
@@ -1566,6 +1590,10 @@ GraphBuilderOrt::BuildModel() {
         AddElementWiseUnaryOperation(*operation->get_element_wise_unary());
         break;
       }
+      case mojom::Operation::Tag::kConcat: {
+        AddConcatOperation(*operation->get_concat());
+        break;
+      }
       case mojom::Operation::Tag::kConv2d: {
         AddConv2dOperation(*operation->get_conv2d());
         break;
@@ -1644,7 +1672,6 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
