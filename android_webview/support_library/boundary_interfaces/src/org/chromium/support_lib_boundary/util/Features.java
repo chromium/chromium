@@ -285,9 +285,8 @@ public class Features {
     // WebSettingsCompat.getBackForwardCacheEnabled
     public static final String BACK_FORWARD_CACHE = "BACK_FORWARD_CACHE";
 
-    // Profile.prefetchUrlAsync
-    // Profile.clearPrefetchAsync
-    // Profile.setSpeculativeLoadingConfig
+    // Profile.prefetchUrl
+    // Profile.clearPrefetch
     public static final String PREFETCH_WITH_URL = "PREFETCH_URL_V3";
 
     // WebviewCompat.setDefaultTrafficStatsTag
@@ -305,4 +304,7 @@ public class Features {
     // WebStorageCompat.deleteBrowsingDataForSite
     public static final String WEB_STORAGE_DELETE_BROWSING_DATA =
             "WEB_STORAGE_DELETE_BROWSING_DATA";
+
+    // Profile.setSpeculativeLoadingConfig
+    public static final String SPECULATIVE_LOADING_CONFIG = "SPECULATIVE_LOADING_CONFIG";
 }
