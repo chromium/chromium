@@ -43,6 +43,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
@@ -645,7 +646,6 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
   EXPECT_CALL(mock_ntp_custom_background_service_,
               SelectLocalBackgroundImage(An<const base::FilePath&>()))
       .Times(1);
-  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   ASSERT_EQ(0, user_action_tester().GetActionCount(
                    "NTPRicherPicker.Backgrounds.UploadConfirmed"));
   handler().ChooseLocalCustomBackground(callback.Get());
@@ -828,6 +828,48 @@ TEST_F(CustomizeChromePageHandlerTest, UpdateScrollToSection) {
 
   EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
 }
+
+class CustomizeChromePageHandlerWallpaperSearchTest
+    : public CustomizeChromePageHandlerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CustomizeChromePageHandlerWallpaperSearchTest() {
+    std::vector<base::test::FeatureRef> kWallpaperSearchFeatures = {
+        ntp_features::kCustomizeChromeWallpaperSearch,
+        optimization_guide::features::kOptimizationGuideModelExecution};
+
+    if (WallpaperSearchEnabled()) {
+      scoped_feature_list_.InitWithFeatures(kWallpaperSearchFeatures, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, kWallpaperSearchFeatures);
+    }
+  }
+  bool WallpaperSearchEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(CustomizeChromePageHandlerWallpaperSearchTest,
+       ChooseLocalCustomBackground) {
+  base::MockCallback<
+      CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
+      callback;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(false));
+
+  if (WallpaperSearchEnabled()) {
+    EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(0);
+  } else {
+    EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
+  }
+
+  handler().ChooseLocalCustomBackground(callback.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CustomizeChromePageHandlerWallpaperSearchTest,
+                         ::testing::Bool());
 
 class CustomizeChromePageHandlerWithModulesTest
     : public CustomizeChromePageHandlerTest {

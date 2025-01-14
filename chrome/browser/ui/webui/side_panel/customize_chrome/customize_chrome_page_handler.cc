@@ -33,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -666,7 +667,15 @@ void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
-    theme_service_->UseDefaultTheme();
+    // Use the default theme color if wallpaper search is disabled.
+    // If wallpaper search is enabled, |ntp_custom_background_service_|
+    // will handle setting the theme color.
+    if (!base::FeatureList::IsEnabled(
+            ntp_features::kCustomizeChromeWallpaperSearch) ||
+        !base::FeatureList::IsEnabled(
+            optimization_guide::features::kOptimizationGuideModelExecution)) {
+      theme_service_->UseDefaultTheme();
+    }
 
     profile_->set_last_selected_directory(file.path().DirName());
     ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());
