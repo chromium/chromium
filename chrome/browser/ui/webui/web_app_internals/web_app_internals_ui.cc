@@ -35,11 +35,9 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
       "isIwaKeyDistributionDevModeEnabled",
       web_app::IsIwaDevModeEnabled(profile) &&
           base::FeatureList::IsEnabled(web_app::kIwaKeyDistributionDevMode));
-#if BUILDFLAG(IS_CHROMEOS)
-  internals->AddBoolean("isIwaPolicyInstallEnabled", true);
-#else
-  internals->AddBoolean("isIwaPolicyInstallEnabled", false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  internals->AddBoolean(
+      "isIwaPolicyInstallEnabled",
+      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInternalsUI)
