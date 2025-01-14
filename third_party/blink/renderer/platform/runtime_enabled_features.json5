@@ -2940,13 +2940,6 @@
       status: "stable",
     },
     {
-      // Input event data for textarea should not be null for certain
-      // inputTypes.
-      // https://issues.chromium.org/issues/40737336
-      name: "NonNullInputEventDataForTextArea",
-      status: "stable"
-    },
-    {
       // TODO(crbug.com/1426629): This feature enables the deprecated value
       // slider-vertical. Disable this feature to stop parsing or allowing these
       // values.

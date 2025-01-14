@@ -454,10 +454,9 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
 String ReplaceSelectionCommand::TextDataForInputEvent() const {
   // As per spec https://www.w3.org/TR/input-events-1/#overview
   // input event data should be set for certain input types.
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled() &&
-      (input_type_ == InputEvent::InputType::kInsertFromDrop ||
-       input_type_ == InputEvent::InputType::kInsertFromPaste ||
-       input_type_ == InputEvent::InputType::kInsertReplacementText)) {
+  if (input_type_ == InputEvent::InputType::kInsertFromDrop ||
+      input_type_ == InputEvent::InputType::kInsertFromPaste ||
+      input_type_ == InputEvent::InputType::kInsertReplacementText) {
     return input_event_data_;
   }
   return g_null_atom;
@@ -2127,10 +2126,8 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       !fragment.FirstChild()->IsTextNode())
     return false;
 
-  if (RuntimeEnabledFeatures::NonNullInputEventDataForTextAreaEnabled()) {
-    // Save the text to set event data for input events.
-    input_event_data_ = To<Text>(fragment.FirstChild())->data();
-  }
+  // Save the text to set event data for input events.
+  input_event_data_ = To<Text>(fragment.FirstChild())->data();
 
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||
