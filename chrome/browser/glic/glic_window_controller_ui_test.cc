@@ -75,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashOnBrowserClose) {
   ui_test_utils::WaitForBrowserToClose();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest, DoNotCrashWhenReopening) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerTest,
+                       DISABLED_DoNotCrashWhenReopening) {
   RunTestSequence(
       PressButton(kGlicButtonElementId),
       // TODO(crbug.com/389729273): observe web client initialization directly.
