@@ -11,7 +11,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
@@ -31,16 +30,6 @@
 
 namespace policy {
 namespace {
-
-const char kRecoveryHistogram[] = "EnterpriseCheck.EnrollementRecoveryOnBoot";
-
-// Do not reorder or delete entries because it is used in UMA.
-enum class EnrollmentRecoveryOnBootUma {
-  kForced = 0,
-  kFalseFlag = 1,
-  kNoSerialNumber = 2,
-  kMaxValue = kNoSerialNumber,
-};
 
 std::string GetString(const base::Value::Dict& dict, std::string_view key) {
   const std::string* value = dict.FindString(key);
@@ -127,9 +116,6 @@ EnrollmentConfig GetPrescribedRecoveryConfig(
       ash::DeviceSettingsService::Get()->HasDmToken()) {
     LOG(WARNING) << "False recovery flag.";
     local_state->ClearPref(::prefs::kEnrollmentRecoveryRequired);
-    base::UmaHistogramEnumeration(kRecoveryHistogram,
-                                  EnrollmentRecoveryOnBootUma::kFalseFlag);
-
     return recovery_config;
   }
 
@@ -137,14 +123,10 @@ EnrollmentConfig GetPrescribedRecoveryConfig(
   const auto serial_number = statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {
     LOG(WARNING) << "Postponing recovery because machine id is missing.";
-    base::UmaHistogramEnumeration(kRecoveryHistogram,
-                                  EnrollmentRecoveryOnBootUma::kNoSerialNumber);
     return recovery_config;
   }
 
   recovery_config.mode = EnrollmentConfig::MODE_RECOVERY;
-  base::UmaHistogramEnumeration(kRecoveryHistogram,
-                                EnrollmentRecoveryOnBootUma::kForced);
 
   return recovery_config;
 }
