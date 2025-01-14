@@ -312,6 +312,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   dispatch_once(&onceToken, ^{
     dict = @{
       @"accessibilityPerformPress" : NSAccessibilityPressAction,
+      @"accessibilityPerformShowMenu" : NSAccessibilityShowMenuAction,
     };
   });
   return dict;
@@ -1017,6 +1018,17 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return _node->HasAction(action) || HasImplicitAction(*_node, action);
 }
 
+- (BOOL)performAction:(ax::mojom::Action)action {
+  if (![self hasAction:action]) {
+    return NO;
+  }
+
+  ui::AXActionData data;
+  data.action = action;
+  _node->GetDelegate()->AccessibilityPerformAction(data);
+  return YES;
+}
+
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
   ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
   if (cell)
@@ -1383,15 +1395,25 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (BOOL)accessibilityPerformPress {
-  ax::mojom::Action action = ax::mojom::Action::kDoDefault;
-  if (![self hasAction:action]) {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kDoDefault];
+}
+
+- (BOOL)accessibilityPerformShowMenu {
+  if (![self instanceActive]) {
     return NO;
   }
 
-  ui::AXActionData data;
-  data.action = action;
-  _node->GetDelegate()->AccessibilityPerformAction(data);
-  return YES;
+  if (AlsoUseShowMenuActionForDefaultAction(*_node)) {
+    return [self accessibilityPerformPress];
+  }
+
+  if ([self performAction:ax::mojom::Action::kShowContextMenu]) {
+    return YES;
+  }
+  return NO;
 }
 
 - (NSMutableArray*)internalAccessibilityAttributeNames {

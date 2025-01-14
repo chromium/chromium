@@ -82,6 +82,9 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Returns true if the given action is supported on the node.
 - (BOOL)hasAction:(ax::mojom::Action)action;
 
+// Performs the given action if supported.
+- (BOOL)performAction:(ax::mojom::Action)action;
+
 // Returns all accessibility attribute names. This is analogous to the
 // deprecated NSAccessibility accessibilityAttributeNames method, which
 // functions identically when the migration flag is off (see

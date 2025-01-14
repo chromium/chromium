@@ -2771,6 +2771,16 @@ bool ui::IsNSRange(id value) {
   return YES;
 }
 
+- (BOOL)accessibilityPerformShowMenu {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->ShowContextMenu(*actionTarget);
+  return YES;
+}
+
 // Returns the description of the given action.
 - (NSString*)accessibilityActionDescription:(NSString*)action {
   TRACE_EVENT2("accessibility",
