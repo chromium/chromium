@@ -409,6 +409,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         .with(MessageBannerProperties.TITLE, title)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
                         .with(MessageBannerProperties.ICON, icon)
+                        .with(
+                                MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX,
+                                icon.getIntrinsicWidth())
+                        .with(
+                                MessageBannerProperties.ICON_TINT_COLOR,
+                                MessageBannerProperties.TINT_NONE)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
                         .with(MessageBannerProperties.ON_FULLY_VISIBLE, onVisibleChange)
                         .build();
