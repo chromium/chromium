@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -71,13 +72,23 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  void SetUpOnMainThread() override {
+    WebRtcTestBase::SetUpOnMainThread();
+
+    base::RunLoop run_loop;
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([]() {
+          content::SetConditionalFocusWindowForTesting(base::Seconds(5));
+        }),
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedPageTitle);
-    command_line->AppendSwitchASCII(blink::switches::kConditionalFocusWindowMs,
-                                    "5000");
     // MSan and GL do not get along so avoid using the GPU with MSan.
     // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
@@ -107,10 +118,9 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   Tab ActiveTab() const {
     WebContents* const active_web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return active_web_contents == capturing_tab_
-               ? Tab::kCapturingTab
-               : active_web_contents == captured_tab_ ? Tab::kCapturedTab
-                                                      : Tab::kUnknownTab;
+    return active_web_contents == capturing_tab_  ? Tab::kCapturingTab
+           : active_web_contents == captured_tab_ ? Tab::kCapturedTab
+                                                  : Tab::kUnknownTab;
   }
 
   // Performs the following actions, in order:
@@ -249,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   // Whereas calls to Wait() in previous tests served to minimize flakiness,
   // this one is to prove no false-positives. Namely, we allow enough time
   // for the focus-change, yet it does not occur.
-  Wait(base::Milliseconds(10000));
+  Wait(base::Seconds(10));
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
@@ -269,16 +279,16 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
-// This ensures that we don't have to wait |kConditionalFocusWindowMs| before
-// focus occurs. Rather, that is just the hard-limit that is employed in case
-// the application attempts abuse by blocking the main thread for too long.
+// This ensures that we don't have to wait for the entire duration of the
+// conditional focus window before focus occurs. Rather, that is just the
+// hard-limit that is employed in case the application attempts abuse by
+// blocking the main thread for too long.
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, FocusTriggeredByMicrotask) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kNoValue);
-  // Note that the Wait(), which is necessary in order to minimize flakiness,
-  // has a duration less than |kConditionalFocusWindowMs|.
-  Wait(base::Milliseconds(2000));
-  // Focus-change already occurred before kConditionalFocusWindowMs.
+  // Recall that the test fixture set the conditional focus window to 5s.
+  Wait(base::Seconds(2));
+  // Focus-change occurs before 5s elapse.
   EXPECT_EQ(ActiveTab(), Tab::kCapturedTab);
 }
 
@@ -336,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   // Whereas calls to Wait() in previous tests served to minimize flakiness,
   // this one is to prove no false-positives. Namely, we allow enough time
   // for the focus-change, yet it does not occur.
-  Wait(base::Milliseconds(10000));
+  Wait(base::Seconds(10));
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
@@ -357,7 +367,7 @@ IN_PROC_BROWSER_TEST_P(ConditionalFocusBrowserTestWithFocusCapturingApplication,
   // Whereas calls to Wait() in previous tests served to minimize flakiness,
   // this one is to prove no false-positives. Namely, we allow enough time
   // for the focus-change, yet it does not occur.
-  Wait(base::Milliseconds(10000));
+  Wait(base::Seconds(10));
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 

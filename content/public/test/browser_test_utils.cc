@@ -4510,6 +4510,11 @@ base::CallbackListSubscription RegisterWebContentsCreationCallback(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SetConditionalFocusWindowForTesting(base::TimeDelta window) {
+  content::MediaStreamManager::GetInstance()
+      ->SetConditionalFocusWindowForTesting(window);
+}
+
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
         GlobalRenderFrameHostId,
