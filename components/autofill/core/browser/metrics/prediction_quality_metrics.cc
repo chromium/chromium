@@ -83,7 +83,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK = 45,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER_AND_APT = 46,
   GROUP_STANDALONE_CREDIT_CARD_VERIFICATION = 47,
-  GROUP_PREDICTION_IMPROVEMENTS = 48,
+  GROUP_AUTOFILL_AI = 48,
   // Note: if adding an enum value here, run
   // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
@@ -221,7 +221,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
       break;
 
     case FieldTypeGroup::kAutofillAi:
-      group = GROUP_PREDICTION_IMPROVEMENTS;
+      group = GROUP_AUTOFILL_AI;
       break;
 
     case FieldTypeGroup::kAddress:
@@ -389,6 +389,15 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
         case IMPROVED_PREDICTION:
+        case PASSPORT_NAME_TAG:
+        case PASSPORT_NUMBER:
+        case PASSPORT_ISSUING_COUNTRY_TAG:
+        case PASSPORT_EXPIRATION_DATE_TAG:
+        case PASSPORT_ISSUE_DATE_TAG:
+        case PASSPORT_COUNTRY_OF_BIRTH_TAG:
+        case LOYALTY_CARD_PROGRAM:
+        case LOYALTY_CARD_PROVIDER:
+        case LOYALTY_CARD_MEMBER_ID:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

@@ -14,16 +14,9 @@ using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 TEST(AutofillAttributeTypeTest, Relationships) {
-  {
-    AttributeType a = AttributeType(AttributeTypeName::kPassportName);
-    EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
-    EXPECT_EQ(a.field_type(), NAME_FULL);
-  }
-  {
-    AttributeType a = AttributeType(AttributeTypeName::kPassportNumber);
-    EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
-    EXPECT_EQ(a.field_type(), NO_SERVER_DATA);
-  }
+  AttributeType a = AttributeType(AttributeTypeName::kPassportName);
+  EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
+  EXPECT_EQ(a.field_type(), PASSPORT_NAME_TAG);
 }
 
 TEST(AutofillEntityTypeTest, Attributes) {

@@ -496,6 +496,9 @@ tools/metrics/histograms/update_autofill_enums.py -->
   <variant name="FIELD_WITH_DEFAULT_VALUE"/>
   <variant name="IBAN_VALUE"/>
   <variant name="IMPROVED_PREDICTION"/>
+  <variant name="LOYALTY_CARD_MEMBER_ID"/>
+  <variant name="LOYALTY_CARD_PROGRAM"/>
+  <variant name="LOYALTY_CARD_PROVIDER"/>
   <variant name="MERCHANT_EMAIL_SIGNUP"/>
   <variant name="MERCHANT_PROMO_CODE"/>
   <variant name="NAME_FIRST"/>
@@ -518,6 +521,12 @@ tools/metrics/histograms/update_autofill_enums.py -->
   <variant name="NOT_USERNAME"/>
   <variant name="NUMERIC_QUANTITY"/>
   <variant name="ONE_TIME_CODE"/>
+  <variant name="PASSPORT_COUNTRY_OF_BIRTH_TAG"/>
+  <variant name="PASSPORT_EXPIRATION_DATE_TAG"/>
+  <variant name="PASSPORT_ISSUE_DATE_TAG"/>
+  <variant name="PASSPORT_ISSUING_COUNTRY_TAG"/>
+  <variant name="PASSPORT_NAME_TAG"/>
+  <variant name="PASSPORT_NUMBER"/>
   <variant name="PASSWORD"/>
   <variant name="PHONE_HOME_CITY_AND_NUMBER"/>
   <variant name="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
