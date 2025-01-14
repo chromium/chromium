@@ -49,6 +49,10 @@ BASE_FEATURE(kPermissionPredictionsV3,
              "PermissionPredictionsV3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPermissionsAIv1,
+             "PermissionsAIv1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to trigger showing a HaTS survey, with the given
 // `probability` and `trigger_id`. The `probability` parameter is defined and
 // handled by the HatsService itself. If the parameter

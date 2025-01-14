@@ -1737,6 +1737,9 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPermissionPredictionsV3Name[];
 extern const char kPermissionPredictionsV3Description[];
 
+extern const char kPermissionsAIv1Name[];
+extern const char kPermissionsAIv1Description[];
+
 extern const char kPermissionQuietChipName[];
 extern const char kPermissionQuietChipDescription[];
 
