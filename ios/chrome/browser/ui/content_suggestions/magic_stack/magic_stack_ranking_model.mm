@@ -240,6 +240,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       ContentSuggestionsModuleType::kCompactedSetUpList);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_setUpListMediator.setUpListConfigs[0]
+                                animate:YES
                          withCompletion:nil];
 }
 
@@ -260,6 +261,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_safetyCheckMediator.safetyCheckState
+                                animate:YES
                          withCompletion:nil];
 }
 
@@ -281,6 +283,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self.delegate
       magicStackRankingModel:self
                didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow
+                     animate:YES
               withCompletion:nil];
 }
 
@@ -296,6 +299,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_tipsMediator.state
+                                animate:YES
                          withCompletion:completion];
 }
 
@@ -323,6 +327,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 - (void)removeTabResumptionModule {
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_tabResumptionMediator.itemConfig
+                                animate:NO
                          withCompletion:nil];
 }
 
@@ -344,6 +349,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self.delegate
       magicStackRankingModel:self
                didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow
+                     animate:YES
               withCompletion:nil];
 }
 
@@ -380,6 +386,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self.delegate
       magicStackRankingModel:self
                didRemoveItem:_mostVisitedTilesMediator.mostVisitedConfig
+                     animate:YES
               withCompletion:nil];
 }
 
@@ -620,6 +627,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_priceTrackingPromoMediator
                                             .priceTrackingPromoItemToShow
+                                animate:YES
                          withCompletion:nil];
 }
 
