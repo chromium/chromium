@@ -223,6 +223,10 @@ constexpr base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate{
     &kHashPrefixRealTimeLookupsSamplePing,
     "HashPrefixRealTimeLookupsSampleRate", /*default_value=*/100};
 
+BASE_FEATURE(kLocalIpAddressInEvents,
+             "LocalIpAddressInEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -338,6 +342,7 @@ base::Value::List GetFeatureStatusList() {
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
+      &kLocalIpAddressInEvents,
       &kLocalListsUseSBv5,
       &kOnDeviceNotificationContentDetectionModel,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
