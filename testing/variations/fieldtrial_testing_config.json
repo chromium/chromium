@@ -11184,6 +11184,27 @@
             ]
         }
     ],
+    "HistoryEmbeddingsV2Images": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "EnableImagesForResults": "true"
+                    },
+                    "enable_features": [
+                        "HistoryEmbeddings"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistorySyncAlternativeIllustration": [
         {
             "platforms": [
