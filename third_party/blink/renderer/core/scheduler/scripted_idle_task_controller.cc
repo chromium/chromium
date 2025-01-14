@@ -62,27 +62,8 @@ void UpdateMaxSchedulerIdleTasksCrashKey(
 
 }  // namespace
 
-BASE_FEATURE(kScriptedIdleTaskControllerOOMFix,
-             "ScriptedIdleTaskControllerOOMFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 IdleTask::~IdleTask() {
   CHECK(!delayed_task_handle_.IsValid());
-}
-
-ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler() =
-    default;
-ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler(
-    base::DelayedTaskHandle delayed_task_handle)
-    : delayed_task_handle_(std::move(delayed_task_handle)) {}
-ScriptedIdleTaskController::DelayedTaskCanceler::DelayedTaskCanceler(
-    DelayedTaskCanceler&&) = default;
-ScriptedIdleTaskController::DelayedTaskCanceler&
-ScriptedIdleTaskController::DelayedTaskCanceler::operator=(
-    ScriptedIdleTaskController::DelayedTaskCanceler&&) = default;
-
-ScriptedIdleTaskController::DelayedTaskCanceler::~DelayedTaskCanceler() {
-  delayed_task_handle_.CancelTask();
 }
 
 const char ScriptedIdleTaskController::kSupplementName[] =
@@ -179,17 +160,13 @@ void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
             ->PostCancelableDelayedTask(base::subtle::PostDelayedTaskPassKey(),
                                         FROM_HERE, std::move(callback),
                                         base::Milliseconds(timeout_millis));
-
-    if (base::FeatureList::IsEnabled(kScriptedIdleTaskControllerOOMFix)) {
-      auto it = idle_tasks_.find(id);
-      CHECK_NE(it, idle_tasks_.end());
-      CHECK(!it->value->delayed_task_handle_.IsValid());
-      it->value->delayed_task_handle_ = std::move(delayed_task_handle);
-    }
+    auto it = idle_tasks_.find(id);
+    CHECK_NE(it, idle_tasks_.end());
+    CHECK(!it->value->delayed_task_handle_.IsValid());
+    it->value->delayed_task_handle_ = std::move(delayed_task_handle);
   }
 
-  PostSchedulerIdleTask(id,
-                        DelayedTaskCanceler(std::move(delayed_task_handle)));
+  PostSchedulerIdleTask(id);
 }
 
 void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
@@ -207,21 +184,17 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   RemoveIdleTask(id);
 }
 
-void ScriptedIdleTaskController::PostSchedulerIdleTask(
-    CallbackId id,
-    DelayedTaskCanceler canceler) {
+void ScriptedIdleTaskController::PostSchedulerIdleTask(CallbackId id) {
   ++num_pending_scheduler_idle_tasks_;
   UpdateMaxSchedulerIdleTasksCrashKey(num_pending_scheduler_idle_tasks_);
 
   scheduler_->PostIdleTask(
-      FROM_HERE,
-      WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
-                    WrapWeakPersistent(this), id, std::move(canceler)));
+      FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
+                               WrapWeakPersistent(this), id));
 }
 
 void ScriptedIdleTaskController::SchedulerIdleTask(
     CallbackId id,
-    ScriptedIdleTaskController::DelayedTaskCanceler /* canceler */,
     base::TimeTicks deadline) {
   CHECK_GT(num_pending_scheduler_idle_tasks_, 0u, base::NotFatalUntil::M135);
   --num_pending_scheduler_idle_tasks_;
@@ -231,22 +204,14 @@ void ScriptedIdleTaskController::SchedulerIdleTask(
   }
 
   if (paused_) {
-    if (base::FeatureList::IsEnabled(kScriptedIdleTaskControllerOOMFix)) {
-      // Reschedule when unpaused.
-      idle_tasks_to_reschedule_.emplace_back(id);
-    } else {
-      // All `IdleTask`s are rescheduled when unpaused.
-    }
+    // Reschedule when unpaused.
+    idle_tasks_to_reschedule_.emplace_back(id);
     return;
   }
 
   // If we are going to yield immediately, reschedule the callback for later.
   if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
-    // Note: `canceler` is implicitly deleted in this code path, which means
-    // that the timeout will not be honored when the
-    // "ScriptedIdleTaskControllerOOMFix" feature is disabled (when the feature
-    // is enabled, the `DelayedTaskHandle` is stored on the `IdleTask`).
-    PostSchedulerIdleTask(id, DelayedTaskCanceler());
+    PostSchedulerIdleTask(id);
     return;
   }
 
@@ -364,18 +329,11 @@ void ScriptedIdleTaskController::ContextUnpaused() {
   }
   idle_tasks_with_expired_timeout_.clear();
 
-  if (base::FeatureList::IsEnabled(kScriptedIdleTaskControllerOOMFix)) {
-    // Reschedule `IdleTask`s for which `SchedulerIdleTask` ran while paused.
-    for (auto& idle_task : idle_tasks_to_reschedule_) {
-      PostSchedulerIdleTask(idle_task, DelayedTaskCanceler());
-    }
-    idle_tasks_to_reschedule_.clear();
-  } else {
-    // Reschedule all `IdleTask`s.
-    for (auto& idle_task : idle_tasks_) {
-      PostSchedulerIdleTask(idle_task.key, DelayedTaskCanceler());
-    }
+  // Reschedule `IdleTask`s for which `SchedulerIdleTask` ran while paused.
+  for (auto& idle_task : idle_tasks_to_reschedule_) {
+    PostSchedulerIdleTask(idle_task);
   }
+  idle_tasks_to_reschedule_.clear();
 }
 
 }  // namespace blink
