@@ -312,13 +312,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 const base::Time& creation_date,
                                                 net::CookieSourceScheme scheme);
 
-  // Cookie ordering methods.
-
-  // Returns true if the cookie is less than |other|, considering only name,
-  // domain and path. In particular, two equivalent cookies (see IsEquivalent())
-  // are identical for PartialCompare().
-  bool PartialCompare(const CanonicalCookie& other) const;
-
   // Return whether this object is a valid CanonicalCookie().  Invalid
   // cookies may be constructed by the detailed constructor.
   // A cookie is considered canonical if-and-only-if:

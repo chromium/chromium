@@ -3054,35 +3054,6 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
           _, _, false));
 }
 
-TEST(CanonicalCookieTest, PartialCompare) {
-  GURL url("http://www.example.com");
-  base::Time creation_time = base::Time::Now();
-  std::optional<base::Time> server_time = std::nullopt;
-  std::unique_ptr<CanonicalCookie> cookie(CanonicalCookie::CreateForTesting(
-      url, "a=b", creation_time, server_time));
-  std::unique_ptr<CanonicalCookie> cookie_different_path(
-      CanonicalCookie::CreateForTesting(url, "a=b; path=/foo", creation_time,
-                                        server_time));
-  std::unique_ptr<CanonicalCookie> cookie_different_value(
-      CanonicalCookie::CreateForTesting(url, "a=c", creation_time,
-                                        server_time));
-
-  // Cookie is equivalent to itself.
-  EXPECT_FALSE(cookie->PartialCompare(*cookie));
-
-  // Changing the path affects the ordering.
-  EXPECT_TRUE(cookie->PartialCompare(*cookie_different_path));
-  EXPECT_FALSE(cookie_different_path->PartialCompare(*cookie));
-
-  // Changing the value does not affect the ordering.
-  EXPECT_FALSE(cookie->PartialCompare(*cookie_different_value));
-  EXPECT_FALSE(cookie_different_value->PartialCompare(*cookie));
-
-  // Cookies identical for PartialCompare() are equivalent.
-  EXPECT_TRUE(cookie->IsEquivalent(*cookie_different_value));
-  EXPECT_TRUE(cookie->IsEquivalent(*cookie));
-}
-
 TEST(CanonicalCookieTest, SecureCookiePrefix) {
   GURL https_url("https://www.example.test");
   GURL http_url("http://www.example.test");

@@ -83,20 +83,6 @@ namespace {
 static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
 
-// Compares cookies using name, domain and path, so that "equivalent" cookies
-// (per RFC 2965) are equal to each other.
-int PartialCookieOrdering(const CanonicalCookie& a, const CanonicalCookie& b) {
-  int diff = a.Name().compare(b.Name());
-  if (diff != 0)
-    return diff;
-
-  diff = a.Domain().compare(b.Domain());
-  if (diff != 0)
-    return diff;
-
-  return a.Path().compare(b.Path());
-}
-
 void AppendCookieLineEntry(const CanonicalCookie& cookie,
                            std::string* cookie_line) {
   if (!cookie_line->empty())
@@ -914,10 +900,6 @@ std::string CanonicalCookie::DebugString() const {
       "name: %s value: %s domain: %s path: %s creation: %" PRId64,
       Name().c_str(), Value().c_str(), Domain().c_str(), Path().c_str(),
       static_cast<int64_t>(CreationDate().ToTimeT()));
-}
-
-bool CanonicalCookie::PartialCompare(const CanonicalCookie& other) const {
-  return PartialCookieOrdering(*this, other) < 0;
 }
 
 bool CanonicalCookie::IsCanonical() const {

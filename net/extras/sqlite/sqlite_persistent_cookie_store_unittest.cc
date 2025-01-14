@@ -1178,7 +1178,9 @@ TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
 
 bool CompareCookies(const std::unique_ptr<CanonicalCookie>& a,
                     const std::unique_ptr<CanonicalCookie>& b) {
-  return a->PartialCompare(*b);
+  CHECK(a);
+  CHECK(b);
+  return *a < *b;
 }
 
 // Confirm the store can handle having cookies with identical creation

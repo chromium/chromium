@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/cookies/canonical_cookie.h"
+
 #include <memory>
 
-#include "net/cookies/canonical_cookie.h"
+#include "base/check.h"
 #include "net/cookies/canonical_cookie.pb.h"
 #include "net/cookies/canonical_cookie_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -24,7 +26,6 @@ DEFINE_BINARY_PROTO_FUZZER(
     const CanonicalCookie copied_cookie = *sanitized_cookie;
     CHECK(sanitized_cookie->IsEquivalent(copied_cookie));
     CHECK(sanitized_cookie->IsEquivalentForSecureCookieMatching(copied_cookie));
-    CHECK(!sanitized_cookie->PartialCompare(copied_cookie));
   }
 }
 
