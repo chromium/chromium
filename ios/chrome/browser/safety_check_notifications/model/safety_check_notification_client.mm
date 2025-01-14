@@ -480,6 +480,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     NSDictionary* notification_metadata,
     Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(browser);
 
   // The notification metadata must correspond to one of the Safety Check
   // notification types.
@@ -491,8 +492,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
 
   if (IsProvisionalNotificationAlertEnabled()) {
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);

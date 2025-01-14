@@ -186,8 +186,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
     // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
     permitted_ = true;
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            GetSceneLevelForegroundActiveBrowser()->GetProfile());
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
     const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
