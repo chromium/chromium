@@ -45,6 +45,7 @@ std::unique_ptr<views::Widget> GlicView::CreateWidget(
   params.remove_standard_frame = true;
 #if BUILDFLAG(IS_WIN)
   params.dont_show_in_taskbar = true;
+  params.force_system_menu_for_frameless = true;
 #endif
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.bounds = initial_bounds;

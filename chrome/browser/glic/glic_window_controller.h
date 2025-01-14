@@ -80,6 +80,10 @@ class GlicWindowController : public views::WidgetObserver {
   // Sets the audio ducking status.  Returns true if the operation succeeded.
   bool SetAudioDucking(bool enabled);
 
+  // Displays a context menu when the user right clicks on the title bar.
+  // This is probably Windows only.
+  void ShowTitleBarContextMenuAt(gfx::Point event_loc);
+
   // Drags the glic window following the current mouse location with the given
   // `mouse_offset` and checks if the glic window is at a position where it
   // could attach to a browser window when a drag ends.

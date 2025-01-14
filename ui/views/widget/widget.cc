@@ -528,6 +528,10 @@ void Widget::Init(InitParams params) {
 #if BUILDFLAG(IS_WIN)
   // These are mutually exclusive.
   CHECK(!(params.force_show_in_taskbar && params.dont_show_in_taskbar));
+
+  // force_system_menu_for_frameless only applies to frameless windows.
+  CHECK(!params.force_system_menu_for_frameless ||
+        params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 #endif  // BUILDFLAG(IS_WIN)
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU) {

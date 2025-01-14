@@ -130,6 +130,10 @@ void CalculateWindowStylesFromInitParams(
       if (params.dont_show_in_taskbar) {
         *ex_style |= WS_EX_TOOLWINDOW;
       }
+      if (params.force_system_menu_for_frameless &&
+          params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS) {
+        *style |= WS_SYSMENU;
+      }
 #endif  // BUILDFLAG(IS_WIN)
       break;
     default:

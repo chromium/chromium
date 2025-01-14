@@ -30,7 +30,13 @@
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/screen_win.h"
+#include "ui/views/win/hwnd_util.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace glic {
+
 namespace {
 // Default value for how close the top-right corner of the glic window must be
 // to a browser's glic button to attach to said browser.
@@ -119,7 +125,11 @@ class WindowEventObserver : public ui::EventObserver {
       mouse_down_in_draggable_area_ =
           glic_view_->IsPointWithinDraggableArea(mouse_location);
     }
-
+    if (event.type() == ui::EventType::kMouseReleased &&
+        event.AsMouseEvent()->IsRightMouseButton() &&
+        mouse_down_in_draggable_area_) {
+      glic_window_controller_->ShowTitleBarContextMenuAt(mouse_location);
+    }
     if (event.type() == ui::EventType::kMouseReleased ||
         event.type() == ui::EventType::kMouseExited) {
       mouse_down_in_draggable_area_ = false;
@@ -439,6 +449,15 @@ bool GlicWindowController::SetAudioDucking(bool enabled) {
   } else {
     return audio_ducker->StopDuckingOtherAudio();
   }
+}
+
+void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
+#if BUILDFLAG(IS_WIN)
+  views::View::ConvertPointToScreen(GetGlicView(), &event_loc);
+  event_loc = display::win::ScreenWin::DIPToScreenPoint(event_loc);
+  views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
+                                             event_loc);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void GlicWindowController::HandleWindowDragWithOffset(

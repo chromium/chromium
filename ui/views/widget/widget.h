@@ -445,6 +445,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If true, force the window not to be shown in the taskbar, even for
     // window types that do appear in the taskbar by default.
     bool dont_show_in_taskbar = false;
+
+    // If true, adds the WS_SYSMENU style to TYPE_WINDOW_FRAMELESS windows.
+    bool force_system_menu_for_frameless = false;
 #endif  //  BUILDFLAG(IS_WIN)
 
     // Only used by X11, for root level windows. Specifies the res_name and
