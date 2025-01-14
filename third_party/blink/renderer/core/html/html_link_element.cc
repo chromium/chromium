@@ -97,8 +97,9 @@ void HTMLLinkElement::ParseAttribute(
     if (rel_attribute_.IsTermsOfService()) {
       UseCounter::Count(&GetDocument(), WebFeature::kLinkRelTermsOfService);
     }
-    if (rel_attribute_.IsPayment() && GetDocument().IsInOutermostMainFrame()) {
-      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelPayment);
+    if (rel_attribute_.IsFacilitatedPayment() &&
+        GetDocument().IsInOutermostMainFrame()) {
+      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelFacilitatedPayment);
       MaybeHandlePaymentLink();
     }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
@@ -523,8 +524,8 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
 void HTMLLinkElement::MaybeHandlePaymentLink() {
 #if BUILDFLAG(IS_ANDROID)
   KURL payment_link = GetNonEmptyURLAttribute(html_names::kHrefAttr);
-  if (rel_attribute_.IsPayment() && !payment_link.IsEmpty() && isConnected() &&
-      GetDocument().IsInOutermostMainFrame() &&
+  if (rel_attribute_.IsFacilitatedPayment() && !payment_link.IsEmpty() &&
+      isConnected() && GetDocument().IsInOutermostMainFrame() &&
       RuntimeEnabledFeatures::PaymentLinkDetectionEnabled()) {
     GetDocument().HandlePaymentLink(payment_link);
   }
