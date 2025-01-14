@@ -148,7 +148,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gfx::Size size,
       SkColorType sk_color_type,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       CanvasResourceHost* resource_host = nullptr);
 

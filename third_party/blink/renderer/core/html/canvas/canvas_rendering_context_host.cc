@@ -183,7 +183,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       // try a passthrough provider.
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
-          Size(), sk_color_type, alpha_type, sk_color_space,
+          Size(), sk_color_type, alpha_type,
+          SkColorSpaceToGfxColorSpace(sk_color_space),
           SharedGpuContext::ContextProviderWrapper(), this);
     }
     if (!provider) {

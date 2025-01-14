@@ -1232,7 +1232,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
     gfx::Size size,
     SkColorType sk_color_type,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
@@ -1267,9 +1267,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // fact that it simply delegates the internal parts of the resource to other
   // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
-      size, sk_color_type, alpha_type,
-      SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
-      context_provider_wrapper, resource_host);
+      size, sk_color_type, alpha_type, color_space, context_provider_wrapper,
+      resource_host);
   CHECK(provider->IsValid());
   return provider;
 }
