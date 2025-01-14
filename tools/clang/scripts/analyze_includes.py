@@ -123,6 +123,11 @@ def parse_build(build_log, root_filter=None):
       build_dir = m.group(1)
       continue
 
+    if line.startswith('['):
+      # Some tool other than clang is running. Ignore its output.
+      skipping_root = True
+      continue
+
   return roots, includes
 
 
@@ -200,6 +205,21 @@ class TestParseBuild(unittest.TestCase):
     self.assertEqual(includes['a.cc'], set(['a.h']))
     self.assertEqual(includes['a.h'], set())
     self.assertEqual(includes['out/foo/gen/c.c'], set())
+
+  def test_bindgen(self):
+    x = [
+        'ninja: Entering directory `out/foo\'',
+        '[123/234] clang -c ../../a.cc -o a.o',
+        '. ../../a.h',
+        '[124/234] bindgen -c ../../b.cc -o b.o',
+        '. ../../b.h',
+        '[125/234] clang -c ../../c.cc -o c.o',
+        '. ../../c.h',
+    ]
+    (roots, includes) = parse_build(x)
+    self.assertEqual(roots, set(['a.cc', 'c.cc']))
+    self.assertEqual(includes['a.cc'], set(['a.h']))
+    self.assertEqual(includes['c.cc'], set(['c.h']))
 
 
 def post_order_nodes(root, child_nodes):
