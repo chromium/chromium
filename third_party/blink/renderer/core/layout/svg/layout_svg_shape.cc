@@ -84,13 +84,14 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
     SetNeedsBoundariesUpdate();
   }
 
+  const ComputedStyle& style = StyleRef();
+
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::UpdateReferenceBoxDependency(*this);
-  SVGResources::UpdatePaints(*this, old_style, StyleRef());
+  SVGResources::UpdatePaints(*this, old_style, style);
 
   if (old_style) {
-    const ComputedStyle& style = StyleRef();
     // Most of the stroke attributes (caps, joins, miters, width, etc.) will
     // cause a re-layout which will clear the stroke-path cache; however, there
     // are a couple of additional properties that *won't* cause a layout, but
