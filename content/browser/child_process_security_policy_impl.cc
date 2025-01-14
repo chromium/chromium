@@ -1136,8 +1136,20 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
   }
 
   // When the child process has been commanded to request a file:// URL,
-  // then we grant it the capability for that URL only.
-  state->second->GrantRequestOfSpecificFile(path);
+  // then we grant it the capability for that URL only. Canonicalize the path
+  // via roundtrip to file:// URL so it will match the incoming URL we validate
+  // against (crbug.com/382645162), except android content:// URLs.
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    state->second->GrantRequestOfSpecificFile(path);
+    return;
+  }
+#endif
+  GURL url = net::FilePathToFileURL(path);
+  base::FilePath canonical_path;
+  if (net::FileURLToFilePath(url, &canonical_path)) {
+    state->second->GrantRequestOfSpecificFile(canonical_path);
+  }
 }
 
 void ChildProcessSecurityPolicyImpl::GrantReadFile(int child_id,
