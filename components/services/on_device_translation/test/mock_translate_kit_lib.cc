@@ -21,6 +21,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <string_view>
 
@@ -181,6 +182,18 @@ class FakeTranslateKit {
 }  // namespace
 
 extern "C" {
+
+TRANSLATE_KIT_EXPORT bool GetTranslateKitVersion(TranslateKitVersion* version) {
+  CHECK(version);
+  CHECK(version->buffer);
+  CHECK(version->buffer_size);
+
+  // Always return a maximum version.
+  constexpr char kMaxVersion[] = "9999.99.99.99";
+  strncpy(version->buffer, kMaxVersion, sizeof(kMaxVersion));
+  version->buffer_size = sizeof(kMaxVersion) - 1;
+  return true;
+}
 
 TRANSLATE_KIT_EXPORT void InitializeStorageBackend(
     FileExistsFn file_exists,

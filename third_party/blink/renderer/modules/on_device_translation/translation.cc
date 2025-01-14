@@ -64,6 +64,8 @@ String ConvertCreateTranslatorErrorToDebugString(
       return "The translation service count exceeded the limitation.";
     case CreateTranslatorError::kExceedsPendingTaskCountLimitation:
       return "Too many Translator API requests are queued.";
+    case CreateTranslatorError::kInvalidVersion:
+      return "The translation library version is invalid.";
   }
 }
 class CreateTranslatorClient
@@ -128,9 +130,7 @@ class CreateTranslatorClient
     Cleanup();
   }
 
-  void ResetReceiver() override {
-    receiver_.reset();
-  }
+  void ResetReceiver() override { receiver_.reset(); }
 
  private:
   Member<Translation> translation_;

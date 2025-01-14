@@ -16,3 +16,15 @@ source_set("cpp") {
     "//third_party/blink/public/common:headers",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "features_unittest.cc" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/services/on_device_translation/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

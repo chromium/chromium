@@ -117,6 +117,9 @@ chromium-metrics-reviews@google.com.
     Success to load TranslateKit binary but one or more function pointers are
     null.
   </int>
+  <int value="4" label="InvalidVersion">
+    Success to load TranslateKit binary but the binary version is invalid.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->

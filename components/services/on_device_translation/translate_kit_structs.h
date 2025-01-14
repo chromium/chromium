@@ -41,6 +41,14 @@ typedef struct {
 } TranslateKitOutputText;
 
 typedef struct {
+  // The buffer to store the version string to.
+  // Not owned.
+  char* buffer;
+  // The size of `buffer`.
+  size_t buffer_size;
+} TranslateKitVersion;
+
+typedef struct {
   // A chrome::on_device_translation::TranslateKitLanguagePackageConfig
   // serialized as a string.
   // Not owned.

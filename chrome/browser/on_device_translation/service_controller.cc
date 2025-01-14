@@ -83,6 +83,8 @@ CreateTranslatorError ToCreateTranslatorError(CreateTranslatorResult result) {
       return CreateTranslatorError::kFailedToInitialize;
     case CreateTranslatorResult::kErrorFailedToCreateTranslator:
       return CreateTranslatorError::kFailedToCreateTranslator;
+    case CreateTranslatorResult::kErrorInvalidVersion:
+      return CreateTranslatorError::kInvalidVersion;
   }
 }
 
@@ -456,7 +458,6 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
   base::ranges::set_difference(required_not_installed_packs, registered_packs,
                                std::back_inserter(to_be_registered_packs));
 }
-
 
 void OnDeviceTranslationServiceController::OnServiceIdle() {
   service_remote_.reset();

@@ -7,6 +7,8 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -16,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -125,6 +128,9 @@ std::unique_ptr<TranslateKitClient> TranslateKitClient::CreateForTest(
 TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
                                        base::PassKey<TranslateKitClient>)
     : lib_(library_path),
+      get_translate_kit_version_func_(
+          reinterpret_cast<GetTranslateKitVersionFn>(
+              lib_.GetFunctionPointer("GetTranslateKitVersion"))),
       initialize_storage_backend_fnc_(
           reinterpret_cast<InitializeStorageBackendFn>(
               lib_.GetFunctionPointer("InitializeStorageBackend"))),
@@ -152,15 +158,34 @@ LoadTranslateKitResult TranslateKitClient::CheckLoadTranslateKitResult() {
     return LoadTranslateKitResult::kInvalidBinary;
   }
 
-  if (!initialize_storage_backend_fnc_ || !create_translate_kit_fnc_ ||
-      !delete_tanslate_kit_fnc_ || !set_language_packages_func_ ||
-      !translate_kit_create_translator_func_ || !delete_translator_fnc_ ||
-      !translator_translate_func_) {
+  if (!get_translate_kit_version_func_ || !initialize_storage_backend_fnc_ ||
+      !create_translate_kit_fnc_ || !delete_tanslate_kit_fnc_ ||
+      !set_language_packages_func_ || !translate_kit_create_translator_func_ ||
+      !delete_translator_fnc_ || !translator_translate_func_) {
     maybe_kit_ptr_ =
         base::unexpected(CreateTranslatorResult::kErrorInvalidFunctionPointer);
     return LoadTranslateKitResult::kInvalidFunctionPointer;
   }
+
+  if (!IsTranslateKitVersionValid()) {
+    maybe_kit_ptr_ =
+        base::unexpected(CreateTranslatorResult::kErrorInvalidVersion);
+    return LoadTranslateKitResult::kInvalidVersion;
+  }
+
   return LoadTranslateKitResult::kSuccess;
+}
+
+DISABLE_CFI_DLSYM
+bool TranslateKitClient::IsTranslateKitVersionValid() {
+  std::string version_buffer(kTranslationAPILibraryVersionStringSize, '\0');
+  TranslateKitVersion version{version_buffer.data(), version_buffer.size()};
+  if (!get_translate_kit_version_func_(&version)) {
+    return false;
+  }
+
+  std::string_view version_string(version.buffer, version.buffer_size);
+  return IsValidTranslateKitVersion(version_string);
 }
 
 DISABLE_CFI_DLSYM

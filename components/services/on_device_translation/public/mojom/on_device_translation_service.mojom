@@ -72,6 +72,9 @@ enum CreateTranslatorResult {
   // The translator cannot be created because the library failed to create the
   // translator.
   kErrorFailedToCreateTranslator = 4,
+
+  // The translator cannot be created because the library version is invalid.
+  kErrorInvalidVersion= 5,
 };
 
 // Currently the sandboxing of the On Device Translation service is supported

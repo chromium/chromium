@@ -88,6 +88,9 @@ enum CreateTranslatorError {
   // The translator cannot be created, because the number of pending tasks
   // exceeds the limitation.
   kExceedsPendingTaskCountLimitation = 10,
+
+  // The translator cannot be created because the library version is invalid.
+  kInvalidVersion = 11,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.
