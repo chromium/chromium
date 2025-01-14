@@ -487,7 +487,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
 
   if (pending_request->request.requested_video_device_ids.empty() ||
       pending_request->request.requested_video_device_ids.front().empty()) {
-    // Passing nullptr selects the default picker (DesktopMediaPickerViews).
+    // Passing nullptr selects the default picker (DesktopMediaPickerImpl).
     pending_request->picker = picker_factory_->CreatePicker(nullptr);
     if (!pending_request->picker) {
       std::move(pending_request->callback)

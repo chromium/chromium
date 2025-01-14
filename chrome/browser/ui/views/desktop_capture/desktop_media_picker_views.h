@@ -26,9 +26,9 @@ class TabbedPane;
 class MdTextButton;
 }  // namespace views
 
-class DesktopMediaPickerViews;
+class DesktopMediaPickerImpl;
 
-// Dialog view used for DesktopMediaPickerViews.
+// Dialog view used for DesktopMediaPickerImpl.
 //
 // TODO(crbug.com/40637301): Consider renaming this class.
 class DesktopMediaPickerDialogView : public views::DialogDelegateView,
@@ -40,7 +40,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   enum class DialogType : int;
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
-      DesktopMediaPickerViews* parent,
+      DesktopMediaPickerImpl* parent,
       std::vector<std::unique_ptr<DesktopMediaList>> source_lists);
   DesktopMediaPickerDialogView(const DesktopMediaPickerDialogView&) = delete;
   DesktopMediaPickerDialogView& operator=(const DesktopMediaPickerDialogView&) =
@@ -49,7 +49,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   void RecordUmaDismissal() const;
 
-  // Called by parent (DesktopMediaPickerViews) when it's destroyed.
+  // Called by parent (DesktopMediaPickerImpl) when it's destroyed.
   void DetachParent();
 
   // Called by DesktopMediaListController.
@@ -165,7 +165,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   const bool is_system_audio_offered_;
   const content::GlobalRenderFrameHostId capturer_global_id_;
 
-  raw_ptr<DesktopMediaPickerViews> parent_;
+  raw_ptr<DesktopMediaPickerImpl> parent_;
 
   raw_ptr<views::Label> description_label_ = nullptr;
 
@@ -194,15 +194,14 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
 // Implementation of DesktopMediaPicker for Views.
 //
-// TODO(crbug.com/40637301): Rename this class.  Consider merging with
-// DesktopMediaPickerController and naming the merged class just
-// DesktopMediaPicker.
-class DesktopMediaPickerViews : public DesktopMediaPicker {
+// TODO(crbug.com/40637301): Consider merging with DesktopMediaPickerController
+// and naming the merged class just DesktopMediaPicker.
+class DesktopMediaPickerImpl : public DesktopMediaPicker {
  public:
-  DesktopMediaPickerViews();
-  DesktopMediaPickerViews(const DesktopMediaPickerViews&) = delete;
-  DesktopMediaPickerViews& operator=(const DesktopMediaPickerViews&) = delete;
-  ~DesktopMediaPickerViews() override;
+  DesktopMediaPickerImpl();
+  DesktopMediaPickerImpl(const DesktopMediaPickerImpl&) = delete;
+  DesktopMediaPickerImpl& operator=(const DesktopMediaPickerImpl&) = delete;
+  ~DesktopMediaPickerImpl() override;
 
   void NotifyDialogResult(const content::DesktopMediaID& source);
 
@@ -223,7 +222,7 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
   Params::RequestSource request_source_;
 
   // The |dialog_| is owned by the corresponding views::Widget instance.
-  // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed
+  // When DesktopMediaPickerImpl is destroyed the |dialog_| is destroyed
   // asynchronously by closing the widget.
   raw_ptr<DesktopMediaPickerDialogView> dialog_;
 };
