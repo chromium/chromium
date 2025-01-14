@@ -49,4 +49,21 @@ EntityInstance::EntityInstance(EntityInstance&&) = default;
 EntityInstance& EntityInstance::operator=(EntityInstance&&) = default;
 EntityInstance::~EntityInstance() = default;
 
+std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
+  os << a.type() << ": " << '"' << a.value() << '"';
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
+  os << "- name: " << '"' << e.type() << '"' << std::endl;
+  os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
+  os << "- guid: " << '"' << e.guid().AsLowercaseString() << '"' << std::endl;
+  os << "- date modified: " << '"' << e.date_modified() << '"' << std::endl;
+  os << "- synced: " << '"' << e.synced() << '"' << std::endl;
+  for (const AttributeInstance& a : e.attributes()) {
+    os << "- attribute " << a << std::endl;
+  }
+  return os;
+}
+
 }  // namespace autofill

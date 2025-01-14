@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_INSTANCE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ENTITY_INSTANCE_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -157,6 +158,9 @@ class EntityInstance final {
   base::Time date_modified_;
   bool synced_ = false;
 };
+
+std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
+std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
 
 }  // namespace autofill
 
