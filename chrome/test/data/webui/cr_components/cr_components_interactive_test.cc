@@ -14,6 +14,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
   RunTest("cr_components/most_visited_focus_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, CrShortcutInput) {
+  RunTest("cr_components/cr_shortcut_input/cr_shortcut_input_test.js",
+          "mocha.run()");
+}
+
 class CrComponentsHistoryClustersFocusTest : public WebUIMochaFocusTest {
  protected:
   CrComponentsHistoryClustersFocusTest() {

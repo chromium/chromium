@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for extensions-shortcut-input. */
+/** @fileoverview Suite of tests for cr-shortcut-input. */
 
-import 'chrome://extensions/extensions.js';
+import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 
-import type {ExtensionsShortcutInputElement} from 'chrome://extensions/extensions.js';
+import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {Modifier} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-suite('ShortcutInputTest', function() {
-  let input: ExtensionsShortcutInputElement;
+suite('CrShortcutInputTest', function() {
+  let input: CrShortcutInputElement;
 
   setup(function() {
     loadTimeData.resetForTesting({
@@ -26,7 +26,7 @@ suite('ShortcutInputTest', function() {
       shortcutNeedCharacter: 'need character',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    input = document.createElement('extensions-shortcut-input');
+    input = document.createElement('cr-shortcut-input');
     document.body.appendChild(input);
   });
 

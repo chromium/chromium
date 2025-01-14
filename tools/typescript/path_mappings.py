@@ -23,6 +23,7 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/certificate_manager",
       "cr_components/color_change_listener",
       "cr_components/commerce",
+      "cr_components/cr_shortcut_input",
       "cr_components/customize_color_scheme_mode",
       "cr_components/customize_themes",
       "cr_components/help_bubble",

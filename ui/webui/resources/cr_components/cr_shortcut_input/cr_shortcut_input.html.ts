@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ShortcutInputElement} from './shortcut_input.js';
+import type {CrShortcutInputElement} from './cr_shortcut_input.js';
 
-export function getHtml(this: ShortcutInputElement) {
+export function getHtml(this: CrShortcutInputElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="main">

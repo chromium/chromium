@@ -25,10 +25,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UpdateShortcut) {
           "runMochaTest('ExtensionShortcutTest', 'UpdateShortcut')");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, KeyboardShortcuts) {
-  RunTest("extensions/shortcut_input_test.js", "mocha.run()");
-}
-
 class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {

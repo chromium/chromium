@@ -7,7 +7,6 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsKeyboardShortcutsElement} from 'chrome://extensions/extensions.js';
-import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -91,34 +90,6 @@ suite('ExtensionShortcutTest', function() {
     assertEquals(2, commands.length);
   });
 
-  test('IsValidKeyCode', function() {
-    assertTrue(isValidKeyCode('A'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('F'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('Z'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('4'.charCodeAt(0)));
-    assertTrue(isValidKeyCode(Key.PAGE_UP));
-    assertTrue(isValidKeyCode(Key.MEDIA_PLAY_PAUSE));
-    assertTrue(isValidKeyCode(Key.DOWN));
-    assertFalse(isValidKeyCode(16));   // Shift
-    assertFalse(isValidKeyCode(17));   // Ctrl
-    assertFalse(isValidKeyCode(18));   // Alt
-    assertFalse(isValidKeyCode(113));  // F2
-    assertFalse(isValidKeyCode(144));  // Num Lock
-    assertFalse(isValidKeyCode(43));   // +
-    assertFalse(isValidKeyCode(27));   // Escape
-  });
-
-  test('KeyStrokeToString', function() {
-    const charCodeA = 'A'.charCodeAt(0);
-    let e = new KeyboardEvent('keydown', {keyCode: charCodeA});
-    assertEquals('A', keystrokeToString(e));
-    e = new KeyboardEvent('keydown', {keyCode: charCodeA, ctrlKey: true});
-    assertEquals('Ctrl+A', keystrokeToString(e));
-    e = new KeyboardEvent(
-        'keydown', {keyCode: charCodeA, ctrlKey: true, shiftKey: true});
-    assertEquals('Ctrl+Shift+A', keystrokeToString(e));
-  });
-
   test('ScopeChange', async function() {
     const selectElement = keyboardShortcuts.shadowRoot!.querySelector('select');
     assertTrue(!!selectElement);
@@ -134,8 +105,8 @@ suite('ExtensionShortcutTest', function() {
 
 
   test('UpdateShortcut', async function() {
-    const shortcutInput = keyboardShortcuts.shadowRoot!.querySelector(
-        'extensions-shortcut-input');
+    const shortcutInput =
+        keyboardShortcuts.shadowRoot!.querySelector('cr-shortcut-input');
     assertTrue(!!shortcutInput);
     const field = shortcutInput.$.input;
     assertEquals('Ctrl + W', field.value);

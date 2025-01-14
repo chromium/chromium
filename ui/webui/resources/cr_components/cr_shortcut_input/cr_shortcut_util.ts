@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {isChromeOS, isMac} from 'chrome://resources/js/platform.js';
-
+import {assertNotReached} from '//resources/js/assert.js';
+import {isChromeOS, isMac} from '//resources/js/platform.js';
 
 export enum Key {
   COMMA = 188,
@@ -68,7 +67,7 @@ function hasModifier(e: KeyboardEvent, countShiftAsModifier: boolean): boolean {
 }
 
 /**
- * Checks whether the passed in |keyCode| is a valid extension command key.
+ * Checks whether the passed in |keyCode| is a valid command key.
  * @return Whether the key is valid.
  */
 export function isValidKeyCode(keyCode: number): boolean {
@@ -85,8 +84,7 @@ export function isValidKeyCode(keyCode: number): boolean {
 }
 
 /**
- * Converts a keystroke event to string form, ignoring invalid extension
- * commands.
+ * Converts a keystroke event to string form, ignoring invalid commands.
  */
 export function keystrokeToString(e: KeyboardEvent): string {
   const output = [];
@@ -178,7 +176,7 @@ export function keystrokeToString(e: KeyboardEvent): string {
 /**
  * Returns true if the event has valid modifiers.
  * @param e The keyboard event to consider.
- * @return Wether the event is valid.
+ * @return Whether the event is valid.
  */
 export function hasValidModifiers(e: KeyboardEvent): boolean {
   switch (getModifierPolicy(e.keyCode)) {

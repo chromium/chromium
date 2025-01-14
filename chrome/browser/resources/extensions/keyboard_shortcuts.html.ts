@@ -19,7 +19,7 @@ export function getHtml(this: KeyboardShortcutsElement) {
         ${item.commands.map(command => html`
           <div class="command-entry">
             <span class="command-name">${command.description}</span>
-            <extensions-shortcut-input .shortcut="${command.keybinding}"
+            <cr-shortcut-input .shortcut="${command.keybinding}"
                 input-aria-label="${this.i18n('editShortcutInputLabel',
                     command.description, item.name)}"
                 edit-button-aria-label="${this.i18n('editShortcutButtonLabel',
@@ -27,7 +27,7 @@ export function getHtml(this: KeyboardShortcutsElement) {
                 @input-capture-change="${this.onInputCaptureChange_}"
                 @shortcut-updated="${this.onShortcutUpdated_.bind(this, item.id,
                     command.name)}">
-            </extensions-shortcut-input>
+            </cr-shortcut-input>
             <select class="md-select" @change="${this.onScopeChanged_}"
                 data-extension-id="${item.id}"
                 data-command-name="${command.name}"

@@ -719,14 +719,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, Layout) {
   RunTestCase("Layout");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, IsValidKeyCode) {
-  RunTestCase("IsValidKeyCode");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, KeyStrokeToString) {
-  RunTestCase("KeyStrokeToString");
-}
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsShortcutTest, ScopeChange) {
   RunTestCase("ScopeChange");
 }
