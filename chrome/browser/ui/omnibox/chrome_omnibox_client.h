@@ -132,10 +132,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
   // Performs preconnection for |match|.
   void DoPreconnect(const AutocompleteMatch& match);
 
-  void OnBitmapFetched(const BitmapFetchedCallback& callback,
-                       int result_index,
-                       const SkBitmap& bitmap);
-
   // Implemented by `LocationBarView` which owns `OmniboxView` which owns this.
   const raw_ptr<LocationBar> location_bar_;
   const raw_ptr<Browser, DanglingUntriaged> browser_;

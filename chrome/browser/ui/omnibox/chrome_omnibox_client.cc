@@ -358,9 +358,7 @@ void ChromeOmniboxClient::OnResultChanged(
     }
 
     request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-        match.ImageUrl(), base::BindOnce(&ChromeOmniboxClient::OnBitmapFetched,
-                                         weak_factory_.GetWeakPtr(),
-                                         on_bitmap_fetched, result_index)));
+        match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
   }
 }
 
@@ -616,12 +614,6 @@ void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
   // We could prefetch the alternate nav URL, if any, but because there
   // can be many of these as a user types an initial series of characters,
   // the OS DNS cache could suffer eviction problems for minimal gain.
-}
-
-void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
-                                          int result_index,
-                                          const SkBitmap& bitmap) {
-  callback.Run(result_index, bitmap);
 }
 
 // static
