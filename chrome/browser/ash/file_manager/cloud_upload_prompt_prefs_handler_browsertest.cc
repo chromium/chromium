@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
 
+#include <tuple>
+
+#include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -20,67 +25,47 @@
 
 namespace chromeos::cloud_upload {
 
-class CloudUploadPromptPrefsHandlerTest : public policy::PolicyTest {
+namespace {
+// Extracts the last part of the preference name, which represents the unique
+// identifier, and returns it converted to CamelCase. Expects a
+// period-separated string in the "filebrowser.office.[unique_name]" format.
+//
+// E.g. "filebrowser.office.always_move_to_drive" returns "AlwaysMoveToDrive".
+std::string ConvertPrefNameToCamelCase(const std::string& pref_name) {
+  std::string last_part =
+      base::SplitString(pref_name, ".", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_ALL)
+          .back();
+  std::string result;
+  bool capitalize_next = true;
+  for (char c : last_part) {
+    if (c == '_') {
+      capitalize_next = true;
+    } else if (isalnum(c)) {
+      result += capitalize_next ? std::toupper(c) : c;
+      capitalize_next = false;
+    }
+  }
+  return result;
+}
+}  // namespace
+
+using ash::cloud_upload::CloudProvider;
+
+class CloudUploadPromptPrefsHandlerTestBase : public policy::PolicyTest {
  public:
-  CloudUploadPromptPrefsHandlerTest() {
+  CloudUploadPromptPrefsHandlerTestBase() {
     feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
          chromeos::features::kUploadOfficeToCloudForEnterprise,
          chromeos::features::kUploadOfficeToCloudSync},
         {});
   }
-  ~CloudUploadPromptPrefsHandlerTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  SyncServiceFactory::GetInstance()->SetTestingFactory(
-                      context,
-                      base::BindRepeating([](content::BrowserContext*)
-                                              -> std::unique_ptr<KeyedService> {
-                        return std::make_unique<syncer::TestSyncService>();
-                      }));
-                }));
-  }
+  ~CloudUploadPromptPrefsHandlerTestBase() override = default;
 
   void SetUpOnMainThread() override {
     policy::PolicyTest::SetUpOnMainThread();
     profile_policy_connector()->OverrideIsManagedForTesting(true);
-  }
-
-  // Sets the Microsoft Office cloud upload policy to `value` (should be one of
-  // kAutomated, kAllowed, kDisallowed).
-  void SetMicrosoftOfficeCloudUpload(const std::string& value) {
-    policy::PolicyMap policies;
-    policy::PolicyTest::SetPolicy(&policies,
-                                  policy::key::kMicrosoftOfficeCloudUpload,
-                                  base::Value(value));
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  // Sets the Microsoft Office cloud upload policy to `value` (should be one of
-  // kAutomated, kAllowed, kDisallowed).
-  void SetGoogleWorkspaceCloudUpload(const std::string& value) {
-    policy::PolicyMap policies;
-    policy::PolicyTest::SetPolicy(&policies,
-                                  policy::key::kGoogleWorkspaceCloudUpload,
-                                  base::Value(value));
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  // Verifies the syncing behavior of two preferences: `syncable_pref` and
-  // `local_pref`. It sets `syncable_pref` to `true` and checks whether
-  // `local_pref` is updated or not, depending on the `should_update` parameter.
-  // The test assumes that both preferences are initially set to `false`.
-  void TestPrefSyncing(const std::string& syncable_pref,
-                       const std::string& local_pref,
-                       bool should_update) {
-    // Simulate a pref change from another device.
-    profile()->GetPrefs()->SetBoolean(syncable_pref, true);
-    EXPECT_EQ(should_update, profile()->GetPrefs()->GetBoolean(local_pref));
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -91,10 +76,9 @@ class CloudUploadPromptPrefsHandlerTest : public policy::PolicyTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
+IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTestBase,
                        KeyedServiceRegistered) {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> nodes;
   const bool success = BrowserContextDependencyManager::GetInstance()
@@ -108,146 +92,205 @@ IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
       });
 }
 
-// Tests that the kOfficeFilesAlwaysMoveToDrive pref is synced when the
-// Google Workspace cloud upload policy is set to "automated".
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
-                       PrefsSyncedIfAutomated_GoogleDrive) {
-  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAutomated);
+class CloudUploadPromptPrefsHandlerTest
+    : public CloudUploadPromptPrefsHandlerTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple<CloudProvider,
+                     /*local_pref*/ std::string,
+                     /*syncable_pref*/ std::string>> {
+ public:
+  // Converts a TestParamInfo object to a human-readable string.
+  // The string is derived from the `local_pref` member of the
+  // parameter.
+  //
+  // We don't use `cloud_provider` or `syncable_pref` because the former is
+  // redundant and the latter is simply the `local_pref` with a 'syncable'
+  // suffix.
+  static std::string ParamToString(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    auto [cloud_provider, local_pref, syncable_pref] = info.param;
+    return ConvertPrefNameToCamelCase(local_pref);
+  }
 
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive));
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
-      prefs::kOfficeFilesAlwaysMoveToDriveSyncable));
+  CloudUploadPromptPrefsHandlerTest() = default;
+  ~CloudUploadPromptPrefsHandlerTest() override = default;
 
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
-      /*should_update=*/true);
-}
+  void SetUpInProcessBrowserTestFixture() override {
+    CloudUploadPromptPrefsHandlerTestBase::SetUpInProcessBrowserTestFixture();
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  SyncServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating([](content::BrowserContext*)
+                                              -> std::unique_ptr<KeyedService> {
+                        return std::make_unique<syncer::TestSyncService>();
+                      }));
+                }));
+  }
 
-// Tests that the kOfficeFilesAlwaysMoveToOneDrive pref is synced when the
+  // Sets the cloud upload policy, based on the `CloudProvider` parameter, to
+  // `value` (should be one of kAutomated, kAllowed, kDisallowed).
+  void SetCloudUploadPolicy(const std::string& value) {
+    const CloudProvider cloud_provider = std::get<0>(GetParam());
+    policy::PolicyMap policies;
+    switch (cloud_provider) {
+      case ash::cloud_upload::CloudProvider::kGoogleDrive:
+        policy::PolicyTest::SetPolicy(&policies,
+                                      policy::key::kGoogleWorkspaceCloudUpload,
+                                      base::Value(value));
+        break;
+      case ash::cloud_upload::CloudProvider::kOneDrive:
+        policy::PolicyTest::SetPolicy(&policies,
+                                      policy::key::kMicrosoftOfficeCloudUpload,
+                                      base::Value(value));
+        break;
+      case ash::cloud_upload::CloudProvider::kNone:
+      case ash::cloud_upload::CloudProvider::kUnknown:
+        NOTREACHED();
+    }
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  // Verifies the syncing behavior of two preferences: `syncable_pref` and
+  // `local_pref`. It sets `syncable_pref` to `true` and checks whether
+  // `local_pref` is updated or not, depending on the `should_update`
+  // parameter. The test assumes that both preferences are initially set to
+  // `false`.
+  void TestPrefSyncing(const std::string& syncable_pref,
+                       const std::string& local_pref,
+                       bool should_update) {
+    // Simulate a pref change from another device.
+    profile()->GetPrefs()->SetBoolean(syncable_pref, true);
+    EXPECT_EQ(should_update, profile()->GetPrefs()->GetBoolean(local_pref))
+        << "Pref " << local_pref << " should " << (should_update ? "" : "not ")
+        << "have been updated";
+  }
+
+  const std::string& local_pref() { return std::get<1>(GetParam()); }
+
+  const std::string& syncable_pref() { return std::get<2>(GetParam()); }
+
+ private:
+  base::CallbackListSubscription subscription_;
+};
+
+// Tests that local prefs are synced when the corresponding Google Workspace or
 // Microsoft Office cloud upload policy is set to "automated".
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
-                       PrefsUpdatedIfAutomated_OneDrive) {
-  SetMicrosoftOfficeCloudUpload(kCloudUploadPolicyAutomated);
+IN_PROC_BROWSER_TEST_P(CloudUploadPromptPrefsHandlerTest,
+                       PrefsSyncedIfAutomated) {
+  SetCloudUploadPolicy(kCloudUploadPolicyAutomated);
 
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
-      prefs::kOfficeFilesAlwaysMoveToOneDrive));
-  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
-      prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable));
-
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDrive,
-      /*should_update=*/true);
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(local_pref()))
+      << "Pref " << local_pref()
+      << " is true, but it should initially be false";
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(syncable_pref()))
+      << "Pref " << syncable_pref()
+      << " is true, but it should initially be false";
+  TestPrefSyncing(syncable_pref(), local_pref(),
+                  /*should_update=*/true);
 }
 
-// Tests that kOfficeFilesAlwaysMoveToDriveSyncable is updated to reflect
-// changes in kOfficeFilesAlwaysMoveToDrive, regardless of the cloud upload
-// policy.
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
-                       SyncablePrefsUpdatedIfLocalPrefsChange_GoogleDrive) {
+// Tests that syncable prefs are updated to reflect changes in their local
+// counterparts, regardless of the cloud upload policy.
+IN_PROC_BROWSER_TEST_P(CloudUploadPromptPrefsHandlerTest,
+                       SyncablePrefsUpdatedIfLocalPrefsChange) {
   for (const std::string& cloud_upload_policy :
        {kCloudUploadPolicyAutomated, kCloudUploadPolicyAllowed,
         kCloudUploadPolicyDisallowed}) {
-    SetGoogleWorkspaceCloudUpload(cloud_upload_policy);
+    SetCloudUploadPolicy(cloud_upload_policy);
 
-    bool current_local_value =
-        profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive);
+    SCOPED_TRACE(::testing::Message()
+                 << "Testing local pref: " << local_pref()
+                 << " and syncable pref: " << syncable_pref()
+                 << " with policy: " << cloud_upload_policy);
+
+    bool current_local_value = profile()->GetPrefs()->GetBoolean(local_pref());
+    bool new_value = !current_local_value;
     ASSERT_EQ(current_local_value,
-              profile()->GetPrefs()->GetBoolean(
-                  prefs::kOfficeFilesAlwaysMoveToDriveSyncable));
+              profile()->GetPrefs()->GetBoolean(syncable_pref()))
+        << "Pref: " << syncable_pref()
+        << " should initially be equal to the local pref: " << local_pref();
     // Change the local pref.
-    profile()->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive,
-                                      !current_local_value);
-    ASSERT_EQ(!current_local_value,
-              profile()->GetPrefs()->GetBoolean(
-                  prefs::kOfficeFilesAlwaysMoveToDriveSyncable));
+    profile()->GetPrefs()->SetBoolean(local_pref(), new_value);
+    ASSERT_EQ(new_value, profile()->GetPrefs()->GetBoolean(syncable_pref()))
+        << "Pref: " << syncable_pref() << " should have been updated to "
+        << (new_value ? " true" : " false");
   }
 }
 
-// Tests that kOfficeFilesAlwaysMoveToOneDriveSyncable is updated to reflect
-// changes in kOfficeFilesAlwaysMoveToOneDrive, regardless of the cloud upload
-// policy.
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
-                       SyncablePrefsUpdatedIfLocalPrefsChange_OneDrive) {
-  for (const std::string& cloud_upload_policy :
-       {kCloudUploadPolicyAutomated, kCloudUploadPolicyAllowed,
-        kCloudUploadPolicyDisallowed}) {
-    SetMicrosoftOfficeCloudUpload(cloud_upload_policy);
-
-    bool current_local_value = profile()->GetPrefs()->GetBoolean(
-        prefs::kOfficeFilesAlwaysMoveToOneDrive);
-    ASSERT_EQ(current_local_value,
-              profile()->GetPrefs()->GetBoolean(
-                  prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable));
-    // Change the local pref.
-    profile()->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToOneDrive,
-                                      !current_local_value);
-    ASSERT_EQ(!current_local_value,
-              profile()->GetPrefs()->GetBoolean(
-                  prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable));
-  }
-}
-
-// Tests that the kOfficeFilesAlwaysMoveToDrive and
-// kOfficeFilesAlwaysMoveToOneDrive prefs aren't synced when the profile isn't
+// Tests that the local prefs aren't synced when the profile isn't
 // enterprise managed.
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
+IN_PROC_BROWSER_TEST_P(CloudUploadPromptPrefsHandlerTest,
                        PrefsNotSyncedIfProfileNotEnterpriseManaged) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
-
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
-      /*should_update=*/false);
-
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDrive,
-      /*should_update=*/false);
-  ;
+  TestPrefSyncing(syncable_pref(), local_pref(), /*should_update=*/false);
 }
 
-// Tests that the kOfficeFilesAlwaysMoveToDrive and
-// kOfficeFilesAlwaysMoveToOneDrive prefs aren't synced if their respective
-// Cloud Upload policies aren't set to "automated".
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
+// Tests that the prefs aren't synced if the respective Cloud Upload policies
+// aren't set to "automated".
+IN_PROC_BROWSER_TEST_P(CloudUploadPromptPrefsHandlerTest,
                        PrefsNotSyncedIfCloudUploadNotAutomated) {
-  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAllowed);
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
-      /*should_update=*/false);
-
-  SetMicrosoftOfficeCloudUpload(kCloudUploadPolicyDisallowed);
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToOneDrive,
-      /*should_update=*/false);
-  ;
+  for (const std::string& cloud_upload_policy :
+       {kCloudUploadPolicyAllowed, kCloudUploadPolicyDisallowed}) {
+    SetCloudUploadPolicy(cloud_upload_policy);
+    TestPrefSyncing(syncable_pref(), local_pref(),
+                    /*should_update=*/false);
+  }
 }
 
-// Tests that the kOfficeFilesAlwaysMoveToDrive pref is synced once the
-// GoogleWorkspaceCloudUpload policy becomes "automated".
-IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTest,
+// Tests that the prefs are synced once the Cloud Upload policy is set to
+// "automated".
+IN_PROC_BROWSER_TEST_P(CloudUploadPromptPrefsHandlerTest,
                        PrefsSyncedWhenCloudUploadBecomesAutomated) {
-  SetMicrosoftOfficeCloudUpload(kCloudUploadPolicyDisallowed);
-  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAllowed);
-  // Set the syncable pref before the policy change, but it shouldn't trigger
-  // the sync.
-  TestPrefSyncing(
-      /*syncable_pref=*/prefs::kOfficeFilesAlwaysMoveToDriveSyncable,
-      /*local_pref=*/prefs::kOfficeFilesAlwaysMoveToDrive,
-      /*should_update=*/false);
+  SetCloudUploadPolicy(kCloudUploadPolicyAllowed);
+  // Set the syncable pref before the policy change, which shouldn't trigger the
+  // sync yet.
+  TestPrefSyncing(syncable_pref(), local_pref(),
+                  /*should_update=*/false);
 
-  SetGoogleWorkspaceCloudUpload(kCloudUploadPolicyAutomated);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetBoolean(
-          prefs::kOfficeFilesAlwaysMoveToDriveSyncable),
-      profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive));
+  SetCloudUploadPolicy(kCloudUploadPolicyAutomated);
+  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(syncable_pref()),
+            profile()->GetPrefs()->GetBoolean(local_pref()))
+      << "Pref: " << local_pref()
+      << " should be equal to the syncable pref: " << syncable_pref();
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(local_pref()))
+      << "Pref: " << local_pref() << " is false, but should be true.";
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    CloudUploadPrefsSync,
+    CloudUploadPromptPrefsHandlerTest,
+    testing::Values(
+        std::make_tuple(CloudProvider::kGoogleDrive,
+                        prefs::kOfficeFilesAlwaysMoveToDrive,
+                        prefs::kOfficeFilesAlwaysMoveToDriveSyncable),
+        std::make_tuple(CloudProvider::kGoogleDrive,
+                        prefs::kOfficeMoveConfirmationShownForDrive,
+                        prefs::kOfficeMoveConfirmationShownForDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kGoogleDrive,
+            prefs::kOfficeMoveConfirmationShownForLocalToDrive,
+            prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kGoogleDrive,
+            prefs::kOfficeMoveConfirmationShownForCloudToDrive,
+            prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable),
+        std::make_tuple(CloudProvider::kOneDrive,
+                        prefs::kOfficeFilesAlwaysMoveToOneDrive,
+                        prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable),
+        std::make_tuple(CloudProvider::kOneDrive,
+                        prefs::kOfficeMoveConfirmationShownForOneDrive,
+                        prefs::kOfficeMoveConfirmationShownForOneDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kOneDrive,
+            prefs::kOfficeMoveConfirmationShownForLocalToOneDrive,
+            prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kOneDrive,
+            prefs::kOfficeMoveConfirmationShownForCloudToOneDrive,
+            prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable)),
+    &CloudUploadPromptPrefsHandlerTest::ParamToString);
 
 }  // namespace chromeos::cloud_upload
