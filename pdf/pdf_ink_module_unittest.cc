@@ -789,15 +789,8 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint,
         /*expect_mouse_events_handled=*/annotation_mode_enabled);
 
-    const int expected_count = annotation_mode_enabled ? 1 : 0;
-    EXPECT_EQ(expected_count, client().stroke_finished_count());
-    const std::vector<int>& updated_thumbnail_page_indices =
-        client().updated_thumbnail_page_indices();
-    if (annotation_mode_enabled) {
-      EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
-    } else {
-      EXPECT_TRUE(updated_thumbnail_page_indices.empty());
-    }
+    ValidateRunStrokeCheckTest(
+        /*expect_stroke_success=*/annotation_mode_enabled);
   }
 
   void ApplyStrokeWithMouseAtMouseDownPoint() {
@@ -829,15 +822,8 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         base::span_from_ref(kMouseUpPoint),
         /*expect_touch_events_handled=*/annotation_mode_enabled);
 
-    const int expected_count = annotation_mode_enabled ? 1 : 0;
-    EXPECT_EQ(expected_count, client().stroke_finished_count());
-    const std::vector<int>& updated_thumbnail_page_indices =
-        client().updated_thumbnail_page_indices();
-    if (annotation_mode_enabled) {
-      EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
-    } else {
-      EXPECT_TRUE(updated_thumbnail_page_indices.empty());
-    }
+    ValidateRunStrokeCheckTest(
+        /*expect_stroke_success=*/annotation_mode_enabled);
   }
 
   // TODO(crbug.com/377733396): Consider refactoring to combine with
@@ -863,10 +849,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         touch_start_points, all_touch_move_points, touch_end_points,
         /*expect_touch_events_handled=*/false);
 
-    EXPECT_EQ(0, client().stroke_finished_count());
-    const std::vector<int>& updated_thumbnail_page_indices =
-        client().updated_thumbnail_page_indices();
-    EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+    ValidateRunStrokeCheckTest(/*expect_stroke_success=*/false);
   }
 
   void RunStrokeMissedEndEventCheckTest() {
@@ -1012,6 +995,17 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         blink::WebInputEvent::Type::kTouchEnd, touch_end_points);
     EXPECT_EQ(expect_touch_events_handled,
               ink_module().HandleInputEvent(touch_end_event));
+  }
+
+  void ValidateRunStrokeCheckTest(bool expect_stroke_success) {
+    EXPECT_EQ(expect_stroke_success ? 1 : 0, client().stroke_finished_count());
+    const std::vector<int>& updated_thumbnail_page_indices =
+        client().updated_thumbnail_page_indices();
+    if (expect_stroke_success) {
+      EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0));
+    } else {
+      EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+    }
   }
 };
 
