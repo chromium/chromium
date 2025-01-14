@@ -442,7 +442,7 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
            kSignatureInputHeaderInvalidComponentName},
   };
 
-  for (const auto test : cases) {
+  for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message() << "Header value: `" << test.value << "`");
 
     // Tack valid parameters onto the test string so that we're actually
