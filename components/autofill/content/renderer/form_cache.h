@@ -79,7 +79,7 @@ class FormCache {
       const FieldDataManager& field_data_manager,
       const CallTimerState& timer_state);
 
-  const std::map<FormRendererId, FormData>& extracted_forms() {
+  const std::map<FormRendererId, FormData>& extracted_forms() const {
     return extracted_forms_;
   }
 

@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -778,6 +780,107 @@ TEST_F(AutofillAgentTest, JavaScriptChangedValue_AutofillState) {
 
   ASSERT_EQ(name_field.Value().Ascii(), "Mr. John Doe");
   EXPECT_FALSE(name_field.IsAutofilled());
+}
+
+// Tests that when JS adds a non-autofillable element to the DOM, we do not
+// trigger a DOM reparse (for performance reasons).
+TEST_F(AutofillAgentTest,
+       DynamicElementNotificationFiltering_AddNonAutofillableElement) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillOptimizeFormExtraction};
+  LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
+  const std::map<FormRendererId, FormData>& extracted_forms =
+      test_api(autofill_agent()).form_cache().extracted_forms();
+  ASSERT_EQ(test_api(autofill_agent()).form_cache().extracted_forms().size(),
+            1u);
+  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+
+  // Add a button to the form. We also modify the ID attribute of the first
+  // input to be able to check whether the agent triggered a reparse or not.
+  ExecuteJavaScriptForTests(R"(
+    form = document.getElementById('form_id');
+    button = document.createElement('button');
+    button.type = submit;
+    button.id = 'submit_button';
+    form.appendChild(button);
+    first_input = form.querySelectorAll('input')[0];
+    first_input.id = 'new_name'
+  )");
+  base::test::RunUntil([&] {
+    return !test_api(autofill_agent())
+                .process_forms_after_dynamic_change_timer()
+                .IsRunning();
+  });
+
+  ASSERT_EQ(test_api(autofill_agent()).form_cache().extracted_forms().size(),
+            1u);
+  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+  // The JS changes to the ID are not reflected in the cache, meaning that the
+  // cache was not updated as a result of executing the prior JS script.
+  EXPECT_EQ(extracted_forms.begin()->second.fields().front().id_attribute(),
+            u"name");
+}
+
+// Tests that when JS adds an autofillable element to the DOM, we trigger a DOM
+// reparse and update the cache.
+TEST_F(AutofillAgentTest,
+       DynamicElementNotificationFiltering_AddAutofillableElement) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillOptimizeFormExtraction};
+  LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
+  const std::map<FormRendererId, FormData>& extracted_forms =
+      test_api(autofill_agent()).form_cache().extracted_forms();
+  ASSERT_EQ(extracted_forms.size(), 1u);
+  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+
+  // Add a fourth text field. This should be detected by the agent and should
+  // trigger a reparse.
+  ExecuteJavaScriptForTests(R"(
+    form = document.getElementById('form_id');
+    second_input = document.createElement('input');
+    second_input.type = 'text';
+    second_input.id = 'new_field';
+    form.appendChild(second_input);
+  )");
+  base::test::RunUntil([&] {
+    return !test_api(autofill_agent())
+                .process_forms_after_dynamic_change_timer()
+                .IsRunning();
+  });
+
+  ASSERT_EQ(extracted_forms.size(), 1u);
+  // The added input should be visible in the cache now.
+  EXPECT_EQ(extracted_forms.begin()->second.fields().size(), 2u);
+}
+
+// Tests that when JS adds a new form to the DOM, we trigger a DOM
+// reparse and update the cache.
+TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillOptimizeFormExtraction};
+  LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
+  const std::map<FormRendererId, FormData>& extracted_forms =
+      test_api(autofill_agent()).form_cache().extracted_forms();
+  ASSERT_EQ(extracted_forms.size(), 1u);
+
+  // Add a second form. This should also be detected by the agent and should
+  // trigger a reparse.
+  ExecuteJavaScriptForTests(R"(
+    second_form = document.createElement('form');
+    second_form.id = 'second_form';
+    input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'second_form_input';
+    second_form.appendChild(input);
+    document.body.appendChild(second_form);
+  )");
+  base::test::RunUntil([&] {
+    return !test_api(autofill_agent())
+                .process_forms_after_dynamic_change_timer()
+                .IsRunning();
+  });
+
+  EXPECT_EQ(extracted_forms.size(), 2u);
 }
 
 class AutofillAgentSubmissionTest : public AutofillAgentTest,

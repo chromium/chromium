@@ -43,6 +43,12 @@ class AutofillAgentTestApi {
 
   void OnFormNoLongerSubmittable() { agent_->OnFormNoLongerSubmittable(); }
 
+  const FormCache& form_cache() { return agent_->form_cache_; }
+
+  const base::OneShotTimer& process_forms_after_dynamic_change_timer() {
+    return agent_->process_forms_after_dynamic_change_timer_;
+  }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };
