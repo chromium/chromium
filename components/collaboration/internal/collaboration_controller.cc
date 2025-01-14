@@ -4,9 +4,11 @@
 
 #include "components/collaboration/internal/collaboration_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -53,6 +55,8 @@ std::string GetStateIdString(StateId state) {
 }  // namespace
 
 // This is base class for each state and handles the logic for the state.
+// TODO(crbug.com/389953812): Consider consolidating metric recording into the
+// base class. Provide a utility function to handle state specific metrics.
 class ControllerState {
  public:
   ControllerState(StateId id, CollaborationController* controller)
@@ -140,6 +144,11 @@ class PendingState : public ControllerState {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
+      if (Flow::Type::kJoin == controller->flow().type) {
+        collaboration::metrics::RecordJoinEvent(
+            metrics::CollaborationServiceJoinEvent::kNotSignedIn);
+      }
+
       controller->TransitionTo(StateId::kAuthenticating);
       return;
     }
@@ -159,9 +168,22 @@ class AuthenticatingState : public ControllerState,
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    controller->delegate()->ShowAuthenticationUi(base::BindOnce(
-        &AuthenticatingState::ProcessOutcome, weak_ptr_factory_.GetWeakPtr()));
+    controller->delegate()->ShowAuthenticationUi(
+        base::BindOnce(&AuthenticatingState::ProcessOutcome,
+                       local_weak_ptr_factory_.GetWeakPtr()));
   }
+
+  void ProcessOutcome(Outcome outcome) override {
+    if (Outcome::kCancel == outcome) {
+      if (Flow::Type::kJoin == controller->flow().type) {
+        collaboration::metrics::RecordJoinEvent(
+            metrics::CollaborationServiceJoinEvent::kCanceledNotSignedIn);
+      }
+    }
+
+    ControllerState::ProcessOutcome(outcome);
+  }
+
   void OnProcessingFinishedWithSuccess() override {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
@@ -193,6 +215,8 @@ class AuthenticatingState : public ControllerState,
  private:
   base::ScopedObservation<CollaborationService, CollaborationService::Observer>
       collaboration_service_observer_{this};
+
+  base::WeakPtrFactory<AuthenticatingState> local_weak_ptr_factory_{this};
 };
 
 class CheckingFlowRequirementsState : public ControllerState {
@@ -280,6 +304,18 @@ class AddingUserToGroupState : public ControllerState {
             local_weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void ProcessOutcome(Outcome outcome) override {
+    if (Outcome::kCancel == outcome) {
+      CHECK_EQ(controller->flow().type, Flow::Type::kJoin)
+          << "Only the join flow can transition into the AddingUserToGroup "
+             "state.";
+      collaboration::metrics::RecordJoinEvent(
+          metrics::CollaborationServiceJoinEvent::kCanceled);
+    }
+
+    ControllerState::ProcessOutcome(outcome);
+  }
+
   void OnProcessingFinishedWithSuccess() override {
     const data_sharing::GroupId group_id =
         controller->flow().join_token().group_id;
@@ -302,7 +338,7 @@ class AddingUserToGroupState : public ControllerState {
     controller->delegate()->ShowJoinDialog(
         controller->flow().join_token(), preview_outcome.value(),
         base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       local_weak_ptr_factory_.GetWeakPtr()));
   }
 
   base::WeakPtrFactory<AddingUserToGroupState> local_weak_ptr_factory_{this};

@@ -14,7 +14,10 @@ namespace collaboration::metrics {
 enum class CollaborationServiceJoinEvent {
   kUnknown = 0,
   kStarted = 1,
-  kMaxValue = kStarted
+  kCanceled = 2,
+  kCanceledNotSignedIn = 3,
+  kNotSignedIn = 4,
+  kMaxValue = kNotSignedIn
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 

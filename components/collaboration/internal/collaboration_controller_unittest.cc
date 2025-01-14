@@ -4,14 +4,18 @@
 
 #include "components/collaboration/internal/collaboration_controller.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/collaboration/test_support/mock_collaboration_service.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -285,6 +289,82 @@ TEST_F(CollaborationControllerTest, PreviewDataFailures) {
       .Run(base::unexpected(data_sharing::DataSharingService::
                                 DataPreviewActionFailure::kOtherFailure));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
+TEST_F(CollaborationControllerTest, AuthenticationCanceledBeforeSignIn) {
+  base::HistogramTester histogram_tester;
+
+  RunLoop run_loop;
+
+  // Start Join flow at pending state.
+  InitializeJoinController(run_loop.QuitClosure());
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate user is not signed in or syncing.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kNotSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
+  ASSERT_FALSE(status.IsAuthenticationValid());
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillOnce(Return(status));
+
+  // The user should be shown authentication screens.
+  base::OnceCallback<void(Outcome)> authentication_ui_calback;
+  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
+      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+
+  // Pending -> Authenticating.
+  std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
+
+  // Authenticating -> Cancel state.
+  EXPECT_CALL(*delegate_, OnFlowFinished);
+  std::move(authentication_ui_calback).Run(Outcome::kCancel);
+
+  run_loop.Run();
+
+  // Verify the not signed in metrics are recorded properly.
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kNotSignedIn, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kCanceledNotSignedIn, 1);
+}
+
+TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
+  base::HistogramTester histogram_tester;
+
+  RunLoop run_loop;
+
+  // Start Join flow.
+  InitializeJoinController(run_loop.QuitClosure());
+
+  // Simulate getting to the Adding User To Group state.
+  base::OnceCallback<void(Outcome)> join_ui_callback;
+  base::OnceCallback<void(const data_sharing::DataSharingService::
+                              SharedDataPreviewOrFailureOutcome&)>
+      preview_callback;
+  EXPECT_CALL(*data_sharing_service_,
+              GetSharedEntitiesPreview(
+                  GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
+                  IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&preview_callback));
+  EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
+      .WillOnce(MoveArg<2>(&join_ui_callback));
+  controller_->SetStateForTesting(StateId::kAddingUserToGroup);
+
+  // Show group preview screen.
+  std::move(preview_callback).Run(data_sharing::SharedDataPreview());
+
+  // Cancel the join flow.
+  EXPECT_CALL(*delegate_, OnFlowFinished);
+  std::move(join_ui_callback).Run(Outcome::kCancel);
+
+  run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kCanceled, 1);
 }
 
 TEST_F(CollaborationControllerTest, AuthenticationError) {
