@@ -19,7 +19,7 @@ namespace payments::facilitated {
 // This class is used for making a payment request to the Payments server. It is
 // used by all FOPs under Facilitated Payments. It encapsulates the info
 // required for making the server call, and pipes the server response back to
-// the `FacilitatedPaymentsManager` through a callback.
+// the payment manager through a callback.
 class FacilitatedPaymentsInitiatePaymentRequest
     : public autofill::payments::PaymentsRequest {
  public:
