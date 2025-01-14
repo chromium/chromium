@@ -57,7 +57,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -98,8 +97,6 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -140,22 +137,8 @@ public class FeedV2NewTabPageTest {
             new GeneralSwipeAction(
                     Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
-    private boolean mIsCachePopulatedInAccountManagerFacade = true;
-
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            new FakeAccountManagerFacade() {
-                @Override
-                public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
-                    // Attention. When cache is not populated, the Promise shouldn't be fulfilled.
-                    if (mIsCachePopulatedInAccountManagerFacade) {
-                        return super.getCoreAccountInfos();
-                    }
-                    return new Promise<>();
-                }
-            };
 
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -167,7 +150,7 @@ public class FeedV2NewTabPageTest {
                             ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
                     .build();
 
-    public final SigninTestRule mSigninTestRule = new SigninTestRule(mFakeAccountManagerFacade);
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
     // observers registered in the AccountManagerFacade mock.
@@ -402,19 +385,19 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsNotReady() {
-        mIsCachePopulatedInAccountManagerFacade = false;
-        openNewTabPage();
-        // Check that the sign-in promo is not shown if accounts are not ready.
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(false)) {
+            openNewTabPage();
+            // Check that the sign-in promo is not shown if accounts are not ready.
+            onView(withId(R.id.feed_stream_recycler_view))
+                    .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+            onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        }
     }
 
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_AccountsReady() {
-        mIsCachePopulatedInAccountManagerFacade = true;
         openNewTabPage();
         // Check that the sign-in promo is displayed this time.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -426,7 +409,6 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromo_NotShownAfterSignIn() {
-        mIsCachePopulatedInAccountManagerFacade = true;
         openNewTabPage();
         // Check that the sign-in promo is displayed.
         onView(withId(R.id.feed_stream_recycler_view))
@@ -445,7 +427,6 @@ public class FeedV2NewTabPageTest {
     @Feature({"FeedNewTabPage"})
     public void testSignInPromoWhenDefaultAccountCannotShowHistorySyncWithoutMinorRestrictions() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
-        mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))

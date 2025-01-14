@@ -191,6 +191,19 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testPromoNotShownWhenAccountsNotAvailable(@SigninAccessPoint int accessPoint) {
+        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(false)) {
+            setUpSignInPromo(accessPoint);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        assertFalse(mPromoCoordinator.canShowPromo());
+                    });
+        }
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

@@ -108,6 +108,13 @@ final class SigninPromoMediator
     }
 
     boolean canShowPromo() {
+        if (!mAccountManagerFacade.getAccounts().isFulfilled()
+                || !mAccountManagerFacade.didAccountFetchSucceed()) {
+            // If accounts are not available in AccountManagerFacade yet, then don't shown the
+            // promo.
+            return false;
+        }
+
         return !mMaxImpressionReached && mDelegate.canShowPromo();
     }
 
