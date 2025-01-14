@@ -1544,6 +1544,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -1553,6 +1554,22 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [self.delegate didTapURLInDisclaimer:URL];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (!(textView == self.disclaimerView &&
+        [self.delegate respondsToSelector:@selector(didTapURLInDisclaimer:)])) {
+    return defaultAction;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSURL* URL = textItem.link;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate didTapURLInDisclaimer:URL];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
