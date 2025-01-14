@@ -221,7 +221,7 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement WebContentsObserver:
     @Override
-    public void destroy() {
+    public void onDestroy() {
         ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
 
         switch (mCloseReason) {
@@ -255,7 +255,6 @@ import java.lang.annotation.RetentionPolicy;
         }
         mHandler.removeCallbacksAndMessages(null);
         hideScrim();
-        super.destroy(); // Stops observing the web contents and cleans up associated references.
     }
 
     private void hideScrim() {

@@ -324,8 +324,7 @@ public class PageInfoController
                     }
 
                     @Override
-                    public void destroy() {
-                        super.destroy();
+                    public void onDestroy() {
                         // Force the dialog to close immediately in case the destroy was from Chrome
                         // quitting.
                         PageInfoController.this.destroy();

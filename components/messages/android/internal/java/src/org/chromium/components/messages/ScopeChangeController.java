@@ -134,9 +134,7 @@ class ScopeChangeController {
         }
 
         @Override
-        public void destroy() {
-            super.destroy();
-            // #destroy will remove the observers.
+        public void onDestroy() {
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.DESTROY));
             mIsActive = false;

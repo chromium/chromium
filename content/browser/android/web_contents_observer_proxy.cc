@@ -70,7 +70,7 @@ void WebContentsObserverProxy::Destroy(JNIEnv* env,
 void WebContentsObserverProxy::WebContentsDestroyed() {
   JNIEnv* env = AttachCurrentThread();
   // The java side will destroy |this|
-  Java_WebContentsObserverProxy_destroy(env, java_observer_);
+  Java_WebContentsObserverProxy_webContentsDestroyed(env, java_observer_);
 }
 
 void WebContentsObserverProxy::RenderFrameCreated(

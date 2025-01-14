@@ -155,8 +155,7 @@ public class ImageDescriptionsDialog
                     }
 
                     @Override
-                    public void destroy() {
-                        super.destroy();
+                    public void onDestroy() {
                         // If no dismissal cause has been set, web contents were destroyed.
                         if (mDismissalCause == DialogDismissalCause.UNKNOWN) {
                             mDismissalCause = DialogDismissalCause.WEB_CONTENTS_DESTROYED;

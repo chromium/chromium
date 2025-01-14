@@ -505,12 +505,8 @@ class WebContentsObserverProxy extends WebContentsObserver {
         finishObserverCall();
     }
 
-    @Override
     @CalledByNative
-    public void destroy() {
-        // Super destruction semantics (removing the observer from the
-        // Java-based WebContents) are quite different, so we explicitly avoid
-        // calling it here.
+    protected void webContentsDestroyed() {
         ThreadUtils.assertOnUiThread();
         RewindableIterator<WebContentsObserver> observersIterator = mObservers.rewindableIterator();
         for (; observersIterator.hasNext(); ) {
