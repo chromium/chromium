@@ -183,8 +183,12 @@ using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Property;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // FAIL if a field with the supplied `name` and `fieldType` is not present on
 // the `form`.
@@ -578,6 +582,264 @@ TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Synthetic) {
           Property(&FormData::child_frames,
                    ElementsAre(ChildFrameMatcher(-1), ChildFrameMatcher(0),
                                ChildFrameMatcher(0), ChildFrameMatcher(2))))));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will stop being extracted for forms once the limit of frames is
+// reached.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_AcrossForms) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 20 frames, just a the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<form id='form2'>"
+       "<!-- Frame limit busted -->"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<form id='form3'>"
+       "<!-- Frame limit busted -->"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/3));
+
+  // Verify that the form data is correctly filled with the child frames data
+  // by respecting the child frames limit, where the first form has its 20 child
+  // frames then the follow up forms don't have any child frames.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                             Property(&FormData::child_frames, SizeIs(20)));
+  auto following_forms_matcher =
+      AllOf(Property(&FormData::renderer_id, IsTrue()),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(form1_matcher, following_forms_matcher,
+                                     following_forms_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames won't be extracted for the syntethic forms once the limit of frames is
+// reached.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_AcrossForms_Synthetic) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 4 iframes, below the per-form limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>"
+       "<!-- 17 frames in the synthetic form, just above the xform limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/2));
+
+  // Verify that the form data is correctly filled with the child frames data
+  // by respecting the child frames limit, where the first form has its 4 child
+  // frames then the follow up synthetic form hasn't any child frame because it
+  // busted the xform limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form1_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                             Property(&FormData::child_frames, SizeIs(4)));
+  auto synthetic_form_matcher =
+      AllOf(Property(&FormData::renderer_id, testing::Eq(FormRendererId(0))),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(synthetic_form_matcher, form1_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will not be extracted on a form that exceeds the limit of child
+// frames.
+TEST_F(AutofillControllerTest, ReadForm_WithChildFrames_Throttling_SingleForm) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A form with iframes and inputs where some of the iframes have predecessors.
+  NSString* const test_page =
+      @"<form id='form1'>"
+       "<!-- 21 frames, just above the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</form>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1));
+
+  // Verify that the form data doesn't have child frames when the form exceeds
+  // the child frame limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form_matcher = AllOf(Property(&FormData::renderer_id, IsTrue()),
+                            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, ElementsAre(form_matcher));
+}
+
+// Checks that with autofill across iframes and throttling enabled, the child
+// frames will not be extracted on a synthetic form that exceeds the limit of
+// child frames.
+TEST_F(AutofillControllerTest,
+       ReadForm_WithChildFrames_Throttling_SingleForm_Synthetic) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAcrossIframesIos,
+                            features::kAutofillAcrossIframesIosThrottling},
+      /*disabled_features=*/{});
+
+  // A synthetic form with too many child frames exceeding the limit.
+  NSString* const test_page =
+      @"<html><body><div id='div'>"
+       "<!-- 21 frames in synthetic form, just above the limit -->"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "<iframe></iframe>"
+       "Name <input id='name' type='text' name='name' />"
+       "Address <input type='text' name='address'>"
+       "City <input type='text' name='city'>"
+       "State <input type='text' name='state'>"
+       "</div></html></body>";
+
+  ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(test_page,
+                                            /*expected_number_of_forms=*/1));
+
+  // Verify that the synthetic form data doesn't have child frames when the form
+  // exceeds the child frame limit.
+  std::vector<FormData> form_data;
+  for (const auto& [_, form] :
+       autofill_manager_for_main_frame()->form_structures()) {
+    form_data.push_back(form->ToFormData());
+  }
+  auto form_matcher =
+      AllOf(Property(&FormData::renderer_id, Eq(FormRendererId(0))),
+            Property(&FormData::child_frames, IsEmpty()));
+  EXPECT_THAT(form_data, UnorderedElementsAre(form_matcher));
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in

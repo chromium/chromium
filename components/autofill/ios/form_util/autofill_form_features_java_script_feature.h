@@ -25,6 +25,10 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // Enables/disables the AutofillAcrossIframes feature in `frame`.
   void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables the throttling of child frame extraction for
+  // AutofillAcrossIframes in `frame`.
+  void SetAutofillAcrossIframesThrottling(web::WebFrame* frame, bool enabled);
+
   // Enables/disables the renderer side behaviours in `frame` needed for
   // Autofill features to work in an isolated content world.
   void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);

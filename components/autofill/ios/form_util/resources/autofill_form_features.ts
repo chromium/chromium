@@ -16,6 +16,12 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * Corresponds to autofill::feature::AutofillAcrossIframesIos.
  */
 let autofillAcrossIframes: boolean = false;
+
+/**
+ * True if the throttling of child frames for autofill across iframes is
+ * enabled.
+ */
+let autofillAcrossIframesThrottling: boolean = false;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
 // LINT.IfChange(autofill_isolated_content_world)
@@ -41,6 +47,20 @@ function isAutofillAcrossIframesEnabled(): boolean {
 }
 
 /**
+ * @see autofillAcrossIframesThrottling
+ */
+function setAutofillAcrossIframesThrottling(enabled: boolean): void {
+  autofillAcrossIframesThrottling = enabled;
+}
+
+/**
+ * @see setAutofillAcrossIframesThrottling
+ */
+function isAutofillAcrossIframesThrottlingEnabled(): boolean {
+  return autofillAcrossIframesThrottling;
+}
+
+/**
  * @see autofillIsolatedContentWorld
  */
 function setAutofillIsolatedContentWorld(enabled: boolean): void {
@@ -59,6 +79,8 @@ function isAutofillIsolatedContentWorldEnabled(): boolean {
 gCrWeb.autofill_form_features = {
   setAutofillAcrossIframes,
   isAutofillAcrossIframesEnabled,
+  setAutofillAcrossIframesThrottling,
+  isAutofillAcrossIframesThrottlingEnabled,
   setAutofillIsolatedContentWorld,
   isAutofillIsolatedContentWorldEnabled,
 };

@@ -408,8 +408,8 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement): string|null {
 gCrWeb.fill.webFormElementToFormData = function(
     frame: Window, formElement: HTMLFormElement,
     formControlElement: fillConstants.FormControlElement,
-    form: fillUtil.AutofillFormData,
-    field?: fillUtil.AutofillFormFieldData): boolean {
+    form: fillUtil.AutofillFormData, field?: fillUtil.AutofillFormFieldData,
+    extractChildFrames: boolean = true): boolean {
   if (!frame) {
     return false;
   }
@@ -435,10 +435,18 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = gCrWeb.form.getFormControlElements(formElement);
 
-  const iframeElements =
-      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+  let iframeElements = extractChildFrames &&
+          gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       gCrWeb.form.getIframeElements(formElement) :
       [];
+
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
 
   return formOrFieldsetsToFormData(
       formElement, formControlElement, /*fieldsets=*/[], controlElements,
@@ -654,8 +662,15 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = '';
 
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      gCrWeb.autofill_form_features
+          .isAutofillAcrossIframesThrottlingEnabled()) {
+    iframeElements = [];
+  }
+
   if (!restrictUnownedFieldsToFormlessCheckout) {
-    // TODO(crbug.com/40266126): Pass iframe elements.
     return formOrFieldsetsToFormData(
         /*formElement=*/ null, /*formControlElement=*/ null, fieldsets,
         controlElements, /*iframeElements=*/ iframeElements, form);
@@ -673,7 +688,6 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index]!;
     if (title.includes(keyword) || path.includes(keyword)) {
-      // TODO(crbug.com/40266126): Pass iframe elements.
       return formOrFieldsetsToFormData(
           /* formElement= */ null, /* formControlElement= */ null, fieldsets,
           controlElements, /* iframeElements= */ iframeElements, form);

@@ -461,6 +461,13 @@ __gCrWeb.autofill.extractNewForms = function(
   const webForms = document.forms;
 
   let numFieldsSeen = 0;
+  let numFramesSeen = 0;
+
+  // Returns true if the child frames can be extracted.
+  const canExtractChildFrames = () =>
+      numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES ||
+      !gCrWeb.autofill_form_features.isAutofillAcrossIframesThrottlingEnabled();
+
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
     const formElement = webForms[formIndex];
@@ -478,7 +485,8 @@ __gCrWeb.autofill.extractNewForms = function(
 
     const form = new __gCrWeb['common'].JSONSafeObject();
     if (!__gCrWeb.fill.webFormElementToFormData(
-            window, formElement, null, form, /*field=*/ null)) {
+            window, formElement, null, form, /*field=*/ null,
+            canExtractChildFrames())) {
       continue;
     }
 
@@ -487,16 +495,33 @@ __gCrWeb.autofill.extractNewForms = function(
       break;
     }
 
+    numFramesSeen += (form.child_frames ?? []).length;
+    // Clear the frames for the form if the limit was busted after parsing this
+    // form. Child frames will still be registered for this form but won't be
+    // part for the frame tree for the form. Child frames for the forms
+    // following this one won't be extracted nor registered.
+    if (!canExtractChildFrames()) {
+      form.child_frames = [];
+    }
+
     if (isFormInteresting_(form)) {
       forms.push(form);
     }
   }
 
   // Look for more extractable fields outside of forms.
-  const unownedForm =
-      extractUnownedFields(restrictUnownedFieldsToFormlessCheckout);
+  const unownedForm = extractUnownedFields(
+      restrictUnownedFieldsToFormlessCheckout, canExtractChildFrames());
 
   if (unownedForm) {
+    numFramesSeen += (unownedForm.child_frames ?? []).length;
+    if (!canExtractChildFrames()) {
+      // Do not associate child frames with the form if the limit of frames
+      // across forms was reached. Forms that were parsed before this one will
+      // still keep their child frames.
+      unownedForm.child_frames = [];
+    }
+
     numFieldsSeen += unownedForm['fields'].length;
     if (numFieldsSeen <= fill_constants.MAX_EXTRACTABLE_FIELDS) {
       if (isFormInteresting_(unownedForm)) {
