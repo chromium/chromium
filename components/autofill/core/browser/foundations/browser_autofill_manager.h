@@ -607,12 +607,6 @@ class BrowserAutofillManager : public AutofillManager {
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
 
-  // Returns a compose suggestion if the compose service is available for
-  // `field` and `trigger_source`.
-  std::optional<Suggestion> MaybeGetComposeSuggestion(
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source);
-
   // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
   // fields in the form_structure if there was a filling operation.
   void AppendFillLogEvents(
