@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -307,6 +308,7 @@ class CORE_EXPORT GridItems {
 
    private:
     wtf_size_t current_index_;
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
     GridItemDataVectorPtr item_data_;
   };
 
@@ -383,6 +385,7 @@ class CORE_EXPORT GridItems {
 
   // Grid items are rearranged in order-modified document order since
   // auto-placement and painting rely on it later in the algorithm.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
   GridItemDataVector item_data_;
 };
 

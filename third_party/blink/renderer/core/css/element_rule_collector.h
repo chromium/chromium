@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -86,6 +87,7 @@ class MatchedRule {
   uint64_t GetPosition() const { return position_; }  // Secondary sort key.
 
  private:
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
   const RuleData* rule_data_;
   uint64_t sort_key_;
   uint64_t position_;

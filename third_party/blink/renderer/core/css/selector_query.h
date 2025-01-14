@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -112,6 +113,7 @@ class CORE_EXPORT SelectorQuery {
   // never match like pseudo elements, div::before. This can be empty, while
   // |selector_list_| will never be empty as SelectorQueryCache::add would have
   // thrown an exception.
+  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
   Vector<const CSSSelector*> selectors_;
   AtomicString selector_id_;
   bool selector_id_is_rightmost_ : 1;

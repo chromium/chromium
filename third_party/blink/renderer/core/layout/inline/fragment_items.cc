@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -73,6 +74,7 @@ void FragmentItems::FinalizeAfterLayout(
     const HeapVector<Member<const LayoutResult>, 1>& results,
     LayoutBlockFlow& container) {
   struct LastItem {
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
     const FragmentItem* item;
     wtf_size_t fragment_id;
     wtf_size_t item_index;

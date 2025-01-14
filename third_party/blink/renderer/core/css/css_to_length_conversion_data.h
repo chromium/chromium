@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -115,7 +116,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
    private:
     float em_ = 0;
     float rem_ = 0;
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
     const Font* font_ = nullptr;
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
     const Font* root_font_ = nullptr;
     // Font-metrics-based units (ex, ch, ic) are pre-zoomed by a factor of
     // `font_zoom_`.
@@ -152,7 +155,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     Length root_line_height_;
     // Note that this Font may be different from the instance held
     // by FontSizes (for the same CSSToLengthConversionData object).
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
     const Font* font_ = nullptr;
+    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
     const Font* root_font_ = nullptr;
     // Like ex/ch/ic, lh is also based on font-metrics and is pre-zoomed by
     // a factor of `font_zoom_`.
