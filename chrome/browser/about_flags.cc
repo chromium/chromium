@@ -11619,6 +11619,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kWindowsSystemTracing)},
 #endif  // BUILDFLAG(IS_WIN)
 
+    {"privacy-sandbox-equalized-prompt-buttons",
+     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsName,
+     flag_descriptions::kPrivacySandboxEqualizedPromptButtonsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

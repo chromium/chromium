@@ -7040,6 +7040,13 @@
     "expiry_milestone": 134
   },
   {
+    "name": "privacy-sandbox-equalized-prompt-buttons",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "privacy-sandbox-internals",
     "owners": [
       "kmg@google.com",

@@ -1800,6 +1800,9 @@ extern const char kPrivacySandboxAdsApiUxEnhancementsDescription[];
 extern const char kPrivacySandboxEnrollmentOverridesName[];
 extern const char kPrivacySandboxEnrollmentOverridesDescription[];
 
+extern const char kPrivacySandboxEqualizedPromptButtonsName[];
+extern const char kPrivacySandboxEqualizedPromptButtonsDescription[];
+
 extern const char kPrivacySandboxInternalsName[];
 extern const char kPrivacySandboxInternalsDescription[];
 

@@ -22562,6 +22562,7 @@ from previous Chrome versions.
   <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
   <int value="830354646" label="SecondaryGoogleAccountUsage:disabled"/>
+  <int value="831988687" label="PrivacySandboxEqualizedPromptButtons:disabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>
   <int value="832711367" label="RequestDesktopSiteForTablets:enabled"/>
   <int value="834033186" label="enable-data-reduction-proxy-dev"/>
@@ -25414,6 +25415,7 @@ from previous Chrome versions.
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937435913"
       label="CryptAuthV2DedupDeviceLastActivityTime:disabled"/>
+  <int value="1937660673" label="PrivacySandboxEqualizedPromptButtons:enabled"/>
   <int value="1937905990" label="AutofillCenterAlignedSuggestions:enabled"/>
   <int value="1938279796" label="PromosOnLocalNtp:disabled"/>
   <int value="1939413645" label="enable-invalid-cert-collection"/>

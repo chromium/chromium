@@ -3123,6 +3123,12 @@ const char kPrivacySandboxEnrollmentOverridesDescription[] =
     "enrolled and attested into the Privacy Sandbox experiment. See: "
     "https://developer.chrome.com/en/docs/privacy-sandbox/enroll/";
 
+const char kPrivacySandboxEqualizedPromptButtonsName[] =
+    "Privacy Sandbox Equalized Prompt Buttons";
+const char kPrivacySandboxEqualizedPromptButtonsDescription[] =
+    "Enables equalized styling for the dismissal buttons on the Privacy "
+    "Sandbox Prompt.";
+
 const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
