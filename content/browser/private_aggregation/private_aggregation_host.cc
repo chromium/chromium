@@ -193,8 +193,7 @@ PrivateAggregationHost::PrivateAggregationHost(
               switches::kPrivateAggregationDeveloperMode)),
       on_report_request_details_received_(
           std::move(on_report_request_details_received)),
-      browser_context_(*browser_context) {
-  CHECK(browser_context);
+      browser_context_(CHECK_DEREF(browser_context)) {
   CHECK(!on_report_request_details_received_.is_null());
 
   // `base::Unretained()` is safe as `receiver_set_` is owned by `this`.
@@ -292,18 +291,15 @@ bool PrivateAggregationHost::BindNewReceiver(
   if (timeout) {
     CHECK(timeout->is_positive());
 
-    ReceiverContext* receiver_context_raw_ptr = receiver_set_.GetContext(id);
-    CHECK(receiver_context_raw_ptr);
-
-    receiver_context_raw_ptr->timeout_timer =
-        std::make_unique<base::OneShotTimer>();
-
-    // Passing `base::Unretained(this)` is safe as `this` owns the receiver
-    // context and the receiver context owns the timer.
-    receiver_context_raw_ptr->timeout_timer->Start(
+    ReceiverContext& context = CHECK_DEREF(receiver_set_.GetContext(id));
+    context.timeout_timer = std::make_unique<base::OneShotTimer>();
+    context.timeout_timer->Start(
         FROM_HERE, *timeout,
-        base::BindOnce(&PrivateAggregationHost::OnTimeoutBeforeDisconnect,
-                       base::Unretained(this), id));
+        base::BindOnce(
+            &PrivateAggregationHost::OnTimeoutBeforeDisconnect,
+            // Passing `base::Unretained(this)` is safe as `this` owns the
+            // receiver context and the receiver context owns the timer.
+            base::Unretained(this), id));
   }
 
   return true;
@@ -523,10 +519,8 @@ void PrivateAggregationHost::CloseCurrentPipe(PipeResult pipe_result) {
 }
 
 void PrivateAggregationHost::OnTimeoutBeforeDisconnect(mojo::ReceiverId id) {
-  ReceiverContext* receiver_context = receiver_set_.GetContext(id);
-  CHECK(receiver_context);
-
-  SendReportOnTimeoutOrDisconnect(*receiver_context,
+  ReceiverContext& receiver_context = CHECK_DEREF(receiver_set_.GetContext(id));
+  SendReportOnTimeoutOrDisconnect(receiver_context,
                                   /*remaining_timeout=*/base::TimeDelta());
 
   RecordTimeoutResultHistogram(
