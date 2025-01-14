@@ -105,9 +105,7 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
 }
 
 SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
-  SVGLayoutResult result;
-  result.bounds_changed =
-      std::exchange(bounds_dirty_from_removed_child_, false);
+  bool bounds_changed = std::exchange(bounds_dirty_from_removed_child_, false);
 
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
@@ -161,13 +159,13 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
       continue;
     }
     const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
-    result.bounds_changed |= child_result.bounds_changed;
+    bounds_changed |= child_result.bounds_changed;
   }
 
-  if (result.bounds_changed) {
-    result.bounds_changed = UpdateBoundingBoxes();
+  if (bounds_changed) {
+    bounds_changed = UpdateBoundingBoxes();
   }
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool SVGContentContainer::HitTest(HitTestResult& result,

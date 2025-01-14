@@ -42,7 +42,7 @@ SVGLayoutResult LayoutSVGResourceMarker::UpdateSVGLayout(
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
   if (is_in_layout_)
-    return {};
+    return SVGLayoutResult(/*bounds_changed=*/false);
 
   base::AutoReset<bool> in_layout_change(&is_in_layout_, true);
 

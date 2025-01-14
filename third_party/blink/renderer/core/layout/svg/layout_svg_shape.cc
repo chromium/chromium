@@ -347,10 +347,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     needs_boundaries_update_ = true;
   }
 
-  SVGLayoutResult result;
-  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = UpdateAfterSVGLayout(layout_info, bbox_changed);
 
   if (needs_boundaries_update_) {
     if (!IsShapeEmpty()) {
@@ -360,14 +357,14 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
       decorated_bounding_box_ = fill_bounding_box_;
     }
     needs_boundaries_update_ = false;
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
 
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
