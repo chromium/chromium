@@ -37,13 +37,11 @@ class MediaCapturePickerDialogBridge {
   // necessarily target) of the capture request is `web_contents`.
   void Show(content::WebContents* web_contents,
             const std::u16string& app_name,
-            bool request_audio,
             MediaCapturePickerDialogCallback callback);
 
   // Called from Java via JNI when the dialog resolves.
   void OnResult(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& java_web_contents,
-                bool audio_share);
+                const base::android::JavaParamRef<jobject>& java_web_contents);
 
  private:
   MediaCapturePickerDialogCallback callback_;
