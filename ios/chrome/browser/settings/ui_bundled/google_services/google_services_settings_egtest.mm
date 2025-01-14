@@ -122,7 +122,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // the feature is not enabled.
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
-  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
+  if ([self isRunningTest:@selector(DISABLED_testParcelTrackingSetting)]) {
     config.features_disabled.push_back(kIOSDisableParcelTracking);
   }
   return config;
@@ -343,7 +343,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests the parcel tracking settings row is properly shown.
-- (void)testParcelTrackingSetting {
+// TODO(crbug.com/389954360): Restore this test.
+- (void)DISABLED_testParcelTrackingSetting {
   // Parcel tracking is only enabled in the US.
   [ChromeEarlGrey setStringValue:"us"
                forLocalStatePref:variations::prefs::

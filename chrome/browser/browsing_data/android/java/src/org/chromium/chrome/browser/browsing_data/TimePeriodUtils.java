@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.browsing_data;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** A utility class to provide functionalities around clear browsing data {@link TimePeriod}. */
+@NullMarked
 public class TimePeriodUtils {
     /** An option to be shown in the time period spiner. */
     public static class TimePeriodSpinnerOption {
@@ -45,7 +46,7 @@ public class TimePeriodUtils {
      * Returns the Array of time periods. Options are displayed in the same order as they appear
      * in the array.
      */
-    public static TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions(@NonNull Context context) {
+    public static TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions(Context context) {
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
         options.add(
                 new TimePeriodSpinnerOption(
@@ -71,7 +72,7 @@ public class TimePeriodUtils {
     }
 
     /** Returns the string associated with the time period. */
-    public static String getTimePeriodString(@NonNull Context context, @TimePeriod int timePeriod) {
+    public static String getTimePeriodString(Context context, @TimePeriod int timePeriod) {
         switch (timePeriod) {
             case TimePeriod.LAST_15_MINUTES:
                 return context.getString(R.string.clear_browsing_data_tab_period_15_minutes);

@@ -238,7 +238,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function registeringScriptWithInvalidWorldIdThrowsAnError() {
+  async function invalidWorldId_UnderscoreError() {
     await chrome.userScripts.unregister();
 
     const scripts = [{
@@ -251,6 +251,23 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.userScripts.register(scripts),
         `Error: World IDs beginning with '_' are reserved.`);
+    chrome.test.succeed();
+  },
+
+  async function invalidWorldId_MainWorldError() {
+    await chrome.userScripts.unregister();
+
+    const scripts = [{
+      id: 'invalidMatchPattern',
+      matches: ['http://example.com/*'],
+      js: [{file: 'script.js'}],
+      world: 'MAIN',
+      worldId: '123'
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.register(scripts),
+        `Error: World ID can only be specified for USER_SCRIPT worlds.`);
     chrome.test.succeed();
   },
 

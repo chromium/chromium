@@ -15,7 +15,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -224,9 +223,12 @@ public class PostTask {
         return sPrenativeThreadPoolExecutor;
     }
 
-    @NullUnmarked
     public static @Nullable Exception getTaskOrigin() {
-        return ENABLE_TASK_ORIGINS ? sTaskOrigin.get() : null;
+        if (ENABLE_TASK_ORIGINS) {
+            assumeNonNull(sTaskOrigin);
+            return sTaskOrigin.get();
+        }
+        return null;
     }
 
     /**

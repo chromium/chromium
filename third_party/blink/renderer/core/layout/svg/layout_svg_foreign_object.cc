@@ -158,18 +158,13 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
 
   const PhysicalRect frame_rect(PhysicalLocation(), Size());
-  const bool bounds_changed = old_frame_rect != frame_rect;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_frame_rect != frame_rect;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
 
   DCHECK(!needs_transform_update_);
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool LayoutSVGForeignObject::UpdateAfterSVGLayout(

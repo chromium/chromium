@@ -63,8 +63,7 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, SecondaryClickMenuNoToolTip);
 
-  void SetToolTip(NSString* tool_tip);
-  void CreateMenu(ui::MenuModel* model, NSString* tool_tip);
+  void CreateMenu(ui::MenuModel* model);
 
   // Getter for item_ that allows lazy initialization.
   NSStatusItem* item();
@@ -72,8 +71,6 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
 
   // Notification balloon.
   DesktopNotificationBalloon notification_;
-
-  NSString* __strong tool_tip_;
 
   // Status menu shown when right-clicking the system icon, if it has been
   // created by |UpdatePlatformContextMenu|.

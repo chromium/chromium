@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -27,8 +30,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -55,6 +59,7 @@ public class RemoteTabGroupMutationHelperUnitTest {
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
     private TabGroupSyncService mTabGroupSyncService;
     private RemoteTabGroupMutationHelper mRemoteMutationHelper;
+    private @Captor ArgumentCaptor<SavedTabGroup> mSavedTabGroupCaptor;
 
     private static Tab prepareTab(int tabId, int rootId) {
         Tab tab = Mockito.mock(Tab.class);
@@ -89,25 +94,24 @@ public class RemoteTabGroupMutationHelperUnitTest {
 
     @Test
     public void testCreateRemoteTabGroup() {
+        Mockito.doNothing().when(mTabGroupSyncService).addGroup(mSavedTabGroupCaptor.capture());
         mRemoteMutationHelper.createRemoteTabGroup(LOCAL_TAB_GROUP_ID_1);
-        verify(mTabGroupSyncService).createGroup(eq(LOCAL_TAB_GROUP_ID_1));
-        verify(mTabGroupSyncService)
-                .updateVisualData(
-                        eq(LOCAL_TAB_GROUP_ID_1), eq(new String()), eq(TabGroupColorId.GREY));
+        verify(mTabGroupSyncService).addGroup(any());
+        Assert.assertEquals(2, mSavedTabGroupCaptor.getValue().savedTabs.size());
+        Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
+        SavedTabGroupTab savedTab1 = mSavedTabGroupCaptor.getValue().savedTabs.get(0);
+        SavedTabGroupTab savedTab2 = mSavedTabGroupCaptor.getValue().savedTabs.get(1);
+
+        Assert.assertEquals(Integer.valueOf(TAB_ID_1), savedTab1.localId);
+        Assert.assertEquals(TAB_TITLE_1, savedTab1.title);
+        Assert.assertEquals(TAB_URL_1, savedTab1.url);
+        Assert.assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab1.syncGroupId);
+
+        Assert.assertEquals(Integer.valueOf(TAB_ID_2), savedTab2.localId);
+        Assert.assertEquals(TAB_TITLE_1, savedTab2.title);
+        Assert.assertEquals(TAB_URL_1, savedTab2.url);
+        Assert.assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab2.syncGroupId);
+
         verify(mTabGroupModelFilter).getRelatedTabListForRootId(eq(ROOT_ID_1));
-        verify(mTabGroupSyncService)
-                .addTab(
-                        eq(LOCAL_TAB_GROUP_ID_1),
-                        eq(TAB_ID_1),
-                        eq(TAB_TITLE_1),
-                        eq(TAB_URL_1),
-                        anyInt());
-        verify(mTabGroupSyncService)
-                .addTab(
-                        eq(LOCAL_TAB_GROUP_ID_1),
-                        eq(TAB_ID_2),
-                        eq(TAB_TITLE_1),
-                        eq(TAB_URL_1),
-                        anyInt());
     }
 }

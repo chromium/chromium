@@ -14,7 +14,10 @@ struct SVGLayoutInfo {
 };
 
 struct SVGLayoutResult {
-  bool bounds_changed = false;
+  SVGLayoutResult() = delete;
+  explicit SVGLayoutResult(bool bounds_changed)
+      : bounds_changed(bounds_changed) {}
+  bool bounds_changed;
 };
 
 }  // namespace blink

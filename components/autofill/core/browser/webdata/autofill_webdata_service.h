@@ -21,7 +21,6 @@
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#include "components/webdata/common/web_database.h"
 
 class WebDatabaseService;
 

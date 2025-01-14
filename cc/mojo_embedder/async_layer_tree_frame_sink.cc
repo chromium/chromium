@@ -290,19 +290,6 @@ std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
                                            host_impl);
 }
 
-void AsyncLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  DCHECK(compositor_frame_sink_ptr_);
-  compositor_frame_sink_ptr_->DidAllocateSharedBitmap(std::move(region), id);
-}
-
-void AsyncLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  DCHECK(compositor_frame_sink_ptr_);
-  compositor_frame_sink_ptr_->DidDeleteSharedBitmap(id);
-}
-
 void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
     std::vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

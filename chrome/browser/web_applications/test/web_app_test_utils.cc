@@ -1171,6 +1171,7 @@ void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
 }
 
 void TestAcceptDialogCallback(
+    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -1180,6 +1181,7 @@ void TestAcceptDialogCallback(
 }
 
 void TestDeclineDialogCallback(
+    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {

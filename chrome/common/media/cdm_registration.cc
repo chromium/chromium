@@ -38,13 +38,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #include "media/cdm/cdm_paths.h"  // nogncheck
-// Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION. This file is in
-// SHARED_INTERMEDIATE_DIR.
-#include "widevine_cdm_version.h"  // nogncheck
-// The following must be after widevine_cdm_version.h.
-#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-#include <gnu/libc-version.h>
-#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/metrics/histogram_functions.h"
@@ -233,15 +226,6 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
       kWidevineCdmType, base::Version(), base::FilePath());
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-  base::Version glibc_version(gnu_get_libc_version());
-  DCHECK(glibc_version.IsValid());
-  if (glibc_version < base::Version(WIDEVINE_CDM_MIN_GLIBC_VERSION)) {
-    LOG(WARNING) << "Widevine not registered because glibc version is too low";
-    return;
-  }
-#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
-
   // The Widevine CDM on Linux/ChromeOS needs to be registered (and loaded)
   // before the zygote is locked down. The CDM can be found from the version
   // bundled with Chrome (if BUNDLE_WIDEVINE_CDM = true) and/or the version

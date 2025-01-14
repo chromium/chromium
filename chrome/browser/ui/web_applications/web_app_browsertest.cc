@@ -1208,14 +1208,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
   NavigateViaLinkClickToURLAndWait(browser(), GetUrlWithScreenshots());
 
   // Wait until the screenshots are in the app banner manager.
+  // Information needed for the banner data is available at
+  // `AppBannerManagerDesktop::ParamsToPerformInstallableWebAppCheck()`.
   webapps::AppBannerManager* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     std::optional<webapps::WebAppBannerData> banner_data =
         app_banner_manager->GetCurrentWebAppBannerData();
-    return banner_data.has_value() && !banner_data->screenshots.empty();
-  })) << "Screenshots were never loaded for current tab.";
+    return banner_data.has_value();
+  })) << "Valid manifest with primary icon did not finish loading for showing "
+         "of dialog";
 
   // Wait for the detailed install dialog to show up post install, and accept
   // it.

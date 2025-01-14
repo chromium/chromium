@@ -814,104 +814,8 @@ bool ExtensionService::UninstallExtension(
     UninstallReason reason,
     std::u16string* error,
     base::OnceClosure done_callback) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  scoped_refptr<const Extension> extension =
-      registry_->GetInstalledExtension(transient_extension_id);
-
-  // Callers should not send us nonexistent extensions.
-  CHECK(extension.get());
-
-  ManagementPolicy* by_policy = system_->management_policy();
-  // Policy change which triggers an uninstall will always set
-  // |external_uninstall| to true so this is the only way to uninstall
-  // managed extensions.
-  // Shared modules being uninstalled will also set |external_uninstall| to true
-  // so that we can guarantee users don't uninstall a shared module.
-  // (crbug.com/273300)
-  // TODO(rdevlin.cronin): This is probably not right. We should do something
-  // else, like include an enum IS_INTERNAL_UNINSTALL or IS_USER_UNINSTALL so
-  // we don't do this.
-  bool external_uninstall =
-      (reason == UNINSTALL_REASON_INTERNAL_MANAGEMENT) ||
-      (reason == UNINSTALL_REASON_COMPONENT_REMOVED) ||
-      (reason == UNINSTALL_REASON_MIGRATED) ||
-      (reason == UNINSTALL_REASON_REINSTALL) ||
-      (reason == UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION) ||
-      (reason == UNINSTALL_REASON_ORPHANED_SHARED_MODULE);
-  if (!external_uninstall &&
-      (!by_policy->UserMayModifySettings(extension.get(), error) ||
-       by_policy->MustRemainInstalled(extension.get(), error))) {
-    ExtensionRegistry::Get(profile_)->TriggerOnUninstallationDenied(
-        extension.get());
-    return false;
-  }
-
-  InstallVerifier::Get(GetBrowserContext())->Remove(extension->id());
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallType", extension->GetType(),
-                            100);
-
-  // Unload before doing more cleanup to ensure that nothing is hanging on to
-  // any of these resources.
-  UnloadExtension(extension->id(), UnloadedExtensionReason::UNINSTALL);
-
-  // `UnloadExtension` ignores extensions that are `BLOCKLISTED` or `BLOCKED`
-  if (registry_->blocklisted_extensions().Contains(extension->id()))
-    registry_->RemoveBlocklisted(extension->id());
-  if (registry_->blocked_extensions().Contains(extension->id()))
-    registry_->RemoveBlocked(extension->id());
-
-  // Prepare barrier closure for UninstallExtensionOnFileThread() task (if
-  // applicable) and DataDeleter::StartDeleting().
-  bool is_unpacked_location =
-      Manifest::IsUnpackedLocation(extension->location());
-  base::RepeatingClosure subtask_done_callback = base::DoNothing();
-  if (!done_callback.is_null()) {
-    int num_tasks = is_unpacked_location ? 1 : 2;
-    subtask_done_callback =
-        base::BarrierClosure(num_tasks, std::move(done_callback));
-  }
-
-  // Delete extensions in profile directory (from webstore, or from .crx), but
-  // do not delete unpacked in a folder outside the profile directory.
-  if (!SkipDeleteExtensionDir(*extension, profile_->GetPath())) {
-    // Extensions installed from webstore or .crx are versioned in subdirs so we
-    // delete the parent dir. Unpacked (installed from .zip rather than folder)
-    // are not versioned so we just delete the single installation directory.
-    base::FilePath extension_dir_to_delete =
-        is_unpacked_location ? extension->path() : extension->path().DirName();
-
-    base::FilePath extensions_install_dir =
-        is_unpacked_location ? unpacked_install_directory_ : install_directory_;
-
-    // Tell the backend to start deleting the installed extension on the file
-    // thread.
-    if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
-                           extension->id(), profile_->GetProfileUserName(),
-                           std::move(extensions_install_dir),
-                           std::move(extension_dir_to_delete),
-                           profile_->GetPath()),
-            subtask_done_callback)) {
-      NOTREACHED();
-    }
-  }
-
-  DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
-
-  extension_registrar_.UntrackTerminatedExtension(extension->id());
-
-  // Notify interested parties that we've uninstalled this extension.
-  ExtensionRegistry::Get(profile_)->TriggerOnUninstalled(extension.get(),
-                                                         reason);
-
-  delayed_installs_.Remove(extension->id());
-  extension_prefs_->OnExtensionUninstalled(
-      extension->id(), extension->location(), external_uninstall);
-
-  return true;
+  return extension_registrar_.UninstallExtension(
+      transient_extension_id, reason, error, std::move(done_callback));
 }
 
 // static
@@ -1151,6 +1055,59 @@ void ExtensionService::PostDeactivateExtension(
   // work properly multi-profile. Besides which, it should be using
   // ExtensionRegistryObserver::OnExtensionLoaded. See http://crbug.com/355029.
   UpdateActiveExtensionsInCrashReporter();
+}
+
+void ExtensionService::PreUninstallExtension(
+    scoped_refptr<const Extension> extension) {
+  InstallVerifier::Get(GetBrowserContext())->Remove(extension->id());
+}
+
+void ExtensionService::PostUninstallExtension(
+    scoped_refptr<const Extension> extension,
+    base::OnceClosure done_callback) {
+  // Prepare barrier closure for UninstallExtensionOnFileThread() task (if
+  // applicable) and DataDeleter::StartDeleting().
+  bool is_unpacked_location =
+      Manifest::IsUnpackedLocation(extension->location());
+  base::RepeatingClosure subtask_done_callback = base::DoNothing();
+  if (!done_callback.is_null()) {
+    int num_tasks = is_unpacked_location ? 1 : 2;
+    subtask_done_callback =
+        base::BarrierClosure(num_tasks, std::move(done_callback));
+  }
+
+  // Delete extensions in profile directory (from webstore, or from .crx), but
+  // do not delete unpacked in a folder outside the profile directory.
+  if (!SkipDeleteExtensionDir(*extension, profile_->GetPath())) {
+    // Extensions installed from webstore or .crx are versioned in subdirs so we
+    // delete the parent dir. Unpacked (installed from .zip rather than folder)
+    // are not versioned so we just delete the single installation directory.
+    base::FilePath extension_dir_to_delete =
+        is_unpacked_location ? extension->path() : extension->path().DirName();
+
+    base::FilePath extensions_install_dir =
+        is_unpacked_location ? unpacked_install_directory_ : install_directory_;
+
+    // Tell the backend to start deleting the installed extension on the file
+    // thread.
+    if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
+            FROM_HERE,
+            base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
+                           extension->id(), profile_->GetProfileUserName(),
+                           std::move(extensions_install_dir),
+                           std::move(extension_dir_to_delete),
+                           profile_->GetPath()),
+            subtask_done_callback)) {
+      NOTREACHED();
+    }
+  }
+
+  DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
+}
+
+void ExtensionService::PostNotifyUninstallExtension(
+    scoped_refptr<const Extension> extension) {
+  delayed_installs_.Remove(extension->id());
 }
 
 content::BrowserContext* ExtensionService::GetBrowserContext() const {

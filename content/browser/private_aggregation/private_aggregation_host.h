@@ -211,9 +211,6 @@ class CONTENT_EXPORT PrivateAggregationHost
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>
       receiver_set_;
 
-  // The number of open pipes where a timeout was specified.
-  int pipes_with_timeout_count_ = 0;
-
   // `this` is indirectly owned by the StoragePartitionImpl, which itself is
   // owned by `browser_context_`.
   raw_ref<BrowserContext> browser_context_;

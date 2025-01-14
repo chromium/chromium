@@ -10,6 +10,7 @@ import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/g
 import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {SemanticEvent, UserAction} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import {ContextMenuOption} from 'chrome-untrusted://lens-overlay/metrics_utils.js';
 import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
@@ -237,20 +238,47 @@ suite('SelectionOverlay', function() {
           expectedLeft.toString().substring(0, 6));
     });
 
-    test(
-        'verify that region search triggers selected region context menu',
-        async () => {
-          await addEmptyText();
+    test('verify that region search triggers selected region context menu', async () => {
+      await addEmptyText();
 
-          await simulateDrag(
-              selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
-          await waitAfterNextRender(selectionOverlayElement);
+      await simulateDrag(
+          selectionOverlayElement, {x: 50, y: 25}, {x: 300, y: 200});
+      await waitAfterNextRender(selectionOverlayElement);
 
-          assertTrue(selectionOverlayElement
-                         .getShowSelectedRegionContextMenuForTesting());
-          assertFalse(selectionOverlayElement
-                          .getShowDetectedTextContextMenuOptionsForTesting());
-        });
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertFalse(selectionOverlayElement
+                      .getShowDetectedTextContextMenuOptionsForTesting());
+
+      // Check that the region context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          2,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+    });
 
 
     test('verify that resizing renders image with padding', async () => {
@@ -411,35 +439,78 @@ suite('SelectionOverlay', function() {
                   'issueTextSelectionRequest'));
         });
 
-    test(
-        'verify that region search over text triggers detected text options',
-        async () => {
-          await simulateDrag(
-              selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
-          await waitAfterNextRender(selectionOverlayElement);
+    test('verify that region search over text triggers detected text options', async () => {
+      await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+      await waitAfterNextRender(selectionOverlayElement);
 
-          assertEquals(
-              1,
-              testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-          assertEquals(
-              0,
-              testBrowserProxy.handler.getCallCount(
-                  'issueTextSelectionRequest'));
-          assertTrue(selectionOverlayElement
-                         .getShowSelectedRegionContextMenuForTesting());
-          assertTrue(selectionOverlayElement
-                         .getShowDetectedTextContextMenuOptionsForTesting());
+      assertEquals(
+          1, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      assertEquals(
+          0,
+          testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
 
-          testBrowserProxy.handler.reset();
-          selectionOverlayElement.handleSelectTextForTesting();
+      // Check that the region with text context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SELECT_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SELECT_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT_IN_REGION));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.SAVE_AS_IMAGE));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
 
-          const textQuery = await testBrowserProxy.handler.whenCalled(
-              'issueTextSelectionRequest');
-          assertDeepEquals('hello there test', textQuery);
-          assertEquals(
-              0,
-              testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
-        });
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          4,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(4, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+
+      testBrowserProxy.handler.reset();
+      selectionOverlayElement.handleSelectTextForTesting();
+
+      const textQuery = await testBrowserProxy.handler.whenCalled(
+          'issueTextSelectionRequest');
+      assertDeepEquals('hello there test', textQuery);
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    });
 
     test(
         `verify that adding text after region selection triggers detected text ` +
@@ -508,6 +579,12 @@ suite('SelectionOverlay', function() {
         async () => {
           await simulateDrag(
               selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+
+          // Verify that the image and detected text context menu options are
+          // shown.
+          assertEquals(
+              4, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+
           selectionOverlayElement.handleCopyAsImageForTesting();
 
           await testBrowserProxy.handler.whenCalled('copyImage');
@@ -527,6 +604,11 @@ suite('SelectionOverlay', function() {
 
           assertTrue(selectionOverlayElement
                          .getShowSelectedRegionContextMenuForTesting());
+
+          // Verify that the image and detected text context menu options are
+          // logged again.
+          assertEquals(
+              8, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
         });
 
     test(
@@ -580,6 +662,58 @@ suite('SelectionOverlay', function() {
       assertDeepEquals('there test', textQuery);
       assertEquals(
           0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    });
+
+    test('verify that selecting text triggers context menu options', async () => {
+      testBrowserProxy.handler.reset();
+
+      // Drag that starts on a word.
+      const wordEl = selectionOverlayElement.$.textSelectionLayer
+                         .getWordNodesForTesting()[1]!;
+      const wordElBoundingBox = wordEl.getBoundingClientRect();
+      await simulateDrag(
+          selectionOverlayElement, {
+            x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+            y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
+          },
+          {
+            x: wordElBoundingBox.right,
+            y: wordElBoundingBox.bottom,
+          });
+
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(
+          selectionOverlayElement.getShowSelectedTextContextMenuForTesting());
+
+      // Check that the text context menu options were shown.
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_TEXT));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.TRANSLATE_TEXT));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_TEXT));
+
+      // Ensure that no other context menu options were shown.
+      assertEquals(
+          2,
+          metrics.count(
+              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
+      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
     test('verify that copy in selected text context menu works', async () => {

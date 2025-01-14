@@ -81,7 +81,10 @@ public class StartupHelperUnitTest {
         doAnswer(
                         invocation -> {
                             LocalTabGroupId groupId = invocation.getArgument(0);
-                            mTabGroupSyncService.createGroup(groupId);
+                            SavedTabGroup savedTabGroup = new SavedTabGroup();
+                            savedTabGroup.title = new String();
+                            savedTabGroup.localId = groupId;
+                            mTabGroupSyncService.addGroup(savedTabGroup);
                             return null;
                         })
                 .when(mRemoteMutationHelper)

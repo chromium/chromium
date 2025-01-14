@@ -509,7 +509,7 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
                                    ? intercepted_account().hosted_domain
                                    : std::string();
   if (manager_domain.empty()) {
-    manager_domain = chrome::GetDeviceManagerIdentity().value_or(std::string());
+    manager_domain = GetDeviceManagerIdentity().value_or(std::string());
   }
 
   if (manager_domain.empty()) {

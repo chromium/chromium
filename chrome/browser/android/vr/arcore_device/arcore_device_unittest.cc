@@ -248,9 +248,6 @@ class StubCompositorFrameSink
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {}
   void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,

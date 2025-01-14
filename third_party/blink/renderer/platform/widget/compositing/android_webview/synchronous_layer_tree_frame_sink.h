@@ -108,9 +108,6 @@ class SynchronousLayerTreeFrameSink
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
   void Invalidate(bool needs_draw) override;
 
   // viz::mojom::CompositorFrameSinkClient implementation.

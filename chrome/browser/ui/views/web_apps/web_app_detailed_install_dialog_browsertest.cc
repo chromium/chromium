@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -40,8 +41,28 @@ namespace web_app {
 namespace {
 
 static constexpr int kIconSize = 40;
-static constexpr int kScreenshotSize = 300;
 static constexpr SkColor kIconColor = SK_ColorGREEN;
+
+// A stub WebAppScreenshotFetcher, useful for testing that the dialog shows up
+// correctly, even with no screenshots.
+class TestScreenshotFetcher : public WebAppScreenshotFetcher {
+ public:
+  // WebAppScreenshotFetcher overrides:
+  void GetScreenshot(
+      int index,
+      base::OnceCallback<void(SkBitmap, std::optional<std::u16string>)>
+          callback) override {}
+  const std::vector<gfx::Size>& GetScreenshotSizes() override {
+    return screenshots_count_;
+  }
+
+  base::WeakPtr<TestScreenshotFetcher> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  std::vector<gfx::Size> screenshots_count_{0};
+  base::WeakPtrFactory<TestScreenshotFetcher> weak_ptr_factory_{this};
+};
 
 SkBitmap CreateSolidColorIcon(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -59,36 +80,6 @@ std::unique_ptr<WebAppInstallInfo> GetInstallInfo() {
   install_info->icon_bitmaps.any[kIconSize] =
       CreateSolidColorIcon(kIconSize, kIconSize, kIconColor);
   return install_info;
-}
-
-std::vector<webapps::Screenshot> GetScreenshots(const std::string& type) {
-  std::vector<webapps::Screenshot> screenshots;
-  if (type == "single_screenshot") {
-    screenshots.emplace_back(
-        CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
-        u"example screenshot");
-  } else if (type == "multiple_screenshots") {
-    screenshots.emplace_back(
-        CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
-        u"example screenshot");
-    screenshots.emplace_back(
-        CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorBLACK),
-        u"example screenshot 2");
-    screenshots.emplace_back(
-        CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorBLUE),
-        u"");
-  } else if (type == "max_ratio_screenshot") {
-    screenshots.emplace_back(
-        CreateSolidColorIcon(webapps::kMaximumScreenshotRatio * kScreenshotSize,
-                             kScreenshotSize, SK_ColorGREEN),
-        std::nullopt);
-  } else {
-    screenshots.emplace_back(
-        CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
-        std::nullopt);
-  }
-
-  return screenshots;
 }
 
 std::unique_ptr<webapps::MlInstallOperationTracker> GetMLInstallTracker(
@@ -111,11 +102,16 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
             [&](bool result, std::unique_ptr<WebAppInstallInfo>) {
               dialog_accepted_ = result;
             }),
-        GetScreenshots(name), PwaInProductHelpState::kNotShown);
+        screenshot_fetcher(), PwaInProductHelpState::kNotShown);
   }
   std::optional<bool> dialog_accepted() { return dialog_accepted_; }
 
+  base::WeakPtr<TestScreenshotFetcher> screenshot_fetcher() {
+    return fetcher_.GetWeakPtr();
+  }
+
  private:
+  TestScreenshotFetcher fetcher_;
   std::optional<bool> dialog_accepted_ = std::nullopt;
 };
 
@@ -232,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   ShowWebAppDetailedInstallDialog(
       popup_browser->tab_strip_model()->GetActiveWebContents(),
       GetInstallInfo(), std::move(install_tracker), test_future.GetCallback(),
-      GetScreenshots(base::EmptyString()), PwaInProductHelpState::kNotShown);
+      screenshot_fetcher(), PwaInProductHelpState::kNotShown);
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
@@ -276,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
       }));
   ShowWebAppDetailedInstallDialog(popup_contents, GetInstallInfo(),
                                   std::move(install_tracker), base::DoNothing(),
-                                  GetScreenshots(base::EmptyString()),
+                                  screenshot_fetcher(),
                                   PwaInProductHelpState::kNotShown);
   run_loop.Run();
 
@@ -289,10 +285,11 @@ class PictureInPictureDetailedInstallDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
  protected:
   void ShowDialogUi() {
+    TestScreenshotFetcher fetcher;
     ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0), GetInstallInfo(),
-        GetMLInstallTracker(browser()), base::DoNothing(),
-        GetScreenshots(base::EmptyString()), PwaInProductHelpState::kNotShown);
+        GetMLInstallTracker(browser()), base::DoNothing(), fetcher.GetWeakPtr(),
+        PwaInProductHelpState::kNotShown);
   }
   DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};

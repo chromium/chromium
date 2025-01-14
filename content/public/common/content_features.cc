@@ -596,11 +596,6 @@ BASE_FEATURE(kLazyInitializeMediaControls,
              "LazyInitializeMediaControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables reporting of Cookie Issues for Legacy Technology Report.
-BASE_FEATURE(kLegacyTechReportEnableCookieIssueReports,
-             "LegacyTechReportEnableCookieIssueReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLogJsConsoleMessages,
              "LogJsConsoleMessages",
 #if BUILDFLAG(IS_ANDROID)

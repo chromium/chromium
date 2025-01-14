@@ -100,8 +100,11 @@
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
                  didRemoveItem:(MagicStackModule*)item
+                       animate:(BOOL)animate
                 withCompletion:(ProceduralBlock)completion {
-  [self.magicStackConsumer removeItem:item withCompletion:completion];
+  [self.magicStackConsumer removeItem:item
+                              animate:animate
+                       withCompletion:completion];
 }
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model

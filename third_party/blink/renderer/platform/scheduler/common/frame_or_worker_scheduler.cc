@@ -44,6 +44,7 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&& other)
     : feature_(other.feature_),
+      policy_(std::move(other.policy_)),
       feature_and_js_location_(other.feature_and_js_location_),
       scheduler_(std::move(other.scheduler_)) {
   other.scheduler_ = nullptr;

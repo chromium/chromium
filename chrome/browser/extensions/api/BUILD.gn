@@ -37,6 +37,7 @@ group("api_implementations") {
     public_deps += [
       "//chrome/browser/extensions/api/activity_log_private",
       "//chrome/browser/extensions/api/autofill_private",
+      "//chrome/browser/extensions/api/braille_display_private",
       "//chrome/browser/extensions/api/command_line_private",
       "//chrome/browser/extensions/api/content_settings",
       "//chrome/browser/extensions/api/context_menus",

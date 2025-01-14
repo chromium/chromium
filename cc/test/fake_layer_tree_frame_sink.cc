@@ -106,19 +106,6 @@ std::unique_ptr<LayerContext> FakeLayerTreeFrameSink::CreateLayerContext(
   return std::make_unique<FakeLayerContext>();
 }
 
-void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  DCHECK(!base::Contains(shared_bitmaps_, id));
-  shared_bitmaps_.push_back(id);
-}
-
-void FakeLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  DCHECK(base::Contains(shared_bitmaps_, id));
-  std::erase(shared_bitmaps_, id);
-}
-
 void FakeLayerTreeFrameSink::DidReceiveCompositorFrameAck() {
   client_->DidReceiveCompositorFrameAck();
 }

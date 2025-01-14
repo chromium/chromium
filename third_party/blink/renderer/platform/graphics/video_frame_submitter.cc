@@ -160,22 +160,6 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
   }
 
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {
-    if (!bundle_) {
-      return;
-    }
-    bundle_->DidAllocateSharedBitmap(frame_sink_id_.sink_id(),
-                                     std::move(region), id);
-  }
-
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {
-    if (!bundle_) {
-      return;
-    }
-    bundle_->DidDeleteSharedBitmap(frame_sink_id_.sink_id(), id);
-  }
-
   void InitializeCompositorFrameSinkType(
       viz::mojom::blink::CompositorFrameSinkType type) override {
     if (!bundle_) {

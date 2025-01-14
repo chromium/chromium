@@ -155,6 +155,9 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
     case ModelBasedCapabilityKey::kPermissionsAi:
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
     // The below capabilities never support on-device execution.
     case ModelBasedCapabilityKey::kFormsAnnotations:
     case ModelBasedCapabilityKey::kFormsPredictions:

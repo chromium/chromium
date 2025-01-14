@@ -59,6 +59,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPruneRedundantInlineConnectivity);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 
+// Expose the accessibility tree for views via an AXTree of AXNodes.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTreeForViews);
+AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
+
 // Use Alternative mechanism for acquiring image descriptions.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();

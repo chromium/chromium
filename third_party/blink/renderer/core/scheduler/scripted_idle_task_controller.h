@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 
-#include "base/feature_list.h"
 #include "base/task/delayed_task_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,8 +19,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-CORE_EXPORT BASE_DECLARE_FEATURE(kScriptedIdleTaskControllerOOMFix);
 
 class IdleRequestOptions;
 class ScriptedIdleTaskController;
@@ -51,8 +48,7 @@ class CORE_EXPORT IdleTask : public GarbageCollected<IdleTask>,
   friend class ScriptedIdleTaskController;
 
   probe::AsyncTaskContext async_task_context_;
-  // Handle to the associated "scheduler timeout task" (only used when the
-  // "ScriptedIdleTaskControllerOOMFix" feature is enabled).
+  // Handle to the associated "scheduler timeout task".
   base::DelayedTaskHandle delayed_task_handle_;
 };
 
@@ -91,32 +87,14 @@ class CORE_EXPORT ScriptedIdleTaskController
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
 
  private:
-  // A helper class to cancel a "scheduler timeout task". Calls `CancelTask()`
-  // for the passed `delayed_task_handle` in dtor.
-  class DelayedTaskCanceler {
-   public:
-    DelayedTaskCanceler();
-    DelayedTaskCanceler(base::DelayedTaskHandle delayed_task_handle);
-    DelayedTaskCanceler(DelayedTaskCanceler&&);
-    DelayedTaskCanceler& operator=(DelayedTaskCanceler&&);
-
-    ~DelayedTaskCanceler();
-
-   private:
-    base::DelayedTaskHandle delayed_task_handle_;
-  };
-
   // Posts a "scheduler idle task" and a "scheduler timeout task" to run the
   // `IdleTask` identified by `id`.
   void PostSchedulerIdleAndTimeoutTasks(CallbackId id, uint32_t timeout_millis);
 
   // Posts a "scheduler idle task" to run the `IdleTask` identified by `id`.
-  // `canceler` is bound to that task (only used when the
-  // "ScriptedIdleTaskControllerOOMFix" feature is disabled).
-  void PostSchedulerIdleTask(CallbackId id, DelayedTaskCanceler canceler);
+  void PostSchedulerIdleTask(CallbackId id);
 
   void SchedulerIdleTask(CallbackId id,
-                         DelayedTaskCanceler canceler,
                          base::TimeTicks deadline);
   void SchedulerTimeoutTask(CallbackId id);
 
@@ -144,13 +122,8 @@ class CORE_EXPORT ScriptedIdleTaskController
   // Pending `IdleTask`s.
   HeapHashMap<CallbackId, Member<IdleTask>> idle_tasks_;
 
-  // `IdleTask`s for which `SchedulerTimeoutTask` ran while paused. They'll be
-  // rescheduled when unpaused.
-  Vector<CallbackId> idle_tasks_with_expired_timeout_;
-
   // `IdleTask`s for which `SchedulerIdleTask` ran while paused. They'll be
-  // rescheduled when unpaused. Only used when the
-  // "ScriptedIdleTaskControllerOOMFix" feature is enabled.
+  // rescheduled when unpaused.
   Vector<CallbackId> idle_tasks_to_reschedule_;
 
   // Id that will be assigned to the `IdleTask` registered with this.

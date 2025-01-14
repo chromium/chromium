@@ -70,18 +70,15 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
 
   const SVGLayoutResult content_result = content_.Layout(child_layout_info);
 
-  SVGLayoutResult result;
-  if (content_result.bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = content_result.bounds_changed;
   if (UpdateAfterSVGLayout(layout_info, transform_change,
                            content_result.bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool LayoutSVGContainer::UpdateAfterSVGLayout(

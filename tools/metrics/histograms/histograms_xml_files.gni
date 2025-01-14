@@ -97,6 +97,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/families/histograms.xml",
   "//tools/metrics/histograms/metadata/fastpair/enums.xml",
   "//tools/metrics/histograms/metadata/fastpair/histograms.xml",
+  "//tools/metrics/histograms/metadata/favicons/histograms.xml",
   "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
   "//tools/metrics/histograms/metadata/file/enums.xml",
   "//tools/metrics/histograms/metadata/file/histograms.xml",

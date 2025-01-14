@@ -395,8 +395,7 @@ std::string ConnectorsService::GetManagementDomain() {
     return std::string();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chrome::GetAccountManagerIdentity(
-             Profile::FromBrowserContext(context_))
+  return GetAccountManagerIdentity(Profile::FromBrowserContext(context_))
       .value_or(std::string());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // In LaCros it's always managed by main profile policy.
@@ -407,8 +406,7 @@ std::string ConnectorsService::GetManagementDomain() {
   return std::string();
 #else
   if (scope.value() == policy::PolicyScope::POLICY_SCOPE_USER) {
-    return chrome::GetAccountManagerIdentity(
-               Profile::FromBrowserContext(context_))
+    return GetAccountManagerIdentity(Profile::FromBrowserContext(context_))
         .value_or(std::string());
   }
 

@@ -274,6 +274,11 @@ const base::FeatureParam<double>
 const base::FeatureParam<std::string> kPrivacySandboxCctAdsNoticeSurveyAppId{
     &kPrivacySandboxCctAdsNoticeSurvey, "app-id", ""};
 
+const base::FeatureParam<int>
+    kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds{
+        &kPrivacySandboxCctAdsNoticeSurvey, "survey-delay",
+        /*20 seconds*/ 20000};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
              "PrivacySandboxAdsApiUxEnhancements",

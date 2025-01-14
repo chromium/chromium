@@ -90,7 +90,7 @@ void GetUserManager(base::Value::Dict* dict, Profile* profile) {
   CHECK(profile);
 
   std::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
+      GetAccountManagerIdentity(profile);
   if (account_manager) {
     dict->Set(policy::kEnterpriseDomainManagerKey, *account_manager);
   }

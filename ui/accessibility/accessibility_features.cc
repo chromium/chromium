@@ -59,6 +59,13 @@ bool IsAccessibilityPruneRedundantInlineConnectivityEnabled() {
       ::features::kAccessibilityPruneRedundantInlineConnectivity);
 }
 
+BASE_FEATURE(kAccessibilityTreeForViews,
+             "AccessibilityTreeForViews",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityTreeForViewsEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityTreeForViews);
+}
+
 BASE_FEATURE(kImageDescriptionsAlternateRouting,
              "ImageDescriptionsAlternateRouting",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -306,6 +306,12 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxCctAdsNoticeSurveyAppId;
 
+// The delay in milliseconds from ads notice close to the attempt to surface a
+// survey.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<int>
+    kPrivacySandboxCctAdsNoticeSurveyDelaysMilliseconds;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If true, displays the Ads APIs UX Enancements.

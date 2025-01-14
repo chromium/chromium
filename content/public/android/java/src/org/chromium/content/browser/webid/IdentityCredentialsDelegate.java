@@ -6,7 +6,6 @@ package org.chromium.content.browser.webid;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.IntentSender.SendIntentException;
 import android.os.Build;
@@ -26,10 +25,10 @@ import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @NullMarked
 public class IdentityCredentialsDelegate {
@@ -58,8 +57,7 @@ public class IdentityCredentialsDelegate {
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     // android.credentials.GetCredentialException requires API level 34
-                    @NullUnmarked
-                    @SuppressLint("NewApi")
+                    @SuppressWarnings("NewApi")
                     @Override
                     protected void onReceiveResult(int code, Bundle data) {
                         Log.d(TAG, "Received a response");
@@ -69,7 +67,7 @@ public class IdentityCredentialsDelegate {
                                     response.getCredential()
                                             .getData()
                                             .getByteArray("identityToken");
-                            result.fulfill(token);
+                            result.fulfill(Objects.requireNonNull(token));
                         } catch (Exception e) {
                             Log.e(TAG, e.toString());
 

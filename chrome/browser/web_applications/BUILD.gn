@@ -362,6 +362,7 @@ source_set("web_applications") {
     "web_app_registrar_observer.h",
     "web_app_registry_update.cc",
     "web_app_registry_update.h",
+    "web_app_screenshot_fetcher.h",
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
     "web_app_tab_helper.cc",

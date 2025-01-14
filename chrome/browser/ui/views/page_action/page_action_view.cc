@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_constants.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
@@ -121,6 +122,25 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
   return true;
 }
 
+void PageActionView::NotifyClick(const ui::Event& event) {
+  IconLabelBubbleView::NotifyClick(event);
+  PageActionTrigger trigger_source;
+  if (event.IsMouseEvent()) {
+    trigger_source = PageActionTrigger::kMouse;
+  } else if (event.IsKeyEvent()) {
+    trigger_source = PageActionTrigger::kKeyboard;
+  } else {
+    CHECK(event.IsGestureEvent());
+    trigger_source = PageActionTrigger::kGesture;
+  }
+  action_item_->InvokeAction(
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(kPageActionTriggerKey,
+                       static_cast<std::underlying_type_t<PageActionTrigger>>(
+                           trigger_source))
+          .Build());
+}
+
 void PageActionView::UpdateIconImage() {
   if (observation_.GetSource() == nullptr ||
       observation_.GetSource()->GetImage().IsEmpty()) {
@@ -161,5 +181,14 @@ void PageActionViewInterface::ActionItemChangedImpl(
   // with conflicts (eg. ActionItem sets visibility, but PageActionController
   // overrides it).
 }
+
+// These methods do nothing because `PageActionView` needs to add the
+// button trigger source (i.e, mouse, keyboard, gesture) to the action's
+// invocation context. The current action-view framework does not support this,
+// so the behaviour is implemented by `PageActionView`.
+void PageActionViewInterface::InvokeActionImpl(
+    actions::ActionItem* action_item) {}
+void PageActionViewInterface::LinkActionInvocationToView(
+    base::RepeatingClosure trigger_action_callback) {}
 
 }  // namespace page_actions

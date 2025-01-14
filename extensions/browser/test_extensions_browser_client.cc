@@ -126,6 +126,11 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+bool TestExtensionsBrowserClient::IsActiveContext(
+    content::BrowserContext* browser_context) const {
+  return true;
+}
+
 std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (context != main_context_ || !ash::LoginState::IsInitialized()) {

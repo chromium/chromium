@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
@@ -465,6 +466,81 @@ void ExtensionRegistrar::ReloadExtension(
   }
 
   delegate_->LoadExtensionForReload(extension_id, path, load_error_behavior);
+}
+
+bool ExtensionRegistrar::UninstallExtension(
+    // "transient" because the process of uninstalling may cause the reference
+    // to become invalid. Instead, use |extension->id()|.
+    const std::string& transient_extension_id,
+    UninstallReason reason,
+    std::u16string* error,
+    base::OnceClosure done_callback) {
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  scoped_refptr<const Extension> extension =
+      registry_->GetInstalledExtension(transient_extension_id);
+
+  // Callers should not send us nonexistent extensions.
+  CHECK(extension.get());
+
+  ManagementPolicy* by_policy = extension_system_->management_policy();
+  // Policy change which triggers an uninstall will always set
+  // |external_uninstall| to true so this is the only way to uninstall
+  // managed extensions.
+  // Shared modules being uninstalled will also set |external_uninstall| to true
+  // so that we can guarantee users don't uninstall a shared module.
+  // (crbug.com/273300)
+  // TODO(rdevlin.cronin): This is probably not right. We should do something
+  // else, like include an enum IS_INTERNAL_UNINSTALL or IS_USER_UNINSTALL so
+  // we don't do this.
+  bool external_uninstall =
+      (reason == UNINSTALL_REASON_INTERNAL_MANAGEMENT) ||
+      (reason == UNINSTALL_REASON_COMPONENT_REMOVED) ||
+      (reason == UNINSTALL_REASON_MIGRATED) ||
+      (reason == UNINSTALL_REASON_REINSTALL) ||
+      (reason == UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION) ||
+      (reason == UNINSTALL_REASON_ORPHANED_SHARED_MODULE);
+  if (!external_uninstall &&
+      (!by_policy->UserMayModifySettings(extension.get(), error) ||
+       by_policy->MustRemainInstalled(extension.get(), error))) {
+    registry_->TriggerOnUninstallationDenied(extension.get());
+    return false;
+  }
+
+  // Prepare to uninstall the extension.
+  delegate_->PreUninstallExtension(extension.get());
+
+  UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallType", extension->GetType(),
+                            100);
+
+  // Unload before doing more cleanup to ensure that nothing is hanging on to
+  // any of these resources.
+  RemoveExtension(extension->id(), UnloadedExtensionReason::UNINSTALL);
+
+  // `UnloadExtension` ignores extensions that are `BLOCKLISTED` or `BLOCKED`
+  if (registry_->blocklisted_extensions().Contains(extension->id())) {
+    registry_->RemoveBlocklisted(extension->id());
+  }
+  if (registry_->blocked_extensions().Contains(extension->id())) {
+    registry_->RemoveBlocked(extension->id());
+  }
+
+  // Perform the necessary clean up after the extension is un-registered.
+  delegate_->PostUninstallExtension(extension, std::move(done_callback));
+
+  UntrackTerminatedExtension(extension->id());
+
+  // Notify interested parties that we've uninstalled this extension.
+  registry_->TriggerOnUninstalled(extension.get(), reason);
+
+  // Perform the necessary clean up work after extension un-installation event
+  // has been notified to all observers.
+  delegate_->PostNotifyUninstallExtension(extension.get());
+
+  extension_prefs_->OnExtensionUninstalled(
+      extension->id(), extension->location(), external_uninstall);
+
+  return true;
 }
 
 bool ExtensionRegistrar::CanBlockExtension(const Extension* extension) const {

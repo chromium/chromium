@@ -559,21 +559,6 @@ void RootCompositorFrameSinkImpl::DidNotProduceFrame(
   support_->DidNotProduceFrame(begin_frame_ack);
 }
 
-void RootCompositorFrameSinkImpl::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {
-  if (!support_->DidAllocateSharedBitmap(std::move(region), id)) {
-    DLOG(ERROR) << "DidAllocateSharedBitmap failed for duplicate "
-                << "SharedBitmapId";
-    compositor_frame_sink_receiver_.reset();
-  }
-}
-
-void RootCompositorFrameSinkImpl::DidDeleteSharedBitmap(
-    const SharedBitmapId& id) {
-  support_->DidDeleteSharedBitmap(id);
-}
-
 void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);

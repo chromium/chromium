@@ -37,12 +37,12 @@ EntityType AttributeType::entity_type() const {
   return EntityType(AttributeTypeNameToEntityTypeName(name_));
 }
 
-std::ostream& operator<<(std::ostream& os, EntityType t) {
-  return os << base::to_underlying(t.name());
+std::ostream& operator<<(std::ostream& os, AttributeType a) {
+  return os << a.name_as_string();
 }
 
-std::ostream& operator<<(std::ostream& os, AttributeType t) {
-  return os << base::to_underlying(t.name());
+std::ostream& operator<<(std::ostream& os, EntityType t) {
+  return os << t.name_as_string();
 }
 
 }  // namespace autofill

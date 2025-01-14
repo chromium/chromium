@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -57,7 +58,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     PwaInProductHelpState iph_state,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    std::vector<webapps::Screenshot> screenshots,
+    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -75,11 +76,11 @@ void OnWebAppInstallShowInstallDialog(
                 .SetAppId(app_id));
       }
 #endif
-      if (!screenshots.empty()) {
+      if (screenshot_fetcher) {
         ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
-            std::move(screenshots), iph_state);
+            screenshot_fetcher.value(), iph_state);
         return;
       } else if (web_app_info->is_diy_app) {
         ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),
@@ -210,9 +211,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      PwaInProductHelpState::kNotShown,
-                     std::move(install_tracker),
-                     data.has_value() ? std::move(data->screenshots)
-                                      : std::vector<webapps::Screenshot>()),
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
       fallback_behavior);
 }
@@ -259,9 +258,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite, install_source, iph_state,
-                     std::move(install_tracker),
-                     data.has_value() ? std::move(data->screenshots)
-                                      : std::vector<webapps::Screenshot>()),
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
       fallback_behavior);
   return true;

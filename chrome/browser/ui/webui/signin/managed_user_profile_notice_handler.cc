@@ -83,8 +83,7 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 }
 
 std::string GetManagedDeviceTitle() {
-  std::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   if (!device_manager) {
     return std::string();
   }
@@ -361,9 +360,8 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
-  std::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
+      GetAccountManagerIdentity(profile);
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   if (!signin_util::IsProfileSeparationEnforcedByProfile(
           profile, base::UTF16ToUTF8(email))) {

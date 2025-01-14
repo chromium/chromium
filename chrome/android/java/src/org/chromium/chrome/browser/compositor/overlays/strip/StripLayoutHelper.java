@@ -1281,7 +1281,7 @@ public class StripLayoutHelper
         // 2. Swap the tabs.
         StripLayoutUtils.moveElement(mStripTabs, index, newIndex);
         if (!mMovingGroup) {
-            if (mReorderDelegate.getInReorderMode()) {
+            if (mReorderDelegate.isReorderingTab()) {
                 // Update strip start and end margins to create more space for first tab or last tab
                 // to drag out of group.
                 mReorderDelegate.setEdgeMarginsForReorder(

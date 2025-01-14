@@ -139,24 +139,19 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  const bool bbox_changed = UpdateBoundingBox();
-
-  SVGLayoutResult result;
-  if (bbox_changed) {
-    result.bounds_changed = true;
-  }
-  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
-    result.bounds_changed = true;
+  bool bounds_changed = UpdateBoundingBox();
+  if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
+    bounds_changed = true;
   }
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
-                                          bool bbox_changed) {
-  if (bbox_changed) {
+                                          bool bounds_changed) {
+  if (bounds_changed) {
     SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kSVGResource);
 
     // Invalidate all resources of this client if our reference box changed.
@@ -165,7 +160,7 @@ bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     needs_transform_update_ =
-        CheckForImplicitTransformChange(layout_info, bbox_changed);
+        CheckForImplicitTransformChange(layout_info, bounds_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }

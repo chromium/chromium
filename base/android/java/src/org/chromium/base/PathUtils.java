@@ -20,7 +20,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.task.AsyncTask;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
@@ -34,7 +33,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** This class provides the path related methods for the native library. */
-@NullUnmarked // Too hard to annotated this class.
+@SuppressWarnings("NullAway") // Too hard to annotate this class.
 public abstract class PathUtils {
     private static final String TAG = "PathUtils";
     private static final String THUMBNAIL_DIRECTORY_NAME = "textures";

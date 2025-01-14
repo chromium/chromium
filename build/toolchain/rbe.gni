@@ -159,7 +159,8 @@ if (use_reclient_cfgs && current_toolchain == default_toolchain) {
 # leading space is important, if the string is non-empty. :)
 rbe_bug_326584510_missing_inputs = ""
 if (defined(clang_unsafe_buffers_paths) &&
-    "$clang_unsafe_buffers_paths" != "") {
-  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
+    "$clang_unsafe_buffers_paths" != []) {
+  from_exec_root = rebase_path("$root_gen_dir/merged_unsafe_buffers_paths.txt",
+                               rbe_exec_root)
   rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
 }

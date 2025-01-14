@@ -49,11 +49,18 @@ constexpr char kMatchesMissingError[] =
 
 // Sanitizes the given `world_id`, updating it if necessary.
 // Returns true on success; on failure, returns false and populates `error_out`.
-bool IsValidWorldId(std::optional<std::string>& world_id,
+bool IsValidWorldId(api::user_scripts::ExecutionWorld world,
+                    std::optional<std::string>& world_id,
                     std::string* error_out) {
   if (!world_id) {
     // Omitting world ID is valid.
     return true;
+  }
+
+  if (world != api::user_scripts::ExecutionWorld::kNone &&
+      world != api::user_scripts::ExecutionWorld::kUserScript) {
+    *error_out = "World ID can only be specified for USER_SCRIPT worlds.";
+    return false;
   }
 
   if (world_id->empty()) {
@@ -184,7 +191,7 @@ std::unique_ptr<UserScript> ParseUserScript(
   }
 
   std::string utf8_error;
-  if (!IsValidWorldId(user_script.world_id, &utf8_error)) {
+  if (!IsValidWorldId(user_script.world, user_script.world_id, &utf8_error)) {
     *error = base::UTF8ToUTF16(utf8_error);
     return nullptr;
   }
@@ -624,7 +631,8 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   }
 
   std::string error;
-  if (!IsValidWorldId(world_id, &error)) {
+  if (!IsValidWorldId(api::user_scripts::ExecutionWorld::kUserScript, world_id,
+                      &error)) {
     return RespondNow(Error(std::move(error)));
   }
 
@@ -857,7 +865,8 @@ UserScriptsResetWorldConfigurationFunction::Run() {
   // that's a fragile guarantee and may change if e.g. we start using reserved
   // world IDs. Validate to be on the safe side.
   std::string error;
-  if (!IsValidWorldId(params->world_id, &error)) {
+  if (!IsValidWorldId(api::user_scripts::ExecutionWorld::kUserScript,
+                      params->world_id, &error)) {
     return RespondNow(Error(std::move(error)));
   }
 

@@ -181,9 +181,9 @@ assert(!(current_os == "watchos" && is_component_build),
        "Can't use component build on watchOS")
 
 declare_args() {
-  # Unsafe buffers. Location of file used by plugins to track portions of
-  # the codebase which have been made manifestly safe.
-  clang_unsafe_buffers_paths = ""
+  # Unsafe buffers. List of files used by plugins to track portions of
+  # the codebase which have not yet been made manifestly safe.
+  clang_unsafe_buffers_paths = []
 }
 
 # ==============================================================================
@@ -546,6 +546,9 @@ foreach(_target_type,
       if (!defined(inputs)) {
         inputs = []
       }
+      if (!defined(deps)) {
+        deps = []
+      }
 
       # Consumed by the unsafe-buffers plugin during compile.
       #
@@ -562,8 +565,9 @@ foreach(_target_type,
           }
         }
       }
-      if (_uses_cflags && clang_unsafe_buffers_paths != "") {
-        inputs += [ clang_unsafe_buffers_paths ]
+      if (_uses_cflags && clang_unsafe_buffers_paths != []) {
+        deps += [ "//build/config:merge_unsafe_buffers_paths" ]
+        inputs += [ "$root_gen_dir/merged_unsafe_buffers_paths.txt" ]
       }
     }
   }
@@ -593,6 +597,9 @@ foreach(_target_type,
       if (!defined(inputs)) {
         inputs = []
       }
+      if (!defined(deps)) {
+        deps = []
+      }
 
       # Consumed by the unsafe-buffers plugin during compile.
       #
@@ -609,12 +616,9 @@ foreach(_target_type,
           }
         }
       }
-      if (_uses_cflags && clang_unsafe_buffers_paths != "") {
-        inputs += [ clang_unsafe_buffers_paths ]
-      }
-
-      if (!defined(deps)) {
-        deps = []
+      if (_uses_cflags && clang_unsafe_buffers_paths != []) {
+        deps += [ "//build/config:merge_unsafe_buffers_paths" ]
+        inputs += [ "$root_gen_dir/merged_unsafe_buffers_paths.txt" ]
       }
       if (!defined(invoker.no_default_deps) || !invoker.no_default_deps) {
         # This pulls in one of:

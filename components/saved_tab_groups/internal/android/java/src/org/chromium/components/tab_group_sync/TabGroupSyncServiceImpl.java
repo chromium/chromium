@@ -54,10 +54,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public String createGroup(LocalTabGroupId groupId) {
-        if (mNativePtr == 0) return null;
-        assert groupId != null;
-        return TabGroupSyncServiceImplJni.get().createGroup(mNativePtr, this, groupId);
+    public void addGroup(SavedTabGroup savedTabGroup) {
+        if (mNativePtr == 0) return;
+        assert savedTabGroup != null;
+        assert savedTabGroup.localId != null;
+        TabGroupSyncServiceImplJni.get().addGroup(mNativePtr, this, savedTabGroup);
     }
 
     @Override
@@ -287,10 +288,10 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
     @NativeMethods
     interface Natives {
-        String createGroup(
+        void addGroup(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
-                LocalTabGroupId groupId);
+                SavedTabGroup savedTabGroup);
 
         void removeGroupByLocalId(
                 long nativeTabGroupSyncServiceAndroid,

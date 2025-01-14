@@ -485,19 +485,6 @@ void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
   }
 }
 
-void CanvasResourceDispatcher::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  if (sink_)
-    sink_->DidAllocateSharedBitmap(std::move(region), id);
-}
-
-void CanvasResourceDispatcher::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  if (sink_)
-    sink_->DidDeleteSharedBitmap(id);
-}
-
 void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
     int placeholder_canvas_id) {
   // `agent_group_scheduler_compositor_task_runner_` may be null if this

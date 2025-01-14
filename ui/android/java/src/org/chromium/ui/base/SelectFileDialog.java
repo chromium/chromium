@@ -1264,7 +1264,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     class GetDisplayNameTask extends AsyncTask<String @Nullable []> {
-        @SuppressWarnings("NullAway.Init")
         String[] mFilePaths;
 
         final Context mContext;
@@ -1275,12 +1274,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             mContext = context;
             mIsMultiple = isMultiple;
             mUris = uris;
+            mFilePaths = new String[mUris.length];
         }
 
         @Override
         @SuppressLint("NewApi")
         public String @Nullable [] doInBackground() {
-            mFilePaths = new String[mUris.length];
             String[] displayNames = new String[mUris.length];
             try {
                 for (int i = 0; i < mUris.length; i++) {

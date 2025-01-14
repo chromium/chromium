@@ -116,10 +116,6 @@ class VideoMockCompositorFrameSink
   }
 
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
-  MOCK_METHOD2(DidAllocateSharedBitmap,
-               void(base::ReadOnlySharedMemoryRegion region,
-                    const viz::SharedBitmapId& id));
-  MOCK_METHOD1(DidDeleteSharedBitmap, void(const viz::SharedBitmapId& id));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD1(BindLayerContext,

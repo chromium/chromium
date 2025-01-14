@@ -31,6 +31,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       group_ui_parent_layer_(cc::slim::Layer::Create()),
       scrollable_strip_layer_(cc::slim::Layer::Create()),
       foreground_layer_(cc::slim::Layer::Create()),
+      foreground_tabs_(cc::slim::Layer::Create()),
+      foreground_group_titles_(cc::slim::Layer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
@@ -59,10 +61,15 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   group_ui_parent_layer_->SetIsDrawable(true);
   scrollable_strip_layer_->SetIsDrawable(true);
   foreground_layer_->SetIsDrawable(true);
+  foreground_tabs_->SetIsDrawable(true);
+  foreground_group_titles_->SetIsDrawable(true);
   tab_strip_layer_->SetIsDrawable(true);
+
   tab_strip_layer_->AddChild(group_ui_parent_layer_);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
   tab_strip_layer_->AddChild(foreground_layer_);
+  foreground_layer_->AddChild(foreground_group_titles_);
+  foreground_layer_->AddChild(foreground_tabs_);
 
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
@@ -422,7 +429,7 @@ void TabStripSceneLayer::PutStripTabLayer(
 
   if (foreground != layer->foreground()) {
     if (foreground) {
-      foreground_layer_->AddChild(layer->layer());
+      foreground_tabs_->AddChild(layer->layer());
     } else {
       scrollable_strip_layer_->AddChild(layer->layer());
     }
@@ -486,7 +493,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Foreground if needed.
   if (foreground != layer->foreground()) {
     if (foreground) {
-      foreground_layer_->AddChild(layer->layer());
+      foreground_group_titles_->AddChild(layer->layer());
     } else {
       group_ui_parent_layer_->AddChild(layer->layer());
     }

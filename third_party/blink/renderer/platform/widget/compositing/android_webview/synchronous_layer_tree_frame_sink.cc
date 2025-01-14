@@ -425,20 +425,6 @@ void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
   // submission of frame depends on DemandDraw calls.
 }
 
-void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  // Webview does not use software compositing (other than resourceless draws,
-  // but this is called for software /resources/).
-  NOTREACHED();
-}
-
-void SynchronousLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  // Webview does not use software compositing (other than resourceless draws,
-  // but this is called for software /resources/).
-  NOTREACHED();
-}
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

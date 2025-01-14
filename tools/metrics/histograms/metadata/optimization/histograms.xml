@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TextSafety" summary="Text Safety"/>
   <variant name="Unknown" summary="Unknown"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
+  <variant name="WritingAssistance" summary="Writing Assistance APIs"/>
 </variants>
 
 <variants name="OptimizationTarget">
@@ -78,6 +79,8 @@ chromium-metrics-reviews@google.com.
       summary="Model Execution Feature: Scam Detection"/>
   <variant name="ModelExecutionFeatureSummarize"
       summary="Model Execution Feature: Summarize"/>
+  <variant name="ModelExecutionFeatureWritingAssistanceApi"
+      summary="Model Execution Feature: Writing Assistance APIs"/>
   <variant name="ModelValidation" summary="Model validation triggered via CLI"/>
   <variant name="NewTabPageHistoryClustersModuleRanking"
       summary="New Tab Page History Clusters Module Ranking"/>

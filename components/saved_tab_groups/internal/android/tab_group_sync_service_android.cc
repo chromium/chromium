@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
@@ -122,22 +123,20 @@ void TabGroupSyncServiceAndroid::OnTabGroupLocalIdChanged(
       env, java_obj_, UuidToJavaString(env, sync_id), j_local_id);
 }
 
-ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
+void TabGroupSyncServiceAndroid::AddGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_group_id) {
-  LocalTabGroupID group_id =
-      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
-
+    const JavaParamRef<jobject>& j_saved_tab_group) {
+  // Create an empty SavedTabGroup.
   SavedTabGroup group(std::u16string(), tab_groups::TabGroupColorId::kGrey,
-                      std::vector<SavedTabGroupTab>(), std::nullopt,
-                      std::nullopt, group_id);
+                      std::vector<SavedTabGroupTab>());
 
-  // Copy group GUID before moving the group.
-  const base::Uuid group_guid = group.saved_guid();
+  // Pass around the group pointer and populate the fields from Java.
+  TabGroupSyncConversionsBridge::FillNativeSavedTabGroup(
+      env, reinterpret_cast<int64_t>(&group), j_saved_tab_group);
+
+  // Add the group to the service.
   tab_group_sync_service_->AddGroup(std::move(group));
-
-  return UuidToJavaString(env, group_guid);
 }
 
 void TabGroupSyncServiceAndroid::RemoveGroupByLocalId(

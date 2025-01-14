@@ -19,6 +19,7 @@ import public "components/optimization_guide/proto/string_value.proto";
 import public "components/optimization_guide/proto/features/scam_detection.proto";
 import public "components/optimization_guide/proto/features/summarize.proto";
 import public "components/optimization_guide/proto/features/tab_organization.proto";
+import public "components/optimization_guide/proto/features/writing_assistance_api.proto";
 
 // Extra LoggingData message for using the Test capability on-device.
 message TestLoggingData {
@@ -43,4 +44,5 @@ message OnDeviceFeatureProtoRegistry {
   SummarizeLoggingData f = 6;
   optimization_guide.proto.TabOrganizationLoggingData g = 7;
   optimization_guide.proto.ScamDetectionLoggingData h = 8;
+  optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
 }

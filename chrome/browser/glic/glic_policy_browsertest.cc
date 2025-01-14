@@ -18,11 +18,13 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 
 using glic::prefs::kGlicEnabledByPolicy;
 
@@ -77,7 +79,7 @@ class GlicPolicyTest : public PolicyTest {
   void TearDownOnMainThread() override {
     if (glic::GlicBackgroundModeManager* background_mode_manager =
             g_browser_process->GetFeatures()->glic_background_mode_manager()) {
-      background_mode_manager->TerminateForTesting();
+      background_mode_manager->ExitBackgroundMode();
     }
     profile_1_ = nullptr;
     profile_2_ = nullptr;
@@ -274,6 +276,53 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
 
   // Background mode should be reentered since the first profile is enabled.
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
+}
+
+// Ensure navigating to chrome://glic is allowed only if the policy is enabled.
+IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
+  // Disable the policy.
+  PolicyMap policies;
+  policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+  ASSERT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
+
+  GURL glic_url = GURL(chrome::kChromeUIGlicURL);
+
+  // Navigate to chrome://glic. The navigation should fail with INVALID_URL
+  // since Glic is disabled by policy.
+  {
+    content::TestNavigationObserver observer(glic_url);
+    observer.WatchExistingWebContents();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(observer.last_navigation_url(), glic_url);
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+    EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
+  }
+
+  // Re-enable the policy.
+  policies.Set(key::kGlicEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true), nullptr);
+  UpdateProviderPolicy(policies);
+  ASSERT_TRUE(profile_1_->GetPrefs()->GetBoolean(kGlicEnabledByPolicy));
+
+  // Navigating to chrome://glic should now succeed.
+  {
+    content::TestNavigationObserver observer(glic_url);
+    observer.WatchExistingWebContents();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(observer.last_navigation_url(), glic_url);
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+
+  // TODO(crbug.com/389737044): Re-disabling the policy will now navigate
+  // successfully (though the page doesn't work due to missing Mojo-bindings)
+  // because GlicUIConfig::IsWebUIEnabled returning false prevents creating a
+  // controller but the resource data source is still registered by the first
+  // successful navigation.
 }
 
 }  // namespace policy

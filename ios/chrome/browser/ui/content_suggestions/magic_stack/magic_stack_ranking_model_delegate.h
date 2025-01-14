@@ -27,10 +27,11 @@
                 didReplaceItem:(MagicStackModule*)oldItem
                       withItem:(MagicStackModule*)item;
 
-// Indicates that `item` should be removed. The `completion` will be
-// executed after the item is removed.
+// Indicates that `item` should be removed and should `animate` the removal. The
+// `completion` will be executed after the item is removed.
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
                  didRemoveItem:(MagicStackModule*)item
+                       animate:(BOOL)animate
                 withCompletion:(ProceduralBlock)completion;
 
 // Indicates that `item` should be reconfigured.

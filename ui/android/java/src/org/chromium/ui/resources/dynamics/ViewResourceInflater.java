@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
@@ -162,7 +161,7 @@ public class ViewResourceInflater {
     }
 
     /** Destroy the instance. */
-    @NullUnmarked // Nulls out non-null fields.
+    @SuppressWarnings("NullAway") // Nulls out non-null fields.
     public void destroy() {
         if (mView == null) return;
 

@@ -42,6 +42,8 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
   kPermissionsAi =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI,
+  kWritingAssistanceApi = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -77,11 +79,13 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ScamDetection";
     case ModelBasedCapabilityKey::kPermissionsAi:
       return out << "PermissionsAi";
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return out << "WritingAssistanceApi";
   }
   return out;
 }
 
-inline constexpr std::array<ModelBasedCapabilityKey, 14>
+inline constexpr std::array<ModelBasedCapabilityKey, 15>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -97,6 +101,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 14>
         ModelBasedCapabilityKey::kBlingPrototyping,
         ModelBasedCapabilityKey::kPasswordChangeSubmission,
         ModelBasedCapabilityKey::kScamDetection,
+        ModelBasedCapabilityKey::kWritingAssistanceApi,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -165,11 +170,14 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kBlingPrototyping;
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION:
-        return ModelBasedCapabilityKey::kPasswordChangeSubmission;
+      return ModelBasedCapabilityKey::kPasswordChangeSubmission;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION:
       return ModelBasedCapabilityKey::kScamDetection;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
       return ModelBasedCapabilityKey::kPermissionsAi;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
+      return ModelBasedCapabilityKey::kWritingAssistanceApi;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -218,6 +226,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kPermissionsAi:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_PERMISSIONS_AI;
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API;
   }
 }
 

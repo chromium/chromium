@@ -1585,7 +1585,7 @@ bool RenderViewContextMenu::IsPressAndHoldEscRequiredToExitFullscreen() const {
 #if BUILDFLAG(ENABLE_PLUGINS)
 void RenderViewContextMenu::HandleAuthorizeAllPlugins() {
   ChromePluginServiceFilter::GetInstance()->AuthorizeAllPlugins(
-      source_web_contents_, false, std::string());
+      source_web_contents_->GetPrimaryMainFrame(), false, std::string());
 }
 #endif
 

@@ -108,7 +108,7 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 
   if (account_manager.empty()) {
     account_manager =
-        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
+        GetAccountManagerIdentity(profile).value_or(std::string());
   }
   if (account_manager.empty()) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
@@ -118,7 +118,9 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
 #else   // BUILDFLAG(IS_CHROMEOS)
-  return chrome::GetManagementPageSubtitle(profile);
+  // Call the global function explicitly to avoid a conflict with
+  // the static method ManagementUI::GetManagementPageSubtitle().
+  return ::GetManagementPageSubtitle(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

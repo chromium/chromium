@@ -110,9 +110,6 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
 
   // cc::TileDisplayLayerImpl::Client:
   void DidAppendQuadsWithResources(

@@ -140,6 +140,9 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelExecutionFeatureScamDetection";
     case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PERMISSIONS_AI:
       return "ModelExecutionFeaturePermissionsAi";
+    case proto::
+        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API:
+      return "ModelExecutionFeatureWritingAssistanceApi";
     case proto::OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER:
       return "ExperimentalEmbedder";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER:

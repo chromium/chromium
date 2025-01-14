@@ -40,7 +40,7 @@ SVGLayoutResult LayoutSVGHiddenContainer::UpdateSVGLayout(
 
   Content().Layout(child_layout_info);
   ClearNeedsLayout();
-  return {};
+  return SVGLayoutResult(/*bounds_changed=*/false);
 }
 
 bool LayoutSVGHiddenContainer::NodeAtPoint(HitTestResult&,

@@ -2476,6 +2476,9 @@ bool EnableNativeWindowActivation();
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Set the length of the window of opportunity for conditional focus.
+void SetConditionalFocusWindowForTesting(base::TimeDelta window);
+
 // Set the global factory for CapturedSurfaceController objects.
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(

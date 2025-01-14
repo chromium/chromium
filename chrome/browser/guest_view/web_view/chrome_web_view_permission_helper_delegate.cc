@@ -133,8 +133,8 @@ void ChromeWebViewPermissionHelperDelegate::OnPermissionResponse(
     const std::string& input) {
   if (allow) {
     ChromePluginServiceFilter::GetInstance()->AuthorizeAllPlugins(
-        web_view_permission_helper()->web_view_guest()->web_contents(), true,
-        identifier);
+        web_view_permission_helper()->web_view_guest()->GetGuestMainFrame(),
+        true, identifier);
   }
 }
 

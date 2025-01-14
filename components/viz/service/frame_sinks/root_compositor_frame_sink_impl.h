@@ -119,9 +119,6 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
   void SubmitCompositorFrameSync(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,

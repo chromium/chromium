@@ -181,9 +181,6 @@ const char kDisableStandardizedBrowserZoom[] =
 const char kSharedArrayBufferAllowedOrigins[] =
     "shared-array-buffer-allowed-origins";
 
-// Allows overriding the conditional focus window's length.
-const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
-
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
 

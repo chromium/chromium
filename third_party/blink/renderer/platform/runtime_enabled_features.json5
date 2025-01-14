@@ -1755,6 +1755,11 @@
     },
     // Kill switch.
     {
+      name: "Fast3DTransformedDescendantStatus",
+      status: "stable",
+    },
+    // Kill switch.
+    {
       name: "FastClearNeedsRepaint",
       status: "stable",
     },

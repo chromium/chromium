@@ -251,16 +251,11 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   }
 
   const gfx::RectF boundaries = ObjectBoundingBox();
-  const bool bounds_changed = old_boundaries != boundaries;
-
-  SVGLayoutResult result;
-  if (bounds_changed) {
-    result.bounds_changed = true;
-  }
+  bool bounds_changed = old_boundaries != boundaries;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
-    result.bounds_changed = true;
+    bounds_changed = true;
   }
-  return result;
+  return SVGLayoutResult(bounds_changed);
 }
 
 bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

@@ -877,4 +877,41 @@ public class PrivacySandboxSurveyControllerTest {
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox/"
+                + "survey-delay-ms/12345"
+    })
+    public void surveyControllerFetchesSurveyDelayFromFeatureParameter() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        Assert.assertEquals(controller.getAdsCctDelayMilliseconds(), 12345);
+        controller.destroy();
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
+                + ":app-id/com.google.android.googlequicksearchbox"
+    })
+    public void surveyControllerReturnsDefaultSurveyDelayWhenParamNotSet() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+        Assert.assertEquals(controller.getAdsCctDelayMilliseconds(), 20_000);
+        controller.destroy();
+    }
 }

@@ -780,6 +780,7 @@ ci.builder(
             "arm",
         ],
     ),
+    builderless = False,
     cores = 16,
     ssd = True,
     tree_closing = True,

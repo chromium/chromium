@@ -227,8 +227,7 @@ void ManagedUserProfileNoticeUI::Initialize(
       std::string manager =
           signin_util::IsProfileSeparationEnforcedByProfile(
               profile, create_param->account_info.email)
-              ? chrome::GetEnterpriseAccountDomain(*profile).value_or(
-                    std::string())
+              ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
               : enterprise_util::GetDomainFromEmail(
                     create_param->account_info.email);
       update_data.Set(

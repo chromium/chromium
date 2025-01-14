@@ -180,7 +180,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_descendant_dependent_flags_update_(true),
       needs_visual_overflow_recalc_(true),
       has_visible_self_painting_descendant_(false),
-      has3d_transformed_descendant_(false),
       needs_cull_rect_update_(false),
       forces_children_cull_rect_update_(false),
       descendant_needs_cull_rect_update_(false),
@@ -461,6 +460,11 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         GetLayoutObject().View()->SetBackgroundNeedsFullPaintInvalidation();
       GetLayoutObject().SetNeedsPaintPropertyUpdate();
     }
+
+    if (RuntimeEnabledFeatures::Fast3DTransformedDescendantStatusEnabled()) {
+      Update3DTransformedDescendantStatus();
+    }
+
     needs_descendant_dependent_flags_update_ = false;
 
     if (IsSelfPaintingLayer() && needs_visual_overflow_recalc_) {
@@ -513,28 +517,22 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     layout_object_->SetShouldCheckForPaintInvalidation();
   }
 
-  Update3DTransformedDescendantStatus();
+  if (!RuntimeEnabledFeatures::Fast3DTransformedDescendantStatusEnabled()) {
+    Update3DTransformedDescendantStatus();
+  }
 }
 
 void PaintLayer::Update3DTransformedDescendantStatus() {
-  has3d_transformed_descendant_ = false;
+  has_3d_transformed_descendant_ = false;
 
   // Transformed or preserve-3d descendants can only be in the z-order lists,
   // not in the normal flow list, so we only need to check those.
   PaintLayerPaintOrderIterator iterator(this, kStackedChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
-    bool child_has3d = false;
-    // If the child lives in a 3d hierarchy, then the layer at the root of
-    // that hierarchy needs the m_has3DTransformedDescendant set.
-    if (child_layer->Preserves3D() &&
-        (child_layer->Has3DTransform() ||
-         child_layer->Has3DTransformedDescendant()))
-      child_has3d = true;
-    else if (child_layer->Has3DTransform())
-      child_has3d = true;
-
-    if (child_has3d) {
-      has3d_transformed_descendant_ = true;
+    if (child_layer->Has3DTransform() ||
+        (child_layer->Preserves3D() &&
+         child_layer->Has3DTransformedDescendant())) {
+      has_3d_transformed_descendant_ = true;
       break;
     }
   }
@@ -1327,7 +1325,7 @@ PaintLayer* PaintLayer::HitTestLayer(
     // reference it.
     DCHECK(container_transform_state);
     local_transform_state = container_transform_state;
-  } else if (container_transform_state || has3d_transformed_descendant_) {
+  } else if (container_transform_state || Has3DTransformedDescendant()) {
     DCHECK(!Preserves3D());
     // We need transform state for the first time, or to offset the container
     // state, so create it here.

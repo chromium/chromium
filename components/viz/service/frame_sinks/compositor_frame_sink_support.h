@@ -191,10 +191,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       CompositorFrame frame,
       std::optional<HitTestRegionList> hit_test_region_list = std::nullopt,
       uint64_t submit_time = 0);
-  // Returns false if the notification was not valid (a duplicate).
-  bool DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const SharedBitmapId& id);
-  void DidDeleteSharedBitmap(const SharedBitmapId& id);
 
   // Mark |id| and all surfaces with smaller ids for destruction. Note that |id|
   // doesn't have to exist at the time of calling.
@@ -454,11 +450,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // frames.
   std::vector<raw_ptr<CapturableFrameSink::Client, VectorExperimental>>
       capture_clients_;
-
-  // The set of SharedBitmapIds that have been reported as allocated to this
-  // interface. On closing this interface, the display compositor should drop
-  // ownership of the bitmaps with these ids to avoid leaking them.
-  std::set<SharedBitmapId> owned_bitmaps_;
 
   // These are the CopyOutputRequests made on the frame sink (as opposed to
   // being included as a part of a CompositorFrame). They stay here until a

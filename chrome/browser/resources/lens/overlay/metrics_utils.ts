@@ -6,6 +6,34 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {UserAction} from './lens.mojom-webui.js';
 import type {SemanticEvent} from './lens.mojom-webui.js';
 
+
+// LINT.IfChange(ContextMenuOption)
+// The possible context menu options that can appear in the Lens overlay.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+export enum ContextMenuOption {
+  COPY_TEXT = 0,
+  TRANSLATE_TEXT = 1,
+  SELECT_TEXT_IN_REGION = 2,
+  TRANSLATE_TEXT_IN_REGION = 3,
+  COPY_AS_IMAGE = 4,
+  SAVE_AS_IMAGE = 5,
+  // Must be last.
+  COUNT = 6,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayContextMenuOption)
+
+export function recordContextMenuOptionShown(
+    invocationSource: string, contextMenuOption: ContextMenuOption) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.ContextMenuOption.Shown`, contextMenuOption,
+      ContextMenuOption.COUNT);
+  chrome.metricsPrivate.recordEnumerationValue(
+      `Lens.Overlay.ByInvocationSource.${
+          invocationSource}.ContextMenuOption.Shown`,
+      contextMenuOption, ContextMenuOption.COUNT);
+}
+
 export function recordLensOverlayInteraction(
     invocationSource: string, interaction: UserAction) {
   chrome.metricsPrivate.recordEnumerationValue(

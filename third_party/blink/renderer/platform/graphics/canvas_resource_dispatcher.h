@@ -121,10 +121,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       uint32_t sequence_id) final {}
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {}
 
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id);
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id);
-
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);
 

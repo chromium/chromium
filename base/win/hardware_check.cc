@@ -5,6 +5,7 @@
 #include "base/win/hardware_check.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <tbs.h>
 
@@ -22,6 +23,15 @@
 namespace base::win {
 
 namespace {
+
+// ntstatus.h conflicts with windows.h so define this locally.
+#define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
+#define SystemSecureBootInformation 0x91
+
+struct SYSTEM_SECUREBOOT_INFORMATION {
+  BOOLEAN SecureBootEnabled;
+  BOOLEAN SecureBootCapable;
+};
 
 bool IsWin11SupportedProcessor(const CPU& cpu_info,
                                std::string_view vendor_name) {
@@ -61,21 +71,16 @@ bool IsWin11SupportedProcessor(const CPU& cpu_info,
   return false;
 }
 
-bool IsUEFISecureBootEnabled() {
-  static constexpr wchar_t kSecureBootRegPath[] =
-      L"SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State";
-
-  RegKey key;
-  auto result =
-      key.Open(HKEY_LOCAL_MACHINE, kSecureBootRegPath, KEY_QUERY_VALUE);
-  if (result != ERROR_SUCCESS) {
+bool IsUEFISecureBootCapable() {
+  SYSTEM_SECUREBOOT_INFORMATION secure_boot_info{};
+  if (::NtQuerySystemInformation(
+          static_cast<SYSTEM_INFORMATION_CLASS>(SystemSecureBootInformation),
+          &secure_boot_info, sizeof(SYSTEM_SECUREBOOT_INFORMATION),
+          nullptr) != STATUS_SUCCESS) {
     return false;
   }
 
-  DWORD secure_boot = 0;
-  result = key.ReadValueDW(L"UEFISecureBootEnabled", &secure_boot);
-
-  return result == ERROR_SUCCESS && secure_boot == 1;
+  return !!secure_boot_info.SecureBootCapable;
 }
 
 bool IsTPM20Supported() {
@@ -114,7 +119,7 @@ HardwareEvaluationResult EvaluateWin11UpgradeEligibility() {
             SysInfo::AmountOfTotalDiskSpace(
                 FilePath(system_path.GetComponents()[0])) >= kMinTotalDiskSpace;
 
-        result.firmware = IsUEFISecureBootEnabled();
+        result.firmware = IsUEFISecureBootCapable();
 
         result.tpm = IsTPM20Supported();
 

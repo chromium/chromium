@@ -12,8 +12,6 @@ viz_component("client") {
     "frame_eviction_manager.h",
     "frame_evictor.cc",
     "frame_evictor.h",
-    "shared_bitmap_reporter.cc",
-    "shared_bitmap_reporter.h",
   ]
 
   defines = [ "VIZ_CLIENT_IMPLEMENTATION" ]

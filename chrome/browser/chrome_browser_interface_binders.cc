@@ -968,12 +968,12 @@ void PopulateChromeWebUIFrameBinders(
       DataSharingInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledForProfile(Profile::FromBrowserContext(
-          render_frame_host->GetProcess()->GetBrowserContext()))) {
-    // TODO(crbug.com/382722218): This is registered only if the profile is Glic
-    // enabled but that can change after binding. The chrome://glic handler
-    // should always register (if flag enabled) but respond differently based on
-    // enabled state.
+  if (GlicEnabling::IsEnabledByFlags()) {
+    // Glic can be disabled at runtime via enterprise policy but binding
+    // registration happens at initialization so we register the binding
+    // unconditionally (if the feature is flag-enabled) but the WebUI page will
+    // check whether the profile is policy-enabled and restrict access if
+    // needed. See GlicUIConfig::IsWebUIEnabled.
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
   }

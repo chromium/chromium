@@ -41,6 +41,7 @@
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -94,10 +95,24 @@ ArrayBufferContents::ArrayBufferContents(
 
   if (!max_num_elements) {
     // Create a fixed-length ArrayBuffer.
-    void* data =
-        (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
-            ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy)
-            : AllocateMemoryOrNull(length, policy);
+    void* data = [&]() {
+      for (int i = 0; i < 2; ++i) {
+        void* data = AllocateMemoryOrNull(length, policy);
+        if (data != nullptr) {
+          return data;
+        }
+        if (v8::Isolate::TryGetCurrent() != nullptr) {
+          v8::Isolate::GetCurrent()->MemoryPressureNotification(
+              v8::MemoryPressureLevel::kCritical);
+        }
+      }
+      if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+        return AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
+                                                                  policy);
+      } else {
+        return AllocateMemoryOrNull(length, policy);
+      }
+    }();
     if (!data) {
       return;
     }

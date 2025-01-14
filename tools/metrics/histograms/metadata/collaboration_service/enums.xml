@@ -31,6 +31,9 @@ chromium-metrics-reviews@google.com.
 <enum name="CollaborationServiceJoinEvent">
   <int value="0" label="Unknown"/>
   <int value="1" label="Started"/>
+  <int value="2" label="Canceled - after sign in requirement"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
+  <int value="4" label="Not signed in on join attempt"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->

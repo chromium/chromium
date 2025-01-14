@@ -138,30 +138,6 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_NativeToJava) {
       env, j_test_, j_group);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_JavaToNative) {
-  auto* env = AttachCurrentThread();
-  long native_group_ptr =
-      Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversionJavaToNative(
-          env, j_test_);
-  EXPECT_NE(native_group_ptr, 0);
-
-  // Verify the converted group.
-  auto retrieved_group =
-      base::WrapUnique(reinterpret_cast<SavedTabGroup*>(native_group_ptr));
-  EXPECT_EQ(kTestGroupTitle, retrieved_group->title());
-  EXPECT_EQ(TabGroupColorId::kCyan, retrieved_group->color());
-  EXPECT_EQ(test_tab_group_id_, retrieved_group->local_group_id());
-
-  // Verify the tabs in the group.
-  EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
-  SavedTabGroupTab tab1 = retrieved_group->saved_tabs()[0];
-  EXPECT_EQ(kTabId1, tab1.local_tab_id());
-  EXPECT_EQ(GURL(kTestUrl), tab1.url());
-  EXPECT_EQ(kTestTabTitle, tab1.title());
-  // The tab position is its index in the SavedTabGroup, not the position field.
-  EXPECT_EQ(0, tab1.position());
-}
-
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
@@ -196,15 +172,23 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupLocalIdChanged) {
                                                                        j_test_);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, CreateGroup) {
+TEST_F(TabGroupSyncServiceAndroidTest, AddGroup) {
   auto* env = AttachCurrentThread();
   SavedTabGroup captured_group = test::CreateTestSavedTabGroup();
   EXPECT_CALL(tab_group_sync_service_, AddGroup(_))
       .WillOnce(SaveArg<0>(&captured_group));
-  Java_TabGroupSyncServiceAndroidUnitTest_testCreateGroup(env, j_test_);
 
-  EXPECT_TRUE(captured_group.local_group_id().has_value());
-  EXPECT_EQ(test_tab_group_id_, captured_group.local_group_id().value());
+  Java_TabGroupSyncServiceAndroidUnitTest_testAddGroup(env, j_test_);
+
+  EXPECT_EQ(test_tab_group_id_, captured_group.local_group_id());
+  EXPECT_EQ(kTestGroupTitle, captured_group.title());
+  EXPECT_EQ(TabGroupColorId::kGreen, captured_group.color());
+
+  EXPECT_EQ(1u, captured_group.saved_tabs().size());
+  SavedTabGroupTab tab1 = captured_group.saved_tabs()[0];
+  EXPECT_EQ(kTabId1, tab1.local_tab_id());
+  EXPECT_EQ(GURL(kTestUrl), tab1.url());
+  EXPECT_EQ(kTestTabTitle, tab1.title());
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupByLocalId) {
