@@ -580,6 +580,7 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.SPDY_HEADERS_TO_HTTP_RESPONSE_USE_BUILDER,
                 "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
                         + " change."),
+        Flag.baseFeature(NetFeatures.HAPPY_EYEBALLS_V3, "Enables Happy Eyeballs V3"),
         Flag.baseFeature("MojoIpcz"),
         Flag.baseFeature(
                 "FixDataPipeTrapBug",
