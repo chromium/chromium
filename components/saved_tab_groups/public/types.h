@@ -47,11 +47,15 @@ struct TabGroupActionContext {
 // client.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tab_group_sync
 enum class TriggerSource {
+  // The source is unknown. Typically the source is always known, but it might
+  // get lost during plumbing down the line in certain situations.
+  UNKNOWN = 0,
+
   // The source is a remote chrome client.
-  REMOTE = 0,
+  REMOTE = 1,
 
   // The source is the local chrome client.
-  LOCAL = 1,
+  LOCAL = 2,
 };
 
 // Whether the saved tab group is for share or for sync.
