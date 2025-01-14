@@ -18,7 +18,6 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -97,9 +96,7 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
                                         kCallTimerStateDummy);
   }
 
-  size_t num_extracted_forms() {
-    return test_api(*form_cache_).num_extracted_forms();
-  }
+  size_t num_extracted_forms() { return form_cache_->extracted_forms().size(); }
 
   FieldDataManager& GetFieldDataManager() const {
     return *field_data_manager_.get();
