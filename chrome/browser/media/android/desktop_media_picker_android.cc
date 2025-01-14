@@ -24,7 +24,7 @@ void DesktopMediaPickerAndroid::Show(
 
   // We outlive `dialog_bridge_` so it can take a raw pointer to us.
   dialog_bridge_.Show(
-      params.web_contents, params.app_name,
+      params.web_contents, params.app_name, params.request_audio,
       base::BindOnce(&DesktopMediaPickerAndroid::NotifyDialogResult,
                      base::Unretained(this)));
 }
