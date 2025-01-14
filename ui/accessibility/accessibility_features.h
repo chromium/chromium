@@ -93,13 +93,6 @@ AX_BASE_EXPORT bool IsAccessibilityExposeSummaryAsHeadingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityLanguageDetection);
 AX_BASE_EXPORT bool IsAccessibilityLanguageDetectionEnabled();
 
-// Restrict AXModes to web content related modes only when an IA2
-// query is performed on a web content node.
-// TODO(crbug.com/40266474): Remove flag once the change has been confirmed
-// safe.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityRestrictiveIA2AXModes);
-AX_BASE_EXPORT bool IsAccessibilityRestrictiveIA2AXModesEnabled();
-
 // Extension manifest v3 migration for network speech synthesis.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
 AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
