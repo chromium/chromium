@@ -63,7 +63,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final SharedPreferences mSharedPreferences;
     private final ObservableSupplier<Boolean> mIsNtpShowingSupplier;
-    private final ObservableSupplier<Boolean> mIsTabSwitcherShowingSupplier;
+    private final ObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final ObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
     @NonNull private final ObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
@@ -85,6 +85,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @param sharedPreferences SharedPreferences instance used to monitor user preference state.
      * @param isNtpShowingSupplier Supplier of the current state of the NTP. Must have a non-null
      *     value immediately available.
+     * @param isTabSwitcherFinishedShowingSupplier Supplier indicating whether the tab switcher has
+     *     finished showing. It should only reflect `true` once the transition animation has fully
+     *     completed.
      * @param isOmniboxFocusedSupplier Supplier of the current omnibox focus state. Must have a
      *     non-null value immediately available.
      * @param isFormFieldFocusedSupplier Supplier of the current form field focus state for the
@@ -98,7 +101,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @NonNull BrowserControlsSizer browserControlsSizer,
             @NonNull SharedPreferences sharedPreferences,
             @NonNull ObservableSupplier<Boolean> isNtpShowingSupplier,
-            @NonNull ObservableSupplier<Boolean> isTabSwitcherShowingSupplier,
+            @NonNull ObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             @NonNull ObservableSupplier<Boolean> isFormFieldFocusedSupplier,
             @NonNull ObservableSupplier<Boolean> isFindInPageShowingSupplier,
@@ -111,7 +114,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
-        mIsTabSwitcherShowingSupplier = isTabSwitcherShowingSupplier;
+        mIsTabSwitcherFinishedShowingSupplier = isTabSwitcherFinishedShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mIsFindInPageShowingSupplier = isFindInPageShowingSupplier;
@@ -124,7 +127,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
-        mIsTabSwitcherShowingSupplier.addObserver((showing) -> updateCurrentPosition());
+        mIsTabSwitcherFinishedShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
         mIsFormFieldFocusedSupplier.addObserver(
                 (focused) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
@@ -253,7 +256,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     private void updateCurrentPosition(boolean formFieldStateChanged, boolean prefStateChanged) {
         boolean ntpShowing = mIsNtpShowingSupplier.get();
-        boolean tabSwitcherShowing = mIsTabSwitcherShowingSupplier.get();
+        boolean tabSwitcherShowing = mIsTabSwitcherFinishedShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
         boolean isFindInPageShowing = mIsFindInPageShowingSupplier.get();
         boolean isFormFieldFocusedWithKeyboardVisible =

@@ -221,7 +221,7 @@ public class ToolbarManager
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mFindInPageShowingSupplier =
             new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<Boolean> mIsTabSwitcherShowingSupplier =
+    private final ObservableSupplierImpl<Boolean> mIsTabSwitcherFinishedShowingSupplier =
             new ObservableSupplierImpl<>();
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
@@ -338,6 +338,7 @@ public class ToolbarManager
     private FormFieldFocusedSupplier mFormFieldFocusedSupplier = new FormFieldFocusedSupplier();
     private final View mProgressBarContainer;
     private @Nullable ObservableSupplier<Integer> mBookmarkBarHeightSupplier;
+    private boolean mInTabSwitcherTransition;
 
     private String mLastUrl;
     private String mCurrentUrl;
@@ -1380,13 +1381,18 @@ public class ToolbarManager
                 new LayoutStateProvider.LayoutStateObserver() {
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mInTabSwitcherTransition = true;
+                        }
                         updateForLayout(layoutType);
                     }
 
                     @Override
                     public void onFinishedShowing(int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mInTabSwitcherTransition = false;
                             mToolbar.onTabSwitcherTransitionFinished();
+                            mIsTabSwitcherFinishedShowingSupplier.set(true);
                         }
                         mToolbar.onTransitionEnd();
                         if (layoutType == LayoutType.BROWSING) {
@@ -1397,9 +1403,10 @@ public class ToolbarManager
                     @Override
                     public void onStartedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mInTabSwitcherTransition = true;
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
-                            mIsTabSwitcherShowingSupplier.set(false);
+                            mIsTabSwitcherFinishedShowingSupplier.set(false);
                             updateButtonStatus();
                             if (mToolbar.setForceTextureCapture(true)) {
                                 mControlContainer.invalidateBitmap();
@@ -1411,6 +1418,7 @@ public class ToolbarManager
                     @Override
                     public void onFinishedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            mInTabSwitcherTransition = false;
                             mToolbar.onTabSwitcherTransitionFinished();
                             updateButtonStatus();
 
@@ -1493,7 +1501,7 @@ public class ToolbarManager
         }
 
         mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
-        mIsTabSwitcherShowingSupplier.set(
+        mIsTabSwitcherFinishedShowingSupplier.set(
                 mLayoutStateProvider != null
                         ? mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER
                         : false);
@@ -1501,7 +1509,7 @@ public class ToolbarManager
                 mBrowserControlsSizer,
                 ContextUtils.getAppSharedPreferences(),
                 mIsNtpShowingSupplier,
-                mIsTabSwitcherShowingSupplier,
+                mIsTabSwitcherFinishedShowingSupplier,
                 mOmniboxFocusStateSupplier,
                 mFormFieldFocusedSupplier,
                 mFindInPageShowingSupplier,
@@ -1542,7 +1550,8 @@ public class ToolbarManager
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
         }
-        mIsTabSwitcherShowingSupplier.set(layoutType == LayoutType.TAB_SWITCHER);
+        mIsTabSwitcherFinishedShowingSupplier.set(
+                layoutType == LayoutType.TAB_SWITCHER && !mInTabSwitcherTransition);
         mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
     }
 
