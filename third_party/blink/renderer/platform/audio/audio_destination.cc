@@ -199,14 +199,16 @@ int AudioDestination::Render(base::TimeDelta delay,
       }
     } else {
       // Otherwise use the single-thread rendering.
-      RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
-                    glitch_info);
+      state_change_underrun_in_bypass_mode_ =
+          !RequestRender(number_of_frames, frames_to_render, delay,
+                         delay_timestamp, glitch_info);
     }
 
     const uint32_t frames_after_render = fifo_->GetFramesAvailable();
     if (frames_after_render < number_of_frames) {
       // This can happen if the device has stopped or is stopping when
       // `Render()` is called.
+      CHECK(state_change_underrun_in_bypass_mode_);
       output_bus_->Zero();
       fifo_->Pull(output_bus_.get(), frames_after_render);
       return frames_after_render;
@@ -244,7 +246,7 @@ int AudioDestination::Render(base::TimeDelta delay,
 
       PostCrossThreadTask(
           *worklet_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&AudioDestination::RequestRender,
+          CrossThreadBindOnce(IgnoreResult(&AudioDestination::RequestRender),
                               WrapRefCounted(this), number_of_frames,
                               result.frames_to_render, delay, delay_timestamp,
                               combined_glitch_info,
@@ -537,19 +539,17 @@ void AudioDestination::RequestRenderWait(
     base::TimeDelta delay,
     base::TimeTicks delay_timestamp,
     const media::AudioGlitchInfo& glitch_info) {
-  RequestRender(frames_requested, frames_to_render, delay, delay_timestamp,
-                glitch_info);
+  state_change_underrun_in_bypass_mode_ = !RequestRender(
+      frames_requested, frames_to_render, delay, delay_timestamp, glitch_info);
   output_buffer_bypass_wait_event_.Signal();
 }
 
-void AudioDestination::RequestRender(
-    size_t frames_requested,
-    size_t frames_to_render,
-    base::TimeDelta delay,
-    base::TimeTicks delay_timestamp,
-    const media::AudioGlitchInfo& glitch_info,
-    bool has_fifo_underrun_occurred) {
-
+bool AudioDestination::RequestRender(size_t frames_requested,
+                                     size_t frames_to_render,
+                                     base::TimeDelta delay,
+                                     base::TimeTicks delay_timestamp,
+                                     const media::AudioGlitchInfo& glitch_info,
+                                     bool has_fifo_underrun_occurred) {
   base::AutoTryLock locker(device_state_lock_);
 
   TRACE_EVENT("webaudio", "AudioDestination::RequestRender", "frames_requested",
@@ -562,11 +562,11 @@ void AudioDestination::RequestRender(
   // The state might be changing by ::Stop() call. If the state is locked, do
   // not touch the below.
   if (!locker.is_acquired()) {
-    return;
+    return false;
   }
 
   if (device_state_ != DeviceState::kRunning) {
-    return;
+    return false;
   }
 
   metric_reporter_.BeginTrace();
@@ -629,6 +629,7 @@ void AudioDestination::RequestRender(
 
   uma_reporter_.Report();
   metric_reporter_.EndTrace();
+  return true;
 }
 
 void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,

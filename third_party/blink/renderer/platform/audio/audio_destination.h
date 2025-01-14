@@ -170,7 +170,10 @@ class PLATFORM_EXPORT AudioDestination final
                          base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
                          const media::AudioGlitchInfo& glitch_info);
-  void RequestRender(size_t frames_requested,
+
+  // Returns true if it was able to provide audio, false otherwise (this would
+  // happen if and only if rendering is stopping or stopped.
+  bool RequestRender(size_t frames_requested,
                      size_t frames_to_render,
                      base::TimeDelta delay,
                      base::TimeTicks delay_timestamp,
@@ -254,6 +257,7 @@ class PLATFORM_EXPORT AudioDestination final
   base::WaitableEvent output_buffer_bypass_wait_event_;
 
   const bool is_output_buffer_bypassed_ = false;
+  bool state_change_underrun_in_bypass_mode_ = false;
 };
 
 }  // namespace blink
