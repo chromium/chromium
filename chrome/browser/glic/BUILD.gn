@@ -91,6 +91,10 @@ source_set("impl") {
     "//ui/webui",
     "//url",
   ]
+
+  if (is_mac) {
+    deps += [ "//ui/accelerated_widget_mac" ]
+  }
 }
 
 mojom("mojo_bindings") {

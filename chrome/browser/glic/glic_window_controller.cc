@@ -395,7 +395,7 @@ bool GlicWindowController::Resize(const gfx::Size& size) {
   window_resize_animation_.reset();
   window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
       glic_window_widget_.get(), GetGlicView(), size,
-      /*duration=*/base::Milliseconds(0),
+      /*duration=*/base::Milliseconds(150),
       base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
   return true;
 }
