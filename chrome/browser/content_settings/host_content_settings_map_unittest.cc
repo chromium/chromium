@@ -67,12 +67,6 @@ using ::testing::Return;
 
 namespace {
 
-bool MatchPrimaryPattern(const ContentSettingsPattern& expected_primary,
-                         const ContentSettingsPattern& primary_pattern,
-                         const ContentSettingsPattern& secondary_pattern) {
-  return expected_primary == primary_pattern;
-}
-
 base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
                                       GURL primary_url,
                                       GURL secondary_url,
@@ -1574,8 +1568,10 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
 
   // First, test that we clear only COOKIES (not APP_BANNER), and pattern2.
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::COOKIES, base::Time(), base::Time::Max(),
-      base::BindRepeating(&MatchPrimaryPattern, pattern2));
+      ContentSettingsType::COOKIES,
+      [&](const ContentSettingPatternSource& setting) {
+        return setting.primary_pattern == pattern2;
+      });
   ContentSettingsForOneType host_settings =
       host_content_settings_map->GetSettingsForOneType(
           ContentSettingsType::COOKIES);
@@ -1620,8 +1616,10 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   ContentSettingsPattern http_pattern =
       ContentSettingsPattern::FromURLNoWildcard(url3_origin_only);
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::SITE_ENGAGEMENT, base::Time(), base::Time::Max(),
-      base::BindRepeating(&MatchPrimaryPattern, http_pattern));
+      ContentSettingsType::SITE_ENGAGEMENT,
+      [&](const ContentSettingPatternSource& setting) {
+        return setting.primary_pattern == http_pattern;
+      });
   // Verify we only have one, and it's url1.
   host_settings = host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::SITE_ENGAGEMENT);
