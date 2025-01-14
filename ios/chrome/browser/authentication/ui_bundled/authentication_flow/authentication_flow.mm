@@ -362,6 +362,27 @@ enum class CancelationReason {
   NOTREACHED();
 }
 
+// Shows a confirmation dialog for signing in to an account managed.
+- (void)showManagedConfirmationStep {
+  // This value is not used if
+  // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
+  BOOL skipBrowsingDataMigration = NO;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Skip browsing data migration if we are at the first run screen or if
+    // there is already a profile that exists with the account we are trying
+    // to signin with.
+    skipBrowsingDataMigration =
+        [self shouldSkipBrowsingDataMigration:_accessPoint
+                                      gaia_id:_identityToSignIn.gaiaID];
+  }
+  [_performer
+      showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
+                                   userEmail:_identityToSignIn.userEmail
+                              viewController:_presentingViewController
+                                     browser:_browser
+                   skipBrowsingDataMigration:skipBrowsingDataMigration];
+}
+
 // Signs out, if the user is already signed in with a different identity.
 // Otherwise, this step does nothing and the flow continues to the next step.
 - (void)signOutIfNeededStep {
@@ -672,26 +693,6 @@ enum class CancelationReason {
               currentProfile:profile];
   _didSignIn = YES;
   [self continueFlow];
-}
-
-- (void)showManagedConfirmationStep {
-  // This value is not used if
-  // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
-  BOOL skipBrowsingDataMigration = NO;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    // Skip browsing data migration if we are at the first run screen or if
-    // there is already a profile that exists with the account we are trying
-    // to signin with.
-    skipBrowsingDataMigration =
-        [self shouldSkipBrowsingDataMigration:_accessPoint
-                                      gaia_id:_identityToSignIn.gaiaID];
-  }
-  [_performer
-      showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
-                                   userEmail:_identityToSignIn.userEmail
-                              viewController:_presentingViewController
-                                     browser:_browser
-                   skipBrowsingDataMigration:skipBrowsingDataMigration];
 }
 
 // Returns true if we are at the FRE step of it there is already a profile that
