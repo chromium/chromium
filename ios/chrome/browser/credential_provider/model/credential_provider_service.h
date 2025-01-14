@@ -159,8 +159,9 @@ class CredentialProviderService
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Observer for when `saving_passwords_enabled_` changes.
-  void OnSavingPasswordsEnabledChanged();
+  // Observer for change in enabled or managed state of prefs that govern the
+  // CPE.
+  void OnPrefOrPolicyStatusChanged();
 
   // For each of the 2 PasswordStoreInterfaces (profile and account), returns
   // the corresponding in-memory store used for password deduplication. See
@@ -210,6 +211,12 @@ class CredentialProviderService
   // The preference associated with
   // password_manager::prefs::kCredentialsEnableService.
   BooleanPrefMember saving_passwords_enabled_;
+
+  // The preference associated with
+  // password_manager::prefs::kCredentialsEnablePasskeys. See
+  // `AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled` documentation
+  // for important caveats.
+  BooleanPrefMember saving_passkeys_enabled_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};

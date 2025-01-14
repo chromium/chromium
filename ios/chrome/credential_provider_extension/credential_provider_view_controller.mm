@@ -53,8 +53,8 @@ UIColor* BackgroundColor() {
 enum class PasskeyCreationEligibility {
   kCanCreate,
   kCanCreateWithUserInteraction,
-  kPasswordSaveDisabledByUser,
-  kPasswordSaveDisabledByEnterprise,
+  kSaveDisabledByUser,
+  kSaveDisabledByEnterprise,
   kPasswordSyncDisabled,
   kSignedOut,
   kUnsupportedAlgorithm,
@@ -343,10 +343,10 @@ enum class PasskeyCreationEligibility {
                         passkeyRequestDetails:passkeyRequestDetails];
 
   switch (passkeyCreationEligibility) {
-    case PasskeyCreationEligibility::kPasswordSaveDisabledByUser:
+    case PasskeyCreationEligibility::kSaveDisabledByUser:
       [self showSavingManuallyDisabledAlert];
       return;
-    case PasskeyCreationEligibility::kPasswordSaveDisabledByEnterprise:
+    case PasskeyCreationEligibility::kSaveDisabledByEnterprise:
       [self showSavingDisabledByEnterpriseAlert];
       return;
     case PasskeyCreationEligibility::kPasswordSyncDisabled:
@@ -632,11 +632,18 @@ enum class PasskeyCreationEligibility {
                                           passkeyRequestDetails:
                                               (PasskeyRequestDetails*)
                                                   passkeyRequestDetails {
+  // Granular policy that allows enterprises to disable just passkey creation.
+  if (!IsPasskeyCreationAllowedByPolicy()) {
+    return PasskeyCreationEligibility::kSaveDisabledByEnterprise;
+  }
+
+  // Broad policy that allows users or enterprises to disable creation of any
+  // credential type.
   if (!IsPasswordCreationUserEnabled()) {
     if (IsPasswordCreationManaged()) {
-      return PasskeyCreationEligibility::kPasswordSaveDisabledByEnterprise;
+      return PasskeyCreationEligibility::kSaveDisabledByEnterprise;
     } else {
-      return PasskeyCreationEligibility::kPasswordSaveDisabledByUser;
+      return PasskeyCreationEligibility::kSaveDisabledByUser;
     }
   }
 

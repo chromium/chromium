@@ -16,4 +16,12 @@ BOOL IsPasswordCreationManaged();
 
 // Whether password sync is enabled for this user.
 BOOL IsPasswordSyncEnabled();
+
+// Whether passkey saving is allowed by policy. Always returns `YES` for
+// unmanaged users, or for users whose enterprise has not configured this
+// policy.
+// IMPORTANT: If `IsPasswordCreationUserEnabled()` is `NO`, that supercedes this
+// policy.
+BOOL IsPasskeyCreationAllowedByPolicy();
+
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_FEATURE_FLAGS_H_

@@ -27,3 +27,9 @@ BOOL IsPasswordSyncEnabled() {
       objectForKey:AppGroupUserDefaultsCredentialProviderPasswordSyncSetting()]
       boolValue];
 }
+
+BOOL IsPasskeyCreationAllowedByPolicy() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled()]
+      boolValue];
+}

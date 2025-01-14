@@ -203,11 +203,17 @@ CredentialProviderService::CredentialProviderService(
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, prefs,
       base::BindRepeating(
-          &CredentialProviderService::OnSavingPasswordsEnabledChanged,
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
+          base::Unretained(this)));
+
+  saving_passkeys_enabled_.Init(
+      password_manager::prefs::kCredentialsEnablePasskeys, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnPrefOrPolicyStatusChanged,
           base::Unretained(this)));
 
   // Make sure the initial value of the pref is stored.
-  OnSavingPasswordsEnabledChanged();
+  OnPrefOrPolicyStatusChanged();
   UpdatePasswordSyncSetting();
 }
 
@@ -628,13 +634,16 @@ void CredentialProviderService::OnPasskeyModelShuttingDown() {
 
 void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
 
-void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
+void CredentialProviderService::OnPrefOrPolicyStatusChanged() {
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
          forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()];
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:saving_passwords_enabled_.IsManaged()]
          forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged()];
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:saving_passkeys_enabled_.GetValue()]
+         forKey:AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled()];
 }
 
 MemoryCredentialStore* CredentialProviderService::GetCredentialStore(

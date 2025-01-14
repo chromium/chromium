@@ -21,13 +21,20 @@ NSString* AppGroupUserDefaultsCredentialProviderUserEmail();
 // created in the extension.
 NSString* AppGroupUserDefaultsCredentialProviderNewCredentials();
 
-// Key for the app group user defaults containing whether saving passwords is
-// currently enabled.
+// Key for the app group user defaults containing whether saving passwords and
+// passkeys is currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled();
 
 // Key for the app group user defaults containing whether saving passwords is
 // currently managed by an enterprise policy.
 NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged();
+
+// Key for the app group user defaults indicating whether saving passkeys is
+// allowed by enterprise policy. Even if this is set to `YES`, passkey creation
+// could still be blocked by `...CredentialProviderSavingPasswordsEnabled`
+// above. This pref is only configurable by enterprise policy, not by users, so
+// if this is set to `NO` then it is because the behavior is managed.
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled();
 
 // Key for the app group user defaults containing whether syncing passwords is
 // currently enabled.

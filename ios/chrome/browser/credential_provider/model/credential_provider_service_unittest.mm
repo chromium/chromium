@@ -156,6 +156,8 @@ class CredentialProviderServiceTest : public PlatformTest {
                                   /*affiliated_match_helper=*/nullptr);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
+    testing_pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialsEnablePasskeys, true);
   }
 
   void TearDown() override {

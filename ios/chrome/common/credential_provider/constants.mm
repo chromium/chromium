@@ -47,6 +47,11 @@ NSString* const kUserDefaultsCredentialProviderSavingPasswordsManaged =
     @"kUserDefaultsCredentialProviderSavingPasswordsManaged";
 
 // Used to generate the key for the app group user defaults containing whether
+// saving passkeys is currently allowed by enterprise policy.
+NSString* const kUserDefaulsCredentialProviderSavingPasskeysEnabled =
+    @"kUserDefaulsCredentialProviderSavingPasskeysEnabled";
+
+// Used to generate the key for the app group user defaults containing whether
 // syncing passwords is currently enabled.
 NSString* const kUserDefaultsCredentialProviderPasswordSyncSetting =
     @"kUserDefaultsCredentialProviderPasswordSyncSetting";
@@ -115,6 +120,12 @@ NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaultsCredentialProviderSavingPasswordsManaged];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaulsCredentialProviderSavingPasskeysEnabled];
 }
 
 NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting() {
