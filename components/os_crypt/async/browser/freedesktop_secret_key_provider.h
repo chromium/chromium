@@ -13,6 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
@@ -92,8 +93,10 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
       "org.freedesktop.Secret.Session";
 
   static constexpr char kMethodReadAlias[] = "ReadAlias";
+  static constexpr char kMethodCreateCollection[] = "CreateCollection";
   static constexpr char kMethodGetSecret[] = "GetSecret";
   static constexpr char kMethodOpenSession[] = "OpenSession";
+  static constexpr char kMethodCreateItem[] = "CreateItem";
   static constexpr char kMethodUnlock[] = "Unlock";
   static constexpr char kMethodClose[] = "Close";
   static constexpr char kMethodSearchItems[] = "SearchItems";
@@ -123,8 +126,10 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kLabelProperty[] = "Label";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  constexpr static char kKeyName[] = "Chrome Safe Storage";
   static constexpr char kAppName[] = "chrome";
 #else
+  constexpr static char kKeyName[] = "Chromium Safe Storage";
   static constexpr char kAppName[] = "chromium";
 #endif
 
@@ -133,6 +138,9 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
       base::expected<DbusObjectPath, ErrorDetail> collection_path);
   void OnGetCollectionLabelResponse(
       base::expected<DbusVariant, ErrorDetail> variant);
+  void OnCreateCollection(
+      base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>,
+                     ErrorDetail> create_collection_reply);
   void OnUnlock(
       base::expected<DbusParameters<DbusArray<DbusObjectPath>, DbusObjectPath>,
                      ErrorDetail> unlocked_collection);
@@ -144,6 +152,11 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
 
   void UnlockDefaultCollection();
   void OpenSession();
+  void CreateItem(scoped_refptr<base::RefCountedMemory> secret);
+  void OnCreateItem(
+      scoped_refptr<base::RefCountedMemory> secret,
+      base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>,
+                     ErrorDetail> created_item);
   void DeriveKeyFromSecret(base::span<const uint8_t> secret);
   void FinalizeSuccess(Encryptor::Key key);
   void FinalizeFailure(InitStatus status, ErrorDetail detail);

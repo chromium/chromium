@@ -42,6 +42,7 @@ constexpr char kEncryptionTag[] = "v11";
 constexpr char kSalt[] = "saltysalt";
 constexpr size_t kDerivedKeySizeInBits = 128;
 constexpr size_t kEncryptionIterations = 1;
+constexpr size_t kSecretLengthBytes = 16;
 
 template <typename ReplyArgs>
 void CallMethod(
@@ -198,8 +199,16 @@ void FreedesktopSecretKeyProvider::OnReadAliasDefault(
                    &FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse,
                    weak_ptr_factory_.GetWeakPtr()));
   } else {
-    NOTIMPLEMENTED();
-    FinalizeFailure(InitStatus::kCreateCollectionFailed, ErrorDetail::kNone);
+    // No default collection, create it
+    auto* service_proxy = bus_->GetObjectProxy(
+        kSecretServiceName, dbus::ObjectPath(kSecretServicePath));
+    DbusDictionary props = MakeDbusDictionary(
+        kSecretCollectionLabelProperty, DbusString(kDefaultCollectionLabel));
+
+    CallMethod(service_proxy, kSecretServiceInterface, kMethodCreateCollection,
+               MakeDbusParameters(std::move(props), DbusString(kDefaultAlias)),
+               base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateCollection,
+                              weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -221,6 +230,26 @@ void FreedesktopSecretKeyProvider::OnGetCollectionLabelResponse(
   }
 
   // Label property read successfully
+  UnlockDefaultCollection();
+}
+
+void FreedesktopSecretKeyProvider::OnCreateCollection(
+    base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>, ErrorDetail>
+        create_collection_reply) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!create_collection_reply.has_value()) {
+    FinalizeFailure(InitStatus::kCreateCollectionFailed,
+                    create_collection_reply.error());
+    return;
+  }
+  const auto& [collection_path, _] = create_collection_reply->value();
+  if (collection_path.value().value() == "/") {
+    FinalizeFailure(InitStatus::kCreateCollectionFailed,
+                    ErrorDetail::kEmptyObjectPaths);
+    return;
+  }
+  default_collection_proxy_ =
+      bus_->GetObjectProxy(kSecretServiceName, collection_path.value());
   UnlockDefaultCollection();
 }
 
@@ -292,8 +321,9 @@ void FreedesktopSecretKeyProvider::OnSearchItems(
   }
 
   if (results->value().empty()) {
-    NOTIMPLEMENTED();
-    FinalizeFailure(InitStatus::kCreateItemFailed, ErrorDetail::kNone);
+    // No items found, create a new one
+    CreateItem(base::MakeRefCounted<base::RefCountedString>(
+        base::Base64Encode(base::RandBytesAsVector(kSecretLengthBytes))));
     return;
   }
 
@@ -328,6 +358,48 @@ void FreedesktopSecretKeyProvider::OnGetSecret(
   }
 
   DeriveKeyFromSecret(base::span(*secret_bytes));
+}
+
+void FreedesktopSecretKeyProvider::CreateItem(
+    scoped_refptr<base::RefCountedMemory> secret) {
+  auto attributes =
+      MakeDbusArray(MakeDbusDictEntry(DbusString(kApplicationAttributeKey),
+                                      DbusString(kAppName)),
+                    MakeDbusDictEntry(DbusString(kSchemaAttributeKey),
+                                      DbusString(kSchemaAttributeValue)));
+  auto props =
+      MakeDbusDictionary(kSecretItemAttributesProperty, std::move(attributes),
+                         kSecretItemLabelProperty, DbusString(kKeyName));
+
+  auto secret_struct = MakeDbusStruct(
+      DbusObjectPath(session_proxy_->object_path()),
+      DbusByteArray(base::MakeRefCounted<base::RefCountedBytes>()),
+      DbusByteArray(secret), DbusString(kMimePlain));
+  auto* collection_proxy = bus_->GetObjectProxy(
+      kSecretServiceName, default_collection_proxy_->object_path());
+  CallMethod(collection_proxy, kSecretCollectionInterface, kMethodCreateItem,
+             MakeDbusParameters(std::move(props), std::move(secret_struct),
+                                DbusBoolean(false)),
+             base::BindOnce(&FreedesktopSecretKeyProvider::OnCreateItem,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(secret)));
+}
+
+void FreedesktopSecretKeyProvider::OnCreateItem(
+    scoped_refptr<base::RefCountedMemory> secret,
+    base::expected<DbusParameters<DbusObjectPath, DbusObjectPath>, ErrorDetail>
+        created_item) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!created_item.has_value()) {
+    FinalizeFailure(InitStatus::kCreateItemFailed, created_item.error());
+    return;
+  }
+  const auto& [item_path, _] = created_item->value();
+  if (item_path.value().value().empty()) {
+    FinalizeFailure(InitStatus::kCreateItemFailed,
+                    ErrorDetail::kEmptyObjectPaths);
+    return;
+  }
+  DeriveKeyFromSecret(*secret);
 }
 
 void FreedesktopSecretKeyProvider::DeriveKeyFromSecret(
