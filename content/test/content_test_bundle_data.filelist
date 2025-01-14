@@ -256,6 +256,8 @@ data/accessibility/accname/name-link-mixed-content-expected-blink.txt
 data/accessibility/accname/name-link-mixed-content.html
 data/accessibility/accname/name-link-multiple-sources-expected-blink.txt
 data/accessibility/accname/name-link-multiple-sources.html
+data/accessibility/accname/name-link-term-definition-expected-blink.txt
+data/accessibility/accname/name-link-term-definition.html
 data/accessibility/accname/name-password-css-after-in-label-expected-blink.txt
 data/accessibility/accname/name-password-css-after-in-label.html
 data/accessibility/accname/name-password-css-before-in-label-expected-blink.txt
