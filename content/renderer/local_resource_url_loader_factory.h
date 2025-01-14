@@ -82,11 +82,21 @@ class CONTENT_EXPORT LocalResourceURLLoaderFactory
   // out-of-process.
   bool CanServe(const network::ResourceRequest& request) const;
 
-  void GetResourceAndRespond(
+  // Fetches the resource from the ResourceBundle and sends it to the
+  // URLLoaderClient. This is static because it is posted as a task which may
+  // outlive |this|.
+  static void GetResourceAndRespond(
+      const scoped_refptr<base::RefCountedData<std::map<url::Origin, Source>>>
+          sources,
       const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) const;
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  const std::map<url::Origin, Source> sources_;
+  // Map for resolving origins to their respective source metadata
+  // (path-to-resource-ID mappings and string replacement maps).
+  // It is ref-counted because it needs to be accessed in an async call to
+  // GetResourceAndRespond, which may outlive |this|.
+  const scoped_refptr<base::RefCountedData<std::map<url::Origin, Source>>>
+      sources_;
 
   // Pipe to fallback factory, which should be the WebUIURLLoaderFactory in the
   // browser process. This is required because there are certain resources that

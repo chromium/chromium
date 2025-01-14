@@ -74,7 +74,9 @@ LocalResourceURLLoaderFactory::Source::~Source() = default;
 LocalResourceURLLoaderFactory::LocalResourceURLLoaderFactory(
     const blink::mojom::LocalResourceLoaderConfigPtr& config,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> fallback)
-    : sources_(ConvertConfigToSourcesMap(config)),
+    : sources_(base::MakeRefCounted<
+               base::RefCountedData<std::map<url::Origin, Source>>>(
+          ConvertConfigToSourcesMap(config))),
       fallback_(std::move(fallback)) {}
 
 LocalResourceURLLoaderFactory::~LocalResourceURLLoaderFactory() = default;
@@ -82,12 +84,12 @@ LocalResourceURLLoaderFactory::~LocalResourceURLLoaderFactory() = default;
 bool LocalResourceURLLoaderFactory::CanServe(
     const network::ResourceRequest& request) const {
   const url::Origin origin = url::Origin::Create(request.url);
-  auto it = sources_.find(origin);
+  auto it = sources_->data.find(origin);
   // The renderer process may not have metadata for the data source. This can
   // happen if the data source isn't a WebUIDataSource, in which case the
   // browser process doesn't send metadata for it.
   // Example: chrome://theme/colors.css
-  if (it == sources_.end()) {
+  if (it == sources_->data.end()) {
     return false;
   }
 
@@ -122,7 +124,14 @@ void LocalResourceURLLoaderFactory::CreateLoaderAndStart(
   }
   // Only the "chrome" scheme is supported.
   CHECK(request.url.scheme() == kChromeUIScheme);
-  GetResourceAndRespond(request, std::move(client));
+  // Parallelize calls to GetResourceAndRespond across multiple threads.
+  // Needs to be posted to a SequencedTaskRunner as Mojo requires a
+  // SequencedTaskRunner::CurrentDefaultHandle in scope.
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTask(FROM_HERE, base::BindOnce(GetResourceAndRespond, sources_,
+                                           request, std::move(client)));
 }
 
 void LocalResourceURLLoaderFactory::Clone(
@@ -130,14 +139,17 @@ void LocalResourceURLLoaderFactory::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
+// static
 void LocalResourceURLLoaderFactory::GetResourceAndRespond(
+    const scoped_refptr<base::RefCountedData<std::map<url::Origin, Source>>>
+        sources,
     const network::ResourceRequest& request,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) const {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   const url::Origin origin = url::Origin::Create(request.url);
-  auto it = sources_.find(origin);
+  auto it = sources->data.find(origin);
   // CanServe should have been called before this point, which would have
   // confirmed that there exists a source corresponding to the URL origin.
-  CHECK(it != sources_.end());
+  CHECK(it != sources->data.end());
 
   const blink::mojom::LocalResourceSourcePtr& source = it->second.source;
   const std::map<const std::string, std::string>& replacement_strings =
