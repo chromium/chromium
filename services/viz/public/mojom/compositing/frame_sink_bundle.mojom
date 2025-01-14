@@ -34,9 +34,6 @@ union BundledFrameSubmissionData {
 
   // Data for a DidNotProduceFrame call.
   BeginFrameAck did_not_produce_frame;
-
-  // Data for a DidDeleteSharedBitmap call.
-  SharedBitmapId did_delete_shared_bitmap;
 };
 
 // SubmitCompositorFrame parameters, as bundled by BundledFrameSubmissionData
@@ -70,12 +67,6 @@ interface FrameSinkBundle {
   // submitting frames at the same time.
   [UnlimitedSize]
   Submit(array<BundledFrameSubmission> submissions);
-
-  // Corresponds to a single message of the same name on CompositorFrameSink
-  // for the identified sink.
-  DidAllocateSharedBitmap(
-      uint32 sink_id, mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-      SharedBitmapId id);
 
   // Corresponds to a single message of the same name on CompositorFrameSink
   // for the identified sink.

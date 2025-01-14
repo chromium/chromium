@@ -34,13 +34,6 @@ void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   latest_frame_skipped_reason_ = reason;
 }
 
-void TestLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {}
-
-void TestLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {}
-
 void TestLayerTreeFrameSink::GetFrameResourcesToReturn(
     std::vector<viz::ReturnedResource>& return_resources) {
   for (auto resource : resources_in_use_) {

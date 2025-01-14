@@ -1014,12 +1014,6 @@ void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
   compositor_sink_->DidNotProduceFrame(ack);
 }
 
-void LayerContextImpl::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const SharedBitmapId& id) {}
-
-void LayerContextImpl::DidDeleteSharedBitmap(const SharedBitmapId& id) {}
-
 void LayerContextImpl::DidAppendQuadsWithResources(
     const std::vector<TransferableResource>& resources) {
   next_frame_resources_.insert(next_frame_resources_.end(), resources.begin(),
