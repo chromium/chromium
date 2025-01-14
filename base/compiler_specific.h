@@ -59,12 +59,32 @@
 //     // This body will not be inlined into callers.
 //   }
 // ```
-#if __has_cpp_attribute(gnu::noinline)
+#if __has_cpp_attribute(clang::noinline)
+#define NOINLINE [[clang::noinline]]
+#elif __has_cpp_attribute(gnu::noinline)
 #define NOINLINE [[gnu::noinline]]
 #elif __has_cpp_attribute(msvc::noinline)
 #define NOINLINE [[msvc::noinline]]
 #else
 #define NOINLINE
+#endif
+
+// Annotates a call site indicating that the callee should not be inlined.
+//
+// See also:
+//   https://clang.llvm.org/docs/AttributeReference.html#noinline
+//
+// Usage:
+// ```
+//   void Func() {
+//      // This specific call to `DoSomething` should not be inlined.
+//      NOINLINE_CALL DoSomething();
+//   }
+// ```
+#if __has_cpp_attribute(clang::noinline)
+#define NOINLINE_CALL [[clang::noinline]]
+#else
+#define NOINLINE_CALL
 #endif
 
 // Annotates a function indicating it should not be optimized.
@@ -102,7 +122,9 @@
 // Since `ALWAYS_INLINE` is performance-oriented but can hamper debugging,
 // ignore it in debug mode.
 #if defined(NDEBUG)
-#if __has_cpp_attribute(gnu::always_inline)
+#if __has_cpp_attribute(clang::always_inline)
+#define ALWAYS_INLINE [[clang::always_inline]] inline
+#elif __has_cpp_attribute(gnu::always_inline)
 #define ALWAYS_INLINE [[gnu::always_inline]] inline
 #elif defined(COMPILER_MSVC)
 #define ALWAYS_INLINE __forceinline
@@ -110,6 +132,30 @@
 #endif
 #if !defined(ALWAYS_INLINE)
 #define ALWAYS_INLINE inline
+#endif
+
+// Annotates a call site indicating the calee should always be inlined.
+//
+// See also:
+//   https://clang.llvm.org/docs/AttributeReference.html#always-inline-force-inline
+//
+// Usage:
+// ```
+//   void Func() {
+//     // This specific call will be inlined if possible.
+//     ALWAYS_INLINE_CALL DoSomething();
+//   }
+// ```
+//
+// Since `ALWAYS_INLINE_CALL` is performance-oriented but can hamper debugging,
+// ignore it in debug mode.
+#if defined(NDEBUG)
+#if __has_cpp_attribute(clang::always_inline)
+#define ALWAYS_INLINE_CALL [[clang::always_inline]]
+#endif
+#endif
+#if !defined(ALWAYS_INLINE_CALL)
+#define ALWAYS_INLINE_CALL
 #endif
 
 // Annotates a function indicating it should never be tail called. Useful to
