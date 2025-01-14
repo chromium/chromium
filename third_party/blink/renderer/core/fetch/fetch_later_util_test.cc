@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-namespace {
 
 const KURL GetSourcePageURL(const String& relative_url) {
   static const String kSourcePageURL = "https://example.com";
@@ -174,26 +173,30 @@ class DeferredFetchPolicyTestBase : public SimTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class CountContainersWithReservedMinimalQuotaTest
+class CountDescendantsWithReservedMinimalQuotaTest
     : public DeferredFetchPolicyTestBase {
  protected:
-  [[nodiscard]] static size_t CountContainersWithReservedMinimalQuotaFor(
+  [[nodiscard]] static size_t CountDescendantsWithReservedMinimalQuotaFor(
       Frame* target_frame) {
     // Should only be called by content of an iframe.
     CHECK(target_frame->Owner());
     // Should not be called by frame without permissions policy
     // `deferred-fetch-minimal`.
     CheckFrameEnableDeferredFetchMinimal(target_frame);
+    // Let controlDocument be container’s node document’s deferred-fetch control
+    // document.
+    auto* control_frame =
+        FetchLaterUtil::GetDeferredFetchControlFrame(target_frame->Parent());
 
-    return CountContainersWithReservedMinimalQuotaForTesting(
-        target_frame->Owner());
+    return FetchLaterUtil::CountDescendantsWithReservedMinimalQuota(
+        control_frame);
   }
 };
 
 // The single cross-origin iframe has default `deferred-fetch-minimal` policy
 // enabled `*`. However, there is no other cross-origin iframe shares this quota
 // with it.
-TEST_F(CountContainersWithReservedMinimalQuotaTest, SingleCrossOriginFrame) {
+TEST_F(CountDescendantsWithReservedMinimalQuotaTest, SingleCrossOriginFrame) {
   // The structure of the document:
   // root -> frame_a (cross-origin)
   String root_url = kMainUrl;
@@ -204,10 +207,10 @@ TEST_F(CountContainersWithReservedMinimalQuotaTest, SingleCrossOriginFrame) {
   auto* frame_a = root->Tree().FirstChild();
 
   // Expects only `frame_a` share the minimal quota policy.
-  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_a), 1u);
+  EXPECT_EQ(CountDescendantsWithReservedMinimalQuotaFor(frame_a), 1u);
 }
 
-TEST_F(CountContainersWithReservedMinimalQuotaTest,
+TEST_F(CountDescendantsWithReservedMinimalQuotaTest,
        MultipleDifferentOriginSiblingFrames) {
   // The structure of the document:
   // root -> frame_a (same-origin)
@@ -236,15 +239,15 @@ TEST_F(CountContainersWithReservedMinimalQuotaTest,
 
   // Frame A and Frame B are same-origin with root and are not counted toward
   // minimal quota policy. Hence, they cannot be used in
-  // `CountContainersWithReservedMinimalQuotaFor()`.
+  // `CountDescendantsWithReservedMinimalQuotaFor()`.
 
   // Frame C and D are different origin with root, and shares the minimal quota
   // policy with each other.
-  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_c), 2u);
-  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_d), 2u);
+  EXPECT_EQ(CountDescendantsWithReservedMinimalQuotaFor(frame_c), 2u);
+  EXPECT_EQ(CountDescendantsWithReservedMinimalQuotaFor(frame_d), 2u);
 }
 
-TEST_F(CountContainersWithReservedMinimalQuotaTest, MultipleLevelFrames) {
+TEST_F(CountDescendantsWithReservedMinimalQuotaTest, MultipleLevelFrames) {
   // The structure of the document:
   // root -> frame_a (same-origin) -> frame_c (cross-origin)
   //      -> frame_d (cross-origin) -> frame_b (same-origin)
@@ -267,12 +270,12 @@ TEST_F(CountContainersWithReservedMinimalQuotaTest, MultipleLevelFrames) {
 
   // Frame A and Frame B are same-origin with root and are not counted toward
   // minimal quota policy. Hence, they cannot be used in
-  // `CountContainersWithReservedMinimalQuotaFor()`.
+  // `CountDescendantsWithReservedMinimalQuotaFor()`.
 
   // Frame C and D are different origin with root, and shares the minimal quota
   // policy with each other.
-  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_c), 2u);
-  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_d), 2u);
+  EXPECT_EQ(CountDescendantsWithReservedMinimalQuotaFor(frame_c), 2u);
+  EXPECT_EQ(CountDescendantsWithReservedMinimalQuotaFor(frame_d), 2u);
 }
 
 using GetContainerDeferredFetchPolicyOnNavigationTest =
@@ -297,7 +300,8 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, SingleSameOriginFrame) {
   // when iframe is loaded.
   EXPECT_EQ(frame_a->Owner()->GetFramePolicy().deferred_fetch_policy,
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), KURL(frame_a_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
 }
 
@@ -318,7 +322,8 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
   auto* root = GetMainFrame();
   auto* frame_a = root->Tree().FirstChild();
 
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), KURL(frame_a_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -349,15 +354,19 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
   auto* frame_c = frame_b->Tree().NextSibling();
   auto* frame_d = frame_c->Tree().NextSibling();
 
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), KURL(frame_a_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_b->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_b->Owner(), KURL(frame_b_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
 
   // Frame C and Frame D should have minimal quota policy set.
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_c->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_c->Owner(), KURL(frame_c_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_d->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_d->Owner(), KURL(frame_d_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -383,20 +392,24 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
   auto* frame_c = frame_a->Tree().FirstChild();
   auto* frame_b = frame_d->Tree().FirstChild();
 
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_a->Owner(), KURL(frame_a_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
   // Frame B will have NO quota, as
   // (1) its "inherited policy" from its parent Frame D, which is a cross-origin
   // iframe, will not have "deferred-fetch" policy enabled by default but only
   // "deferred-fetch-minimal".
   // (2) its parent Frame D does not share same quota with root frame.
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_b->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_b->Owner(), KURL(frame_b_url)),
             FramePolicy::DeferredFetchPolicy::kDisabled);
 
   // Frame C and Frame D should have minimal quota policy set.
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_c->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_c->Owner(), KURL(frame_c_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
-  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_d->Owner()),
+  EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
+                frame_d->Owner(), KURL(frame_d_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
@@ -440,31 +453,129 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
       << i + 1 << "-th cross-origin iframe";
 }
 
-using ToReservedDeferredFetchQuotaTest = DeferredFetchPolicyTestBase;
+class GetDeferredFetchControlFrameTest : public DeferredFetchPolicyTestBase {};
+
+TEST_F(GetDeferredFetchControlFrameTest, SingleDocument) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  NavigateTo(kMainUrl, "");
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(GetMainFrame()),
+            GetMainFrame());
+}
+
+TEST_F(GetDeferredFetchControlFrameTest, SingleSameOriginFrame) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), root);
+}
+
+TEST_F(GetDeferredFetchControlFrameTest, SingleCrossOriginFrame) {
+  // The structure of the document:
+  // root -> frame_a (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kCrossSubdomainUrl + "frame-a.html";
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), frame_a);
+}
+
+TEST_F(GetDeferredFetchControlFrameTest, MultipleDifferentOriginSiblingFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  //      -> frame_b (same-origin)
+  //      -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url,
+             RenderWithIframes(
+                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
+             {{frame_a_url, ""},
+              {frame_b_url, ""},
+              {frame_c_url, ""},
+              {frame_d_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_b = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_b->Tree().NextSibling();
+  auto* frame_d = frame_c->Tree().NextSibling();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_b), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_c), frame_c);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_d), frame_d);
+}
+
+TEST_F(GetDeferredFetchControlFrameTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+  auto* frame_b = frame_d->Tree().FirstChild();
+
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(root), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_a), root);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_b), frame_b);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_c), frame_c);
+  EXPECT_EQ(FetchLaterUtil::GetDeferredFetchControlFrame(frame_d), frame_d);
+}
+
+class ToReservedDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {};
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDisabled) {
-  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+  EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
                 FramePolicy::DeferredFetchPolicy::kDisabled),
             0u);
 }
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetch) {
-  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+  EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
                 FramePolicy::DeferredFetchPolicy::kDeferredFetch),
             kNormalReservedDeferredFetchQuota);
 }
 
 TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetchMinimal) {
-  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+  EXPECT_EQ(FetchLaterUtil::ToReservedDeferredFetchQuota(
                 FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal),
             kMinimalReservedDeferredFetchQuota);
 }
 
 class AreSameOriginTest : public DeferredFetchPolicyTestBase {
- protected:
-  [[nodiscard]] static bool AreSameOrigin(Frame* frame_a, Frame* frame_b) {
-    return AreSameOriginForTesting(frame_a, frame_b);
-  }
 };
 
 TEST_F(AreSameOriginTest, MultipleDifferentOriginSiblingFrames) {
@@ -494,24 +605,24 @@ TEST_F(AreSameOriginTest, MultipleDifferentOriginSiblingFrames) {
   auto* frame_d = frame_c->Tree().NextSibling();
 
   // Root, Frame A and Frame B are same-origin.
-  EXPECT_TRUE(AreSameOrigin(root, frame_a));
-  EXPECT_TRUE(AreSameOrigin(frame_a, root));
-  EXPECT_TRUE(AreSameOrigin(root, frame_b));
-  EXPECT_TRUE(AreSameOrigin(frame_b, root));
-  EXPECT_TRUE(AreSameOrigin(frame_a, frame_b));
-  EXPECT_TRUE(AreSameOrigin(frame_b, frame_a));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(root, frame_a));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_a, root));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(root, frame_b));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_b, root));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_a, frame_b));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_b, frame_a));
 
   // Frame C and D are different origin with root, and shares the minimal quota
   // policy with each other.
-  EXPECT_TRUE(AreSameOrigin(frame_c, frame_d));
-  EXPECT_TRUE(AreSameOrigin(frame_d, frame_c));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_c, frame_d));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_d, frame_c));
 
-  EXPECT_FALSE(AreSameOrigin(root, frame_c));
-  EXPECT_FALSE(AreSameOrigin(root, frame_d));
-  EXPECT_FALSE(AreSameOrigin(frame_a, frame_c));
-  EXPECT_FALSE(AreSameOrigin(frame_a, frame_d));
-  EXPECT_FALSE(AreSameOrigin(frame_b, frame_c));
-  EXPECT_FALSE(AreSameOrigin(frame_b, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(root, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(root, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_d));
 }
 
 TEST_F(AreSameOriginTest, MultipleLevelFrames) {
@@ -537,25 +648,24 @@ TEST_F(AreSameOriginTest, MultipleLevelFrames) {
   auto* frame_b = frame_d->Tree().FirstChild();
 
   // Root, Frame A and Frame B are same-origin.
-  EXPECT_TRUE(AreSameOrigin(root, frame_a));
-  EXPECT_TRUE(AreSameOrigin(frame_a, root));
-  EXPECT_TRUE(AreSameOrigin(root, frame_b));
-  EXPECT_TRUE(AreSameOrigin(frame_b, root));
-  EXPECT_TRUE(AreSameOrigin(frame_a, frame_b));
-  EXPECT_TRUE(AreSameOrigin(frame_b, frame_a));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(root, frame_a));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_a, root));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(root, frame_b));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_b, root));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_a, frame_b));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_b, frame_a));
 
   // Frame C and D are different origin with root, and shares the minimal quota
   // policy with each other.
-  EXPECT_TRUE(AreSameOrigin(frame_c, frame_d));
-  EXPECT_TRUE(AreSameOrigin(frame_d, frame_c));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_c, frame_d));
+  EXPECT_TRUE(FetchLaterUtil::AreSameOrigin(frame_d, frame_c));
 
-  EXPECT_FALSE(AreSameOrigin(root, frame_c));
-  EXPECT_FALSE(AreSameOrigin(root, frame_d));
-  EXPECT_FALSE(AreSameOrigin(frame_a, frame_c));
-  EXPECT_FALSE(AreSameOrigin(frame_a, frame_d));
-  EXPECT_FALSE(AreSameOrigin(frame_b, frame_c));
-  EXPECT_FALSE(AreSameOrigin(frame_b, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(root, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(root, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_d));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_c));
+  EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_d));
 }
 
-}  // namespace
 }  // namespace blink

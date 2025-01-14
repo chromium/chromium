@@ -426,12 +426,12 @@ void HTMLFrameOwnerElement::UpdateRequiredPolicy() {
   }
 }
 
-void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy() {
+void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy(const KURL& to_url) {
   if (!IsFetchLaterUseDeferredFetchPolicyEnabled()) {
     return;
   }
   frame_policy_.deferred_fetch_policy =
-      GetContainerDeferredFetchPolicyOnNavigation(this);
+      FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(this, to_url);
 
   if (ContentFrame()) {
     auto* frame = GetDocument().GetFrame();
