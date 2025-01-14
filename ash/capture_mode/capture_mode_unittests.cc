@@ -7829,16 +7829,19 @@ TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
 
 // Test fixture to verify screen capture histograms depending on the test
 // param (true for tablet mode, false for clamshell mode).
-class CaptureModeHistogramTest : public CaptureModeSettingsTestBase,
-                                 public ::testing::WithParamInterface<bool> {
+class CaptureModeHistogramTest
+    : public CaptureModeSettingsTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   CaptureModeHistogramTest() = default;
   ~CaptureModeHistogramTest() override = default;
 
   // CaptureModeSettingsTestBase:
   void SetUp() override {
+    auto [unused_is_tablet, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
     CaptureModeSettingsTestBase::SetUp();
-    if (GetParam()) {
+    if (std::get<0>(GetParam())) {
       SwitchToTabletMode();
     }
   }
@@ -7854,10 +7857,11 @@ class CaptureModeHistogramTest : public CaptureModeSettingsTestBase,
 
   void OpenView(const views::View* view,
                 ui::test::EventGenerator* event_generator) {
-    if (GetParam())
+    if (std::get<0>(GetParam())) {
       TouchOnView(view, event_generator);
-    else
+    } else {
       ClickOnView(view, event_generator);
+    }
   }
 };
 
@@ -8065,6 +8069,18 @@ TEST_P(CaptureModeHistogramTest, CaptureModeSwitchToDefaultReasonMetric) {
       CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, CaptureModeHistogramTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHistogramTest,
+    testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHistogramTest::ParamType>&
+           info) {
+      bool is_tablet_mode = std::get<0>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      std::string test_name = is_tablet_mode ? "Tablet" : "Clamshell";
+      test_name += SunfishScannerTestName(sunfish_enabled, scanner_enabled);
+      return test_name;
+    });
 
 }  // namespace ash
