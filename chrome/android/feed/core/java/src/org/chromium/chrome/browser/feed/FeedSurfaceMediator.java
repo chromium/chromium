@@ -608,15 +608,9 @@ public class FeedSurfaceMediator
 
         boolean suggestionsVisible = isSuggestionsVisible();
 
-        @StreamKind
-        int streamKind =
-                mCoordinator.shouldDisplaySupervisedFeed()
-                        ? StreamKind.SUPERVISED_USER
-                        : StreamKind.FOR_YOU;
-
         addHeaderAndStream(
-                getInterestFeedHeaderText(suggestionsVisible, streamKind),
-                mCoordinator.createFeedStream(streamKind, new StreamsMediatorImpl()));
+                getInterestFeedHeaderText(suggestionsVisible),
+                mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);
 
         // Build menu after section enabled key is set.
@@ -1058,8 +1052,7 @@ public class FeedSurfaceMediator
                 .get(PRIMARY_FEED_HEADER_POSITION)
                 .set(
                         SectionHeaderProperties.HEADER_TEXT_KEY,
-                        getInterestFeedHeaderText(
-                                suggestionsVisible, mTabToStreamMap.get(0).getStreamKind()));
+                        getInterestFeedHeaderText(suggestionsVisible));
 
         setHeaderIndicatorState(suggestionsVisible);
 
@@ -1133,26 +1126,11 @@ public class FeedSurfaceMediator
                         : FeedUserActionType.TAPPED_TURN_OFF);
     }
 
-    /**
-     * Returns the interest feed header text based on the type of user (supervised or
-     * non-supervised) and the selected default search engine
-     */
-    private String getInterestFeedHeaderText(boolean isExpanded, @StreamKind int streamKind) {
+    /** Returns the interest feed header text and the selected default search engine. */
+    private String getInterestFeedHeaderText(boolean isExpanded) {
         Resources res = mContext.getResources();
         final boolean isDefaultSearchEngineGoogle =
                 mTemplateUrlService.isDefaultSearchEngineGoogle();
-
-        if (streamKind == StreamKind.SUPERVISED_USER) {
-            if (isDefaultSearchEngineGoogle) {
-                return isExpanded
-                        ? res.getString(R.string.supervised_user_ntp_discover_on)
-                        : res.getString(R.string.supervised_user_ntp_discover_off);
-            } else {
-                return isExpanded
-                        ? res.getString(R.string.supervised_user_ntp_discover_on_branded)
-                        : res.getString(R.string.supervised_user_ntp_discover_off_branded);
-            }
-        }
 
         if (WebFeedBridge.isWebFeedEnabled() && FeedServiceBridge.isSignedIn() && isExpanded) {
             return res.getString(R.string.ntp_discover_on);
@@ -1170,8 +1148,7 @@ public class FeedSurfaceMediator
         ModelList itemList = new ModelList();
         int iconId = 0;
 
-        // Do not display Manage menu items for the supervised-user feed.
-        if (FeedServiceBridge.isSignedIn() && !mCoordinator.shouldDisplaySupervisedFeed()) {
+        if (FeedServiceBridge.isSignedIn()) {
             if (WebFeedBridge.isWebFeedEnabled()) {
                 itemList.add(
                         buildMenuListItem(

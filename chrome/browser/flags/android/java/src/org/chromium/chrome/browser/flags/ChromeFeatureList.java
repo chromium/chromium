@@ -368,7 +368,6 @@ public abstract class ChromeFeatureList {
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String IP_PROTECTION_USER_BYPASS = "IpProtectionUserBypass";
-    public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =

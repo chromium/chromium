@@ -93,10 +93,7 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -114,7 +111,6 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.FEED_CONTAINMENT
 })
 @EnableFeatures({
-    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
     ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT
@@ -471,32 +467,6 @@ public class FeedSurfaceCoordinatorTest {
 
         mCoordinator.clearScrollableContainerDelegateForTesting();
         assertEquals(Integer.MAX_VALUE, mCoordinator.getFeedHeaderPosition());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForChildUser() {
-        AccountInfo account = TestAccounts.CHILD_ACCOUNT;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        when(mProfileMock.isChild()).thenReturn(true);
-
-        assertTrue(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForRegularUser() {
-        AccountInfo account = TestAccounts.ACCOUNT1;
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
-        when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
-                .thenReturn(account);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
-    }
-
-    @Test
-    public void testIsPrimaryAccountSupervisedForSignedOutUser() {
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertFalse(mCoordinator.shouldDisplaySupervisedFeed());
     }
 
     @Test

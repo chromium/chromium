@@ -63,7 +63,6 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync_sessions/features.h"
 #include "components/visited_url_ranking/public/features.h"
@@ -404,7 +403,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfV2,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
-    &supervised_user::kKidFriendlyContentFeed,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,

@@ -369,8 +369,6 @@ TestSingleWebFeedSurface::TestSingleWebFeedSurface(
           StreamType(StreamKind::kSingleWebFeed, web_feed_id, entry_point),
           stream,
           entry_point) {}
-TestSupervisedFeedSurface::TestSupervisedFeedSurface(FeedStream* stream)
-    : TestSurfaceBase(StreamType(StreamKind::kSupervisedUser), stream) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;

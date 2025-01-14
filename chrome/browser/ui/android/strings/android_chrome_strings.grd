@@ -4050,18 +4050,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
         Discover by Google - off
       </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON" desc="Title in the feed header when the feed is turned on for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content for young minds
-      </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON_BRANDED" desc="Title in the feed header when the feed is turned on for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content by Google for young minds
-      </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF" desc="Title in the feed header when the feed is turned off for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content for young minds - off
-      </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content by Google for young minds - off
-      </message>
 
       <message name="IDS_NTP_FOLLOWING"
         meaning="Title for content - e.g. Followed sites"

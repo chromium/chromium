@@ -14,10 +14,6 @@
 
 namespace supervised_user {
 
-BASE_FEATURE(kKidFriendlyContentFeed,
-             "KidFriendlyContentFeed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -187,9 +183,5 @@ BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
 BASE_FEATURE(kExemptGuardianApprovalOnGwsRedirector,
              "ExemptGuardianApprovalOnGwsRedirector",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsKidFriendlyContentFeedAvailable() {
-  return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
-}
 
 }  // namespace supervised_user

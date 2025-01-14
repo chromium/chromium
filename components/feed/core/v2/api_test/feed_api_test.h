@@ -220,10 +220,6 @@ class TestSingleWebFeedSurface : public TestSurfaceBase {
       std::string = "",
       SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
 };
-class TestSupervisedFeedSurface : public TestSurfaceBase {
- public:
-  explicit TestSupervisedFeedSurface(FeedStream* stream = nullptr);
-};
 
 class TestImageFetcher : public ImageFetcher {
  public:

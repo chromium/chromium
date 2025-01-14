@@ -796,13 +796,6 @@ public class FeedSurfaceCoordinator
         mMediator.setTabId(getTabIdFromLaunchOrigin(launchOrigin));
     }
 
-    /*
-     * Returns true if the supervised user feed should be displayed.
-     */
-    public boolean shouldDisplaySupervisedFeed() {
-        return mProfile.isChild();
-    }
-
     /**
      * Gets the appropriate {@link StreamTabId} for the given {@link NewTabPageLaunchOrigin}.
      *

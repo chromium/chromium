@@ -12,9 +12,6 @@
 
 namespace supervised_user {
 
-// Experiment to enable kid-friendly content feed.
-BASE_DECLARE_FEATURE(kKidFriendlyContentFeed);
-
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
 // Applies the updated extension approval flow, which can skip parent-approvals
@@ -133,10 +130,6 @@ BASE_DECLARE_FEATURE(kExemptGuardianApprovalOnGwsRedirector);
 // Local web approvals are only available when refreshed version of web
 // filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
-
-// Returns whether the experiment to display a kid-friendly content stream on
-// the New Tab page has been enabled.
-bool IsKidFriendlyContentFeedAvailable();
 
 }  // namespace supervised_user
 
