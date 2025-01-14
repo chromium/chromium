@@ -150,6 +150,22 @@ bool LensOverlayEntryPointController::IsEnabled() {
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
+// static
+void LensOverlayEntryPointController::InvokeAction(
+    tabs::TabInterface* active_tab,
+    const actions::ActionInvocationContext& context) {
+  LensOverlayController* controller =
+      active_tab->GetTabFeatures()->lens_overlay_controller();
+
+  // Toggle the Lens overlay. There's no need to show or hide the side
+  // panel as the overlay controller will handle that.
+  if (controller->IsOverlayActive()) {
+    controller->CloseUIAsync(lens::LensOverlayDismissalSource::kToolbar);
+  } else {
+    controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
+  }
+}
+
 void LensOverlayEntryPointController::OnViewAddedToWidget(views::View* view) {
   CHECK(location_bar_);
   location_bar_->GetFocusManager()->AddFocusChangeListener(this);
