@@ -5,9 +5,6 @@
 # When Optimization Guide Bots run AI related API tests, the default
 # TestExpectations file is ignored and this file is referred.
 
-crbug.com/378549335 wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Failure Pass Timeout ]
-crbug.com/378549335 wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Failure Pass Timeout ]
-
 # Temporary marking Writer/Rewriter API tests as flaky because it will be broken
 # until we get a new prompt.
 crbug.com/372099809 wpt_internal/ai/rewriter-api-slow.https.any.html [ Failure Pass Timeout ]

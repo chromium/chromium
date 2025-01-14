@@ -394,6 +394,10 @@ void AILanguageModel::PromptGetInputSizeCompletion(
     responder->OnContextOverflow();
   }
 
+  if (context_->HasContextItem()) {
+    session_->AddContext(*context_->MakeRequest());
+  }
+
   session_->ExecuteModel(
       *context_->MaybeFormatRequest(request),
       base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
@@ -411,10 +415,6 @@ void AILanguageModel::Prompt(
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
-  }
-
-  if (context_->HasContextItem()) {
-    session_->AddContext(*context_->MakeRequest());
   }
 
   // Clear the response from the previous execution.

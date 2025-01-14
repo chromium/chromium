@@ -415,31 +415,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               return session;
             });
 
-    mojo::Remote<blink::mojom::AILanguageModel> mock_session;
-    AITestUtils::MockCreateLanguageModelClient
-        mock_create_language_model_client;
-    base::RunLoop creation_run_loop;
-    EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
-        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
-                          language_model,
-                      blink::mojom::AILanguageModelInfoPtr info) {
-          EXPECT_TRUE(language_model);
-          mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
-              std::move(language_model));
-          creation_run_loop.Quit();
-        });
-
-    mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
-
-    mock_remote->CreateLanguageModel(
-        mock_create_language_model_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AILanguageModelCreateOptions::New());
-    creation_run_loop.Run();
+    mojo::Remote<blink::mojom::AILanguageModel> mock_session =
+        CreateMockSession();
 
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop responder_run_loop;
-    std::string response = std::string(kTestResponse);
 
     EXPECT_CALL(mock_responder, OnError(_))
         .WillOnce(testing::Invoke(
@@ -458,7 +439,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     responder_run_loop.Run();
   }
 
- private:
   optimization_guide::OptimizationGuideModelStreamingExecutionResult
   CreateExecutionResult(const std::string& output, bool is_complete) {
     optimization_guide::proto::StringValue response;
@@ -471,6 +451,107 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
         /*provided_by_on_device=*/true);
   }
 
+  void TestSessionAddContext(bool should_overflow_context) {
+    SetupMockOptimizationGuideKeyedService();
+    // Use `max_context_token / 2 + 1` to ensure the
+    // context overflow on the second prompt.
+    uint32_t mock_size_in_tokens =
+        should_overflow_context
+            ? 1 + AITestUtils::GetFakeTokenLimits().max_context_tokens / 2
+            : 1;
+
+    EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+        .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+                      const std::optional<
+                          optimization_guide::SessionConfigParams>&
+                          config_params) {
+          auto session = std::make_unique<
+              testing::NiceMock<optimization_guide::MockSession>>();
+
+          SetUpMockSession(*session, /*use_prompt_api_proto=*/false,
+                           IsModelStreamingChunkByChunk());
+
+          ON_CALL(*session, GetContextSizeInTokens(_, _))
+              .WillByDefault(
+                  [&](const google::protobuf::MessageLite& request_metadata,
+                      optimization_guide::
+                          OptimizationGuideModelSizeInTokenCallback callback) {
+                    std::move(callback).Run(mock_size_in_tokens);
+                  });
+
+          ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
+              .WillByDefault(
+                  [&](const google::protobuf::MessageLite& request_metadata,
+                      optimization_guide::
+                          OptimizationGuideModelSizeInTokenCallback callback) {
+                    std::move(callback).Run(mock_size_in_tokens);
+                  });
+
+          // If the context is overflow, the previous prompt history should not
+          // be added to the context.
+          EXPECT_CALL(*session, AddContext(_))
+              .Times(should_overflow_context ? 0 : 1);
+
+          EXPECT_CALL(*session, ExecuteModel(_, _))
+              .Times(2)
+              .WillOnce(
+                  [&](const google::protobuf::MessageLite& request_metadata,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultStreamingCallback
+                              callback) {
+                    EXPECT_THAT(ToString(request_metadata), "User: A\nModel: ");
+                    callback.Run(
+                        CreateExecutionResult("OK", /*is_complete=*/true));
+                  })
+              .WillOnce(
+                  [&](const google::protobuf::MessageLite& request_metadata,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultStreamingCallback
+                              callback) {
+                    EXPECT_THAT(ToString(request_metadata), "User: B\nModel: ");
+                    callback.Run(
+                        CreateExecutionResult("OK", /*is_complete=*/true));
+                  });
+          return session;
+        });
+
+    mojo::Remote<blink::mojom::AILanguageModel> mock_session =
+        CreateMockSession();
+
+    AITestUtils::MockModelStreamingResponder mock_responder_1;
+    AITestUtils::MockModelStreamingResponder mock_responder_2;
+
+    base::RunLoop responder_run_loop_1;
+    base::RunLoop responder_run_loop_2;
+
+    EXPECT_CALL(mock_responder_1, OnStreaming(_))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text) { EXPECT_THAT(text, "OK"); }));
+    EXPECT_CALL(mock_responder_2, OnStreaming(_))
+        .WillOnce(testing::Invoke(
+            [&](const std::string& text) { EXPECT_THAT(text, "OK"); }));
+
+    EXPECT_CALL(mock_responder_2, OnContextOverflow())
+        .Times(should_overflow_context ? 1 : 0);
+
+    EXPECT_CALL(mock_responder_1, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              responder_run_loop_1.Quit();
+            }));
+    EXPECT_CALL(mock_responder_2, OnCompletion(_))
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              responder_run_loop_2.Quit();
+            }));
+
+    mock_session->Prompt("A", mock_responder_1.BindNewPipeAndPassRemote());
+    responder_run_loop_1.Run();
+    mock_session->Prompt("B", mock_responder_2.BindNewPipeAndPassRemote());
+    responder_run_loop_2.Run();
+  }
+
+ private:
   void SetUpMockSession(
       testing::NiceMock<optimization_guide::MockSession>& session,
       bool use_prompt_api_proto,
@@ -558,6 +639,31 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
     mock_session->Prompt(prompt, mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();
+  }
+
+  mojo::Remote<blink::mojom::AILanguageModel> CreateMockSession() {
+    mojo::Remote<blink::mojom::AILanguageModel> mock_session;
+    AITestUtils::MockCreateLanguageModelClient
+        mock_create_language_model_client;
+    base::RunLoop creation_run_loop;
+    EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
+        .WillOnce([&](mojo::PendingRemote<blink::mojom::AILanguageModel>
+                          language_model,
+                      blink::mojom::AILanguageModelInfoPtr info) {
+          EXPECT_TRUE(language_model);
+          mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
+              std::move(language_model));
+          creation_run_loop.Quit();
+        });
+
+    mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+    mock_remote->CreateLanguageModel(
+        mock_create_language_model_client.BindNewPipeAndPassRemote(),
+        blink::mojom::AILanguageModelCreateOptions::New());
+    creation_run_loop.Run();
+
+    return mock_session;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -689,6 +795,18 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
                              mock_responder.BindNewPipeAndPassRemote());
         mock_session->Destroy();
       }));
+}
+
+// Tests that the session will call `AddContext()` from the second prompt when
+// there is no context overflow.
+TEST_P(AILanguageModelTest, PromptWithHistoryWithoutContextOverflow) {
+  TestSessionAddContext(/*should_overflow_context=*/false);
+}
+
+// Tests that the session will not call `AddContext()` from the second prompt
+// when there is context overflow.
+TEST_P(AILanguageModelTest, PromptWithHistoryWithContextOverflow) {
+  TestSessionAddContext(/*should_overflow_context=*/true);
 }
 
 // Tests `AILanguageModel::Context` creation without initial prompts.
