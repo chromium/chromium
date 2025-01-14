@@ -50,17 +50,8 @@ void PageActionController::Hide(actions::ActionId action_id) {
 void PageActionController::ActionItemChanged(
     const actions::ActionItem* action_item) {
   auto& model = FindPageActionModel(action_item->GetActionId().value());
-
-  // TODO(crbug.com/388264699): Consider setting all these properties in a
-  // single Setter method, so that the model doesn't notify multiple times if
-  // multiple properties change.
-  model.SetActionItemEnabled(base::PassKey<PageActionController>(),
-                             action_item->GetEnabled());
-  model.SetActionItemVisible(base::PassKey<PageActionController>(),
-                             action_item->GetVisible());
-  model.SetText(action_item->GetText());
-  model.SetTooltipText(action_item->GetTooltipText());
-  model.SetImage(action_item->GetImage());
+  model.SetActionItemProperties(base::PassKey<PageActionController>(),
+                                action_item);
 }
 
 void PageActionController::OverrideText(actions::ActionId action_id,

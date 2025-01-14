@@ -11,6 +11,10 @@
 #include "base/types/pass_key.h"
 #include "ui/base/models/image_model.h"
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace page_actions {
 
 class PageActionController;
@@ -27,21 +31,20 @@ class PageActionModel {
   void AddObserver(PageActionModelObserver* observer);
   void RemoveObserver(PageActionModelObserver* observer);
 
+  // Applies any relevant ActionItem properties to the model, including
+  // visibility, text and icon properties.
+  void SetActionItemProperties(base::PassKey<PageActionController>,
+                               const actions::ActionItem* action_item);
+
   void SetShowRequested(base::PassKey<PageActionController>, bool requested);
-  void SetActionItemEnabled(base::PassKey<PageActionController>, bool enabled);
-  void SetActionItemVisible(base::PassKey<PageActionController>, bool visible);
   void SetOverrideText(base::PassKey<PageActionController>,
                        const std::optional<std::u16string>& override_text);
+
   // The model distills all visibility properties into a single result.
   bool GetVisible() const;
 
-  void SetImage(const ui::ImageModel& image);
   const ui::ImageModel& GetImage() const;
-
-  void SetText(const std::u16string& text);
   const std::u16string GetText() const;
-
-  void SetTooltipText(const std::u16string& tooltip);
   const std::u16string GetTooltipText() const;
 
  private:

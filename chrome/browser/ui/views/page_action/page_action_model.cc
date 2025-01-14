@@ -6,8 +6,14 @@
 
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "ui/actions/actions.h"
 
 namespace page_actions {
+
+namespace {
+using ::actions::ActionItem;
+}  // namespace
+
 PageActionModel::PageActionModel() = default;
 
 PageActionModel::~PageActionModel() {
@@ -24,57 +30,49 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
-void PageActionModel::SetActionItemEnabled(base::PassKey<PageActionController>,
-                                           bool enabled) {
-  if (action_item_enabled_ == enabled) {
-    return;
-  }
-  action_item_enabled_ = enabled;
-  NotifyChange();
-}
+void PageActionModel::SetActionItemProperties(
+    base::PassKey<PageActionController>,
+    const ActionItem* action_item) {
+  bool model_changed = false;
 
-void PageActionModel::SetActionItemVisible(base::PassKey<PageActionController>,
-                                           bool visible) {
-  if (action_item_visible_ == visible) {
-    return;
+  if (action_item_enabled_ != action_item->GetEnabled()) {
+    action_item_enabled_ = action_item->GetEnabled();
+    model_changed = true;
   }
-  action_item_visible_ = visible;
-  NotifyChange();
+  if (action_item_visible_ != action_item->GetVisible()) {
+    action_item_visible_ = action_item->GetVisible();
+    model_changed = true;
+  }
+  if (action_item_image_ != action_item->GetImage()) {
+    action_item_image_ = action_item->GetImage();
+    model_changed = true;
+  }
+  if (text_ != action_item->GetText()) {
+    text_ = action_item->GetText();
+    model_changed = true;
+  }
+  if (tooltip_ != action_item->GetTooltipText()) {
+    tooltip_ = action_item->GetTooltipText();
+    model_changed = true;
+  }
+
+  if (model_changed) {
+    NotifyChange();
+  }
 }
 
 bool PageActionModel::GetVisible() const {
   return action_item_enabled_ && action_item_visible_ && show_requested_;
 }
 
-void PageActionModel::SetImage(const ui::ImageModel& image) {
-  if (action_item_image_ == image) {
-    return;
-  }
-  action_item_image_ = image;
-  NotifyChange();
-}
 const ui::ImageModel& PageActionModel::GetImage() const {
   return action_item_image_;
 }
 
-void PageActionModel::SetText(const std::u16string& text) {
-  if (text_ == text) {
-    return;
-  }
-  text_ = text;
-  NotifyChange();
-}
 const std::u16string PageActionModel::GetText() const {
   return override_text_.value_or(text_);
 }
 
-void PageActionModel::SetTooltipText(const std::u16string& tooltip) {
-  if (tooltip_ == tooltip) {
-    return;
-  }
-  tooltip_ = tooltip;
-  NotifyChange();
-}
 const std::u16string PageActionModel::GetTooltipText() const {
   return tooltip_;
 }

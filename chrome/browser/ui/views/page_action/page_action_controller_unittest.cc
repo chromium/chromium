@@ -204,18 +204,18 @@ TEST_F(PageActionControllerTest, ShowIfNotPinned) {
   base::CallbackListSubscription subscription =
       controller()->CreateActionItemSubscription(action_item.get());
   PinnedToolbarActionsModel* pinned_actions = pinned_actions_model();
-  EXPECT_EQ(2, observer.model_change_count());
+  EXPECT_EQ(1, observer.model_change_count());
 
   // Pin the action item. Nothing should happen.
   pinned_actions->UpdatePinnedState(0, true);
   EXPECT_FALSE(controller()->ShowIfNotPinned(0));
   EXPECT_FALSE(observer.visible());
-  EXPECT_EQ(2, observer.model_change_count());
+  EXPECT_EQ(1, observer.model_change_count());
 
   // Unpin the action item. `ShowIfNotPinned` should take effect.
   pinned_actions->UpdatePinnedState(0, false);
   EXPECT_TRUE(controller()->ShowIfNotPinned(0));
-  EXPECT_EQ(3, observer.model_change_count());
+  EXPECT_EQ(2, observer.model_change_count());
   EXPECT_TRUE(observer.visible());
 
   actions::ActionManager::Get().ResetForTesting();
