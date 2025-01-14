@@ -96,7 +96,9 @@ void AIRewriter::ModelExecutionCallback(
   auto compose_response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ComposeResponse>(result.response->response);
   if (compose_response) {
-    responder->OnStreaming(compose_response->output());
+    responder->OnStreaming(
+        compose_response->output(),
+        blink::mojom::ModelStreamingResponderAction::kReplace);
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);

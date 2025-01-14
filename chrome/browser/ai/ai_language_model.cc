@@ -348,7 +348,11 @@ void AILanguageModel::ModelExecutionCallback(
   }
 
   if (response->has_value()) {
-    responder->OnStreaming(streaming_result);
+    responder->OnStreaming(
+        streaming_result,
+        should_stream_full_response
+            ? blink::mojom::ModelStreamingResponderAction::kReplace
+            : blink::mojom::ModelStreamingResponderAction::kAppend);
   }
   if (result.response->is_complete) {
     // TODO(crbug.com/351935390): instead of calculating this from the
