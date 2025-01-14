@@ -18,7 +18,9 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
@@ -410,6 +412,18 @@ class GPU_EXPORT SharedImageInterface
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 
   void Release() const;
+
+  // Used by client side shared image pool aka SharedImagePool to
+  // create a service side pool. It also creates a new mojo IPC connection
+  // between the client and the service side pool so that service side pool
+  // can communicate with client side pool when needed.
+  virtual void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+
+  // Called when client side SharedImagePool is destroyed. It will
+  // in turn destroy the corresponding GPU service side SharedImagePool.
+  virtual void DestroySharedImagePool(const SharedImagePoolId& pool_id);
 
  protected:
   friend class base::RefCountedThreadSafe<SharedImageInterface>;

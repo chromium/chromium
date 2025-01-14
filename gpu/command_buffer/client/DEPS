@@ -6,6 +6,7 @@ include_rules = [
   "+components/miracle_parameter",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
+  "+mojo/public/cpp/bindings/pending_remote.h",
 ]
 
 specific_include_rules = {
