@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -20,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/actions/action_view_controller.h"
 
 namespace page_actions {
@@ -272,6 +274,69 @@ TEST_F(PageActionViewTest, OverrideText) {
   view->OnNewActiveController(nullptr);
   EXPECT_FALSE(view->GetVisible());
   EXPECT_EQ(kOverrideText, view->GetText());
+}
+
+class PageActionViewTriggerTest : public PageActionViewTest {
+ public:
+  PageActionViewTriggerTest() = default;
+  ~PageActionViewTriggerTest() override = default;
+
+  void SetUp() override {
+    PageActionViewTest::SetUp();
+    action_item()->SetInvokeActionCallback(base::BindRepeating(
+        &PageActionViewTriggerTest::ActionInvocationCallback,
+        base::Unretained(this)));
+  }
+
+  void ActionInvocationCallback(actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+    const PageActionTrigger trigger = static_cast<PageActionTrigger>(
+        context.GetProperty(kPageActionTriggerKey));
+    switch (trigger) {
+      case PageActionTrigger::kMouse:
+        ++mouse_trigger_count_;
+        break;
+      case PageActionTrigger::kKeyboard:
+        ++key_trigger_count_;
+        break;
+      case PageActionTrigger::kGesture:
+        ++gesture_trigger_count_;
+        break;
+    }
+  }
+
+  int TotalTriggerCount() const {
+    return mouse_trigger_count_ + key_trigger_count_ + gesture_trigger_count_;
+  }
+  int mouse_trigger_count() const { return mouse_trigger_count_; }
+  int key_trigger_count() const { return key_trigger_count_; }
+  int gesture_trigger_count() const { return gesture_trigger_count_; }
+
+ private:
+  int mouse_trigger_count_ = 0;
+  int key_trigger_count_ = 0;
+  int gesture_trigger_count_ = 0;
+};
+
+TEST_F(PageActionViewTriggerTest, PageActionKeyTriggerPropagation) {
+  page_action_view()->NotifyClick(
+      ui::test::TestEvent(ui::EventType::kKeyPressed));
+  EXPECT_EQ(1, key_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewTriggerTest, PageActionMouseTriggerPropagation) {
+  page_action_view()->NotifyClick(
+      ui::test::TestEvent(ui::EventType::kMousePressed));
+  EXPECT_EQ(1, mouse_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
+  page_action_view()->NotifyClick(
+      ui::test::TestEvent(ui::EventType::kGestureTap));
+  EXPECT_EQ(1, gesture_trigger_count());
+  EXPECT_EQ(1, TotalTriggerCount());
 }
 
 }  // namespace

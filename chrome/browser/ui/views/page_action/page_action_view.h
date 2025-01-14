@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/events/event.h"
 #include "ui/views/view.h"
 
 namespace page_actions {
@@ -47,6 +48,7 @@ class PageActionView : public IconLabelBubbleView,
   void UpdateBorder() override;
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
+  void NotifyClick(const ui::Event& event) override;
 
   actions::ActionId GetActionId() const;
 
@@ -70,6 +72,9 @@ class PageActionView : public IconLabelBubbleView,
   base::CallbackListSubscription action_item_controller_subscription_;
 };
 
+// TODO(crbug.com/376285151): This class is overriding all of the behaviour
+// from its base classes with stub implementations. `PageActionView` can now
+// be disconnected from the ActionItem-View framework altogether.
 class PageActionViewInterface : public views::LabelButtonActionViewInterface {
  public:
   explicit PageActionViewInterface(PageActionView* action_view,
@@ -79,6 +84,9 @@ class PageActionViewInterface : public views::LabelButtonActionViewInterface {
   ~PageActionViewInterface() override;
 
   void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+  void InvokeActionImpl(actions::ActionItem* action_item) override;
+  void LinkActionInvocationToView(
+      base::RepeatingClosure trigger_action_callback) override;
 
  private:
   raw_ptr<PageActionView> action_view_;
