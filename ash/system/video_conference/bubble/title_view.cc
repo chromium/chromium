@@ -108,8 +108,9 @@ MicTestButton::MicTestButton() {
   auto* background_layer = background_view_->layer();
   background_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
 
-  AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
-      &MicTestButton::OnMicTestButtonClicked, base::Unretained(this))));
+  button_container_ =
+      AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(
+          &MicTestButton::OnMicTestButtonClicked, base::Unretained(this))));
 }
 
 void MicTestButton::OnThemeChanged() {
@@ -120,6 +121,7 @@ void MicTestButton::OnThemeChanged() {
           ? cros_tokens::kCrosSysSystemPrimaryContainer
           : cros_tokens::kCrosSysSystemOnBase);
   background_view_->layer()->SetColor(color);
+  button_container_->OnThemeChanged();
 }
 
 void MicTestButton::OnMicTestButtonClicked(const ui::Event& event) {
@@ -220,6 +222,7 @@ void MicTestButtonContainer::OnThemeChanged() {
                       : cros_tokens::kCrosSysOnSurface;
   sidetone_icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kVideoConferenceSidetoneIcon, color_id));
+  mic_indicator_->OnThemeChanged();
 }
 
 MicTestButtonContainer::~MicTestButtonContainer() = default;
