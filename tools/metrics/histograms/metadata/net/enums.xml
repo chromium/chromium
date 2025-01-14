@@ -2698,6 +2698,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cross-site redirect with storage access override"/>
 </enum>
 
+<!-- LINT.IfChange(StreamSocketCloseReason) -->
+
 <enum name="StreamSocketCloseReason">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Close all connections"/>
@@ -2708,7 +2710,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="QUIC session created"/>
   <int value="7" label="Using existing SPDY session"/>
   <int value="8" label="Using existing QUIC session"/>
+  <int value="9" label="Abort"/>
 </enum>
+
+<!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
 <enum name="TPMSupport">
   <int value="0" label="None"/>

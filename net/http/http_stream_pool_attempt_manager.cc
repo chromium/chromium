@@ -458,11 +458,10 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
       });
 
   if (rv != OK) {
-    final_error_to_notify_jobs_ = rv;
     // If service endpoint resolution failed, record an empty endpoint and the
     // result.
     connection_attempts_.emplace_back(IPEndPoint(), rv);
-    NotifyFailure();
+    HandleFinalError(rv);
     return;
   }
 
@@ -552,11 +551,15 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
 void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
     StreamSocketCloseReason reason) {
+  if (in_flight_attempts_.empty()) {
+    return;
+  }
+
   const size_t num_cancel_attempts = in_flight_attempts_.size();
   for (auto& attempt : in_flight_attempts_) {
     attempt->SetCancelReason(reason);
   }
-  pool()->DecrementTotalConnectingStreamCount(in_flight_attempts_.size());
+  pool()->DecrementTotalConnectingStreamCount(num_cancel_attempts);
   in_flight_attempts_.clear();
   slow_attempt_count_ = 0;
 
@@ -597,9 +600,15 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::CancelJobs(int error) {
-  final_error_to_notify_jobs_ = error;
   is_canceling_jobs_ = true;
-  NotifyFailure();
+  HandleFinalError(error);
+}
+
+void HttpStreamPool::AttemptManager::CancelQuicTask(int error) {
+  if (quic_task_) {
+    quic_task_result_ = error;
+    quic_task_.reset();
+  }
 }
 
 size_t HttpStreamPool::AttemptManager::PendingJobCount() const {
@@ -739,8 +748,7 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
 void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
   if (spdy_session_) {
     spdy_session_.reset();
-    is_failing_ = true;
-    final_error_to_notify_jobs_ = ERR_HTTP_1_1_REQUIRED;
+    HandleFinalError(ERR_HTTP_1_1_REQUIRED);
   }
 }
 
@@ -798,8 +806,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   if (rv != OK &&
       (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllEndpointsFailed ||
        group_->force_quic() || !CanUseTcpBasedProtocols())) {
-    final_error_to_notify_jobs_ = rv;
-    NotifyFailure();
+    HandleFinalError(rv);
     return;
   }
 
@@ -827,6 +834,12 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
   dict.Set("is_failing", is_failing_);
+  if (final_error_to_notify_jobs_.has_value()) {
+    dict.Set("final_error_to_notify_job", *final_error_to_notify_jobs_);
+  }
+  if (most_recent_tcp_error_.has_value()) {
+    dict.Set("most_recent_tcp_error", *most_recent_tcp_error_);
+  }
   dict.Set("can_attempt_connection",
            CanAttemptResultToString(CanAttemptConnection()));
   dict.Set("service_endpoint_request_finished",
@@ -924,11 +937,8 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
   }
 
   if (!CanUseQuic()) {
-    if (quic_task_) {
-      // TODO(crbug.com/346835898): Use other error code?
-      quic_task_result_ = ERR_ABORTED;
-      quic_task_.reset();
-    }
+    // TODO(crbug.com/346835898): Use other error code?
+    CancelQuicTask(ERR_ABORTED);
     UpdateStreamAttemptState();
   }
 }
@@ -1147,7 +1157,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
               TcpBasedAttemptState::kAllEndpointsFailed &&
           !quic_task_) {
         // Tried all endpoints.
-        NotifyFailure();
+        DCHECK(most_recent_tcp_error_.has_value());
+        HandleFinalError(*most_recent_tcp_error_);
       }
       return;
     }
@@ -1440,6 +1451,30 @@ bool HttpStreamPool::AttemptManager::HasEnoughAttemptsForSlowIPEndPoint(
   return num_attempts >= std::max(jobs_.size(), CalculateMaxPreconnectCount());
 }
 
+void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
+  // `this` may already be failing, e.g. IP address change happens while failing
+  // for a different reason.
+  if (is_failing_) {
+    return;
+  }
+
+  CHECK(!final_error_to_notify_jobs_.has_value());
+  final_error_to_notify_jobs_ = error;
+  is_failing_ = true;
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
+        base::Value::Dict dict = GetStatesAsNetLogParams();
+        dict.Set("net_error", final_error_to_notify_jobs());
+        return dict;
+      });
+
+  CancelInFlightAttempts(StreamSocketCloseReason::kAbort);
+  CancelQuicTask(final_error_to_notify_jobs());
+  NotifyPreconnectsComplete(final_error_to_notify_jobs());
+  NotifyJobOfFailure();
+  // `this` may be deleted.
+}
+
 HttpStreamPool::AttemptManager::FailureKind
 HttpStreamPool::AttemptManager::DetermineFailureKind() {
   if (is_canceling_jobs_) {
@@ -1455,20 +1490,6 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
   }
 
   return FailureKind::kStreamFailed;
-}
-
-void HttpStreamPool::AttemptManager::NotifyFailure() {
-  is_failing_ = true;
-  net_log_.AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
-        base::Value::Dict dict = GetStatesAsNetLogParams();
-        dict.Set("net_error", final_error_to_notify_jobs());
-        return dict;
-      });
-
-  NotifyPreconnectsComplete(final_error_to_notify_jobs());
-  NotifyJobOfFailure();
-  // `this` may be deleted.
 }
 
 void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
@@ -1863,13 +1884,11 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     return;
   }
 
-  final_error_to_notify_jobs_ = rv;
-
   if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     CHECK(UsingTls());
     client_auth_cert_info_ = in_flight_attempt->attempt()->GetCertRequestInfo();
     in_flight_attempt.reset();
-    NotifyFailure();
+    HandleFinalError(rv);
     return;
   }
 
@@ -1884,11 +1903,17 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     CHECK(has_ssl_info);
     cert_error_ssl_info_ = ssl_info;
     in_flight_attempt.reset();
-    NotifyFailure();
-  } else {
-    in_flight_attempt.reset();
-    MaybeAttemptConnection();
+    HandleFinalError(rv);
+    return;
   }
+
+  most_recent_tcp_error_ = rv;
+  in_flight_attempt.reset();
+  // Try to connect to a different destination, if any.
+  // TODO(crbug.com/383606724): Figure out better way to make connection
+  // attempts, see the review comment at
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6160855/comment/60e04065_805b0b89/
+  MaybeAttemptConnection();
 }
 
 void HttpStreamPool::AttemptManager::OnSpdyThrottleDelayPassed() {

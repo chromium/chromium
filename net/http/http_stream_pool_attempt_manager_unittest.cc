@@ -2515,7 +2515,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPAddressChangeAfterNeedsClientAuth) {
   RunUntilIdle();
   EXPECT_THAT(requester1.result(),
               Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
-  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
+  EXPECT_THAT(requester2.result(),
+              Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigChangedCloseIdleStream) {
@@ -6557,6 +6558,181 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringStreamRequest) {
   // Destroy the pool.
   InitializeSession();
   FastForwardUntilNoTasksRemain();
+}
+
+// Regression test for crbug.com/384965448
+// Ensure that QUIC attempts are canceled when network change happens.
+TEST_F(HttpStreamPoolAttemptManagerTest, NetworkChangeCancelJobs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  FastForwardUntilNoTasksRemain();
+
+  quic_completer.Complete(OK);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  EXPECT_THAT(manager->InFlightAttemptCount(), 0u);
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_NETWORK_CHANGED)));
+}
+
+// Regression test for crbug.com/384965448
+// Ensure that QUIC attempts are canceled when service endpoint request provided
+// results partially and the failed.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       ServiceEndpointRequestFailedAfterUpdatedCalled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Notifies partial endpoint results. Triggers QuicTask to start.
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  // Simulates endpoint resolution failure.
+  endpoint_request->CallOnServiceEndpointRequestFinished(ERR_NAME_NOT_RESOLVED);
+
+  quic_completer.Complete(OK);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  EXPECT_THAT(manager->InFlightAttemptCount(), 0u);
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_NAME_NOT_RESOLVED)));
+}
+
+// Regression test for crbug.com/384965448
+// Ensure that QUIC attempts are canceled when a client certificate is
+// required.
+TEST_F(HttpStreamPoolAttemptManagerTest, ClientAuthRequiredCancelQuic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl.cert_request_info->host_and_port =
+      HostPortPair::FromString(kDefaultDestination);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(),
+              Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
+  quic_completer.Complete(OK);
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  EXPECT_THAT(manager->InFlightAttemptCount(), 0u);
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED)));
+}
+
+// Regression test for crbug.com/384965448
+// Ensure that QUIC attempts are canceled when a certificate error happens.
+TEST_F(HttpStreamPoolAttemptManagerTest, CertificateErrorCancelQuic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_CERT_DATE_INVALID);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CERT_DATE_INVALID)));
+  quic_completer.Complete(OK);
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  EXPECT_THAT(manager->InFlightAttemptCount(), 0u);
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_CERT_DATE_INVALID)));
 }
 
 }  // namespace net

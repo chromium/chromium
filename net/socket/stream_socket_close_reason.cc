@@ -29,6 +29,8 @@ std::string_view StreamSocketCloseReasonToString(
       return "UsingExistingSpdySession";
     case StreamSocketCloseReason::kUsingExistingQuicSession:
       return "UsingExistingQuicSession";
+    case StreamSocketCloseReason::kAbort:
+      return "Abort";
   }
 }
 

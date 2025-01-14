@@ -159,6 +159,9 @@ class HttpStreamPool::AttemptManager
   // Cancels all jobs.
   void CancelJobs(int error);
 
+  // Cancels the QuicTask if it exists.
+  void CancelQuicTask(int error);
+
   // Returns the number of pending jobs/preconnects. The number is
   // calculated by subtracting the number of in-flight attempts (excluding slow
   // attempts) from the number of total jobs.
@@ -357,12 +360,13 @@ class HttpStreamPool::AttemptManager
                             std::optional<IPEndPoint>& current_endpoint);
   bool HasEnoughAttemptsForSlowIPEndPoint(const IPEndPoint& ip_endpoint);
 
+  // Called when this gets a fatal error. Notifies all jobs of the failure and
+  // cancels in-flight TCP-based attempts and QuicTask's, if they exist.
+  void HandleFinalError(int error);
+
   // Calculate the failure kind to notify jobs of failure. Used to call one of
   // the job's methods.
   FailureKind DetermineFailureKind();
-
-  // Notifies a failure to all jobs.
-  void NotifyFailure();
 
   // Notifies a failure to a single job. Used by NotifyFailure().
   void NotifyJobOfFailure();
@@ -508,6 +512,9 @@ class HttpStreamPool::AttemptManager
   // Set to an error from service endpoint resolution failure, the last stream
   // attempt failure, network change events, or QUIC task failure.
   std::optional<int> final_error_to_notify_jobs_;
+
+  // Set to the most recent TCP-based attempt failure, if any.
+  std::optional<int> most_recent_tcp_error_;
 
   // Set to a SSLInfo when an attempt has failed with a certificate error. Used
   // to notify jobs.
