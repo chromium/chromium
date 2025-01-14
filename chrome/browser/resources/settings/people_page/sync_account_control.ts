@@ -508,6 +508,15 @@ export class SettingsSyncAccountControlElement extends
     return turnOffSync;
   }
 
+  private getSigninPausedLabel_(peopleSignOut: string, removeAccount: string):
+      string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return removeAccount;
+    }
+
+    return peopleSignOut;
+  }
+
   private shouldShowErrorActionButton_(): boolean {
     if (this.embeddedInSubpage &&
         this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
