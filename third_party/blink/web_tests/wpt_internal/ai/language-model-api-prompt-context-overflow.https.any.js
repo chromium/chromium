@@ -22,4 +22,8 @@ promise_test(async () => {
   const promptString = await getPromptExceedingAvailableTokens(session);
   session.prompt(promptString);
   await promise;
+
+  // Destroy the session here to stop the prompt, so that the next test can run
+  // faster.
+  session.destroy();
 }, "event listener should be triggered when the context overflows.");
