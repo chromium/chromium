@@ -1361,11 +1361,12 @@ void NetworkContext::ClearHttpAuthCache(base::Time start_time,
       url_request_context_->http_transaction_factory()->GetSession();
   DCHECK(http_session);
 
-  http_session->http_auth_cache()->ClearEntriesAddedBetween(
-      start_time, end_time, BuildUrlFilter(std::move(filter)));
-  // TODO(mmenke): Use another error code for this, as ERR_ABORTED has somewhat
-  // magical handling with respect to navigations.
-  http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
+  if (http_session->http_auth_cache()->ClearEntriesAddedBetween(
+          start_time, end_time, BuildUrlFilter(std::move(filter)))) {
+    // TODO(mmenke): Use another error code for this, as ERR_ABORTED has
+    // somewhat magical handling with respect to navigations.
+    http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
+  }
 
   std::move(callback).Run();
 }

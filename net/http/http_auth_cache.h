@@ -205,13 +205,14 @@ class NET_EXPORT HttpAuthCache {
   // Clears cache entries added between |begin_time| inclusively and |end_time|
   // exclusively. Clears all entries if |begin_time| and |end_time| are equal to
   // base::Time::Min() and base::Time::Max() respectively.
-  void ClearEntriesAddedBetween(
+  // Returns true if any entries were cleared.
+  bool ClearEntriesAddedBetween(
       base::Time begin_time,
       base::Time end_time,
       base::RepeatingCallback<bool(const GURL&)> url_matcher);
 
-  // Clears all added entries.
-  void ClearAllEntries();
+  // Clears all added entries. Returns true if any entries were cleared.
+  bool ClearAllEntries();
 
   // Updates a stale digest entry on server |scheme_host_port| for realm |realm|
   // and scheme |scheme|. The cached auth challenge is replaced with
