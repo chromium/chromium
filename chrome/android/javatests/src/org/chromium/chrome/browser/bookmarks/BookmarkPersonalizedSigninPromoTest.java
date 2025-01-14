@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -54,7 +53,6 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Set;
 
@@ -106,8 +104,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -118,8 +114,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfBookmarksIsNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -130,8 +124,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -144,8 +136,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -157,8 +147,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/362215887")
     public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
