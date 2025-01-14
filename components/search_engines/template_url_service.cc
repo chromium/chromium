@@ -180,7 +180,11 @@ bool ShouldMergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
 
   return existing_turl.short_name() != new_values.short_name() ||
          existing_turl.url() != new_values.url() ||
-         existing_turl.featured_by_policy() != new_values.featured_by_policy();
+         existing_turl.featured_by_policy() !=
+             new_values.featured_by_policy() ||
+         (existing_turl.policy_origin() ==
+              TemplateURLData::PolicyOrigin::kSearchAggregator &&
+          existing_turl.favicon_url() != new_values.favicon_url());
 }
 
 // Creates a new `TemplateURL` that copies updates fields from `new_values` into
@@ -194,6 +198,10 @@ TemplateURL MergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
   merged_data.SetShortName(new_values.short_name());
   merged_data.SetURL(new_values.url());
   merged_data.featured_by_policy = new_values.featured_by_policy();
+  if (existing_turl.policy_origin() ==
+      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+    merged_data.favicon_url = new_values.favicon_url();
+  }
   return TemplateURL(merged_data);
 }
 
@@ -1073,6 +1081,8 @@ void TemplateURLService::UpdateProviderFavicons(
   Scoper scoper(this);
   for (TemplateURL* turl : urls_for_host_copy) {
     if (!IsCreatedByExtension(turl) &&
+        turl->policy_origin() !=
+            TemplateURLData::PolicyOrigin::kSearchAggregator &&
         turl->IsSearchURL(potential_search_url, search_terms_data()) &&
         turl->favicon_url() != favicon_url) {
       TemplateURLData data(turl->data());
