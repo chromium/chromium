@@ -118,7 +118,6 @@ class BookmarkManagerMediator
                     if (!mIsBookmarkModelReorderingInProgress) {
                         mPendingRefresh.post();
                     }
-                    mIsBookmarkModelReorderingInProgress = false;
                 }
 
                 @Override
@@ -255,7 +254,11 @@ class BookmarkManagerMediator
                 @Override
                 public void onSwap() {
                     mIsBookmarkModelReorderingInProgress = true;
-                    setOrder();
+                    try {
+                        setOrder();
+                    } finally {
+                        mIsBookmarkModelReorderingInProgress = false;
+                    }
                 }
             };
 
