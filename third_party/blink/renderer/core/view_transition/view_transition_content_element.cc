@@ -14,10 +14,12 @@ ViewTransitionContentElement::ViewTransitionContentElement(
     const AtomicString& view_transition_name,
     viz::ViewTransitionElementResourceId resource_id,
     bool is_live_content_element,
+    bool is_generated_name,
     const ViewTransitionStyleTracker* style_tracker)
     : ViewTransitionPseudoElementBase(parent,
                                       pseudo_id,
                                       view_transition_name,
+                                      is_generated_name,
                                       style_tracker),
       resource_id_(resource_id),
       is_live_content_element_(is_live_content_element) {

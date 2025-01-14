@@ -234,6 +234,7 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
 AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
   DCHECK(element);
   auto pseudo_id = element->GetPseudoIdForStyling();
+
   switch (pseudo_id) {
     case kPseudoIdNone:
       return g_null_atom;
@@ -246,7 +247,11 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
       StringBuilder builder;
       builder.Append(PseudoElementTagName(pseudo_id).LocalName());
       builder.Append("(");
-      builder.Append(pseudo->view_transition_name());
+      if (pseudo->is_generated_name_) {
+        builder.Append("match-element");
+      } else {
+        builder.Append(pseudo->view_transition_name());
+      }
       builder.Append(")");
       return AtomicString(builder.ReleaseString());
     }

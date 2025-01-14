@@ -27,6 +27,7 @@ class CORE_EXPORT ViewTransitionContentElement
       const AtomicString& view_transition_name,
       viz::ViewTransitionElementResourceId,
       bool is_live_content_element,
+      bool is_generated_name,
       const ViewTransitionStyleTracker* style_tracker);
   ~ViewTransitionContentElement() override;
 

@@ -2238,3 +2238,10 @@ html5lib/generated/run-foreign-fragment-write.html [ Skip ]
 [ Debug ] external/wpt/css/css-view-transitions/* [ Skip ]
 [ Debug ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/* [ Skip ]
 [ Debug ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/* [ Skip ]
+
+# CSS view-transition features that only work for same-document transitions.
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-from-id-shadow.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/match-element-name.html [ Skip ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-get-animations.html [ Skip ]
+

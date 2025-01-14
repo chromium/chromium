@@ -16,6 +16,7 @@ ViewTransitionTransitionElement::ViewTransitionTransitionElement(
     : ViewTransitionPseudoElementBase(parent,
                                       PseudoId::kPseudoIdViewTransition,
                                       g_null_atom,
+                                      /*is_generated_name=*/false,
                                       style_tracker) {}
 
 PseudoElement*

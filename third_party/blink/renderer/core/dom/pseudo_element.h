@@ -99,6 +99,9 @@ class CORE_EXPORT PseudoElement : public Element {
 
   virtual void Dispose();
 
+ protected:
+  void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
+
  private:
   class AttachLayoutTreeScope {
     STACK_ALLOCATED();
@@ -114,6 +117,7 @@ class CORE_EXPORT PseudoElement : public Element {
 
   PseudoId pseudo_id_;
   const AtomicString view_transition_name_;
+  bool is_generated_name_ = false;
 };
 
 CORE_EXPORT const QualifiedName& PseudoElementTagName(PseudoId);

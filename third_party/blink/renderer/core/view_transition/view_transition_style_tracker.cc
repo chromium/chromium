@@ -466,10 +466,12 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
   ImageWrapperPseudoElement(Element* parent,
                             PseudoId pseudo_id,
                             const AtomicString& view_transition_name,
+                            bool is_generated_name,
                             const ViewTransitionStyleTracker* style_tracker)
       : ViewTransitionPseudoElementBase(parent,
                                         pseudo_id,
                                         view_transition_name,
+                                        is_generated_name,
                                         style_tracker) {}
 
   ~ImageWrapperPseudoElement() override = default;
@@ -963,6 +965,9 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     // already sorted.
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
+
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -1174,6 +1179,9 @@ bool ViewTransitionStyleTracker::Start() {
     element_data->containing_group_name = ComputeContainingGroupName(
         name, element->ComputedStyleRef().ViewTransitionGroup());
 
+    element_data->is_generated_name =
+        !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
+
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
@@ -1300,6 +1308,10 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
 
+  bool is_generated_name =
+      view_transition_name &&
+      element_data_map_.find(view_transition_name)->value->is_generated_name;
+
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
       return MakeGarbageCollected<ViewTransitionTransitionElement>(parent,
@@ -1307,11 +1319,11 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
     case kPseudoIdViewTransitionGroup: {
       return MakeGarbageCollected<ViewTransitionPseudoElementBase>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
     }
     case kPseudoIdViewTransitionImagePair:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
-          parent, pseudo_id, view_transition_name, this);
+          parent, pseudo_id, view_transition_name, is_generated_name, this);
 
     case kPseudoIdViewTransitionOld: {
       DCHECK(view_transition_name);
@@ -1337,7 +1349,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       // update it when the value changes.
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/false, this);
+          /*is_live_content_element=*/false, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, reference_rect_in_enclosing_layer_space,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
@@ -1356,7 +1368,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 
       auto* pseudo_element = MakeGarbageCollected<ViewTransitionContentElement>(
           parent, pseudo_id, view_transition_name, snapshot_id,
-          /*is_live_content_element=*/true, this);
+          /*is_live_content_element=*/true, is_generated_name, this);
       pseudo_element->SetIntrinsicSize(
           captured_rect, border_box_rect,
           element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
