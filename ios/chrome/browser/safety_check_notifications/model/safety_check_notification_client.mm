@@ -453,13 +453,20 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
   if ([interacted_notification_metadata_ count]) {
     Browser* browser = GetSceneLevelForegroundActiveBrowser();
 
+    // Create a local copy of `interacted_notification_metadata_` to ensure
+    // `ShowUIForNotificationMetadata(…)` has valid data. The original might be
+    // asynchronously set to `nil` in `OnNotificationsCleared(…)` before this
+    // runs.
+    NSDictionary* interactedNotificationMetadata =
+        [interacted_notification_metadata_ copy];
+
     if (browser) {
       [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
           prepareToPresentModal:
               base::CallbackToBlock(base::BindOnce(
                   &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
                   weak_ptr_factory_.GetWeakPtr(),
-                  interacted_notification_metadata_, browser))];
+                  interactedNotificationMetadata, browser))];
     }
   }
 
