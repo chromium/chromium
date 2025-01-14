@@ -69,6 +69,9 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       std::optional<PersistentNotificationType> type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
+  void AddActivityLogForTesting(
+      data_sharing::GroupId collaboration_id,
+      const std::vector<ActivityLogItem>& activity_log) override;
 
   // TabGroupChangeNotifier::Observer.
   void OnTabGroupChangeNotifierInitialized() override;
@@ -262,6 +265,10 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // The list of observers for any changes to persistent messages.
   base::ObserverList<PersistentMessageObserver> persistent_message_observers_;
+
+  // Test-only mock activity log, keyed by collaboration id.
+  std::unordered_map<data_sharing::GroupId, const std::vector<ActivityLogItem>&>
+      activity_log_for_testing_;
 
   base::WeakPtrFactory<MessagingBackendServiceImpl> weak_ptr_factory_{this};
 };

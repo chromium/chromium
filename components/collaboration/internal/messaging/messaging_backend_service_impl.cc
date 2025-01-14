@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -451,6 +452,11 @@ std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessages(
 
 std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
     const ActivityLogQueryParams& params) {
+  if (activity_log_for_testing_.contains(params.collaboration_id)) {
+    CHECK_IS_TEST();
+    return activity_log_for_testing_.at(params.collaboration_id);
+  }
+
   std::vector<ActivityLogItem> result;
   std::vector<collaboration_pb::Message> messages =
       store_->GetRecentMessagesForGroup(params.collaboration_id);
@@ -853,6 +859,13 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
         *user_display_name);
   }
   store_->AddMessage(message);
+}
+
+void MessagingBackendServiceImpl::AddActivityLogForTesting(
+    data_sharing::GroupId collaboration_id,
+    const std::vector<ActivityLogItem>& activity_log) {
+  CHECK_IS_TEST();
+  activity_log_for_testing_.emplace(collaboration_id, activity_log);
 }
 
 std::optional<std::string>

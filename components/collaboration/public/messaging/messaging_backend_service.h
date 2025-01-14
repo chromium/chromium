@@ -87,6 +87,11 @@ class MessagingBackendService : public KeyedService,
   // UI. Will return an empty list if the service has not been initialized.
   virtual std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) = 0;
+
+  // Testing-only API for setting activity log.
+  virtual void AddActivityLogForTesting(
+      data_sharing::GroupId collaboration_id,
+      const std::vector<ActivityLogItem>& activity_log) = 0;
 };
 
 }  // namespace collaboration::messaging

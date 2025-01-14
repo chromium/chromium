@@ -36,6 +36,9 @@ class EmptyMessagingBackendService : public MessagingBackendService {
       std::optional<PersistentNotificationType> type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
+  void AddActivityLogForTesting(
+      data_sharing::GroupId collaboration_id,
+      const std::vector<ActivityLogItem>& activity_log) override;
 };
 
 }  // namespace collaboration::messaging
