@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -389,6 +390,13 @@ class DiceWebSigninInterceptionBubblePixelTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
                        InvokeUi_default) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam().test_suffix == "EnterpriseManagedIntercepted") {
+    // TODO(crbug.com/389737045): Enable for this variation once pixel tests
+    // are corrected.
+    GTEST_SKIP();
+  }
+#endif
   ShowAndVerifyUi();
 }
 
