@@ -85,6 +85,7 @@ blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
   auto request = blink::mojom::AIPageContentOptions::New();
   request->include_geometry = true;
   request->on_critical_path = true;
+  request->include_hidden_searchable_content = true;
 
   return request;
 }

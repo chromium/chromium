@@ -215,15 +215,18 @@ class AIPageContentAgentTest : public testing::Test {
   }
 
   mojom::blink::AIPageContentPtr GetAIPageContent(
-      bool include_geometry = true) {
+      std::optional<mojom::blink::AIPageContentOptions> options =
+          std::nullopt) {
     auto* agent = AIPageContentAgent::GetOrCreateForTesting(
         *helper_.LocalMainFrame()->GetFrame()->GetDocument());
     EXPECT_TRUE(agent);
 
-    return agent->GetAIPageContentInternal(include_geometry);
+    return agent->GetAIPageContentInternal(options ? *options
+                                                   : default_options_);
   }
 
  protected:
+  const mojom::blink::AIPageContentOptions default_options_;
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
 };
@@ -1586,7 +1589,9 @@ TEST_F(AIPageContentAgentTest, NoGeometry) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent(/*include_geometry=*/false);
+  mojom::blink::AIPageContentOptions options;
+  options.include_geometry = false;
+  auto content = GetAIPageContent(options);
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
   EXPECT_FALSE(content->root_node->content_attributes->geometry);
@@ -1595,6 +1600,34 @@ TEST_F(AIPageContentAgentTest, NoGeometry) {
   const auto& text_node = *content->root_node->children_nodes[0];
   CheckTextNode(text_node, "text");
   EXPECT_FALSE(text_node.content_attributes->geometry);
+}
+
+TEST_F(AIPageContentAgentTest, NoHiddenButSearchableContent) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      margin: 0; font-size: 100px;"
+      "    }"
+      "  </style>"
+      "  <header hidden=until-found>hidden text</header><div>visible text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  mojom::blink::AIPageContentOptions options;
+  options.include_hidden_searchable_content = false;
+  auto content = GetAIPageContent(options);
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  EXPECT_EQ(content->root_node->children_nodes.size(), 2u);
+  const auto& hidden_container = *content->root_node->children_nodes[0];
+  CheckContainerNode(hidden_container);
+  EXPECT_TRUE(hidden_container.children_nodes.empty());
+
+  const auto& text_node = *content->root_node->children_nodes[1];
+  CheckTextNode(text_node, "visible text");
 }
 
 }  // namespace

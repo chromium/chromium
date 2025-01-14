@@ -205,6 +205,12 @@ struct AIPageContentOptions {
   // Requests which are not on the critical path can be de-prioritized to avoid
   // blocking higher priority work.
   bool on_critical_path = true;
+
+  // The page can have content which is currently hidden but can be accessed by
+  // the user via find-in-page. This content's style and layout is not kept
+  // up-to-date as an optimization. Including it will force the renderer to
+  // update it's style and layout.
+  bool include_hidden_searchable_content = true;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

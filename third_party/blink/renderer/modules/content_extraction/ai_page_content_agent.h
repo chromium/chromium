@@ -43,22 +43,22 @@ class MODULES_EXPORT AIPageContentAgent final
   void Trace(Visitor* visitor) const override;
 
   // mojom::blink::AIPageContentAgent overrides.
-  void GetAIPageContent(mojom::blink::AIPageContentOptionsPtr request,
+  void GetAIPageContent(mojom::blink::AIPageContentOptionsPtr options,
                         GetAIPageContentCallback callback) override;
 
   // public for testing.
   mojom::blink::AIPageContentPtr GetAIPageContentInternal(
-      bool include_geometry) const;
+      const mojom::blink::AIPageContentOptions& options) const;
 
  private:
-  void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr request,
+  void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,
                             GetAIPageContentCallback callback,
                             base::TimeTicks deadline) const;
 
   // Synchronously services a single request.
   class ContentBuilder {
    public:
-    explicit ContentBuilder(bool include_geometry);
+    ContentBuilder(const mojom::blink::AIPageContentOptions& options);
     ~ContentBuilder();
 
     mojom::blink::AIPageContentPtr Build(LocalFrame& frame);
@@ -81,7 +81,7 @@ class MODULES_EXPORT AIPageContentAgent final
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
 
-    const bool include_geometry_ = true;
+    const raw_ref<const mojom::blink::AIPageContentOptions> options_;
   };
 
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);

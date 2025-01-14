@@ -417,10 +417,10 @@ void AIPageContentAgent::Trace(Visitor* visitor) const {
 }
 
 void AIPageContentAgent::GetAIPageContent(
-    mojom::blink::AIPageContentOptionsPtr request,
+    mojom::blink::AIPageContentOptionsPtr options,
     GetAIPageContentCallback callback) {
-  if (request->on_critical_path) {
-    GetAIPageContentSync(std::move(request), std::move(callback),
+  if (options->on_critical_path) {
+    GetAIPageContentSync(std::move(options), std::move(callback),
                          base::TimeTicks());
     return;
   }
@@ -433,30 +433,31 @@ void AIPageContentAgent::GetAIPageContent(
   // committed, in case that happens before the idle task runs.
   ThreadScheduler::Current()->PostIdleTask(
       FROM_HERE, WTF::BindOnce(&AIPageContentAgent::GetAIPageContentSync,
-                               WrapWeakPersistent(this), std::move(request),
+                               WrapWeakPersistent(this), std::move(options),
                                std::move(callback)));
 }
 
 void AIPageContentAgent::GetAIPageContentSync(
-    mojom::blink::AIPageContentOptionsPtr request,
+    mojom::blink::AIPageContentOptionsPtr options,
     GetAIPageContentCallback callback,
     base::TimeTicks deadline) const {
-  std::move(callback).Run(GetAIPageContentInternal(request->include_geometry));
+  std::move(callback).Run(GetAIPageContentInternal(*options));
 }
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
-    bool include_geometry) const {
+    const mojom::blink::AIPageContentOptions& options) const {
   LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame || !frame->GetDocument() || !frame->GetDocument()->View()) {
     return nullptr;
   }
 
-  ContentBuilder builder(include_geometry);
+  ContentBuilder builder(options);
   return builder.Build(*frame);
 }
 
-AIPageContentAgent::ContentBuilder::ContentBuilder(bool include_geometry)
-    : include_geometry_(include_geometry) {}
+AIPageContentAgent::ContentBuilder::ContentBuilder(
+    const mojom::blink::AIPageContentOptions& options)
+    : options_(options) {}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
 
@@ -475,19 +476,23 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
-  forced_activatable_locks.emplace_back(
-      document.GetDisplayLockDocumentState().GetScopedForceActivatableLocks());
-  document.View()->ForAllChildLocalFrameViews([&](LocalFrameView& frame_view) {
-    if (!frame_view.GetFrame().GetDocument()) {
-      return;
-    }
-
+  if (options_->include_hidden_searchable_content) {
     forced_activatable_locks.emplace_back(
-        frame_view.GetFrame()
-            .GetDocument()
-            ->GetDisplayLockDocumentState()
+        document.GetDisplayLockDocumentState()
             .GetScopedForceActivatableLocks());
-  });
+    document.View()->ForAllChildLocalFrameViews(
+        [&](LocalFrameView& frame_view) {
+          if (!frame_view.GetFrame().GetDocument()) {
+            return;
+          }
+
+          forced_activatable_locks.emplace_back(
+              frame_view.GetFrame()
+                  .GetDocument()
+                  ->GetDisplayLockDocumentState()
+                  .GetScopedForceActivatableLocks());
+        });
+  }
 
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kUnknown);
@@ -686,7 +691,7 @@ std::optional<DOMNodeId> AIPageContentAgent::ContentBuilder::AddNodeId(
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
-  if (!include_geometry_) {
+  if (!options_->include_geometry) {
     return;
   }
 
