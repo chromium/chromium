@@ -1073,7 +1073,6 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "isolated_web_apps/key_distribution/iwa_key_distribution_component_installer_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
-    "navigation_capturing_data_transfer_browsertest.cc",
     "navigation_capturing_forced_off_browsertest.cc",
     "policy/web_app_policy_manager_browsertest.cc",
     "preinstalled_web_app_manager_browsertest.cc",
