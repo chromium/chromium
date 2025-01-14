@@ -58,15 +58,6 @@ class TabStripModelChange {
     kInsertedIntoOtherTabStrip
   };
 
-  // Base class for all changes.
-  // TODO(dfried): would love to change this whole thing into a std::variant,
-  // but C++17 features are not yet approved for use in chromium.
-  struct Delta {
-    virtual ~Delta() = default;
-
-    virtual void WriteIntoTrace(perfetto::TracedValue context) const = 0;
-  };
-
   struct RemovedTab {
     RemovedTab(tabs::TabInterface* tab,
                int index,
@@ -96,9 +87,9 @@ class TabStripModelChange {
 
   // WebContents were inserted. This implicitly changes the existing selection
   // model by calling IncrementFrom(index) on each index in |contents[i].index|.
-  struct Insert : public Delta {
+  struct Insert {
     Insert();
-    ~Insert() override;
+    ~Insert();
     Insert(Insert&& other);
     Insert& operator=(Insert&& other);
 
@@ -126,14 +117,14 @@ class TabStripModelChange {
     // after processing all of `contents`.
     std::vector<ContentsWithIndex> contents;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   // WebContents were removed at |indices_before_removal|. This implicitly
   // changes the existing selection model by calling DecrementFrom(index).
-  struct Remove : public Delta {
+  struct Remove {
     Remove();
-    ~Remove() override;
+    ~Remove();
     Remove(Remove&& other);
     Remove& operator=(Remove&& other);
 
@@ -162,30 +153,30 @@ class TabStripModelChange {
     // after processing all of `contents`.
     std::vector<RemovedTab> contents;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   // A tab was moved from `from_index` to `to_index`. This implicitly changes
   // the existing selection model by calling Move(from_index, to_index, 1).
-  struct Move : public Delta {
+  struct Move {
     raw_ptr<tabs::TabInterface> tab = nullptr;
     raw_ptr<content::WebContents> contents = nullptr;
     int from_index;
     int to_index;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   // The tab was replaced at the specified index. This is invoked when
   // prerendering swaps in a prerendered WebContents or when a tab's WebContents
   // is discarded to save memory.
-  struct Replace : public Delta {
+  struct Replace {
     raw_ptr<tabs::TabInterface> tab = nullptr;
     raw_ptr<content::WebContents> old_contents = nullptr;
     raw_ptr<content::WebContents> new_contents = nullptr;
     int index;
 
-    void WriteIntoTrace(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   TabStripModelChange();
@@ -206,10 +197,13 @@ class TabStripModelChange {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
-  TabStripModelChange(Type type, std::unique_ptr<Delta> delta);
+  using Delta = std::variant<Insert, Remove, Move, Replace>;
+
+  TabStripModelChange(Type type, Delta delta);
 
   const Type type_ = kSelectionOnly;
-  std::unique_ptr<Delta> delta_;
+
+  Delta delta_;
 };
 
 // Struct to carry changes on selection/activation.
