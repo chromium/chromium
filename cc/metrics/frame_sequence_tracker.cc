@@ -207,26 +207,13 @@ void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
         // termination.
         termination_status_ = TerminationStatus::kReadyForTermination;
       }
-    } else if (!base::FeatureList::IsEnabled(
-                   ::features::kMetricsBackfillAdjustmentHoldback) &&
-               last_ended_frame_id_.sequence_number <
-                   args.frame_id.sequence_number) {
+    } else if (last_ended_frame_id_.sequence_number <
+               args.frame_id.sequence_number) {
       // Don't count drops from after the sequence has begun termination.
       return;
     }
   }
 
-  // When we are not scheduled for termination we can receive frames whose
-  // `sequence_number` is newer than the `last_ended_frame_id_.sequence_number`.
-  // These can be backfills for VSyncs for which we did not attempt to produce a
-  // frame, due to delays in the previous `sequence_number`, but for which
-  // content was still expected.
-  if (base::FeatureList::IsEnabled(
-          ::features::kMetricsBackfillAdjustmentHoldback) &&
-      frame_info.final_state == FrameInfo::FrameFinalState::kDropped &&
-      last_ended_frame_id_.sequence_number < args.frame_id.sequence_number) {
-    return;
-  }
   if (metrics_)
     metrics_->AddSortedFrame(args, frame_info);
 }
