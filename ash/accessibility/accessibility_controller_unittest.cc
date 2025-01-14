@@ -1873,7 +1873,7 @@ TEST_F(AccessibilityControllerTest,
   ASSERT_EQ(controller()->GetFilterKeysEventRewriterForTest(), nullptr);
 }
 
-TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
+TEST_F(AccessibilityControllerTest, FaceGazeNotifications) {
   ASSERT_FALSE(
       prefs()->GetBoolean(prefs::kFaceGazeDlcSuccessNotificationHasBeenShown));
   ASSERT_FALSE(
@@ -1900,10 +1900,10 @@ TEST_F(AccessibilityControllerTest, FaceGazeNotificationsOnlyShownOnce) {
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
 
-  // The failure notification shouldn't be shown again.
+  // The failure notification should be shown every time the DLC fails.
   controller()->ShowNotificationForFaceGaze(
       FaceGazeNotificationType::kDlcFailed);
-  ASSERT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
+  ASSERT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
 
 namespace {

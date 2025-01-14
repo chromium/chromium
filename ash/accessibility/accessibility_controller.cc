@@ -3793,8 +3793,10 @@ void AccessibilityController::ShowNotificationForFaceGaze(
       break;
   }
 
-  if (active_user_prefs_->GetBoolean(notification_shown_pref)) {
-    // Do not show notifications more than once.
+  if (active_user_prefs_->GetBoolean(notification_shown_pref) &&
+      notification_shown_pref ==
+          prefs::kFaceGazeDlcSuccessNotificationHasBeenShown) {
+    // Do not show success notifications more than once.
     return;
   }
 
