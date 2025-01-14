@@ -194,7 +194,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     widget_destroyed_waiter_.reset();
     picker_views_.reset();
 
-    picker_views_ = std::make_unique<DesktopMediaPickerViews>();
+    picker_views_ = std::make_unique<DesktopMediaPickerImpl>();
     test_api_.set_picker(picker_views_.get());
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
@@ -262,7 +262,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   std::map<DesktopMediaList::Type,
            raw_ptr<FakeDesktopMediaList, CtnExperimental>>
       media_lists_;
-  std::unique_ptr<DesktopMediaPickerViews> picker_views_;
+  std::unique_ptr<DesktopMediaPickerImpl> picker_views_;
   DesktopMediaPickerViewsTestApi test_api_;
   TestDialogObserver observer_;
   std::vector<DesktopMediaList::Type> source_types_;
@@ -733,7 +733,7 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
   EXPECT_FALSE(test_api_.HasAudioShareControl());  // Not requested.
 }
 
-// Creates a single pane DesktopMediaPickerViews that only has a tab list.
+// Creates a single pane DesktopMediaPickerImpl that only has a tab list.
 class DesktopMediaPickerViewsSingleTabPaneTest
     : public DesktopMediaPickerViewsTestBase {
  public:

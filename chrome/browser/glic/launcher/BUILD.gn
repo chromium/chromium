@@ -67,5 +67,6 @@ source_set("browser_tests") {
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base/accelerators/global_accelerator_listener",
   ]
 }

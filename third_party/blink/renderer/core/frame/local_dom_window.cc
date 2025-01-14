@@ -1110,8 +1110,6 @@ void LocalDOMWindow::SendOrientationChangeEvent() {
 }
 
 int LocalDOMWindow::orientation() const {
-  DCHECK(RuntimeEnabledFeatures::OrientationEventEnabled());
-
   LocalFrame* frame = GetFrame();
   if (!frame)
     return 0;

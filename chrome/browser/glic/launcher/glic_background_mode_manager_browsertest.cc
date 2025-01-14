@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/global_features.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -42,7 +42,7 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
 
   bool IsHotkeySupported() {
     auto* const global_shortcut_listener =
-        extensions::GlobalShortcutListener::GetInstance();
+        ui::GlobalAcceleratorListener::GetInstance();
     return global_shortcut_listener != nullptr;
   }
 

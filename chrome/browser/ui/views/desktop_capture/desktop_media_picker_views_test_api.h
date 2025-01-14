@@ -12,7 +12,7 @@
 #include "content/public/browser/desktop_media_id.h"
 
 class DesktopMediaPaneView;
-class DesktopMediaPickerViews;
+class DesktopMediaPickerImpl;
 class DesktopMediaListController;
 
 namespace ui {
@@ -34,7 +34,7 @@ class DesktopMediaPickerViewsTestApi {
       const DesktopMediaPickerViewsTestApi&) = delete;
   ~DesktopMediaPickerViewsTestApi();
 
-  void set_picker(DesktopMediaPickerViews* picker) { picker_ = picker; }
+  void set_picker(DesktopMediaPickerImpl* picker) { picker_ = picker; }
 
   bool AudioSupported(DesktopMediaList::Type type) const;
 
@@ -69,7 +69,7 @@ class DesktopMediaPickerViewsTestApi {
   const views::TableView* GetTableView() const;
   views::TableView* GetTableView();
 
-  raw_ptr<DesktopMediaPickerViews> picker_;
+  raw_ptr<DesktopMediaPickerImpl> picker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_

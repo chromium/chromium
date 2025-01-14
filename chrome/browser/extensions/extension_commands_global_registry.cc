@@ -7,12 +7,12 @@
 #include "base/lazy_instance.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace extensions {
 
@@ -28,8 +28,8 @@ ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
 
 ExtensionCommandsGlobalRegistry::~ExtensionCommandsGlobalRegistry() {
   if (!IsEventTargetsEmpty()) {
-    GlobalShortcutListener* global_shortcut_listener =
-        GlobalShortcutListener::GetInstance();
+    ui::GlobalAcceleratorListener* global_shortcut_listener =
+        ui::GlobalAcceleratorListener::GetInstance();
     if (!global_shortcut_listener) {
       return;
     }
@@ -76,7 +76,7 @@ void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
     return;
   }
 
-  auto* instance = GlobalShortcutListener::GetInstance();
+  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
     return;
   }
@@ -128,7 +128,7 @@ void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
 void ExtensionCommandsGlobalRegistry::RemoveExtensionKeybindingImpl(
     const ui::Accelerator& accelerator,
     const std::string& command_name) {
-  auto* instance = GlobalShortcutListener::GetInstance();
+  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
     return;
   }
@@ -137,7 +137,7 @@ void ExtensionCommandsGlobalRegistry::RemoveExtensionKeybindingImpl(
 
 void ExtensionCommandsGlobalRegistry::OnShortcutHandlingSuspended(
     bool suspended) {
-  auto* instance = GlobalShortcutListener::GetInstance();
+  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
   if (!instance) {
     return;
   }

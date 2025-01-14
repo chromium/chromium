@@ -1065,6 +1065,14 @@ test("ui_base_unittests") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_unittest.cc" ]
+    deps += [
+      "//ui/base/accelerators/global_accelerator_listener",
+      "//ui/events:events_base",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
   }

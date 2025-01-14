@@ -367,7 +367,7 @@ DesktopMediaPickerDialogView::DisplaySurfaceCategory::
 
 DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
-    DesktopMediaPickerViews* parent,
+    DesktopMediaPickerImpl* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
     : web_contents_(params.web_contents),
       request_source_(params.request_source),
@@ -1142,9 +1142,9 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
 BEGIN_METADATA(DesktopMediaPickerDialogView)
 END_METADATA
 
-DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
+DesktopMediaPickerImpl::DesktopMediaPickerImpl() : dialog_(nullptr) {}
 
-DesktopMediaPickerViews::~DesktopMediaPickerViews() {
+DesktopMediaPickerImpl::~DesktopMediaPickerImpl() {
   if (dialog_) {
     if (request_source_ == RequestSource::kGetDisplayMedia) {
       dialog_->RecordUmaDismissal();
@@ -1154,7 +1154,7 @@ DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   }
 }
 
-void DesktopMediaPickerViews::Show(
+void DesktopMediaPickerImpl::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
@@ -1166,7 +1166,7 @@ void DesktopMediaPickerViews::Show(
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
 }
 
-void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
+void DesktopMediaPickerImpl::NotifyDialogResult(const DesktopMediaID& source) {
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();
   dialog_ = nullptr;
@@ -1191,6 +1191,6 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     return std::make_unique<ShareThisTabMediaPicker>();
   } else {
-    return std::make_unique<DesktopMediaPickerViews>();
+    return std::make_unique<DesktopMediaPickerImpl>();
   }
 }

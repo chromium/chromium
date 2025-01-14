@@ -37,7 +37,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    picker_ = std::make_unique<DesktopMediaPickerViews>();
+    picker_ = std::make_unique<DesktopMediaPickerImpl>();
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
 
@@ -81,7 +81,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     return sources;
   }
 
-  std::unique_ptr<DesktopMediaPickerViews> picker_;
+  std::unique_ptr<DesktopMediaPickerImpl> picker_;
 
   // If this list isn't filled in, a default list of source lists will be
   // created.
