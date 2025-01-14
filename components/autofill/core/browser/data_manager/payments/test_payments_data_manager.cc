@@ -18,7 +18,9 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
-                          app_locale) {}
+                          app_locale) {
+  is_payments_data_loaded_ = true;
+}
 
 TestPaymentsDataManager::~TestPaymentsDataManager() = default;
 

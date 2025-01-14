@@ -23,6 +23,7 @@ TestAddressDataManager::TestAddressDataManager(const std::string& app_locale)
   // Not initialized through the base class constructor call, since
   // `inmemory_strike_database_` is not initialized at this point.
   SetStrikeDatabase(&inmemory_strike_database_);
+  has_initial_load_finished_ = true;
 }
 
 TestAddressDataManager::~TestAddressDataManager() = default;
@@ -51,9 +52,6 @@ void TestAddressDataManager::RemoveProfile(const std::string& guid) {
 void TestAddressDataManager::LoadProfiles() {
   // Usually, this function would reload data from the database. Since the
   // TestAddressDataManager doesn't use a database, this is a no-op.
-  has_initial_load_finished_ = true;
-  // In the non-test AddressDataManager, stored address metrics are emitted
-  // after the initial load.
 }
 
 void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
