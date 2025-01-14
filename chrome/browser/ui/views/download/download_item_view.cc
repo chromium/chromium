@@ -348,10 +348,12 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       base::BindRepeating(&DownloadItemView::ExecuteCommand,
                           base::Unretained(this), DownloadCommands::DEEP_SCAN),
       l10n_util::GetStringUTF16(IDS_SCAN_DOWNLOAD)));
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   review_button_ = AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DownloadItemView::ReviewButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_REVIEW_DOWNLOAD)));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   dropdown_button_ = AddChildView(std::make_unique<ContextMenuButton>(this));
 
@@ -422,9 +424,7 @@ void DownloadItemView::Layout(PassKey) {
     gfx::Rect button_bounds(gfx::Point(label->bounds().right() + kLabelPadding,
                                        CenterY(button_size.height())),
                             button_size);
-    for (const raw_ptr<views::MdTextButton>& button :
-         {save_button_, discard_button_, scan_button_, open_now_button_,
-          review_button_}) {
+    for (const raw_ptr<views::MdTextButton>& button : buttons()) {
       button->SetBoundsRect(button_bounds);
       if (button->GetVisible()) {
         button_bounds.set_x(button_bounds.right() + kSaveDiscardButtonPadding);
@@ -582,11 +582,8 @@ gfx::Size DownloadItemView::CalculatePreferredSize(
     width +=
         kStartPadding * 2 + icon_size.width() + label->width() + kEndPadding;
     height = std::max(height, icon_size.height());
-    const int visible_buttons = base::ranges::count(
-        std::array<const views::View*, 5>{save_button_, discard_button_,
-                                          scan_button_, open_now_button_,
-                                          review_button_},
-        true, &views::View::GetVisible);
+    const int visible_buttons =
+        base::ranges::count(buttons(), true, &views::View::GetVisible);
     if (visible_buttons > 0) {
       const gfx::Size button_size = GetButtonSize();
       width += kLabelPadding + button_size.width() * visible_buttons +
@@ -697,11 +694,9 @@ void DownloadItemView::OnThemeChanged() {
       GetColorProvider()->GetColor(kColorDownloadShelfBackground);
   SetBackground(views::CreateSolidBackground(background_color));
 
-  shelf_->ConfigureButtonForTheme(open_now_button_);
-  shelf_->ConfigureButtonForTheme(save_button_);
-  shelf_->ConfigureButtonForTheme(discard_button_);
-  shelf_->ConfigureButtonForTheme(scan_button_);
-  shelf_->ConfigureButtonForTheme(review_button_);
+  for (const raw_ptr<views::MdTextButton>& button : buttons()) {
+    shelf_->ConfigureButtonForTheme(button);
+  }
 
   UpdateDropdownButtonImage();
 }
@@ -846,8 +841,12 @@ void DownloadItemView::UpdateLabels() {
 
 void DownloadItemView::UpdateButtons() {
   bool prompt_to_scan = false, prompt_to_discard = false;
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   bool prompt_to_review = enterprise_connectors::ShouldPromptReviewForDownload(
       model_->profile(), model_->GetDownloadItem());
+#else
+  bool prompt_to_review = false;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
     prompt_to_scan =
@@ -857,12 +856,16 @@ void DownloadItemView::UpdateButtons() {
         !ChromeDownloadManagerDelegate::IsDangerTypeBlocked(danger_type);
   }
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   const bool allow_open_during_deep_scan =
       (mode_ == download::DownloadItemMode::kDeepScanning) &&
       !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
            model_->profile())
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+#else
+  const bool allow_open_during_deep_scan = false;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   open_button_->SetEnabled((mode_ == download::DownloadItemMode::kNormal) ||
                            prompt_to_scan || allow_open_during_deep_scan);
 
@@ -877,7 +880,9 @@ void DownloadItemView::UpdateButtons() {
       (mode_ == download::DownloadItemMode::kInsecureDownloadBlock) ||
       prompt_to_discard);
   scan_button_->SetVisible(prompt_to_scan);
-  review_button_->SetVisible(prompt_to_review);
+  if (review_button_) {
+    review_button_->SetVisible(prompt_to_review);
+  }
 
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
   if (dropdown_button_->GetVisible() && !dropdown_button_shown_recorded_) {
@@ -1123,7 +1128,7 @@ gfx::Size DownloadItemView::GetButtonSize() const {
   if (scan_button_->GetVisible()) {
     size.SetToMax(scan_button_->GetPreferredSize());
   }
-  if (review_button_->GetVisible()) {
+  if (review_button_ && review_button_->GetVisible()) {
     size.SetToMax(review_button_->GetPreferredSize());
   }
   return size;
@@ -1229,6 +1234,7 @@ void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
 }
 
 void DownloadItemView::ReviewButtonPressed() {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Disable every button on the download so the user has to use the review
   // dialog to review their sensitive data/malware violation.
   review_button_->SetEnabled(false);
@@ -1242,6 +1248,7 @@ void DownloadItemView::ReviewButtonPressed() {
                      DownloadCommands::KEEP),
       base::BindOnce(&DownloadItemView::ExecuteCommand, base::Unretained(this),
                      DownloadCommands::DISCARD));
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {
@@ -1332,6 +1339,16 @@ std::u16string DownloadItemView::CalculateAccessibleName() const {
              ? warning_label_->GetText()
              : (status_label_->GetText() + u' ' +
                 model_->GetFileNameToReportUser().LossyDisplayName());
+}
+
+std::array<raw_ptr<views::MdTextButton>, DownloadItemView::kButtonsCount>
+DownloadItemView::buttons() const {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  return {open_now_button_, save_button_, discard_button_, scan_button_,
+          review_button_};
+#else
+  return {open_now_button_, save_button_, discard_button_, scan_button_};
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
 DEFINE_ENUM_CONVERTERS(download::DownloadItemMode,

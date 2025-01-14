@@ -8,10 +8,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif
 
 namespace download {
 
@@ -34,6 +38,7 @@ bool ShouldShowDownloadBubble(Profile* profile) {
 }
 
 bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   auto* connector_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);
@@ -50,6 +55,9 @@ bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
 
   return settings->block_until_verdict ==
          enterprise_connectors::BlockUntilVerdict::kBlock;
+#else
+  return false;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 bool IsDownloadBubblePartialViewControlledByPref() {
