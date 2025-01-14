@@ -60,8 +60,8 @@ bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
     return !svg_shape->IsShapeEmpty();
   }
-  if (auto* ng_text = DynamicTo<LayoutSVGText>(object)) {
-    return ng_text->IsObjectBoundingBoxValid();
+  if (auto* text = DynamicTo<LayoutSVGText>(object)) {
+    return text->IsObjectBoundingBoxValid();
   }
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
@@ -114,36 +114,33 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
     if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
-      if (auto* ng_text = DynamicTo<LayoutSVGText>(child)) {
-        ng_text->SetNeedsTextMetricsUpdate();
+      if (auto* text = DynamicTo<LayoutSVGText>(child)) {
+        text->SetNeedsTextMetricsUpdate();
       }
       force_child_layout = true;
     }
 
-    if (layout_info.viewport_changed) {
-      // When selfNeedsLayout is false and the layout size changed, we have to
-      // check whether this child uses relative lengths
-      if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {
-        if (element->HasRelativeLengths()) {
-          // FIXME: this should be done on invalidation, not during layout.
-          // When the layout size changed and when using relative values tell
-          // the LayoutSVGShape to update its shape object
-          if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
-            shape->SetNeedsShapeUpdate();
-          } else if (auto* ng_text = DynamicTo<LayoutSVGText>(*child)) {
-            ng_text->SetNeedsTextMetricsUpdate();
-          } else if (auto* container =
-                         DynamicTo<LayoutSVGTransformableContainer>(*child)) {
-            container->SetNeedsTransformUpdate();
-          }
+    bool child_has_viewport_dependence = false;
+    if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {
+      child_has_viewport_dependence = element->HasRelativeLengths();
+    }
 
-          force_child_layout = true;
-        }
-        if (!child->NeedsLayout() &&
-            child->SVGSelfOrDescendantHasViewportDependency()) {
-          force_child_layout = true;
-        }
+    if (layout_info.viewport_changed && child_has_viewport_dependence) {
+      if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
+        shape->SetNeedsShapeUpdate();
+      } else if (auto* text = DynamicTo<LayoutSVGText>(*child)) {
+        text->SetNeedsTextMetricsUpdate();
+      } else if (auto* container =
+                     DynamicTo<LayoutSVGTransformableContainer>(*child)) {
+        container->SetNeedsTransformUpdate();
       }
+
+      force_child_layout = true;
+    }
+
+    if (layout_info.viewport_changed && !child->NeedsLayout() &&
+        child->SVGSelfOrDescendantHasViewportDependency()) {
+      force_child_layout = true;
     }
 
     DCHECK(!child->IsSVGRoot());
