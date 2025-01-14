@@ -481,6 +481,9 @@ void GlicWindowController::HandleWindowDragWithOffset(
 
 void GlicWindowController::HandleAttachmentToBrowserWindows(
     views::Widget* widget) {
+  // This should only ever be called after a move is completed.
+  CHECK(!in_move_loop_);
+
   content::BrowserContext* glic_browser_context =
       GetGlicView()->web_view()->GetBrowserContext();
 
@@ -494,8 +497,6 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    views::Widget* window_widget =
-        browser->window()->AsBrowserView()->GetWidget();
     if (!IsBrowserGlicCompatible(browser)) {
       continue;
     }
@@ -515,14 +516,17 @@ void GlicWindowController::HandleAttachmentToBrowserWindows(
     // If there is no active drag (i.e. the previous drag has ended)
     // then determine whether the glic window should be attached or detached
     // from the browser window.
-    if (!in_move_loop_) {
-      if (corner_distance < kAttachmentDistanceThreshold) {
-        AttachToBrowser(browser);
-      } else if (glic_window_widget_->parent() == window_widget) {
-        // If farther than the attachment threshold from the current parent
-        // widget, reparent under an empty holder widget.
-        MaybeCreateHolderWindowAndReparent();
-      }
+    if (corner_distance < kAttachmentDistanceThreshold) {
+      AttachToBrowser(browser);
+      return;
+    }
+
+    if (glic_window_widget_->parent() ==
+        browser->window()->AsBrowserView()->GetWidget()) {
+      // If farther than the attachment threshold from the current parent
+      // widget, reparent under an empty holder widget.
+      MaybeCreateHolderWindowAndReparent();
+      return;
     }
   }
 }
