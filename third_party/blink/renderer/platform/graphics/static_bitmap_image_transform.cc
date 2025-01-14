@@ -254,8 +254,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
             source->GetSharedImage()->usage();
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
             gfx::Size(dest_size.width(), dest_size.height()), dest_color_type,
-            dest_alpha_type, dest_color_space, kShouldInitialize,
-            context_provider, RasterMode::kGPU, shared_image_usage_flags);
+            dest_alpha_type, SkColorSpaceToGfxColorSpace(dest_color_space),
+            kShouldInitialize, context_provider, RasterMode::kGPU,
+            shared_image_usage_flags);
       }
     }
     // If not (or if the SharedImage provider fails), fall back to software.

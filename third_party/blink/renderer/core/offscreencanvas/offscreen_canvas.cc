@@ -558,7 +558,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   const sk_sp<SkColorSpace> sk_color_space = GetRenderingContextSkColorSpace();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Size(), sk_color_type, alpha_type, sk_color_space,
+        Size(), sk_color_type, alpha_type,
+        SkColorSpaceToGfxColorSpace(sk_color_space),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
