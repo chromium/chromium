@@ -65,6 +65,9 @@
 -testing/iossim/
 -third_party/
 +third_party/blink/
++third_party/pdfium/
+-third_party/pdfium/testing/
+-third_party/pdfium/third_party/
 -tools/
 -url/third_party/
 -v8/
