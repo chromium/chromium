@@ -135,10 +135,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
+  virtual ~FeatureAccessChecker();
 
   // Uses the set config and dependencies to check. Returns a list of errors.
   // For details of errors, please refer the comments of FeatureAccessConfig.
-  FeatureAccessFailureSet Check() const;
+  virtual FeatureAccessFailureSet Check() const;
+
+ protected:
+  // Constructor for mock subclass.
+  FeatureAccessChecker();
 
  private:
   FeatureAccessConfig config_;

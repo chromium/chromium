@@ -29,13 +29,23 @@ component("media_app") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "mantis_untrusted_service_unittest.cc" ]
+  sources = [
+    "mantis_untrusted_service_manager_unittest.cc",
+    "mantis_untrusted_service_unittest.cc",
+  ]
   deps = [
     ":media_app",
+    "//ash/constants",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/mantis/mojom",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/specialized_features",
+    "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -35,6 +35,10 @@ FeatureAccessChecker::FeatureAccessChecker(
       identity_manager_(identity_manager),
       variations_service_(variations_service) {}
 
+FeatureAccessChecker::FeatureAccessChecker() = default;
+
+FeatureAccessChecker::~FeatureAccessChecker() = default;
+
 FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   FeatureAccessFailureSet failures;
   if (config_.disabled_in_kiosk_mode && chromeos::IsKioskSession()) {
