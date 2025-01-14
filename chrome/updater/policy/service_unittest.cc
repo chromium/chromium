@@ -782,7 +782,9 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy,
+                     base::MakeRefCounted<GroupPolicyManager>(
+                         CreateExternalConstants()->IsMachineManaged()));
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Group Policy");
@@ -793,7 +795,9 @@ TEST(PolicyService, CreateManagers) {
                         Wow6432(KEY_WRITE));
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  managers = CreateManagers(CreateExternalConstants(), dm_policy);
+  managers = CreateManagers(CreateExternalConstants(), dm_policy,
+                            base::MakeRefCounted<GroupPolicyManager>(
+                                CreateExternalConstants()->IsMachineManaged()));
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -807,7 +811,7 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy, {});
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
@@ -821,7 +825,7 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy);
+      CreateManagers(CreateExternalConstants(), dm_policy, {});
   EXPECT_EQ(managers.size(), size_t{3});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");

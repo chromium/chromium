@@ -89,7 +89,7 @@ bool CloudPolicyOverridesPlatformPolicy(
 std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-    scoped_refptr<PolicyManagerInterface> group_policy) {
+    scoped_refptr<PolicyManagerInterface> group_policy_manager) {
   // The order of the policy managers:
   //   1) External constants policy manager (if present).
   //   2) Group policy manager (Windows only). **
@@ -107,10 +107,6 @@ std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
                                external_constants->GroupPolicies())
                          : nullptr;
 #if BUILDFLAG(IS_WIN)
-  auto group_policy_manager = group_policy
-                                  ? group_policy
-                                  : base::MakeRefCounted<GroupPolicyManager>(
-                                        external_constants->IsMachineManaged());
   if (CloudPolicyOverridesPlatformPolicy({dm_policy_manager,
                                           group_policy_manager,
                                           external_constants_policy_manager})) {
@@ -151,7 +147,14 @@ PolicyService::PolicyService(
     bool is_ceca_experiment_enabled)
     : policy_managers_(SortManagers(CreateManagers(
           external_constants,
-          CreateDMPolicyManager(external_constants->IsMachineManaged())))),
+          CreateDMPolicyManager(external_constants->IsMachineManaged()),
+#if BUILDFLAG(IS_WIN)
+          base::MakeRefCounted<GroupPolicyManager>(
+              external_constants->IsMachineManaged())
+#else
+          {}
+#endif
+              ))),
       external_constants_(external_constants),
       persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
