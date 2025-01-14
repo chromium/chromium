@@ -9,7 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** The annotated field is never null. Helps R8 optimize until b/302213229 is implemented. */
+/** The annotated method or field is never null. Helps R8 optimize until b/302213229 is implemented. */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
-public @interface AssumeNonNull {}
+public @interface OptimizeAsNonNull {}
