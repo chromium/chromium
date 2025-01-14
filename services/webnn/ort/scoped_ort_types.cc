@@ -20,6 +20,9 @@ namespace webnn::ort {
   ScopedOrt##ort_type##Ptr& ScopedOrt##ort_type##Ptr::operator=( \
       ScopedOrt##ort_type##Ptr&&) = default;
 
+SCOPED_ORT_TYPE_PTR_DEFINITION(Env, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(Session, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(SessionOptions, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(Value, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(MemoryInfo, OrtApi)
 SCOPED_ORT_TYPE_PTR_DEFINITION(OpAttr, OrtApi)

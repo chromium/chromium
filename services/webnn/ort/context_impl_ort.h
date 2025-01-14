@@ -7,12 +7,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "services/webnn/ort/allocator_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
@@ -23,7 +22,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
                  mojom::CreateContextOptionsPtr options,
-                 scoped_refptr<AllocatorOrt> allocator_ort);
+                 ScopedOrtEnvPtr env);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -32,9 +31,6 @@ class ContextImplOrt final : public WebNNContextImpl {
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
-
-  const OrtEnv* env() const { return allocator_ort_->env(); }
-  scoped_refptr<AllocatorOrt> allocator() const { return allocator_ort_; }
 
   static ContextProperties GetContextProperties();
 
@@ -51,7 +47,7 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
-  scoped_refptr<AllocatorOrt> allocator_ort_;
+  ScopedOrtEnvPtr env_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

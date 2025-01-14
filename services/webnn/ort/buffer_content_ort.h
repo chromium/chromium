@@ -5,30 +5,25 @@
 #ifndef SERVICES_WEBNN_ORT_BUFFER_CONTENT_ORT_H_
 #define SERVICES_WEBNN_ORT_BUFFER_CONTENT_ORT_H_
 
-#include "services/webnn/ort/utils_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 
 namespace webnn::ort {
-
-class AllocatorOrt;
 
 // The internal contents of an MLTensor. Access should be managed by wrapping in
 // a `QueueableResourceState`.
 class BufferContentOrt {
  public:
-  explicit BufferContentOrt(OrtAllocator* allocator,
-                            std::vector<int64_t> shape,
-                            ONNXTensorElementDataType ort_data_type);
+  explicit BufferContentOrt(ScopedOrtValuePtr tensor);
 
   BufferContentOrt(const BufferContentOrt&) = delete;
   BufferContentOrt& operator=(const BufferContentOrt&) = delete;
 
   ~BufferContentOrt();
 
-  OrtValue* tensor() const { return tensor_; }
+  OrtValue* tensor() const { return tensor_.Get(); }
 
  private:
-  raw_ptr<OrtValue> tensor_;
-  std::vector<int64_t> shape_;
+  ScopedOrtValuePtr tensor_;
 };
 
 }  // namespace webnn::ort

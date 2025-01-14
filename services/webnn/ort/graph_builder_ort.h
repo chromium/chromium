@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
-#include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/ort_model_builder.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -92,8 +91,7 @@ class GraphBuilderOrt {
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-                     constant_operands,
-                 scoped_refptr<AllocatorOrt> allocator);
+                     constant_operands);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -105,8 +103,7 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      scoped_refptr<AllocatorOrt> allocator);
+          constant_operands);
 
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);

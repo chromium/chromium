@@ -11,7 +11,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
-#include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
@@ -39,7 +38,7 @@ class OrtModelBuilder final {
     std::vector<base::HeapArray<uint8_t>> external_data;
   };
 
-  explicit OrtModelBuilder(scoped_refptr<AllocatorOrt> allocator);
+  OrtModelBuilder();
   ~OrtModelBuilder();
   OrtModelBuilder(const OrtModelBuilder&) = delete;
   OrtModelBuilder& operator=(const OrtModelBuilder&) = delete;
@@ -87,11 +86,10 @@ class OrtModelBuilder final {
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();
 
  private:
-  scoped_refptr<AllocatorOrt> allocator_;
-
   std::vector<ScopedOrtValueInfoPtr> inputs_;
   std::vector<ScopedOrtValueInfoPtr> outputs_;
 
+  ScopedOrtMemoryInfoPtr memory_info_;
   ScopedOrtGraphPtr graph_;
 
   std::unique_ptr<ModelInfo> model_info_;

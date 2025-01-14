@@ -19,9 +19,16 @@ class ContextImplOrt;
 
 class TensorImplOrt final : public WebNNTensorImpl {
  public:
-  TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-                ContextImplOrt* context,
-                mojom::TensorInfoPtr tensor_info);
+  static base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  Create(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+         WebNNContextImpl* context,
+         mojom::TensorInfoPtr tensor_info);
+
+  TensorImplOrt(
+      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+      WebNNContextImpl* context,
+      mojom::TensorInfoPtr tensor_info,
+      scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state);
 
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;

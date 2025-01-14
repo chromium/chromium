@@ -222,10 +222,9 @@ GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    scoped_refptr<AllocatorOrt> allocator) {
+        constant_operands) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands), allocator);
+                                std::move(constant_operands));
 
   RETURN_IF_ERROR(graph_builder.BuildModel());
   return std::move(graph_builder.result_);
@@ -235,12 +234,11 @@ GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    scoped_refptr<AllocatorOrt> allocator)
+        constant_operands)
     : graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
-      model_builder_(OrtModelBuilder(std::move(allocator))),
+      model_builder_(OrtModelBuilder()),
       result_(std::make_unique<Result>()) {
   for (const auto& [id, _] : graph_info.id_to_operand_map) {
     next_operand_id_ = std::max(next_operand_id_, id + 1);

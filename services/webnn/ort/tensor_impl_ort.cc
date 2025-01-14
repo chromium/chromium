@@ -13,22 +13,65 @@
 
 namespace webnn::ort {
 
-TensorImplOrt::TensorImplOrt(
+// static
+base::expected<std::unique_ptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplOrt::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    ContextImplOrt* context,
-    mojom::TensorInfoPtr tensor_info)
-    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)) {
-  // Convert the shape from uint32_t to int64_t.
-  std::vector<int64_t> ort_shape(shape().begin(), shape().end());
-  ONNXTensorElementDataType ort_data_type =
-      OperandTypeToONNXTensorElementDataType(data_type());
+    WebNNContextImpl* context,
+    mojom::TensorInfoPtr tensor_info) {
+  const OrtApi* ort_api = GetOrtApi();
+  OrtAllocator* allocator = nullptr;
+  // Use the default allocator which is CPU based and non-arena.
+  // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
+  // same default allocator and its returned value should NOT be freed.
+  //
+  // TODO(https://github.com/shiyi9801/chromium/issues/65): Figure out how to
+  // support allocator for other devices.
+  OrtStatus* status = ort_api->GetAllocatorWithDefaultOptions(&allocator);
+  if (status) {
+    std::string_view msg = ort_api->GetErrorMessage(status);
+    LOG(ERROR) << "[WebNN] Failed to get default allocator: " << msg;
+    ort_api->ReleaseStatus(status);
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+  CHECK(allocator);
 
-  auto buffer_content = std::make_unique<BufferContentOrt>(
-      context->allocator()->allocator(), std::move(ort_shape), ort_data_type);
-  buffer_state_ =
+  ONNXTensorElementDataType ort_data_type =
+      OperandTypeToONNXTensorElementDataType(
+          tensor_info->descriptor.data_type());
+  // Convert the shape from uint32_t to int64_t.
+  std::vector<int64_t> ort_shape(tensor_info->descriptor.shape().begin(),
+                                 tensor_info->descriptor.shape().end());
+  ScopedOrtValuePtr tensor;
+  status = ort_api->CreateTensorAsOrtValue(allocator, ort_shape.data(),
+                                           ort_shape.size(), ort_data_type,
+                                           tensor.GetAddressOf());
+  if (status) {
+    std::string_view msg = ort_api->GetErrorMessage(status);
+    LOG(ERROR) << "[WebNN] Failed to create tensor: " << msg;
+    ort_api->ReleaseStatus(status);
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create tensor."));
+  }
+  CHECK(tensor.Get());
+
+  auto buffer_content = std::make_unique<BufferContentOrt>(std::move(tensor));
+  auto buffer_state =
       base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
           std::move(buffer_content));
+  return std::make_unique<TensorImplOrt>(std::move(receiver), context,
+                                         std::move(tensor_info),
+                                         std::move(buffer_state));
 }
+
+TensorImplOrt::TensorImplOrt(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    WebNNContextImpl* context,
+    mojom::TensorInfoPtr tensor_info,
+    scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state)
+    : WebNNTensorImpl(std::move(receiver), context, std::move(tensor_info)),
+      buffer_state_(std::move(buffer_state)) {}
 
 TensorImplOrt::~TensorImplOrt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

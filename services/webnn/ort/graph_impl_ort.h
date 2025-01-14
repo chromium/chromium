@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/graph_builder_ort.h"
+#include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
@@ -52,16 +52,22 @@ class GraphImplOrt final : public WebNNGraphImpl {
   ~GraphImplOrt() override;
 
   struct Session {
-    Session(OrtSession* session,
+    Session(ScopedOrtEnvPtr env,
+            ScopedOrtSessionPtr session,
             std::vector<base::HeapArray<uint8_t>> external_data);
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
     ~Session();
 
-    OrtSession* GetSession() { return session.get(); }
+    OrtSession* GetSession() { return session.Get(); }
 
     std::vector<base::HeapArray<uint8_t>> external_data;
-    raw_ptr<OrtSession> session;
+
+    // `env` should be prior to `session`. That ensures releasing `env` after
+    // releasing the session. This avoids unloading the providers DLLs being
+    // used during `session` destruction.
+    ScopedOrtEnvPtr env;
+    ScopedOrtSessionPtr session;
   };
 
  private:
@@ -75,8 +81,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
       mojom::CreateContextOptionsPtr context_options,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      scoped_refptr<AllocatorOrt> allocator);
+          constant_operands);
 
   static void DidCreateAndBuild(
       base::WeakPtr<WebNNContextImpl> context,

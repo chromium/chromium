@@ -39,6 +39,9 @@ namespace webnn::ort {
     std::unique_ptr<Ort##ort_type*> pptr_;                                 \
   };
 
+SCOPED_ORT_TYPE_PTR_DECLARATION(Env)
+SCOPED_ORT_TYPE_PTR_DECLARATION(Session)
+SCOPED_ORT_TYPE_PTR_DECLARATION(SessionOptions)
 SCOPED_ORT_TYPE_PTR_DECLARATION(Value)
 SCOPED_ORT_TYPE_PTR_DECLARATION(MemoryInfo)
 SCOPED_ORT_TYPE_PTR_DECLARATION(OpAttr)

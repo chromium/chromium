@@ -155,8 +155,6 @@ component("webnn_service") {
 
   if (webnn_use_ort) {
     sources += [
-      "ort/allocator_ort.cc",
-      "ort/allocator_ort.h",
       "ort/buffer_content_ort.cc",
       "ort/buffer_content_ort.h",
       "ort/context_impl_ort.cc",
@@ -213,7 +211,6 @@ source_set("tests") {
       "dml/tensor_desc_test.cc",
       "dml/test_base.cc",
       "dml/test_base.h",
-      "ort/allocator_ort_test.cc",
       "ort/context_impl_ort_test.cc",
     ]
   }

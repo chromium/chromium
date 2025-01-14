@@ -39,12 +39,12 @@ ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options,
-    scoped_refptr<AllocatorOrt> allocator_ort)
+    ScopedOrtEnvPtr env)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
                        std::move(options)),
-      allocator_ort_(std::move(allocator_ort)) {}
+      env_(std::move(env)) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 
@@ -178,8 +178,8 @@ void ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
-  std::move(callback).Run(std::make_unique<TensorImplOrt>(
-      std::move(receiver), this, std::move(tensor_info)));
+  std::move(callback).Run(
+      TensorImplOrt::Create(std::move(receiver), this, std::move(tensor_info)));
 }
 
 }  // namespace webnn::ort
