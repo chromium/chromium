@@ -304,6 +304,17 @@ enum class ZeroRttState {
   kMaxValue = kNotAttempted,
 };
 
+std::string_view ZeroRttStateToString(ZeroRttState state) {
+  switch (state) {
+    case ZeroRttState::kAttemptedAndSucceeded:
+      return "AttemptedAndSucceeded";
+    case ZeroRttState::kAttemptedAndRejected:
+      return "AttemptedAndRejected";
+    case ZeroRttState::kNotAttempted:
+      return "NotAttempted";
+  }
+}
+
 void RecordHandshakeState(HandshakeState state) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicHandshakeState", state,
                             NUM_HANDSHAKE_STATES);
@@ -1761,6 +1772,10 @@ void QuicChromiumClientSession::LogZeroRttStats() {
                               early_data_reason,
                               ssl_early_data_reason_max_value + 1);
   }
+
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_STATE, [&] {
+    return base::Value::Dict().Set("state", ZeroRttStateToString(state));
+  });
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(

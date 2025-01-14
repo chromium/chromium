@@ -2585,6 +2585,12 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_SESSION_READY)
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
+// Records the state of a QUIC 0-RTT handshake.
+//   {
+//     "state": <The state of 0-RTT handshake>
+//   }
+EVENT_TYPE(QUIC_SESSION_ZERO_RTT_STATE)
+
 // Records that the QUIC session received a default network change signal.
 //   {
 //     "new_default_network": <The new default network>
