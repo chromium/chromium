@@ -4,11 +4,14 @@
 
 #include <jni.h>
 
+#include <cstdint>
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "base/android/jni_array.h"
-#include "components/cbor/values.h"
+#include "base/android/scoped_java_ref.h"
 #include "device/fido/attestation_object.h"
-#include "device/fido/authenticator_data.h"
-#include "device/fido/fido_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webauthn/android/jni_headers/Fido2Api_jni.h"

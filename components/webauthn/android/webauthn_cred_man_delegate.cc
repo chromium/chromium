@@ -4,10 +4,13 @@
 
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "content/public/browser/web_contents.h"
 

@@ -4,6 +4,9 @@
 
 #include "components/webauthn/android/internal_authenticator_android.h"
 
+#include <jni.h>
+
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,8 +15,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

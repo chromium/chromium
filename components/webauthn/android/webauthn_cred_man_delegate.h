@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/types/strong_alias.h"
 

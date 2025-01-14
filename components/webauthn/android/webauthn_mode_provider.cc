@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <jni.h>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
+#include "base/supports_user_data.h"
 #include "components/webauthn/android/webauthn_mode.h"
 #include "content/public/browser/web_contents.h"
 
