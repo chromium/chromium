@@ -340,8 +340,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
             .ToLocalChecked();
 
     v8::Local<v8::Value> massager_args[] = {args_array, dispatch_event};
-    JSRunner::Get(context)->RunJSFunction(
-        massager, context, std::size(massager_args), massager_args);
+    JSRunner::Get(context)->RunJSFunction(massager, context, massager_args);
   }
 }
 

@@ -547,7 +547,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     maybe_custom_callback =
         JSRunner::Get(v8_context)
             ->RunJSFunctionSync(get_bind_directory_entry_callback, v8_context,
-                                0, nullptr);
+                                {});
   }  // End modules enabled scope.
   v8::Local<v8::Value> callback;
   if (!maybe_custom_callback.ToLocal(&callback)) {
