@@ -1260,7 +1260,6 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       attr_kernel_shape.Release(), attr_pads.Release(),
       attr_ceil_mode.Release()};
 
-  // P value of the Lp norm used to pool over the input data.
   std::string op_type;
   switch (pool2d.kind) {
     case mojom::Pool2d::Kind::kAveragePool2d: {
@@ -1273,8 +1272,9 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     }
     case mojom::Pool2d::Kind::kL2Pool2d: {
       op_type = kOpTypeLpPool2d;
-      attributes.push_back(model_builder_.CreateAttribute(
-          /*name=*/"p", static_cast<int64_t>(2)));
+      attributes.push_back(
+          model_builder_.CreateAttribute(/*name=*/"p", static_cast<int64_t>(2))
+              .Release());
       break;
     }
   }
