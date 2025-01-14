@@ -34,7 +34,7 @@
 
     // image smoothing
     [NoAllocDirectCall=Setter] attribute boolean imageSmoothingEnabled; // (default True)
-    [RuntimeEnabled=CanvasImageSmoothing, MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
+    [MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
     [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)

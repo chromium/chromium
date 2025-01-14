@@ -187,6 +187,7 @@ CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
+CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
 CONSOLE MESSAGE:     getter lineDashOffset
 CONSOLE MESSAGE:     getter lineJoin
@@ -239,6 +240,7 @@ CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
+CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap
 CONSOLE MESSAGE:     setter lineDashOffset
 CONSOLE MESSAGE:     setter lineJoin
@@ -586,6 +588,7 @@ CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
+CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
 CONSOLE MESSAGE:     getter lineDashOffset
 CONSOLE MESSAGE:     getter lineJoin
@@ -638,6 +641,7 @@ CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
+CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap
 CONSOLE MESSAGE:     setter lineDashOffset
 CONSOLE MESSAGE:     setter lineJoin
