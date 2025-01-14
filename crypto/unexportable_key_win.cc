@@ -54,13 +54,19 @@ const char kMetricVirtualOpenStorageError[] =
 void LogTPMOperationError(
     TPMOperation operation,
     SECURITY_STATUS status,
-    SignatureVerifier::SignatureAlgorithm selected_algorithm) {
+    std::optional<SignatureVerifier::SignatureAlgorithm> selected_algorithm) {
   static constexpr char kCreateKeyErrorStatusHistogramFormat[] =
       "Crypto.TPMOperation.Win.%s%s.Error";
+  // Only `kWrappedKeyCreation` could and should be recorded without
+  // `selected_algorithm`.
+  CHECK_EQ(!selected_algorithm.has_value(),
+           operation == TPMOperation::kWrappedKeyCreation);
+  std::string algorithm_string =
+      selected_algorithm ? AlgorithmToString(*selected_algorithm) : "";
   base::UmaHistogramSparse(
       base::StringPrintf(kCreateKeyErrorStatusHistogramFormat,
                          OperationToString(operation).c_str(),
-                         AlgorithmToString(selected_algorithm).c_str()),
+                         algorithm_string.c_str()),
       status);
 }
 
@@ -456,7 +462,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
           /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
       if (FAILED(creation_status)) {
         LogTPMOperationError(TPMOperation::kNewKeyCreation, creation_status,
-                             algo.value());
+                             algo);
         return nullptr;
       }
 
@@ -468,8 +474,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     const base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
         ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);
     if (!wrapped_key.has_value()) {
-      LogTPMOperationError(TPMOperation::kWrappedKeyCreation,
-                           wrapped_key.error(), algo.value());
+      LogTPMOperationError(TPMOperation::kWrappedKeyExport, wrapped_key.error(),
+                           algo);
       return nullptr;
     }
 
@@ -807,11 +813,14 @@ bool LoadWrappedTPMKey(base::span<const uint8_t> wrapped,
     return false;
   }
 
-  if (FAILED(NCryptImportKey(
-          provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
-          /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
-          const_cast<PBYTE>(wrapped.data()), wrapped.size(),
-          /*dwFlags=*/NCRYPT_SILENT_FLAG))) {
+  SECURITY_STATUS import_status = NCryptImportKey(
+      provider.get(), /*hImportKey=*/NULL, BCRYPT_OPAQUE_KEY_BLOB,
+      /*pParameterList=*/nullptr, ScopedNCryptKey::Receiver(key).get(),
+      const_cast<PBYTE>(wrapped.data()), wrapped.size(),
+      /*dwFlags=*/NCRYPT_SILENT_FLAG);
+  if (FAILED(import_status)) {
+    LogTPMOperationError(TPMOperation::kWrappedKeyCreation, import_status,
+                         std::nullopt);
     return false;
   }
   return true;

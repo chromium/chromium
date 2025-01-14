@@ -190,20 +190,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Crypto.TPMOperation.Win.WrappedKeyCreation.Error"
+    enum="Win32TpmErrorCodes" expires_after="2025-08-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows when an operation to create a TPM-protected key from a
+    wrapped key failed. Represents the Win32 status returned by the API
+    corresponding with that operation.
+  </summary>
+</histogram>
+
 <histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"
     enum="Win32TpmErrorCodes" expires_after="2025-08-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
   <summary>
-    Collected on Windows when an operation failed while using a TPM-protected
-    key. Represents the Win32 status returned by the API corresponding with that
-    operation.
+    Collected on Windows when a {Operation} operation failed while using a
+    TPM-protected {SignatureAlgorithm} key. Represents the Win32 status returned
+    by the API corresponding with that operation.
   </summary>
   <token key="Operation">
-    <variant name="MessageSigning"/>
-    <variant name="NewKeyCreation"/>
-    <variant name="WrappedKeyCreation"/>
+    <variant name="MessageSigning" summary="signing"/>
+    <variant name="NewKeyCreation" summary="new key creation"/>
+    <variant name="WrappedKeyExport" summary="wrapped key export"/>
   </token>
   <token key="SignatureAlgorithm">
     <variant name="ECDSA"/>

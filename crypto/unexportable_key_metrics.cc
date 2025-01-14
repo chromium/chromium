@@ -287,6 +287,8 @@ std::string OperationToString(TPMOperation operation) {
       return "NewKeyCreation";
     case TPMOperation::kWrappedKeyCreation:
       return "WrappedKeyCreation";
+    case TPMOperation::kWrappedKeyExport:
+      return "WrappedKeyExport";
   }
 }
 
