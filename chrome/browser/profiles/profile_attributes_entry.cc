@@ -137,6 +137,7 @@ const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
     "is_using_default_avatar";
 const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
 const char ProfileAttributesEntry::kAccountIdKey[] = "account_id_key";
+const char ProfileAttributesEntry::kIsGlicEligible[] = "is_glic_eligible";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -601,6 +602,14 @@ std::string ProfileAttributesEntry::GetProfileManagementId() const {
 
 std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
+}
+
+bool ProfileAttributesEntry::IsGlicEligible() const {
+  return GetBool(kIsGlicEligible);
+}
+
+void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
+  SetBool(kIsGlicEligible, value);
 }
 
 base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {

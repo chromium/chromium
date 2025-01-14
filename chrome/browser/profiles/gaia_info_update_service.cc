@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -143,6 +144,11 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
     entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
                           info.account_image);
   }
+
+  // Treat `signin::Tribool::kUnknown` as ineligible.
+  entry->SetIsGlicEligible(
+      info.capabilities.can_use_model_execution_features() ==
+      signin::Tribool::kTrue);
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
@@ -171,6 +177,7 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
+  entry->SetIsGlicEligible(false);
 }
 
 void GAIAInfoUpdateService::Shutdown() {

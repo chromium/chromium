@@ -31,6 +31,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -49,7 +50,8 @@ AccountInfo GetValidAccountInfo(std::string email,
                                 GaiaId gaia_id,
                                 std::string given_name,
                                 std::string full_name,
-                                std::string hosted_domain) {
+                                std::string hosted_domain,
+                                bool can_use_model_execution_features = false) {
   AccountInfo account_info;
   account_info.email = email;
   account_info.gaia = gaia_id;
@@ -59,6 +61,12 @@ AccountInfo GetValidAccountInfo(std::string email,
   account_info.hosted_domain = hosted_domain;
   account_info.locale = email;
   account_info.picture_url = "example.com";
+
+  if (can_use_model_execution_features) {
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+  }
+
   return account_info;
 }
 
@@ -222,7 +230,8 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSync));
   info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             kNoHostedDomainFound);
+                             kNoHostedDomainFound,
+                             /*can_use_model_execution_features=*/true);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                       info);
   base::RunLoop().RunUntilIdle();
@@ -232,6 +241,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_TRUE(entry->IsGlicEligible());
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -248,6 +258,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_FALSE(entry->IsGlicEligible());
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
@@ -357,6 +368,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   entry->SetHostedDomain(kNoHostedDomainFound);
+  entry->SetIsGlicEligible(true);
 
   // Verify that creating the GAIAInfoUpdateService resets the GAIA related
   // profile attributes if the profile no longer has a primary account and that
@@ -368,6 +380,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_TRUE(entry->GetGAIAGivenName().empty());
   EXPECT_FALSE(entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_FALSE(entry->IsGlicEligible());
 }
 
 TEST_F(GAIAInfoUpdateServiceTest,

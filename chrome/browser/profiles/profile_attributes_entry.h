@@ -222,6 +222,10 @@ class ProfileAttributesEntry {
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
 
+  // Returns whether the current profile state is glic eligibile or not based on
+  // the signed in account. Signed out profiles are ineligible.
+  bool IsGlicEligible() const;
+
   // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
   // known by the `IdentityManager`).
   base::flat_set<std::string> GetGaiaIds() const;
@@ -267,6 +271,8 @@ class ProfileAttributesEntry {
                    const std::u16string& user_name,
                    bool is_consented_primary_account);
 
+  void SetIsGlicEligible(bool value);
+
   // Update info about accounts. These functions are idempotent, only the first
   // call for a given input matters.
   void AddAccountName(const std::string& name);
@@ -293,6 +299,7 @@ class ProfileAttributesEntry {
   static const char kIsUsingDefaultAvatarKey[];
   static const char kUseGAIAPictureKey[];
   static const char kAccountIdKey[];
+  static const char kIsGlicEligible[];
 
  private:
   friend class ProfileAttributesStorage;
