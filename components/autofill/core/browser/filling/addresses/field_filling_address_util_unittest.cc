@@ -885,6 +885,9 @@ TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
         actual_value != test_case.value_to_fill, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.TransliteratorInitStatus", true,
+        actual_value != test_case.value_to_fill ? 1 : 0);
   }
 }
 

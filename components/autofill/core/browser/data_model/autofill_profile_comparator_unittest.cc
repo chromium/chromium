@@ -637,10 +637,6 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
   EXPECT_TRUE(
       comparator_.HaveMergeableAlternativeNames(p4_katakana, p2_katakana));
 
-  // Check that the transliterator initialization status is recorded.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true, 44);
-
   // Mergeable profiles where one is using Katakana and the other Hiragana.
   EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3_katakana));
   EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, p2));

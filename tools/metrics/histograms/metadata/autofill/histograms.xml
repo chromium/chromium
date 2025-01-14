@@ -2938,18 +2938,6 @@ tools/metrics/histograms/update_autofill_enums.py -->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Filling.AlternativeNameTransliteratorInitStatus"
-    enum="BooleanSuccess" expires_after="2025-12-13">
-  <owner>aayazhan@google.com</owner>
-  <owner>sygiet@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the status of the transliterator initialization. It will be equal to
-    true if there were no errors and false otherwise. Recorded during the
-    merging of alternative names.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Filling.DidAlternativeNameFieldRequireConversion"
     enum="BooleanYesNo" expires_after="2025-12-17">
   <owner>aayazhan@google.com</owner>
@@ -6502,6 +6490,17 @@ tools/metrics/histograms/update_autofill_enums.py -->
     Records the outcome of the attempt to trigger Touch To Fill for IBANs. It is
     recorded only when the form is parsed as an IBAN by autofill on Chrome
     Android and the user clicks on the form field.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TransliteratorInitStatus" enum="BooleanSuccess"
+    expires_after="2025-12-31">
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the status of the transliterator initialization. It will be equal to
+    true if there were no errors and false otherwise. Recorded during
+    normalizations.
   </summary>
 </histogram>
 

@@ -38,11 +38,11 @@ static constexpr auto kCountriesWithGermanTransliteration =
     base::MakeFixedFlatSet<std::string_view>(
         {"AT", "BE", "CH", "DE", "IT", "LI", "LU"});
 
-std::unique_ptr<icu::Transliterator> GetTransliterator(TransliterationId id,
-                                                       UErrorCode& err) {
+std::unique_ptr<icu::Transliterator> GetTransliterator(TransliterationId id) {
   icu::UnicodeString transliteration_rules;
   UParseError parse_error;
   icu::Transliterator* transliterator;
+  UErrorCode err = U_ZERO_ERROR;
 
   switch (id) {
     case TransliterationId::kKatakanaToHiragana:
@@ -83,71 +83,53 @@ std::unique_ptr<icu::Transliterator> GetTransliterator(TransliterationId id,
   }
 
   if (U_FAILURE(err) || transliterator == nullptr) {
-    // TODO(crbug.com/328968064): Add a histogram to count how often this
-    // happens.
-    LOG(ERROR) << "Failed to create ICU Transliterator: " << u_errorName(err);
+    base::UmaHistogramBoolean("Autofill.TransliteratorInitStatus", false);
     return nullptr;
   }
 
+  base::UmaHistogramBoolean("Autofill.TransliteratorInitStatus", true);
   return base::WrapUnique(transliterator);
 }
-}  // namespace
 
-std::u16string RemoveDiacriticsAndConvertToLowerCase(
-    std::u16string_view value,
-    const AddressCountryCode& country_code) {
+std::u16string Transliterate(std::u16string_view value,
+                             TransliterationId transliteration_id) {
   if (value.empty()) {
     return std::u16string(value);
   }
 
-  UErrorCode err = U_ZERO_ERROR;
+  std::unique_ptr<icu::Transliterator> transliterator =
+      GetTransliterator(transliteration_id);
+
+  // Transliterator initialization failed.
+  if (!transliterator) {
+    return base::i18n::ToLower(value);
+  }
+  icu::UnicodeString transliterated_value(
+      icu::UnicodeString(value.data(), value.length()));
+  transliterator->transliterate(transliterated_value);
+  return base::i18n::UnicodeStringToString16(transliterated_value);
+}
+}  // namespace
+
+// TODO(crbug.com/359768803): Merge with the function
+// `TransliterateAlternativeName()`.
+std::u16string RemoveDiacriticsAndConvertToLowerCase(
+    std::u16string_view value,
+    const AddressCountryCode& country_code) {
   TransliterationId transliteration_id =
       kCountriesWithGermanTransliteration.contains(country_code.value()) &&
               base::FeatureList::IsEnabled(
                   features::kAutofillEnableGermanTransliteration)
           ? TransliterationId::kGerman
           : TransliterationId::kDefault;
-  std::unique_ptr<icu::Transliterator> transliterator =
-      GetTransliterator(transliteration_id, err);
-
-  if (U_FAILURE(err) || !transliterator) {
-    return base::i18n::ToLower(value);
-  }
-  icu::UnicodeString transliterated_value(
-      icu::UnicodeString(value.data(), value.length()));
-  transliterator->transliterate(transliterated_value);
-  return base::i18n::UnicodeStringToString16(transliterated_value);
+  return Transliterate(value, transliteration_id);
 }
 
 std::u16string TransliterateAlternativeName(std::u16string_view value,
                                             bool inverse_transliteration) {
-  if (value.empty()) {
-    return std::u16string(value);
-  }
-
-  UErrorCode err = U_ZERO_ERROR;
-  std::unique_ptr<icu::Transliterator> transliterator = GetTransliterator(
-      inverse_transliteration ? TransliterationId::kHiraganaToKatakana
-                              : TransliterationId::kKatakanaToHiragana,
-      err);
-
-  if (U_FAILURE(err) || !transliterator) {
-    // TODO(crbug.com/359768803): Remove the metric recording once we confirm
-    // that transliteration initialization never fails.
-    // This metric records the status of the transliterator initialization. It
-    // is set to false if the initialization fails.
-    base::UmaHistogramBoolean(
-        "Autofill.Filling.AlternativeNameTransliteratorInitStatus", false);
-    return base::i18n::ToLower(value);
-  }
-  icu::UnicodeString transliterated_value(
-      icu::UnicodeString(value.data(), value.length()));
-  transliterator->transliterate(transliterated_value);
-  // The metric is set to true if the transliterator initialization was
-  // successful.
-  base::UmaHistogramBoolean(
-      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true);
-  return base::i18n::UnicodeStringToString16(transliterated_value);
+  return Transliterate(value, inverse_transliteration
+                                  ? TransliterationId::kHiraganaToKatakana
+                                  : TransliterationId::kKatakanaToHiragana);
 }
 
 }  // namespace autofill
