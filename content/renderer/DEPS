@@ -48,6 +48,9 @@ specific_include_rules = {
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",
   ],
+  "local_resource_url_loader_factory_unittest\.cc": [
+    "+ui/base/resource",
+  ],
   "render_thread_impl_discardable_memory_browsertest\.cc": [
     "+components/discardable_memory/service",
     "+content/browser/browser_main_loop.h",
