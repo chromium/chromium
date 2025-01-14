@@ -114,9 +114,8 @@ class PerformNetworkContextPrefetchRecorderTest : public ::testing::Test {
                     const GURL& page_url,
                     const std::vector<GURL>& resources) {
     const net::SchemefulSite site(page_url);
-    const auto nak = net::NetworkAnonymizationKey::CreateSameSite(site);
     auto requests = base::ToVector(resources, [&](const GURL& resource_url) {
-      return PrefetchRequest(resource_url, nak, destination);
+      return PrefetchRequest(resource_url, destination);
     });
     PerformNetworkContextPrefetch(profile_.get(), page_url,
                                   std::move(requests));

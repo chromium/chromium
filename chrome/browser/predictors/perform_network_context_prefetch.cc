@@ -24,7 +24,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
@@ -100,7 +99,6 @@ void PrefetchResource(
     const GURL& page,
     const url::Origin& page_origin,
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination) {
   const auto site_for_cookies = net::SiteForCookies::FromUrl(page);
   network::ResourceRequest request;
@@ -283,7 +281,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
   const std::string user_agent =
       embedder_support::GetUserAgent(user_agent_reduction);
 
-  for (const auto& [url, network_anonymization_key, destination] : requests) {
+  for (const auto& [url, destination] : requests) {
     auto resource_type = GetResourceTypeForPrefetch(destination);
     if (!resource_type) {
       // TODO(crbug.com/342445996): Support more resource types.
@@ -304,7 +302,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
         ComputeAcceptLanguageHeaderValue(page_origin, url, profile, prefs);
     PrefetchResource(network_context, ua_metadata, user_agent, accept_language,
                      resource_type.value(), page, page_origin, url,
-                     network_anonymization_key, destination);
+                     destination);
   }
 }
 

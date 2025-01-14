@@ -15,6 +15,7 @@
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -1368,14 +1369,10 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll;
   if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
-    auto network_anonymization_key =
-        net::NetworkAnonymizationKey::CreateSameSite(
-            net::SchemefulSite(url::Origin::Create(url)));
     size_t count = 0;
     for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
       prediction.prefetch_requests.emplace_back(
-          font_url, network_anonymization_key,
-          network::mojom::RequestDestination::kFont);
+          font_url, network::mojom::RequestDestination::kFont);
       ++count;
     }
     base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
@@ -1430,8 +1427,7 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
           // Once we support cross-site cases, remove the following continue;
           continue;
         }
-        prediction.prefetch_requests.emplace_back(
-            subresource_url, network_anonymization_key, destination);
+        prediction.prefetch_requests.emplace_back(subresource_url, destination);
       }
       base::UmaHistogramCounts10000(
           "Blink.LCPP.PrefetchSubresource.Count.SameSite",
