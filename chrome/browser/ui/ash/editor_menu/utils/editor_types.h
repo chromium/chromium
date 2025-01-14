@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_EDITOR_TYPES_H_
 #define CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_EDITOR_TYPES_H_
 
-#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 
 namespace chromeos::editor_menu {
 

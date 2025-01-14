@@ -38,6 +38,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
@@ -283,6 +284,7 @@ void TableView::SetModel(ui::TableModel* model) {
 void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
   columns_ = columns;
   visible_columns_.clear();
+  visible_columns_.reserve(columns.size());
   for (const auto& column : columns) {
     VisibleColumn visible_column;
     visible_column.column = column;
@@ -1071,9 +1073,85 @@ void TableView::OnPaint(gfx::Canvas* canvas) {
   OnPaintImpl(canvas);
 }
 
+void TableView::DrawString(gfx::Canvas* canvas,
+                           const std::u16string& text,
+                           SkColor color,
+                           const gfx::Rect& text_bounds,
+                           int flags,
+                           size_t row,
+                           size_t col) {
+  if (!canvas->IntersectsClipRect(RectToSkRect(text_bounds))) {
+    return;
+  }
+
+  gfx::ScopedCanvas scoped(canvas);
+
+  canvas->AdjustClipRectForTextBounds(text_bounds);
+
+  // Resize the vector to accommodate the desired index
+  if (row >= render_text_cache_.size()) {
+    render_text_cache_.resize(row + 1);
+  }
+  if (col >= render_text_cache_[row].size()) {
+    render_text_cache_[row].resize(col + 1);
+  }
+  // Get or create the Render Text if it doesn't already exist.
+  std::unique_ptr<gfx::RenderText>& render_text = render_text_cache_[row][col];
+  if (!render_text) {
+    render_text = gfx::RenderText::CreateRenderText();
+    render_text->set_clip_to_display_rect(false);
+    render_text->SetFontList(font_list_);
+  }
+
+  UpdateRenderText(gfx::Rect(text_bounds), text, flags, color,
+                   render_text.get());
+  render_text->Draw(canvas);
+}
+
+// Updates |render_text| from the specified parameters.
+void TableView::UpdateRenderText(const gfx::Rect& rect,
+                                 const std::u16string& text,
+                                 int flags,
+                                 SkColor color,
+                                 gfx::RenderText* render_text) {
+  render_text->SetText(text);
+  render_text->SetCursorEnabled(false);
+  render_text->SetDisplayRect(rect);
+
+  // Set the text alignment explicitly based on the directionality of the UI,
+  // if not specified.
+  if (!(flags &
+        (gfx::Canvas::TEXT_ALIGN_LEFT | gfx::Canvas::TEXT_ALIGN_CENTER |
+         gfx::Canvas::TEXT_ALIGN_RIGHT | gfx::Canvas::TEXT_ALIGN_TO_HEAD))) {
+    flags |= gfx::Canvas::DefaultCanvasTextAlignment();
+  }
+
+  if (flags & gfx::Canvas::TEXT_ALIGN_LEFT) {
+    render_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  } else if (flags & gfx::Canvas::TEXT_ALIGN_CENTER) {
+    render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  } else if (flags & gfx::Canvas::TEXT_ALIGN_RIGHT) {
+    render_text->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  } else {
+    render_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  }
+
+  render_text->set_subpixel_rendering_suppressed(
+      (flags & gfx::Canvas::NO_SUBPIXEL_RENDERING) != 0);
+
+  render_text->SetColor(color);
+  const int font_style = font_list_.GetFontStyle();
+  render_text->SetStyle(gfx::TEXT_STYLE_ITALIC,
+                        (font_style & gfx::Font::ITALIC) != 0);
+  render_text->SetStyle(gfx::TEXT_STYLE_UNDERLINE,
+                        (font_style & gfx::Font::UNDERLINE) != 0);
+  render_text->SetStyle(gfx::TEXT_STYLE_STRIKE,
+                        (font_style & gfx::Font::STRIKE_THROUGH) != 0);
+  render_text->SetWeight(font_list_.GetFontWeight());
+}
+
 void TableView::OnPaintImpl(gfx::Canvas* canvas) {
   // Don't invoke View::OnPaint so that we can render our own focus border.
-
   if (sort_on_paint_) {
     SortItemsAndUpdateMapping(/*schedule_paint=*/false);
   }
@@ -1116,6 +1194,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
     }
     for (size_t j = region.min_column; j < region.max_column; ++j) {
+      const ui::TableColumn column = visible_columns_[j].column;
       const gfx::Rect cell_bounds = GetCellBounds(i, j);
       gfx::Rect text_bounds = cell_bounds;
       text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
@@ -1152,13 +1231,12 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
 
       // Paint text if there is still room for it after all that insetting.
       if (!text_bounds.IsEmpty()) {
-        canvas->DrawStringRectWithFlags(
-            model_->GetText(model_index, visible_columns_[j].column.id),
-            font_list_, is_selected ? selected_fg_color : fg_color,
-            GetMirroredRect(text_bounds),
-            TableColumnAlignmentToCanvasAlignment(
-                GetMirroredTableColumnAlignment(
-                    visible_columns_[j].column.alignment)));
+        DrawString(canvas, model_->GetText(model_index, column.id),
+                   is_selected ? selected_fg_color : fg_color,
+                   GetMirroredRect(text_bounds),
+                   TableColumnAlignmentToCanvasAlignment(
+                       GetMirroredTableColumnAlignment(column.alignment)),
+                   i, j);
       }
     }
   }

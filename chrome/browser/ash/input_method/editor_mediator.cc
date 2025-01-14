@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
-#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"

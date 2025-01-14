@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/zip.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/vector_math.h"
@@ -338,7 +339,7 @@ void AudioBus::CopyTo(AudioBus* dest) const {
     dest->SetBitstreamSize(bitstream_data_.size());
     dest->SetBitstreamFrames(bitstream_frames_);
 
-    dest->bitstream_data().copy_from(bitstream_data_);
+    dest->bitstream_data().copy_from_nonoverlapping(bitstream_data_);
     return;
   }
 
@@ -366,11 +367,13 @@ void AudioBus::CopyPartialFramesTo(int source_start_frame,
   const size_t dest_offset = base::checked_cast<size_t>(dest_start_frame);
   const size_t count = base::checked_cast<size_t>(frame_count);
 
+  ChannelVector src_channels = AllChannelsSubspan(source_offset, count);
+  ChannelVector dest_channels = dest->AllChannelsSubspan(dest_offset, count);
+
   // Since we don't know if the other AudioBus is wrapped or not (and we don't
-  // want to care), just copy using the public channel() accessors.
-  for (int i = 0; i < channels(); ++i) {
-    ConstChannel src_span = channel_span(i).subspan(source_offset, count);
-    dest->channel_span(i).subspan(dest_offset, count).copy_from(src_span);
+  // want to care), just copy using the channel accessors.
+  for (auto [src_span, dest_span] : base::zip(src_channels, dest_channels)) {
+    dest_span.copy_from_nonoverlapping(src_span);
   }
 }
 

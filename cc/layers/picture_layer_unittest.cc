@@ -119,8 +119,11 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
-                          host->GetThreadUnsafeCommitState());
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                            host->GetThreadUnsafeCommitState());
+  }
 
   EXPECT_EQ(invalidation_bounds,
             layer_impl->GetPendingInvalidation()->bounds());
@@ -213,7 +216,10 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   const auto& unsafe_state = host->GetThreadUnsafeCommitState();
   std::unique_ptr<CommitState> commit_state =
       host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
-  layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
+  }
   host->CommitComplete(commit_state->source_frame_number,
                        {base::TimeTicks(), base::TimeTicks::Now()});
 
@@ -233,8 +239,11 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   // We should now have invalid contents and should therefore clear the
   // recording source.
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
-                          host->GetThreadUnsafeCommitState());
+  {
+    LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
+    layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                            host->GetThreadUnsafeCommitState());
+  }
   UpdateDrawProperties(host_impl.pending_tree());
 
   host_impl.ActivateSyncTree();

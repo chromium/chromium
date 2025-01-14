@@ -40,7 +40,7 @@ static_library("quick_insert") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom",
-    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/constants",
     "//components/favicon/core:core",
     "//components/optimization_guide/core",

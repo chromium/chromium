@@ -2131,8 +2131,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     std::unique_ptr<PictureLayerImpl> layer =
         PictureLayerImpl::Create(host_impl()->pending_tree(), 1);
     layer->SetBounds(size);
-    Region invalidation;
-    layer->UpdateRasterSource(raster, &invalidation);
+    layer->SetRasterSourceForTesting(raster);
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
     layer->set_contributes_to_drawn_render_surface(true);
 

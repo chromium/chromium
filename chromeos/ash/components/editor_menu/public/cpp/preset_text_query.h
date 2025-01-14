@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_
-#define CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_
+#define CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_
 
 #include <string>
 #include <string_view>
@@ -42,4 +42,4 @@ using PresetTextQueries = std::vector<PresetTextQuery>;
 
 }  // namespace chromeos::editor_menu
 
-#endif  // CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_PRESET_TEXT_QUERY_H_

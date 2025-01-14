@@ -149,7 +149,9 @@ int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
       }
 
       for (int ch = 1; ch < dest->channels(); ++ch) {
-        dest->channel_span(ch).copy_prefix_from(first_channel_frames);
+        dest->channel_span(ch)
+            .first(max_frames)
+            .copy_from_nonoverlapping(first_channel_frames);
       }
     }
   }

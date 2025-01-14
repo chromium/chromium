@@ -974,6 +974,7 @@ static_library("test_support") {
     "metrics/autofill_metrics_test_base.h",
     "metrics/ukm_metrics_test_utils.cc",
     "metrics/ukm_metrics_test_utils.h",
+    "payments/bnpl_manager_test_api.h",
     "payments/credit_card_access_manager_test_api.h",
     "payments/credit_card_access_manager_test_base.cc",
     "payments/credit_card_access_manager_test_base.h",

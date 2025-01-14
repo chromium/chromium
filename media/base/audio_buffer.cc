@@ -174,7 +174,7 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
       // Note: `data_size` is the external data size, not `data_size_`.
       auto [data_portion, zero_portion] = data_->span().split_at(data_size);
 
-      data_portion.copy_from(base::span(data[0], data_size));
+      data_portion.copy_from_nonoverlapping(base::span(data[0], data_size));
       needs_zeroing = zero_portion;
     }
 
@@ -501,7 +501,8 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     dest->SetBitstreamSize(new_dest_size);
 
     auto dest_span = dest->bitstream_data().subspan(dest_size, data_size());
-    dest_span.copy_from(base::span(channel_data_[0], data_size()));
+    dest_span.copy_from_nonoverlapping(
+        base::span(channel_data_[0], data_size()));
 
     dest->SetBitstreamFrames(dest_frame_offset + frame_count());
     return;

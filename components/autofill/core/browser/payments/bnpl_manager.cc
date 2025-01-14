@@ -18,10 +18,26 @@
 
 namespace autofill::payments {
 
+BnplManager::OngoingFlowState::OngoingFlowState() = default;
+
+BnplManager::OngoingFlowState::~OngoingFlowState() = default;
+
 BnplManager::BnplManager(PaymentsAutofillClient* payments_autofill_client)
     : payments_autofill_client_(CHECK_DEREF(payments_autofill_client)) {}
 
 BnplManager::~BnplManager() = default;
+
+void BnplManager::InitBnplFlow(
+    uint64_t final_checkout_amount,
+    OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
+  ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
+
+  ongoing_flow_state_->final_checkout_amount = final_checkout_amount;
+  ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
+      std::move(on_bnpl_vcn_fetched_callback);
+
+  // TODO(crbug.com/356443046): Add integration for the BNPL dialogs.
+}
 
 std::optional<uint64_t> BnplManager::MaybeParseAmountToMonetaryMicroUnits(
     const std::string& amount) {
@@ -57,11 +73,12 @@ std::optional<uint64_t> BnplManager::MaybeParseAmountToMonetaryMicroUnits(
 
 void BnplManager::FetchVcnDetails() {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
-  request_details.billing_customer_number = billing_customer_number_;
-  request_details.risk_data = risk_data_;
-  request_details.instrument_id = instrument_id_;
-  request_details.context_token = context_token_;
-  request_details.redirect_url = redirect_url_;
+  request_details.billing_customer_number =
+      ongoing_flow_state_->billing_customer_number;
+  request_details.risk_data = ongoing_flow_state_->risk_data;
+  request_details.instrument_id = ongoing_flow_state_->instrument_id;
+  request_details.context_token = ongoing_flow_state_->context_token;
+  request_details.redirect_url = ongoing_flow_state_->redirect_url;
 
   payments_autofill_client_->GetPaymentsNetworkInterface()
       ->GetBnplPaymentInstrumentForFetchingVcn(
@@ -75,6 +92,8 @@ void BnplManager::OnVcnDetailsFetched(
     const BnplFetchVcnResponseDetails& response_details) {
   // TODO(crbug.com/378518604): Implement OnVcnDetailsFetched() to fill the form
   // from the VCN details that were fetched.
+
+  ongoing_flow_state_.reset();
 }
 
 }  // namespace autofill::payments

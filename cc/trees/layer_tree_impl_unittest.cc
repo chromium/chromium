@@ -2453,13 +2453,12 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   CopyProperties(root, child2);
   CopyProperties(root, child3);
 
-  Region empty_invalidation;
-  scoped_refptr<RasterSource> raster_source1(
-      FakeRasterSource::CreateFilledWithPaintWorklet(child1->bounds()));
-  child1->UpdateRasterSource(raster_source1, &empty_invalidation);
-  scoped_refptr<RasterSource> raster_source3(
-      FakeRasterSource::CreateFilledWithPaintWorklet(child3->bounds()));
-  child3->UpdateRasterSource(raster_source3, &empty_invalidation);
+  scoped_refptr<RasterSource> raster_source1 =
+      FakeRasterSource::CreateFilledWithPaintWorklet(child1->bounds());
+  child1->SetRasterSourceForTesting(raster_source1);
+  scoped_refptr<RasterSource> raster_source3 =
+      FakeRasterSource::CreateFilledWithPaintWorklet(child3->bounds());
+  child3->SetRasterSourceForTesting(raster_source3);
 
   // The set should correctly track which layers are in it.
   const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>& layers =
@@ -2469,9 +2468,10 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   EXPECT_TRUE(layers.contains(child3));
 
   // Test explicitly removing a layer from the set.
-  scoped_refptr<RasterSource> empty_raster_source(
-      FakeRasterSource::CreateFilled(child1->bounds()));
-  child1->UpdateRasterSource(empty_raster_source, &empty_invalidation);
+  scoped_refptr<RasterSource> empty_raster_source =
+      FakeRasterSource::CreateFilled(child1->bounds());
+  child1->SetRasterSourceForTesting(empty_raster_source);
+
   EXPECT_EQ(layers.size(), 1u);
   EXPECT_FALSE(layers.contains(child1));
 

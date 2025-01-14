@@ -263,11 +263,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight) {
-        const crSlider = this.shadowRoot!
-                             .querySelector<SettingsSliderElement>(
-                                 '#keyboardBrightnessSlider')!.shadowRoot!
-                             .querySelector('cr-slider');
+      if (this.hasKeyboardBacklight && this.isChromeOsKeyboard()) {
+        const crSlider =
+            this.shadowRoot!.querySelector('#keyboardBrightnessSlider')
+                ?.shadowRoot!.querySelector('cr-slider');
         if (crSlider) {
           // Set key press increment value to be 10.
           crSlider.setAttribute('key-press-slider-increment', '10');

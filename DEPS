@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '305e5c570be4b142e8590d37dd9136b60f12b9bc',
+  'boringssl_revision': '571a7432a19592c620fa316abde47770dad4f82b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
@@ -468,7 +468,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    'cbada99a33f015cb8333d63a88ff0c10cbbc6f38',
+  'libcxxabi_revision':    '8205ccf0f23545ebcd8846363ea1d29e77917a22',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.

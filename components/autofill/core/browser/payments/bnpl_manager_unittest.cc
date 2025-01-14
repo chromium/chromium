@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -53,14 +54,6 @@ class BnplManagerTest : public Test {
 
     bnpl_manager_ = std::make_unique<BnplManager>(
         autofill_client_->GetPaymentsAutofillClient());
-  }
-
-  void PopulateManagerWithUserAndBnplIssuerDetails() {
-    bnpl_manager_->billing_customer_number_ = kBillingCustomerNumber;
-    bnpl_manager_->risk_data_ = kRiskData;
-    bnpl_manager_->instrument_id_ = kInstrumentId;
-    bnpl_manager_->context_token_ = kContextToken;
-    bnpl_manager_->redirect_url_ = kRedirectUrl;
   }
 
  protected:
@@ -179,10 +172,29 @@ TEST_F(BnplManagerTest, AmountParser_OverflowValue) {
       std::nullopt);
 }
 
+// Tests that the initial state for a BNPL flow is set when
+// BnplManager::InitBnplFlow() is triggered.
+TEST_F(BnplManagerTest, InitBnplFlow_SetsInitialState) {
+  uint64_t final_checkout_amount = 1000000;
+  bnpl_manager_->InitBnplFlow(final_checkout_amount, base::DoNothing());
+
+  EXPECT_EQ(
+      final_checkout_amount,
+      test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount);
+  EXPECT_FALSE(test_api(*bnpl_manager_)
+                   .GetOngoingFlowState()
+                   ->on_bnpl_vcn_fetched_callback.is_null());
+}
+
 // Tests that FetchVcnDetails calls the payments network interface with the
-// request details filled out correctly.
+// request details filled out correctly, and once the VCN is filled the state of
+// BnplManager is reset.
 TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
-  PopulateManagerWithUserAndBnplIssuerDetails();
+  bnpl_manager_->InitBnplFlow(1000000, base::DoNothing());
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(kBillingCustomerNumber,
+                                                   kRiskData, kInstrumentId,
+                                                   kContextToken, kRedirectUrl);
 
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingVcn(
@@ -191,7 +203,14 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
                             kContextToken, kRedirectUrl),
                   /*callback=*/_));
 
-  bnpl_manager_->FetchVcnDetails();
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_)
+      .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                           BnplFetchVcnResponseDetails());
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
 }  // namespace autofill::payments
