@@ -227,7 +227,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_NoScannersAvailableError) {
   GetDocumentScan().SetGetScannerNamesResponse({});
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("No scanners available", error);
@@ -235,7 +236,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_NoScannersAvailableError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_MissingMimeTypesError) {
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {}, future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Unsupported MIME types", error);
@@ -243,7 +244,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_MissingMimeTypesError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_UnsupportedMimeTypesError) {
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/tiff"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/tiff"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Unsupported MIME types", error);
@@ -253,7 +255,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
   GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   GetDocumentScan().SetScanResponse(std::nullopt);
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Failed to scan image", error);
@@ -264,7 +267,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
   const std::vector<std::string> scan_data = {kScanDataItem};
   GetDocumentScan().SetScanResponse(scan_data);
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(error.has_value());
   ASSERT_TRUE(scan_results.has_value());
@@ -279,7 +283,8 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeError) {
   GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"testing"}, future.GetCallback());
+  document_scan_api_handler_->SimpleScan(extension_, {"testing"},
+                                         future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(scan_results.has_value());
   EXPECT_EQ("Virtual USB printer unavailable", error);
@@ -291,7 +296,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
   const std::vector<std::string> scan_data = {kScanDataItem};
   GetDocumentScan().SetScanResponse(scan_data);
   SimpleScanFuture future;
-  document_scan_api_handler_->SimpleScan({"image/png", "testing"},
+  document_scan_api_handler_->SimpleScan(extension_, {"image/png", "testing"},
                                          future.GetCallback());
   const auto& [scan_results, error] = future.Get();
   EXPECT_FALSE(error.has_value());

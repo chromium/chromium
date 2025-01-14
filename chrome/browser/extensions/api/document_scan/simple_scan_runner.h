@@ -1,0 +1,61 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_SIMPLE_SCAN_RUNNER_H_
+#define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_SIMPLE_SCAN_RUNNER_H_
+
+#include <optional>
+#include <string>
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/common/extensions/api/document_scan.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "extensions/common/extension_id.h"
+
+namespace extensions {
+
+class Extension;
+
+// Handles API requests from chrome.documentScan.scan including selecting a
+// scanner and collecting the returned results.
+class SimpleScanRunner {
+ public:
+  using SimpleScanCallback = base::OnceCallback<void(
+      std::optional<api::document_scan::ScanResults> scan_results,
+      std::optional<std::string> error)>;
+  using SimpleScanRunnerCallback =
+      base::OnceCallback<void(crosapi::mojom::ScanFailureMode,
+                              const std::optional<std::string>&)>;
+
+  SimpleScanRunner(scoped_refptr<const Extension> extension,
+                   crosapi::mojom::DocumentScan* document_scan);
+
+  ~SimpleScanRunner();
+
+  void Start(std::vector<std::string> mime_types, SimpleScanCallback callback);
+
+  const ExtensionId& extension_id() const;
+
+ private:
+  void OnSimpleScanNamesReceived(bool force_virtual_usb_printer,
+                                 const std::vector<std::string>& scanner_names);
+  void OnSimpleScanCompleted(crosapi::mojom::ScanFailureMode failure_mode,
+                             const std::optional<std::string>& scan_data);
+
+  scoped_refptr<const Extension> extension_;
+
+  const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
+
+  // Parameters for the in-progress call.
+  std::vector<std::string> mime_types_;
+  SimpleScanCallback callback_;
+
+  base::WeakPtrFactory<SimpleScanRunner> weak_ptr_factory_{this};
+};
+
+}  // namespace extensions
+
+#endif  // CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_SIMPLE_SCAN_RUNNER_H_
