@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -103,10 +102,7 @@ import org.chromium.ui.modelutil.PropertyModel;
     }
 
     public void onAccepted() {
-        if (mIsServerCard
-                && !mIsLoadingDisabled
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION)) {
+        if (mIsServerCard && !mIsLoadingDisabled) {
             mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true);
             // Set the loading result here so if the bottom sheet is closed without user actions,
             // it will be recorded with a finished loading result.
