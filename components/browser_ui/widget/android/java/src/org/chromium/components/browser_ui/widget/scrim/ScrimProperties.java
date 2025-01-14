@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.GestureDetector;
 import android.view.View;
 
@@ -61,23 +60,9 @@ public class ScrimProperties {
     /* package */ static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     /**
-     * The background color for the scrim. If null, a default color will be set as the background,
-     * unless {@link #BACKGROUND_DRAWABLE} is set.
+     * The background color for the scrim. If null, a default color will be set as the background.
      */
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
-
-    /**
-     * Background of the scrim.
-     *
-     * <p>When this is set, no default background color applies and {@link #BACKGROUND_COLOR} is
-     * ignored.
-     *
-     * <p>The drawable is responsible for filling in the background with the appropriate color.
-     * When the scrim should cover the status bar, the background color drawn by this drawable
-     * must be consistent with the status bar's color.
-     */
-    public static final WritableObjectPropertyKey<Drawable> BACKGROUND_DRAWABLE =
-            new WritableObjectPropertyKey<>();
 
     /**
      * A filter for touch event that happen on this view.
@@ -108,7 +93,6 @@ public class ScrimProperties {
                 ALPHA,
                 TOUCH_EVENT_DELEGATE,
                 BACKGROUND_COLOR,
-                BACKGROUND_DRAWABLE,
                 GESTURE_DETECTOR,
                 AFFECTS_NAVIGATION_BAR,
             };

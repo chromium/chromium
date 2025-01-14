@@ -15,7 +15,6 @@ import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.AF
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ALL_KEYS;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.ANCHOR_VIEW;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BACKGROUND_COLOR;
-import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.BACKGROUND_DRAWABLE;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.CLICK_DELEGATE;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.GESTURE_DETECTOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW;
@@ -281,7 +280,6 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     public void testGestureDetector() throws TimeoutException {
-        ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
         PropertyModel model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -293,7 +291,6 @@ public class ScrimTest {
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .with(BACKGROUND_COLOR, Color.RED)
-                                    .with(BACKGROUND_DRAWABLE, customDrawable)
                                     .with(GESTURE_DETECTOR, mCustomGestureDetector)
                                     .build();
                         });
@@ -407,45 +404,6 @@ public class ScrimTest {
                 "No events to the navigation bar delegate should have occurred",
                 callCount,
                 mNavigationBarCallbackHelper.getCallCount());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Scrim"})
-    public void testCustomDrawable() throws TimeoutException {
-        ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
-        PropertyModel model =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return new PropertyModel.Builder(ALL_KEYS)
-                                    .with(TOP_MARGIN, 0)
-                                    .with(AFFECTS_STATUS_BAR, false)
-                                    .with(ANCHOR_VIEW, mAnchorView)
-                                    .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                                    .with(CLICK_DELEGATE, mClickDelegate)
-                                    .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                                    .with(BACKGROUND_COLOR, Color.RED)
-                                    .with(BACKGROUND_DRAWABLE, customDrawable)
-                                    .with(GESTURE_DETECTOR, null)
-                                    .build();
-                        });
-
-        showScrim(model, false);
-
-        assertEquals(
-                "Scrim should be using a custom background.",
-                customDrawable,
-                mScrimCoordinator.getViewForTesting().getBackground());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Scrim should be null after being hidden.",
-                            mScrimCoordinator.getViewForTesting(),
-                            Matchers.nullValue());
-                });
     }
 
     @Test
