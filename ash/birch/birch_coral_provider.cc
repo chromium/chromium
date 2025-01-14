@@ -506,11 +506,13 @@ void BirchCoralProvider::OnWindowDestroyed(aura::Window* window) {
 
 void BirchCoralProvider::OnWindowParentChanged(aura::Window* window,
                                                aura::Window* parent) {
-  // When the last group is launched the `in_session_source_desk_` is reset and
-  // its windows are still being observed, we only need to removed the
-  // observation.
-  if (!in_session_source_desk_) {
-    windows_observation_.RemoveObservation(window);
+  // Reset the observations when `response_` or `in_session_source_desk_` are
+  // null. This can occur when launching the last group which resets the
+  // `in_session_source_desk_`.
+  // TODO(crbug.com/383770356): Still need to find out the reason why the window
+  // is still being observed when the `response_` has been reset.
+  if (!response_ || !in_session_source_desk_) {
+    Reset();
     return;
   }
 
@@ -543,9 +545,7 @@ void BirchCoralProvider::OnOverviewModeEnded() {
   // Clear the in-session `response_` and reset the in-session source desk and
   // the app windows observation.
   if (response_ && response_->source() == CoralSource::kInSession) {
-    response_.reset();
-    in_session_source_desk_ = nullptr;
-    windows_observation_.RemoveAllObservations();
+    Reset();
   }
 }
 
@@ -553,8 +553,7 @@ void BirchCoralProvider::OnSessionStateChanged(
     session_manager::SessionState state) {
   // Clear stale items on login.
   if (state == session_manager::SessionState::ACTIVE) {
-    response_.reset();
-    in_session_source_desk_ = nullptr;
+    Reset();
   }
 }
 
@@ -857,6 +856,12 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
     }
     group_iter++;
   }
+}
+
+void BirchCoralProvider::Reset() {
+  response_.reset();
+  in_session_source_desk_ = nullptr;
+  windows_observation_.RemoveAllObservations();
 }
 
 }  // namespace ash
