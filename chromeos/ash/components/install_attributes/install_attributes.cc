@@ -435,7 +435,7 @@ void InstallAttributes::OnTpmStatusComplete(
     return;
   }
 
-  base::HistogramBase::Sample state;
+  base::HistogramBase::Sample32 state;
   // If we get the TPM status successfully, we are interested if install
   // attributes file exists (device_locked_), if the device is enrolled
   // (registration_mode_) and if the TPM is locked, meaning the TPM password

@@ -401,7 +401,7 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_NoUsageReported) {
   service()->OnArcSessionStopped();
 
   tester.ExpectUniqueSample("Arc.Session.HasWebViewUsage",
-                            static_cast<base::HistogramBase::Sample>(0), 1);
+                            static_cast<base::HistogramBase::Sample32>(0), 1);
 }
 
 TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_OneUsageReported) {
@@ -411,7 +411,7 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_OneUsageReported) {
   service()->OnArcSessionStopped();
 
   tester.ExpectUniqueSample("Arc.Session.HasWebViewUsage",
-                            static_cast<base::HistogramBase::Sample>(1), 1);
+                            static_cast<base::HistogramBase::Sample32>(1), 1);
 }
 
 TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
@@ -427,9 +427,9 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
   service()->OnArcSessionStopped();
 
   tester.ExpectBucketCount("Arc.Session.HasWebViewUsage",
-                           static_cast<base::HistogramBase::Sample>(0), 1);
+                           static_cast<base::HistogramBase::Sample32>(0), 1);
   tester.ExpectBucketCount("Arc.Session.HasWebViewUsage",
-                           static_cast<base::HistogramBase::Sample>(1), 2);
+                           static_cast<base::HistogramBase::Sample32>(1), 2);
 }
 
 TEST_F(ArcMetricsServiceTest, ReportArcKeyMintError_SomeErrorReported) {
@@ -439,7 +439,7 @@ TEST_F(ArcMetricsServiceTest, ReportArcKeyMintError_SomeErrorReported) {
   service()->OnArcSessionStopped();
 
   tester.ExpectUniqueSample("Arc.KeyMint.KeyMintError",
-                            static_cast<base::HistogramBase::Sample>(2), 1);
+                            static_cast<base::HistogramBase::Sample32>(2), 1);
 }
 
 TEST_F(ArcMetricsServiceTest,
