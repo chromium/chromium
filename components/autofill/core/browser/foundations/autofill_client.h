@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
@@ -252,6 +253,10 @@ class AutofillClient {
   // use the client's `IsOffTheRecord()` function.
   virtual PersonalDataManager& GetPersonalDataManager() = 0;
   const PersonalDataManager& GetPersonalDataManager() const;
+
+  // Gets the EntityDataManager instance associated with the client, if there is
+  // one.
+  virtual EntityDataManager* GetEntityDataManager() = 0;
 
   // Gets the AutofillOptimizationGuide instance associated with the client.
   // This function can return nullptr if we are on an unsupported platform, or

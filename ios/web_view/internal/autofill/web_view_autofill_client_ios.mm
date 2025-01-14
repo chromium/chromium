@@ -129,6 +129,10 @@ PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_);
 }
 
+EntityDataManager* WebViewAutofillClientIOS::GetEntityDataManager() {
+  return nullptr;
+}
+
 SingleFieldFillRouter& WebViewAutofillClientIOS::GetSingleFieldFillRouter() {
   return single_field_fill_router_;
 }

@@ -51,6 +51,12 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the second iteration Autofill with AI.
+// This feature is independent of `autofill_ai::kAutofillAi`.
+BASE_FEATURE(kAutofillAiWithDataSchema,
+             "AutofillAiWithDataSchema",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",

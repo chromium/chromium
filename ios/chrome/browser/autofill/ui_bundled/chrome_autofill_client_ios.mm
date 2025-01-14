@@ -151,6 +151,10 @@ PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_.get());
 }
 
+EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
+  return nullptr;
+}
+
 FieldClassificationModelHandler*
 ChromeAutofillClientIOS::GetPasswordManagerFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

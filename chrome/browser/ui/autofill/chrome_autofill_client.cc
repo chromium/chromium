@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -370,6 +371,12 @@ ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
 PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
   return CHECK_DEREF(PersonalDataManagerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext()));
+}
+
+EntityDataManager* ChromeAutofillClient::GetEntityDataManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return AutofillEntityDataManagerFactory::GetForProfile(profile);
 }
 
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {

@@ -12,7 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/sync/base/data_type.h"
@@ -84,6 +86,15 @@ class AutofillWebDataService : public WebDataServiceBase {
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the profiles included in the argument |result|.
   WebDataServiceBase::Handle GetAutofillProfiles(
+      WebDataServiceConsumer* consumer);
+
+  // Asynchronously adds, updates, removes, or retrieves EntityInstances.
+  void AddEntityInstance(const EntityInstance& entity);
+  void UpdateEntityInstance(const EntityInstance& entity);
+  void RemoveEntityInstance(const base::Uuid& guid);
+  void RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
+                                            base::Time delete_end);
+  WebDataServiceBase::Handle GetEntityInstances(
       WebDataServiceConsumer* consumer);
 
   // Schedules a task to count the number of unique autofill values contained

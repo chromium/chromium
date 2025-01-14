@@ -104,6 +104,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
+  EntityDataManager* GetEntityDataManager() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;

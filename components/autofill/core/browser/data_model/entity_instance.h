@@ -33,7 +33,6 @@ namespace autofill {
 //
 // Entity instances are loaded from a webdata table and exposed through
 // EntityDataManager.
-// TODO(crbug.com/388590912): Write the EntityDataManager.
 class EntityInstance;
 class AttributeInstance;
 

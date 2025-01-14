@@ -1051,6 +1051,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin_,
                                                        delete_end_);
+      web_data_service->RemoveEntityInstancesModifiedBetween(delete_begin_,
+                                                             delete_end_);
       // Clear out the Autofill StrikeDatabase in its entirety.
       // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that

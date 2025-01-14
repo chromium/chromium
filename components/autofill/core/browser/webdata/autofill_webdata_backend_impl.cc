@@ -15,12 +15,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -439,6 +441,68 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
       DenseSet<AutofillProfile::RecordType>::all(), profiles);
   return std::make_unique<WDResult<std::vector<AutofillProfile>>>(
       AUTOFILL_PROFILES_RESULT, std::move(profiles));
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::AddEntityInstance(
+    const EntityInstance& entity,
+    WebDatabase* db) {
+  // TODO(crbug.com/388590912): Implement.
+  NOTIMPLEMENTED();
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityInstance(
+    const EntityInstance& entity,
+    WebDatabase* db) {
+  // TODO(crbug.com/388590912): Implement.
+  NOTIMPLEMENTED();
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
+    const base::Uuid& guid,
+    WebDatabase* db) {
+  // TODO(crbug.com/388590912): Implement.
+  NOTIMPLEMENTED();
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State
+AutofillWebDataBackendImpl::RemoveEntityInstancesModifiedBetween(
+    base::Time delete_begin,
+    base::Time delete_end,
+    WebDatabase* db) {
+  // TODO(crbug.com/388590912): Implement.
+  NOTIMPLEMENTED();
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/388590912): Remove the fake data below and with actual
+  // database queries.
+  using enum AttributeTypeName;
+  std::vector<EntityInstance> entities = {
+      EntityInstance(
+          EntityType(EntityTypeName::kPassport),
+          {AttributeInstance(AttributeType(kPassportName), "Donald Duck", {}),
+           AttributeInstance(AttributeType(kPassportCountry), "USA", {}),
+           AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
+           AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
+          base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now(),
+          /*synced=*/false),
+      EntityInstance(
+          EntityType(EntityTypeName::kLoyaltyCard),
+          {AttributeInstance(AttributeType(kLoyaltyCardProgram),
+                             "Asterisk Alliance", {}),
+           AttributeInstance(AttributeType(kLoyaltyCardProvider),
+                             "Duck Airways", {}),
+           AttributeInstance(AttributeType(kLoyaltyCardMemberId), "1", {})},
+          base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now(),
+          /*synced=*/true)};
+  return std::make_unique<WDResult<std::vector<EntityInstance>>>(
+      AUTOFILL_ENTITY_INSTANCE_RESULT, std::move(entities));
 }
 
 std::unique_ptr<WDTypedResult>
