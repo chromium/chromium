@@ -94,9 +94,15 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
   button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                         ui::ImageModel::FromVectorIcon(
                             icon, ui::kColorSysOnSurface, kButtonHeight));
+  button->SetImageModel(views::Button::ButtonState::STATE_DISABLED,
+                        ui::ImageModel::FromVectorIcon(
+                            icon, ui::kColorSysStateDisabled, kButtonHeight));
   button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
                          ui::kColorSysOnSurface);
+  button->SetTextColorId(views::LabelButton::ButtonState::STATE_DISABLED,
+                         ui::kColorSysStateDisabled);
   button->SetImageLabelSpacing(kButtonImageLabelSpacing);
+
   auto color_id = button->GetEnabled() ? ui::kColorSysTonalOutline
                                        : ui::kColorButtonBorderDisabled;
   button->SetBorder(views::CreatePaddedBorder(
