@@ -417,8 +417,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     const size_t row_bytes = info.minRowBytes();
     auto* backing =
         static_cast<HudSoftwareBacking*>(pool_resource.software_backing());
-    auto shared_image = backing->shared_image;
-    base::span<uint8_t> mem = shared_image->Map()->GetMemoryForPlane(0);
+    auto mapping = backing->shared_image->Map();
+    base::span<uint8_t> mem = mapping->GetMemoryForPlane(0);
     CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
     sk_sp<SkSurface> surface =
         SkSurfaces::WrapPixels(info, mem.data(), row_bytes, &props);
