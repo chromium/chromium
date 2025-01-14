@@ -925,7 +925,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
     }
 
-    private @NonNull ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+    private @NonNull ObservableSupplier<Integer> initHubOverviewColorSupplier() {
         // Prior to Hub creation we don't know what color to use. Default to the background color
         // since this shouldn't be visible.
         ObservableSupplierImpl<Integer> overviewColorSupplier =
@@ -935,15 +935,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     ObservableSupplier<Integer> hubToolbarOverviewColorSupplier =
                             hubManager.getHubToolbarOverviewColorSupplier();
                     Callback<Integer> hubToolbarOverviewColorObserver = overviewColorSupplier::set;
-                    hubToolbarOverviewColorSupplier.addObserver(hubToolbarOverviewColorObserver);
 
                     ObservableSupplier<Boolean> hubVisibilitySupplier =
                             hubManager.getHubVisibilitySupplier();
-
-                    if (hubVisibilitySupplier.get() != null && hubVisibilitySupplier.get()) {
-                        hubToolbarOverviewColorSupplier.addObserver(
-                                hubToolbarOverviewColorObserver);
-                    }
 
                     Callback<Boolean> hubVisibilityObserver =
                             isVisible -> {
@@ -960,7 +954,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     mCleanUpHubOverviewColorObserver =
                             () -> {
                                 hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
-                                hubToolbarOverviewColorSupplier.addObserver(
+                                hubToolbarOverviewColorSupplier.removeObserver(
                                         hubToolbarOverviewColorObserver);
                             };
                 });
@@ -2274,7 +2268,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 mBackPressManager,
                 getSavedInstanceState(),
                 mMultiInstanceManager,
-                getHubOverviewColorSupplier(),
+                initHubOverviewColorSupplier(),
                 getBaseChromeLayout(),
                 mManualFillingComponentSupplier,
                 getEdgeToEdgeManager());
