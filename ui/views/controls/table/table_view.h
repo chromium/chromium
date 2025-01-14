@@ -14,6 +14,7 @@
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/render_text.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -315,6 +316,23 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   void OnPaintImpl(gfx::Canvas* canvas);
 
+  // Draws a string with the desired parameters in an efficient way by reusing
+  // RenderTexts for each cell.
+  void DrawString(gfx::Canvas* canvas,
+                  const std::u16string& text,
+                  SkColor color,
+                  const gfx::Rect& text_bounds,
+                  int flags,
+                  size_t row,
+                  size_t col);
+
+  // Updates |render_text| from the specified parameters.
+  void UpdateRenderText(const gfx::Rect& rect,
+                        const std::u16string& text,
+                        int flags,
+                        SkColor color,
+                        gfx::RenderText* render_text);
+
   // Returns the horizontal margin between the bounds of a cell and its
   // contents.
   int GetCellMargin() const;
@@ -599,6 +617,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // TODO(crbug.com/388086397): Enable by mouse hovering by default when color
   // tokens are refined on all platforms.
   bool hovering_enabled_ = false;
+
+  // RenderText cache from row,col.
+  std::vector<std::vector<std::unique_ptr<gfx::RenderText>>> render_text_cache_;
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;
