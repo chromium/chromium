@@ -233,8 +233,7 @@ void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
   DidInitialize(create_params);
 }
 
-void GuestViewBase::InitWithGuestPageHolder(
-    const base::Value::Dict& create_params,
+void GuestViewBase::SetGuestPageHolder(
     content::GuestPageHolder* guest_page_holder) {
   CHECK(guest_page_holder);
 
@@ -244,6 +243,12 @@ void GuestViewBase::InitWithGuestPageHolder(
   CHECK_EQ(content::WebContents::FromFrameTreeNodeId(
                guest_main_frame_tree_node_id()),
            owner_web_contents());
+}
+
+void GuestViewBase::InitWithGuestPageHolder(
+    const base::Value::Dict& create_params,
+    content::GuestPageHolder* guest_page_holder) {
+  SetGuestPageHolder(guest_page_holder);
 
   // TODO(crbug.com/40202416): Add a ZoomController that manages the zoom just
   // within this guest.
