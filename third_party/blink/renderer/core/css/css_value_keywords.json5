@@ -1401,6 +1401,12 @@
     // "large",
     // "small",
     // "of",
+    "curve",
+    // "smooth",
+    // "start",
+    // "end",
+    "origin",
+    "with",
 
     // @font-face src
     "format",
