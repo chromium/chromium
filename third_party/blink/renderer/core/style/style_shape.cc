@@ -121,6 +121,7 @@ class SegmentVisitor {
 void StyleShape::GetPath(Path& path,
                          const gfx::RectF& box_rect,
                          float zoom) const {
+  path.SetWindRule(GetWindRule());
   SVGPathBuilder builder(path);
   builder.EmitSegment(
       {.command = SVGPathSegType::kPathSegMoveToAbs,
