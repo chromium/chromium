@@ -1783,12 +1783,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   virtual void VisibilityChanged(View* starting_from, bool is_visible);
 
   // This method is invoked when the parent NativeView of the widget that the
-  // view is attached to is about to change, but the view hierarchy will not
-  // change. This is followed by `NativeViewHierarchyChanged()` below after the
-  // change has occurred.
-  virtual void NativeViewHierarchyWillChange();
-
-  // This method is invoked when the parent NativeView of the widget that the
   // view is attached to has changed and the view hierarchy has not changed.
   // ViewHierarchyChanged() is called when the parent NativeView of the widget
   // that the view is attached to is changed as a result of changing the view
@@ -2063,10 +2057,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // If is_added_to_widget is true, calls AddedToWidget for all children.
   void PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
                                  bool is_added_to_widget);
-
-  // Propagates NativeViewHierarchyWillChange() notification through all the
-  // children.
-  void PropagateNativeViewHierarchyWillChange();
 
   // Propagates NativeViewHierarchyChanged() notification through all the
   // children.
@@ -2484,6 +2474,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   std::unique_ptr<views::ViewMaskLayer> mask_layer_;
 
   // Accelerators --------------------------------------------------------------
+
+  // Focus manager accelerators registered on.
+  raw_ptr<FocusManager> accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,

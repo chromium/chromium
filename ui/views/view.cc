@@ -1791,13 +1791,15 @@ void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
 
   // Providing we are attached to a Widget and registered with a focus manager,
   // we should de-register from that focus manager now.
-  if (auto* focus_manager = GetFocusManager()) {
-    focus_manager->UnregisterAccelerator(accelerator, this);
+  if (GetWidget() && accelerator_focus_manager_) {
+    accelerator_focus_manager_->UnregisterAccelerator(accelerator, this);
   }
 }
 
 void View::ResetAccelerators() {
-  UnregisterAccelerators(false);
+  if (accelerators_) {
+    UnregisterAccelerators(false);
+  }
 }
 
 bool View::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -2255,12 +2257,15 @@ void View::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {}
 
 void View::VisibilityChanged(View* starting_from, bool is_visible) {}
 
-void View::NativeViewHierarchyWillChange() {
-  UnregisterAccelerators(true);
-}
-
 void View::NativeViewHierarchyChanged() {
-  RegisterPendingAccelerators();
+  FocusManager* focus_manager = GetFocusManager();
+  if (accelerator_focus_manager_ != focus_manager) {
+    UnregisterAccelerators(true);
+
+    if (focus_manager) {
+      RegisterPendingAccelerators();
+    }
+  }
 }
 
 void View::AddedToWidget() {}
@@ -3131,7 +3136,9 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   // their parents. This allows children to override accelerators registered by
   // their parents as accelerators registered later take priority over those
   // registered earlier.
-  RegisterPendingAccelerators();
+  if (GetFocusManager()) {
+    RegisterPendingAccelerators();
+  }
 
   {
     internal::ScopedChildrenLock lock(this);
@@ -3146,16 +3153,6 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
     GetViewAccessibility().OnViewAddedToWidget();
     observers_.Notify(&ViewObserver::OnViewAddedToWidget, this);
   }
-}
-
-void View::PropagateNativeViewHierarchyWillChange() {
-  {
-    internal::ScopedChildrenLock lock(this);
-    for (views::View* child : children_) {
-      child->PropagateNativeViewHierarchyWillChange();
-    }
-  }
-  NativeViewHierarchyWillChange();
 }
 
 void View::PropagateNativeViewHierarchyChanged() {
@@ -3624,16 +3621,13 @@ void View::RegisterPendingAccelerators() {
     return;
   }
 
-  auto* focus_manager = GetFocusManager();
-  if (!focus_manager) {
-    return;
-  }
-
+  accelerator_focus_manager_ = GetFocusManager();
+  CHECK(accelerator_focus_manager_);
   for (std::vector<ui::Accelerator>::const_iterator i =
            accelerators_->begin() +
            static_cast<ptrdiff_t>(registered_accelerator_count_);
        i != accelerators_->end(); ++i) {
-    focus_manager->RegisterAccelerator(
+    accelerator_focus_manager_->RegisterAccelerator(
         *i, ui::AcceleratorManager::kNormalPriority, this);
   }
   registered_accelerator_count_ = accelerators_->size();
@@ -3645,8 +3639,9 @@ void View::UnregisterAccelerators(bool leave_data_intact) {
   }
 
   if (GetWidget()) {
-    if (auto* focus_manager = GetFocusManager()) {
-      focus_manager->UnregisterAccelerators(this);
+    if (accelerator_focus_manager_) {
+      accelerator_focus_manager_->UnregisterAccelerators(this);
+      accelerator_focus_manager_ = nullptr;
     }
     if (!leave_data_intact) {
       accelerators_->clear();

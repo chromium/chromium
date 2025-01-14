@@ -355,10 +355,6 @@ View* RootView::GetContentsView() {
   return children().empty() ? nullptr : children().front();
 }
 
-void RootView::NotifyNativeViewHierarchyWillChange() {
-  PropagateNativeViewHierarchyWillChange();
-}
-
 void RootView::NotifyNativeViewHierarchyChanged() {
   PropagateNativeViewHierarchyChanged();
 }
