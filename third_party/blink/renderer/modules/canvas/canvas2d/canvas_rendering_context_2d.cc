@@ -59,8 +59,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -92,6 +90,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_helpers.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
@@ -112,7 +111,6 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
@@ -161,17 +159,6 @@ namespace {
 BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              "AdjustCanCreateCanvas2dResourceProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
-V8CanvasPixelFormat CanvasPixelFormatToV8(CanvasPixelFormat pixel_format) {
-  switch (pixel_format) {
-    case CanvasPixelFormat::kF16:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16);
-    case CanvasPixelFormat::kUint8:
-      return V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8);
-  }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -973,27 +960,7 @@ cc::Layer* CanvasRenderingContext2D::CcLayer() const {
 
 CanvasRenderingContext2DSettings*
 CanvasRenderingContext2D::getContextAttributes() const {
-  const auto& attrs = CreationAttributes();
-  CanvasRenderingContext2DSettings* settings =
-      CanvasRenderingContext2DSettings::Create();
-  settings->setAlpha(attrs.alpha);
-  settings->setColorSpace(PredefinedColorSpaceToV8(attrs.color_space));
-  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
-    settings->setPixelFormat(
-        CanvasPixelFormatToV8(color_params_.PixelFormat()));
-  }
-  settings->setDesynchronized(attrs.desynchronized_specified);
-
-  switch (attrs.will_read_frequently) {
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:
-      settings->setWillReadFrequently(true);
-      break;
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kFalse:
-    case CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined:
-      settings->setWillReadFrequently(false);
-      break;
-  }
-  return settings;
+  return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {

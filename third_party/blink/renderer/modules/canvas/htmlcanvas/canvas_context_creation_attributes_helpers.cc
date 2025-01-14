@@ -6,8 +6,12 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_pixel_format.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_will_read_frequently.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -71,6 +75,38 @@ bool ToCanvasContextCreationAttributes(
   }
   result.xr_compatible = attrs->xrCompatible();
   return true;
+}
+
+CanvasRenderingContext2DSettings* ToCanvasRenderingContext2DSettings(
+    const CanvasContextCreationAttributesCore& attrs) {
+  CanvasRenderingContext2DSettings* settings =
+      CanvasRenderingContext2DSettings::Create();
+  settings->setAlpha(attrs.alpha);
+  settings->setColorSpace(PredefinedColorSpaceToV8(attrs.color_space));
+  if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
+    switch (attrs.pixel_format) {
+      case CanvasPixelFormat::kF16:
+        settings->setPixelFormat(
+            V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16));
+        break;
+      case CanvasPixelFormat::kUint8:
+        settings->setPixelFormat(
+            V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8));
+        break;
+    }
+  }
+  settings->setDesynchronized(attrs.desynchronized_specified);
+
+  switch (attrs.will_read_frequently) {
+    case CanvasContextCreationAttributesCore::WillReadFrequently::kTrue:
+      settings->setWillReadFrequently(true);
+      break;
+    case CanvasContextCreationAttributesCore::WillReadFrequently::kFalse:
+    case CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined:
+      settings->setWillReadFrequently(false);
+      break;
+  }
+  return settings;
 }
 
 }  // namespace blink
