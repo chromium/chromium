@@ -10,7 +10,6 @@
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/layer_type.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::LayerCopyAnimator*)
 
@@ -115,7 +114,7 @@ void LayerCopyAnimator::OnWindowBoundsChanged(aura::Window* window,
 }
 
 void LayerCopyAnimator::RunAnimation() {
-  CHECK_EQ(copied_layer_->type(), ui::LAYER_SOLID_COLOR);
+  copied_layer_->SetFillsBoundsOpaquely(false);
 
   auto* parent_layer = window_->layer()->parent();
   parent_layer->Add(copied_layer_.get());
