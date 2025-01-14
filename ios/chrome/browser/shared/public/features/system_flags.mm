@@ -338,7 +338,8 @@ bool ShouldOpenInIncognitoOverride() {
   NSString* value = [[NSUserDefaults standardUserDefaults]
       stringForKey:kAsyncStartupOverrideResponse];
   return ([value isEqualToString:@"FirstPartyIncognitoNoDelay"] ||
-          [value isEqualToString:@"FirstPartyIncognito500Delay"]);
+          [value isEqualToString:@"FirstPartyIncognito500Delay"] ||
+          [value isEqualToString:@"AlwaysShowTheUI"]);
 }
 
 bool ShouldDelayAsyncStartup() {
@@ -346,6 +347,12 @@ bool ShouldDelayAsyncStartup() {
       stringForKey:kAsyncStartupOverrideResponse];
   return ([value isEqualToString:@"FirstPartyIncognito500Delay"] ||
           [value isEqualToString:@"500ms"]);
+}
+
+bool AlwaysShowTheFirstPartyIncognitoUI() {
+  NSString* value = [[NSUserDefaults standardUserDefaults]
+      stringForKey:kAsyncStartupOverrideResponse];
+  return [value isEqualToString:@"AlwaysShowTheUI"];
 }
 
 }  // namespace experimental_flags

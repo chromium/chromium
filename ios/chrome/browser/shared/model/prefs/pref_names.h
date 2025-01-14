@@ -730,6 +730,11 @@ inline constexpr char kProminenceNotificationAlertImpressionCount[] =
 // - 2: Europe
 inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
 
+// A boolean used to determine if the Youtube Incognito Interstitial sheet has
+// been shown.
+inline constexpr char kYoutubeIncognitoHasBeenShown[] =
+    "ios.youtube_incognito.has_been_shown";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

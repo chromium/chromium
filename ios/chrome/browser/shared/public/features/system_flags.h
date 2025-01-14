@@ -176,6 +176,9 @@ bool ShouldOpenInIncognitoOverride();
 // Whether the a delay should be added to the asynchronous startup.
 bool ShouldDelayAsyncStartup();
 
+// Whether to always show the first party incognito experience UI.
+bool AlwaysShowTheFirstPartyIncognitoUI();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

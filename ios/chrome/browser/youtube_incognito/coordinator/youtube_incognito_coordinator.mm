@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
@@ -34,11 +38,18 @@ CGFloat const kHalfSheetCornerRadius = 20;
 - (void)start {
   if (self.incognitoDisabled) {
     [self presentEnterpriseViewController];
-  } else {
-    // TODO(crbug.com/374935670): Show toast when the view was presented
-    // already.
-    [self presentViewController];
+    return;
   }
+
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (!localState->GetBoolean(prefs::kYoutubeIncognitoHasBeenShown) ||
+      experimental_flags::AlwaysShowTheFirstPartyIncognitoUI()) {
+    localState->SetBoolean(prefs::kYoutubeIncognitoHasBeenShown, true);
+    [self presentViewController];
+    return;
+  }
+  // TODO(crbug.com/374935670): Show toast when the view was presented
+  // already.
 }
 
 - (void)stop {

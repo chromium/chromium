@@ -705,6 +705,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kProminenceNotificationAlertImpressionCount, 0);
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
+
+  registry->RegisterBooleanPref(prefs::kYoutubeIncognitoHasBeenShown, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
