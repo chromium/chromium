@@ -167,6 +167,18 @@ void WolvicContentBrowserClient::ConfigureNetworkContextParams(
   network_context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
   network_context_params->file_paths->http_cache_directory =
       user_data_path.Append(FILE_PATH_LITERAL("Cache"));
+
+  // TODO: Set the desktop user agent by the default, and revisit this to set
+  // the setting value if the payment request solves the UA issue.
+
+  // These values will be used when the network requst has the empty http
+  // header. All network requests created by renderer(web page) already have
+  // the http header, so the value will be used only for the network requests
+  // created by the native code like the payment request.
+  auto* settings = SessionSettings::Get();
+  network_context_params->user_agent =
+      settings->GetDefaultUserAgent(SessionSettings::UserAgentMode::kDesktop);
+  network_context_params->accept_language = "en-us,en";
 }
 
 void WolvicContentBrowserClient::BindMediaServiceReceiver(
