@@ -3534,11 +3534,6 @@
         "default": "experimental"},
     },
     {
-      // See https://issues.chromium.org/40805258
-      name: "RemoveCollapsedPlaceholder",
-      status: "stable",
-    },
-    {
       name: "RemoveDanglingMarkupInTarget",
       status: "stable",
     },

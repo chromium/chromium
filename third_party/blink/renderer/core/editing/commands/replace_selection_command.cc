@@ -1262,10 +1262,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     return;
 
   Position insertion_pos = EndingVisibleSelection().Start();
-  Position placeholder;
-  if (RuntimeEnabledFeatures::RemoveCollapsedPlaceholderEnabled()) {
-    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
-  }
+  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
 
   // We don't want any of the pasted content to end up nested in a Mail
   // blockquote, so first break out of any surrounding Mail blockquotes. Unless
