@@ -150,6 +150,10 @@ class LocationBarView
     return page_action_icon_controller_;
   }
 
+  page_actions::PageActionContainerView* page_action_container() {
+    return page_action_container_;
+  }
+
   // Returns the screen coordinates of the omnibox (where the URL text appears,
   // not where the icons are shown).
   gfx::Point GetOmniboxViewOrigin() const;
