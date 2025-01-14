@@ -1290,6 +1290,7 @@ if (is_android) {
       "//components/messages/android:junit",
       "//components/messages/android/internal:junit",
       "//components/payments/content/android:junit",
+      "//components/payments/content/android:junit_spc",
       "//components/permissions/android:components_permissions_junit_tests",
       "//components/policy/android:components_policy_junit_tests",
       "//components/prefs/android:junit",
