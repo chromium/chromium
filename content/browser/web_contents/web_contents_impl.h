@@ -2588,6 +2588,9 @@ class CONTENT_EXPORT WebContentsImpl
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
 
+  // Stores the force enable zoom state for Accessibility.
+  bool force_enable_zoom_ = false;
+
   // Stores all prefetch containers created by `this`.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_containers_;
 

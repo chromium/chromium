@@ -121,13 +121,15 @@ std::unique_ptr<input::FlingSchedulerBase> InputManager::MakeFlingScheduler(
 void InputManager::SetupRenderInputRouter(
     input::RenderInputRouter* render_input_router,
     const FrameSinkId& frame_sink_id,
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client) {
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client,
+    bool force_enable_zoom) {
   // TODO(382291983): Setup RenderInputRouter's mojo connections to renderer.
   render_input_router->SetFlingScheduler(
       MakeFlingScheduler(render_input_router, frame_sink_id));
 
   render_input_router->SetupInputRouter(
       GetDeviceScaleFactorForId(frame_sink_id));
+  render_input_router->SetForceEnableZoom(force_enable_zoom);
   render_input_router->BindRenderInputRouterInterfaces(std::move(rir_client));
   render_input_router->RendererWidgetCreated(/*for_frame_widget=*/true,
                                              /*is_in_viz=*/true);
@@ -187,7 +189,8 @@ void InputManager::OnCreateCompositorFrameSink(
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   SetupRenderInputRouter(render_input_router.get(), frame_sink_id,
-                         std::move(render_input_router_config->rir_client));
+                         std::move(render_input_router_config->rir_client),
+                         render_input_router_config->force_enable_zoom);
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,
@@ -408,6 +411,17 @@ void InputManager::NotifySiteIsMobileOptimized(
     return;
   }
   itr->second->input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
+}
+
+void InputManager::ForceEnableZoomStateChanged(
+    bool force_enable_zoom,
+    const std::vector<FrameSinkId>& frame_sink_ids) {
+  for (auto& frame_sink_id : frame_sink_ids) {
+    auto itr = rir_map_.find(frame_sink_id);
+    if (itr != rir_map_.end()) {
+      itr->second->SetForceEnableZoom(force_enable_zoom);
+    }
+  }
 }
 
 void InputManager::SetupRenderInputRouterDelegateConnection(

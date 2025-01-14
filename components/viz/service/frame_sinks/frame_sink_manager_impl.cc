@@ -1172,6 +1172,17 @@ void FrameSinkManagerImpl::SetSameDocNavigationScreenshotSize(
   std::move(callback).Run();
 }
 
+void FrameSinkManagerImpl::GetForceEnableZoomState(
+    const FrameSinkId& frame_sink_id,
+    GetForceEnableZoomStateCallback callback) {
+  CHECK(GetInputManager());
+  CHECK(GetInputManager()->GetRenderInputRouterFromFrameSinkId(frame_sink_id));
+  bool enabled = GetInputManager()
+                     ->GetRenderInputRouterFromFrameSinkId(frame_sink_id)
+                     ->GetForceEnableZoom();
+  std::move(callback).Run(enabled);
+}
+
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   transition_token_to_animation_manager_.erase(transition_token);

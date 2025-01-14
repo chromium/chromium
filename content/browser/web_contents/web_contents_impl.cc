@@ -3565,12 +3565,23 @@ void WebContentsImpl::OnWebPreferencesChanged() {
   updating_web_preferences_ = true;
   SetWebPreferences(ComputeWebPreferences(GetPrimaryMainFrame()));
 #if BUILDFLAG(IS_ANDROID)
-  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
-    RenderFrameHostImpl* rfh = node->current_frame_host();
-    if (rfh->is_local_root()) {
-      if (auto* rwh = rfh->GetRenderWidgetHost()) {
-        rwh->SetForceEnableZoom(web_preferences_->force_enable_zoom);
+  const bool force_enable_zoom_changed =
+      (force_enable_zoom_ != web_preferences_->force_enable_zoom);
+  force_enable_zoom_ = web_preferences_->force_enable_zoom;
+  if (force_enable_zoom_changed) {
+    std::vector<viz::FrameSinkId> frame_sink_ids;
+    for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
+      RenderFrameHostImpl* rfh = node->current_frame_host();
+      if (rfh->is_local_root()) {
+        if (auto* rwh = rfh->GetRenderWidgetHost()) {
+          rwh->SetForceEnableZoom(force_enable_zoom_);
+          frame_sink_ids.push_back(rwh->GetFrameSinkId());
+        }
       }
+    }
+    // Notify VizCompositor thread of force_enable_zoom state changes.
+    if (auto* remote = GetRenderInputRouterDelegateRemote()) {
+      remote->ForceEnableZoomStateChanged(force_enable_zoom_, frame_sink_ids);
     }
   }
 #endif

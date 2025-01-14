@@ -215,6 +215,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void SetSameDocNavigationScreenshotSize(
       const gfx::Size& result_size,
       SetSameDocNavigationScreenshotSizeCallback callback) override;
+  void GetForceEnableZoomState(
+      const FrameSinkId& frame_sink_id,
+      GetForceEnableZoomStateCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 

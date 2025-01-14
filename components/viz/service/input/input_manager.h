@@ -127,6 +127,9 @@ class VIZ_SERVICE_EXPORT InputManager
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized,
                                    const FrameSinkId& frame_sink_id) override;
+  void ForceEnableZoomStateChanged(
+      bool force_enable_zoom,
+      const std::vector<FrameSinkId>& frame_sink_ids) override;
 
   void SetupRenderInputRouterDelegateConnection(
       const base::UnguessableToken& grouping_id,
@@ -152,7 +155,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void SetupRenderInputRouter(
       input::RenderInputRouter* render_input_router,
       const FrameSinkId& frame_sink_id,
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client);
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client,
+      bool force_enable_zoom);
 
   std::unique_ptr<input::FlingSchedulerBase> MakeFlingScheduler(
       input::RenderInputRouter* rir,

@@ -51,10 +51,14 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/input/touch_action.h"
+#include "components/input/features.h"
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
+#include "components/input/utils.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/process_reuse_policy.h"
@@ -127,6 +131,7 @@
 #include "ipc/ipc_security_test_util.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -138,6 +143,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -11588,6 +11594,87 @@ class EnableForceZoomContentClient
   }
 };
 
+class AndroidInputBrowserTest : public SitePerProcessBrowserTest {
+ public:
+  AndroidInputBrowserTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{input::features::kInputOnViz, true},
+         {viz::mojom::EnableVizTestApis, true}});
+  }
+
+  bool GetRenderInputRouterForceEnableZoom(RenderWidgetHostImpl* rwh) {
+    return rwh->GetRenderInputRouter()->GetForceEnableZoom();
+  }
+
+  RenderWidgetHostImpl* GetRenderWidgetHost() const {
+    RenderWidgetHostImpl* const rwh =
+        RenderWidgetHostImpl::From(shell()
+                                       ->web_contents()
+                                       ->GetRenderWidgetHostView()
+                                       ->GetRenderWidgetHost());
+    CHECK(rwh);
+    return rwh;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Check if browser's |force_enable_zoom| state is in sync with Viz's state with
+// InputVizard enabled.
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, CheckForceEnableZoomValue) {
+  // Return early if transferring input to Viz isn't supported.
+  if (!input::IsTransferInputToVizSupported()) {
+    return;
+  }
+
+  mojo::ScopedAllowSyncCallForTesting allowed_for_testing;
+  content::RenderFrameSubmissionObserver render_frame_submission_observer(
+      shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+
+  EXPECT_FALSE(GetRenderInputRouterForceEnableZoom(GetRenderWidgetHost()));
+  bool enabled = false;
+  content::GetHostFrameSinkManager()
+      ->GetFrameSinkManagerTestApi()
+      .GetForceEnableZoomState(GetRenderWidgetHost()->GetFrameSinkId(),
+                               &enabled);
+  EXPECT_FALSE(enabled);
+
+  EnableForceZoomContentClient new_client;
+
+  web_contents()->OnWebPreferencesChanged();
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+
+  EXPECT_TRUE(GetRenderInputRouterForceEnableZoom(GetRenderWidgetHost()));
+  content::GetHostFrameSinkManager()
+      ->GetFrameSinkManagerTestApi()
+      .GetForceEnableZoomState(GetRenderWidgetHost()->GetFrameSinkId(),
+                               &enabled);
+  EXPECT_TRUE(enabled);
+
+  // Navigate to a cross-site website.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("bar.com", "/title2.html")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+
+  EXPECT_TRUE(GetRenderInputRouterForceEnableZoom(GetRenderWidgetHost()));
+  content::GetHostFrameSinkManager()
+      ->GetFrameSinkManagerTestApi()
+      .GetForceEnableZoomState(GetRenderWidgetHost()->GetFrameSinkId(),
+                               &enabled);
+  EXPECT_TRUE(enabled);
+}
+
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
                        ForceEnableZoomPropagatesToChild) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -14074,6 +14161,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 #if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessAndroidImeTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         AndroidInputBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #endif  // BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
