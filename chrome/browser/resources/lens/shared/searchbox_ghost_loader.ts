@@ -21,7 +21,9 @@ const SearchboxGhostLoaderElementBase = I18nMixin(PolymerElement);
 export class SearchboxGhostLoaderElement extends
     SearchboxGhostLoaderElementBase {
   static get is() {
+    // LINT.IfChange(GhostLoaderTagName)
     return 'cr-searchbox-ghost-loader';
+    // LINT.ThenChange(/ui/webui/resources/cr_components/searchbox/searchbox.ts:GhostLoaderTagName)
   }
 
   static get template() {

@@ -190,21 +190,25 @@
     display: block;
   }
 </style>
-<div id="searchboxContainer" on-escape-searchbox="handleEscapeSearchbox">
+<div id="searchboxContainer"
+     on-escape-searchbox="handleEscapeSearchbox"
+     on-focusout="onSearchboxFocusOut_">
   <template is="dom-if" if="[[isBackArrowVisible]]">
     <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-searchbox
+    <cr-searchbox
     id="searchbox"
     placeholder-text="{{placeholderText}}"
     searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]"
-  >
+    on-focusin="onSearchboxFocusIn_"
+    >
   </cr-searchbox>
   <cr-searchbox-ghost-loader
       id="searchboxGhostLoader"
-      show-error-state="{{showErrorState}}">
+      show-error-state="{{showErrorState}}"
+      tabindex="-1">
   </cr-searchbox-ghost-loader>
 </div>
 

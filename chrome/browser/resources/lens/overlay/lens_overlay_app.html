@@ -347,16 +347,14 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <div id="searchboxContainer">
+  <div id="searchboxContainer" on-focusout="handleSearchboxBlurred">
     <cr-searchbox
       id="searchbox"
-      on-focus="handleSearchboxFocused"
-      on-blur="handleSearchboxBlurred"
+      on-focusin="handleSearchboxFocused"
       searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
     </cr-searchbox>
-    </cr-searchbox>
-    <cr-searchbox-ghost-loader id="searchboxGhostLoader"
-        show-error-state="{{showErrorState}}">
+    <cr-searchbox-ghost-loader id="searchboxGhostLoader" tabindex="-1"
+      show-error-state="{{showErrorState}}">
     </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">

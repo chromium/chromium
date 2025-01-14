@@ -23,6 +23,10 @@ import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {decodeString16, mojoString16} from './utils.js';
 
+// LINT.IfChange(GhostLoaderTagName)
+const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
+// LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
+
 interface Input {
   text: string;
   inline: string;
@@ -270,6 +274,7 @@ export class SearchboxElement extends SearchboxElementBase {
   searchboxSteadyStateShadow: boolean;
   showThumbnail: boolean;
   private inputAriaLive_: string;
+  private isLensSearchbox_: boolean;
   private isDeletingInput_: boolean;
   private queryAutocompleteOnEmptyInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -548,26 +553,40 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private onInputWrapperFocusout_(e: FocusEvent) {
+    const newlyFocusedEl = e.relatedTarget as Element;
     // Hide the matches and stop autocomplete only when the focus goes outside
-    // of the searchbox wrapper.
-    if (!this.$.inputWrapper.contains(e.relatedTarget as Element)) {
-      if (this.lastQueriedInput_ === '') {
-        // Clear the input as well as the matches if the input was empty when
-        // the matches arrived.
-        this.updateInput_({text: '', inline: ''});
-        this.clearAutocompleteMatches_();
-      } else {
-        this.dropdownIsVisible = false;
-
-        // Stop autocomplete but leave (potentially stale) results and continue
-        // listening for key presses. These stale results should never be shown.
-        // They correspond to the potentially stale suggestion left in the
-        // searchbox when blurred. That stale result may be navigated to by
-        // focusing and pressing 'Enter'.
-        this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
-      }
-      this.pageHandler_.onFocusChanged(false);
+    // of the searchbox wrapper. If focus is still in the searchbox wrapper,
+    // exit early.
+    if (this.$.inputWrapper.contains(newlyFocusedEl)) {
+      return;
     }
+
+    // If this is a Lens searchbox, treat the ghost loader as keeping searchbox
+    // focus.
+    // TODO(380467089): This workaround wouldn't be needed if the ghost loader
+    // was part of the searchbox element. Remove this workaround once they are
+    // combined.
+    if (this.isLensSearchbox_ &&
+        newlyFocusedEl?.tagName.toLowerCase() === LENS_GHOST_LOADER_TAG_NAME) {
+      return;
+    }
+
+    if (this.lastQueriedInput_ === '') {
+      // Clear the input as well as the matches if the input was empty when
+      // the matches arrived.
+      this.updateInput_({text: '', inline: ''});
+      this.clearAutocompleteMatches_();
+    } else {
+      this.dropdownIsVisible = false;
+
+      // Stop autocomplete but leave (potentially stale) results and continue
+      // listening for key presses. These stale results should never be shown.
+      // They correspond to the potentially stale suggestion left in the
+      // searchbox when blurred. That stale result may be navigated to by
+      // focusing and pressing 'Enter'.
+      this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
+    }
+    this.pageHandler_.onFocusChanged(false);
   }
 
   private onInputWrapperKeydown_(e: KeyboardEvent) {
