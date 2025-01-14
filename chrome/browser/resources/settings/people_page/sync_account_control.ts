@@ -643,6 +643,11 @@ export class SettingsSyncAccountControlElement extends
 
   private onTurnOffButtonClick_() {
     /* This will route to people_page's disconnect dialog. */
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        !this.isSyncing_() &&
+        this.syncStatus.statusAction !== StatusAction.NO_ACTION) {
+      this.onSignoutClick_();
+    }
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SIGN_OUT);
   }
