@@ -7529,6 +7529,7 @@ test("unit_tests") {
       "../browser/notifications/muted_notification_handler_unittest.cc",
       "../browser/notifications/screen_capture_notification_blocker_unittest.cc",
       "../browser/password_manager/generated_password_leak_detection_pref_unittest.cc",
+      "../browser/password_manager/password_change_delegate_impl_unittest.cc",
       "../browser/password_manager/password_change_delegate_mock.cc",
       "../browser/password_manager/password_change_delegate_mock.h",
       "../browser/performance_manager/execution_context_priority/side_panel_loading_voter_unittest.cc",

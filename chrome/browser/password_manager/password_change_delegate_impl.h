@@ -14,7 +14,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/password_manager/core/browser/password_form_cache.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "url/gurl.h"
@@ -23,16 +23,27 @@ namespace content {
 class WebContents;
 }
 
-// This class controls password change process. Password change process starts
-// immediately after creating the object.
-class PasswordChangeDelegateImpl
-    : public password_manager::PasswordFormManagerObserver,
-      public PasswordChangeDelegate,
-      public content::WebContentsObserver {
+namespace password_manager {
+class PasswordFormManager;
+class PasswordManagerDriver;
+}  // namespace password_manager
+
+namespace {
+class ParsedPasswordFormWaiter;
+}
+
+// This class controls password change process including acceptance of privacy
+// notice, opening of a new tab, navigation to the change password url, password
+// generation and form submission.
+class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
+                                   public content::WebContentsObserver {
  public:
   using OpenPasswordChangeTabCallback =
       base::RepeatingCallback<content::WebContents*(const GURL&,
                                                     content::WebContents*)>;
+
+  static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
+      base::Seconds(10);
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
@@ -48,10 +59,6 @@ class PasswordChangeDelegateImpl
   base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
 
  private:
-  // password_manager::PasswordFormManagerObserver Impl
-  void OnPasswordFormParsed(
-      password_manager::PasswordFormManager* form_manager) override;
-
   // PasswordChangeDelegate Impl
   bool IsPasswordChangeOngoing(content::WebContents* web_contents) override;
   State GetCurrentState() const override;
@@ -83,6 +90,9 @@ class PasswordChangeDelegateImpl
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 
+  void OnPasswordChangeFormParsed(
+      password_manager::PasswordFormManager* form_manager);
+
   void FillChangePasswordForm(
       password_manager::PasswordForm form,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver);
@@ -102,6 +112,9 @@ class PasswordChangeDelegateImpl
   base::WeakPtr<content::WebContents> executor_;
 
   State current_state_ = State::kWaitingForChangePasswordForm;
+
+  // Class which awaits for change password form to appear.
+  std::unique_ptr<ParsedPasswordFormWaiter> form_waiter_;
 
   // Form manager for displayed change password form.
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;

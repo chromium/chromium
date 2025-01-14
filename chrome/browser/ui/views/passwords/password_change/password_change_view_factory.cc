@@ -28,6 +28,9 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
       return new SuccessfulPasswordChangeView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       return new FailedPasswordChangeView(web_contents, anchor_view);
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+      NOTIMPLEMENTED();
+      break;
   }
   NOTREACHED();
 }

@@ -25,6 +25,9 @@ class PasswordChangeDelegate {
     // Delegate is waiting for change password form to appear.
     kWaitingForChangePasswordForm,
 
+    // Change password form wasn't found.
+    kChangePasswordFormNotFound,
+
     // Change password form is detected. Generating and filling password fields.
     // Delegate waits for submission confirmation.
     kChangingPassword,

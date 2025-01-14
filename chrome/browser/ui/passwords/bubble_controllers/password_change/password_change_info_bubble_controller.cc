@@ -48,6 +48,7 @@ std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
       NOTIMPLEMENTED();
       break;
   }

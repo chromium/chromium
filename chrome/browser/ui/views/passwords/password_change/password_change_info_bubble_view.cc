@@ -102,6 +102,7 @@ std::unique_ptr<views::View> PasswordChangeInfoBubbleView::CreateBodyText(
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
     case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
       NOTIMPLEMENTED();
   }
   NOTREACHED();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
+#include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -57,19 +59,67 @@ PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
   return *cache;
 }
 
-const PasswordForm* GetChangePasswordForm(PasswordFormManager* form_manager) {
-  CHECK(form_manager);
+// Helper object which waits for change password parsing, invokes callback on
+// completion. If form isn't found withing
+// `PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout` callback is
+// invoked with null.
+class ParsedPasswordFormWaiter
+    : public password_manager::PasswordFormManagerObserver {
+ public:
+  using PasswordFormFoundCallback =
+      base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
-  const PasswordForm* parsed_form = form_manager->GetParsedObservedForm();
-  CHECK(parsed_form);
+  ParsedPasswordFormWaiter(content::WebContents* web_contents,
+                           PasswordFormFoundCallback callback)
+      : web_contents_(web_contents->GetWeakPtr()),
+        callback_(std::move(callback)) {
+    GetFormCache(web_contents).SetObserver(weak_ptr_factory_.GetWeakPtr());
 
-  // New password field and password confirmation fields are indicators of
-  // a change password form.
-  return (parsed_form->new_password_element_renderer_id &&
-          parsed_form->confirmation_password_element_renderer_id)
-             ? parsed_form
-             : nullptr;
-}
+    timeout_timer_.Start(
+        FROM_HERE,
+        PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout, this,
+        &ParsedPasswordFormWaiter::OnTimeout);
+  }
+
+  ~ParsedPasswordFormWaiter() override {
+    if (web_contents_) {
+      GetFormCache(web_contents_.get()).ResetObserver();
+    }
+  }
+
+ private:
+  // password_manager::PasswordFormManagerObserver Impl
+  void OnPasswordFormParsed(
+      password_manager::PasswordFormManager* form_manager) override {
+    CHECK(callback_);
+    CHECK(form_manager);
+
+    const PasswordForm* parsed_form = form_manager->GetParsedObservedForm();
+    CHECK(parsed_form);
+
+    // New password field and password confirmation fields are indicators of
+    // a change password form.
+    if (!parsed_form->new_password_element_renderer_id ||
+        !parsed_form->confirmation_password_element_renderer_id) {
+      return;
+    }
+
+    // Do not invoke anything after calling the `callback_` as object might be
+    // destroyed immediately after.
+    std::move(callback_).Run(form_manager);
+  }
+
+  void OnTimeout() {
+    CHECK(callback_);
+    std::move(callback_).Run(nullptr);
+  }
+
+  base::OneShotTimer timeout_timer_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  PasswordFormFoundCallback callback_;
+
+  base::WeakPtrFactory<ParsedPasswordFormWaiter> weak_ptr_factory_{this};
+};
 
 std::u16string GeneratePassword(
     const PasswordForm& form,
@@ -117,22 +167,24 @@ void PasswordChangeDelegateImpl::StartPasswordChange() {
           .Run(change_password_url_, originator_.get());
   if (new_tab) {
     executor_ = new_tab->GetWeakPtr();
-    GetFormCache(new_tab).SetObserver(weak_ptr_factory_.GetWeakPtr());
+    form_waiter_ = std::make_unique<ParsedPasswordFormWaiter>(
+        new_tab,
+        base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
 
     Observe(new_tab);
   }
 }
 
-void PasswordChangeDelegateImpl::OnPasswordFormParsed(
-    PasswordFormManager* form_manager) {
-  const PasswordForm* form = GetChangePasswordForm(form_manager);
-  if (!form) {
+void PasswordChangeDelegateImpl::OnPasswordChangeFormParsed(
+    password_manager::PasswordFormManager* form_manager) {
+  form_waiter_.reset();
+
+  if (!form_manager) {
+    UpdateState(State::kChangePasswordFormNotFound);
     return;
   }
 
-  CHECK(executor_);
-  // Change password form is detected - no need to continue observing.
-  GetFormCache(executor_.get()).ResetObserver();
   form_manager_ = form_manager->Clone();
 
   // Post task is required because when PasswordFormManager parses a form
@@ -141,7 +193,8 @@ void PasswordChangeDelegateImpl::OnPasswordFormParsed(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordChangeDelegateImpl::FillChangePasswordForm,
-                     weak_ptr_factory_.GetWeakPtr(), *form,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     *form_manager->GetParsedObservedForm(),
                      form_manager->GetDriver()));
 }
 
