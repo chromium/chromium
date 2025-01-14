@@ -226,7 +226,7 @@ class ASH_EXPORT VideoRecordingWatcher
   const raw_ptr<CaptureModeController> controller_;
 
   // The currently active behavior which is passed from capture mode session.
-  const raw_ptr<CaptureModeBehavior, DanglingUntriaged> active_behavior_;
+  const raw_ptr<CaptureModeBehavior> active_behavior_;
   const raw_ptr<wm::CursorManager> cursor_manager_;
   const raw_ptr<aura::Window, DanglingUntriaged> window_being_recorded_;
   raw_ptr<aura::Window, DanglingUntriaged> current_root_;

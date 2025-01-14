@@ -806,9 +806,6 @@ class ASH_EXPORT CaptureModeController
   bool is_camera_muted_ = false;
   bool is_microphone_muted_ = false;
 
-  // Watches events that lead to ending video recording.
-  std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
-
   // Tracks the windows that currently have content protection enabled, so that
   // we prevent them from being video recorded. Each window is mapped to its
   // currently-set protection_mask. Windows in this map are only the ones that
@@ -871,6 +868,11 @@ class ASH_EXPORT CaptureModeController
   // settings.
   base::flat_map<BehaviorType, std::unique_ptr<CaptureModeBehavior>>
       behaviors_map_;
+
+  // Watches events that lead to ending video recording.
+  // Must be destroyed before `behaviors_map_` to avoid dangling raw pointers
+  // to `CaptureModeBehavior`s.
+  std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
 
   base::ObserverList<CaptureModeObserver> observers_;
 
