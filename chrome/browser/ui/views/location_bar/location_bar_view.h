@@ -263,6 +263,14 @@ class LocationBarView
   // |is_hovering| should be true when mouse is in omnibox; false when exited.
   void OnOmniboxHovered(bool is_hovering);
 
+  // `browser_` returned here may be nullptr. There are two known cases.
+  //
+  // 1. simple_web_view_dialog, which is used to show captive portal page on
+  // signin screen on ChromeOS, passes in nullptr while constructing its
+  // location_bar_view_. See crbug.com/379534750.
+  //
+  // 2. presentation_receiver_window_view is the other known case. However,
+  // presentation_receiver_window_view is about to be sunsetted in a year or so.
   Browser* browser() { return browser_; }
   Profile* profile() { return profile_; }
 

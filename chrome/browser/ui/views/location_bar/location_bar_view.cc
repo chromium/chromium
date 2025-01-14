@@ -288,7 +288,11 @@ void LocationBarView::Init() {
             MerchantTrustServiceFactory::GetForProfile(profile_));
   }
 
-  // Initialize the Omnibox view.
+  // Initialize the Omnibox view. browser_ can be nullptr on ChromeOS in the
+  // case of simple_web_view_dialog. Or it can be nulltpr on ChromeOS and on
+  // other desktop platforms in the case of presentation_receiver_window_view.
+  // See crbug.com/379534750. In other cases, browser_ can be nullptr but is
+  // limited to test environment.
   auto omnibox_view = std::make_unique<OmniboxViewViews>(
       std::make_unique<ChromeOmniboxClient>(
           /*location_bar=*/this, browser_, profile_),
