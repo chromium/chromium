@@ -152,6 +152,8 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
     // This will be deleted soon.
     return;
   }
+  TRACE_EVENT0("loading",
+               "StreamingSearchPrefetchURLLoader::ResponseReader::PushData");
   while (true) {
     std::string_view response_data =
         loader_->GetMoreDataFromCache(write_position_);
@@ -669,6 +671,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
   // as we are at the intermediate state during refactoring.
   DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
+  TRACE_EVENT0("loading", "StreamingSearchPrefetchURLLoader::PushData");
   while (true) {
     std::string_view response_data = GetMoreDataFromCache(write_position_);
 
