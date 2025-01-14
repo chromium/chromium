@@ -93,16 +93,18 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
 }
 
 std::optional<media::AudioCodec> TryGetPcmCodec(const String& codec) {
-  if (codec == "ulaw") {
+  String codecs_str = codec.LowerASCII();
+  if (codecs_str == "ulaw") {
     return media::AudioCodec::kPCM_MULAW;
   }
 
-  if (codec == "alaw") {
+  if (codecs_str == "alaw") {
     return media::AudioCodec::kPCM_ALAW;
   }
 
-  if (codec == "pcm-u8" || codec == "pcm-s16" || codec == "pcm-s24" ||
-      codec == "pcm-s32" || codec == "pcm-f32") {
+  if (codecs_str == "pcm-u8" || codecs_str == "pcm-s16" ||
+      codecs_str == "pcm-s24" || codecs_str == "pcm-s32" ||
+      codecs_str == "pcm-f32") {
     return media::AudioCodec::kPCM;
   }
 
@@ -110,29 +112,33 @@ std::optional<media::AudioCodec> TryGetPcmCodec(const String& codec) {
 }
 
 media::SampleFormat PcmCodecToSampleFormat(const String& codec) {
-  CHECK(codec.StartsWith("pcm"));
+  String codecs_str = codec.LowerASCII();
 
-  if (codec == "pcm-u8") {
+  if (codecs_str == "pcm-u8") {
     return media::SampleFormat::kSampleFormatU8;
   }
 
-  if (codec == "pcm-s16") {
+  if (codecs_str == "pcm-s16") {
     return media::SampleFormat::kSampleFormatS16;
   }
 
-  if (codec == "pcm-s24") {
+  if (codecs_str == "pcm-s24") {
     return media::SampleFormat::kSampleFormatS24;
   }
 
-  if (codec == "pcm-s32") {
+  if (codecs_str == "pcm-s32") {
     return media::SampleFormat::kSampleFormatS32;
   }
 
-  if (codec == "pcm-f32") {
+  if (codecs_str == "pcm-f32") {
     return media::SampleFormat::kSampleFormatF32;
   }
 
-  return media::SampleFormat::kUnknownSampleFormat;
+  // We want to default to F32Planar for unexpected states, as well as the case
+  // of the codec being "1", which is a valid PCM codec for WAV (seen in
+  // media/base/mime_util_internal.cc). This return catches both unexpected
+  // cases and this desired case.
+  return media::SampleFormat::kSampleFormatPlanarF32;
 }
 
 // static
