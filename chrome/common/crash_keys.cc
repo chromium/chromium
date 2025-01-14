@@ -206,6 +206,9 @@ void AppendStringAnnotationsCommandLineSwitch(base::CommandLine* command_line) {
     string_annotations = base::StrCat(
         {string_annotations, crash_key.Name(), "=", crash_key.Value()});
   }
+  if (string_annotations.empty()) {
+    return;
+  }
   command_line->AppendSwitchASCII(kStringAnnotationsSwitch, string_annotations);
 }
 
