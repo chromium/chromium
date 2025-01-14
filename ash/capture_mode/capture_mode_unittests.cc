@@ -3140,15 +3140,17 @@ TEST_P(CaptureModeRecordingSizeTest, DISABLED_CaptureAtPixelsWindow) {
 // Tests the behavior of screen recording with the presence of HDCP secure
 // content on the screen in all capture mode sources (fullscreen, region, and
 // window) depending on the test param.
-class CaptureModeHdcpTest
-    : public CaptureModeTestBase,
-      public ::testing::WithParamInterface<CaptureModeSource> {
+class CaptureModeHdcpTest : public CaptureModeTestBase,
+                            public ::testing::WithParamInterface<
+                                std::tuple<CaptureModeSource, bool, bool>> {
  public:
   CaptureModeHdcpTest() = default;
   ~CaptureModeHdcpTest() override = default;
 
   // CaptureModeTestBase:
   void SetUp() override {
+    auto [unused_source, sunfish_enabled, scanner_enabled] = GetParam();
+    InitFeatures(sunfish_enabled, scanner_enabled);
     CaptureModeTestBase::SetUp();
     window_ = CreateTestWindow(gfx::Rect(200, 200));
     // Create a child window with protected content. This simulates the real
@@ -3172,7 +3174,8 @@ class CaptureModeHdcpTest
 
   // Enters the capture mode session.
   void StartSessionForVideo() {
-    StartCaptureSession(GetParam(), CaptureModeType::kVideo);
+    StartCaptureSession(std::get<CaptureModeSource>(GetParam()),
+                        CaptureModeType::kVideo);
   }
 
   // Attempts video recording from the capture mode source set by the test
@@ -3181,7 +3184,7 @@ class CaptureModeHdcpTest
     auto* controller = CaptureModeController::Get();
     ASSERT_TRUE(controller->IsActive());
 
-    switch (GetParam()) {
+    switch (std::get<CaptureModeSource>(GetParam())) {
       case CaptureModeSource::kFullscreen:
       case CaptureModeSource::kRegion:
         controller->StartVideoRecordingImmediatelyForTesting();
@@ -3259,7 +3262,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowDestruction) {
   // except when we're capturing a different |window_|.
   auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -3313,7 +3316,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   // Recording should be able to start (since the protected window is on the
   // first display) unless the protected window itself is the one being
   // recorded.
-  if (GetParam() == CaptureModeSource::kWindow) {
+  if (std::get<CaptureModeSource>(GetParam()) == CaptureModeSource::kWindow) {
     EXPECT_FALSE(controller->is_recording_in_progress());
   } else {
     WaitForRecordingToStart();
@@ -3333,11 +3336,21 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeHdcpTest,
-                         testing::Values(CaptureModeSource::kFullscreen,
-                                         CaptureModeSource::kRegion,
-                                         CaptureModeSource::kWindow));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CaptureModeHdcpTest,
+    testing::Combine(testing::Values(CaptureModeSource::kFullscreen,
+                                     CaptureModeSource::kRegion,
+                                     CaptureModeSource::kWindow),
+                     testing::Bool(),
+                     testing::Bool()),
+    [](const testing::TestParamInfo<CaptureModeHdcpTest::ParamType>& info) {
+      auto source = std::get<CaptureModeSource>(info.param);
+      bool sunfish_enabled = std::get<1>(info.param);
+      bool scanner_enabled = std::get<2>(info.param);
+      return SourceSunfishScannerTestName(source, sunfish_enabled,
+                                          scanner_enabled);
+    });
 
 TEST_P(CaptureModeTest, ClosingWindowBeingRecorded) {
   auto window = CreateTestWindow(gfx::Rect(200, 200));
