@@ -17370,6 +17370,7 @@ from previous Chrome versions.
   <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
   <int value="-1238992816" label="ShelfDimming:enabled"/>
+  <int value="-1238769868" label="TabStripGroupDragDropAndroid:disabled"/>
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
   <int value="-1237821073" label="SharedHighlightingUseBlocklist:enabled"/>
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
@@ -22097,6 +22098,7 @@ from previous Chrome versions.
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>
   <int value="654199907" label="AllowSyncXHRInPageDismissal:disabled"/>
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>
+  <int value="655364027" label="TabStripGroupDragDropAndroid:enabled"/>
   <int value="656779919" label="OsFeedbackJelly:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>

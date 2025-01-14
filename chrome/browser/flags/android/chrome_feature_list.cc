@@ -1041,6 +1041,10 @@ BASE_FEATURE(kTabStripGroupCollapseAndroid,
              "TabStripGroupCollapseAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabStripGroupDragDropAndroid,
+             "TabStripGroupDragDropAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabStripGroupReorderAndroid,
              "TabStripGroupReorderAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);

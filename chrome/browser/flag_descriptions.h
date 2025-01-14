@@ -2823,6 +2823,9 @@ extern const char kTabGroupSyncDisableNetworkLayerDescription[];
 extern const char kTabStripGroupCollapseAndroidName[];
 extern const char kTabStripGroupCollapseAndroidDescription[];
 
+extern const char kTabStripGroupDragDropAndroidName[];
+extern const char kTabStripGroupDragDropAndroidDescription[];
+
 extern const char kTabStripGroupReorderAndroidName[];
 extern const char kTabStripGroupReorderAndroidDescription[];
 

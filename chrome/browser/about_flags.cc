@@ -9563,6 +9563,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripGroupCollapseAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupCollapseAndroid)},
 
+    {"tab-strip-group-drag-drop-android",
+     flag_descriptions::kTabStripGroupDragDropAndroidName,
+     flag_descriptions::kTabStripGroupDragDropAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupDragDropAndroid)},
+
     {"tab-strip-group-reorder-android",
      flag_descriptions::kTabStripGroupReorderAndroidName,
      flag_descriptions::kTabStripGroupReorderAndroidDescription, kOsAndroid,

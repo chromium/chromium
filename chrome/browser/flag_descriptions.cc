@@ -4813,6 +4813,14 @@ const char kTabStripGroupCollapseAndroidDescription[] =
     "Collapsed groups can be clicked again to expand. Synced tab groups will "
     "immediately be collapsed.";
 
+const char kTabStripGroupDragDropAndroidName[] =
+    "Tab Strip Group Drag Drop Android";
+const char kTabStripGroupDragDropAndroidDescription[] =
+    "Enables long-pressing on tab strip tab group indicators to start "
+    "drag-and-drop. Users can drag the tab group off the tab strip and drop it "
+    "into another window in split-screen mode or create a new window by "
+    "dropping it on the edge of Chrome.";
+
 const char kTabStripGroupReorderAndroidName[] = "Tab Strip Group Reorder";
 const char kTabStripGroupReorderAndroidDescription[] =
     "Enables long-pressing on tab strip tab group indicators to enter reorder "
