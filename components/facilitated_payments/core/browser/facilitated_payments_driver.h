@@ -15,7 +15,7 @@ class GURL;
 namespace payments::facilitated {
 
 class EwalletManager;
-class FacilitatedPaymentsManager;
+class PixManager;
 
 // A cross-platform interface which is a gateway for all Facilitated Payments
 // related communication between the browser and the DOM. There can be one
@@ -27,20 +27,20 @@ class FacilitatedPaymentsManager;
 // to handle common logics shared by cross-platform.
 class FacilitatedPaymentsDriver {
  public:
-  FacilitatedPaymentsDriver(std::unique_ptr<FacilitatedPaymentsManager> manager,
+  FacilitatedPaymentsDriver(std::unique_ptr<PixManager> pix_manager,
                             std::unique_ptr<EwalletManager> ewallet_manager);
   FacilitatedPaymentsDriver(const FacilitatedPaymentsDriver&) = delete;
   FacilitatedPaymentsDriver& operator=(const FacilitatedPaymentsDriver&) =
       delete;
   virtual ~FacilitatedPaymentsDriver();
 
-  // Informs `FacilitatedPaymentsManager` that a navigation related event has
+  // Informs `PixManager` that a navigation related event has
   // taken place. The navigation could be to the currently displayed page, or
   // away from the currently displayed page. It is invoked only for the primary
   // main frame by the platform-specific implementation.
   void DidNavigateToOrAwayFromPage() const;
 
-  // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
+  // Inform the `PixManager` about `copied_text` being copied to
   // the clipboard. It is invoked only for the primary main frame.
   virtual void OnTextCopiedToClipboard(const GURL& render_frame_host_url,
                                        const std::u16string& copied_text,
@@ -52,13 +52,12 @@ class FacilitatedPaymentsDriver {
   virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
                                          const GURL& page_url);
 
-  virtual void SetFacilitatedPaymentsManagerForTesting(
-      std::unique_ptr<FacilitatedPaymentsManager> manager);
+  virtual void SetPixManagerForTesting(std::unique_ptr<PixManager> pix_manager);
   virtual void SetEwalletManagerForTesting(
       std::unique_ptr<EwalletManager> ewallet_manager);
 
  private:
-  std::unique_ptr<FacilitatedPaymentsManager> manager_;
+  std::unique_ptr<PixManager> pix_manager_;
 
   std::unique_ptr<EwalletManager> ewallet_manager_;
 };

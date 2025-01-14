@@ -121,6 +121,7 @@ if (enable_vulkan) {
     deps = [
       ":buildflags",
       "//base",
+      "//build:android_buildflags",
       "//build:chromeos_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -29,11 +31,13 @@ FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,
     PrefService* prefs,
     signin::IdentityManager* identity_manager,
-    variations::VariationsService* variations_service)
+    VariationsServiceCallback variations_service_callback)
     : config_(config),
       prefs_(prefs),
       identity_manager_(identity_manager),
-      variations_service_(variations_service) {}
+      variations_service_callback_(std::move(variations_service_callback)) {}
+
+FeatureAccessChecker::~FeatureAccessChecker() = default;
 
 FeatureAccessChecker::FeatureAccessChecker() = default;
 
@@ -103,9 +107,13 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   }
 
   if (!config_.country_codes.empty()) {
-    if (variations_service_ == nullptr ||
+    variations::VariationsService* variations_service =
+        variations_service_callback_.is_null()
+            ? nullptr
+            : variations_service_callback_.Run();
+    if (variations_service == nullptr ||
         !base::Contains(config_.country_codes,
-                        variations_service_->GetLatestCountry())) {
+                        variations_service->GetLatestCountry())) {
       failures.Put(kCountryCheckFailed);
     }
   }

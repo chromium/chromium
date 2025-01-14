@@ -78,8 +78,9 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
   void OnDestruct() override { delete this; }
   void OnPageVisibilityChanged(
       content::PageVisibilityState visibility_state) override {
-    if (visibility_state != content::PageVisibilityState::kVisible)
+    if (visibility_state != content::PageVisibilityState::kVisible) {
       return;
+    }
     std::move(continue_loading_cb_).Run();
     delete this;
   }

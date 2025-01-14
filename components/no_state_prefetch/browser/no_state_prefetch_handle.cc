@@ -32,14 +32,16 @@ void NoStatePrefetchHandle::SetObserver(Observer* observer) {
 
 void NoStatePrefetchHandle::OnNavigateAway() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prefetch_data_)
+  if (prefetch_data_) {
     prefetch_data_->OnHandleNavigatedAway(this);
+  }
 }
 
 void NoStatePrefetchHandle::OnCancel() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prefetch_data_)
+  if (prefetch_data_) {
     prefetch_data_->OnHandleCanceled(this);
+  }
 }
 
 bool NoStatePrefetchHandle::IsPrefetching() const {
@@ -71,8 +73,9 @@ NoStatePrefetchHandle::NoStatePrefetchHandle(
 void NoStatePrefetchHandle::OnPrefetchStop(
     NoStatePrefetchContents* no_state_prefetch_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (observer_)
+  if (observer_) {
     observer_->OnPrefetchStop(this);
+  }
 }
 
 bool NoStatePrefetchHandle::RepresentingSamePrefetchAs(

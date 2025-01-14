@@ -39,8 +39,9 @@ NoStatePrefetchURLLoaderThrottle::NoStatePrefetchURLLoaderThrottle(
 }
 
 NoStatePrefetchURLLoaderThrottle::~NoStatePrefetchURLLoaderThrottle() {
-  if (destruction_closure_)
+  if (destruction_closure_) {
     std::move(destruction_closure_).Run();
+  }
 }
 
 void NoStatePrefetchURLLoaderThrottle::DetachFromCurrentSequence() {
@@ -122,7 +123,6 @@ void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
     std::vector<std::string>* /* to_be_removed_headers */,
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
-
   std::string follow_only_when_prerender_shown_header;
   if (response_head.headers) {
     follow_only_when_prerender_shown_header =

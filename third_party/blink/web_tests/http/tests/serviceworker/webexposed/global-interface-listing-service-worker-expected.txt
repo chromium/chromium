@@ -142,6 +142,16 @@ interface AbortSignal : EventTarget
     method constructor
     method throwIfAborted
     setter onabort
+interface AsyncDisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.asyncDispose)
+    method adopt
+    method constructor
+    method defer
+    method disposeAsync
+    method move
+    method use
 interface BackgroundFetchEvent : ExtendableEvent
     attribute @@toStringTag
     getter registration
@@ -524,6 +534,16 @@ interface DecompressionStream
     getter readable
     getter writable
     method constructor
+interface DisposableStack
+    attribute @@toStringTag
+    getter disposed
+    method Symbol(Symbol.dispose)
+    method adopt
+    method constructor
+    method defer
+    method dispose
+    method move
+    method use
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -1987,6 +2007,10 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
+interface SuppressedError : Error
+    attribute message
+    attribute name
+    method constructor
 interface SyncEvent : ExtendableEvent
     attribute @@toStringTag
     getter lastChance

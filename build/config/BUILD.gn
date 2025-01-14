@@ -429,11 +429,3 @@ config("precompiled_headers") {
 config("compress_debug_sections") {
   ldflags = [ "-gz" ]
 }
-
-action("merge_unsafe_buffers_paths") {
-  script = "//build/merge_unsafe_buffers_paths.py"
-  sources = clang_unsafe_buffers_paths
-  outputs = [ "$root_gen_dir/merged_unsafe_buffers_paths.txt" ]
-  args = rebase_path(sources, root_build_dir) +
-         rebase_path(outputs, root_build_dir)
-}
