@@ -254,8 +254,9 @@ class PasswordManager : public PasswordManagerInterface {
     return server_predictions_;
   }
 
-  const std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
-                 base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>&
+  const std::map<
+      std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>>&
   GetClassifierModelPredictionsForTesting() const {
     return classifier_model_predictions_;
   }
@@ -472,7 +473,7 @@ class PasswordManager : public PasswordManagerInterface {
   // the combination of the driver and the renderer id of the form, that allow
   // to uniquely identify forms on the page.
   std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
-           base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+           base::flat_map<autofill::FieldRendererId, autofill::FieldType>>
       classifier_model_predictions_;
 
   // The URL of the last submitted form.

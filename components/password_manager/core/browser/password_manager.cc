@@ -260,10 +260,10 @@ bool StoreResultFilterAllowsSaving(PasswordFormManager* form_manager,
 }
 
 bool ModelPredictionsContainCredentialTypes(
-    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+    const base::flat_map<FieldRendererId, FieldType>& predictions) {
   return base::ranges::any_of(
       predictions,
-      [](const std::pair<FieldGlobalId, FieldType>& field_prediction) {
+      [](const std::pair<FieldRendererId, FieldType>& field_prediction) {
         autofill::FieldTypeGroup type_category =
             GroupTypeOfFieldType(field_prediction.second);
         return (type_category == autofill::FieldTypeGroup::kUsernameField) ||
@@ -289,6 +289,14 @@ void RecordMetricsForPasswordVsOtpFrequency(
   if (type != PasswordVsOtpFormType::kNone) {
     base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm2", type);
   }
+}
+
+base::flat_map<FieldRendererId, FieldType> KeyPredictionsByRendererIds(
+    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+  return base::MakeFlatMap<FieldRendererId, FieldType>(
+      predictions, {}, [](const auto& field) {
+        return std::make_pair(field.first.renderer_id, field.second);
+      });
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1572,8 +1580,11 @@ void PasswordManager::ProcessClassificationModelPredictions(
     const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
   RecordMetricsForPasswordVsOtpFrequency(field_predictions);
 
+  // A combination of driver and form renderer id allow to identify fields
+  // uniquely, so only the renderer ids need to be kept (not global ids).
   auto& predictions_for_form = classifier_model_predictions_[std::make_pair(
-      driver, form.renderer_id())] = std::move(field_predictions);
+      driver, form.renderer_id())] =
+      KeyPredictionsByRendererIds(field_predictions);
 
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {

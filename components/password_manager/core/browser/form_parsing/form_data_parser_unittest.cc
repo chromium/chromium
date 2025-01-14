@@ -304,7 +304,7 @@ class FormParserTest : public testing::Test {
   FormData GetFormDataAndExpectation(
       const FormParsingTestCase& test_case,
       FormPredictions* server_predictions,
-      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>*
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>*
           model_predictions,
       ParseResultIds* fill_result,
       ParseResultIds* save_result) {
@@ -371,7 +371,7 @@ class FormParserTest : public testing::Test {
       }
       if (model_predictions && (field_description.model_predicted_type !=
                                 autofill::MAX_VALID_FIELD_TYPE)) {
-        (*model_predictions)[field.global_id()] =
+        (*model_predictions)[field.renderer_id()] =
             field_description.model_predicted_type;
       }
       if (field_description.predicted_username >= 0) {
@@ -401,7 +401,7 @@ class FormParserTest : public testing::Test {
   void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
     for (const FormParsingTestCase& test_case : test_cases) {
       FormPredictions server_predictions;
-      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>
+      base::flat_map<autofill::FieldRendererId, autofill::FieldType>
           model_predictions;
       ParseResultIds fill_result;
       ParseResultIds save_result;

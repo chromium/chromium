@@ -52,7 +52,7 @@ class BrowserSavePasswordProgressLogger
   // model `predictions`.
   void LogFormDataWithModelPredictions(
       const autofill::FormData& form,
-      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+      const base::flat_map<autofill::FieldRendererId, autofill::FieldType>&
           predictions);
 
   // Browser-specific addition to the base class' Log* methods. The input is

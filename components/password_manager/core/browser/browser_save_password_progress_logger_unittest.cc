@@ -133,8 +133,8 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
 TEST_F(BrowserSavePasswordProgressLoggerTest, LogFormDataWithModelPredictions) {
   StubLogManager log_manager;
   TestLogger logger(&log_manager);
-  base::flat_map<autofill::FieldGlobalId, autofill::FieldType> predictions = {
-      {form_.fields()[0].global_id(), FieldType::NEW_PASSWORD}};
+  base::flat_map<autofill::FieldRendererId, autofill::FieldType> predictions = {
+      {form_.fields()[0].renderer_id(), FieldType::NEW_PASSWORD}};
   logger.LogFormDataWithModelPredictions(form_, predictions);
 
   SCOPED_TRACE(testing::Message()

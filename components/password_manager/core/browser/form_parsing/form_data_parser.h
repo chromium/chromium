@@ -178,7 +178,7 @@ class FormDataParser {
     return server_predictions_;
   }
 
-  void set_model_predictions(base::flat_map<autofill::FieldGlobalId,
+  void set_model_predictions(base::flat_map<autofill::FieldRendererId,
                                             autofill::FieldType> predictions) {
     model_predictions_ = std::move(predictions);
   }
@@ -208,7 +208,7 @@ class FormDataParser {
 
   // Classification model predictions are an optional source of information
   // about field types.
-  std::optional<base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+  std::optional<base::flat_map<autofill::FieldRendererId, autofill::FieldType>>
       model_predictions_;
 
   // Records whether readonly password fields were seen during the last call to

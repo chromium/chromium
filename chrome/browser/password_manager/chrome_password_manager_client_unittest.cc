@@ -674,8 +674,8 @@ TEST_F(ChromePasswordManagerClientTest,
   ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
   // Check that predictions are available for all form fields.
   EXPECT_THAT(received_predictions[form_key],
-              UnorderedElementsAre(Key(form.fields()[0].global_id()),
-                                   Key(form.fields()[1].global_id())));
+              UnorderedElementsAre(Key(form.fields()[0].renderer_id()),
+                                   Key(form.fields()[1].renderer_id())));
 }
 
 TEST_F(ChromePasswordManagerClientTest,

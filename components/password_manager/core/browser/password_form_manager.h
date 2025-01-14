@@ -142,7 +142,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Stores model predictions in the `parser_`.
   void ProcessModelPredictions(
-      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+      const base::flat_map<autofill::FieldRendererId, autofill::FieldType>&
           predictions);
 
   // Sends fill data to the renderer. If no server predictions exist, it
