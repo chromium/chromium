@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -405,6 +406,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    cros_settings_test_helper_ =
+        std::make_unique<ScopedCrosSettingsTestHelper>();
     ash::AshTestHelper::InitParams params;
     ash_test_helper_.SetUp(std::move(params));
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -468,7 +471,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     profile_ = nullptr;
     profile_manager_ = nullptr;
     mock_desks_client_ = nullptr;
+    fake_user_manager_.Reset();
     ash_test_helper_.TearDown();
+    cros_settings_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -484,6 +489,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
+  std::unique_ptr<ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   AshTestHelper ash_test_helper_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<MockDesksClient> mock_desks_client_;

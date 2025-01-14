@@ -59,28 +59,6 @@ User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
   return user;
 }
 
-UserList FakeUserManager::GetUsersAllowedForMultiUserSignIn() const {
-  UserList result;
-  for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
-    if ((*it)->GetType() == UserType::kRegular && !(*it)->is_logged_in()) {
-      result.push_back(*it);
-    }
-  }
-  return result;
-}
-
-void FakeUserManager::UpdateUserAccountData(
-    const AccountId& account_id,
-    const UserAccountData& account_data) {
-  for (User* user : users_) {
-    if (user->GetAccountId() == account_id) {
-      user->set_display_name(account_data.display_name());
-      user->set_given_name(account_data.given_name());
-      return;
-    }
-  }
-}
-
 void FakeUserManager::LogoutAllUsers() {
   primary_user_ = nullptr;
   active_user_ = nullptr;
@@ -152,28 +130,6 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
   if (active_user_ != nullptr) {
     NotifyActiveUserChanged(active_user_);
   }
-}
-
-void FakeUserManager::SaveUserDisplayName(const AccountId& account_id,
-                                          const std::u16string& display_name) {
-  for (UserList::iterator it = users_.begin(); it != users_.end(); ++it) {
-    if ((*it)->GetAccountId() == account_id) {
-      (*it)->set_display_name(display_name);
-      return;
-    }
-  }
-}
-
-const UserList& FakeUserManager::GetLRULoggedInUsers() const {
-  return users_;
-}
-
-UserList FakeUserManager::GetUnlockUsers() const {
-  return users_;
-}
-
-bool FakeUserManager::IsKnownUser(const AccountId& account_id) const {
-  return true;
 }
 
 bool FakeUserManager::IsUserNonCryptohomeDataEphemeral(

@@ -32,3 +32,9 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "floating_workspace_service_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ]
+}

@@ -54,33 +54,11 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                                       bool is_ephemeral);
 
   // UserManager overrides.
-  UserList GetUsersAllowedForMultiUserSignIn() const override;
-  void UpdateUserAccountData(const AccountId& account_id,
-                             const UserAccountData& account_data) override;
-
-  // Set the user as logged in.
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& username_hash,
                     bool browser_restart,
                     bool is_child) override;
-
   void SwitchActiveUser(const AccountId& account_id) override;
-  void SaveUserDisplayName(const AccountId& account_id,
-                           const std::u16string& display_name) override;
-
-  // Not implemented.
-  void Shutdown() override {}
-  const UserList& GetLRULoggedInUsers() const override;
-  UserList GetUnlockUsers() const override;
-  void OnSessionStarted() override {}
-  bool IsKnownUser(const AccountId& account_id) const override;
-  void SaveUserOAuthStatus(const AccountId& account_id,
-                           User::OAuthTokenStatus oauth_token_status) override {
-  }
-  void SaveForceOnlineSignin(const AccountId& account_id,
-                             bool force_online_signin) override {}
-  void SaveUserDisplayEmail(const AccountId& account_id,
-                            const std::string& display_email) override {}
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
   bool IsUserCryptohomeDataEphemeral(
