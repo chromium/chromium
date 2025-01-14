@@ -165,15 +165,16 @@ constexpr char kOpSubtractTypeName[] = "sub";
 constexpr char kOpMaximumTypeName[] = "maximum";
 constexpr char kOpMinimumTypeName[] = "minimum";
 constexpr char kOpPowerTypeName[] = "pow";
-constexpr char kOpLogicalAnd[] = "logical_and";
-constexpr char kOpLogicalOr[] = "logical_or";
-constexpr char kOpLogicalXor[] = "logical_xor";
-// Elementwise unary operators.
 constexpr char kOpLogicalEqual[] = "equal";
 constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
 constexpr char kOpLogicalLess[] = "less";
 constexpr char kOpLogicalLessEqual[] = "less_equal";
+constexpr char kOpLogicalNotEqual[] = "not_equal";
+constexpr char kOpLogicalAnd[] = "logical_and";
+constexpr char kOpLogicalOr[] = "logical_or";
+constexpr char kOpLogicalXor[] = "logical_xor";
+// Elementwise unary operators.
 constexpr char kOpLogicalNot[] = "logical_not";
 constexpr char kOpAbsTypeName[] = "abs";
 constexpr char kOpCeilTypeName[] = "ceil";
@@ -1012,6 +1013,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
        /*greater_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
        /*greater_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
+       /*not_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
        /*lesser_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
        /*lesser_or_equal_input=*/{kFloatsAndInt32, SupportedRanks::UpTo(5)},
        /*logical_and_input=*/
@@ -2111,6 +2113,12 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
       CHECK(context_properties_.data_type_limits.lesser_or_equal_input
                 .data_types.Has(input_data_type));
       op_type_name = kOpLogicalLessEqual;
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kNotEqual: {
+      CHECK(context_properties_.data_type_limits.not_equal_input.data_types.Has(
+          input_data_type));
+      op_type_name = kOpLogicalNotEqual;
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLogicalAnd: {

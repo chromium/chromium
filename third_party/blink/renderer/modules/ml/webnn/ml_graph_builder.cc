@@ -176,8 +176,9 @@ enum class MLGraphOperatorUma {
   kTriangular = 89,
   kWhere = 90,
   kReverse = 91,
+  kNotEqual = 92,
   kMinValue = kGraphBuilt,
-  kMaxValue = kReverse,
+  kMaxValue = kNotEqual,
 };
 
 using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
@@ -234,6 +235,8 @@ MLGraphOperatorUma GetUmaValueForOperation(
           return MLGraphOperatorUma::kLesser;
         case blink_mojom::ElementWiseBinary::Kind::kLesserOrEqual:
           return MLGraphOperatorUma::kLesserOrEqual;
+        case blink_mojom::ElementWiseBinary::Kind::kNotEqual:
+          return MLGraphOperatorUma::kNotEqual;
         case blink_mojom::ElementWiseBinary::Kind::kLogicalAnd:
           return MLGraphOperatorUma::kLogicalAnd;
         case blink_mojom::ElementWiseBinary::Kind::kLogicalOr:
@@ -1953,6 +1956,7 @@ BUILD_ELEMENTWISE_BINARY_OP(greater, greater, kGreater)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, lesser, kLesser)
 BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, greater_or_equal, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, lesser_or_equal, kLesserOrEqual)
+BUILD_ELEMENTWISE_BINARY_OP(notEqual, not_equal, kNotEqual)
 BUILD_ELEMENTWISE_BINARY_OP(logicalAnd, logical_and, kLogicalAnd)
 BUILD_ELEMENTWISE_BINARY_OP(logicalOr, logical_or, kLogicalOr)
 BUILD_ELEMENTWISE_BINARY_OP(logicalXor, logical_xor, kLogicalXor)

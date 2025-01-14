@@ -2080,6 +2080,46 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
   return base::ok();
 }
 
+template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
+const GraphNode* CreateUnaryOperator(const TensorDesc& input_tensor,
+                                     const TensorDesc& output_tensor,
+                                     const NodeOutput* input,
+                                     GraphBuilderDml& graph_builder,
+                                     std::string_view label = "") {
+  DML_OPERATOR_DESC unary_operator_desc{
+      .InputTensor = &input_tensor.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
+  std::array<const NodeOutput*, 1> inputs = {input};
+  return graph_builder.CreateOperatorNode(operator_type, &unary_operator_desc,
+                                          inputs, label);
+}
+
+template <typename OperatorDesc,
+          DML_OPERATOR_TYPE operator_type,
+          typename Operation>
+void CreateOperatorNodeForUnary(const IdToOperandMap& id_to_operand_map,
+                                const Operation& operation,
+                                GraphBuilderDml& graph_builder,
+                                IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, operation->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = operation->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  const GraphNode* unary_node =
+      CreateUnaryOperator<OperatorDesc, operator_type>(
+          input_tensor_desc, output_tensor_desc, input, graph_builder,
+          operation->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      unary_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 void CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
@@ -2258,6 +2298,28 @@ void CreateOperatorNodeForBinary(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL,
           inputs, label);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kNotEqual: {
+      CHECK(context_properties.data_type_limits.not_equal_input.data_types.Has(
+          input_data_type));
+      // DirectML doesn't support `notEqual`, emulate it by `logicalNot(equal(a,
+      // b))`. Step 1: calculate `equal(a, b)`.
+      const TensorDesc equal_output_tensor_desc =
+          TensorDesc(output_tensor_desc.GetDataType(), output_dimensions);
+      const GraphNode* equal_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_EQUALS_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc,
+              equal_output_tensor_desc, graph_builder,
+              DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS, inputs, label);
+      const NodeOutput* equal_output =
+          graph_builder.CreateNodeOutput(equal_node, equal_output_tensor_desc);
+      // Step 2: calculate `logicalNot(equal_output)`
+      binary_node =
+          CreateUnaryOperator<DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
+                              DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
+              equal_output_tensor_desc, output_tensor_desc, equal_output,
+              graph_builder, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLogicalAnd: {
@@ -2730,46 +2792,6 @@ void CreateOperatorNodeForSplit(const IdToOperandMap& id_to_operand_map,
         split_node, std::move(output_tensor_desc[i]), i);
     CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
   }
-}
-
-template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
-const GraphNode* CreateUnaryOperator(const TensorDesc& input_tensor,
-                                     const TensorDesc& output_tensor,
-                                     const NodeOutput* input,
-                                     GraphBuilderDml& graph_builder,
-                                     std::string_view label = "") {
-  DML_OPERATOR_DESC unary_operator_desc{
-      .InputTensor = &input_tensor.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
-  std::array<const NodeOutput*, 1> inputs = {input};
-  return graph_builder.CreateOperatorNode(operator_type, &unary_operator_desc,
-                                          inputs, label);
-}
-
-template <typename OperatorDesc,
-          DML_OPERATOR_TYPE operator_type,
-          typename Operation>
-void CreateOperatorNodeForUnary(const IdToOperandMap& id_to_operand_map,
-                                const Operation& operation,
-                                GraphBuilderDml& graph_builder,
-                                IdToNodeOutputMap& id_to_node_output_map) {
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, operation->input_operand_id);
-  const auto& input_tensor_desc = input->GetTensorDesc();
-
-  uint64_t output_id = operation->output_operand_id;
-  const auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
-
-  const GraphNode* unary_node =
-      CreateUnaryOperator<OperatorDesc, operator_type>(
-          input_tensor_desc, output_tensor_desc, input, graph_builder,
-          operation->label);
-
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      unary_node, std::move(output_tensor_desc), 0);
-  // The output id must be unique in the map.
-  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
 void CreateOperatorNodeForNeg(const IdToOperandMap& id_to_operand_map,

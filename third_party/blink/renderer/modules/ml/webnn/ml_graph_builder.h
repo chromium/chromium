@@ -189,6 +189,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                            MLOperand* b,
                            const MLOperatorOptions* options,
                            ExceptionState& exception_state);
+  MLOperand* notEqual(MLOperand* a,
+                      MLOperand* b,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
   MLOperand* logicalAnd(MLOperand* a,
                         MLOperand* b,
                         const MLOperatorOptions* options,

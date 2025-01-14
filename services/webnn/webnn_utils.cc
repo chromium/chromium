@@ -202,6 +202,8 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
       return ops::kLesser;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return ops::kLesserOrEqual;
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      return ops::kNotEqual;
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
       return ops::kLogicalAnd;
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
@@ -350,6 +352,7 @@ bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
     case mojom::ElementWiseBinary::Kind::kLesser:
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
     case mojom::ElementWiseBinary::Kind::kLogicalXor:

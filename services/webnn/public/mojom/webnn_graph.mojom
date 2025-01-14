@@ -269,6 +269,7 @@ struct ElementWiseBinary {
     kGreaterOrEqual,
     kLesser,
     kLesserOrEqual,
+    kNotEqual,
     kLogicalAnd,
     kLogicalOr,
     kLogicalXor,

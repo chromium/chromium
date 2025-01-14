@@ -199,6 +199,7 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits greaterOrEqual;
   MLBinarySupportLimits lesser;
   MLBinarySupportLimits lesserOrEqual;
+  MLBinarySupportLimits notEqual;
   MLBinarySupportLimits logicalAnd;
   MLBinarySupportLimits logicalOr;
   MLBinarySupportLimits logicalXor;

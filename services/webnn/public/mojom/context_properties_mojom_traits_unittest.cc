@@ -54,25 +54,23 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kInt8},
         webnn::SupportedRanks::UpTo(8)},
        /*equal_input=*/
-       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-        webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*greater_input=*/
-       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-        webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*greater_or_equal_input=*/
        {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*lesser_input=*/
-       {{webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
-        webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*lesser_or_equal_input=*/
-       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-        webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
+       /*not_equal_input=*/
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*logical_and_input=*/
-       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*logical_or_input=*/
-       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*logical_xor_input=*/
-       {{webnn::OperandDataType::kUint8}, webnn::SupportedRanks::UpTo(8)},
+       {{webnn::OperandDataType::kFloat16}, webnn::SupportedRanks::UpTo(8)},
        /*logical_not_input=*/webnn::SupportedDataTypes::All(),
        /*logical_output=*/{webnn::OperandDataType::kUint64},
        /*abs_input=*/
@@ -180,12 +178,12 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
 
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
-      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

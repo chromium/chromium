@@ -163,6 +163,10 @@ ContextProperties ContextImplDml::GetProperties(
        /*lesser_or_equal_input=*/
        {kFloat16To32Ints8To32, SupportedRanks::UpTo(8)},
 
+       // NotEqual is emulated by DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS and
+       // DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT.
+       /*not_equal_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_and_operator_desc#tensor-support
        /*logical_and_input=*/{kUint8To32, SupportedRanks::UpTo(8)},
 
@@ -399,6 +403,8 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.gather_elements_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.gather_nd_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.not_equal_input.data_types =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reshape_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;

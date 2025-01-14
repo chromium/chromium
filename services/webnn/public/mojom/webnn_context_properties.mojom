@@ -85,6 +85,7 @@ struct DataTypeLimits {
   SupportedTensors greater_or_equal_input;
   SupportedTensors lesser_input;
   SupportedTensors lesser_or_equal_input;
+  SupportedTensors not_equal_input;
   SupportedTensors logical_and_input;
   SupportedTensors logical_or_input;
   SupportedTensors logical_xor_input;

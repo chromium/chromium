@@ -247,6 +247,8 @@ MLOperand* BuildElementWiseBinaryOperator(
       return builder->lesser(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return builder->lesserOrEqual(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kNotEqual:
+      return builder->notEqual(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
       return builder->logicalAnd(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
@@ -578,6 +580,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*lesser_input=*/
          {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
          /*lesser_or_equal_input=*/
+         {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
+         /*not_equal_input=*/
          {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},
          /*logical_and_input=*/
          {webnn::SupportedDataTypes::All(), webnn::SupportedRanks::UpTo(8)},

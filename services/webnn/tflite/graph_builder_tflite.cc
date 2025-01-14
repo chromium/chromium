@@ -462,6 +462,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*lesser_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
        /*lesser_or_equal_input=*/
        {kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
+       /*not_equal_input=*/
+       {kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
        // Logical binary operators are limited to 4D when broadcasting is
        // required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/logical.cc
@@ -2071,6 +2073,11 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
                 .data_types.Has(input_data_type));
       code = ::tflite::BuiltinOperator_LESS_EQUAL;
       break;
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      CHECK(context_properties_.data_type_limits.not_equal_input.data_types.Has(
+          input_data_type));
+      code = ::tflite::BuiltinOperator_NOT_EQUAL;
+      break;
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
       CHECK(
           context_properties_.data_type_limits.logical_and_input.data_types.Has(
@@ -2101,37 +2108,42 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(op.output_operand_id));
 
-  if (op.kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
-      op.kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
-      op.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
-    // The data types of the inputs and output for these binary logical
-    // operators are uint8 in WebNN. However, TFLite requires them to be bools,
-    // so we need to cast the inputs to temporary bool tensors, perform the
-    // actual operation, and then cast the output back to uint8.
+  if (IsLogicalElementWiseBinary(op.kind)) {
+    int32_t lhs_tensor_index = lhs_tensor_info.index;
+    int32_t rhs_tensor_index = rhs_tensor_info.index;
+    if (op.kind == mojom::ElementWiseBinary::Kind::kLogicalAnd ||
+        op.kind == mojom::ElementWiseBinary::Kind::kLogicalOr ||
+        op.kind == mojom::ElementWiseBinary::Kind::kLogicalXor) {
+      // The data types of the inputs for these binary logical operators are
+      // uint8 in WebNN. However, TFLite requires them to be bools, so we need
+      // to cast the inputs to temporary bool tensors, perform the actual
+      // operation.
+      CHECK_EQ(lhs_tensor_info.data_type, ::tflite::TensorType_UINT8);
+      lhs_tensor_index = SerializeTemporaryTensor(lhs_tensor_info.dimensions,
+                                                  ::tflite::TensorType_BOOL);
+      operators_.emplace_back(SerializeCastOperation(
+          lhs_tensor_info.index,
+          /*input_tensor_type=*/::tflite::TensorType_UINT8, lhs_tensor_index,
+          /*output_tensor_type=*/::tflite::TensorType_BOOL));
 
-    CHECK_EQ(lhs_tensor_info.data_type, ::tflite::TensorType_UINT8);
-    int32_t lhs_tensor_bool_index = SerializeTemporaryTensor(
-        lhs_tensor_info.dimensions, ::tflite::TensorType_BOOL);
-    operators_.emplace_back(SerializeCastOperation(
-        lhs_tensor_info.index,
-        /*input_tensor_type=*/::tflite::TensorType_UINT8, lhs_tensor_bool_index,
-        /*output_tensor_type=*/::tflite::TensorType_BOOL));
+      CHECK_EQ(rhs_tensor_info.data_type, ::tflite::TensorType_UINT8);
+      rhs_tensor_index = SerializeTemporaryTensor(rhs_tensor_info.dimensions,
+                                                  ::tflite::TensorType_BOOL);
+      operators_.emplace_back(SerializeCastOperation(
+          rhs_tensor_info.index,
+          /*input_tensor_type=*/::tflite::TensorType_UINT8, rhs_tensor_index,
+          /*output_tensor_type=*/::tflite::TensorType_BOOL));
+    }
 
-    CHECK_EQ(rhs_tensor_info.data_type, ::tflite::TensorType_UINT8);
-    int32_t rhs_tensor_bool_index = SerializeTemporaryTensor(
-        rhs_tensor_info.dimensions, ::tflite::TensorType_BOOL);
-    operators_.emplace_back(SerializeCastOperation(
-        rhs_tensor_info.index,
-        /*input_tensor_type=*/::tflite::TensorType_UINT8, rhs_tensor_bool_index,
-        /*output_tensor_type=*/::tflite::TensorType_BOOL));
-
+    // The data types of the output for all the binary logical operators are
+    // uint8 in WebNN. However, TFLite returns bools, so we need to cast the
+    // output to uint8.
     CHECK_EQ(output_tensor_info.data_type, ::tflite::TensorType_UINT8);
     int32_t output_tensor_bool_index = SerializeTemporaryTensor(
         output_tensor_info.dimensions, ::tflite::TensorType_BOOL);
 
     operators_.emplace_back(SerializeBinaryOperation(
-        code, lhs_tensor_bool_index, rhs_tensor_bool_index,
-        output_tensor_bool_index));
+        code, lhs_tensor_index, rhs_tensor_index, output_tensor_bool_index));
 
     // Cast the output from bool to uint8, since that's what WebNN expects back.
     return SerializeCastOperation(

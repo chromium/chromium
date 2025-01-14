@@ -39,6 +39,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors greater_or_equal_input,
                  SupportedTensors lesser_input,
                  SupportedTensors lesser_or_equal_input,
+                 SupportedTensors not_equal_input,
                  SupportedTensors logical_and_input,
                  SupportedTensors logical_or_input,
                  SupportedTensors logical_xor_input,
@@ -152,6 +153,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors greater_or_equal_input;
   SupportedTensors lesser_input;
   SupportedTensors lesser_or_equal_input;
+  SupportedTensors not_equal_input;
   SupportedTensors logical_and_input;
   SupportedTensors logical_or_input;
   SupportedTensors logical_xor_input;
@@ -258,6 +260,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.greater_or_equal_input == rhs.greater_or_equal_input &&
          lhs.lesser_input == rhs.lesser_input &&
          lhs.lesser_or_equal_input == rhs.lesser_or_equal_input &&
+         lhs.not_equal_input == rhs.not_equal_input &&
          lhs.logical_and_input == rhs.logical_and_input &&
          lhs.logical_or_input == rhs.logical_or_input &&
          lhs.logical_xor_input == rhs.logical_xor_input &&

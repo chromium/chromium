@@ -602,6 +602,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*lesser_input=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
        /*lesser_or_equal_input=*/
        {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
+       /*not_equal_input=*/
+       {SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
        /*logical_and_input=*/
        {DataTypeConstraint::kUint8, SupportedRanks::UpTo(8)},
        /*logical_or_input=*/

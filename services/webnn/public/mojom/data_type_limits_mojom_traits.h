@@ -114,6 +114,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.lesser_or_equal_input;
   }
+  static webnn::SupportedTensors not_equal_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.not_equal_input;
+  }
   static webnn::SupportedTensors logical_and_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.logical_and_input;
@@ -449,6 +453,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGreaterOrEqualInput(&out->greater_or_equal_input) &&
            data.ReadLesserInput(&out->lesser_input) &&
            data.ReadLesserOrEqualInput(&out->lesser_or_equal_input) &&
+           data.ReadNotEqualInput(&out->not_equal_input) &&
            data.ReadLogicalAndInput(&out->logical_and_input) &&
            data.ReadLogicalOrInput(&out->logical_or_input) &&
            data.ReadLogicalXorInput(&out->logical_xor_input) &&

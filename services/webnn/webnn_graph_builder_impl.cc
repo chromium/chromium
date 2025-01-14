@@ -1084,6 +1084,9 @@ bool OperationValidationContext::ValidateElementWiseBinaryOperands(
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return context_properties_->data_type_limits.lesser_or_equal_input
           .SupportsAll({lhs->descriptor, rhs->descriptor});
+    case mojom::ElementWiseBinary::Kind::kNotEqual:
+      return context_properties_->data_type_limits.not_equal_input.SupportsAll(
+          {lhs->descriptor, rhs->descriptor});
     case mojom::ElementWiseBinary::Kind::kLogicalAnd:
       return context_properties_->data_type_limits.logical_and_input
           .SupportsAll({lhs->descriptor, rhs->descriptor});

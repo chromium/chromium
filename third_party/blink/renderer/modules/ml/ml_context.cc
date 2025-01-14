@@ -405,6 +405,14 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   lesser_or_equal->setOutput(
       SupportedDataTypesToDataTypeLimits(data_type_limits.logical_output));
   op_support_limits->setLesserOrEqual(lesser_or_equal);
+  MLBinarySupportLimits* not_equal = MLBinarySupportLimits::Create();
+  not_equal->setA(
+      SupportedTensorLimitsToTensorLimits(data_type_limits.not_equal_input));
+  not_equal->setB(
+      SupportedTensorLimitsToTensorLimits(data_type_limits.not_equal_input));
+  not_equal->setOutput(
+      SupportedDataTypesToDataTypeLimits(data_type_limits.logical_output));
+  op_support_limits->setNotEqual(not_equal);
   MLBinarySupportLimits* logical_and = MLBinarySupportLimits::Create();
   logical_and->setA(
       SupportedTensorLimitsToTensorLimits(data_type_limits.logical_and_input));
