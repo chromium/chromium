@@ -226,18 +226,14 @@ void ExtensionService::AddProviderForTesting(
 
 void ExtensionService::BlocklistExtensionForTest(
     const std::string& extension_id) {
-  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-      extension_prefs_);
-  OnBlocklistStateAdded(extension_id);
+  extension_registrar_.BlocklistExtensionForTest(extension_id);  // IN-TEST
 }
 
 void ExtensionService::GreylistExtensionForTest(
     const std::string& extension_id,
     const BitMapBlocklistState& state) {
-  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(extension_id, state,
-                                                          extension_prefs_);
-  OnGreylistStateAdded(extension_id, state);
+  extension_registrar_.GreylistExtensionForTest(extension_id,
+                                                state);  // IN-TEST
 }
 
 bool ExtensionService::OnExternalExtensionUpdateUrlFound(
@@ -958,86 +954,21 @@ void ExtensionService::PerformActionBasedOnExtensionTelemetryServiceVerdicts(
 }
 
 void ExtensionService::OnGreylistStateRemoved(const std::string& extension_id) {
-  bool is_on_sb_list = (blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                            extension_id, extension_prefs_) !=
-                        BitMapBlocklistState::NOT_BLOCKLISTED);
-  bool is_on_omaha_list =
-      blocklist_prefs::HasAnyOmahaGreylistState(extension_id, extension_prefs_);
-  if (is_on_sb_list || is_on_omaha_list) {
-    return;
-  }
-  // Clear all acknowledged states so the extension will still get disabled if
-  // it is added to the greylist again.
-  blocklist_prefs::ClearAcknowledgedGreylistStates(extension_id,
-                                                   extension_prefs_);
-  RemoveDisableReasonAndMaybeEnable(extension_id,
-                                    disable_reason::DISABLE_GREYLIST);
+  extension_registrar_.OnGreylistStateRemoved(extension_id);
 }
 
 void ExtensionService::OnGreylistStateAdded(const std::string& extension_id,
                                             BitMapBlocklistState new_state) {
-#if DCHECK_IS_ON()
-  bool has_new_state_on_sb_list =
-      (blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-           extension_id, extension_prefs_) == new_state);
-  bool has_new_state_on_omaha_list = blocklist_prefs::HasOmahaBlocklistState(
-      extension_id, new_state, extension_prefs_);
-  DCHECK(has_new_state_on_sb_list || has_new_state_on_omaha_list);
-#endif
-  if (blocklist_prefs::HasAcknowledgedBlocklistState(extension_id, new_state,
-                                                     extension_prefs_)) {
-    // If the extension is already acknowledged, don't disable it again
-    // because it can be already re-enabled by the user. This could happen if
-    // the extension is added to the SafeBrowsing blocklist, and then
-    // subsequently marked by Omaha. In this case, we don't want to disable the
-    // extension twice.
-    return;
-  }
-
-  // Set the current greylist states to acknowledge immediately because the
-  // extension is disabled silently. Clear the other acknowledged state because
-  // when the state changes to another greylist state in the future, we'd like
-  // to disable the extension again.
-  blocklist_prefs::UpdateCurrentGreylistStatesAsAcknowledged(extension_id,
-                                                             extension_prefs_);
-  DisableExtension(extension_id, disable_reason::DISABLE_GREYLIST);
+  extension_registrar_.OnGreylistStateAdded(extension_id, new_state);
 }
 
 void ExtensionService::OnBlocklistStateRemoved(
     const std::string& extension_id) {
-  if (blocklist_prefs::IsExtensionBlocklisted(extension_id, extension_prefs_)) {
-    return;
-  }
-
-  // Clear acknowledged state.
-  blocklist_prefs::RemoveAcknowledgedBlocklistState(
-      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-      extension_prefs_);
-
-  scoped_refptr<const Extension> extension =
-      registry_->blocklisted_extensions().GetByID(extension_id);
-  DCHECK(extension);
-  registry_->RemoveBlocklisted(extension_id);
-  AddExtension(extension.get());
+  extension_registrar_.OnBlocklistStateRemoved(extension_id);
 }
 
 void ExtensionService::OnBlocklistStateAdded(const std::string& extension_id) {
-  DCHECK(
-      blocklist_prefs::IsExtensionBlocklisted(extension_id, extension_prefs_));
-  // The extension was already acknowledged by the user, it should already be in
-  // the unloaded state.
-  if (blocklist_prefs::HasAcknowledgedBlocklistState(
-          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-          extension_prefs_)) {
-    DCHECK(base::Contains(registry_->blocklisted_extensions().GetIDs(),
-                          extension_id));
-    return;
-  }
-
-  scoped_refptr<const Extension> extension =
-      registry_->GetInstalledExtension(extension_id);
-  registry_->AddBlocklisted(extension);
-  UnloadExtension(extension_id, UnloadedExtensionReason::BLOCKLIST);
+  extension_registrar_.OnBlocklistStateAdded(extension_id);
 }
 
 void ExtensionService::RemoveDisableReasonAndMaybeEnable(
@@ -1054,7 +985,6 @@ void ExtensionService::EnableExtension(const std::string& extension_id) {
 
 void ExtensionService::DisableExtension(const std::string& extension_id,
                                         int disable_reasons) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   extension_registrar_.DisableExtension(extension_id, disable_reasons);
 }
 
@@ -1062,7 +992,6 @@ void ExtensionService::DisableExtensionWithSource(
     const Extension* source_extension,
     const std::string& extension_id,
     disable_reason::DisableReason disable_reasons) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   extension_registrar_.DisableExtensionWithSource(
       source_extension, extension_id, disable_reasons);
 }
