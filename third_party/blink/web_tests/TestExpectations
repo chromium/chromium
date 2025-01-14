@@ -3107,6 +3107,7 @@ crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-022.h
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-023.html [ Failure ]
 crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac [ Timeout ]
 [ Mac13 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
+[ Mac14 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
 [ Mac13 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 [ Mac14 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
