@@ -152,6 +152,8 @@ BASE_DECLARE_FEATURE(kEnableLockCookieDatabaseByDefault);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kSRIMessageSignatureEnforcement);
 
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kCreateURLLoaderPipeAsync);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
