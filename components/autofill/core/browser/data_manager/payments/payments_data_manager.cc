@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -1159,13 +1160,8 @@ bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
     return false;
   }
 
-  bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
+  return !IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);
-
-  // The option should only be shown if the user has not already opted-in and
-  // the flag to remove the dropdown is disabled.
-  return !is_opted_in && !base::FeatureList::IsEnabled(
-                             features::kAutofillRemovePaymentsButterDropdown);
 #else
   return false;
 #endif  // #if BUILDFLAG(IS_LINUX) ||BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
@@ -1174,15 +1170,15 @@ bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
 
 void PaymentsDataManager::OnUserAcceptedCardsFromAccountOption() {
   DCHECK(IsPaymentsWalletSyncTransportEnabled());
-  prefs::SetUserOptedInWalletSyncTransport(
-      pref_service_, sync_service_->GetAccountInfo().account_id,
-      /*opted_in=*/true);
+  SetUserOptedInWalletSyncTransport(pref_service_,
+                                    sync_service_->GetAccountInfo().account_id,
+                                    /*opted_in=*/true);
 }
 
 void PaymentsDataManager::OnUserAcceptedUpstreamOffer() {
   // If the user is in sync transport mode for Wallet, record an opt-in.
   if (IsPaymentsWalletSyncTransportEnabled()) {
-    prefs::SetUserOptedInWalletSyncTransport(
+    SetUserOptedInWalletSyncTransport(
         pref_service_, sync_service_->GetAccountInfo().account_id,
         /*opted_in=*/true);
   }
@@ -1731,14 +1727,9 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   if (!sync_service_->IsSyncFeatureEnabled()) {
     // For SyncTransport, only show server payment methods if the user has
     // opted in to seeing them in the dropdown.
-    if (!prefs::IsUserOptedInWalletSyncTransport(
+    if (!IsUserOptedInWalletSyncTransport(
             pref_service_, sync_service_->GetAccountInfo().account_id)) {
-      // If the AutofillRemovePaymentsButterDropdown feature is enabled, all
-      // users can see server payment methods, even in SyncTransport mode.
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillRemovePaymentsButterDropdown)) {
-        return false;
-      }
+      return false;
     }
   }
 

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
-
 #import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/core/browser/studies/autofill_experiments.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -16,6 +15,7 @@
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
@@ -153,8 +153,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
            accountId);
 
-  autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,
-                                                     /*opted_in=*/true);
+  autofill::SetUserOptedInWalletSyncTransport(_prefService, accountId,
+                                              /*opted_in=*/true);
   if (!CWVWebView.skipAccountStorageCheckEnabled) {
     CHECK(password_manager::features_util::IsOptedInForAccountStorage(
         _prefService, _syncService));

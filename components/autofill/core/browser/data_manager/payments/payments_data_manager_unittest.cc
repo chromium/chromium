@@ -52,6 +52,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1561,8 +1562,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
           signin::ConsentLevel::kSignin);
 
   // Opt-in to seeing server card in sync transport mode.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id, true);
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
@@ -1600,8 +1600,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   EXPECT_EQ(1U, payments_data_manager().GetServerCreditCards().size());
 
   // Opt-in to seeing server card in sync transport mode.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), active_info.account_id, true);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id, true);
 
   // Check that the server card is available for suggestion.
   EXPECT_EQ(2U, payments_data_manager().GetCreditCards().size());
@@ -3004,13 +3003,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   CoreAccountId account_id =
       identity_test_env_.identity_manager()->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin);
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
-                                                       true);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), account_id, true);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
-                                                       false);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), account_id, false);
   EXPECT_TRUE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function now returns
@@ -3055,6 +3052,10 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 
+  // The test preferences are not hooked properly into the IdentityManager,
+  // manually set the explicit signin flag.
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
+
   // The function should returns false because the
   // kAutofillRemovePaymentsButterDropdown flag is enabled.
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
@@ -3096,6 +3097,10 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
       /*types=*/{syncer::UserSelectableType::kAutofill,
                  syncer::UserSelectableType::kPayments});
 
+  // The test preferences are not hooked properly into the IdentityManager,
+  // manually set the explicit signin flag.
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
+
   // Server payment methods should be suggested because the flag is enabled.
   EXPECT_TRUE(
       test_api(payments_data_manager()).ShouldSuggestServerPaymentMethods());
@@ -3133,13 +3138,11 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   CoreAccountId account_id =
       identity_test_env_.identity_manager()->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin);
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
-                                                       true);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), account_id, true);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(prefs_.get(), account_id,
-                                                       false);
+  SetUserOptedInWalletSyncTransport(prefs_.get(), account_id, false);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function still
@@ -3253,8 +3256,8 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
       /*types=*/{syncer::UserSelectableType::kAutofill,
                  syncer::UserSelectableType::kPayments});
   // Make sure there are no opt-ins recorded yet.
-  ASSERT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
-                                                       active_info.account_id));
+  ASSERT_FALSE(
+      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
 
   // Account wallet storage only makes sense together with support for
   // unconsented primary accounts, i.e. on Win/Mac/Linux.
@@ -3265,13 +3268,13 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
 
   // Make sure an opt-in gets recorded if the user accepted an Upstream offer.
   payments_data_manager().OnUserAcceptedUpstreamOffer();
-  EXPECT_TRUE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
-                                                      active_info.account_id));
+  EXPECT_TRUE(
+      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
 
   // Clear the prefs.
   prefs::ClearSyncTransportOptIns(prefs_.get());
-  ASSERT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
-                                                       active_info.account_id));
+  ASSERT_FALSE(
+      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
 
   ///////////////////////////////////////////////////////////
   // kSignedIn
@@ -3286,13 +3289,13 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   // Make sure an opt-in does not get recorded even if the user accepted an
   // Upstream offer.
   payments_data_manager().OnUserAcceptedUpstreamOffer();
-  EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
-                                                       active_info.account_id));
+  EXPECT_FALSE(
+      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
 
   // Clear the prefs.
   prefs::ClearSyncTransportOptIns(prefs_.get());
-  ASSERT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
-                                                       active_info.account_id));
+  ASSERT_FALSE(
+      IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
 
   ///////////////////////////////////////////////////////////
   // kSignedOut
@@ -3305,8 +3308,8 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
     // Make sure an opt-in does not get recorded even if the user accepted an
     // Upstream offer.
     payments_data_manager().OnUserAcceptedUpstreamOffer();
-    EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(
-        prefs_.get(), active_info.account_id));
+    EXPECT_FALSE(
+        IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -3322,8 +3325,8 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
     // Make sure an opt-in does not get recorded even if the user accepted an
     // Upstream offer.
     payments_data_manager().OnUserAcceptedUpstreamOffer();
-    EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(
-        prefs_.get(), active_info.account_id));
+    EXPECT_FALSE(
+        IsUserOptedInWalletSyncTransport(prefs_.get(), active_info.account_id));
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3526,7 +3529,7 @@ TEST_F(PaymentsDataManagerTest, GetAccountInfoForPaymentsServer) {
 
 TEST_F(PaymentsDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   // Set up some sync transport opt-ins in the prefs.
-  ::autofill::prefs::SetUserOptedInWalletSyncTransport(
+  SetUserOptedInWalletSyncTransport(
       prefs_.get(), CoreAccountId::FromGaiaId("account1"), true);
   EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 

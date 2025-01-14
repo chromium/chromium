@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 
+#include <string_view>
+
 #include "build/build_config.h"
-#include "google_apis/gaia/core_account_id.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -214,13 +215,6 @@ void SetPaymentCvcStorage(PrefService* prefs, bool value);
 bool IsPaymentCardBenefitsEnabled(const PrefService* prefs);
 
 void SetPaymentCardBenefits(PrefService* prefs, bool value);
-
-void SetUserOptedInWalletSyncTransport(PrefService* prefs,
-                                       const CoreAccountId& account_id,
-                                       bool opted_in);
-
-bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
-                                      const CoreAccountId& account_id);
 
 void ClearSyncTransportOptIns(PrefService* prefs);
 
