@@ -106,4 +106,55 @@ suite('GlicDataPage', function() {
     assertEquals(false, page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
     assertFalse(tabAccessToggle.checked);
   });
+
+  test('TabContextExpand', async () => {
+    assertFalse(page.$.tabAccessInfoCollapse.opened);
+
+    const tabAccessToggle = page.$.tabAccessToggle;
+    const expandButton = page.$.tabAccessExpandButton;
+    const infoCard = page.$.tabAccessInfoCollapse;
+
+    // Clicking the expand button opens the info card.
+    expandButton.click();
+    await flushTasks();
+    assertTrue(infoCard.opened);
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+
+    // Clicking the expand button again collapses the info card.
+    expandButton.click();
+    await flushTasks();
+    assertFalse(infoCard.opened);
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+
+    // Toggling the setting to on opens the info card.
+    tabAccessToggle.click();
+    await flushTasks();
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(infoCard.opened);
+
+    // Toggling the setting off closes the info card.
+    tabAccessToggle.click();
+    await flushTasks();
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(infoCard.opened);
+
+    // Toggling the setting to on while the info card is open leaves it open.
+    expandButton.click();
+    await flushTasks();
+    assertTrue(infoCard.opened);
+    tabAccessToggle.click();
+    await flushTasks();
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(infoCard.opened);
+
+    // Toggling the setting to off while the info card is closed leaves it
+    // closed.
+    expandButton.click();
+    await flushTasks();
+    assertFalse(infoCard.opened);
+    tabAccessToggle.click();
+    await flushTasks();
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(infoCard.opened);
+  });
 });
