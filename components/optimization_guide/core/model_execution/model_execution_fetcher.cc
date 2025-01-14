@@ -225,6 +225,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kScamDetection:
     case ModelBasedCapabilityKey::kPermissionsAi:
     case ModelBasedCapabilityKey::kSummarize:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // On-device only feature.
       NOTREACHED();
   }

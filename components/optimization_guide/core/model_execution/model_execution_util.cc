@@ -57,6 +57,7 @@ void SetExecutionRequest(
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
     case ModelBasedCapabilityKey::kScamDetection:
     case ModelBasedCapabilityKey::kPermissionsAi:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // Do not log requests for these features.
       return;
   }
@@ -101,6 +102,7 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
     case ModelBasedCapabilityKey::kPermissionsAi:
     case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
       // Do not log responses for these features.
       return;
   }
