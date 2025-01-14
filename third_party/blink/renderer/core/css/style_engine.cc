@@ -214,7 +214,7 @@ bool DocumentHasComplexSafeAreaConstraint(Document& document) {
     if (auto* element = DynamicTo<Element>(current)) {
       if (const ComputedStyle* style =
               ComputedStyle::NullifyEnsured(element->GetComputedStyle())) {
-        if (style->HasEnvSafeAreaInsetBottom() &&
+        if (style->HasEnvSafeAreaInsetBottom() && !style->Bottom().IsAuto() &&
             !style->IsBottomRelativeToSafeAreaInset()) {
           return true;
         }
