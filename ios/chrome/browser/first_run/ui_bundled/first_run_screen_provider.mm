@@ -18,9 +18,9 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
-@implementation FirstRunScreenProvider
+namespace {
 
-+ (NSArray*)firstRunScreenSequenceForProfile:(ProfileIOS*)profile {
+NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
   NSMutableArray* screens = [NSMutableArray array];
 
   first_run::UpdatedFRESequenceVariationType variationType =
@@ -74,9 +74,12 @@
   return screens;
 }
 
+}  // namespace
+
+@implementation FirstRunScreenProvider
+
 - (instancetype)initForProfile:(ProfileIOS*)profile {
-  return [super
-      initWithScreens:[[self class] firstRunScreenSequenceForProfile:profile]];
+  return [super initWithScreens:FirstRunScreenSequenceForProfile(profile)];
 }
 
 @end

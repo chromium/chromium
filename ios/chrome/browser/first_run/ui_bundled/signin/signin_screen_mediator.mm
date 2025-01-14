@@ -28,14 +28,20 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
+namespace {
+// Represents the state of the screen relevant to the First Run.
+enum class SigninScreenState {
+  // The screen is the first screen in the FRE sequence.
+  kFirstRunAsFirstScreen,
+  // The screen is in the FRE sequence, but is not the first screen.
+  kFirstRunAsOtherScreen,
+  // The screen is not in the FRE.
+  kNotFirstRun,
+};
+}  // namespace
+
 @interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
                                     IdentityManagerObserverBridgeDelegate> {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserver;
-  // YES if this is part of a first run signin.
-  BOOL _firstRun;
 }
 
 // Application local pref.
@@ -62,6 +68,12 @@
   raw_ptr<AuthenticationService> _authenticationService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
+  // State of the sign-in screen.
+  SigninScreenState _screenState;
 }
 
 - (instancetype)
@@ -103,15 +115,30 @@
     } else {
       _hadIdentitiesAtStartup = _accountManagerService->HasIdentities();
     }
-    _firstRun =
-        accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-    if (_firstRun) {
-      _logger = [[FirstRunSigninLogger alloc] initWithAccessPoint:accessPoint
-                                                      promoAction:promoAction];
+
+    if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE) {
+      if (!_localPrefService->GetBoolean(prefs::kEulaAccepted)) {
+        _screenState = SigninScreenState::kFirstRunAsFirstScreen;
+      } else {
+        _screenState = SigninScreenState::kFirstRunAsOtherScreen;
+      }
     } else {
-      _logger = [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
-                                                  promoAction:promoAction];
+      _screenState = SigninScreenState::kNotFirstRun;
     }
+
+    switch (_screenState) {
+      case SigninScreenState::kNotFirstRun:
+        _logger = [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                    promoAction:promoAction];
+        break;
+      case SigninScreenState::kFirstRunAsFirstScreen:
+      case SigninScreenState::kFirstRunAsOtherScreen:
+        _logger =
+            [[FirstRunSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                  promoAction:promoAction];
+        break;
+    }
+
     _ignoreDismissGesture =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN;
@@ -196,18 +223,20 @@
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  if (_firstRun) {
+  if (_screenState != SigninScreenState::kNotFirstRun) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
-    self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
-    self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
-                                      self.UMAReportingUserChoice);
-    self.localPrefService->CommitPendingWrite();
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   firstRunStage);
     RecordFirstRunSignInMetrics(_identityManager, self.attemptStatus,
                                 self.hadIdentitiesAtStartup);
+  }
+  if (_screenState == SigninScreenState::kFirstRunAsFirstScreen) {
+    self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
+    self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
+                                      self.UMAReportingUserChoice);
+    self.localPrefService->CommitPendingWrite();
   }
 }
 
@@ -249,19 +278,25 @@
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
       !HasManagedSyncDataType(_syncService);
   self.consumer.hasPlatformPolicies = HasPlatformPolicies();
-  if (!_firstRun) {
-    self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
-  } else {
-    BOOL metricReportingDisabled =
-        self.localPrefService->IsManagedPreference(
-            metrics::prefs::kMetricsReportingEnabled) &&
-        !self.localPrefService->GetBoolean(
-            metrics::prefs::kMetricsReportingEnabled);
-    self.consumer.screenIntent =
-        metricReportingDisabled
-            ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
-            : SigninScreenConsumerScreenIntentWelcomeAndSignin;
+
+  switch (_screenState) {
+    case SigninScreenState::kNotFirstRun:
+    case SigninScreenState::kFirstRunAsOtherScreen:
+      self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
+      break;
+    case SigninScreenState::kFirstRunAsFirstScreen:
+      BOOL metricReportingDisabled =
+          self.localPrefService->IsManagedPreference(
+              metrics::prefs::kMetricsReportingEnabled) &&
+          !self.localPrefService->GetBoolean(
+              metrics::prefs::kMetricsReportingEnabled);
+      self.consumer.screenIntent =
+          metricReportingDisabled
+              ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
+              : SigninScreenConsumerScreenIntentWelcomeAndSignin;
+      break;
   }
+
   if (signinForcedOrAvailable) {
     self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
         _identityManager, _accountManagerService);

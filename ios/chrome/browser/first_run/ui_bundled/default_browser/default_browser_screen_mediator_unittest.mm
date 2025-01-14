@@ -5,16 +5,20 @@
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
 
 #import "base/test/gmock_callback_support.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
+#import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_consumer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_test_utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -36,8 +40,12 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kSegmentedDefaultBrowserPromo);
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     DeviceSwitcherResultDispatcher::RegisterProfilePrefs(prefs_->registry());
+    // Set kEulaAccepted as true to stimulate being past the FRE.
+    prefs_->registry()->RegisterBooleanPref(prefs::kEulaAccepted, true);
+    TestingApplicationContext::GetGlobal()->SetLocalState(prefs_.get());
     device_info_tracker_ = std::make_unique<FakeDeviceInfoTracker>();
     consumer_mock_ =
         OCMStrictProtocolMock(@protocol(DefaultBrowserScreenConsumer));
@@ -45,6 +53,7 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     PlatformTest::TearDown();
     mediator_to_test_.consumer = nil;
     [mediator_to_test_ disconnect];
@@ -83,7 +92,7 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<FakeDeviceInfoTracker> device_info_tracker_;
   NiceMock<MockSegmentationPlatformService> segmentation_platform_service_;
@@ -99,6 +108,8 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsDesktopUser) {
   SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
                     PredictionStatus::kSucceeded);
+  OCMExpect([consumer_mock_
+      setScreenIntent:DefaultBrowserScreenConsumerScreenIntent::kDefault]);
   ExpectTextForSegment(DefaultBrowserUserSegment::kDesktopUser);
 }
 
@@ -107,6 +118,8 @@ TEST_F(DefaultBrowserScreenMediatorTest, UserIsDesktopUser) {
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsAndroidSwitcher) {
   SetUpMediatorTest(DefaultBrowserUserSegment::kAndroidSwitcher,
                     PredictionStatus::kSucceeded);
+  OCMExpect([consumer_mock_
+      setScreenIntent:DefaultBrowserScreenConsumerScreenIntent::kDefault]);
   ExpectTextForSegment(DefaultBrowserUserSegment::kAndroidSwitcher);
 }
 
@@ -115,6 +128,8 @@ TEST_F(DefaultBrowserScreenMediatorTest, UserIsAndroidSwitcher) {
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsNotInTargetedSegment) {
   SetUpMediatorTest(DefaultBrowserUserSegment::kDefault,
                     PredictionStatus::kSucceeded);
+  OCMExpect([consumer_mock_
+      setScreenIntent:DefaultBrowserScreenConsumerScreenIntent::kDefault]);
   ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
 
@@ -123,6 +138,8 @@ TEST_F(DefaultBrowserScreenMediatorTest, UserIsNotInTargetedSegment) {
 TEST_F(DefaultBrowserScreenMediatorTest, ClassificationNotReady) {
   SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
                     PredictionStatus::kNotReady);
+  OCMExpect([consumer_mock_
+      setScreenIntent:DefaultBrowserScreenConsumerScreenIntent::kDefault]);
   ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
 
@@ -131,6 +148,8 @@ TEST_F(DefaultBrowserScreenMediatorTest, ClassificationNotReady) {
 TEST_F(DefaultBrowserScreenMediatorTest, ClassificationFailed) {
   SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
                     PredictionStatus::kFailed);
+  OCMExpect([consumer_mock_
+      setScreenIntent:DefaultBrowserScreenConsumerScreenIntent::kDefault]);
   ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
 

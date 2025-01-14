@@ -18,6 +18,9 @@
 
 @implementation DefaultBrowserScreenViewController
 
+@synthesize hasPlatformPolicies = _hasPlatformPolicies;
+@synthesize screenIntent = _screenIntent;
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -60,23 +63,39 @@
     l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
   ];
 
+  [self generateDisclaimer];
+
   UIView* instructionView =
       [[InstructionView alloc] initWithList:defaultBrowserSteps];
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.specificContentView addSubview:instructionView];
+  [self.specificContentView addSubview:instructionView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [instructionView.bottomAnchor
-        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
     [instructionView.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [instructionView.widthAnchor
         constraintEqualToAnchor:self.specificContentView.widthAnchor],
-    [instructionView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.specificContentView
-                                                 .topAnchor],
   ]];
+
+  if ([self.disclaimerText length] > 0) {
+    [NSLayoutConstraint activateConstraints:@[
+      [instructionView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.specificContentView
+                                                .bottomAnchor],
+      [instructionView.topAnchor
+          constraintEqualToAnchor:self.specificContentView.topAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [instructionView.bottomAnchor
+          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+      [instructionView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.specificContentView
+                                                   .topAnchor],
+    ]];
+  }
 
   [super viewDidLoad];
 }
@@ -89,6 +108,40 @@
 
 - (void)setPromoSubtitle:(NSString*)subtitleText {
   self.subtitleText = subtitleText;
+}
+
+#pragma mark - Private
+
+// Generates the footer string.
+- (void)generateDisclaimer {
+  NSMutableArray<NSString*>* array = [NSMutableArray array];
+  NSMutableArray<NSURL*>* urls = [NSMutableArray array];
+  if (self.hasPlatformPolicies) {
+    [array addObject:l10n_util::GetNSString(
+                         IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED)];
+  }
+  switch (self.screenIntent) {
+    case kDefault: {
+      break;
+    }
+    case kTOSAndUMA: {
+      [array addObject:l10n_util::GetNSString(
+                           IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE)];
+      [urls addObject:[NSURL URLWithString:first_run::kTermsOfServiceURL]];
+      [array addObject:l10n_util::GetNSString(
+                           IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING)];
+      [urls addObject:[NSURL URLWithString:first_run::kMetricReportingURL]];
+      break;
+    }
+    case kTOSWithoutUMA: {
+      [array addObject:l10n_util::GetNSString(
+                           IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE)];
+      [urls addObject:[NSURL URLWithString:first_run::kTermsOfServiceURL]];
+      break;
+    }
+  }
+  self.disclaimerText = [array componentsJoinedByString:@" "];
+  self.disclaimerURLs = urls;
 }
 
 @end
