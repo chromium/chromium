@@ -405,21 +405,17 @@ class CORE_EXPORT StyleCascade {
   bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          const CSSParserContext&,
-                         const FunctionContext&,
+                         const FunctionContext*,
                          CSSParserTokenType stop_type,
                          TokenSequence&);
   bool ResolveVarInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       const CSSParserContext&,
+                      const FunctionContext*,
                       TokenSequence&);
   bool ResolveEnvInto(CSSParserTokenStream&,
                       CascadeResolver&,
                       const CSSParserContext&,
-                      TokenSequence&);
-  bool ResolveArgInto(CSSParserTokenStream&,
-                      CascadeResolver&,
-                      const CSSParserContext&,
-                      const FunctionContext&,
                       TokenSequence&);
   bool ResolveAttrInto(CSSParserTokenStream&,
                        CascadeResolver&,
@@ -438,7 +434,7 @@ class CORE_EXPORT StyleCascade {
                            CSSParserTokenStream& stream,
                            CascadeResolver& resolver,
                            const CSSParserContext& context,
-                           const FunctionContext& function_context,
+                           const FunctionContext* function_context,
                            TokenSequence& out);
 
   const CSSValue* ResolveFunctionExpression(
@@ -446,7 +442,7 @@ class CORE_EXPORT StyleCascade {
       const CSSSyntaxDefinition& type,
       CascadeResolver& resolver,
       const CSSParserContext& context,
-      const FunctionContext& function_context);
+      const FunctionContext* function_context);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,

@@ -1126,7 +1126,8 @@ const CSSValue* StyleCascade::ResolveVariableReference(
   TokenSequence sequence;
 
   CSSParserTokenStream stream(data->OriginalText());
-  if (ResolveTokensInto(stream, resolver, *context, FunctionContext{},
+  if (ResolveTokensInto(stream, resolver, *context,
+                        /* function_context */ nullptr,
                         /* stop_type */ kEOFToken, sequence)) {
     // TODO(sesse): It would be nice if we had some way of combining
     // ResolveTokensInto() and the re-tokenization. This is basically
@@ -1168,9 +1169,10 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     TokenSequence sequence;
 
     CSSParserTokenStream stream(shorthand_data->OriginalText());
-    if (!ResolveTokensInto(
-            stream, resolver, *GetParserContext(*shorthand_value),
-            FunctionContext{}, /* stop_type */ kEOFToken, sequence)) {
+    if (!ResolveTokensInto(stream, resolver,
+                           *GetParserContext(*shorthand_value),
+                           /* function_context */ nullptr,
+                           /* stop_type */ kEOFToken, sequence)) {
       return cssvalue::CSSUnsetValue::Create();
     }
 
@@ -1317,7 +1319,8 @@ CSSVariableData* StyleCascade::ResolveVariableData(
   TokenSequence sequence(data);
 
   CSSParserTokenStream stream(data->OriginalText());
-  if (!ResolveTokensInto(stream, resolver, context, FunctionContext{},
+  if (!ResolveTokensInto(stream, resolver, context,
+                         /* function_context */ nullptr,
                          /* stop_type */ kEOFToken, sequence)) {
     return nullptr;
   }
@@ -1328,7 +1331,7 @@ CSSVariableData* StyleCascade::ResolveVariableData(
 bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                                      CascadeResolver& resolver,
                                      const CSSParserContext& context,
-                                     const FunctionContext& function_context,
+                                     const FunctionContext* function_context,
                                      CSSParserTokenType stop_type,
                                      TokenSequence& out) {
   bool success = true;
@@ -1341,15 +1344,11 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       break;
     } else if (token.FunctionId() == CSSValueID::kVar) {
       CSSParserTokenStream::BlockGuard guard(stream);
-      success &= ResolveVarInto(stream, resolver, context, out);
+      success &=
+          ResolveVarInto(stream, resolver, context, function_context, out);
     } else if (token.FunctionId() == CSSValueID::kEnv) {
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveEnvInto(stream, resolver, context, out);
-    } else if (token.FunctionId() == CSSValueID::kArg &&
-               RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
-      CSSParserTokenStream::BlockGuard guard(stream);
-      success &=
-          ResolveArgInto(stream, resolver, context, function_context, out);
     } else if (token.FunctionId() == CSSValueID::kAttr &&
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
@@ -1396,9 +1395,36 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
 bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   const CSSParserContext& context,
+                                  const FunctionContext* function_context,
                                   TokenSequence& out) {
-  CustomProperty property(ConsumeVariableName(stream), state_.GetDocument());
+  AtomicString var_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
+
+  // Within a function context (i.e. when resolving values within the body of
+  // an @function rule), var() must first look for local variables
+  // and arguments.
+  //
+  // https://drafts.csswg.org/css-mixins-1/#locally-substitute-a-var
+  if (function_context) {
+    // TODO(crbug.com/325504770): Support local variables.
+    const auto it = function_context->arguments.find(var_name);
+    if (it != function_context->arguments.end()) {
+      // Note that there's nothing to actually resolve within `arg_value`;
+      // substitution functions were already eliminated at the call-site
+      // by ResolveFunctionInto. We're still using ResolveTokensInto, since
+      // it's the most convenient way to "paste" `arg_value` into `out`.
+      //
+      // TODO(crbug.com/325504770): Avoid tokenization and the call to
+      // ResolveTokensInto.
+      String arg_value = it->value->CssText();
+      CSSParserTokenStream arg_value_stream(arg_value);
+      return ResolveTokensInto(arg_value_stream, resolver, context,
+                               /* function_context */ nullptr,
+                               /* stop_type */ kEOFToken, out);
+    }
+  }
+
+  CustomProperty property(var_name, state_.GetDocument());
 
   // Any custom property referenced (by anything, even just once) in the
   // document can currently not be animated on the compositor. Hence we mark
@@ -1437,9 +1463,9 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    bool success =
-        ResolveTokensInto(stream, resolver, context, FunctionContext{},
-                          /* stop_type */ kEOFToken, fallback);
+    bool success = ResolveTokensInto(stream, resolver, context,
+                                     /* function_context */ nullptr,
+                                     /* stop_type */ kEOFToken, fallback);
     // The fallback must match the syntax of the referenced custom property.
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
     //
@@ -1468,7 +1494,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        CSSParserTokenStream& stream,
                                        CascadeResolver& resolver,
                                        const CSSParserContext& context,
-                                       const FunctionContext& function_context,
+                                       const FunctionContext* function_context,
                                        TokenSequence& out) {
   state_.StyleBuilder().SetAffectedByCSSFunction();
 
@@ -1523,9 +1549,10 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     function_arguments.insert(parameter.name, argument_value);
   }
 
+  FunctionContext local_function_context{function_arguments};
   const CSSValue* ret_value = ResolveFunctionExpression(
       function->GetFunctionBody().OriginalText(), function->GetReturnType(),
-      resolver, context, FunctionContext{function_arguments});
+      resolver, context, &local_function_context);
   if (ret_value == nullptr) {
     return false;
   }
@@ -1533,7 +1560,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   String ret_string = ret_value->CssText();
   CSSParserTokenStream ret_value_stream(ret_string);
   return ResolveTokensInto(ret_value_stream, resolver, context,
-                           FunctionContext{}, /* stop_type */ kEOFToken, out);
+                           /* function_context */ nullptr,
+                           /* stop_type */ kEOFToken, out);
 }
 
 // Resolves an expression within a function; in practice, either a function
@@ -1549,7 +1577,7 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
     const CSSSyntaxDefinition& type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
-    const FunctionContext& function_context) {
+    const FunctionContext* function_context) {
   TokenSequence resolved_expr;
 
   CSSParserTokenStream argument_stream(expr);
@@ -1563,6 +1591,10 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
   if (!value) {
     return nullptr;
   }
+
+  // TODO(crbug.com/325504770): We need to return a CSSUnparsedDeclarationValue
+  // (or CSSVariableData) from this function. We're currently losing
+  // tainting information held by TokenSequence.
 
   // Resolve the value as if it were a registered property, to get rid of
   // extraneous calc(), resolve lengths and so on.
@@ -1604,33 +1636,14 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 
   if (!data) {
     if (ConsumeComma(stream)) {
-      return ResolveTokensInto(stream, resolver, context, FunctionContext{},
+      return ResolveTokensInto(stream, resolver, context,
+                               /* function_context */ nullptr,
                                /* stop_type */ kEOFToken, out);
     }
     return false;
   }
 
   return out.Append(data, data->IsAttrTainted());
-}
-
-bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
-                                  CascadeResolver& resolver,
-                                  const CSSParserContext& context,
-                                  const FunctionContext& function_context,
-                                  TokenSequence& out) {
-  AtomicString argument_name = ConsumeVariableName(stream);
-  DCHECK(stream.AtEnd());
-
-  const auto it = function_context.arguments.find(argument_name);
-  if (it == function_context.arguments.end()) {
-    // Argument not found.
-    return false;
-  }
-
-  String arg_value = it->value->CssText();
-  CSSParserTokenStream arg_value_stream(arg_value);
-  return ResolveTokensInto(arg_value_stream, resolver, context,
-                           FunctionContext{}, /* stop_type */ kEOFToken, out);
 }
 
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
@@ -1659,7 +1672,8 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    if (!ResolveTokensInto(stream, resolver, context, FunctionContext{},
+    if (!ResolveTokensInto(stream, resolver, context,
+                           /* function_context */ nullptr,
                            /* stop_type */ kEOFToken, fallback)) {
       return false;
     }
@@ -1711,7 +1725,8 @@ bool StyleCascade::ResolveAppearanceAutoBaseSelectInto(
     stream.ConsumeIncludingWhitespace();  // kCommaToken
   }
 
-  return ResolveTokensInto(stream, resolver, context, FunctionContext{},
+  return ResolveTokensInto(stream, resolver, context,
+                           /* function_context */ nullptr,
                            /* stop_type */ kCommaToken, out);
 }
 

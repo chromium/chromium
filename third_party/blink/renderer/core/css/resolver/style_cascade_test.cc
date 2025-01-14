@@ -4320,7 +4320,7 @@ TEST_F(StyleCascadeTest, CSSFunctionTrivial) {
 TEST_F(StyleCascadeTest, CSSFunctionWithArgument) {
   AppendSheet(R"HTML(
      @function --foo(--a <length>) returns <length> {
-       @return calc(arg(--a) * 2);
+       @return calc(var(--a) * 2);
      }
     )HTML");
 
@@ -4335,7 +4335,7 @@ TEST_F(StyleCascadeTest, CSSFunctionWithArgument) {
 TEST_F(StyleCascadeTest, CSSFunctionWithTwoArguments) {
   AppendSheet(R"HTML(
      @function --foo(--a <integer>, --b <integer>) returns <integer> {
-       @return calc(arg(--a) * arg(--b));
+       @return calc(var(--a) * var(--b));
      }
     )HTML");
 
@@ -4347,13 +4347,30 @@ TEST_F(StyleCascadeTest, CSSFunctionWithTwoArguments) {
   EXPECT_EQ("24", cascade.ComputedValue("z-index"));
 }
 
+TEST_F(StyleCascadeTest, CSSFunctionShadowingArgument) {
+  AppendSheet(R"HTML(
+     @function --foo(--a <length>) returns <length> {
+       @return calc(var(--a) * var(--b));
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--a", "0px"); /* Shadowed by argument --a. */
+  cascade.Add("--b", "2");
+  cascade.Add("left", "--foo(10.00px)");
+  cascade.Apply();
+
+  EXPECT_EQ("20px", cascade.ComputedValue("left"));
+}
+
 TEST_F(StyleCascadeTest, CSSFunctionCallingOtherFunction) {
   AppendSheet(R"HTML(
      @function --foo(--a <length>) returns <length> {
-       @return calc(arg(--a) * 2);
+       @return calc(var(--a) * 2);
      }
      @function --bar(--b <length>) returns <length> {
-       @return calc(--foo(arg(--b)) * 3);
+       @return calc(--foo(var(--b)) * 3);
      }
     )HTML");
 
@@ -4419,7 +4436,7 @@ TEST_F(StyleCascadeTest, CSSFunctionAdvancedType) {
 TEST_F(StyleCascadeTest, CSSFunctionExplicitCalc) {
   AppendSheet(R"HTML(
      @function --foo(--x <number>) returns <number> {
-       @return calc(arg(--x) * 2);
+       @return calc(var(--x) * 2);
      }
     )HTML");
 
