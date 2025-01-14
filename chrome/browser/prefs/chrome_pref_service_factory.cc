@@ -441,7 +441,6 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
 #endif  // BUILDFLAG(IS_ANDROID)
     {
 #if BUILDFLAG(IS_ANDROID)
-      std::cerr << "Deleting file" << std::endl;
       // Delete account preference file on Mobile platforms.
       // TODO(crbug.com/346508597): Remove this after an year, consistent with
       // the pref migration process.
