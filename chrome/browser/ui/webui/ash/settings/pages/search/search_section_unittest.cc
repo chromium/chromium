@@ -76,7 +76,15 @@ TEST_F(SearchSectionTest,
                    .value());
 }
 
-TEST_F(SearchSectionTest, DoesNotIncludeSunfishSettingsByDefault) {
+TEST_F(SearchSectionTest,
+       DoesNotIncludeSunfishSettingsWhenSunfishFeaturesDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/
+                                {
+                                    features::kSunfishFeature,
+                                    features::kScannerUpdate,
+                                    features::kScannerDogfood,
+                                });
   search_section_ =
       std::make_unique<SearchSection>(profile(), search_tag_registry());
   std::unique_ptr<content::TestWebUIDataSource> html_source =
