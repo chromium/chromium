@@ -81,6 +81,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kCreateSpeculativeRFHFilterRestore;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kCreateSpeculativeRFHDelayMs;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeleteStaleSessionCookiesOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevToolsPrivacyUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
 // TODO(crbug.com/364900088): Refactor DIPS feature flags and parameters into

@@ -55,7 +55,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
@@ -4386,7 +4385,7 @@ class SessionRestoreStaleSessionCookieDeletionTest
   SessionRestoreStaleSessionCookieDeletionTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatureState(
-        kDeleteStaleSessionCookiesOnStartup,
+        features::kDeleteStaleSessionCookiesOnStartup,
         ShouldDeleteStaleSessionCookiesOnStartup());
   }
 

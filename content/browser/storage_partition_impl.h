@@ -227,7 +227,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
       override;
 
-  void DeleteStaleSessionOnlyCookiesAfterDelay() override;
+  void DeleteStaleSessionData() override;
 
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
@@ -729,7 +729,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
-  void DeleteStaleSessionOnlyCookiesAfterDelayCallback();
+  void DeleteStaleSessionOnlyCookiesAfterDelay();
 
   void ClearNoncesInNetworkContextAfterDelayCallback(
       const std::vector<base::UnguessableToken>& nonces);

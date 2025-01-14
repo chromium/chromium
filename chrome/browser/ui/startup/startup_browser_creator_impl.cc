@@ -615,12 +615,10 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
            ? StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL))})
            : tabs));
 
-  // Now that a restore is no longer possible, it is safe to clear DOM storage,
-  // unless this is a crash recovery.
+  // Now that a restore is no longer possible, it is safe to clear session
+  // cookie/storage, unless this is a crash recovery.
   if (!is_post_crash_launch) {
-    profile_->GetDefaultStoragePartition()
-        ->GetDOMStorageContext()
-        ->StartScavengingUnusedSessionStorage();
+    profile_->GetDefaultStoragePartition()->DeleteStaleSessionData();
   }
 
   return browser;

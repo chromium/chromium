@@ -266,6 +266,13 @@ const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
 const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
     &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
+// Clears session cookies last accessed/modified more than 7 days ago on startup
+// even when session restore is enabled.
+// See crbug.com/40285083 for more info.
+BASE_FEATURE(kDeleteStaleSessionCookiesOnStartup,
+             "DeleteStaleSessionCookiesOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/
 BASE_FEATURE(kDigitalGoodsApi,
