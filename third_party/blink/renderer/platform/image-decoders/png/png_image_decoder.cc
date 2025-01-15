@@ -250,21 +250,11 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
     return ColorProfile::Create(base::as_bytes(base::span(buffer, length)));
   }
 
-  png_fixed_point chrm[8];
-  if (!png_get_cHRM_fixed(png, info, &chrm[0], &chrm[1], &chrm[2], &chrm[3],
-                          &chrm[4], &chrm[5], &chrm[6], &chrm[7])) {
-    return nullptr;
-  }
-
   png_fixed_point inverse_gamma;
-  if (!png_get_gAMA_fixed(png, info, &inverse_gamma)) {
+  bool got_gama_chunk = png_get_gAMA_fixed(png, info, &inverse_gamma);
+  if (!got_gama_chunk) {
     return nullptr;
   }
-
-  // cHRM and gAMA tags are both present. The PNG spec states that cHRM is
-  // valid even without gAMA but we cannot apply the cHRM without guessing
-  // a gAMA. Color correction is not a guessing game: match the behavior
-  // of Safari and Firefox instead (compat).
 
   struct pngFixedToFloat {
     explicit pngFixedToFloat(png_fixed_point value)
@@ -272,6 +262,39 @@ static inline std::unique_ptr<ColorProfile> ReadColorProfile(png_structp png,
     operator float() { return float_value; }
     float float_value;
   };
+
+  png_fixed_point chrm[8];
+  if (!png_get_cHRM_fixed(png, info, &chrm[0], &chrm[1], &chrm[2], &chrm[3],
+                          &chrm[4], &chrm[5], &chrm[6], &chrm[7])) {
+    if (got_gama_chunk) {
+      // `kPngGammaThreshold` mimics `PNG_GAMMA_THRESHOLD_FIXED` from `libpng`
+      // without using internal/private `png_muldiv` and/or
+      // `png_gamma_significant`.
+      constexpr float kPngGammaThreshold = 0.05f;
+      constexpr float kMinNeutralValue = 1.0f - kPngGammaThreshold;
+      constexpr float kMaxNeutralValue = 1.0f + kPngGammaThreshold;
+      float floating_inverse_gamma = pngFixedToFloat(inverse_gamma);
+      float tmp = floating_inverse_gamma * 2.2f;
+      bool is_neutral = kMinNeutralValue < tmp && tmp < kMaxNeutralValue;
+      if (!is_neutral) {
+        skcms_ICCProfile profile;
+        skcms_Init(&profile);
+        skcms_SetXYZD50(&profile, &SkNamedGamut::kSRGB);
+
+        skcms_TransferFunction fn = SkNamedTransferFn::k2Dot2;
+        fn.g = 1.0f / floating_inverse_gamma;
+        skcms_SetTransferFunction(&profile, &fn);
+
+        return std::make_unique<ColorProfile>(profile);
+      }
+    }
+    return nullptr;
+  }
+
+  // cHRM and gAMA tags are both present. The PNG spec states that cHRM is
+  // valid even without gAMA but we cannot apply the cHRM without guessing
+  // a gAMA. Color correction is not a guessing game: match the behavior
+  // of Safari and Firefox instead (compat).
 
   float rx = pngFixedToFloat(chrm[2]);
   float ry = pngFixedToFloat(chrm[3]);
@@ -447,22 +470,6 @@ void PNGImageDecoder::HeaderAvailable() {
   if (color_type == PNG_COLOR_TYPE_GRAY ||
       color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
     png_set_gray_to_rgb(png);
-  }
-
-  if (!HasEmbeddedColorProfile()) {
-    const double kInverseGamma = 0.45455;
-    const double kDefaultGamma = 2.2;
-    double gamma;
-    if (!IgnoresColorSpace() && png_get_gAMA(png, info, &gamma)) {
-      const double kMaxGamma = 21474.83;
-      if ((gamma <= 0.0) || (gamma > kMaxGamma)) {
-        gamma = kInverseGamma;
-        png_set_gAMA(png, info, gamma);
-      }
-      png_set_gamma(png, kDefaultGamma, gamma);
-    } else {
-      png_set_gamma(png, kDefaultGamma, kInverseGamma);
-    }
   }
 
   // process eXIf chunk
