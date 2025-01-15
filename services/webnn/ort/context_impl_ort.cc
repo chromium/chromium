@@ -80,7 +80,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*logical_and_input=*/DataTypeConstraint::kUint8,
        /*logical_or_input=*/DataTypeConstraint::kUint8,
        /*logical_xor_input=*/DataTypeConstraint::kUint8,
-       /*logical_not_input=*/{},
+       /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*ceil_input=*/DataTypeConstraint::kFloat16To32,
