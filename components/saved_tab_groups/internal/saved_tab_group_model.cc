@@ -157,8 +157,6 @@ void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
     saved_group.SetPosition(Count());
   }
 
-  stats::RecordEmptyGroupsMetricsOnGroupAddedLocally(saved_group, is_loaded_);
-
   InsertGroupImpl(std::move(saved_group));
 
   for (auto& observer : observers_) {
