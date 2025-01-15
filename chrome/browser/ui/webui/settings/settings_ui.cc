@@ -22,6 +22,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -556,8 +557,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
-  html_source->AddBoolean("showGlicSettings",
-                          base::FeatureList::IsEnabled(features::kGlic));
+#if BUILDFLAG(ENABLE_GLIC)
+  html_source->AddBoolean("showGlicSettings", GlicEnabling::IsEnabledByFlags());
+#endif
 
   // AI
   const bool ai_settings_refresh_enabled =
