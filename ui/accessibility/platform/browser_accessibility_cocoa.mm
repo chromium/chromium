@@ -2676,6 +2676,7 @@ bool ui::IsNSRange(id value) {
 
 // Performs the given accessibility action on the webkit accessibility object
 // that backs this object.
+// This API is deprecated.
 - (void)accessibilityPerformAction:(NSString*)action {
   TRACE_EVENT2("accessibility",
                "BrowserAccessibilityCocoa::accessibilityPerformAction",
