@@ -107,6 +107,7 @@ class WebClientImpl implements WebClientInterface {
 class HostMessageHandler implements HostMessageHandlerInterface {
   // Undefined until the web client is initialized.
   private receiver: WebClientReceiver|undefined;
+
   constructor(
       private handler: WebClientHandlerInterface,
       private sender: PostMessageRequestSender) {}
@@ -313,6 +314,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private sender: PostMessageRequestSender;
   private handler: WebClientHandlerRemote;
   private bootstrapPingIntervalId: number|undefined;
+
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
       private embeddedOrigin: string) {
