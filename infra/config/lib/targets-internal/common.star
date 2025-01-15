@@ -574,6 +574,8 @@ def _finalize_swarming(swarming):
         d["optional_dimensions"] = {str(k): v for k, v in d["optional_dimensions"].items()}
         all_dimension_sets.extend(d["optional_dimensions"].values())
     for dimensions in all_dimension_sets:
+        if not dimensions:
+            continue
         for v in dimensions.values():
             if v != None and type(v) != type(""):
                 fail("all dimension values must be None or strings, {} is type {}".format(v, type(v)))
