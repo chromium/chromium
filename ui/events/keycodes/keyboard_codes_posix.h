@@ -28,6 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// IWYU pragma: private, include "ui/events/keycodes/keyboard_codes.h"
+
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODES_POSIX_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODES_POSIX_H_
 
