@@ -1790,7 +1790,7 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   bounds.set_size(adjusted_size_in_pixels);
   const auto override_redirect =
       properties.x11_extension_delegate &&
-      properties.x11_extension_delegate->IsOverrideRedirect();
+      properties.x11_extension_delegate->IsOverrideRedirect(*this);
 
   workspace_extension_delegate_ = properties.workspace_extension_delegate;
   x11_extension_delegate_ = properties.x11_extension_delegate;

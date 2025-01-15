@@ -130,7 +130,9 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
     return false;
   }
 #endif
-  bool IsOverrideRedirect() const override { return false; }
+  bool IsOverrideRedirect(const X11Extension& x11_extension) const override {
+    return false;
+  }
   gfx::Rect GetGuessedFullScreenSizeInPx() const override {
     return guessed_bounds_px_;
   }
