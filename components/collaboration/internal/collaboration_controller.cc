@@ -16,6 +16,8 @@
 
 namespace collaboration {
 
+using metrics::CollaborationServiceJoinEvent;
+
 class ControllerState;
 
 namespace {
@@ -145,8 +147,7 @@ class PendingState : public ControllerState {
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
       if (Flow::Type::kJoin == controller->flow().type) {
-        collaboration::metrics::RecordJoinEvent(
-            metrics::CollaborationServiceJoinEvent::kNotSignedIn);
+        RecordJoinEvent(CollaborationServiceJoinEvent::kNotSignedIn);
       }
 
       controller->TransitionTo(StateId::kAuthenticating);
@@ -176,8 +177,7 @@ class AuthenticatingState : public ControllerState,
   void ProcessOutcome(Outcome outcome) override {
     if (Outcome::kCancel == outcome) {
       if (Flow::Type::kJoin == controller->flow().type) {
-        collaboration::metrics::RecordJoinEvent(
-            metrics::CollaborationServiceJoinEvent::kCanceledNotSignedIn);
+        RecordJoinEvent(CollaborationServiceJoinEvent::kCanceledNotSignedIn);
       }
     }
 
@@ -309,20 +309,24 @@ class AddingUserToGroupState : public ControllerState {
       CHECK_EQ(controller->flow().type, Flow::Type::kJoin)
           << "Only the join flow can transition into the AddingUserToGroup "
              "state.";
-      collaboration::metrics::RecordJoinEvent(
-          metrics::CollaborationServiceJoinEvent::kCanceled);
+      RecordJoinEvent(CollaborationServiceJoinEvent::kCanceled);
     }
 
     ControllerState::ProcessOutcome(outcome);
   }
 
   void OnProcessingFinishedWithSuccess() override {
+    RecordJoinEvent(CollaborationServiceJoinEvent::kAccepted);
+
     const data_sharing::GroupId group_id =
         controller->flow().join_token().group_id;
     if (IsTabGroupInSync(group_id) && IsPeopleGroupInDataSharing(group_id)) {
+      RecordJoinEvent(CollaborationServiceJoinEvent::kOpenedExistingGroup);
       controller->TransitionTo(StateId::kOpeningLocalTabGroup);
       return;
     }
+
+    RecordJoinEvent(CollaborationServiceJoinEvent::kOpenedNewGroup);
     controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
   }
 

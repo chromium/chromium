@@ -17,7 +17,10 @@ enum class CollaborationServiceJoinEvent {
   kCanceled = 2,
   kCanceledNotSignedIn = 3,
   kNotSignedIn = 4,
-  kMaxValue = kNotSignedIn
+  kAccepted = 5,
+  kOpenedNewGroup = 6,
+  kOpenedExistingGroup = 7,
+  kMaxValue = kOpenedExistingGroup,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 
