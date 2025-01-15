@@ -32,43 +32,41 @@ UnscopedExtensionProvider::~UnscopedExtensionProvider() = default;
 
 void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
-  // No need to do other checks if there are no unscoped extensions.
-  std::set<std::string> unscoped_extensions = GetUnscopedModeExtensionIds();
-  if (unscoped_extensions.empty()) {
+  if (minimal_changes) {
+    // Return early and maintain the current matches list.
     return;
   }
 
-  // TODO(378538411): investigate enabling zero-suggest to the extensions.
-  if (input.IsZeroSuggest()) {
-    return;
-  }
+  // Reset done and increment the input ID to discard any stale extension
+  // suggestions that may be incoming later if the current request id and
+  // incoming request ids do not match.
+  Stop(true, false);
 
-  // Return early if only synchronous matches are needed and the changes are not
+  // Do not forward the event to unscoped extensions delegate if:
+  // 1. there are no unscoped extensions
+  // 2. in zero-suggest mode
+  // 3. only synchronous matches are needed and the changes are not
   // minimal. Minimal changes will not need an async call.
-  if (input.omit_asynchronous_matches() && !minimal_changes) {
+  // 4. in keyword mode.
+  std::set<std::string> unscoped_extensions = GetUnscopedModeExtensionIds();
+  bool skip_unscoped_extensions_matches =
+      unscoped_extensions.empty() || input.IsZeroSuggest() ||
+      (input.omit_asynchronous_matches()) || input.InKeywordMode();
+
+  if (skip_unscoped_extensions_matches) {
     return;
   }
 
-  // Do not send anything in keyword mode.
-  // TODO(378538411): Figure out if `done_` needs to be reset.
-  if (input.InKeywordMode()) {
-    return;
-  }
-
-  if (!minimal_changes) {
-    // Reset done and increment the input ID to discard any stale extension
-    // suggestions that may be incoming later if the current request id and
-    // incoming request ids do not match.
-    done_ = true;
-    delegate_->IncrementRequestId();
-  }
+  delegate_->IncrementRequestId();
   delegate_->Start(input, minimal_changes, unscoped_extensions);
 }
 
 void UnscopedExtensionProvider::Stop(bool clear_cached_results,
                                      bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-  delegate_->IncrementRequestId();
+  if (due_to_user_inactivity) {
+    delegate_->IncrementRequestId();
+  }
 }
 
 std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()
