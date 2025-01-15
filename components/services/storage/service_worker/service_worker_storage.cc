@@ -164,7 +164,6 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   }
 
   FindForClientUrlInDB(database_.get(),
-                       base::SequencedTaskRunner::GetCurrentDefault(),
                        client_url, key, std::move(callback));
 }
 
@@ -201,9 +200,7 @@ void ServiceWorkerStorage::FindRegistrationForScope(
     return;
   }
 
-  FindForScopeInDB(database_.get(),
-                   base::SequencedTaskRunner::GetCurrentDefault(), scope, key,
-                   std::move(callback));
+  FindForScopeInDB(database_.get(), scope, key, std::move(callback));
 }
 
 void ServiceWorkerStorage::FindRegistrationForId(
@@ -236,8 +233,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
     return;
   }
 
-  FindForIdInDB(database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-                registration_id, key, std::move(callback));
+  FindForIdInDB(database_.get(), registration_id, key, std::move(callback));
 }
 
 void ServiceWorkerStorage::FindRegistrationForIdOnly(
@@ -261,7 +257,6 @@ void ServiceWorkerStorage::FindRegistrationForIdOnly(
   }
 
   FindForIdOnlyInDB(database_.get(),
-                    base::SequencedTaskRunner::GetCurrentDefault(),
                     registration_id, std::move(callback));
 }
 
@@ -319,9 +314,7 @@ void ServiceWorkerStorage::GetUsageForStorageKey(
       break;
   }
 
-  GetUsageForStorageKeyInDB(database_.get(),
-                            base::SequencedTaskRunner::GetCurrentDefault(), key,
-                            std::move(callback));
+  GetUsageForStorageKeyInDB(database_.get(), key, std::move(callback));
 }
 
 void ServiceWorkerStorage::GetAllRegistrations(
@@ -381,8 +374,7 @@ void ServiceWorkerStorage::StoreRegistrationData(
   uint64_t resources_total_size_bytes =
       registration_data->resources_total_size_bytes;
   WriteRegistrationInDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      std::move(registration_data), std::move(resources),
+      database_.get(), std::move(registration_data), std::move(resources),
       base::BindOnce(&ServiceWorkerStorage::DidStoreRegistrationData,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      resources_total_size_bytes));
@@ -565,8 +557,7 @@ void ServiceWorkerStorage::DeleteRegistration(
       registration_id, key, std::move(callback));
 
   DeleteRegistrationFromDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      registration_id, key,
+      database_.get(), registration_id, key,
       base::BindOnce(&ServiceWorkerStorage::DidDeleteRegistration,
                      weak_factory_.GetWeakPtr(), std::move(params)));
 }
@@ -807,7 +798,6 @@ void ServiceWorkerStorage::GetUserData(int64_t registration_id,
   }
 
   GetUserDataInDB(database_.get(),
-                  base::SequencedTaskRunner::GetCurrentDefault(),
                   registration_id, keys, std::move(callback));
 }
 
@@ -844,7 +834,6 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefix(
   }
 
   GetUserDataByKeyPrefixInDB(database_.get(),
-                             base::SequencedTaskRunner::GetCurrentDefault(),
                              registration_id, key_prefix, std::move(callback));
 }
 
@@ -880,9 +869,8 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefix(
     return;
   }
 
-  GetUserKeysAndDataByKeyPrefixInDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      registration_id, key_prefix, std::move(callback));
+  GetUserKeysAndDataByKeyPrefixInDB(database_.get(), registration_id,
+                                    key_prefix, std::move(callback));
 }
 
 void ServiceWorkerStorage::ClearUserData(int64_t registration_id,
@@ -997,9 +985,7 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
     return;
   }
 
-  GetUserDataForAllRegistrationsInDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(), key,
-      std::move(callback));
+  GetUserDataForAllRegistrationsInDB(database_.get(), key, std::move(callback));
 }
 
 void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
@@ -1031,9 +1017,8 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
     return;
   }
 
-  GetUserDataForAllRegistrationsByKeyPrefixInDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      key_prefix, std::move(callback));
+  GetUserDataForAllRegistrationsByKeyPrefixInDB(database_.get(), key_prefix,
+                                                std::move(callback));
 }
 
 void ServiceWorkerStorage::ClearUserDataForAllRegistrationsByKeyPrefix(
@@ -1250,15 +1235,12 @@ void ServiceWorkerStorage::GetPurgingResourceIdsForTest(
 void ServiceWorkerStorage::GetPurgeableResourceIdsForTest(
     ResourceIdsCallback callback) {
   GetPurgeableResourceIdsFromDB(database_.get(),
-                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 std::move(callback));
 }
 
 void ServiceWorkerStorage::GetUncommittedResourceIdsForTest(
     ResourceIdsCallback callback) {
-  GetUncommittedResourceIdsFromDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      std::move(callback));
+  GetUncommittedResourceIdsFromDB(database_.get(), std::move(callback));
 }
 
 void ServiceWorkerStorage::LazyInitialize(base::OnceClosure callback) {
@@ -1273,9 +1255,8 @@ void ServiceWorkerStorage::LazyInitialize(base::OnceClosure callback) {
 
   state_ = STORAGE_STATE_INITIALIZING;
   ReadInitialDataFromDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&ServiceWorkerStorage::DidReadInitialData,
-                     weak_factory_.GetWeakPtr()));
+      database_.get(), base::BindOnce(&ServiceWorkerStorage::DidReadInitialData,
+                                      weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerStorage::DidReadInitialData(
@@ -1480,7 +1461,7 @@ void ServiceWorkerStorage::DeleteStaleResources() {
   DCHECK(!has_checked_for_stale_resources_);
   has_checked_for_stale_resources_ = true;
   CollectStaleResourcesFromDB(
-      database_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
+      database_.get(),
       base::BindOnce(&ServiceWorkerStorage::DidCollectStaleResources,
                      weak_factory_.GetWeakPtr()));
 }
@@ -1524,7 +1505,6 @@ void ServiceWorkerStorage::OnResourceMetadataWriterDisconnected(
 // static
 void ServiceWorkerStorage::CollectStaleResourcesFromDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     GetResourcesCallback callback) {
   std::vector<int64_t> ids;
   ServiceWorkerDatabase::Status status =
@@ -1550,7 +1530,6 @@ void ServiceWorkerStorage::CollectStaleResourcesFromDB(
 // static
 void ServiceWorkerStorage::ReadInitialDataFromDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     InitializeCallback callback) {
   TRACE_EVENT("ServiceWorker", "ServiceWorkerStorage::ReadInitialDataFromDB");
   base::TimeTicks now = base::TimeTicks::Now();
@@ -1582,7 +1561,6 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
 
 void ServiceWorkerStorage::DeleteRegistrationFromDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     const blink::StorageKey& key,
     DeleteRegistrationInDBCallback callback) {
@@ -1613,7 +1591,6 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
 
 void ServiceWorkerStorage::WriteRegistrationInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     mojom::ServiceWorkerRegistrationDataPtr registration,
     ResourceList resources,
     WriteRegistrationCallback callback) {
@@ -1627,7 +1604,6 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
 // static
 void ServiceWorkerStorage::FindForClientUrlInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& client_url,
     const blink::StorageKey& key,
     FindForClientUrlInDBCallback callback) {
@@ -1692,7 +1668,6 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
 // static
 void ServiceWorkerStorage::FindForScopeInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& scope,
     const blink::StorageKey& key,
     FindInDBCallback callback) {
@@ -1724,7 +1699,6 @@ void ServiceWorkerStorage::FindForScopeInDB(
 // static
 void ServiceWorkerStorage::FindForIdInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     const blink::StorageKey& key,
     FindInDBCallback callback) {
@@ -1738,7 +1712,6 @@ void ServiceWorkerStorage::FindForIdInDB(
 // static
 void ServiceWorkerStorage::FindForIdOnlyInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     FindInDBCallback callback) {
   blink::StorageKey key;
@@ -1749,14 +1722,12 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
                             /*resources=*/nullptr, status);
     return;
   }
-  FindForIdInDB(database, original_task_runner, registration_id, key,
-                std::move(callback));
+  FindForIdInDB(database, registration_id, key, std::move(callback));
 }
 
 // static
 void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const blink::StorageKey& key,
     GetUsageForStorageKeyCallback callback) {
   int64_t usage = 0;
@@ -1767,7 +1738,6 @@ void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
 
 void ServiceWorkerStorage::GetUserDataInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     const std::vector<std::string>& keys,
     GetUserDataInDBCallback callback) {
@@ -1779,7 +1749,6 @@ void ServiceWorkerStorage::GetUserDataInDB(
 
 void ServiceWorkerStorage::GetUserDataByKeyPrefixInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     const std::string& key_prefix,
     GetUserDataInDBCallback callback) {
@@ -1791,7 +1760,6 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefixInDB(
 
 void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefixInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
     const std::string& key_prefix,
     GetUserKeysAndDataInDBCallback callback) {
@@ -1804,7 +1772,6 @@ void ServiceWorkerStorage::GetUserKeysAndDataByKeyPrefixInDB(
 
 void ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const std::string& key,
     GetUserDataForAllRegistrationsInDBCallback callback) {
   std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
@@ -1815,7 +1782,6 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB(
 
 void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const std::string& key_prefix,
     GetUserDataForAllRegistrationsInDBCallback callback) {
   std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
@@ -1843,7 +1809,6 @@ void ServiceWorkerStorage::PerformStorageCleanupInDB(
 // static
 void ServiceWorkerStorage::GetPurgeableResourceIdsFromDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     ServiceWorkerStorage::ResourceIdsCallback callback) {
   std::vector<int64_t> resource_ids;
   ServiceWorkerDatabase::Status status =
@@ -1854,7 +1819,6 @@ void ServiceWorkerStorage::GetPurgeableResourceIdsFromDB(
 // static
 void ServiceWorkerStorage::GetUncommittedResourceIdsFromDB(
     ServiceWorkerDatabase* database,
-    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     ServiceWorkerStorage::ResourceIdsCallback callback) {
   std::vector<int64_t> resource_ids;
   ServiceWorkerDatabase::Status status =
