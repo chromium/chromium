@@ -39,7 +39,6 @@ PopupMenuHelper::~PopupMenuHelper() {
 
 void PopupMenuHelper::ShowPopupMenu(
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> items,

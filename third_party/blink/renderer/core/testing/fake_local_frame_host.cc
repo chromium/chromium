@@ -175,7 +175,6 @@ void FakeLocalFrameHost::TextSelectionChanged(const WTF::String& text,
 void FakeLocalFrameHost::ShowPopupMenu(
     mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int32_t item_height,
     double font_size,
     int32_t selected_item,
     Vector<mojom::blink::MenuItemPtr> menu_items,

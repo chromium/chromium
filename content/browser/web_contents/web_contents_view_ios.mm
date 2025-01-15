@@ -187,7 +187,6 @@ void WebContentsViewIOS::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
-    int item_height,
     double item_font_size,
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -195,9 +194,9 @@ void WebContentsViewIOS::ShowPopupMenu(
     bool allow_multiple_selection) {
   popup_menu_helper_ = std::make_unique<PopupMenuHelper>(
       this, render_frame_host, std::move(popup_client));
-  popup_menu_helper_->ShowPopupMenu(bounds, item_height, item_font_size,
-                                    selected_item, std::move(menu_items),
-                                    right_aligned, allow_multiple_selection);
+  popup_menu_helper_->ShowPopupMenu(bounds, item_font_size, selected_item,
+                                    std::move(menu_items), right_aligned,
+                                    allow_multiple_selection);
 }
 
 void WebContentsViewIOS::OnMenuClosed() {
