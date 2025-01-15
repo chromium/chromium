@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/common/buildflags.h"
 #include "media/media_buildflags.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 
@@ -142,6 +143,9 @@ CONTENT_EXPORT extern const char kIsolateOrigins[];
 CONTENT_EXPORT extern const char kIsolationByDefault[];
 CONTENT_EXPORT extern const char kJavaScriptHarmony[];
 CONTENT_EXPORT extern const char kLaunchAsBrowser[];
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+CONTENT_EXPORT extern const char kLoadWebUIfromDisk[];
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 CONTENT_EXPORT extern const char kLogGpuControlListDecisions[];
 CONTENT_EXPORT extern const char kLoggingLevel[];
 CONTENT_EXPORT extern const char kLogFile[];

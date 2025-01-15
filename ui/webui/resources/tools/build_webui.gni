@@ -578,6 +578,11 @@ template("build_webui") {
         grit_output_dir = invoker.grit_output_dir
       }
 
+      grit_flags = [
+        "-E",
+        "add_filepath_to_resource_map=${load_webui_from_disk}",
+      ]
+
       output_dir = grit_output_dir
     }
   }
