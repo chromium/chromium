@@ -9980,36 +9980,6 @@
             ]
         }
     ],
-    "FocusMode": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "FocusModeEnabled",
-                    "enable_features": [
-                        "FocusMode"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FocusModeYTM": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "FocusModeYTM",
-                    "enable_features": [
-                        "FocusModeYTM"
-                    ]
-                }
-            ]
-        }
-    ],
     "FollowOnboarding": [
         {
             "platforms": [
