@@ -27,6 +27,7 @@ class CallbackListSubscription;
 namespace page_actions {
 
 class PageActionModel;
+class PageActionModelInterface;
 class PageActionModelObserver;
 
 // `PageActionController` controls the state of all page actions, scoped to a
@@ -60,8 +61,8 @@ class PageActionController {
   // Manages observers for the page action's underlying `PageActionModel`.
   void AddObserver(
       actions::ActionId action_id,
-      base::ScopedObservation<PageActionModel, PageActionModelObserver>&
-          observation);
+      base::ScopedObservation<PageActionModelInterface,
+                              PageActionModelObserver>& observation);
 
   // Subscribes this controller to updates in the supplied ActionItem, and
   // returns the created subscription. This allows the subscription to be

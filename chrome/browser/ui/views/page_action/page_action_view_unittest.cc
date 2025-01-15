@@ -27,6 +27,9 @@
 namespace page_actions {
 namespace {
 
+using ::testing::Return;
+using ::testing::ReturnRef;
+
 constexpr int kDefaultIconSize = 16;
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
@@ -41,6 +44,40 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
+class MockPageActionModel : public PageActionModelInterface {
+ public:
+  MOCK_METHOD(bool, GetVisible, (), (const, override));
+  MOCK_METHOD(const std::u16string, GetText, (), (const, override));
+  MOCK_METHOD(const std::u16string, GetTooltipText, (), (const, override));
+  MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
+
+  MOCK_METHOD(void,
+              AddObserver,
+              (PageActionModelObserver * observer),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (PageActionModelObserver * observer),
+              (override));
+  MOCK_METHOD(void,
+              SetActionItemProperties,
+              (base::PassKey<PageActionController>,
+               const actions::ActionItem* action_item),
+              (override));
+  MOCK_METHOD(void,
+              SetShowRequested,
+              (base::PassKey<PageActionController>, bool requested),
+              (override));
+  MOCK_METHOD(void,
+              SetOverrideText,
+              (base::PassKey<PageActionController>,
+               const std::optional<std::u16string>& text),
+              (override));
+};
+
+// Test class that includes a real controller and model. Prefer to use simpler
+// PageActionViewWithMockModelTest where possible.
+// TODO(crbug.com/388527536): Move any tests possible to the mock model setup.
 class PageActionViewTest : public ChromeViewsTestBase {
  public:
   PageActionViewTest() = default;
@@ -96,6 +133,44 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
+};
+
+// Test class that uses a mock PageActionModel.
+class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
+ public:
+  PageActionViewWithMockModelTest() = default;
+
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+
+    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
+    page_action_view_ = std::make_unique<PageActionView>(
+        action_item_.get(), &icon_label_view_delegate_);
+    page_action_view_->SetModel(model());
+
+    ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetText()).WillByDefault(Return(mock_string_));
+    ON_CALL(mock_model_, GetTooltipText()).WillByDefault(Return(mock_string_));
+    ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
+  }
+
+  void TearDown() override { ChromeViewsTestBase::TearDown(); }
+
+  PageActionView* page_action_view() { return page_action_view_.get(); }
+  MockPageActionModel* model() { return &mock_model_; }
+
+ private:
+  std::unique_ptr<actions::ActionItem> action_item_;
+  std::unique_ptr<PageActionView> page_action_view_;
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
+
+  // Must exist in order to create PageActionView during the test.
+  views::LayoutProvider layout_provider_;
+
+  // Mock model and associated placeholder data.
+  testing::NiceMock<MockPageActionModel> mock_model_;
+  ui::ImageModel mock_image_;
+  std::u16string mock_string_;
 };
 
 // Tests that calling Show/Hide will show/hide the view.
@@ -337,6 +412,23 @@ TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
       ui::test::TestEvent(ui::EventType::kGestureTap));
   EXPECT_EQ(1, gesture_trigger_count());
   EXPECT_EQ(1, TotalTriggerCount());
+}
+
+TEST_F(PageActionViewWithMockModelTest, Visibility) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+}
+
+TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
+  const std::u16string kTestText = u"Test text";
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
 }  // namespace

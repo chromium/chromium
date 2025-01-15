@@ -47,7 +47,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   }
 }
 
-void PageActionView::OnPageActionModelChanged(PageActionModel* model) {
+void PageActionView::OnPageActionModelChanged(PageActionModelInterface* model) {
   SetEnabled(model->GetVisible());
   SetVisible(model->GetVisible());
   SetText(model->GetText());
@@ -57,7 +57,8 @@ void PageActionView::OnPageActionModelChanged(PageActionModel* model) {
   UpdateBorder();
 }
 
-void PageActionView::OnPageActionModelWillBeDeleted(PageActionModel* model) {
+void PageActionView::OnPageActionModelWillBeDeleted(
+    PageActionModelInterface* model) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   SetVisible(false);
@@ -155,6 +156,11 @@ void PageActionView::UpdateIconImage() {
   if (!image.isNull()) {
     SetImageModel(ui::ImageModel::FromImageSkia(image));
   }
+}
+
+void PageActionView::SetModel(PageActionModelInterface* model) {
+  observation_.Reset();
+  observation_.Observe(model);
 }
 
 BEGIN_METADATA(PageActionView)
