@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "content/common/mac/task_port_policy.h"
+#include "content/common/mac/system_policy.h"
 #endif
 
 namespace content {

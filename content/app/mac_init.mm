@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "content/common/mac/task_port_policy.h"
+#include "content/common/mac/system_policy.h"
 
 namespace content {
 
