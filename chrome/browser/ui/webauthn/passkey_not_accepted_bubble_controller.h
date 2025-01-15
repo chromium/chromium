@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_NOT_ACCEPTED_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_NOT_ACCEPTED_BUBBLE_CONTROLLER_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
