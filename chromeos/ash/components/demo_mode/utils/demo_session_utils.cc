@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash::demo_mode {
@@ -51,6 +52,11 @@ bool ShouldFallBackToMGS() {
 
 void SetShouldFallBackMGS(bool should_fall_back_mgs) {
   g_should_fall_back_mgs = should_fall_back_mgs;
+}
+
+void SetDoNothingWhenPowerIdle() {
+  chromeos::PowerPolicyController::Get()
+      ->SetShouldDoNothingWhenIdleInDemoMode();
 }
 
 }  // namespace ash::demo_mode

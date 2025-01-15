@@ -8456,7 +8456,6 @@ static_library("browser_generated_files") {
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/fusebox:fusebox_proto",
-      "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
       "//chrome/browser/ash/system_web_apps/types/proto",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/browser/nearby_sharing/instantmessaging/proto",
@@ -8493,6 +8492,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/web_applications/proto",
+      "//chromeos/ash/components/mojo_service_manager:mojo_service_manager_connection",
     ]
   }
   if (is_win) {

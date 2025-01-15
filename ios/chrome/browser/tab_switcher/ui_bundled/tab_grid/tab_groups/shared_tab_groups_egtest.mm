@@ -7,6 +7,8 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/data_sharing/public/features.h"
+#import "components/data_sharing/public/group_data.h"
+#import "components/data_sharing/test_support/test_utils.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
@@ -307,10 +309,8 @@ void ShareGroupAtIndex(int index) {
 // Checks that the user with JoinOnly can trigger the Join flow.
 // TODO(crbug.com/380113830): Re-enable this test.
 - (void)DISABLED_testJoinGroup {
-  GURL joinGroupURL =
-      GURL(data_sharing::features::kDataSharingURL.Get() +
-           "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
-           "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
 
   // Verify that it opened the Join flow.
@@ -411,10 +411,8 @@ void ShareGroupAtIndex(int index) {
 // Checks that the user with JoinOnly can trigger the Join flow.
 // TODO(crbug.com/380113830): Re-enable this test.
 - (void)DISABLED_testJoinGroup {
-  GURL joinGroupURL =
-      GURL(data_sharing::features::kDataSharingURL.Get() +
-           "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
-           "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
 
   // Verify that it opened the Join flow.

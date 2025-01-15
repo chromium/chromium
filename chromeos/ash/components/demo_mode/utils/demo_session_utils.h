@@ -34,6 +34,11 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 // Whether the device is in demo account session.
 void SetShouldFallBackMGS(bool is_demo_account_session);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Set to power idle action policy to do nothing and use the DemoModeIdleHandler
+// when idle.
+void SetDoNothingWhenPowerIdle();
+
 }  // namespace ash::demo_mode
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEMO_MODE_UTILS_DEMO_SESSION_UTILS_H_

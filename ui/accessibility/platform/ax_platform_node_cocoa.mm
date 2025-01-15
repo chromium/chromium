@@ -162,7 +162,6 @@ ui::CocoaActionList BuildActionList() {
   const ui::CocoaActionList::value_type entries[] = {
       // NSAccessibilityPressAction must come first in this list.
       {ax::mojom::Action::kDoDefault, NSAccessibilityPressAction},
-
       {ax::mojom::Action::kDecrement, NSAccessibilityDecrementAction},
       {ax::mojom::Action::kIncrement, NSAccessibilityIncrementAction},
       {ax::mojom::Action::kShowContextMenu, NSAccessibilityShowMenuAction},
@@ -196,8 +195,18 @@ void PostAnnouncementNotification(NSString* announcement,
 // Returns true if |action| should be added implicitly for |data|.
 bool HasImplicitAction(const ui::AXPlatformNodeBase& node,
                        ax::mojom::Action action) {
-  return action == ax::mojom::Action::kDoDefault &&
-         node.GetData().IsClickable();
+  // TODO integrate the method into AXNodeData, see crrev.com/c/6115619
+  // for details.
+  switch (action) {
+    case ax::mojom::Action::kDoDefault:
+      return node.GetData().IsClickable();
+    case ax::mojom::Action::kDecrement:
+    case ax::mojom::Action::kIncrement:
+      return node.GetRole() == ax::mojom::Role::kSlider ||
+             node.GetRole() == ax::mojom::Role::kSpinButton;
+    default:
+      return false;
+  }
 }
 
 // For roles that show a menu for the default action, ensure "show menu" also
@@ -313,6 +322,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     dict = @{
       @"accessibilityPerformPress" : NSAccessibilityPressAction,
       @"accessibilityPerformShowMenu" : NSAccessibilityShowMenuAction,
+      @"accessibilityPerformDecrement" : NSAccessibilityDecrementAction,
+      @"accessibilityPerformIncrement" : NSAccessibilityIncrementAction,
     };
   });
   return dict;
@@ -1357,8 +1368,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // should be given a press action implicitly.
   DCHECK([action_list[0].second isEqualToString:NSAccessibilityPressAction]);
   for (const auto& item : action_list) {
-    if (_node->HasAction(item.first) || HasImplicitAction(*_node, item.first))
+    if ((_node->HasAction(item.first) ||
+         HasImplicitAction(*_node, item.first))) {
       [axActions addObject:item.second];
+    }
   }
 
   if (AlsoUseShowMenuActionForDefaultAction(*_node))
@@ -1367,11 +1380,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return axActions;
 }
 
+// This API is deprecated.
 - (void)accessibilityPerformAction:(NSString*)action {
   // Actions are performed asynchronously, so it's always possible for an object
   // to change its mind after previously reporting an action as available.
-  if (![[self accessibilityActionNames] containsObject:action])
+
+  if (![[self accessibilityActionNames] containsObject:action]) {
     return;
+  }
 
   ui::AXActionData data;
   if ([action isEqualToString:NSAccessibilityShowMenuAction] &&
@@ -1414,6 +1430,20 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return YES;
   }
   return NO;
+}
+
+- (BOOL)accessibilityPerformDecrement {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kDecrement];
+}
+
+- (BOOL)accessibilityPerformIncrement {
+  if (![self instanceActive]) {
+    return NO;
+  }
+  return [self performAction:ax::mojom::Action::kIncrement];
 }
 
 - (NSMutableArray*)internalAccessibilityAttributeNames {

@@ -157,6 +157,10 @@ class DataSharingServiceImpl : public DataSharingService,
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
 
+  // Utillity to create URL from `group_token`. See
+  // DataSharingService::GetDataSharingUrl().
+  static std::unique_ptr<GURL> GetDataSharingUrl(const GroupToken& group_token);
+
  private:
   void OnReadSingleGroupCompleted(
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,

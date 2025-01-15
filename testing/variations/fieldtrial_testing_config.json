@@ -1665,11 +1665,7 @@
     "AutofillEnableCardBenefitsForAmericanExpress": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {

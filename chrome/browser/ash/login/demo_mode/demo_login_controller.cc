@@ -311,6 +311,9 @@ void DemoLoginController::OnLoginScreenShown() {
   // Try demo account login first by disable auto-login to managed guest
   // session.
   demo_mode::SetShouldFallBackMGS(false);
+  // TODO(crbug.com/387572263): figure out whether should ignore the power idle
+  // policy when fallback to MGS when sign in is enable.
+  demo_mode::SetDoNothingWhenPowerIdle();
 
   MaybeCleanupPreviousDemoAccount();
 }

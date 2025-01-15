@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/mojo_service_manager/utility_process_bridge.h"
+#include "chromeos/ash/components/mojo_service_manager/utility_process_bridge.h"
 
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"

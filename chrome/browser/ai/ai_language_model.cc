@@ -289,6 +289,26 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInfo());
 }
 
+void AILanguageModel::AddPromptHistoryAndSendCompletion(
+    const PromptApiRequest& history_request,
+    blink::mojom::ModelStreamingResponder* responder,
+    uint32_t size) {
+  // If the on device model service fails to get the size, it will be 0.
+  // TODO(crbug.com/351935691): make sure the error is explicitly returned and
+  // handled accordingly.
+  if (size) {
+    auto item = Context::ContextItem();
+    item.tokens = size;
+    item.prompts = history_request.prompt_history();
+    if (context_->AddContextItem(std::move(item)) ==
+        Context::SpaceReservationResult::kSpaceMadeAvailable) {
+      responder->OnContextOverflow();
+    }
+  }
+  responder->OnCompletion(
+      blink::mojom::ModelExecutionContextInfo::New(context_->current_tokens()));
+}
+
 void AILanguageModel::ModelExecutionCallback(
     const PromptApiRequest& input,
     mojo::RemoteSetElementId responder_id,
@@ -334,26 +354,18 @@ void AILanguageModel::ModelExecutionCallback(
             ? blink::mojom::ModelStreamingResponderAction::kReplace
             : blink::mojom::ModelStreamingResponderAction::kAppend);
   }
-
   if (result.response->is_complete) {
-    uint32_t token_count = result.response->input_token_count +
-                           result.response->output_token_count;
-    // If the on device model service fails to calculate the size, it will be 0.
-    // TODO(crbug.com/351935691): make sure the error is explicitly returned
-    // and handled accordingly.
-    if (token_count) {
-      auto item = Context::ContextItem();
-      item.tokens = token_count;
-      item.prompts.CopyFrom(input.current_prompts());
-      item.prompts.Add(MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT,
-                                  current_response_));
-      if (context_->AddContextItem(std::move(item)) ==
-          Context::SpaceReservationResult::kSpaceMadeAvailable) {
-        responder->OnContextOverflow();
-      }
-    }
-    responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
-        context_->current_tokens()));
+    // TODO(crbug.com/351935390): instead of calculating this from the
+    // AILanguageModel, it should be returned by the model since the token
+    // should be calculated during the execution.
+    PromptApiRequest request;
+    request.mutable_prompt_history()->CopyFrom(input.current_prompts());
+    *request.add_prompt_history() =
+        MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT, current_response_);
+    session_->GetContextSizeInTokens(
+        *context_->MaybeFormatRequest(request),
+        base::BindOnce(&AILanguageModel::AddPromptHistoryAndSendCompletion,
+                       weak_ptr_factory_.GetWeakPtr(), request, responder));
   }
 }
 

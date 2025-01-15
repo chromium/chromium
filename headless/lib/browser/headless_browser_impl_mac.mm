@@ -4,9 +4,7 @@
 
 #include "headless/lib/browser/headless_browser_impl.h"
 
-#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -18,48 +16,9 @@
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
-// Overrides events and actions for NSPopUpButtonCell.
-@interface FakeNSPopUpButtonCell : NSObject
-@end
-
-@implementation FakeNSPopUpButtonCell
-
-- (void)performClickWithFrame:(NSRect)frame inView:(NSView*)view {
-}
-
-- (void)attachPopUpWithFrame:(NSRect)frame inView:(NSView*)view {
-}
-
-@end
-
 namespace headless {
 
 namespace {
-
-// Swizzles all event and actions for NSPopUpButtonCell to avoid showing in
-// headless mode.
-class HeadlessPopUpMethods {
- public:
-  HeadlessPopUpMethods(const HeadlessPopUpMethods&) = delete;
-  HeadlessPopUpMethods& operator=(const HeadlessPopUpMethods&) = delete;
-
-  static void Init() {
-    [[maybe_unused]] static base::NoDestructor<HeadlessPopUpMethods> swizzler;
-  }
-
- private:
-  friend class base::NoDestructor<HeadlessPopUpMethods>;
-  HeadlessPopUpMethods()
-      : popup_perform_click_swizzler_([NSPopUpButtonCell class],
-                                      [FakeNSPopUpButtonCell class],
-                                      @selector(performClickWithFrame:inView:)),
-        popup_attach_swizzler_([NSPopUpButtonCell class],
-                               [FakeNSPopUpButtonCell class],
-                               @selector(attachPopUpWithFrame:inView:)) {}
-
-  base::apple::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
-  base::apple::ScopedObjCClassSwizzler popup_attach_swizzler_;
-};
 
 NSString* const kActivityReason = @"Batch headless process";
 const NSActivityOptions kActivityOptions =
@@ -80,8 +39,6 @@ void HeadlessBrowserImpl::PlatformInitialize() {
   HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size,
                                                   options()->screen_info_spec);
   display::Screen::SetScreenInstance(screen);
-
-  HeadlessPopUpMethods::Init();
 }
 
 void HeadlessBrowserImpl::PlatformStart() {

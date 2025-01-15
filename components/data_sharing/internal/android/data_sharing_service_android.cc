@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
+#include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "url/android/gurl_android.h"
@@ -314,6 +315,17 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObserverBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_DataSharingServiceImpl_getObserverBridge(env, GetJavaObject());
+}
+
+ScopedJavaLocalRef<jobject>
+JNI_DataSharingServiceImpl_GetDataSharingUrlForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_group_id,
+    const JavaParamRef<jstring>& j_access_token) {
+  GURL url = *DataSharingServiceImpl::GetDataSharingUrl(
+      GroupToken(GroupId(ConvertJavaStringToUTF8(env, j_group_id)),
+                 ConvertJavaStringToUTF8(env, j_access_token)));
+  return url::GURLAndroid::FromNativeGURL(env, url);
 }
 
 }  // namespace data_sharing

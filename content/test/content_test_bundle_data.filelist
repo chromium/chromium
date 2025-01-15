@@ -5610,6 +5610,10 @@ data/accessibility/mac/methods/accessibility-linked-ui-elements-expected.txt
 data/accessibility/mac/methods/accessibility-linked-ui-elements.html
 data/accessibility/mac/methods/accessibility-number-of-characters-expected.txt
 data/accessibility/mac/methods/accessibility-number-of-characters.html
+data/accessibility/mac/methods/accessibility-perform-decrement-expected.txt
+data/accessibility/mac/methods/accessibility-perform-decrement.html
+data/accessibility/mac/methods/accessibility-perform-increment-expected.txt
+data/accessibility/mac/methods/accessibility-perform-increment.html
 data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
 data/accessibility/mac/methods/accessibility-placeholder-value.html
 data/accessibility/mac/methods/accessibility-role-description-expected.txt

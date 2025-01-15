@@ -200,6 +200,11 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
   // down.
   void NotifyChromeIsExiting();
 
+  // Adjusts idle action policy when set by demo mode. There are 2 states in
+  // demo mode: use power idle policy or use `DemoModeIdleHandler` which
+  // implements UI actions for idle.
+  void SetShouldDoNothingWhenIdleInDemoMode();
+
   // Adjusts policy when the display is forced off in response to the
   // user tapping the power button, or when it's no longer forced off.
   void HandleBacklightsForcedOffForPowerButton(bool forced_off);
@@ -304,6 +309,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
 
   // Indicates if screen autolock is enabled or not by policy.
   bool auto_screen_lock_enabled_ = false;
+
+  bool should_do_nothing_when_idle_in_demo_mode_ = false;
 };
 
 }  // namespace chromeos

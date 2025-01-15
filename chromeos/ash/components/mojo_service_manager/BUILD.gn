@@ -45,3 +45,22 @@ static_library("fake_mojo_service_manager") {
   ]
   public_deps = [ ":mojo_service_manager_impl" ]
 }
+
+static_library("mojo_service_manager_connection") {
+  sources = [
+    "connection_helper.cc",
+    "connection_helper.h",
+    "utility_process_bridge.cc",
+    "utility_process_bridge.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos:features",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    ":mojo_service_manager",
+  ]
+  if (!use_real_chromeos_services) {
+    deps += [ "//chromeos/ash/services/cros_healthd/public/cpp:fakes" ]
+  }
+}
