@@ -518,8 +518,9 @@ class FrameSchedulerImplTest : public testing::Test {
   scoped_refptr<MainThreadTaskQueue>
   JavaScriptTimerNormalThrottleableTaskQueue() {
     return GetTaskQueue(
-        FrameSchedulerImpl::ThrottleableTaskQueueTraits().SetPrioritisationType(
-            PrioritisationType::kJavaScriptTimer));
+        FrameSchedulerImpl::ThrottleableTaskQueueTraits()
+            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue>
@@ -527,46 +528,55 @@ class FrameSchedulerImplTest : public testing::Test {
     return GetTaskQueue(
         FrameSchedulerImpl::ThrottleableTaskQueueTraits()
             .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
-            .SetCanBeIntensivelyThrottled(true));
+            .SetCanBeIntensivelyThrottled(true)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> JavaScriptTimerNonThrottleableTaskQueue() {
     return GetTaskQueue(
-        FrameSchedulerImpl::DeferrableTaskQueueTraits().SetPrioritisationType(
-            PrioritisationType::kJavaScriptTimer));
+        FrameSchedulerImpl::DeferrableTaskQueueTraits()
+            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
+            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> LoadingTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::LoadingTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::LoadingTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> LoadingControlTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::LoadingControlTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::LoadingControlTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> UnfreezableLoadingTaskQueue() {
-    return GetTaskQueue(
-        FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::UnfreezableLoadingTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> DeferrableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::DeferrableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::DeferrableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> PausableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::PausableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::PausableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> UnpausableTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::UnpausableTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::UnpausableTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> ForegroundOnlyTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> InputBlockingTaskQueue() {
-    return GetTaskQueue(FrameSchedulerImpl::InputBlockingQueueTraits());
+    return GetTaskQueue(FrameSchedulerImpl::InputBlockingQueueTraits()
+                            .SetCanBeDeferredForRendering(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType type) {

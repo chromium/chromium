@@ -7484,29 +7484,6 @@
             ]
         }
     ],
-    "DeferRendererTasksAfterInput": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AllTypes_20241204",
-                    "params": {
-                        "policy": "all-types"
-                    },
-                    "enable_features": [
-                        "DeferRendererTasksAfterInput"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferSpeculativeRFHCreation": [
         {
             "platforms": [

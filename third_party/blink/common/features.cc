@@ -524,7 +524,7 @@ BASE_FEATURE(kCreateImageBitmapOrientationNone,
 
 BASE_FEATURE(kDeferRendererTasksAfterInput,
              "DeferRendererTasksAfterInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kDeferRendererTasksAfterInputPolicyParamName[] = "policy";
 const char kDeferRendererTasksAfterInputMinimalTypesPolicyName[] =
@@ -554,7 +554,7 @@ BASE_FEATURE_ENUM_PARAM(TaskDeferralPolicy,
                         kTaskDeferralPolicyParam,
                         &kDeferRendererTasksAfterInput,
                         kDeferRendererTasksAfterInputPolicyParamName,
-                        TaskDeferralPolicy::kAllDeferrableTypes,
+                        TaskDeferralPolicy::kAllTypes,
                         &kTaskDeferralOptions);
 
 BASE_FEATURE(kDelayAsyncScriptExecution,
