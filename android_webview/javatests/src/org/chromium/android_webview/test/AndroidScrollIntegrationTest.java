@@ -488,8 +488,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
         final int targetScrollXCss = 132;
         final int targetScrollYCss = 243;
-        final int targetScrollXPix = (int) Math.floor(targetScrollXCss * deviceDIPScale);
-        final int targetScrollYPix = (int) Math.floor(targetScrollYCss * deviceDIPScale);
 
         final int maxScrollXCss = 101;
         final int maxScrollYCss = 201;
@@ -869,8 +867,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         final ScrollTestContainerView testContainerView =
                 (ScrollTestContainerView)
                         mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-        final OverScrollByCallbackHelper overScrollByCallbackHelper =
-                testContainerView.getOverScrollByCallbackHelper();
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
@@ -1008,7 +1004,6 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         // Drag scroll.
         final CallbackHelper onScrollToCallbackHelper =
                 testContainerView.getOnScrollToCallbackHelper();
-        final int scrollToCallCount = onScrollToCallbackHelper.getCallCount();
         final int dragSteps = 10;
         final int dragStepSize = 24;
         final int targetScrollYPix = dragStepSize * dragSteps;
