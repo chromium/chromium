@@ -59,4 +59,8 @@ void SetDoNothingWhenPowerIdle() {
       ->SetShouldDoNothingWhenIdleInDemoMode();
 }
 
+bool ForceSessionLengthCountFromSessionStarts() {
+  return IsDeviceInDemoMode() && features::IsDemoModeSignInEnabled();
+}
+
 }  // namespace ash::demo_mode

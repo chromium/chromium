@@ -39,6 +39,11 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 // when idle.
 void SetDoNothingWhenPowerIdle();
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether force the session length count from ChromeOS session instead of first
+// user activity.
+bool ForceSessionLengthCountFromSessionStarts();
+
 }  // namespace ash::demo_mode
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEMO_MODE_UTILS_DEMO_SESSION_UTILS_H_
