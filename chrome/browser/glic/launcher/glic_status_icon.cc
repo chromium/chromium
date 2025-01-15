@@ -73,6 +73,9 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
                 l10n_util::GetStringUTF16(
                     IDS_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT));
+  menu->AddItem(
+      IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
+      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
   return menu;
@@ -104,7 +107,7 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
           chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
       break;
     }
-    case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
+    case IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON: {
       ShowPromoInPage::Params params;
       params.bubble_anchor_id = kGlicOsToggleElementId;
       params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
@@ -113,6 +116,12 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
       chrome::ShowPageWithPromoForProfile(
           glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
           chrome::GetSettingsUrl(chrome::kChromeUIGlicHost), std::move(params));
+      break;
+    }
+    case IDC_GLIC_STATUS_ICON_MENU_SETTINGS: {
+      chrome::ShowSettingsSubPageForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          chrome::kChromeUIGlicHost);
       break;
     }
     default: {

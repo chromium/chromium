@@ -29,6 +29,8 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
+namespace content {
+
 namespace {
 
 BASE_FEATURE(kSqlWALModeOnDipsDatabase,
@@ -1554,3 +1556,5 @@ bool DIPSDatabase::SetTimerLastFired(base::Time time) {
   return SetConfigValue(kTimerLastFiredKey,
                         time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
+
+}  // namespace content

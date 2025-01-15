@@ -98,7 +98,8 @@ class CookieControlsBubbleViewPixelTest
         CookieSettingsFactory::GetForProfile(browser()->profile()),
         /*original_cookie_settings=*/nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     cookie_controls_coordinator_ =
         cookie_controls_icon_->GetCoordinatorForTesting();

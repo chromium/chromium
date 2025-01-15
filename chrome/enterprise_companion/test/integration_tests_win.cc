@@ -50,11 +50,11 @@ class InstallerTest : public ::testing::Test {
 
   // Run the installer and expect success or failure.
   void RunInstaller(bool expect_success) {
-    base::FilePath installer_pkg_path =
+    base::FilePath installer_exe_path =
         base::PathService::CheckedGet(base::DIR_EXE).AppendASCII(kTestExe);
-    ASSERT_TRUE(base::PathExists(installer_pkg_path));
+    ASSERT_TRUE(base::PathExists(installer_exe_path));
 
-    base::CommandLine command_line(installer_pkg_path);
+    base::CommandLine command_line(installer_exe_path);
     command_line.AppendSwitch(kInstallSwitch);
 
     base::Process installer_process = base::LaunchProcess(command_line, {});

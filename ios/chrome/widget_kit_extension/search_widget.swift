@@ -50,7 +50,7 @@ struct SearchWidget: Widget {
 #endif
 
 struct SearchWidgetEntryView: View {
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
     SearchWidgetEntryViewTemplate(
@@ -65,7 +65,7 @@ struct SearchWidgetEntryViewTemplate: View {
   let imageName: String
   let title: LocalizedStringKey
   let accessibilityLabel: LocalizedStringKey
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
     // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
@@ -90,11 +90,17 @@ struct SearchWidgetEntryViewTemplate: View {
           .padding([.leading, .trailing], 11)
           .padding(.top, 16)
           Spacer()
-          Text(title)
-            .foregroundColor(Color("widget_text_color"))
-            .fontWeight(.semibold)
-            .font(.subheadline)
-            .padding([.leading, .bottom, .trailing], 16)
+          HStack {
+            Text(title)
+              .foregroundColor(Color("widget_text_color"))
+              .fontWeight(.semibold)
+              .font(.subheadline)
+              .padding([.leading, .bottom], 16)
+            Spacer()
+            #if IOS_ENABLE_WIDGETS_FOR_MIM
+              AvatarForSearch(entry: entry)
+            #endif
+          }
         }
       }
     }
@@ -105,5 +111,26 @@ struct SearchWidgetEntryViewTemplate: View {
     .crContainerBackground(
       Color("widget_background_color")
         .unredacted())
+  }
+}
+
+struct AvatarForSearch: View {
+  var entry: ConfigureWidgetEntry
+  var body: some View {
+    if entry.isPreview {
+      Circle()
+        .foregroundColor(Color("widget_text_color"))
+        .opacity(0.2)
+        .frame(width: 25, height: 25)
+        .padding([.bottom, .trailing], 16)
+    } else if let avatar = entry.avatar {
+      avatar
+        .resizable()
+        .clipShape(Circle())
+        .unredacted()
+        .scaledToFill()
+        .frame(width: 25, height: 25)
+        .padding([.bottom, .trailing], 16)
+    }
   }
 }

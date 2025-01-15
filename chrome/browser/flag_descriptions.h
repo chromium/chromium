@@ -3084,15 +3084,6 @@ extern const char kTabOrganizationDescription[];
 extern const char kTabOrganizationSettingsVisibilityName[];
 extern const char kTabOrganizationSettingsVisibilityDescription[];
 
-extern const char kMultiTabOrganizationName[];
-extern const char kMultiTabOrganizationDescription[];
-
-extern const char kTabReorganizationName[];
-extern const char kTabReorganizationDescription[];
-
-extern const char kTabReorganizationDividerName[];
-extern const char kTabReorganizationDividerDescription[];
-
 extern const char kTabstripDeclutterName[];
 extern const char kTabstripDeclutterDescription[];
 

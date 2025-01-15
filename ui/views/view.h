@@ -528,6 +528,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // view.
   std::optional<size_t> GetIndexOf(const View* view) const;
 
+  // Propagates WillClearFocusManager() notification through all the children.
+  void PropagateWillClearFocusManager();
+
   // Size and disposition ------------------------------------------------------
   // Methods for obtaining and modifying the position and size of the view.
   // Position is in the coordinate system of the view's parent.
@@ -1782,6 +1785,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // invoked for that view as well as all the children recursively.
   virtual void VisibilityChanged(View* starting_from, bool is_visible);
 
+  // This method is invoked when the view will soon no longer have a focus
+  // manager. This should prompt it to unregister all accelerators. They can be
+  // re-registered if it is added (to the same manager or another) later.
+  virtual void WillClearFocusManager();
+
   // This method is invoked when the parent NativeView of the widget that the
   // view is attached to has changed and the view hierarchy has not changed.
   // ViewHierarchyChanged() is called when the parent NativeView of the widget
@@ -2474,9 +2482,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   std::unique_ptr<views::ViewMaskLayer> mask_layer_;
 
   // Accelerators --------------------------------------------------------------
-
-  // Focus manager accelerators registered on.
-  raw_ptr<FocusManager> accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,

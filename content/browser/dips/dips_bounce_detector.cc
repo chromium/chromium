@@ -49,7 +49,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using content::NavigationHandle;
+namespace content {
 
 ServerBounceDetectionState::ServerBounceDetectionState() = default;
 ServerBounceDetectionState::~ServerBounceDetectionState() = default;
@@ -91,11 +91,11 @@ std::vector<DIPSRedirectInfoPtr> CloneRedirects(
 // page of its WebContents. We use it to determine whether late cookie access
 // notifications were from the primary page and so should be attributed to the
 // RedirectChainDetector's committed redirect context.
-class PrimaryPageMarker : public content::PageUserData<PrimaryPageMarker> {
+class PrimaryPageMarker : public PageUserData<PrimaryPageMarker> {
  private:
-  friend class content::PageUserData<PrimaryPageMarker>;
-  explicit PrimaryPageMarker(content::Page& page)
-      : content::PageUserData<PrimaryPageMarker>(page) {}
+  friend class PageUserData<PrimaryPageMarker>;
+  explicit PrimaryPageMarker(Page& page)
+      : PageUserData<PrimaryPageMarker>(page) {}
   PAGE_USER_DATA_KEY_DECL();
 };
 
@@ -105,7 +105,7 @@ PAGE_USER_DATA_KEY_IMPL(PrimaryPageMarker);
 
 /* static */
 void DIPSWebContentsObserver::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
+    WebContents* web_contents) {
   auto* dips_service = DIPSServiceImpl::Get(web_contents->GetBrowserContext());
   if (!dips_service) {
     return;
@@ -114,11 +114,10 @@ void DIPSWebContentsObserver::MaybeCreateForWebContents(
   DIPSWebContentsObserver::CreateForWebContents(web_contents, dips_service);
 }
 
-DIPSWebContentsObserver::DIPSWebContentsObserver(
-    content::WebContents* web_contents,
-    DIPSServiceImpl* dips_service)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
+DIPSWebContentsObserver::DIPSWebContentsObserver(WebContents* web_contents,
+                                                 DIPSServiceImpl* dips_service)
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
       dips_service_(dips_service) {
   detector_ = RedirectChainDetector::FromWebContents(web_contents);
   CHECK(detector_);
@@ -129,9 +128,9 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
-RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<RedirectChainDetector>(*web_contents),
+RedirectChainDetector::RedirectChainDetector(WebContents* web_contents)
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<RedirectChainDetector>(*web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()),
@@ -478,7 +477,7 @@ bool AddLateCookieAccess(const GURL& url,
 
 bool DIPSRedirectContext::AddLateCookieAccess(const GURL& url,
                                               CookieOperation op) {
-  return ::AddLateCookieAccess(url, op, redirects_);
+  return ::content::AddLateCookieAccess(url, op, redirects_);
 }
 
 void DIPSWebContentsObserver::EmitDIPSIssue(
@@ -560,8 +559,8 @@ UrlAndSourceId RedirectChainDetector::GetLastCommittedURL() const {
 }
 
 namespace dips {
-void Populate3PcExceptions(content::BrowserContext* browser_context,
-                           content::WebContents* web_contents,
+void Populate3PcExceptions(BrowserContext* browser_context,
+                           WebContents* web_contents,
                            const GURL& initial_url,
                            const GURL& final_url,
                            base::span<DIPSRedirectInfoPtr> redirects) {
@@ -569,8 +568,7 @@ void Populate3PcExceptions(content::BrowserContext* browser_context,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url));
   const blink::StorageKey final_url_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url));
-  content::ContentBrowserClient* browser_client =
-      content::GetContentClient()->browser();
+  ContentBrowserClient* browser_client = GetContentClient()->browser();
   for (DIPSRedirectInfoPtr& redirect : redirects) {
     redirect->has_3pc_exception =
         browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
@@ -768,7 +766,7 @@ void DIPSBounceDetector::DidRedirectNavigation(
 }
 
 void RedirectChainDetector::NotifyStorageAccessed(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     blink::mojom::StorageTypeAccessed storage_type,
     bool blocked) {
   if (!render_frame_host->GetPage().IsPrimary() || blocked) {
@@ -779,13 +777,13 @@ void RedirectChainDetector::NotifyStorageAccessed(
                                      CookieOperation::kChange);
 }
 
-void RedirectChainDetector::PrimaryPageChanged(content::Page& page) {
+void RedirectChainDetector::PrimaryPageChanged(Page& page) {
   PrimaryPageMarker::CreateForPage(page);
 }
 
 namespace dips {
 
-bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host) {
+bool IsOrWasInPrimaryPage(RenderFrameHost* render_frame_host) {
   return IsInPrimaryPage(render_frame_host) ||
          PrimaryPageMarker::GetForPage(render_frame_host->GetPage());
 }
@@ -793,8 +791,8 @@ bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host) {
 }  // namespace dips
 
 void RedirectChainDetector::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
+    RenderFrameHost* render_frame_host,
+    const CookieAccessDetails& details) {
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
   // - Blocked by policies.
@@ -845,7 +843,7 @@ void DIPSWebContentsObserver::OnSiteStorageAccessed(const GURL& first_party_url,
 
 void RedirectChainDetector::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
-    const content::CookieAccessDetails& details) {
+    const CookieAccessDetails& details) {
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
   // - Blocked by policies.
@@ -919,9 +917,9 @@ void RedirectChainDetector::OnSiteStorageAccessed(const GURL& first_party_url,
 }
 
 void DIPSWebContentsObserver::OnServiceWorkerAccessed(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    AllowServiceWorkerResult allowed) {
   if (!IsInPrimaryPage(render_frame_host) || !allowed) {
     return;
   }
@@ -935,9 +933,9 @@ void DIPSWebContentsObserver::OnServiceWorkerAccessed(
 }
 
 void DIPSWebContentsObserver::OnServiceWorkerAccessed(
-    content::NavigationHandle* navigation_handle,
+    NavigationHandle* navigation_handle,
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    AllowServiceWorkerResult allowed) {
   if (!IsInPrimaryPage(navigation_handle) || !allowed) {
     return;
   }
@@ -954,9 +952,9 @@ void DIPSWebContentsObserver::OnServiceWorkerAccessed(
 
 void DIPSWebContentsObserver::OnClientAdded(
     const blink::SharedWorkerToken& token,
-    content::GlobalRenderFrameHostId render_frame_host_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id);
+    GlobalRenderFrameHostId render_frame_host_id) {
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_frame_host_id);
 
   if (!IsInPrimaryPage(render_frame_host)) {
     return;
@@ -974,15 +972,15 @@ void DIPSWebContentsObserver::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
     const url::Origin& security_origin,
-    content::DedicatedWorkerCreator creator) {
-  const content::GlobalRenderFrameHostId* const render_frame_host_id =
-      absl::get_if<content::GlobalRenderFrameHostId>(&creator);
+    DedicatedWorkerCreator creator) {
+  const GlobalRenderFrameHostId* const render_frame_host_id =
+      absl::get_if<GlobalRenderFrameHostId>(&creator);
   if (!render_frame_host_id) {
     return;
   }
 
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(*render_frame_host_id);
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(*render_frame_host_id);
 
   if (!IsInPrimaryPage(render_frame_host)) {
     return;
@@ -994,7 +992,7 @@ void DIPSWebContentsObserver::OnWorkerCreated(
   }
 }
 
-void DIPSWebContentsObserver::PrimaryPageChanged(content::Page& page) {
+void DIPSWebContentsObserver::PrimaryPageChanged(Page& page) {
   if (last_committed_site_.has_value()) {
     dips_service_->RemoveOpenSite(last_committed_site_.value());
   }
@@ -1140,7 +1138,7 @@ void DIPSBounceDetector::DidFinishNavigation(
 
 // TODO(kaklilu): Follow up on how this interacts with Fenced Frames.
 void RedirectChainDetector::FrameReceivedUserActivation(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   // Ignore iframe activations since we only care for its associated main-frame
   // interactions on the top-level site.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
@@ -1162,7 +1160,7 @@ void DIPSBounceDetector::OnUserActivation() {
 }
 
 void DIPSWebContentsObserver::FrameReceivedUserActivation(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -1190,7 +1188,7 @@ void DIPSBounceDetector::WebAuthnAssertionRequestSucceeded() {
 }
 
 void RedirectChainDetector::WebAuthnAssertionRequestSucceeded(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -1199,7 +1197,7 @@ void RedirectChainDetector::WebAuthnAssertionRequestSucceeded(
 }
 
 void DIPSWebContentsObserver::WebAuthnAssertionRequestSucceeded(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -1240,8 +1238,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(DIPSWebContentsObserver);
 
 namespace dips {
 
-ukm::SourceId GetInitialRedirectSourceId(
-    content::NavigationHandle* navigation_handle) {
+ukm::SourceId GetInitialRedirectSourceId(NavigationHandle* navigation_handle) {
   DIPSNavigationHandleImpl handle(navigation_handle);
   return handle.GetRedirectSourceId(0);
 }
@@ -1285,7 +1282,7 @@ bool DelayedChainHandler::AddLateCookieAccess(const GURL& url,
     return false;
   }
 
-  return ::AddLateCookieAccess(url, op, prev_chain_pair_->first);
+  return ::content::AddLateCookieAccess(url, op, prev_chain_pair_->first);
 }
 
 void DelayedChainHandler::HandlePreviousChainNowImpl(bool timer_fired) {
@@ -1306,3 +1303,5 @@ void DelayedChainHandler::HandlePreviousChainNowImpl(bool timer_fired) {
   prev_chain_pair_.reset();
   handler_.Run(std::move(prev_redirects), std::move(prev_chain));
 }
+
+}  // namespace content

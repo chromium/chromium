@@ -274,6 +274,9 @@ class PdfInkModule {
     // The event position for the last input, similar to what is stored in
     // `DrawingStrokeState` for compensating for missed input events.
     std::optional<gfx::PointF> input_last_event_position;
+
+    // The type of tool used to generate the input.
+    ink::StrokeInput::ToolType tool_type;
   };
 
   // Drawing brush state changes that are pending the completion of an
@@ -304,9 +307,12 @@ class PdfInkModule {
                     ink::StrokeInput::ToolType tool_type);
 
   // Return values have the same semantics as On{Mouse,Touch}*() above.
-  bool StartEraseStroke(const gfx::PointF& position);
-  bool ContinueEraseStroke(const gfx::PointF& position);
-  bool FinishEraseStroke(const gfx::PointF& position);
+  bool StartEraseStroke(const gfx::PointF& position,
+                        ink::StrokeInput::ToolType tool_type);
+  bool ContinueEraseStroke(const gfx::PointF& position,
+                           ink::StrokeInput::ToolType tool_type);
+  bool FinishEraseStroke(const gfx::PointF& position,
+                         ink::StrokeInput::ToolType tool_type);
 
   // Shared code for the Erase methods above. Returns if something got erased or
   // not.

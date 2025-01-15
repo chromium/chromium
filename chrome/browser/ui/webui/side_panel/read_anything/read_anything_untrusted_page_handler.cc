@@ -502,10 +502,9 @@ void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
   OnGetVoicePackInfo(std::move(voicePackInfo));
 }
 
-void ReadAnythingUntrustedPageHandler::OnExtensionInstalled(
+void ReadAnythingUntrustedPageHandler::OnExtensionReady(
     content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    bool is_update) {
+    const extensions::Extension* extension) {
   if (extension->id() != extension_misc::kTTSEngineExtensionId) {
     return;
   }

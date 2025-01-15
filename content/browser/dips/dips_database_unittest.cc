@@ -35,7 +35,7 @@
 using base::Time;
 using testing::Optional;
 
-class DIPSDatabase;
+namespace content {
 
 namespace {
 
@@ -769,10 +769,9 @@ INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
 
 // A test class that verifies the behavior of the methods used to query the
 // DIPSDatabase to find all sites which should have their state cleared by DIPS.
-class DIPSDatabaseQueryTest
-    : public DIPSDatabaseTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, content::DIPSTriggeringAction>> {
+class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
+                              public testing::WithParamInterface<
+                                  std::tuple<bool, DIPSTriggeringAction>> {
  public:
   using QueryMethod = base::RepeatingCallback<std::vector<std::string>(void)>;
   DIPSDatabaseQueryTest() : DIPSDatabaseTest(std::get<0>(GetParam())) {
@@ -788,25 +787,23 @@ class DIPSDatabaseQueryTest
   }
 
   // Returns the DIPS-triggering action we're testing.
-  content::DIPSTriggeringAction CurrentAction() {
-    return std::get<1>(GetParam());
-  }
+  DIPSTriggeringAction CurrentAction() { return std::get<1>(GetParam()); }
 
   // Returns a callback for the respective querying method we want to test,
   // based on `features::kDIPSTriggeringAction`. This is equivalent to that
   // used by `DIPSStorage::GetSitesToClear` when the DIPS Timer fires.
   QueryMethod GetQueryMethodUnderTest() {
     switch (CurrentAction()) {
-      case content::DIPSTriggeringAction::kNone:
+      case DIPSTriggeringAction::kNone:
         return base::BindLambdaForTesting(
             [&]() { return std::vector<std::string>{}; });
-      case content::DIPSTriggeringAction::kBounce:
+      case DIPSTriggeringAction::kBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBounced(grace_period); });
-      case content::DIPSTriggeringAction::kStorage:
+      case DIPSTriggeringAction::kStorage:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatUsedStorage(grace_period); });
-      case content::DIPSTriggeringAction::kStatefulBounce:
+      case DIPSTriggeringAction::kStatefulBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBouncedWithState(grace_period); });
     }
@@ -817,19 +814,19 @@ class DIPSDatabaseQueryTest
                              TimestampRange interaction_times,
                              TimestampRange waa_times) {
     switch (CurrentAction()) {
-      case content::DIPSTriggeringAction::kNone:
+      case DIPSTriggeringAction::kNone:
         break;
-      case content::DIPSTriggeringAction::kBounce:
+      case DIPSTriggeringAction::kBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/{},
                    /*bounce_times=*/event_times, waa_times);
         break;
-      case content::DIPSTriggeringAction::kStorage:
+      case DIPSTriggeringAction::kStorage:
         db_->Write(site, /*storage_times=*/event_times, interaction_times,
                    /*stateful_bounce_times=*/{}, /*bounce_times=*/{},
                    waa_times);
         break;
-      case content::DIPSTriggeringAction::kStatefulBounce:
+      case DIPSTriggeringAction::kStatefulBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/event_times,
                    /*bounce_times=*/event_times, waa_times);
@@ -1165,9 +1162,9 @@ INSTANTIATE_TEST_SUITE_P(
     DIPSDatabaseQueryTest,
     ::testing::Combine(
         ::testing::Bool(),
-        ::testing::Values(content::DIPSTriggeringAction::kBounce,
-                          content::DIPSTriggeringAction::kStorage,
-                          content::DIPSTriggeringAction::kStatefulBounce)));
+        ::testing::Values(DIPSTriggeringAction::kBounce,
+                          DIPSTriggeringAction::kStorage,
+                          DIPSTriggeringAction::kStatefulBounce)));
 
 // A test class that verifies DIPSDatabase garbage collection behavior for both
 // tables.
@@ -1825,3 +1822,5 @@ TEST_F(DIPSDatabaseConfigTest, TimerLastFired) {
   ASSERT_TRUE(db_->SetTimerLastFired(time));
   ASSERT_EQ(db_->GetTimerLastFired(), time);
 }
+
+}  // namespace content

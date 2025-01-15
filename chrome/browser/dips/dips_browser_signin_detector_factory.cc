@@ -72,7 +72,7 @@ DIPSBrowserSigninDetectorFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<DIPSBrowserSigninDetector>(
       base::PassKey<DIPSBrowserSigninDetectorFactory>(),
-      DIPSService::Get(context),
+      content::DIPSService::Get(context),
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(context)));
 }

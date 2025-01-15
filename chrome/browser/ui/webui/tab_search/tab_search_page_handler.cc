@@ -1030,7 +1030,6 @@ void TabSearchPageHandler::SetTabOrganizationUserInstruction(
 
 void TabSearchPageHandler::SetUserFeedback(
     int32_t session_id,
-    int32_t organization_id,
     tab_search::mojom::UserFeedback feedback) {
   optimization_guide::proto::UserFeedback user_feedback;
   switch (feedback) {
@@ -1047,27 +1046,16 @@ void TabSearchPageHandler::SetUserFeedback(
           optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       break;
   }
-  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    CHECK(organization_id == -1);
-    Browser* browser = chrome::FindLastActive();
-    if (!browser) {
-      return;
-    }
-    TabOrganizationSession* session =
-        organization_service_->GetSessionForBrowser(browser);
-    if (!session) {
-      return;
-    }
-    session->SetFeedback(user_feedback);
-  } else {
-    CHECK(organization_id >= 0);
-    TabOrganization* organization =
-        GetTabOrganization(organization_service_, session_id, organization_id);
-    if (!organization) {
-      return;
-    }
-    organization->SetFeedback(user_feedback);
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
   }
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
+  if (!session) {
+    return;
+  }
+  session->SetFeedback(user_feedback);
 }
 
 void TabSearchPageHandler::NotifyOrganizationUIReadyToShow() {

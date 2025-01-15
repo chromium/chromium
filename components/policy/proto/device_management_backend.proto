@@ -4653,6 +4653,9 @@ message FmRegistrationTokenUploadRequest {
 // Response to `FmRegistrationTokenUploadRequest`.
 message FmRegistrationTokenUploadResponse {}
 
+// Request body for determining enterprise promotion eligibility.
+message DeterminePromotionEligibilityRequest {}
+
 enum PromotionType {
   PROMOTION_TYPE_UNSPECIFIED = 0;
   CHROME_ENTERPRISE_CORE = 1;

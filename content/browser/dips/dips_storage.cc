@@ -20,6 +20,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
+namespace content {
+
 DIPSStorage::DIPSStorage(const std::optional<base::FilePath>& path)
     : db_(std::make_unique<DIPSDatabase>(path)) {
   base::AssertLongCPUWorkAllowed();
@@ -241,18 +243,18 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
       custom_period.value_or(features::kDIPSGracePeriod.Get());
 
   switch (features::kDIPSTriggeringAction.Get()) {
-    case content::DIPSTriggeringAction::kNone: {
+    case DIPSTriggeringAction::kNone: {
       return {};
     }
-    case content::DIPSTriggeringAction::kStorage: {
+    case DIPSTriggeringAction::kStorage: {
       sites_to_clear = GetSitesThatUsedStorage(grace_period);
       break;
     }
-    case content::DIPSTriggeringAction::kBounce: {
+    case DIPSTriggeringAction::kBounce: {
       sites_to_clear = GetSitesThatBounced(grace_period);
       break;
     }
-    case content::DIPSTriggeringAction::kStatefulBounce: {
+    case DIPSTriggeringAction::kStatefulBounce: {
       sites_to_clear = GetSitesThatBouncedWithState(grace_period);
       break;
     }
@@ -330,3 +332,5 @@ bool DIPSStorage::SetTimerLastFired(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->SetTimerLastFired(time);
 }
+
+}  // namespace content

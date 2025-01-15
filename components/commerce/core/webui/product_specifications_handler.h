@@ -30,14 +30,22 @@ class ProductSpecificationsHandler
 
     virtual ~Delegate() = default;
 
+    // Show the disclosure dialog for the potential product specifications set,
+    // which is created if the disclosure is accepted.
     virtual void ShowDisclosureDialog(const std::vector<GURL>& urls,
                                       const std::string& name,
                                       const std::string& set_id) = 0;
 
+    // Show the product specifications set for the given UUID, either in the
+    // current tab or in a new tab.
     virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                                      bool in_new_tab) = 0;
 
+    // Show the sync setup flow for Compare.
     virtual void ShowSyncSetupFlow() = 0;
+
+    // Show the chrome://compare page.
+    virtual void ShowComparePage(bool in_new_tab) = 0;
   };
 
   explicit ProductSpecificationsHandler(
@@ -64,6 +72,7 @@ class ProductSpecificationsHandler
   void ShowSyncSetupFlow() override;
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                            bool in_new_tab) override;
+  void ShowComparePage(bool in_new_tab) override;
   void GetPageTitleFromHistory(
       const GURL& url,
       GetPageTitleFromHistoryCallback callback) override;

@@ -556,7 +556,8 @@
 // Glic status tray icon menu
 #define IDC_GLIC_STATUS_ICON_MENU_SHOW                        53310
 #define IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT 53311
-#define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53312
+#define IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON                 53312
+#define IDC_GLIC_STATUS_ICON_MENU_SETTINGS                    53313
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

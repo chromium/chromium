@@ -119,11 +119,13 @@ CookieControlsController::CookieControlsController(
     scoped_refptr<CookieSettings> cookie_settings,
     scoped_refptr<CookieSettings> original_cookie_settings,
     HostContentSettingsMap* settings_map,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings)
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    bool is_incognito_profile)
     : cookie_settings_(cookie_settings),
       original_cookie_settings_(original_cookie_settings),
       settings_map_(settings_map),
-      tracking_protection_settings_(tracking_protection_settings) {
+      tracking_protection_settings_(tracking_protection_settings),
+      is_incognito_profile_(is_incognito_profile) {
   CHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
   cookie_observation_.Observe(cookie_settings_.get());
@@ -239,6 +241,12 @@ bool CookieControlsController::ShowActFeatures() {
           tracking_protection_settings_->IsFpProtectionEnabled());
 }
 
+bool CookieControlsController::ShouldUpdateTpContentSetting() {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
+         is_incognito_profile_;
+}
+
 std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
@@ -288,7 +296,8 @@ CookieControlsController::GetEnforcementForThirdPartyCookieBlocking(
       info.secondary_pattern ==
           ContentSettingsPattern::FromURLToSchemefulSitePattern(url);
 
-  // Rules from regular mode can't be temporarily overridden in incognito.
+  // Rules from regular mode can't be temporarily overridden in off the record
+  // profiles.
   bool exception_exists_in_regular_profile = false;
   if (cookies_allowed && original_cookie_settings_) {
     SettingInfo original_info;
@@ -338,16 +347,18 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
-    tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    if (ShouldUpdateTpContentSetting()) {
+      tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    }
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  if (ShowActFeatures()) {
+  cookie_settings_->SetCookieSettingForUserBypass(url);
+  if (ShouldUpdateTpContentSetting()) {
     tracking_protection_settings_->AddTrackingProtectionException(url);
   }
-  cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);

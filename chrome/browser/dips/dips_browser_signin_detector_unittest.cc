@@ -82,7 +82,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
   void InitDIPSService() {
     DIPSBrowserSigninDetectorFactory::GetInstance()
         ->EnableWaitForServiceForTesting();
-    dips_service_ = DIPSService::Get(profile_.get());
+    dips_service_ = content::DIPSService::Get(profile_.get());
     EXPECT_NE(dips_service_, nullptr);
     DIPSBrowserSigninDetectorFactory::GetInstance()->WaitForServiceForTesting(
         profile_.get());
@@ -98,7 +98,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
     return identity_test_environment_profile_adaptor_->identity_test_env();
   }
 
-  DIPSService* dips_service() { return dips_service_; }
+  content::DIPSService* dips_service() { return dips_service_; }
 
   GURL GetURL(std::string_view domain) {
     return GURL(base::StrCat({"http://", domain}));
@@ -135,7 +135,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_profile_adaptor_;
-  raw_ptr<DIPSService> dips_service_;
+  raw_ptr<content::DIPSService> dips_service_;
 };
 
 TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {

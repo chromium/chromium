@@ -183,6 +183,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeHighlighterColor) -->
 
+<!-- LINT.IfChange(PDFInk2StrokeInputDeviceType) -->
+
+<enum name="PDFInk2StrokeInputDeviceType">
+  <int value="0" label="Mouse"/>
+  <int value="1" label="Touch"/>
+  <int value="2" label="Pen"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeInputDeviceType) -->
+
 <!-- LINT.IfChange(PDFInk2StrokePenColor) -->
 
 <enum name="PDFInk2StrokePenColor">

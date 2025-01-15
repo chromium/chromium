@@ -107,8 +107,6 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using base::Bucket;
-using content::NavigationHandle;
-using content::WebContents;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::Eq;
@@ -116,10 +114,12 @@ using testing::Gt;
 using testing::IsEmpty;
 using testing::Pair;
 using ukm::builders::DIPS_Redirect;
-using AttributionData = std::set<content::AttributionDataModel::DataKey>;
+
+namespace content {
 
 namespace {
 
+using AttributionData = std::set<AttributionDataModel::DataKey>;
 using blink::mojom::StorageTypeAccessed;
 
 // Returns a simplified URL representation for ease of comparison in tests.
@@ -158,9 +158,8 @@ void AppendSitesInReport(std::vector<std::string>* reports,
 
 std::vector<url::Origin> GetOrigins(const AttributionData& data) {
   std::vector<url::Origin> origins;
-  base::ranges::transform(
-      data, std::back_inserter(origins),
-      &content::AttributionDataModel::DataKey::reporting_origin);
+  base::ranges::transform(data, std::back_inserter(origins),
+                          &AttributionDataModel::DataKey::reporting_origin);
   return origins;
 }
 
@@ -211,11 +210,10 @@ testing::AssertionResult WaitForRedirectCookieWrite(WebContents* web_contents,
 
 // Keeps a log of DidStartNavigation, OnCookiesAccessed, and DidFinishNavigation
 // executions.
-class WCOCallbackLogger
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<WCOCallbackLogger>,
-      public content::SharedWorkerService::Observer,
-      public content::DedicatedWorkerService::Observer {
+class WCOCallbackLogger : public WebContentsObserver,
+                          public WebContentsUserData<WCOCallbackLogger>,
+                          public SharedWorkerService::Observer,
+                          public DedicatedWorkerService::Observer {
  public:
   WCOCallbackLogger(const WCOCallbackLogger&) = delete;
   WCOCallbackLogger& operator=(const WCOCallbackLogger&) = delete;
@@ -223,36 +221,33 @@ class WCOCallbackLogger
   const std::vector<std::string>& log() const { return log_; }
 
  private:
-  explicit WCOCallbackLogger(content::WebContents* web_contents);
+  explicit WCOCallbackLogger(WebContents* web_contents);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class content::WebContentsUserData<WCOCallbackLogger>;
+  friend class WebContentsUserData<WCOCallbackLogger>;
 
   // Start WebContentsObserver overrides:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
-                         const content::CookieAccessDetails& details) override;
-  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
                              StorageTypeAccessed storage_type,
                              bool blocked) override;
-  void OnServiceWorkerAccessed(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
-  void OnServiceWorkerAccessed(
-      content::NavigationHandle* navigation_handle,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
+                               const GURL& scope,
+                               AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
+                               const GURL& scope,
+                               AllowServiceWorkerResult allowed) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebAuthnAssertionRequestSucceeded(
-      content::RenderFrameHost* render_frame_host) override;
+      RenderFrameHost* render_frame_host) override;
   // End WebContentsObserver overrides.
 
   // Start SharedWorkerService.Observer overrides:
-  void OnClientAdded(
-      const blink::SharedWorkerToken& token,
-      content::GlobalRenderFrameHostId render_frame_host_id) override;
+  void OnClientAdded(const blink::SharedWorkerToken& token,
+                     GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
                        int worker_process_id,
                        const url::Origin& security_origin,
@@ -260,20 +255,18 @@ class WCOCallbackLogger
   }
   void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
   }
-  void OnClientRemoved(
-      const blink::SharedWorkerToken& token,
-      content::GlobalRenderFrameHostId render_frame_host_id) override {}
-  using content::SharedWorkerService::Observer::OnFinalResponseURLDetermined;
+  void OnClientRemoved(const blink::SharedWorkerToken& token,
+                       GlobalRenderFrameHostId render_frame_host_id) override {}
+  using SharedWorkerService::Observer::OnFinalResponseURLDetermined;
   // End SharedWorkerService.Observer overrides.
 
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
                        const url::Origin& security_origin,
-                       content::DedicatedWorkerCreator creator) override;
-  void OnBeforeWorkerDestroyed(
-      const blink::DedicatedWorkerToken& worker_token,
-      content::DedicatedWorkerCreator creator) override {}
+                       DedicatedWorkerCreator creator) override;
+  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
+                               DedicatedWorkerCreator creator) override {}
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& worker_token,
       const GURL& url) override {}
@@ -284,9 +277,9 @@ class WCOCallbackLogger
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WCOCallbackLogger::WCOCallbackLogger(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
+WCOCallbackLogger::WCOCallbackLogger(WebContents* web_contents)
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
 
 void WCOCallbackLogger::DidStartNavigation(
     NavigationHandle* navigation_handle) {
@@ -295,9 +288,8 @@ void WCOCallbackLogger::DidStartNavigation(
                          FormatURL(navigation_handle->GetURL()).c_str()));
 }
 
-void WCOCallbackLogger::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
+void WCOCallbackLogger::OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                                          const CookieAccessDetails& details) {
   // Callbacks for favicons are ignored only in testing logs because their
   // ordering is variable and would cause flakiness
   if (details.url.path() == "/favicon.ico") {
@@ -310,9 +302,8 @@ void WCOCallbackLogger::OnCookiesAccessed(
       FormatURL(details.url).c_str()));
 }
 
-void WCOCallbackLogger::OnCookiesAccessed(
-    NavigationHandle* navigation_handle,
-    const content::CookieAccessDetails& details) {
+void WCOCallbackLogger::OnCookiesAccessed(NavigationHandle* navigation_handle,
+                                          const CookieAccessDetails& details) {
   log_.push_back(base::StringPrintf(
       "OnCookiesAccessed(NavigationHandle, %s: %s)",
       details.type == CookieOperation::kChange ? "Change" : "Read",
@@ -320,18 +311,18 @@ void WCOCallbackLogger::OnCookiesAccessed(
 }
 
 void WCOCallbackLogger::OnServiceWorkerAccessed(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    AllowServiceWorkerResult allowed) {
   log_.push_back(
       base::StringPrintf("OnServiceWorkerAccessed(RenderFrameHost: %s)",
                          FormatURL(scope).c_str()));
 }
 
 void WCOCallbackLogger::OnServiceWorkerAccessed(
-    content::NavigationHandle* navigation_handle,
+    NavigationHandle* navigation_handle,
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    AllowServiceWorkerResult allowed) {
   log_.push_back(
       base::StringPrintf("OnServiceWorkerAccessed(NavigationHandle: %s)",
                          FormatURL(scope).c_str()));
@@ -339,9 +330,9 @@ void WCOCallbackLogger::OnServiceWorkerAccessed(
 
 void WCOCallbackLogger::OnClientAdded(
     const blink::SharedWorkerToken& token,
-    content::GlobalRenderFrameHostId render_frame_host_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id);
+    GlobalRenderFrameHostId render_frame_host_id) {
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_frame_host_id);
   GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
 
   log_.push_back(base::StringPrintf("OnSharedWorkerClientAdded(%s)",
@@ -352,11 +343,11 @@ void WCOCallbackLogger::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
     const url::Origin& security_origin,
-    content::DedicatedWorkerCreator creator) {
-  const content::GlobalRenderFrameHostId& render_frame_host_id =
-      absl::get<content::GlobalRenderFrameHostId>(creator);
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id);
+    DedicatedWorkerCreator creator) {
+  const GlobalRenderFrameHostId& render_frame_host_id =
+      absl::get<GlobalRenderFrameHostId>(creator);
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_frame_host_id);
   GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
 
   log_.push_back(base::StringPrintf("OnDedicatedWorkerCreated(%s)",
@@ -375,14 +366,14 @@ void WCOCallbackLogger::DidFinishNavigation(
 }
 
 void WCOCallbackLogger::WebAuthnAssertionRequestSucceeded(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   log_.push_back(base::StringPrintf(
       "WebAuthnAssertionRequestSucceeded(%s)",
       FormatURL(render_frame_host->GetLastCommittedURL()).c_str()));
 }
 
 void WCOCallbackLogger::NotifyStorageAccessed(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     StorageTypeAccessed storage_type,
     bool blocked) {
   log_.push_back(base::StringPrintf(
@@ -392,7 +383,7 @@ void WCOCallbackLogger::NotifyStorageAccessed(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
 
-class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
+class DIPSBounceDetectorBrowserTest : public ContentBrowserTest {
  protected:
   DIPSBounceDetectorBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
@@ -406,7 +397,7 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features_,
                                                        disabled_features_);
-    content::ContentBrowserTest::SetUp();
+    ContentBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -416,7 +407,7 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     browser_client_ =
-        std::make_unique<content::ContentBrowserTestTpcBlockingBrowserClient>();
+        std::make_unique<ContentBrowserTestTpcBlockingBrowserClient>();
     prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -430,9 +421,7 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
     CHECK(web_contents_observer_);
   }
 
-  content::WebContents* GetActiveWebContents() {
-    return shell()->web_contents();
-  }
+  WebContents* GetActiveWebContents() { return shell()->web_contents(); }
 
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
     GetRedirectChainHelper()->SetRedirectChainHandlerForTesting(
@@ -458,11 +447,10 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
         DIPSService::Get(web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
-    content::DipsRedirectChainObserver chain_observer(dips_service,
-                                                      expected_url);
+    DipsRedirectChainObserver chain_observer(dips_service, expected_url);
     // Performing a browser-based navigation terminates the current redirect
     // chain.
-    ASSERT_TRUE(content::NavigateToURL(
+    ASSERT_TRUE(NavigateToURL(
         web_contents,
         embedded_test_server()->GetURL("endthechain.test", "/title1.html")));
     if (wait) {
@@ -471,53 +459,49 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
   }
 
   [[nodiscard]] testing::AssertionResult AccessStorage(
-      content::RenderFrameHost* frame,
+      RenderFrameHost* frame,
       StorageTypeAccessed type) {
     // We drop the first character of ToString(type) because it's just the
     // constant-indicating 'k'.
-    return content::ExecJs(
-        frame,
-        base::StringPrintf(kStorageAccessScript,
-                           base::ToString(type).substr(1).c_str()),
-        content::EXECUTE_SCRIPT_NO_USER_GESTURE,
-        /*world_id=*/1);
+    return ExecJs(frame,
+                  base::StringPrintf(kStorageAccessScript,
+                                     base::ToString(type).substr(1).c_str()),
+                  EXECUTE_SCRIPT_NO_USER_GESTURE,
+                  /*world_id=*/1);
   }
 
   auto* fenced_frame_test_helper() { return &fenced_frame_test_helper_; }
   auto* prerender_test_helper() { return &prerender_test_helper_; }
 
-  content::RenderFrameHost* GetIFrame() {
-    content::WebContents* web_contents = GetActiveWebContents();
+  RenderFrameHost* GetIFrame() {
+    WebContents* web_contents = GetActiveWebContents();
     return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
-  content::RenderFrameHost* GetNestedIFrame() {
-    return ChildFrameAt(GetIFrame(), 0);
-  }
+  RenderFrameHost* GetNestedIFrame() { return ChildFrameAt(GetIFrame(), 0); }
 
   RedirectChainDetector* GetRedirectChainHelper() {
     return RedirectChainDetector::FromWebContents(GetActiveWebContents());
   }
 
-  void NavigateNestedIFrameTo(content::RenderFrameHost* parent_frame,
+  void NavigateNestedIFrameTo(RenderFrameHost* parent_frame,
                               const std::string& iframe_id,
                               const GURL& url) {
-    content::TestNavigationObserver load_observer(GetActiveWebContents());
+    TestNavigationObserver load_observer(GetActiveWebContents());
     std::string script = base::StringPrintf(
         "var iframe = document.getElementById('%s');iframe.src='%s';",
         iframe_id.c_str(), url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(parent_frame, script,
-                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    ASSERT_TRUE(ExecJs(parent_frame, script, EXECUTE_SCRIPT_NO_USER_GESTURE));
     load_observer.Wait();
   }
 
-  void AccessCHIPSViaJSIn(content::RenderFrameHost* frame) {
+  void AccessCHIPSViaJSIn(RenderFrameHost* frame) {
     FrameCookieAccessObserver observer(GetActiveWebContents(), frame,
                                        CookieOperation::kChange);
-    ASSERT_TRUE(content::ExecJs(frame,
-                                "document.cookie = '__Host-foo=bar;"
-                                "SameSite=None;Secure;Path=/;Partitioned';",
-                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    ASSERT_TRUE(ExecJs(frame,
+                       "document.cookie = '__Host-foo=bar;"
+                       "SameSite=None;Secure;Path=/;Partitioned';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
   }
 
@@ -527,11 +511,11 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
 
   void SimulateCookieWrite() {
     WebContents* web_contents = GetActiveWebContents();
-    content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+    RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
     URLCookieAccessObserver cookie_observer(
         web_contents, frame->GetLastCommittedURL(), CookieOperation::kChange);
-    ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
-                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    ASSERT_TRUE(ExecJs(frame, "document.cookie = 'foo=bar';",
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
     cookie_observer.Wait();
   }
 
@@ -545,11 +529,10 @@ class DIPSBounceDetectorBrowserTest : public content::ContentBrowserTest {
       web_contents_observer_ = nullptr;
 
  private:
-  content::test::PrerenderTestHelper prerender_test_helper_;
-  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  test::PrerenderTestHelper prerender_test_helper_;
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<content::ContentBrowserTestTpcBlockingBrowserClient>
-      browser_client_;
+  std::unique_ptr<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -561,20 +544,19 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   AccessCookieViaJSIn(GetActiveWebContents(), GetIFrame());
 
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -605,18 +587,17 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
   browser_client().AllowThirdPartyCookiesOnSite(
       embedded_test_server()->GetURL("a.test", "/"));
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       https_server.GetURL("a.test", "/set-cookie?foo=bar;SameSite=None;Secure");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -637,19 +618,18 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url = https_server.GetURL("b.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   AccessCHIPSViaJSIn(GetIFrame());
 
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -671,20 +651,19 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       https_server.GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       https_server.GetURL("b.test",
                           "/set-cookie?__Host-foo=bar;SameSite=None;"
                           "Secure;Path=/;Partitioned");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -702,13 +681,12 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL nested_iframe_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
@@ -719,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -742,13 +720,12 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL nested_iframe_url =
       https_server.GetURL("a.test", "/set-cookie?foo=bar;SameSite=None;Secure");
@@ -757,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -778,13 +755,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_test_server()->GetURL("b.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL nested_iframe_url = https_server.GetURL("c.test", "/title1.html");
   NavigateNestedIFrameTo(GetIFrame(), "test_iframe", nested_iframe_url);
@@ -794,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -815,13 +791,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_test_server()->GetURL("b.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL nested_iframe_url = https_server.GetURL(
       "a.test",
@@ -831,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -856,13 +831,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   {
     const GURL primary_main_frame_url = embedded_test_server()->GetURL(
         "a.test", "/page_with_blank_iframe.html");
-    ASSERT_TRUE(
-        content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
     const GURL iframe_url = embedded_test_server()->GetURL(
         "b.test", "/page_with_blank_iframe.html");
-    ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                             "test_iframe", iframe_url));
+    ASSERT_TRUE(
+        NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
     const GURL nested_iframe_url =
         https_server.GetURL("c.test", "/title1.html");
@@ -873,8 +847,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   GURL image_url = https_server.GetURL("c.test", "/favicon/icon.png");
   CreateImageAndWaitForCookieAccess(GetActiveWebContents(), image_url);
@@ -882,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -901,12 +874,11 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL fenced_frame_url =
       embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  content::RenderFrameHostWrapper fenced_frame(
+  RenderFrameHostWrapper fenced_frame(
       fenced_frame_test_helper()->CreateFencedFrame(
           GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
   EXPECT_FALSE(fenced_frame.IsDestroyed());
@@ -916,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -933,14 +905,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL fenced_frame_url = embedded_test_server()->GetURL(
       "a.test", "/fenced_frames/set_cookie_header.html");
   URLCookieAccessObserver observer(GetActiveWebContents(), fenced_frame_url,
                                    CookieOperation::kChange);
-  content::RenderFrameHostWrapper fenced_frame(
+  RenderFrameHostWrapper fenced_frame(
       fenced_frame_test_helper()->CreateFencedFrame(
           GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
   EXPECT_FALSE(fenced_frame.IsDestroyed());
@@ -949,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -974,18 +945,16 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL prerendering_url =
       embedded_test_server()->GetURL("a.test", "/title2.html");
-  const content::FrameTreeNodeId host_id =
+  const FrameTreeNodeId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
-  content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
-                                                host_id);
+  test::PrerenderHostObserver observer(*GetActiveWebContents(), host_id);
   EXPECT_FALSE(observer.was_activated());
-  content::RenderFrameHost* prerender_frame =
+  RenderFrameHost* prerender_frame =
       prerender_test_helper()->GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_frame, nullptr);
 
@@ -997,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -1015,20 +984,19 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL prerendering_url =
       embedded_test_server()->GetURL("a.test", "/set_cookie_header.html");
   URLCookieAccessObserver observer(GetActiveWebContents(), prerendering_url,
                                    CookieOperation::kChange);
-  const content::FrameTreeNodeId host_id =
+  const FrameTreeNodeId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   observer.Wait();
 
-  content::test::PrerenderHostObserver prerender_observer(
-      *GetActiveWebContents(), host_id);
+  test::PrerenderHostObserver prerender_observer(*GetActiveWebContents(),
+                                                 host_id);
   EXPECT_FALSE(prerender_observer.was_activated());
   prerender_test_helper()->CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
@@ -1036,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL primary_main_frame_final_url =
       embedded_test_server()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   // From the time the cookie was set by the prerendering page and now, the
@@ -1061,12 +1029,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   StartAppendingRedirectsTo(&redirects);
 
   // Navigate to the initial page, a.test.
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL("a.test", "/title1.html")));
 
   // Navigate with a click (not considered to be redirect) to b.test.
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("b.test", "/title1.html")));
 
@@ -1074,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                             StorageTypeAccessed::kLocalStorage));
 
   // Navigate without a click (considered a client-redirect) to c.test.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("c.test", "/title1.html")));
 
@@ -1109,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       "d.test/set-cookie?name=value");
   GURL final_url =
       embedded_test_server()->GetURL("d.test", "/set-cookie?name=value");
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set cookies on all 4 test domains
   ASSERT_TRUE(NavigateToSetCookie(web_contents, embedded_test_server(),
@@ -1136,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Visit the redirect.
   URLCookieAccessObserver observer(web_contents, final_url,
                                    CookieOperation::kChange);
-  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, redirect_url, final_url));
   observer.Wait();
 
   // Verify that the 7 OnCookiesAccessed() executions are called in order, and
@@ -1225,14 +1193,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   const GURL redirect_url = https_server.GetURL(
       "b.test", "/cross-site-with-samesite-none-cookie/c.test/title1.html");
   const std::string iframe_id = "test_iframe";
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents, root_url));
-  ASSERT_TRUE(
-      content::NavigateIframeToURL(web_contents, iframe_id, redirect_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, root_url));
+  ASSERT_TRUE(NavigateIframeToURL(web_contents, iframe_id, redirect_url));
   EndRedirectChain(/*wait=*/false);
 
   // b.test had a stateful redirect, but because it was in an iframe, we ignored
@@ -1253,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Record user activation on d.test.
   GURL url = embedded_test_server()->GetURL("d.test", "/title1.html");
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   SimulateMouseClick();
 
   // Verify interaction was recorded for d.test, before proceeding.
@@ -1263,12 +1230,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(state->user_interaction_times.has_value());
 
   // Visit initial page on a.test.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
 
   // Navigate with a click (not a redirect) to b.test, which statefully
   // S-redirects to c.test and write a cookie on c.test.
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       web_contents,
       embedded_test_server()->GetURL(
           "b.test", "/cross-site-with-cookie/c.test/title1.html"),
@@ -1277,13 +1244,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Navigate without a click (i.e. by C-redirecting) to d.test and write a
   // cookie on d.test:
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
   AccessCookieViaJSIn(web_contents, web_contents->GetPrimaryMainFrame());
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
   // statefully S-redirects to f.test, which statefully S-redirects to g.test.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       embedded_test_server()->GetURL(
           "e.test",
@@ -1324,20 +1291,20 @@ IN_PROC_BROWSER_TEST_F(
   auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
 
   // Set SameSite=None cookie on d.test.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, https_server.GetURL(
                         "d.test", "/set-cookie?foo=bar;Secure;SameSite=None")));
 
   // Visit initial page
-  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
   // Navigate with a click (not a redirect).
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Cause a third-party cookie read.
   CreateImageAndWaitForCookieAccess(web_contents, image_url);
   // Navigate without a click (i.e. by redirecting).
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
 
   EXPECT_THAT(logger->log(),
               ElementsAre(
@@ -1384,20 +1351,20 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
 
   // Set cookie on sub.b.test.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents,
       embedded_test_server()->GetURL("sub.b.test", "/set-cookie?foo=bar")));
 
   // Visit initial page
-  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
   // Navigate with a click (not a redirect).
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Cause a same-site cookie read.
   CreateImageAndWaitForCookieAccess(web_contents, image_url);
   // Navigate without a click (i.e. by redirecting).
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
 
   EXPECT_THAT(logger->log(),
               ElementsAre(
@@ -1435,24 +1402,24 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   StartAppendingRedirectsTo(&redirects);
 
   // Visit initial page on a.test
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
   // c.test
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       web_contents,
       embedded_test_server()->GetURL("b.test",
                                      "/cross-site/c.test/title1.html"),
       embedded_test_server()->GetURL("c.test", "/title1.html")));
 
   // Navigate without a click (i.e. by C-redirecting) to d.test
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
   // S-redirects to f.test
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       embedded_test_server()->GetURL("e.test",
                                      "/cross-site/f.test/title1.html"),
@@ -1481,12 +1448,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   StartAppendingRedirectsTo(&redirects);
 
   // Visit initial page on a.test
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
   // c.test
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       web_contents,
       embedded_test_server()->GetURL("b.test",
                                      "/cross-site/c.test/title1.html"),
@@ -1509,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url(
       embedded_test_server()->GetURL("a.test", "/title1.html"));
-  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+  ASSERT_TRUE(NavigateToURL(original_tab, original_tab_url));
 
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
@@ -1530,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
-  content::WebContentsDestroyedWatcher watcher(new_tab);
+  WebContentsDestroyedWatcher watcher(new_tab);
   new_tab->Close();
   watcher.Wait();
 
@@ -1548,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url(
       embedded_test_server()->GetURL("a.test", "/title1.html"));
-  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+  ASSERT_TRUE(NavigateToURL(original_tab, original_tab_url));
 
   // Open link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
@@ -1566,9 +1533,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       base::BindRepeating(&AppendRedirects, &redirects));
 
   // Navigate without a click (i.e. by C-redirecting) to c.test.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       new_tab, embedded_test_server()->GetURL("c.test", "/title1.html")));
-  content::WebContentsDestroyedWatcher watcher(new_tab);
+  WebContentsDestroyedWatcher watcher(new_tab);
   new_tab->Close();
   watcher.Wait();
 
@@ -1585,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        OpenRedirectURLInNewTab_OpaqueOriginInitiator) {
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url("data:text/html,<html></html>");
-  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+  ASSERT_TRUE(NavigateToURL(original_tab, original_tab_url));
 
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
@@ -1605,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->SetRedirectChainHandlerForTesting(
           base::BindRepeating(&AppendRedirects, &redirects));
 
-  content::WebContentsDestroyedWatcher watcher(new_tab);
+  WebContentsDestroyedWatcher watcher(new_tab);
   new_tab->Close();
   watcher.Wait();
 
@@ -1616,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                   "c.test/title1.html")));
 }
 
-class RedirectHeuristicBrowserTest : public content::ContentBrowserTest {
+class RedirectHeuristicBrowserTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -1625,7 +1592,7 @@ class RedirectHeuristicBrowserTest : public content::ContentBrowserTest {
   }
 
   void PreRunTestOnMainThread() override {
-    content::ContentBrowserTest::PreRunTestOnMainThread();
+    ContentBrowserTest::PreRunTestOnMainThread();
     ukm::InitializeSourceUrlRecorderForWebContents(GetActiveWebContents());
     browser_client_.emplace();
   }
@@ -1634,7 +1601,7 @@ class RedirectHeuristicBrowserTest : public content::ContentBrowserTest {
 
   // Perform a browser-based navigation to terminate the current redirect chain.
   void EndRedirectChain() {
-    ASSERT_TRUE(content::NavigateToURL(
+    ASSERT_TRUE(NavigateToURL(
         GetActiveWebContents(),
         embedded_test_server()->GetURL("endthechain.test", "/title1.html")));
   }
@@ -1644,15 +1611,14 @@ class RedirectHeuristicBrowserTest : public content::ContentBrowserTest {
   }
 
   void SimulateWebAuthnAssertion() {
-    content::WebAuthnAssertionRequestSucceeded(
+    WebAuthnAssertionRequestSucceeded(
         GetActiveWebContents()->GetPrimaryMainFrame());
   }
 
   TpcBlockingBrowserClient& browser_client() { return browser_client_->impl(); }
 
  private:
-  std::optional<content::ContentBrowserTestTpcBlockingBrowserClient>
-      browser_client_;
+  std::optional<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };
 
 // Tests the conditions for recording RedirectHeuristic_CookieAccess2 and
@@ -1702,14 +1668,14 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                                   /*is_ad_tagged=*/false));
 
   // Visit initial page.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
   // Redirect to tracking URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_pre_target_redirect));
 
   // Redirect to target URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   target_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, target_url));
   // Read a cookie from the tracking URL.
   CreateImageAndWaitForCookieAccess(web_contents,
                                     image_url_pre_target_redirect);
@@ -1721,11 +1687,11 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
   // Redirect to second tracking URL. (This has no effect since the cookie
   // accesses already happened.)
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_post_target_redirect));
   // Redirect to final URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
 
   EndRedirectChain();
 
@@ -1811,29 +1777,29 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
   // Start on `tracker_url_with_user_activation_interaction` and record a
   // current user activation interaction.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, tracker_url_with_user_activation_interaction));
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            tracker_url_with_user_activation_interaction));
   SimulateMouseClick();
 
   // Redirect to on `tracker_url_with_authentication_interaction` and record a
   // current authentication interaction.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, tracker_url_with_authentication_interaction));
+  ASSERT_TRUE(
+      NavigateToURL(web_contents, tracker_url_with_authentication_interaction));
   SimulateWebAuthnAssertion();
 
   // Redirect to one of the target URLs, to set DoesFirstPartyPrecedeThirdParty.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, target_url_3pc_blocked));
   // Redirect to all tracking URLs.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_in_iframe));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_with_user_activation_interaction));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_with_authentication_interaction));
 
   // Redirect to target URL with cookies allowed.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, target_url_3pc_allowed));
   // Read a cookie from the tracking URL with user activation interaction.
   CreateImageAndWaitForCookieAccess(
@@ -1845,18 +1811,18 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                                     image_url_with_authentication_interaction);
 
   // Redirect to target URL with cookies blocked.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, target_url_3pc_blocked));
   // Open an iframe of the tracking URL on the target URL.
-  ASSERT_TRUE(content::NavigateIframeToURL(web_contents,
-                                           /*iframe_id=*/"test_iframe",
-                                           image_url_in_iframe));
+  ASSERT_TRUE(NavigateIframeToURL(web_contents,
+                                  /*iframe_id=*/"test_iframe",
+                                  image_url_in_iframe));
   // Read a cookie from the tracking URL in an iframe on the target page.
   CreateImageAndWaitForCookieAccess(web_contents, image_url_in_iframe);
 
   // Redirect to final URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
 
   EndRedirectChain();
 
@@ -2027,8 +1993,7 @@ class RedirectHeuristicGrantTest
   std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
-  std::optional<content::ContentBrowserTestTpcBlockingBrowserClient>
-      browser_client_;
+  std::optional<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
@@ -2044,23 +2009,22 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
       embedded_test_server()->GetURL("c.test", "/title1.html");
 
   // Start on `first_party_url`.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, first_party_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, first_party_url));
 
   // Navigate to `aba_current_interaction_url` and record a current interaction.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents, aba_current_interaction_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, aba_current_interaction_url));
   SimulateMouseClick();
 
   // Redirect through `first_party_url`, `aba_current_interaction_url`, and
   // `no_interaction_url` before committing and ending on `first_party_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, first_party_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          first_party_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, aba_current_interaction_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, no_interaction_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, first_party_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          no_interaction_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          first_party_url));
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
@@ -2094,26 +2058,25 @@ IN_PROC_BROWSER_TEST_P(
       embedded_test_server()->GetURL("c.test", "/title1.html");
 
   // Record a past interaction on `aba_past_interaction_url`.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, aba_past_interaction_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, aba_past_interaction_url));
   SimulateMouseClick();
 
   // Start redirect chain on `no_aba_current_interaction_url` and record a
   // current interaction.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents, no_aba_current_interaction_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, no_aba_current_interaction_url));
   SimulateMouseClick();
 
   // Redirect through `no_aba_current_interaction_url`, `first_party_url`, and
   // `aba_past_interaction_url` before committing and ending on
   // `first_party_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, no_aba_current_interaction_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, first_party_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          first_party_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, aba_past_interaction_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, first_party_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          first_party_url));
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
@@ -2148,23 +2111,23 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
       embedded_test_server()->GetURL("c.test", "/title1.html");
 
   // Record a past web authentication interaction on `past_interaction_url`.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, past_interaction_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, past_interaction_url));
   SimulateWebAuthnAssertion();
 
   // Start redirect chain on `first_party_url` with an interaction that simulate
   // a user starting the authentication process
-  ASSERT_TRUE(content::NavigateToURL(web_contents, first_party_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, first_party_url));
   SimulateMouseClick();
 
   // Navigate through 'past_interaction_url', 'current_interaction_url' with a
   // web authentication interaction, and back to 'first_party_url'
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, past_interaction_url));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, current_interaction_url));
   SimulateWebAuthnAssertion();
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, first_party_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          first_party_url));
   EndRedirectChain();
 
   // Wait on async tasks for the grants to be created.
@@ -2204,10 +2167,10 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Navigate to a URL that will give a 301 redirect to another URL that will
   // give a 302 redirect, before settling on a third URL.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_301, final_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, redirect_301, final_url));
 
   // Do client redirect to a URL that gives a 303 redirect.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, redirect_303, final_url));
 
   RedirectChainDetector* wco =
@@ -2282,7 +2245,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
   auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_https_test_server().GetURL("a.test", "/title1.html")));
 
@@ -2305,20 +2268,19 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
   const GURL primary_main_frame_url = embedded_https_test_server().GetURL(
       "a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url =
       embedded_https_test_server().GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   EXPECT_TRUE(AccessStorage(GetIFrame(), GetParam()));
 
   const GURL primary_main_frame_final_url =
       embedded_https_test_server().GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -2334,13 +2296,12 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
   const GURL primary_main_frame_url = embedded_https_test_server().GetURL(
       "a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL iframe_url = embedded_https_test_server().GetURL(
       "a.test", "/page_with_blank_iframe.html");
-  ASSERT_TRUE(content::NavigateIframeToURL(GetActiveWebContents(),
-                                           "test_iframe", iframe_url));
+  ASSERT_TRUE(
+      NavigateIframeToURL(GetActiveWebContents(), "test_iframe", iframe_url));
 
   const GURL nested_iframe_url =
       embedded_https_test_server().GetURL("a.test", "/title1.html");
@@ -2351,7 +2312,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
   const GURL primary_main_frame_final_url =
       embedded_https_test_server().GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -2367,13 +2328,12 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
   const GURL primary_main_frame_url =
       embedded_https_test_server().GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL fenced_frame_url = embedded_https_test_server().GetURL(
       "a.test", "/fenced_frames/title0.html");
-  std::unique_ptr<content::RenderFrameHostWrapper> fenced_frame =
-      std::make_unique<content::RenderFrameHostWrapper>(
+  std::unique_ptr<RenderFrameHostWrapper> fenced_frame =
+      std::make_unique<RenderFrameHostWrapper>(
           fenced_frame_test_helper()->CreateFencedFrame(
               GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
   EXPECT_NE(fenced_frame, nullptr);
@@ -2383,7 +2343,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
   const GURL primary_main_frame_final_url =
       embedded_https_test_server().GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -2407,18 +2367,16 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
   const GURL primary_main_frame_url =
       embedded_https_test_server().GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL prerendering_url =
       embedded_https_test_server().GetURL("a.test", "/title2.html");
-  const content::FrameTreeNodeId host_id =
+  const FrameTreeNodeId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
-  content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
-                                                host_id);
+  test::PrerenderHostObserver observer(*GetActiveWebContents(), host_id);
   EXPECT_FALSE(observer.was_activated());
-  content::RenderFrameHost* prerender_frame =
+  RenderFrameHost* prerender_frame =
       prerender_test_helper()->GetPrerenderedMainFrameHost(host_id);
   EXPECT_NE(prerender_frame, nullptr);
 
@@ -2430,7 +2388,7 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
   const GURL primary_main_frame_final_url =
       embedded_https_test_server().GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `primary_main_frame_final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
@@ -2466,7 +2424,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // - https://source.chromium.org/chromium/chromium/src/+/main:content/browser/webauth/webauth_browsertest.cc;drc=e8e4ad9096841fae7c55cea1b7d278c58f6160ff
 // - https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/payments/secure_payment_confirmation_authenticator_browsertest.cc;drc=edea5c45c08d151afe67276f08a2ee13814563e1
 // clang-format on
-class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
+class DIPSWebAuthnBrowserTest : public ContentBrowserTest {
  public:
   DIPSWebAuthnBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -2490,7 +2448,7 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    content::ContentBrowserTest::SetUpOnMainThread();
+    ContentBrowserTest::SetUpOnMainThread();
 
     // Allowlist all certs for the HTTPS server.
     mock_cert_verifier()->set_default_result(net::OK);
@@ -2512,9 +2470,8 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
     config.resident_key_support = true;
     virtual_device_factory->SetCtap2Config(std::move(config));
 
-    auth_env_ =
-        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
-            std::move(virtual_device_factory));
+    auth_env_ = std::make_unique<ScopedAuthenticatorEnvironmentForTesting>(
+        std::move(virtual_device_factory));
 
     web_contents_observer_ =
         DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
@@ -2522,21 +2479,19 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    content::ContentBrowserTest::TearDownOnMainThread();
+    ContentBrowserTest::TearDownOnMainThread();
     web_contents_observer_ = nullptr;
   }
 
   void PostRunTestOnMainThread() override {
     auth_env_.reset();
     // web_contents_observer_.ClearAndDelete();
-    content::ContentBrowserTest::PostRunTestOnMainThread();
+    ContentBrowserTest::PostRunTestOnMainThread();
   }
 
   auto* TestServer() { return &https_server_; }
 
-  content::WebContents* GetActiveWebContents() {
-    return shell()->web_contents();
-  }
+  WebContents* GetActiveWebContents() { return shell()->web_contents(); }
 
   RedirectChainDetector* GetRedirectChainHelper() {
     return RedirectChainDetector::FromWebContents(GetActiveWebContents());
@@ -2546,9 +2501,8 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
   // (NOTE: tests using WCOCallbackLogger must call this *after* checking the
   // log, since this navigation will be logged.)
   void EndRedirectChain() {
-    ASSERT_TRUE(
-        content::NavigateToURL(GetActiveWebContents(),
-                               TestServer()->GetURL("a.test", "/title1.html")));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                              TestServer()->GetURL("a.test", "/title1.html")));
   }
 
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
@@ -2562,7 +2516,7 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
   }
 
   void GetWebAuthnAssertion() {
-    ASSERT_EQ("OK", content::EvalJs(GetActiveWebContents(), R"(
+    ASSERT_EQ("OK", EvalJs(GetActiveWebContents(), R"(
     let cred_id = new Uint8Array([1,2,3,4]);
     navigator.credentials.get({
       publicKey: {
@@ -2578,10 +2532,10 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
     }).then(c => 'OK',
       e => e.toString());
   )",
-                                    content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                           EXECUTE_SCRIPT_NO_USER_GESTURE));
   }
 
-  content::ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
+  ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
     return mock_cert_verifier_.mock_cert_verifier();
   }
 
@@ -2589,10 +2543,10 @@ class DIPSWebAuthnBrowserTest : public content::ContentBrowserTest {
   const std::string authn_hostname = "b.test";
 
  private:
-  content::ContentMockCertVerifier mock_cert_verifier_;
+  ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_server_;
   raw_ptr<DIPSWebContentsObserver> web_contents_observer_ = nullptr;
-  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+  std::unique_ptr<ScopedAuthenticatorEnvironmentForTesting> auth_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSWebAuthnBrowserTest,
@@ -2605,10 +2559,10 @@ IN_PROC_BROWSER_TEST_F(DIPSWebAuthnBrowserTest,
   StartAppendingRedirectsTo(&redirects);
 
   const GURL initial_url = TestServer()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), initial_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), initial_url));
 
   const GURL bounce_url = TestServer()->GetURL(authn_hostname, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), bounce_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), bounce_url));
 
   AccessCookieViaJSIn(GetActiveWebContents(),
                       GetActiveWebContents()->GetPrimaryMainFrame());
@@ -2617,7 +2571,7 @@ IN_PROC_BROWSER_TEST_F(DIPSWebAuthnBrowserTest,
 
   const GURL final_url = TestServer()->GetURL("d.test", "/title1.html");
   // Performs a Client-redirect to `final_url`.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       GetActiveWebContents(), final_url));
 
   EXPECT_THAT(
@@ -2661,12 +2615,11 @@ IN_PROC_BROWSER_TEST_F(
   StartAppendingReportsTo(&reports);
 
   // Visit initial page on a.test.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, TestServer()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            TestServer()->GetURL("a.test", "/title1.html")));
 
   GURL url = TestServer()->GetURL(authn_hostname, "/title1.html");
-  ASSERT_TRUE(
-      content::NavigateToURLFromRendererWithoutUserGesture(web_contents, url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents, url));
 
   GetWebAuthnAssertion();
 
@@ -2680,7 +2633,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate with a click (not a redirect) to d.test, which statefully
   // S-redirects to c.test and write a cookie on c.test.
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       web_contents,
       TestServer()->GetURL(
           "d.test", "/cross-site-with-samesite-none-cookie/c.test/title1.html"),
@@ -2689,13 +2642,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate without a click (i.e. by C-redirecting) to `authn_hostname` and
   // write a cookie on `authn_hostname`:
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, TestServer()->GetURL(authn_hostname, "/title1.html")));
   AccessCookieViaJSIn(web_contents, web_contents->GetPrimaryMainFrame());
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
   // statefully S-redirects to f.test, which statefully S-redirects to g.test.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       TestServer()->GetURL("e.test",
                            "/cross-site-with-samesite-none-cookie/f.test/"
@@ -2720,13 +2673,12 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Navigate to URL to set service workers. This will result in a service
   // worker access from the RenderFrameHost.
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      embedded_test_server()->GetURL(
-          "/service_worker/create_service_worker.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
 
   // Register a service worker on the current page, and await its completion.
-  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(), R"(
+  ASSERT_EQ(true, EvalJs(GetActiveWebContents(), R"(
     (async () => {
       await navigator.serviceWorker.register('/service_worker/empty.js');
       await navigator.serviceWorker.ready;
@@ -2740,10 +2692,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("/service_worker/empty.html")));
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
-      embedded_test_server()->GetURL(
-          "/service_worker/create_service_worker.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
 
   // Validate that the expected callbacks to WebContentsObserver were made.
   EXPECT_THAT(logger->log(),
@@ -2775,14 +2726,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->AddObserver(logger);
 
   // Navigate to URL for shared worker.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("a.test", "/no-favicon.html")));
 
   // Create and start a shared worker on the current page.
-  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
-                                  content::JsReplace(
-                                      R"(
+  ASSERT_EQ(true,
+            EvalJs(GetActiveWebContents(), JsReplace(
+                                               R"(
     (async () => {
       const worker = await new Promise((resolve, reject) => {
         const worker =
@@ -2807,8 +2758,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       return ok;
     })();
   )",
-                                      embedded_test_server()->GetURL(
-                                          "b.test", "/cors-ok.txt"))));
+                                               embedded_test_server()->GetURL(
+                                                   "b.test", "/cors-ok.txt"))));
 
   // Validate that the expected callback to SharedWorkerService.Observer was
   // made.
@@ -2840,14 +2791,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->AddObserver(logger);
 
   // Navigate to URL for dedicated worker.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       GetActiveWebContents(),
       embedded_test_server()->GetURL("a.test", "/no-favicon.html")));
 
   // Create and start a dedicated worker on the current page.
-  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents(),
-                                  content::JsReplace(
-                                      R"(
+  ASSERT_EQ(true,
+            EvalJs(GetActiveWebContents(), JsReplace(
+                                               R"(
     (async () => {
       const worker = new Worker("/workers/fetcher_treat_as_public.js");
 
@@ -2866,8 +2817,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       return ok;
     })();
   )",
-                                      embedded_test_server()->GetURL(
-                                          "b.test", "/cors-ok.txt"))));
+                                               embedded_test_server()->GetURL(
+                                                   "b.test", "/cors-ok.txt"))));
 
   // Validate that the expected callback to DedicatedWorkerService.Observer was
   // made.
@@ -2901,16 +2852,15 @@ class DIPSBounceTriggerBrowserTest : public DIPSBounceDetectorBrowserTest {
 
 // Verifies that a HTTP 204 (No Content) response is treated like a bounce.
 IN_PROC_BROWSER_TEST_F(DIPSBounceTriggerBrowserTest, NoContent) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   GURL committed_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, committed_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, committed_url));
 
-  content::DipsRedirectChainObserver observer(
+  DipsRedirectChainObserver observer(
       DIPSService::Get(web_contents->GetBrowserContext()), committed_url);
   GURL nocontent_url = embedded_test_server()->GetURL("b.test", "/nocontent");
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents, nocontent_url, committed_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, nocontent_url, committed_url));
   observer.Wait();
 
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
@@ -2937,7 +2887,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
 
   // Record user activation on a.test.
   const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   SimulateMouseClick();
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
@@ -2971,7 +2921,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
 
   // Record user activation on a.test.
   const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   SimulateMouseClick();
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
@@ -2982,7 +2932,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
   // Navigate to a new page and click, only a second after the previous click.
   test_clock_.Advance(base::Seconds(1));
   const GURL url2 = embedded_test_server()->GetURL("b.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateMouseClick();
   // Verify the second interaction was also recorded (not throttled).
   state = GetDIPSState(GetDipsService(web_contents), url2);
@@ -2999,7 +2949,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
 
   // Record client-side storage access on a.test.
   const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   SimulateCookieWrite();
   // Verify the write was recorded in the DIPS DB.
   std::optional<StateValue> state =
@@ -3034,7 +2984,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
 
   // Record client-side storage access on a.test.
   const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   SimulateCookieWrite();
   // Verify the write was recorded in the DIPS DB.
   std::optional<StateValue> state =
@@ -3046,7 +2996,7 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
   // previous write.
   test_clock_.Advance(base::Seconds(1));
   const GURL url2 = embedded_test_server()->GetURL("b.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateCookieWrite();
   // Verify the second write was also recorded (not throttled).
   state = GetDIPSState(GetDipsService(web_contents), url2);
@@ -3055,10 +3005,10 @@ IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                                               start_time + base::Seconds(1))));
 }
 
-class AllSitesFollowingFirstPartyTest : public content::ContentBrowserTest {
+class AllSitesFollowingFirstPartyTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    content::ContentBrowserTest::SetUpOnMainThread();
+    ContentBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
 
@@ -3077,11 +3027,11 @@ class AllSitesFollowingFirstPartyTest : public content::ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
                        SiteFollowingFirstPartyIncluded) {
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), first_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
@@ -3090,10 +3040,10 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
                        SiteNotFollowingFirstPartyNotIncluded) {
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), first_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
@@ -3101,10 +3051,10 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest, MultipleSitesIncluded) {
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), first_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), first_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
@@ -3114,8 +3064,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest, MultipleSitesIncluded) {
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
                        NoFirstParty_NothingIncluded) {
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
@@ -3124,17 +3074,16 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
                        NothingAfterFirstParty_NothingIncluded) {
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), other_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), third_party_url_));
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), first_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), other_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), third_party_url_));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), first_party_url_));
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
               testing::IsEmpty());
 }
 
-class DIPSPrivacySandboxApiInteractionTest
-    : public content::ContentBrowserTest {
+class DIPSPrivacySandboxApiInteractionTest : public ContentBrowserTest {
  public:
   DIPSPrivacySandboxApiInteractionTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -3160,20 +3109,17 @@ class DIPSPrivacySandboxApiInteractionTest
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
   }
 
-  content::WebContents* GetActiveWebContents() {
-    return shell()->web_contents();
-  }
+  WebContents* GetActiveWebContents() { return shell()->web_contents(); }
 
   void EndRedirectChain() {
     WebContents* web_contents = GetActiveWebContents();
     DIPSService* dips_service = GetDipsService(web_contents);
     GURL expected_url = web_contents->GetLastCommittedURL();
 
-    content::DipsRedirectChainObserver chain_observer(dips_service,
-                                                      expected_url);
+    DipsRedirectChainObserver chain_observer(dips_service, expected_url);
     // Performing a browser-based navigation terminates the current redirect
     // chain.
-    ASSERT_TRUE(content::NavigateToURL(
+    ASSERT_TRUE(NavigateToURL(
         web_contents, embedded_https_test_server_.GetURL("end-the-chain.d.test",
                                                          "/title1.html")));
     chain_observer.Wait();
@@ -3182,7 +3128,7 @@ class DIPSPrivacySandboxApiInteractionTest
   base::expected<std::vector<url::Origin>, std::string>
   WaitForInterestGroupData() {
     WebContents* web_contents = GetActiveWebContents();
-    content::InterestGroupManager* interest_group_manager =
+    InterestGroupManager* interest_group_manager =
         web_contents->GetBrowserContext()
             ->GetDefaultStoragePartition()
             ->GetInterestGroupManager();
@@ -3206,9 +3152,9 @@ class DIPSPrivacySandboxApiInteractionTest
 
   base::expected<AttributionData, std::string> WaitForAttributionData() {
     WebContents* web_contents = GetActiveWebContents();
-    content::AttributionDataModel* model = web_contents->GetBrowserContext()
-                                               ->GetDefaultStoragePartition()
-                                               ->GetAttributionDataModel();
+    AttributionDataModel* model = web_contents->GetBrowserContext()
+                                      ->GetDefaultStoragePartition()
+                                      ->GetAttributionDataModel();
     if (!model) {
       return base::unexpected("null attribution data model");
     }
@@ -3244,7 +3190,7 @@ class DIPSPrivacySandboxApiInteractionTest
     }
 
     base::RunLoop run_loop;
-    content::GetNetworkService()->SetTrustTokenKeyCommitments(
+    GetNetworkService()->SetTrustTokenKeyCommitments(
         network::WrapKeyCommitmentsForIssuers(
             std::move(origins_and_commitments)),
         run_loop.QuitClosure());
@@ -3318,8 +3264,7 @@ class DIPSPrivacySandboxApiInteractionTest
   }
 
   network::test::TrustTokenRequestHandler trust_token_request_handler_;
-  std::optional<content::ContentBrowserTestTpcBlockingBrowserClient>
-      browser_client_;
+  std::optional<ContentBrowserTestTpcBlockingBrowserClient> browser_client_;
 };
 
 // Verify that accessing storage via the PAT Protected Audience API doesn't
@@ -3339,17 +3284,17 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   // Visit source site.
   GURL source_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, source_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, source_url));
 
   // Navigate from source site to PAT-using site.
   GURL bounce_url =
       embedded_https_test_server_.GetURL(pat_using_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Have PAT-using site perform an interest groups API action that accesses
   // storage, without accessing storage in any other way.
-  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(),
-                              content::JsReplace(R"(
+  ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
+                     JsReplace(R"(
                                   const pageOrigin = new URL($1).origin;
                                   const interestGroup = {
                                     name: "exampleInterestGroup",
@@ -3363,8 +3308,8 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
                                       // interest group while the test runs.
                                       /*durationSeconds=*/3000000);
                               )",
-                                                 bounce_url),
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                               bounce_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Wait for interest group data to be written to storage.
   ASSERT_OK_AND_ASSIGN(std::vector<url::Origin> interest_group_joining_origins,
@@ -3376,8 +3321,8 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   // end the redirect chain.
   GURL bounce_back_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, bounce_back_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          bounce_back_url));
   EndRedirectChain();
 
   // Expect DIPS to not have recorded user interaction.
@@ -3399,7 +3344,7 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
 
   // Make sure that the cookie we wrote for the PAT-using site is still there.
-  EXPECT_EQ(content::GetCookies(web_contents->GetBrowserContext(), bounce_url),
+  EXPECT_EQ(GetCookies(web_contents->GetBrowserContext(), bounce_url),
             "name=value");
 }
 
@@ -3422,25 +3367,25 @@ IN_PROC_BROWSER_TEST_F(
   // Visit source site.
   GURL source_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, source_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, source_url));
 
   // Navigate from source site to PAT-using site.
   GURL bounce_url =
       embedded_https_test_server_.GetURL(pat_using_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Have PAT-using site perform an attribution reporting action that accesses
   // storage, without accessing storage in any other way.
   GURL attribution_url = embedded_https_test_server_.GetURL(
       attribution_host, "/attribution_reporting/register_source_headers.html");
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              content::JsReplace(
-                                  R"(
+  ASSERT_TRUE(ExecJs(web_contents,
+                     JsReplace(
+                         R"(
                                   let img = document.createElement('img');
                                   img.attributionSrc = $1;
                                   document.body.appendChild(img);)",
-                                  attribution_url),
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                         attribution_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Wait for attribution data to be written to storage.
   ASSERT_OK_AND_ASSIGN(AttributionData data, WaitForAttributionData());
@@ -3451,8 +3396,8 @@ IN_PROC_BROWSER_TEST_F(
   // end the redirect chain.
   GURL bounce_back_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, bounce_back_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          bounce_back_url));
   EndRedirectChain();
 
   // Expect DIPS to not have recorded user interaction.
@@ -3474,7 +3419,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
 
   // Make sure that the cookie we wrote for the PAT-using site is still there.
-  EXPECT_EQ(content::GetCookies(web_contents->GetBrowserContext(), bounce_url),
+  EXPECT_EQ(GetCookies(web_contents->GetBrowserContext(), bounce_url),
             "name=value");
 }
 
@@ -3497,21 +3442,21 @@ IN_PROC_BROWSER_TEST_F(
   // Visit source site.
   GURL source_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, source_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, source_url));
 
   // Navigate from source site to PAT-using site.
   GURL bounce_url =
       embedded_https_test_server_.GetURL(pat_using_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Have PAT-using site perform a Private State Tokens API action that accesses
   // storage, without accessing storage in any other way, and wait for the
   // private state token to be written to storage.
   const std::string pat_using_site_origin =
       embedded_https_test_server_.GetOrigin(pat_using_host).Serialize();
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              content::JsReplace(
-                                  R"(
+  ASSERT_TRUE(ExecJs(web_contents,
+                     JsReplace(
+                         R"(
                                     (async () => {
                                       await fetch("/issue", {
                                         privateToken: {
@@ -3522,15 +3467,15 @@ IN_PROC_BROWSER_TEST_F(
                                       return await document.hasPrivateToken($1);
                                     })();
                                   )",
-                                  pat_using_site_origin),
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                         pat_using_site_origin),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, bounce_back_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          bounce_back_url));
   EndRedirectChain();
 
   // Expect DIPS to not have recorded user interaction.
@@ -3552,7 +3497,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
 
   // Make sure that the cookie we wrote for the PAT-using site is still there.
-  EXPECT_EQ(content::GetCookies(web_contents->GetBrowserContext(), bounce_url),
+  EXPECT_EQ(GetCookies(web_contents->GetBrowserContext(), bounce_url),
             "name=value");
 }
 
@@ -3573,29 +3518,29 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   // Visit source site.
   GURL source_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, source_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, source_url));
 
   // Navigate from source site to PAT-using site.
   GURL bounce_url =
       embedded_https_test_server_.GetURL(pat_using_host, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
 
   // Have PAT-using site perform a Topics API action that accesses storage,
   // without accessing storage in any other way.
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              R"(
+  ASSERT_TRUE(ExecJs(web_contents,
+                     R"(
                                 (async () => {
                                   await document.browsingTopics();
                                 })();
                               )",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
       embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, bounce_back_url));
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                          bounce_back_url));
   EndRedirectChain();
 
   // Expect DIPS to not have recorded user interaction.
@@ -3617,7 +3562,7 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
 
   // Make sure that the cookie we wrote for the PAT-using site is still there.
-  EXPECT_EQ(content::GetCookies(web_contents->GetBrowserContext(), bounce_url),
+  EXPECT_EQ(GetCookies(web_contents->GetBrowserContext(), bounce_url),
             "name=value");
 }
 
@@ -3640,17 +3585,17 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxDataPreservationTest,
 
   GURL toplevel_url =
       embedded_https_test_server_.GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, toplevel_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, toplevel_url));
 
   // Create image that registers an attribution source.
   GURL attribution_url = embedded_https_test_server_.GetURL(
       "b.test", "/attribution_reporting/register_source_headers.html");
-  ASSERT_TRUE(content::ExecJs(web_contents, content::JsReplace(
-                                                R"(
+  ASSERT_TRUE(ExecJs(web_contents, JsReplace(
+                                       R"(
     let img = document.createElement('img');
     img.attributionSrc = $1;
     document.body.appendChild(img);)",
-                                                attribution_url)));
+                                       attribution_url)));
 
   // Wait for the AttributionDataModel to show that source.
   ASSERT_OK_AND_ASSIGN(AttributionData data, WaitForAttributionData());
@@ -3692,8 +3637,8 @@ class SiteStorage {
   constexpr SiteStorage() = default;
 
   virtual base::expected<std::string, std::string> ReadValue(
-      content::RenderFrameHost* frame) const = 0;
-  virtual testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
+      RenderFrameHost* frame) const = 0;
+  virtual testing::AssertionResult WriteValue(RenderFrameHost* frame,
                                               std::string_view value,
                                               bool partitioned) const = 0;
 
@@ -3702,16 +3647,16 @@ class SiteStorage {
 
 class CookieStorage : public SiteStorage {
   base::expected<std::string, std::string> ReadValue(
-      content::RenderFrameHost* frame) const override {
-    content::EvalJsResult result = content::EvalJs(
-        frame, "document.cookie", content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+      RenderFrameHost* frame) const override {
+    EvalJsResult result =
+        EvalJs(frame, "document.cookie", EXECUTE_SCRIPT_NO_USER_GESTURE);
     if (!result.error.empty()) {
       return base::unexpected(result.error);
     }
     return base::ok(result.ExtractString());
   }
 
-  testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
+  testing::AssertionResult WriteValue(RenderFrameHost* frame,
                                       std::string_view cookie,
                                       bool partitioned) const override {
     std::string value(cookie);
@@ -3721,9 +3666,9 @@ class CookieStorage : public SiteStorage {
 
     FrameCookieAccessObserver obs(WebContents::FromRenderFrameHost(frame),
                                   frame, CookieOperation::kChange);
-    testing::AssertionResult result = content::ExecJs(
-        frame, content::JsReplace("document.cookie = $1;", value),
-        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+    testing::AssertionResult result =
+        ExecJs(frame, JsReplace("document.cookie = $1;", value),
+               EXECUTE_SCRIPT_NO_USER_GESTURE);
     if (result) {
       obs.Wait();
     }
@@ -3735,10 +3680,9 @@ class CookieStorage : public SiteStorage {
 
 class LocalStorage : public SiteStorage {
   base::expected<std::string, std::string> ReadValue(
-      content::RenderFrameHost* frame) const override {
-    content::EvalJsResult result =
-        content::EvalJs(frame, "localStorage.getItem('value')",
-                        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+      RenderFrameHost* frame) const override {
+    EvalJsResult result = EvalJs(frame, "localStorage.getItem('value')",
+                                 EXECUTE_SCRIPT_NO_USER_GESTURE);
     if (!result.error.empty()) {
       return base::unexpected(result.error);
     }
@@ -3748,12 +3692,11 @@ class LocalStorage : public SiteStorage {
     return base::ok(result.ExtractString());
   }
 
-  testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
+  testing::AssertionResult WriteValue(RenderFrameHost* frame,
                                       std::string_view value,
                                       bool partitioned) const override {
-    return content::ExecJs(
-        frame, content::JsReplace("localStorage.setItem('value', $1);", value),
-        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+    return ExecJs(frame, JsReplace("localStorage.setItem('value', $1);", value),
+                  EXECUTE_SCRIPT_NO_USER_GESTURE);
   }
 
   std::string_view name() const override { return "LocalStorage"; }
@@ -3786,23 +3729,22 @@ class DIPSDataDeletionBrowserTest
       std::string_view first_party_hostname,
       std::string_view third_party_hostname,
       std::string_view value) {
-    content::WebContents* web_contents = GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
 
-    if (!content::NavigateToURL(
-            web_contents,
-            https_server().GetURL(first_party_hostname,
-                                  "/page_with_blank_iframe.html"))) {
+    if (!NavigateToURL(web_contents,
+                       https_server().GetURL(first_party_hostname,
+                                             "/page_with_blank_iframe.html"))) {
       return testing::AssertionFailure() << "Failed to navigate top-level";
     }
 
     const std::string_view kIframeId = "test_iframe";
-    if (!content::NavigateIframeToURL(
+    if (!NavigateIframeToURL(
             web_contents, kIframeId,
             https_server().GetURL(third_party_hostname, "/title1.html"))) {
       return testing::AssertionFailure() << "Failed to navigate iframe";
     }
 
-    content::RenderFrameHost* iframe = content::ChildFrameAt(web_contents, 0);
+    RenderFrameHost* iframe = ChildFrameAt(web_contents, 0);
     if (!iframe) {
       return testing::AssertionFailure() << "Child frame not found";
     }
@@ -3812,23 +3754,22 @@ class DIPSDataDeletionBrowserTest
   [[nodiscard]] base::expected<std::string, std::string>
   ReadFromPartitionedStorage(std::string_view first_party_hostname,
                              std::string_view third_party_hostname) {
-    content::WebContents* web_contents = GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
 
-    if (!content::NavigateToURL(
-            web_contents,
-            https_server().GetURL(first_party_hostname,
-                                  "/page_with_blank_iframe.html"))) {
+    if (!NavigateToURL(web_contents,
+                       https_server().GetURL(first_party_hostname,
+                                             "/page_with_blank_iframe.html"))) {
       return base::unexpected("Failed to navigate top-level");
     }
 
     const std::string_view kIframeId = "test_iframe";
-    if (!content::NavigateIframeToURL(
+    if (!NavigateIframeToURL(
             web_contents, kIframeId,
             https_server().GetURL(third_party_hostname, "/title1.html"))) {
       return base::unexpected("Failed to navigate iframe");
     }
 
-    content::RenderFrameHost* iframe = content::ChildFrameAt(web_contents, 0);
+    RenderFrameHost* iframe = ChildFrameAt(web_contents, 0);
     if (!iframe) {
       return base::unexpected("iframe not found");
     }
@@ -3837,10 +3778,10 @@ class DIPSDataDeletionBrowserTest
 
   [[nodiscard]] base::expected<std::string, std::string> ReadFromStorage(
       std::string_view hostname) {
-    content::WebContents* web_contents = GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
 
-    if (!content::NavigateToURL(
-            web_contents, https_server().GetURL(hostname, "/title1.html"))) {
+    if (!NavigateToURL(web_contents,
+                       https_server().GetURL(hostname, "/title1.html"))) {
       return base::unexpected("Failed to navigate");
     }
 
@@ -3850,10 +3791,10 @@ class DIPSDataDeletionBrowserTest
   [[nodiscard]] testing::AssertionResult WriteToStorage(
       std::string_view hostname,
       std::string_view value) {
-    content::WebContents* web_contents = GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
 
-    if (!content::NavigateToURL(
-            web_contents, https_server().GetURL(hostname, "/title1.html"))) {
+    if (!NavigateToURL(web_contents,
+                       https_server().GetURL(hostname, "/title1.html"))) {
       return testing::AssertionFailure() << "Failed to navigate";
     }
 
@@ -3865,14 +3806,14 @@ class DIPSDataDeletionBrowserTest
       std::string_view host1,
       std::string_view host2,
       std::string_view host3) {
-    content::WebContents* web_contents = GetActiveWebContents();
+    WebContents* web_contents = GetActiveWebContents();
 
-    if (!content::NavigateToURL(web_contents,
-                                https_server().GetURL(host1, "/title1.html"))) {
+    if (!NavigateToURL(web_contents,
+                       https_server().GetURL(host1, "/title1.html"))) {
       return testing::AssertionFailure() << "Failed to navigate to " << host1;
     }
 
-    if (!content::NavigateToURLFromRenderer(
+    if (!NavigateToURLFromRenderer(
             web_contents, https_server().GetURL(host2, "/title1.html"))) {
       return testing::AssertionFailure() << "Failed to navigate to " << host2;
     }
@@ -3882,7 +3823,7 @@ class DIPSDataDeletionBrowserTest
       return result;
     }
 
-    if (!content::NavigateToURLFromRendererWithoutUserGesture(
+    if (!NavigateToURLFromRendererWithoutUserGesture(
             web_contents, https_server().GetURL(host3, "/title1.html"))) {
       return testing::AssertionFailure() << "Failed to navigate to " << host3;
     }
@@ -3896,12 +3837,12 @@ class DIPSDataDeletionBrowserTest
   const SiteStorage* storage() { return GetParam(); }
 
   [[nodiscard]] base::expected<std::string, std::string> ReadValue(
-      const content::ToRenderFrameHost& frame) {
+      const ToRenderFrameHost& frame) {
     return storage()->ReadValue(frame.render_frame_host());
   }
 
   [[nodiscard]] testing::AssertionResult WriteValue(
-      const content::ToRenderFrameHost& frame,
+      const ToRenderFrameHost& frame,
       std::string_view value,
       bool partitioned = false) {
     return storage()->WriteValue(frame.render_frame_host(), value, partitioned);
@@ -3911,7 +3852,7 @@ class DIPSDataDeletionBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteDomain) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Perform a stateful bounce on b.test to make it eligible for deletion.
   ASSERT_TRUE(DoStatefulBounce("a.test", "b.test", "c.test"));
@@ -3919,8 +3860,8 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteDomain) {
   // Confirm unpartitioned storage was written on b.test.
   EXPECT_THAT(ReadFromStorage("b.test"), base::test::ValueIs("bounce=yes"));
   // Navigate away from b.test since DIPS won't delete its state while loaded.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents, https_server().GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            https_server().GetURL("a.test", "/title1.html")));
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
@@ -3933,7 +3874,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteDomain) {
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DontDeleteOtherDomains) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test
   ASSERT_TRUE(WriteToStorage("a.test", "foo=bar"));
@@ -3955,7 +3896,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DontDeleteOtherDomains) {
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DontDeleteDomainWhenPartitioned) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on b.test embedded in a.test.
   ASSERT_TRUE(WriteToPartitionedStorage("a.test", "b.test", "foo=bar"));
@@ -3978,7 +3919,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteSubdomains) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on sub.b.test
   ASSERT_TRUE(WriteToStorage("sub.b.test", "foo=bar"));
@@ -3999,7 +3940,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteSubdomains) {
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded3Ps) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test embedded in b.test.
   ASSERT_TRUE(WriteToPartitionedStorage("b.test", "a.test", "foo=bar"));
@@ -4023,7 +3964,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded3Ps) {
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DeleteEmbedded3Ps_Subdomain) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test embedded in sub.b.test.
   ASSERT_TRUE(WriteToPartitionedStorage("sub.b.test", "a.test", "foo=bar"));
@@ -4045,6 +3986,29 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
               base::test::ValueIs(""));
 }
 
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded1Ps) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set storage on a.test embedded in another a.test.
+  ASSERT_TRUE(WriteToPartitionedStorage("a.test", "a.test", "foo=bar"));
+  // Confirm written.
+  EXPECT_THAT(ReadFromPartitionedStorage("a.test", "a.test"),
+              base::test::ValueIs("foo=bar"));
+
+  // Perform a stateful bounce on a.test to make it eligible for deletion.
+  ASSERT_TRUE(DoStatefulBounce("b.test", "a.test", "c.test"));
+
+  // Trigger DIPS deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  DIPSService::Get(web_contents->GetBrowserContext())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  ASSERT_THAT(deleted_sites.Get(), ElementsAre("a.test"));
+
+  // Confirm partitioned a.test storage was deleted.
+  EXPECT_THAT(ReadFromPartitionedStorage("a.test", "a.test"),
+              base::test::ValueIs(""));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSDataDeletionBrowserTest,
                          ::testing::Values(&kCookieStorage, &kLocalStorage));
@@ -4062,10 +4026,9 @@ class DIPSBounceDetectorBFCacheTest : public DIPSBounceDetectorBrowserTest,
   bool IsBFCacheEnabled() const { return GetParam(); }
   void SetUpOnMainThread() override {
     if (!IsBFCacheEnabled()) {
-      content::DisableBackForwardCacheForTesting(
+      DisableBackForwardCacheForTesting(
           GetActiveWebContents(),
-          content::BackForwardCache::DisableForTestingReason::
-              TEST_REQUIRES_NO_CACHING);
+          BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
     }
 
     DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
@@ -4084,20 +4047,20 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
   RedirectChainDetector* wco =
       RedirectChainDetector::FromWebContents(web_contents);
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
 
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
-  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'bounce=true';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'bounce=true';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
   URLCookieAccessObserver cookie_observer(web_contents, final_url,
                                           CookieOperation::kChange);
 
-  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'final=yes';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'final=yes';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();
   // Since cookies are reported serially, both cookie writes should have been
   // reported by now.
@@ -4127,12 +4090,12 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, QuickEndChainTest) {
       embedded_test_server()->GetURL("c.test", "/empty.html");
   WebContents* const web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
-  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'bounce=true';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'bounce=true';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
   // End the redirect chain without waiting for the cookie access notification.
   EndRedirectChain();
 
@@ -4153,15 +4116,15 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, CookieAccessReported) {
   WCOCallbackLogger::CreateForWebContents(web_contents);
   auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url1));
-  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'initial=true';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
-  ASSERT_TRUE(content::NavigateToURL(web_contents, url3));
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'initial=true';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(NavigateToURL(web_contents, url3));
   URLCookieAccessObserver cookie_observer(web_contents, url3,
                                           CookieOperation::kChange);
-  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'final=yes';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(ExecJs(web_contents, "document.cookie = 'final=yes';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();
 
   EXPECT_THAT(
@@ -4187,16 +4150,16 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
   RedirectChainDetector* wco =
       RedirectChainDetector::FromWebContents(web_contents);
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
 
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
-  content::SimulateMouseClick(web_contents, 0,
-                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, bounce_url));
+  ::content::SimulateMouseClick(web_contents, 0,
+                                blink::WebMouseEvent::Button::kLeft);
   // Consume the transient user activation so the next navigation is not
   // considered to be user-initiated and will be judged a bounce.
-  if (content::EvalJs(web_contents, "!open('about:blank')",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+  if (EvalJs(web_contents, "!open('about:blank')",
+             EXECUTE_SCRIPT_NO_USER_GESTURE)
           .ExtractBool()) {
     // Due to a race condition, the open() call might be executed before the
     // click is processed, causing open() to fail and leaving the window with
@@ -4209,12 +4172,12 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
   ASSERT_FALSE(
       web_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
 
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
   UserActivationObserver interaction_observer(
       web_contents, web_contents->GetPrimaryMainFrame());
-  content::SimulateMouseClick(web_contents, 0,
-                              blink::WebMouseEvent::Button::kLeft);
+  ::content::SimulateMouseClick(web_contents, 0,
+                                blink::WebMouseEvent::Button::kLeft);
   interaction_observer.Wait();
 
   const DIPSRedirectContext& context = wco->CommittedRedirectContext();
@@ -4227,22 +4190,22 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
 IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
   WebContents* const web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(IsInPrimaryPage(rfh));
   EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
-  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  const GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
   // Attempt to get a pointer to the RFH of the a.test page, although
-  rfh = content::RenderFrameHost::FromID(rfh_id);
+  rfh = RenderFrameHost::FromID(rfh_id);
   if (IsBFCacheEnabled()) {
     // If the bfcache is enabled, the RFH should be in the cache.
     ASSERT_TRUE(rfh);
     EXPECT_TRUE(rfh->IsInLifecycleState(
-        content::RenderFrameHost::LifecycleState::kInBackForwardCache));
+        RenderFrameHost::LifecycleState::kInBackForwardCache));
     // The page is no longer primary, but it used to be:
     EXPECT_FALSE(IsInPrimaryPage(rfh));
     EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
@@ -4251,7 +4214,7 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
     // still is, it's only because it's pending deletion.
     if (rfh) {
       EXPECT_TRUE(rfh->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPendingDeletion));
+          RenderFrameHost::LifecycleState::kPendingDeletion));
       // The page is no longer primary, but it used to be:
       EXPECT_FALSE(IsInPrimaryPage(rfh));
       EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
@@ -4260,29 +4223,29 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
 }
 
 // For waiting until prerendering starts.
-class PrerenderingObserver : public content::WebContentsObserver {
+class PrerenderingObserver : public WebContentsObserver {
  public:
-  explicit PrerenderingObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
+  explicit PrerenderingObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
 
   void Wait() { run_loop_.Run(); }
 
-  content::GlobalRenderFrameHostId rfh_id() const {
+  GlobalRenderFrameHostId rfh_id() const {
     CHECK(rfh_id_.has_value());
     return rfh_id_.value();
   }
 
  private:
   base::RunLoop run_loop_;
-  std::optional<content::GlobalRenderFrameHostId> rfh_id_;
+  std::optional<GlobalRenderFrameHostId> rfh_id_;
 
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
 };
 
 void PrerenderingObserver::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+          RenderFrameHost::LifecycleState::kPrerendering)) {
     rfh_id_ = render_frame_host->GetGlobalId();
     run_loop_.Quit();
   }
@@ -4294,12 +4257,12 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
                        PrerenderedPagesAreNotPrimary) {
   WebContents* const web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents,
       embedded_test_server()->GetURL("a.test", "/empty.html?primary")));
 
   PrerenderingObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+  ASSERT_TRUE(ExecJs(web_contents, R"(
     const elt = document.createElement('script');
     elt.setAttribute('type', 'speculationrules');
     elt.textContent = JSON.stringify({
@@ -4310,16 +4273,15 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
   ASSERT_FALSE(testing::Test::HasFailure())
       << "Failed waiting for prerendering";
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(observer.rfh_id());
+  RenderFrameHost* rfh = RenderFrameHost::FromID(observer.rfh_id());
   ASSERT_TRUE(rfh);
   EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
 
   // Navigating to another site may trigger destruction of the frame.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
 
-  rfh = content::RenderFrameHost::FromID(observer.rfh_id());
+  rfh = RenderFrameHost::FromID(observer.rfh_id());
   if (rfh) {
     // Even if it's still in memory, it was never primary.
     EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
@@ -4332,12 +4294,12 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
                        PrerenderedPagesCanBecomePrimary) {
   WebContents* const web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents,
       embedded_test_server()->GetURL("a.test", "/empty.html?primary")));
 
   PrerenderingObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+  ASSERT_TRUE(ExecJs(web_contents, R"(
     const elt = document.createElement('script');
     elt.setAttribute('type', 'speculationrules');
     elt.textContent = JSON.stringify({
@@ -4349,20 +4311,19 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
   ASSERT_FALSE(testing::Test::HasFailure())
       << "Failed waiting for prerendering";
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(observer.rfh_id());
+  RenderFrameHost* rfh = RenderFrameHost::FromID(observer.rfh_id());
   ASSERT_TRUE(rfh);
   EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
 
   // Navigate to the prerendered page.
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+  ASSERT_TRUE(NavigateToURLFromRenderer(
       web_contents,
       embedded_test_server()->GetURL("a.test", "/empty.html?prerendered")));
   // Navigate to another page, so the prerendered page is no longer active.
-  ASSERT_TRUE(content::NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
 
-  rfh = content::RenderFrameHost::FromID(observer.rfh_id());
+  rfh = RenderFrameHost::FromID(observer.rfh_id());
   if (rfh) {
     EXPECT_FALSE(IsInPrimaryPage(rfh));
     EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
@@ -4370,3 +4331,5 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, DIPSBounceDetectorBFCacheTest, ::testing::Bool());
+
+}  // namespace content

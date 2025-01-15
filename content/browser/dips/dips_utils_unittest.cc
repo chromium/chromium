@@ -14,6 +14,8 @@
 using ::testing::Eq;
 using ::testing::Pair;
 
+namespace content {
+
 TEST(TimestampRangeTest, UpdateTimestampRangeEmpty) {
   const base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
@@ -156,7 +158,7 @@ TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyInExperiment) {
       network::features::kSkipTpcdMitigationsForAds,
       {{"SkipTpcdMitigationsForAdsHeuristics", "true"}});
 
-  content::CookieAccessDetails details;
+  CookieAccessDetails details;
   EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kFalse);
 
   details.cookie_setting_overrides.Put(
@@ -168,7 +170,7 @@ TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentFeature) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(network::features::kSkipTpcdMitigationsForAds);
 
-  content::CookieAccessDetails details;
+  CookieAccessDetails details;
   EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
 
   details.cookie_setting_overrides.Put(
@@ -182,7 +184,7 @@ TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
       network::features::kSkipTpcdMitigationsForAds,
       {{"SkipTpcdMitigationsForAdsHeuristics", "false"}});
 
-  content::CookieAccessDetails details;
+  CookieAccessDetails details;
   EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
 
   details.cookie_setting_overrides.Put(
@@ -206,3 +208,5 @@ TEST(HasCHIPS, TrueOnlyWhenHasAtLeastOnePartitionedCookie) {
       {*unpartitioned_cookie.get()}, {*partitioned_cookie.get()}};
   EXPECT_TRUE(HasCHIPS(cookie_access_result_list_with_partitioned));
 }
+
+}  // namespace content

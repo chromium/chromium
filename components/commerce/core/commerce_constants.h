@@ -90,41 +90,6 @@ inline constexpr char kProductSpecificationsUrlKey[] =
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
 inline constexpr long kToMicroCurrency = 1e6;
-
-// Please do not use below UTM constants beyond commerce use cases.
-// UTM campaign label.
-inline constexpr char kUTMCampaignLabel[] = "utm_campaign";
-
-// UTM campaign value for partner merchant carts when discount is enabled.
-inline constexpr char kUTMCampaignValueForCartDiscount[] =
-    "chrome-cart-discount-on";
-
-// UTM campaign value for partner merchant carts when discount is disabled.
-inline constexpr char kUTMCampaignValueForCartNoDiscount[] =
-    "chrome-cart-discount-off";
-
-// UTM campaign value for non-partner merchant carts.
-inline constexpr char kUTMCampaignValueForChromeCart[] = "chrome-cart";
-
-// UTM campaign value for discounts in history clusters.
-inline constexpr char kUTMCampaignValueForDiscounts[] =
-    "chrome-history-cluster-with-discount";
-
-// UTM medium label.
-inline constexpr char kUTMMediumLabel[] = "utm_medium";
-
-// General UTM medium value.
-inline constexpr char kUTMMediumValue[] = "app";
-
-// Prefix of UTM labels, including the underscore.
-inline constexpr char kUTMPrefix[] = "utm_";
-
-// UTM source label.
-inline constexpr char kUTMSourceLabel[] = "utm_source";
-
-// General UTM source value.
-inline constexpr char kUTMSourceValue[] = "chrome";
-
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

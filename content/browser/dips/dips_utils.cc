@@ -17,6 +17,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace content {
+
 base::cstring_view DIPSCookieModeToString(DIPSCookieMode mode) {
   switch (mode) {
     case DIPSCookieMode::kBlock3PC:
@@ -50,7 +52,7 @@ base::cstring_view DIPSDataAccessTypeToString(DIPSDataAccessType type) {
   }
 }
 
-base::FilePath GetDIPSFilePath(content::BrowserContext* context) {
+base::FilePath GetDIPSFilePath(BrowserContext* context) {
   return context->GetPath().Append(kDIPSFilename);
 }
 
@@ -154,15 +156,15 @@ std::string GetSiteForDIPS(const url::Origin& origin) {
   return domain.empty() ? origin.host() : domain;
 }
 
-bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {
+bool HasSameSiteIframe(WebContents* web_contents, const GURL& url) {
   const auto popup_site = net::SiteForCookies::FromUrl(url);
   bool found = false;
 
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
-      [&](content::RenderFrameHost* frame) {
+      [&](RenderFrameHost* frame) {
         if (frame->IsInPrimaryMainFrame()) {
           // Continue to look at children of the main frame.
-          return content::RenderFrameHost::FrameIterationAction::kContinue;
+          return RenderFrameHost::FrameIterationAction::kContinue;
         }
 
         // Note: For future first-party checks, consider using schemeful site
@@ -172,11 +174,11 @@ bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {
                 frame->GetLastCommittedURL(), /*compute_schemefully=*/false)) {
           // We found a same-site iframe -- break out of the ForEach loop.
           found = true;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
+          return RenderFrameHost::FrameIterationAction::kStop;
         }
 
         // Not same-site, so skip children and go to the next sibling iframe.
-        return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        return RenderFrameHost::FrameIterationAction::kSkipChildren;
       });
 
   return found;
@@ -192,8 +194,7 @@ bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {
   return false;
 }
 
-OptionalBool IsAdTaggedCookieForHeuristics(
-    const content::CookieAccessDetails& details) {
+OptionalBool IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details) {
   if (!base::FeatureList::IsEnabled(
           network::features::kSkipTpcdMitigationsForAds) ||
       !network::features::kSkipTpcdMitigationsForAdsHeuristics.Get()) {
@@ -211,3 +212,5 @@ bool HasCHIPS(const net::CookieAccessResultList& cookie_access_result_list) {
   }
   return false;
 }
+
+}  // namespace content

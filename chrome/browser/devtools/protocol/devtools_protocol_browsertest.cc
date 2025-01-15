@@ -589,8 +589,8 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
     return testing::AssertionFailure() << "Failed to wait for loading to stop";
   }
 
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
+  content::DIPSService* dips_service =
+      content::DIPSService::Get(web_contents->GetBrowserContext());
   if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
     return testing::AssertionFailure()
            << "Failed to navigate to " << bounce_url;
@@ -626,14 +626,15 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
                                        << final_observer.redirects()->size();
   }
 
-  const DIPSRedirectInfo& redirect = *final_observer.redirects()->at(0);
+  const content::DIPSRedirectInfo& redirect =
+      *final_observer.redirects()->at(0);
   if (redirect.url.url != bounce_url) {
     return testing::AssertionFailure() << "Expected redirect at " << bounce_url
                                        << "; found " << redirect.url.url;
   }
 
-  if (redirect.access_type != DIPSDataAccessType::kWrite &&
-      redirect.access_type != DIPSDataAccessType::kReadWrite) {
+  if (redirect.access_type != content::DIPSDataAccessType::kWrite &&
+      redirect.access_type != content::DIPSDataAccessType::kReadWrite) {
     return testing::AssertionFailure()
            << "No write access recorded for redirect";
   }

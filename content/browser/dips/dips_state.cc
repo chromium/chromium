@@ -7,6 +7,8 @@
 #include "content/browser/dips/dips_storage.h"
 #include "content/browser/dips/dips_utils.h"
 
+namespace content {
+
 DIPSState::DIPSState(DIPSStorage* storage, std::string site)
     : storage_(storage), site_(std::move(site)), was_loaded_(false) {}
 
@@ -46,3 +48,5 @@ void DIPSState::update_bounce_time(base::Time time) {
 void DIPSState::update_web_authn_assertion_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.web_authn_assertion_times, time);
 }
+
+}  // namespace content

@@ -267,7 +267,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   UseFixedPlaceholderTextAndHideCursor(
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", 13, GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_basics", 14, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -288,7 +288,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", 13,
+      "bubble_launcher_gradient_zone", 14,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -341,7 +341,7 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
 
   UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/5, search_box_view));
+      "launcher_search_iph", /*revision_number=*/6, search_box_view));
 }
 
 class AppListViewTabletPixelTest
@@ -379,7 +379,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics", 14,
+      "tablet_launcher_basics", 15,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -400,7 +400,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone", 12,
+      "tablet_launcher_top_gradient_zone", 13,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -421,7 +421,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone", 14,
+      "tablet_launcher_bottom_gradient_zone", 15,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 

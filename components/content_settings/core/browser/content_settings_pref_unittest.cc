@@ -46,6 +46,7 @@ constexpr char kTestPatternNonCanonicalAlpha2[] = "https://alph%61.com,*";
 constexpr char kTestPatternCanonicalBeta[] = "https://beta.com,*";
 constexpr char kTestPatternNonCanonicalBeta[] = "https://bet%61.com,*";
 constexpr char kTestPatternCanonicalGamma[] = "https://gamma.com,*";
+constexpr char kTestPatternCanonicalDelta[] = "https://delta.com,*";
 
 constexpr char kTestContentSettingPrefName[] = "content_settings.test";
 constexpr char kTestContentSettingPartitionedPrefName[] =
@@ -56,6 +57,8 @@ constexpr char kLastModifiedKey[] = "last_modified";
 constexpr char kSettingKey[] = "setting";
 constexpr char kTagKey[] = "tag";
 constexpr char kSessionModelKey[] = "model";
+constexpr char kDecidedByRelatedWebsiteSets[] =
+    "decided_by_related_website_sets";
 
 // Creates a JSON dictionary representing a dummy content setting exception
 // value in preferences. The setting will be marked with the |tag| like so:
@@ -69,12 +72,14 @@ constexpr char kSessionModelKey[] = "model";
 base::Value::Dict CreateDummyContentSettingValue(
     std::string_view tag,
     bool expired,
-    mojom::SessionModel session_model = mojom::SessionModel::DURABLE) {
+    mojom::SessionModel session_model = mojom::SessionModel::DURABLE,
+    bool decided_by_related_website_sets = false) {
   return base::Value::Dict()
       .Set(kSettingKey, base::Value::Dict().Set(kTagKey, tag))
       .Set(kLastModifiedKey, "13189876543210000")
       .Set(kExpirationKey, expired ? "13189876543210001" : "0")
-      .Set(kSessionModelKey, static_cast<int>(session_model));
+      .Set(kSessionModelKey, static_cast<int>(session_model))
+      .Set(kDecidedByRelatedWebsiteSets, decided_by_related_website_sets);
 }
 
 // Given the JSON dictionary representing the "setting" stored under a content
@@ -440,6 +445,7 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
   using CanonicalPatternToTag = std::pair<std::string, std::string>;
   std::vector<CanonicalPatternToTag> expected_patterns_to_tags = {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
+      {kTestPatternCanonicalDelta, kTestPatternCanonicalDelta},
   };
 
   // Create pre-existing entries: one that is expired, one that never
@@ -454,11 +460,17 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
       CreateDummyContentSettingValue(kTestPatternCanonicalBeta,
                                      /*expired=*/false));
 
-  original_pref_value.Set(
-      kTestPatternCanonicalGamma,
-      CreateDummyContentSettingValue(
-          kTestPatternCanonicalGamma, /*expired=*/false,
-          mojom::SessionModel::NON_RESTORABLE_USER_SESSION));
+  original_pref_value.Set(kTestPatternCanonicalGamma,
+                          CreateDummyContentSettingValue(
+                              kTestPatternCanonicalGamma, /*expired=*/true,
+                              mojom::SessionModel::DURABLE,
+                              /*decided_by_related_website_sets=*/true));
+
+  original_pref_value.Set(kTestPatternCanonicalDelta,
+                          CreateDummyContentSettingValue(
+                              kTestPatternCanonicalDelta, /*expired=*/false,
+                              mojom::SessionModel::DURABLE,
+                              /*decided_by_related_website_sets=*/true));
 
   SetPrefForPartition(partition_key(), std::move(original_pref_value));
   auto content_settings_pref =
@@ -588,49 +600,6 @@ TEST_F(ContentSettingsPrefTest,
                 ->FindDict("http://example.com,*")
                 ->FindBool("decided_by_related_website_sets"),
             std::nullopt);
-}
-
-// Ensure that NON_RESTORABLE_USER_SESSION grants are migrated to DURABLE with a
-// `decided_by_related_website_sets` value of true.
-// TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is removed.
-TEST_F(
-    ContentSettingsPrefTest,
-    MigrateNonRestorableStorageAccessToDurableWithDecidedByRelatedWebsiteSets) {
-  PartitionKey partition_key = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar", /*in_memory=*/false);
-
-  // Write pref.
-  {
-    auto content_settings_pref =
-        CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-    RuleMetaData metadata;
-    metadata.set_session_model(
-        mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-    content_settings_pref->SetWebsiteSetting(
-        ContentSettingsPattern::FromString("http://example.com"),
-        ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        metadata, partition_key);
-  }
-
-  // Read pref.
-  // Reset is needed because `ReadContentSettingsFromPref()` is called in the
-  // constructor of `ContentSettingsPref` and reusing the registrar causes a
-  // fatal error because it already had the pref registered.
-  registrar_.Reset();
-  registrar_.Init(&prefs_);
-  auto content_settings_pref =
-      CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-  auto rule_iterator = content_settings_pref->GetRuleIterator(
-      /*off_the_record=*/false, partition_key);
-  ASSERT_TRUE(rule_iterator->HasNext());
-  auto rule = rule_iterator->Next();
-  EXPECT_EQ(
-      "http://example.com,*",
-      CreatePatternString(rule->primary_pattern, rule->secondary_pattern));
-  EXPECT_EQ(rule->value.GetInt(), CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(rule->metadata.session_model(), mojom::SessionModel::DURABLE);
-  EXPECT_EQ(rule->metadata.decided_by_related_website_sets(), true);
-  EXPECT_FALSE(rule_iterator->HasNext());
 }
 
 }  // namespace content_settings

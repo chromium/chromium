@@ -418,6 +418,8 @@ static_library("common") {
     "ipc_video_frame_capturer.h",
     "it2me_desktop_environment.cc",
     "it2me_desktop_environment.h",
+    "legacy_interaction_strategy.cc",
+    "legacy_interaction_strategy.h",
     "me2me_heartbeat_service_client.cc",
     "me2me_heartbeat_service_client.h",
     "mojo_video_capturer.cc",

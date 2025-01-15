@@ -914,5 +914,4 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::PollViewProperty(
 }
 
 }  // namespace views::test
-
 #endif  // UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_H_

@@ -78,6 +78,7 @@ class PopupNavigationDelegate;
 
 namespace content {
 class BrowserContext;
+class DIPSService;
 class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -1086,7 +1087,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
-                            DIPSService* dips_service) override;
+                            content::DIPSService* dips_service) override;
   uint64_t GetDipsRemoveMask() override;
   bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 

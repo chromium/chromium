@@ -479,7 +479,8 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   // We haven't found a reason to auto-grant permission, but before we prompt
   // there's one more hurdle: the user must have interacted with the requesting
   // site in a top-level context recently.
-  DIPSService* dips_service = DIPSService::Get(browser_context());
+  content::DIPSService* dips_service =
+      content::DIPSService::Get(browser_context());
   if (!dips_service ||
       kStorageAccessAPITopLevelUserInteractionBound == base::TimeDelta()) {
     // If we don't have access to this kind of historical info or the time bound
@@ -579,7 +580,6 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
       outcome = RequestOutcome::kReusedImplicitGrant;
     } else {
       switch (info.metadata.session_model()) {
-        case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
         case content_settings::mojom::SessionModel::USER_SESSION:
           outcome = RequestOutcome::kReusedImplicitGrant;
           break;

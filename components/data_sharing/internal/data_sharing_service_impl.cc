@@ -37,8 +37,8 @@ namespace data_sharing {
 
 namespace {
 
-constexpr char kGroupIdKey[] = "group_id";
-constexpr char kTokenBlobKey[] = "token_blob";
+constexpr char kGroupIdKey[] = "g";
+constexpr char kTokenBlobKey[] = "t";
 constexpr base::FilePath::CharType kDataSharingDir[] =
     FILE_PATH_LITERAL("DataSharing");
 

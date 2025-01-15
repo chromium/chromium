@@ -371,7 +371,8 @@ std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
   headless_web_contents->begin_frame_control_enabled_ =
       builder->enable_begin_frame_control_ ||
       headless_web_contents->browser()->options()->enable_begin_frame_control;
-  headless_web_contents->InitializeWindow(builder->window_bounds_);
+  headless_web_contents->InitializeWindow(builder->window_bounds_,
+                                          builder->window_state_);
   if (!headless_web_contents->OpenURL(builder->initial_url_))
     return nullptr;
   return headless_web_contents;
@@ -388,19 +389,20 @@ HeadlessWebContentsImpl::CreateForChildContents(
   // Child contents have their own root window and inherit the BeginFrameControl
   // setting.
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
-  child->InitializeWindow(child->web_contents_->GetContainerBounds());
-
+  child->InitializeWindow(child->web_contents_->GetContainerBounds(),
+                          /*window_state=*/"normal");
   return child;
 }
 
 void HeadlessWebContentsImpl::InitializeWindow(
-    const gfx::Rect& initial_bounds) {
+    const gfx::Rect& bounds,
+    const std::string& window_state) {
   static int window_id = 1;
   window_id_ = window_id++;
-  window_state_ = "normal";
 
   browser()->PlatformInitializeWebContents(this);
-  SetBounds(initial_bounds);
+  SetBounds(bounds);
+  SetWindowState(window_state);
 }
 
 void HeadlessWebContentsImpl::SetWindowState(const std::string& state) {
@@ -409,7 +411,7 @@ void HeadlessWebContentsImpl::SetWindowState(const std::string& state) {
   } else if (state == "minimized") {
     web_contents_->WasHidden();
   } else {
-    NOTREACHED();
+    NOTREACHED() << "Unknown window state: " << state;
   }
   window_state_ = state;
 }
@@ -542,6 +544,12 @@ HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetInitialURL(
 HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowBounds(
     const gfx::Rect& bounds) {
   window_bounds_ = bounds;
+  return *this;
+}
+
+HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowState(
+    std::string_view window_state) {
+  window_state_ = window_state;
   return *this;
 }
 

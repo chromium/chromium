@@ -13,6 +13,7 @@ let instance: ProductSpecificationsBrowserProxy|null = null;
 export interface ProductSpecificationsBrowserProxy {
   getCallbackRouter(): PageCallbackRouter;
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void;
+  showComparePage(inNewTab: boolean): void;
   setAcceptedDisclosureVersion(version: DisclosureVersion): void;
   maybeShowDisclosure(urls: Url[], name: string, setId: string):
       Promise<{disclosureShown: boolean}>;
@@ -48,6 +49,10 @@ export class ProductSpecificationsBrowserProxyImpl implements
 
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean) {
     this.handler.showProductSpecificationsSetForUuid(uuid, inNewTab);
+  }
+
+  showComparePage(inNewTab: boolean) {
+    this.handler.showComparePage(inNewTab);
   }
 
   maybeShowDisclosure(urls: Url[], name: string, setId: string) {

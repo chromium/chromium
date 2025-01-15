@@ -52,6 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
@@ -446,6 +447,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
             getTheme().applyStyle(defaultFontFamilyOverlay, true);
             mThemeResIds.add(defaultFontFamilyOverlay);
+        }
+
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
+                || CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.DISABLE_OPT_OUT_EDGE_TO_EDGE)) {
+            int optOutEdgeToEdge = R.style.ThemeOverlay_BrowserUI_OptOutEdgeToEdge;
+            getTheme().applyStyle(optOutEdgeToEdge, true);
+            mThemeResIds.add(optOutEdgeToEdge);
         }
     }
 

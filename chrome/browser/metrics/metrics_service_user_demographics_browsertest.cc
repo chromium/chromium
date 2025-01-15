@@ -99,9 +99,7 @@ class MetricsServiceUserDemographicsBrowserTest
 };
 
 // TODO(crbug.com/40103988): Add the remaining test cases.
-// Keep this test in sync with testUMADemographicsReportingWithFeatureEnabled
-// and testUMADemographicsReportingWithFeatureDisabled in
-// ios/chrome/browser/metrics/demographics_egtest.mm.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoData)
 IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
                        AddSyncedUserBirthYearAndGenderToProtoData) {
   test::DemographicsTestParams param = GetParam();
@@ -156,6 +154,8 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
   harness->SignOutPrimaryAccount();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
+// LINT.ThenChange(/ios/chrome/browser/metrics/demographics_egtest.mm:AddSyncedUserBirthYearAndGenderToProtoDataEnabled_msudBrowsertest)
+// ThenChange(/ios/chrome/browser/metrics/demographics_egtest.mm:AddSyncedUserBirthYearAndGenderToProtoDataDisabled_msudBrowsertest)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Cannot test for the enabled feature on Chrome OS because there are always

@@ -28,10 +28,6 @@ void AddOrganizationDetailsToQualityOrganization(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    quality_organization->set_user_feedback(organization->feedback());
-  }
-
   switch (organization->choice()) {
     case TabOrganization::UserChoice::kRejected: {
       quality_organization->set_choice(
@@ -66,10 +62,7 @@ void AddSessionDetailsToQuality(
     optimization_guide::proto::TabOrganizationQuality* quality,
     const TabOrganizationSession* session) {
   CHECK(session && session->request() && session->request()->response());
-
-  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
-    quality->set_user_feedback(session->feedback());
-  }
+  quality->set_user_feedback(session->feedback());
 
   for (const auto& response_organization :
        session->request()->response()->organizations) {

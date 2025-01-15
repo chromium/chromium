@@ -64,6 +64,14 @@ void ProductSpecificationsHandler::ShowProductSpecificationsSetForUuid(
   delegate_->ShowProductSpecificationsSetForUuid(uuid, in_new_tab);
 }
 
+void ProductSpecificationsHandler::ShowComparePage(bool in_new_tab) {
+  if (!delegate_) {
+    return;
+  }
+
+  delegate_->ShowComparePage(in_new_tab);
+}
+
 void ProductSpecificationsHandler::SetAcceptedDisclosureVersion(
     product_specifications::mojom::DisclosureVersion version) {
   if (!pref_service_) {

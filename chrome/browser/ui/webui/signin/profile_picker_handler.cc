@@ -183,6 +183,22 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   return profile_entry;
 }
 
+// Opens the "Sign in to Chrome" Help Center URL.
+void OpenSigninOnDesktopLearnMoreURL(Browser* browser) {
+  // Browser may be closing if the Profile was locked after being loaded for
+  // example.
+  if (!browser || browser->IsBrowserClosing()) {
+    return;
+  }
+
+  browser->OpenURL(
+      content::OpenURLParams(GURL(chrome::kSigninOnDesktopLearnMoreURL),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
+}
+
 }  // namespace
 
 ProfilePickerHandler::ProfilePickerHandler() = default;
@@ -281,6 +297,10 @@ void ProfilePickerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "updateProfileOrder",
       base::BindRepeating(&ProfilePickerHandler::HandleUpdateProfileOrder,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "onLearnMoreClicked",
+      base::BindRepeating(&ProfilePickerHandler::HandleOnLearnMoreClicked,
                           base::Unretained(this)));
   Profile* profile = Profile::FromWebUI(web_ui());
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
@@ -610,6 +630,17 @@ void ProfilePickerHandler::HandleUpdateProfileOrder(
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .UpdateProfilesOrderPref(from_index, to_index);
+}
+
+void ProfilePickerHandler::HandleOnLearnMoreClicked(
+    const base::Value::List& args) {
+  CHECK_EQ(0U, args.size());
+
+  // Loads the last used profile and open/uses a browser to show the help page.
+  profiles::SwitchToProfile(
+      g_browser_process->profile_manager()->GetLastUsedProfileDir(),
+      /*always_create=*/false,
+      base::BindOnce(&OpenSigninOnDesktopLearnMoreURL));
 }
 
 void ProfilePickerHandler::HandleCloseProfileStatistics(

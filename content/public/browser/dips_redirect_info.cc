@@ -9,6 +9,8 @@
 #include "base/rand_util.h"
 #include "content/browser/dips/dips_utils.h"
 
+namespace content {
+
 DIPSRedirectChainInfo::DIPSRedirectChainInfo(const UrlAndSourceId& initial_url,
                                              const UrlAndSourceId& final_url,
                                              size_t length,
@@ -86,3 +88,5 @@ DIPSRedirectInfo::DIPSRedirectInfo(const UrlAndSourceId& url,
 DIPSRedirectInfo::DIPSRedirectInfo(const DIPSRedirectInfo&) = default;
 
 DIPSRedirectInfo::~DIPSRedirectInfo() = default;
+
+}  // namespace content

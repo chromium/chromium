@@ -10897,19 +10897,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::internal::
                             kTabOrganizationSettingsVisibility)},
 
-    {"multi-tab-organization", flag_descriptions::kMultiTabOrganizationName,
-     flag_descriptions::kMultiTabOrganizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kMultiTabOrganization)},
-
-    {"tab-reorganization", flag_descriptions::kTabReorganizationName,
-     flag_descriptions::kTabReorganizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabReorganization)},
-
-    {"tab-reorganization-divider",
-     flag_descriptions::kTabReorganizationDividerName,
-     flag_descriptions::kTabReorganizationDividerDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabReorganizationDivider)},
-
     {"tabstrip-declutter", flag_descriptions::kTabstripDeclutterName,
      flag_descriptions::kTabstripDeclutterDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripDeclutter,

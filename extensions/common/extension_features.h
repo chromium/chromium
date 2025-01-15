@@ -241,6 +241,10 @@ BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
 // nothing breaks.
 BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
 
+// Changes the chrome.userScript API to be enabled by a per-extension toggle
+// rather than the developer mode toggle on chrome://extensions.
+BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -105,9 +105,29 @@ void ReportStrokeTypeAndSize(StrokeMetricBrushType type,
   base::UmaHistogramEnumeration(size_metric, size);
 }
 
+void ReportStrokeInputDeviceType(ink::StrokeInput::ToolType tool_type) {
+  StrokeMetricInputDeviceType type;
+  switch (tool_type) {
+    case ink::StrokeInput::ToolType::kMouse:
+      type = StrokeMetricInputDeviceType::kMouse;
+      break;
+    case ink::StrokeInput::ToolType::kTouch:
+      type = StrokeMetricInputDeviceType::kTouch;
+      break;
+    case ink::StrokeInput::ToolType::kStylus:
+      type = StrokeMetricInputDeviceType::kPen;
+      break;
+    default:
+      NOTREACHED();
+  };
+  base::UmaHistogramEnumeration("PDF.Ink2StrokeInputDeviceType", type);
+}
+
 }  // namespace
 
-void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush) {
+void ReportDrawStroke(PdfInkBrush::Type type,
+                      const ink::Brush& brush,
+                      ink::StrokeInput::ToolType tool_type) {
   bool is_pen = type == PdfInkBrush::Type::kPen;
   const base::fixed_flat_map<float, StrokeMetricBrushSize, 5>& sizes =
       is_pen ? kPenAndEraserSizes : kHighlighterSizes;
@@ -116,6 +136,7 @@ void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush) {
   ReportStrokeTypeAndSize(is_pen ? StrokeMetricBrushType::kPen
                                  : StrokeMetricBrushType::kHighlighter,
                           size_iter->second);
+  ReportStrokeInputDeviceType(tool_type);
 
   SkColor sk_color = GetSkColorFromInkBrush(brush);
   if (is_pen) {
@@ -130,10 +151,11 @@ void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush) {
   }
 }
 
-void ReportEraseStroke(float size) {
+void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type) {
   auto iter = kPenAndEraserSizes.find(size);
   CHECK(iter != kPenAndEraserSizes.end());
   ReportStrokeTypeAndSize(StrokeMetricBrushType::kEraser, iter->second);
+  ReportStrokeInputDeviceType(tool_type);
 }
 
 }  // namespace chrome_pdf

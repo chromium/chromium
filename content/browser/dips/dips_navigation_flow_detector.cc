@@ -13,6 +13,8 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
+namespace content {
+
 namespace {
 enum QuantityBucket {
   kZero = 0,
@@ -113,7 +115,7 @@ void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
       .Record(ukm::UkmRecorder::Get());
 }
 
-void MaybeEmitDirectNavigationUkm(content::NavigationHandle* navigation_handle,
+void MaybeEmitDirectNavigationUkm(NavigationHandle* navigation_handle,
                                   const DIPSRedirectContext& redirect_context) {
   if (!IsPageTransitionDirectNavigation(
           navigation_handle->GetPageTransition())) {
@@ -209,9 +211,9 @@ bool InFlowSuccessorInteractionState::IsAtSuccessor() const {
 }  // namespace dips
 
 DipsNavigationFlowDetector::DipsNavigationFlowDetector(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
+    WebContents* web_contents)
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
       current_page_visit_info_(dips::PageVisitInfo()) {
   redirect_chain_observation_.Observe(
       RedirectChainDetector::FromWebContents(web_contents));
@@ -220,7 +222,7 @@ DipsNavigationFlowDetector::DipsNavigationFlowDetector(
 DipsNavigationFlowDetector::~DipsNavigationFlowDetector() = default;
 
 void DipsNavigationFlowDetector::OnNavigationCommitted(
-    content::NavigationHandle* navigation_handle) {
+    NavigationHandle* navigation_handle) {
   bool primary_page_changed = navigation_handle->IsInPrimaryMainFrame() &&
                               !navigation_handle->IsSameDocument() &&
                               navigation_handle->HasCommitted();
@@ -228,7 +230,7 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
     return;
   }
 
-  content::RenderFrameHost* render_frame_host =
+  RenderFrameHost* render_frame_host =
       navigation_handle->GetWebContents()->GetPrimaryMainFrame();
 
   GURL current_page_url = render_frame_host->GetLastCommittedURL();
@@ -548,8 +550,8 @@ const DIPSRedirectContext& DipsNavigationFlowDetector::GetRedirectContext()
 }
 
 void DipsNavigationFlowDetector::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
+    RenderFrameHost* render_frame_host,
+    const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
   if (!dips::IsOrWasInPrimaryPage(render_frame_host) ||
@@ -578,8 +580,8 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
 }
 
 void DipsNavigationFlowDetector::OnCookiesAccessed(
-    content::NavigationHandle* navigation_handle,
-    const content::CookieAccessDetails& details) {
+    NavigationHandle* navigation_handle,
+    const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
   if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy) {
@@ -632,7 +634,7 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
 }
 
 void DipsNavigationFlowDetector::NotifyStorageAccessed(
-    content::RenderFrameHost* render_frame_host,
+    RenderFrameHost* render_frame_host,
     blink::mojom::StorageTypeAccessed storage_type,
     bool blocked) {
   if (!render_frame_host->IsInPrimaryMainFrame() || blocked) {
@@ -647,7 +649,7 @@ void DipsNavigationFlowDetector::NotifyStorageAccessed(
 }
 
 void DipsNavigationFlowDetector::FrameReceivedUserActivation(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   current_page_visit_info_->did_page_receive_user_activation = true;
 
   if (successor_interaction_tracking_state_.has_value() &&
@@ -658,7 +660,7 @@ void DipsNavigationFlowDetector::FrameReceivedUserActivation(
 }
 
 void DipsNavigationFlowDetector::WebAuthnAssertionRequestSucceeded(
-    content::RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -670,3 +672,5 @@ void DipsNavigationFlowDetector::WebContentsDestroyed() {
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DipsNavigationFlowDetector);
+
+}  // namespace content

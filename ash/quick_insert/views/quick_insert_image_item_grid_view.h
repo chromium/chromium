@@ -51,7 +51,7 @@ class ASH_EXPORT QuickInsertImageItemGridView
   views::View* GetColumnContaining(views::View* item);
 
   int column_width_;
-  views::View::Views items_;
+  size_t num_items_ = 0;
 };
 
 }  // namespace ash

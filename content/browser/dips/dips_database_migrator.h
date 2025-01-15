@@ -9,6 +9,8 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
+namespace content {
+
 // Returns whether the migration was successful.
 CONTENT_EXPORT bool MigrateDIPSSchemaToLatestVersion(
     sql::Database& db,
@@ -67,5 +69,7 @@ class CONTENT_EXPORT DIPSDatabaseMigrator {
 };
 
 }  // namespace internal
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_DATABASE_MIGRATOR_H_

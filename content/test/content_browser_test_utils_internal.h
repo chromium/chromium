@@ -391,7 +391,6 @@ class ShowPopupWidgetWaiter
     void ShowPopupMenu(
         mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
         const gfx::Rect& bounds,
-        int32_t item_height,
         double font_size,
         int32_t selected_item,
         std::vector<blink::mojom::MenuItemPtr> menu_items,

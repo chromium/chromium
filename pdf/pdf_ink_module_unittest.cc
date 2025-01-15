@@ -2643,6 +2643,7 @@ class PdfInkModuleMetricsTest : public PdfInkModuleUndoRedoTest {
   static constexpr char kPenColorMetric[] = "PDF.Ink2StrokePenColor";
   static constexpr char kHighlighterColorMetric[] =
       "PDF.Ink2StrokeHighlighterColor";
+  static constexpr char kInputDeviceMetric[] = "PDF.Ink2StrokeInputDeviceType";
   static constexpr char kPenSizeMetric[] = "PDF.Ink2StrokePenSize";
   static constexpr char kHighlighterSizeMetric[] =
       "PDF.Ink2StrokeHighlighterSize";
@@ -2658,6 +2659,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kMouse, 1);
   histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
                                 1);
   histograms.ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
@@ -2669,6 +2672,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
 
   // The metrics should stay the same.
   histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kMouse, 1);
   histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
                                 1);
   histograms.ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
@@ -2893,6 +2898,100 @@ TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {
 
   histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kPen, 2);
   histograms.ExpectTotalCount(kTypeMetric, 4);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeInputDeviceMouse) {
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
+
+  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+
+  // Draw a stroke with a mouse.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kMouse, 1);
+
+  // Draw an eraser stroke with a mouse that erases the first stroke.
+  SelectEraserToolOfSize(3.0f);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kMouse, 2);
+
+  // Draw another eraser stroke with a mouse that erases nothing.
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kMouse, 2);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeInputDeviceTouch) {
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
+
+  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+
+  // Draw a stroke with touch.
+  RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kTouch, 1);
+
+  // Draw an eraser stroke with touch that erases the first stroke.
+  SelectEraserToolOfSize(3.0f);
+  const std::vector<base::span<const gfx::PointF>> move_point{
+      base::span_from_ref(kMouseDownPoint),
+  };
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
+                               base::span_from_ref(kMouseDownPoint));
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kTouch, 2);
+
+  // Draw another eraser stroke with touch that erases nothing.
+  ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
+                               base::span_from_ref(kMouseDownPoint));
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kTouch, 2);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  RunStrokePenCheckTest(/*annotation_mode_enabled=*/false);
+
+  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+
+  // Draw a stroke with a pen.
+  RunStrokePenCheckTest(/*annotation_mode_enabled=*/true);
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kPen, 1);
+
+  // Draw an eraser stroke with a pen that erases the first stroke.
+  SelectEraserToolOfSize(3.0f);
+  const std::vector<base::span<const gfx::PointF>> move_point{
+      base::span_from_ref(kMouseDownPoint),
+  };
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
+                             base::span_from_ref(kMouseDownPoint));
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kPen, 2);
+
+  // Draw another eraser stroke with a pen that erases nothing.
+  ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
+                             base::span_from_ref(kMouseDownPoint));
+
+  histograms.ExpectUniqueSample(kInputDeviceMetric,
+                                StrokeMetricInputDeviceType::kPen, 2);
 }
 
 }  // namespace chrome_pdf

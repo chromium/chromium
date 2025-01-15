@@ -10,6 +10,8 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 
+namespace content {
+
 using internal::DIPSDatabaseMigrator;
 
 DIPSDatabaseMigrator::DIPSDatabaseMigrator(sql::Database* const db,
@@ -300,3 +302,5 @@ bool DIPSDatabaseMigrator::MigrateSchemaVersionFrom7To8() {
          meta_table_->SetCompatibleVersionNumber(
              std::min(8, DIPSDatabase::kMinCompatibleSchemaVersion));
 }
+
+}  // namespace content

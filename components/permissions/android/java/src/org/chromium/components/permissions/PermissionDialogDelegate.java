@@ -60,9 +60,6 @@ public class PermissionDialogDelegate {
     /** The {@link ContentSettingsType}s requested in this dialog. */
     private int[] mContentSettingsTypes;
 
-    // Prompt(screen) variant we want to display on the dialog.
-    private @EmbeddedPromptVariant int mEmbeddedPromptVariant;
-
     /**
      * Defines a (potentially empty) list of ranges represented as pairs of <startIndex, endIndex>,
      * which shall be used by the UI to format the specified ranges as bold text.
@@ -109,14 +106,6 @@ public class PermissionDialogDelegate {
         return mShowPositiveNonEphemeralAsFirstButton;
     }
 
-    public @EmbeddedPromptVariant int getEmbeddedPromptVariant() {
-        return mEmbeddedPromptVariant;
-    }
-
-    public void setEmbeddedPromptVariant(@EmbeddedPromptVariant int variant) {
-        mEmbeddedPromptVariant = variant;
-    }
-
     public void onAccept() {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get().accept(mNativeDelegatePtr, PermissionDialogDelegate.this);
@@ -155,6 +144,7 @@ public class PermissionDialogDelegate {
         return PermissionDialogDelegateJni.get().getRequestTypeEnumSize();
     }
 
+    /** Called from C++ by |nativeDelegatePtr| to destroy the dialog. */
     @CalledByNative
     private void dismissFromNative() {
         assert mDialogController != null;
@@ -199,8 +189,7 @@ public class PermissionDialogDelegate {
             String positiveButtonText,
             String negativeButtonText,
             String positiveEphemeralButtonText,
-            boolean showPositiveNonEphemeralAsFirstButton,
-            @EmbeddedPromptVariant int variant) {
+            boolean showPositiveNonEphemeralAsFirstButton) {
         assert (boldedRanges.length % 2 == 0); // Contains a list of offset and length values
 
         return new PermissionDialogDelegate(
@@ -213,8 +202,7 @@ public class PermissionDialogDelegate {
                 positiveButtonText,
                 negativeButtonText,
                 positiveEphemeralButtonText,
-                showPositiveNonEphemeralAsFirstButton,
-                variant);
+                showPositiveNonEphemeralAsFirstButton);
     }
 
     /** Upon construction, this class takes ownership of the passed in native delegate. */
@@ -228,8 +216,7 @@ public class PermissionDialogDelegate {
             String positiveButtonText,
             String negativeButtonText,
             String positiveEphemeralButtonText,
-            boolean showPositiveNonEphemeralAsFirstButton,
-            @EmbeddedPromptVariant int variant) {
+            boolean showPositiveNonEphemeralAsFirstButton) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
@@ -242,7 +229,6 @@ public class PermissionDialogDelegate {
         mNegativeButtonText = negativeButtonText;
         mPositiveEphemeralButtonText = positiveEphemeralButtonText;
         mShowPositiveNonEphemeralAsFirstButton = showPositiveNonEphemeralAsFirstButton;
-        mEmbeddedPromptVariant = variant;
     }
 
     @NativeMethods

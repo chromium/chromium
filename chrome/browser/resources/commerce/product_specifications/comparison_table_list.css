@@ -74,6 +74,11 @@ cr-toolbar-selection-overlay::part(clearIcon) {
   padding: var(--container-padding);
 }
 
+hr {
+  border: none;
+  border-top: var(--cr-hairline);
+}
+
 #listContainer {
   max-height: 100%;
   overflow: scroll;

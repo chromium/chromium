@@ -24,10 +24,10 @@
 #include "url/gurl.h"
 
 namespace content {
+
 struct CookieAccessDetails;
 class NavigationHandle;
 class RenderFrameHost;
-}  // namespace content
 
 namespace dips {
 
@@ -109,8 +109,8 @@ class InFlowSuccessorInteractionState {
 // navigational tracking by sites that also perform user-interest activity.
 class CONTENT_EXPORT DipsNavigationFlowDetector
     : public RedirectChainDetector::Observer,
-      public content::WebContentsObserver,
-      public content::WebContentsUserData<DipsNavigationFlowDetector> {
+      public WebContentsObserver,
+      public WebContentsUserData<DipsNavigationFlowDetector> {
  public:
   ~DipsNavigationFlowDetector() override;
 
@@ -120,7 +120,7 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
   }
 
  protected:
-  explicit DipsNavigationFlowDetector(content::WebContents* web_contents);
+  explicit DipsNavigationFlowDetector(WebContents* web_contents);
 
   void MaybeEmitNavFlowNodeUkmForPreviousPage();
   bool CanEmitNavFlowNodeUkmForPreviousPage() const;
@@ -143,7 +143,7 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
 
  private:
   // So WebContentsUserData::CreateForWebContents can call the constructor.
-  friend class content::WebContentsUserData<DipsNavigationFlowDetector>;
+  friend class WebContentsUserData<DipsNavigationFlowDetector>;
 
   dips::FlowStatus FlowStatusAfterNavigation(
       bool did_most_recent_navigation_start_new_flow) const;
@@ -156,24 +156,22 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
   // start WebContentsObserver overrides
   // For client-initiated cookie accesses, and late-reported cookie accesses in
   // navigations.
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
   // For cookie accesses in navigations.
-  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
-                         const content::CookieAccessDetails& details) override;
-  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+  void OnCookiesAccessed(NavigationHandle* navigation_handle,
+                         const CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
                              blink::mojom::StorageTypeAccessed storage_type,
                              bool blocked) override;
-  void FrameReceivedUserActivation(
-      content::RenderFrameHost* render_frame_host) override;
+  void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
-      content::RenderFrameHost* render_frame_host) override;
+      RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   // end WebContentsObserver overrides
 
   // start RedirectChainDetector::Observer overrides
-  void OnNavigationCommitted(
-      content::NavigationHandle* navigation_handle) override;
+  void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
   // end RedirectChainDetector::Observer overrides
 
   std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
@@ -206,5 +204,7 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_NAVIGATION_FLOW_DETECTOR_H_

@@ -5,14 +5,19 @@
 import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './images/icons.html.js';
 
+import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {CrToolbarSelectionOverlayElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -31,6 +36,8 @@ export interface ComparisonTableListElement {
   $: {
     delete: CrIconButtonElement,
     edit: CrIconButtonElement,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
+    more: CrIconButtonElement,
     toolbar: CrToolbarSelectionOverlayElement,
   };
 }
@@ -70,6 +77,10 @@ export class ComparisonTableListElement extends CrLitElement {
     return loadTimeData.getStringF('numSelected', numSelected);
   }
 
+  protected getOpenAllString_(numSelected: number): string {
+    return loadTimeData.getStringF('menuOpenAll', numSelected);
+  }
+
   protected onEditClick_() {
     if (!this.isEditing_) {
       this.isEditing_ = true;
@@ -84,18 +95,30 @@ export class ComparisonTableListElement extends CrLitElement {
   }
 
   protected async onDeleteClick_() {
-    // Disable the delete button while sets are being deleted.
-    this.deletePending_ = true;
-    const promises: void[] = [];
-    this.selectedUuids_.forEach(uuid => {
-      promises.push(this.shoppingApi_.deleteProductSpecificationsSet(uuid));
-    });
-    this.deletePending_ = false;
+    // Close the menu only if it has been rendered.
+    const menu = this.$.menu.getIfExists();
+    if (menu) {
+      menu.close();
+    }
 
-    await Promise.all(promises);
+    this.deleteSelectedTables_();
+    this.stopEditing_();
+  }
+
+  protected async onShowContextMenuClick_() {
+    this.$.menu.get().showAt(this.$.more);
+  }
+
+  protected async onOpenAllClick_() {
+    this.selectedUuids_.forEach(uuid => {
+      ProductSpecificationsBrowserProxyImpl.getInstance()
+          .showProductSpecificationsSetForUuid(uuid, true);
+    });
+
+    this.$.menu.get().close();
     this.stopEditing_();
 
-    this.fire('delete-finished-for-testing');
+    this.fire('open-all-finished-for-testing');
   }
 
   protected onCheckboxChange_(event:
@@ -113,6 +136,19 @@ export class ComparisonTableListElement extends CrLitElement {
     this.isEditing_ = false;
     this.selectedUuids_.clear();
     this.numSelected_ = 0;
+  }
+
+  private async deleteSelectedTables_() {
+    // Disable the delete button while sets are being deleted.
+    this.deletePending_ = true;
+    const promises: void[] = [];
+    this.selectedUuids_.forEach(uuid => {
+      promises.push(this.shoppingApi_.deleteProductSpecificationsSet(uuid));
+    });
+    await Promise.all(promises);
+    this.deletePending_ = false;
+
+    this.fire('delete-finished-for-testing');
   }
 }
 

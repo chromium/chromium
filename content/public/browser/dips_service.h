@@ -19,9 +19,9 @@
 class GURL;
 
 namespace content {
+
 class BrowserContext;
 class WebContents;
-}  // namespace content
 
 // The primary purpose of DIPSService is to allow clients to observe redirect
 // chains as soon as the bounce tracking mitigation system detects them. It also
@@ -37,7 +37,7 @@ class CONTENT_EXPORT DIPSService : public base::SupportsUserData {
    public:
     // Called whenever a site bounces the user while accessing storage (e.g.
     // cookies or local storage) in any primary main frame.
-    virtual void OnStatefulBounce(content::WebContents* web_contents) {}
+    virtual void OnStatefulBounce(WebContents* web_contents) {}
     // Called whenever the DIPSService finishes handling a redirect chain (so
     // metadata for its redirects have been written to the DIPS database).
     virtual void OnChainHandled(
@@ -45,7 +45,7 @@ class CONTENT_EXPORT DIPSService : public base::SupportsUserData {
         const DIPSRedirectChainInfoPtr& chain) {}
   };
 
-  static DIPSService* Get(content::BrowserContext* context);
+  static DIPSService* Get(BrowserContext* context);
 
   // Some embedders support the user signing into the browser. In order to
   // protect the cookies (or other storage) that keeps the user logged in,
@@ -73,5 +73,7 @@ class CONTENT_EXPORT DIPSService : public base::SupportsUserData {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(const Observer* observer) = 0;
 };
+
+}  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_DIPS_SERVICE_H_

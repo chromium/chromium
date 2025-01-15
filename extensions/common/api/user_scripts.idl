@@ -123,6 +123,11 @@ namespace userScripts {
     // The JavaScript "world" to run the script in. The default is
     // <code>USER_SCRIPT</code>.
     ExecutionWorld? world;
+    // Specifies the user script world ID to execute in. If omitted, the script
+    // will execute in the default user script world. Only valid if `world` is
+    // omitted or is `USER_SCRIPT`. Values with leading underscores (`_`) are
+    // reserved.
+    DOMString? worldId;
   };
 
   // An object used to update the <code>`USER_SCRIPT`</code> world

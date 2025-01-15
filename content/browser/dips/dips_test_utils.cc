@@ -20,13 +20,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using content::CookieAccessDetails;
-using content::NavigationHandle;
-using content::RenderFrameHost;
-using content::WebContents;
+namespace content {
 
-void CloseTab(content::WebContents* web_contents) {
-  content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
+void CloseTab(WebContents* web_contents) {
+  WebContentsDestroyedWatcher destruction_watcher(web_contents);
   web_contents->Close();
   destruction_watcher.Wait();
 }
@@ -36,35 +33,33 @@ base::expected<WebContents*, std::string> OpenInNewTab(
     const GURL& url) {
   OpenedWindowObserver tab_observer(original_tab,
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  if (!content::ExecJs(original_tab,
-                       content::JsReplace("window.open($1, '_blank');", url))) {
+  if (!ExecJs(original_tab, JsReplace("window.open($1, '_blank');", url))) {
     return base::unexpected("window.open failed");
   }
   tab_observer.Wait();
 
   // Wait for the new tab to finish navigating.
-  content::WaitForLoadStop(tab_observer.window());
+  WaitForLoadStop(tab_observer.window());
 
   return tab_observer.window();
 }
 
-void AccessCookieViaJSIn(content::WebContents* web_contents,
-                         content::RenderFrameHost* frame) {
+void AccessCookieViaJSIn(WebContents* web_contents, RenderFrameHost* frame) {
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'foo=bar';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
 }
 
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
+    WebContents* web_contents,
+    RenderFrameHost* frame,
     const GURL& target_url) {
-  content::TestFrameNavigationObserver nav_observer(frame);
-  bool js_succeeded = content::ExecJs(frame,
-                                      content::JsReplace(
-                                          R"(
+  TestFrameNavigationObserver nav_observer(frame);
+  bool js_succeeded = ExecJs(frame,
+                             JsReplace(
+                                 R"(
       function redirectViaMetaTag() {
         var element = document.createElement('meta');
         element.setAttribute('http-equiv', 'refresh');
@@ -77,8 +72,8 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
         redirectViaMetaTag();
       }
       )",
-                                          target_url),
-                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+                                 target_url),
+                             EXECUTE_SCRIPT_NO_USER_GESTURE);
   if (!js_succeeded) {
     return testing::AssertionFailure()
            << "Failed to execute script to client-side redirect to URL "
@@ -95,13 +90,13 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
 }
 
 [[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
+    WebContents* web_contents,
+    RenderFrameHost* frame,
     const GURL& target_url) {
-  content::TestFrameNavigationObserver nav_observer(frame);
-  bool js_succeeded = content::ExecJs(
-      frame, content::JsReplace(R"(window.location.replace($1);)", target_url),
-      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  TestFrameNavigationObserver nav_observer(frame);
+  bool js_succeeded =
+      ExecJs(frame, JsReplace(R"(window.location.replace($1);)", target_url),
+             EXECUTE_SCRIPT_NO_USER_GESTURE);
   if (!js_succeeded) {
     return testing::AssertionFailure()
            << "Failed to execute script to client-side redirect to URL "
@@ -117,7 +112,7 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
   }
 }
 
-bool NavigateToSetCookie(content::WebContents* web_contents,
+bool NavigateToSetCookie(WebContents* web_contents,
                          const net::EmbeddedTestServer* server,
                          std::string_view host,
                          bool is_secure_cookie_set,
@@ -132,25 +127,25 @@ bool NavigateToSetCookie(content::WebContents* web_contents,
   const auto url = server->GetURL(host, relative_url);
 
   URLCookieAccessObserver observer(web_contents, url, CookieOperation::kChange);
-  bool success = content::NavigateToURL(web_contents, url);
+  bool success = NavigateToURL(web_contents, url);
   if (success) {
     observer.Wait();
   }
   return success;
 }
 
-void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
+void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
                                        const GURL& image_url) {
   URLCookieAccessObserver observer(web_contents, image_url,
                                    CookieOperation::kRead);
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              content::JsReplace(
-                                  R"(
+  ASSERT_TRUE(ExecJs(web_contents,
+                     JsReplace(
+                         R"(
     let img = document.createElement('img');
     img.src = $1;
     document.body.appendChild(img);)",
-                                  image_url),
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                         image_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   // The image must cause a cookie access, or else this will hang.
   observer.Wait();
 }
@@ -219,8 +214,8 @@ void FrameCookieAccessObserver::Wait() {
 }
 
 void FrameCookieAccessObserver::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
+    RenderFrameHost* render_frame_host,
+    const CookieAccessDetails& details) {
   if (details.type == access_type_ && render_frame_host_ == render_frame_host) {
     run_loop_.Quit();
   }
@@ -305,15 +300,15 @@ ScopedInitDIPSFeature::ScopedInitDIPSFeature(
     : init_feature_(features::kDIPS, enable, params) {}
 
 OpenedWindowObserver::OpenedWindowObserver(
-    content::WebContents* web_contents,
+    WebContents* web_contents,
     WindowOpenDisposition open_disposition)
     : WebContentsObserver(web_contents), open_disposition_(open_disposition) {}
 
 void OpenedWindowObserver::DidOpenRequestedURL(
-    content::WebContents* new_contents,
-    content::RenderFrameHost* source_render_frame_host,
+    WebContents* new_contents,
+    RenderFrameHost* source_render_frame_host,
     const GURL& url,
-    const content::Referrer& referrer,
+    const Referrer& referrer,
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
@@ -325,11 +320,10 @@ void OpenedWindowObserver::DidOpenRequestedURL(
 }
 
 void SimulateMouseClickAndWait(WebContents* web_contents) {
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+  WaitForHitTestData(web_contents->GetPrimaryMainFrame());
   UserActivationObserver observer(web_contents,
                                   web_contents->GetPrimaryMainFrame());
-  content::SimulateMouseClick(web_contents, 0,
-                              blink::WebMouseEvent::Button::kLeft);
+  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer.Wait();
 }
 
@@ -341,8 +335,8 @@ TpcBlockingBrowserClient::TpcBlockingBrowserClient() = default;
 TpcBlockingBrowserClient::~TpcBlockingBrowserClient() = default;
 
 bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
-    content::BrowserContext* browser_context,
-    content::WebContents* web_contents,
+    BrowserContext* browser_context,
+    WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
   // TODO: crbug.com/384531044 - implement this method by subclassing
@@ -390,7 +384,7 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
-    content::BrowserContext* browser_context,
+    BrowserContext* browser_context,
     const net::SchemefulSite& top_frame_site,
     const net::SchemefulSite& accessing_site,
     base::TimeDelta ttl,
@@ -427,3 +421,5 @@ void TpcBlockingBrowserClient::BlockThirdPartyCookies(
   tpc_blocks_.emplace(net::SchemefulSite(first_party_url),
                       net::SchemefulSite(url));
 }
+
+}  // namespace content

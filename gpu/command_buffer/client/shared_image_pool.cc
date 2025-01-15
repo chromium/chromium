@@ -132,6 +132,10 @@ void SharedImagePoolBase::ReleaseImageInternal(
 
 void SharedImagePoolBase::ClearInternal() {
   image_pool_.clear();
+  CHECK(sii_);
+  // A pool might contain several images. Hence Flush() to ensure that the
+  // deferred IPCs are sent to the GPU process and GPU memory is reclaimed.
+  sii_->Flush();
 }
 
 void SharedImagePoolBase::ReconfigureInternal(const ImageInfo& image_info) {

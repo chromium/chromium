@@ -23,13 +23,10 @@
 #include "content/public/browser/dips_service.h"
 
 namespace content {
+
 class BrowserContext;
 class BrowserContextImpl;
-}  // namespace content
-
-namespace dips {
 class PersistentRepeatingTimer;
-}
 
 // When DIPS moves to //content, DIPSServiceImpl will *not* be exposed in the
 // Content API. Only other code in //content (such as the DIPS implementation)
@@ -44,11 +41,10 @@ class CONTENT_EXPORT DIPSServiceImpl : public DIPSService {
       bool stateful,
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback)>;
 
-  DIPSServiceImpl(base::PassKey<content::BrowserContextImpl>,
-                  content::BrowserContext* context);
+  DIPSServiceImpl(base::PassKey<BrowserContextImpl>, BrowserContext* context);
   ~DIPSServiceImpl() override;
 
-  static DIPSServiceImpl* Get(content::BrowserContext* context);
+  static DIPSServiceImpl* Get(BrowserContext* context);
 
   base::SequenceBound<DIPSStorage>* storage() { return &storage_; }
 
@@ -127,10 +123,10 @@ class CONTENT_EXPORT DIPSServiceImpl : public DIPSService {
   }
 
   // Notify Observers that a stateful bounce took place in `web_contents`.
-  void NotifyStatefulBounce(content::WebContents* web_contents);
+  void NotifyStatefulBounce(WebContents* web_contents);
 
  private:
-  std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
+  std::unique_ptr<PersistentRepeatingTimer> CreateTimer();
 
   void GotState(
       std::vector<DIPSRedirectInfoPtr> redirects,
@@ -163,12 +159,12 @@ class CONTENT_EXPORT DIPSServiceImpl : public DIPSService {
   void RecordBrowserSignIn(std::string_view domain) override;
 
   base::RunLoop wait_for_file_deletion_;
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   // The persisted timer controlling how often incidental state is cleared.
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
   // given for its `timer_delay` parameter.
   // See base/time/time_delta_from_string.h for how that param should be given.
-  std::unique_ptr<dips::PersistentRepeatingTimer> repeating_timer_;
+  std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
 
@@ -176,5 +172,7 @@ class CONTENT_EXPORT DIPSServiceImpl : public DIPSService {
 
   base::WeakPtrFactory<DIPSServiceImpl> weak_factory_{this};
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_SERVICE_IMPL_H_

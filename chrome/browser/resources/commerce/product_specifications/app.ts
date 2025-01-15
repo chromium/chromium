@@ -700,6 +700,11 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private seeAllSets_() {
+    if (loadTimeData.getBoolean('comparisonTableListEnabled')) {
+      this.productSpecificationsProxy_.showComparePage(true);
+      return;
+    }
+
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('productSpecificationsManagementUrl'));
   }

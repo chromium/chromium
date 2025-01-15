@@ -46,14 +46,15 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
-using content::DipsRedirectChainObserver;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Pair;
 
-bool Has3pcException(content::BrowserContext* browser_context,
-                     content::WebContents* web_contents,
+namespace content {
+
+bool Has3pcException(BrowserContext* browser_context,
+                     WebContents* web_contents,
                      const GURL& url,
                      const GURL& initial_url,
                      const GURL& final_url) {
@@ -70,7 +71,7 @@ class DIPSServiceTest : public testing::Test {
   base::PassKey<DIPSServiceTest> PassKey() { return {}; }
 
   void RecordBounce(
-      content::BrowserContext* browser_context,
+      BrowserContext* browser_context,
       const GURL& url,
       const GURL& initial_url,
       const GURL& final_url,
@@ -86,20 +87,20 @@ class DIPSServiceTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(DIPSServiceTest, CreateServiceIfFeatureEnabled) {
   ScopedInitDIPSFeature init_dips(true);
 
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   EXPECT_NE(DIPSServiceImpl::Get(&profile), nullptr);
 }
 
 TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
   ScopedInitDIPSFeature init_dips(false);
 
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   EXPECT_EQ(DIPSServiceImpl::Get(&profile), nullptr);
 }
 
@@ -109,14 +110,14 @@ TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
 TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   base::FilePath data_path = base::CreateUniqueTempDirectoryScopedToTest();
   DIPSServiceImpl* service;
-  std::unique_ptr<content::TestBrowserContext> profile;
+  std::unique_ptr<TestBrowserContext> profile;
 
   // Ensure the DIPS feature is enabled and the database is set to be persisted.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kDIPS, {{"persist_database", "true"}});
 
-  profile = std::make_unique<content::TestBrowserContext>(data_path);
+  profile = std::make_unique<TestBrowserContext>(data_path);
   service = DIPSServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
 
@@ -134,7 +135,7 @@ TEST_F(DIPSServiceTest, DeleteDbFilesIfPersistenceDisabled) {
   // Reset the TestBrowserContext, then create a new instance with the same user
   // data path.
   profile.reset();
-  profile = std::make_unique<content::TestBrowserContext>(data_path);
+  profile = std::make_unique<TestBrowserContext>(data_path);
 
   service = DIPSServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
@@ -156,8 +157,8 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
       features::kDIPS, {{"persist_database", "true"}});
 
   // Build a regular profile.
-  std::unique_ptr<content::TestBrowserContext> profile =
-      std::make_unique<content::TestBrowserContext>(data_path);
+  std::unique_ptr<TestBrowserContext> profile =
+      std::make_unique<TestBrowserContext>(data_path);
   DIPSServiceImpl* service = DIPSServiceImpl::Get(profile.get());
   ASSERT_NE(service, nullptr);
 
@@ -168,8 +169,8 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
   ASSERT_TRUE(base::PathExists(GetDIPSFilePath(profile.get())));
 
   // Build an off-the-record profile based on `profile`.
-  std::unique_ptr<content::TestBrowserContext> otr_profile =
-      std::make_unique<content::TestBrowserContext>(profile->GetPath());
+  std::unique_ptr<TestBrowserContext> otr_profile =
+      std::make_unique<TestBrowserContext>(profile->GetPath());
   otr_profile->set_is_off_the_record(true);
   DIPSServiceImpl* otr_service = DIPSServiceImpl::Get(otr_profile.get());
   ASSERT_NE(otr_service, nullptr);
@@ -191,8 +192,8 @@ TEST_F(DIPSServiceTest, PreserveRegularProfileDbFiles) {
 TEST_F(DIPSServiceTest, EmptySiteEventsIgnored) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDIPS);
-  std::unique_ptr<content::TestBrowserContext> profile =
-      std::make_unique<content::TestBrowserContext>();
+  std::unique_ptr<TestBrowserContext> profile =
+      std::make_unique<TestBrowserContext>();
   DIPSServiceImpl* service = DIPSServiceImpl::Get(profile.get());
 
   // Record a bounce for an empty URL.
@@ -216,22 +217,22 @@ TEST_F(DIPSServiceTest, EmptySiteEventsIgnored) {
 class DIPSServiceStateRemovalTest : public testing::Test {
  public:
   DIPSServiceStateRemovalTest()
-      : profile_(std::make_unique<content::TestBrowserContext>()),
+      : profile_(std::make_unique<TestBrowserContext>()),
         service_(DIPSServiceImpl::Get(GetProfile())) {
-    content::SetBrowserClientForTesting(&browser_client_);
+    SetBrowserClientForTesting(&browser_client_);
   }
 
   base::TimeDelta grace_period;
   base::TimeDelta interaction_ttl;
   base::TimeDelta tiny_delta = base::Milliseconds(1);
 
-  content::BrowserContext* GetProfile() { return profile_.get(); }
+  BrowserContext* GetProfile() { return profile_.get(); }
   DIPSServiceImpl* GetService() { return service_; }
 
  protected:
   TpcBlockingBrowserClient browser_client_;
-  content::BrowserTaskEnvironment task_environment_;
-  content::MockBrowsingDataRemoverDelegate delegate_;
+  BrowserTaskEnvironment task_environment_;
+  MockBrowsingDataRemoverDelegate delegate_;
 
   // Test setup.
   void SetUp() override {
@@ -276,7 +277,7 @@ class DIPSServiceStateRemovalTest : public testing::Test {
         net::SchemefulSite(third_party_url), base::Days(1),
         /*ignore_schemas=*/false);
 
-    auto* client = content::GetContentClientForTesting()->browser();
+    auto* client = GetContentClientForTesting()->browser();
     EXPECT_TRUE(client->IsFullCookieAccessAllowed(
         profile_.get(), nullptr, third_party_url,
         blink::StorageKey::CreateFirstParty(
@@ -303,7 +304,7 @@ class DIPSServiceStateRemovalTest : public testing::Test {
  private:
   base::SimpleTestClock clock_;
 
-  std::unique_ptr<content::TestBrowserContext> profile_;
+  std::unique_ptr<TestBrowserContext> profile_;
   raw_ptr<DIPSServiceImpl, DanglingUntriaged> service_ = nullptr;
 };
 
@@ -410,26 +411,26 @@ TEST_F(DIPSServiceStateRemovalTest, DISABLED_BrowsingDataDeletion_Enabled) {
   // Verify a removal task was not posted to the BrowsingDataRemover(Delegate).
   delegate_.VerifyAndClearExpectations();
 
-  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
-      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
   filter_builder->SetCookiePartitionKeyCollection(
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (content::ContentBrowserClient::kDefaultDipsRemoveMask &
-       ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
-          content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+      (ContentBrowserClient::kDefaultDipsRemoveMask &
+       ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
+          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
       filter_builder.get());
   // We don't test the filter builder for partitioned cookies here because it's
   // messy. The browser tests ensure that it behaves as expected.
   delegate_.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
+      BrowsingDataRemover::DATA_TYPE_COOKIES,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
 
   // Time-travel to after the grace period has ended for the bounce.
   AdvanceTimeTo(bounce + grace_period + tiny_delta);
@@ -791,26 +792,26 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   // Verify a removal task was not posted to the BrowsingDataRemover(Delegate).
   delegate_.VerifyAndClearExpectations();
 
-  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
-      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
   filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
   filter_builder->SetCookiePartitionKeyCollection(
       net::CookiePartitionKeyCollection());
   delegate_.ExpectCall(
       base::Time::Min(), base::Time::Max(),
-      (content::ContentBrowserClient::kDefaultDipsRemoveMask &
-       ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
-          content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+      (ContentBrowserClient::kDefaultDipsRemoveMask &
+       ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX) |
+          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
       filter_builder.get());
   // We don't test the filter builder for partitioned cookies here because it's
   // messy. The browser tests ensure that it behaves as expected.
   delegate_.ExpectCallDontCareAboutFilterBuilder(
       base::Time::Min(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
+      BrowsingDataRemover::DATA_TYPE_COOKIES,
+      BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
 
   // Perform immediate enforcement of deletion, without regard for grace period
   // and verify `url` is returned the `DeletedSitesCallback`.
@@ -1041,14 +1042,14 @@ TEST_F(DIPSServiceHistogramTest, ServerBounceDelay) {
                   .GetTotalCountsForPrefix(kServerRedirectsStatusCodePrefix)
                   .empty());
 
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
   UrlAndSourceId first_redirect_url = MakeUrlAndId("http://b.test/");
   UrlAndSourceId second_redirect_url = MakeUrlAndId("http://c.test/");
 
-  content::DipsRedirectChainObserver observer(service, GURL());
+  DipsRedirectChainObserver observer(service, GURL());
   std::vector<DIPSRedirectInfoPtr> redirects;
   redirects.push_back(DIPSRedirectInfo::CreateForServer(
       first_redirect_url,
@@ -1105,7 +1106,7 @@ using DIPSServiceUkmTest = DIPSServiceTest;
 
 TEST_F(DIPSServiceUkmTest, BothChainBeginAndChainEnd) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
@@ -1167,7 +1168,7 @@ TEST_F(DIPSServiceUkmTest, BothChainBeginAndChainEnd) {
 
 TEST_F(DIPSServiceUkmTest, InitialAndFinalSitesSame_True) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
@@ -1214,7 +1215,7 @@ TEST_F(DIPSServiceUkmTest, InitialAndFinalSitesSame_True) {
 
 TEST_F(DIPSServiceUkmTest, DontReportEmptyChainsAtAll) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
@@ -1235,7 +1236,7 @@ TEST_F(DIPSServiceUkmTest, DontReportEmptyChainsAtAll) {
 
 TEST_F(DIPSServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
@@ -1271,7 +1272,7 @@ TEST_F(DIPSServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
 
 TEST_F(DIPSServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  content::TestBrowserContext profile;
+  TestBrowserContext profile;
   DIPSServiceImpl* service = DIPSServiceImpl::Get(&profile);
 
   UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
@@ -1306,7 +1307,7 @@ TEST_F(DIPSServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
 }
 
 TEST(DIPSCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
-  content::BrowserTaskEnvironment task_environment;
+  BrowserTaskEnvironment task_environment;
 
   base::FilePath user_data_dir;
   base::FilePath db_path;
@@ -1314,10 +1315,10 @@ TEST(DIPSCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
   // First, create a browser context while DIPS is enabled, and confirm a
   // database file is created.
   {
-    content::TestBrowserContext browser_context;
+    TestBrowserContext browser_context;
     db_path = GetDIPSFilePath(&browser_context);
     // Wait for the database to be created.
-    content::BrowserContextImpl::From(&browser_context)
+    BrowserContextImpl::From(&browser_context)
         ->GetDipsService()
         ->storage()
         ->FlushPostedTasksForTesting();
@@ -1328,8 +1329,7 @@ TEST(DIPSCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
 
     // Confirm that WaitForDipsCleanupForTesting() returns even if the file is
     // not deleted.
-    content::BrowserContextImpl::From(&browser_context)
-        ->WaitForDipsCleanupForTesting();
+    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
     ASSERT_TRUE(base::PathExists(db_path));
   }
 
@@ -1340,11 +1340,11 @@ TEST(DIPSCleanupTest, DatabaseFileIsDeletedIfFeatureIsDisabled) {
   // disabled. Confirm the database file is deleted.
   {
     ScopedInitDIPSFeature disable_dips(false);
-    content::TestBrowserContext browser_context(user_data_dir);
-    ASSERT_FALSE(
-        content::BrowserContextImpl::From(&browser_context)->GetDipsService());
-    content::BrowserContextImpl::From(&browser_context)
-        ->WaitForDipsCleanupForTesting();
+    TestBrowserContext browser_context(user_data_dir);
+    ASSERT_FALSE(BrowserContextImpl::From(&browser_context)->GetDipsService());
+    BrowserContextImpl::From(&browser_context)->WaitForDipsCleanupForTesting();
     ASSERT_FALSE(base::PathExists(db_path));
   }
 }
+
+}  // namespace content

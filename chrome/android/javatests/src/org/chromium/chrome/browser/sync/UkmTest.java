@@ -68,6 +68,7 @@ public class UkmTest {
     @SmallTest
     // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
+    // LINT.IfChange(ConsentAddedButNoSyncCheck)
     public void consentAddedButNoSyncCheck() throws Exception {
         // Keep in sync with UkmBrowserTest.ConsentAddedButNoSyncCheck in
         // chrome/browser/metrics/ukm_browsertest.cc.
@@ -88,13 +89,15 @@ public class UkmTest {
         Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
     }
 
+    // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ConsentAddedButNoSyncCheck)
+
     @Test
     @SmallTest
     // TODO(crbug.com/40117796): Enable the corrersponding C++ test and delete this
     // test.
+
+    // LINT.IfChange(SingleSyncSignoutCheck)
     public void singleSyncSignoutCheck() throws Exception {
-        // Keep in sync with UkmBrowserTest.SingleSyncSignoutCheck in
-        // chrome/browser/metrics/ukm_browsertest.cc.
         // Make sure that UKM is disabled when an explicit passphrase is set.
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -115,4 +118,5 @@ public class UkmTest {
         // Client ID should have been reset.
         Assert.assertNotEquals("Client id:", clientId, getUkmClientId(normalTab));
     }
+    // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:SingleSyncSignoutCheck)
 }

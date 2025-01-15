@@ -44,8 +44,28 @@ export function getHtml(this: ComparisonTableListElement) {
             ?disabled="${this.deletePending_ || this.numSelected_ === 0}"
             @click="${this.onDeleteClick_}">
         </cr-icon-button>
+        <cr-icon-button id="more" iron-icon="cr:more-vert"
+            title="$i18n{menuTooltipMore}" aria-label="$i18n{menuTooltipMore}"
+            ?disabled="${this.deletePending_ || this.numSelected_ === 0}"
+            @click="${this.onShowContextMenuClick_}">
+      </cr-icon-button>
       </div>
     </cr-toolbar-selection-overlay>
   </div>
+
+  <cr-lazy-render-lit id="menu"
+      .template="${() => html`
+        <cr-action-menu>
+          <button id="menuOpenAll" class="dropdown-item"
+              @click="${this.onOpenAllClick_}">
+            ${this.getOpenAllString_(this.numSelected_)}
+          </button>
+          <hr>
+          <button id="menuDelete" class="dropdown-item"
+              @click="${this.onDeleteClick_}">
+            $i18n{menuDelete}
+          </button>
+        </cr-action-menu>`}">
+  </cr-lazy-render-lit>
   <!--_html_template_end_-->`;
 }

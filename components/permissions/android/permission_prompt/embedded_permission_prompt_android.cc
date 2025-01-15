@@ -35,17 +35,13 @@ EmbeddedPermissionPromptAndroid::GetPromptDisposition() const {
   return PermissionPromptDisposition::MODAL_DIALOG;
 }
 
-bool EmbeddedPermissionPromptAndroid::ShouldFinalizeRequestAfterDecided()
-    const {
-  return false;
-}
-
 Variant EmbeddedPermissionPromptAndroid::GetEmbeddedPromptVariant() const {
   return prompt_model_->prompt_variant();
 }
 
 void EmbeddedPermissionPromptAndroid::Closing() {
   delegate()->Dismiss();
+  // TODO(crbug.com/388407662): free `PermissionDialogDelegate`
 }
 
 void EmbeddedPermissionPromptAndroid::Accept() {
@@ -60,6 +56,7 @@ void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
 
 void EmbeddedPermissionPromptAndroid::Deny() {
   delegate()->Deny();
+  // TODO(crbug.com/388407662): free `PermissionDialogDelegate`
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
@@ -90,7 +87,7 @@ bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {
 void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
   prompt_model_->CalculateCurrentVariant();
   if (prompt_model_->prompt_variant() == Variant::kPreviouslyGranted) {
-    delegate()->FinalizeCurrentRequests();
+    // TODO(crbug.com/388407662); destroy dialog.
     return;
   }
   // TODO(crbug.com/388407640); update new screen.

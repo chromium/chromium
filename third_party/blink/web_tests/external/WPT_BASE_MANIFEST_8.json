@@ -334692,7 +334692,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "03175344c51141a2d1f54ee62d95c36cd17193fa",
+      "47cdf69c388b770dcc5282c74c50317d807f8ae4",
       []
      ],
      "inheritance-expected.txt": [
@@ -352922,14 +352922,6 @@
       ],
       "path-function-computed-expected.txt": [
        "be136977b717590263a7824e2941905c16aee595",
-       []
-      ],
-      "shape-function-computed.tentative-expected.txt": [
-       "b44fa2f5b54df3e8c9dc34ca3090921ee76a4e94",
-       []
-      ],
-      "shape-function-valid.tentative-expected.txt": [
-       "e9efdd26f528d7d16047ef1ff48c67579dd2a9d5",
        []
       ],
       "xywh-function-computed-expected.txt": [
@@ -424292,7 +424284,7 @@
     },
     "resources": {
      "utils.js": [
-      "a976fc555c5f494f1ba0b6a1aa7590f32ba92536",
+      "5c4cdaa9558f30b07456afdc22fb6913106f30de",
       []
      ],
      "utils_validation.js": [
@@ -491079,7 +491071,7 @@
        ]
       ],
       "clip-path-shape-parsing.html": [
-       "5f610155058e2966b16bde66744ffbdf73369edb",
+       "5a4c7415bb40632989c87ee1fbe51540f94af8e2",
        [
         null,
         {}
@@ -497638,7 +497630,7 @@
        ]
       ],
       "shape-function-computed.tentative.html": [
-       "cd2bd6d531b1701451848ef982a73e60817f0f68",
+       "a87bc2391a882930d9e068e79a2c831b2fad6f53",
        [
         null,
         {}
@@ -497652,7 +497644,7 @@
        ]
       ],
       "shape-function-valid.tentative.html": [
-       "5eef0f0c3d4a6b8c6d884c7f497862830c8e874d",
+       "2372290cb69f8b22b3ab764ff088bc7bb8984125",
        [
         null,
         {}
@@ -543937,7 +543929,7 @@
      ]
     ],
     "automatic-beacon-component-ad.https.html": [
-     "55711c4f08b5332efd1e88a3daa3dae07e46932f",
+     "175736fd8385cd45f4b39600f75e784bb119a027",
      [
       null,
       {
@@ -626845,7 +626837,7 @@
          {}
         ]
        ],
-       "dialog-closedby.tentative.html": [
+       "dialog-closedby.html": [
         "cb72b701a0c602d318b9444b83ab314adfb2fcd7",
         [
          null,
@@ -626973,7 +626965,7 @@
          {}
         ]
        ],
-       "dialog-popover-closedby-complex.tentative.html": [
+       "dialog-popover-closedby-complex.html": [
         "472e0329236f8bef807a3d722fe8b3ef0a603ac0",
         [
          null,
@@ -626983,7 +626975,7 @@
          }
         ]
        ],
-       "dialog-popover-closedby-simple.tentative.html": [
+       "dialog-popover-closedby-simple.html": [
         "f1d78e1ebcda6aacf7a3e586635d793f25d3d1b9",
         [
          null,
@@ -626993,7 +626985,7 @@
          }
         ]
        ],
-       "dialog-requestclose.tentative.html": [
+       "dialog-requestclose.html": [
         "5cbad9c651935e8296d1fad3c94433965b9303db",
         [
          null,
@@ -738127,7 +738119,7 @@
    "webnn": {
     "conformance_tests": {
      "abs.https.any.js": [
-      "ad5ef12c0297660162b0d81ec2fdf8c863df87b4",
+      "38312b3a58142b9b98832bf76a77d0bbdd0d2a11",
       [
        "webnn/conformance_tests/abs.https.any.html?cpu",
        {
@@ -739465,7 +739457,7 @@
       ]
      ],
      "ceil.https.any.js": [
-      "3e8bd3013d024f1915780180e10d5a17c62a6932",
+      "c513ec1b46922c65f1a5ce552df2621bf7c7d056",
       [
        "webnn/conformance_tests/ceil.https.any.html?cpu",
        {
@@ -740560,7 +740552,7 @@
       ]
      ],
      "cos.https.any.js": [
-      "b5d10addb19f2d2774b926272d8696eabd715f86",
+      "eb01e59b8a06f08ed1e594744483161984a5fc7e",
       [
        "webnn/conformance_tests/cos.https.any.html?cpu",
        {
@@ -741874,7 +741866,7 @@
       ]
      ],
      "erf.https.any.js": [
-      "5411c8f73d2211d3631760e6840f5b4b57d8d0f9",
+      "8ace793fa15961069d6017f8bac16a130cbc149a",
       [
        "webnn/conformance_tests/erf.https.any.html?cpu",
        {
@@ -742093,7 +742085,7 @@
       ]
      ],
      "exp.https.any.js": [
-      "f00a9fedb1299dec3c44fc37714f750f9c792b0e",
+      "3f217ca23ec4547b64255eeeaf4c5a6995ca67dd",
       [
        "webnn/conformance_tests/exp.https.any.html?cpu",
        {
@@ -742531,7 +742523,7 @@
       ]
      ],
      "floor.https.any.js": [
-      "138f7874ce3f08ffb6d71b83ed4b09d14b38a1c1",
+      "2407d9766064b877d52e809214b446500997d7f3",
       [
        "webnn/conformance_tests/floor.https.any.html?cpu",
        {
@@ -745159,7 +745151,7 @@
       ]
      ],
      "identity.https.any.js": [
-      "d54741a21c43b249b592f30b37198003880723d8",
+      "05fee94f71ddd1b6feb39996bbc93c7b1d585e59",
       [
        "webnn/conformance_tests/identity.https.any.html?cpu",
        {
@@ -746911,7 +746903,7 @@
       ]
      ],
      "log.https.any.js": [
-      "e31a771d8cabb830b601c43493539b7bcbfab5c4",
+      "35a5c5b0b0fed389d9d5af071923d29796dff5f4",
       [
        "webnn/conformance_tests/log.https.any.html?cpu",
        {
@@ -749320,7 +749312,7 @@
       ]
      ],
      "neg.https.any.js": [
-      "53006267d4c1a261af55f7c5c5bef80d86cbbcba",
+      "6a1968d55633483cebc341698c504cbc1e86bde4",
       [
        "webnn/conformance_tests/neg.https.any.html?cpu",
        {
@@ -751072,7 +751064,7 @@
       ]
      ],
      "reciprocal.https.any.js": [
-      "bbe1ec106c8302b2d2b97665a6a284fc0667cf72",
+      "da3fa341a4be2e478aaeb0cc0c84866d59fda96d",
       [
        "webnn/conformance_tests/reciprocal.https.any.html?cpu",
        {
@@ -755695,7 +755687,7 @@
       ]
      ],
      "sin.https.any.js": [
-      "ff3245d9b95dccdae34fe1bdb773f21220f8e2fc",
+      "48a15271cc13250dabf610b8104b7c75e80043a6",
       [
        "webnn/conformance_tests/sin.https.any.html?cpu",
        {
@@ -757009,7 +757001,7 @@
       ]
      ],
      "sqrt.https.any.js": [
-      "2b8a1b2f1daf91d737d5e7d9a15a3912f91e6422",
+      "4604652b8a439c8893890a8101f32061485852f9",
       [
        "webnn/conformance_tests/sqrt.https.any.html?cpu",
        {
@@ -757666,7 +757658,7 @@
       ]
      ],
      "tan.https.any.js": [
-      "0d509cf23fbcc77c5a7fb3f898b7d6acc762eaa7",
+      "2d09e6f10c6dd0535c5b7a6096cb0e167d2c1cbf",
       [
        "webnn/conformance_tests/tan.https.any.html?cpu",
        {

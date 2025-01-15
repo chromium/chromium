@@ -47,10 +47,9 @@ using WebAppInstallationAcceptanceCallback =
 
 // Callback to show the WebApp installation confirmation bubble in UI.
 // |web_app_info| is the WebAppInstallInfo to be installed.
-// If `screenshot_fetcher` exists and is not std::nullopt, then the detailed
-// install dialog is shown.
+// If `screenshot_fetcher` exists, then the detailed install dialog is shown.
 using WebAppInstallDialogCallback = base::OnceCallback<void(
-    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> screenshot_fetcher,
+    base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;

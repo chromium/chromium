@@ -90,19 +90,20 @@ void ThrottleManager::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::FingerprintingProtectionHost>
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
-  for (auto navigation_handle :
-       render_frame_host->GetPendingCommitCrossDocumentNavigations()) {
-    // TODO(https://crbug.com/347304498): Add `ThrottleManagers` to
-    // `RenderFrames` from creation time once activation is decoupled from
-    // navigations.
-    if (auto* manager = FromNavigationHandle(*navigation_handle)) {
-      manager->receivers_.Bind(render_frame_host, std::move(pending_receiver));
-      return;
-    }
-  }
-
   if (auto* manager = FromPage(render_frame_host->GetPage())) {
     manager->receivers_.Bind(render_frame_host, std::move(pending_receiver));
+  } else {
+    for (auto navigation_handle :
+         render_frame_host->GetPendingCommitCrossDocumentNavigations()) {
+      // TODO(https://crbug.com/347304498): Add `ThrottleManagers` to
+      // `RenderFrames` from creation time once activation is decoupled from
+      // navigations.
+      if ((manager = FromNavigationHandle(*navigation_handle))) {
+        manager->receivers_.Bind(render_frame_host,
+                                 std::move(pending_receiver));
+        return;
+      }
+    }
   }
 }
 

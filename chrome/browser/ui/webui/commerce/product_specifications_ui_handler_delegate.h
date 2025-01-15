@@ -29,6 +29,8 @@ class ProductSpecificationsUIHandlerDelegate
   void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                            bool in_new_tab) override;
 
+  void ShowComparePage(bool in_new_tab) override;
+
  private:
   raw_ptr<content::WebUI> web_ui_;
 };

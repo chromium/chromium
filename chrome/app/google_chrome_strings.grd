@@ -2291,7 +2291,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Select the Chrome profile linked to your Google Account to personalize your glic experience.
         </message>
         <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Text shown in the Profile Picker Glic version below the profiles list container that helps the user to create a new profile and sign in to it." translateable="false">
-          To add a new profile and use it with glic, sign in to Chrome with a different Google Account. <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>Learn how<ph name="END_LINK">&lt;/a&gt;</ph>
+          To add a new profile and use it with glic, sign in to Chrome with a different Google Account. <ph name="BEGIN_LINK">&lt;a id="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
 
         <!-- First Run Experience -->

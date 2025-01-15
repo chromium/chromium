@@ -819,8 +819,11 @@ void BrowserViewLayout::LayoutSidePanelView(
   // Adjust the side panel separator bounds based on the side panel bounds
   // calculated above.
   gfx::Rect side_panel_separator_bounds = side_panel_bounds;
+  // TODO (https://crbug.com/389972209): Adding 1px to the width as a bandaid
+  // fix. This covers a case with subpixeling where a thin line of the
+  // background finds its way to the front.
   side_panel_separator_bounds.set_width(
-      side_panel_separator->GetPreferredSize().width());
+      side_panel_separator->GetPreferredSize().width() + 1);
 
   // If the side panel appears before `contents_container_bounds`, place the
   // separator immediately after the side panel but before the container bounds.

@@ -740,4 +740,9 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/create-target-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'}")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    CreateTargetWindowState,
+    "sanity/create-target-window-state.js",
+    "--screen-info={1600x1200}")
+
 }  // namespace headless

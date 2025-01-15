@@ -14,6 +14,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.StreamUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -24,6 +26,7 @@ import java.io.StringWriter;
  * serializing it again. This class is meant to be used from native code.
  */
 @JNINamespace("data_decoder")
+@NullMarked
 public class JsonSanitizer {
     // Disallow instantiating the class.
     private JsonSanitizer() {}
@@ -180,6 +183,6 @@ public class JsonSanitizer {
     interface Natives {
         void onSuccess(long id, String json);
 
-        void onError(long id, String error);
+        void onError(long id, @Nullable String error);
     }
 }

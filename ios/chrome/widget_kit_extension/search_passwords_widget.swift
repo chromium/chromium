@@ -50,7 +50,7 @@ struct SearchPasswordsWidget: Widget {
 #endif
 
 struct SearchPasswordsWidgetEntryView: View {
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
 
   var body: some View {
     SearchWidgetEntryViewTemplate(

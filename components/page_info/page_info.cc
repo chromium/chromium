@@ -1411,7 +1411,7 @@ void PageInfo::PresentSitePermissions() {
       ContentSetting setting = content_settings->GetContentSetting(
           requester.GetURL(), site_url_, permission_info.type, &info);
 
-      if (IsGrantedByRelatedWebsiteSets(type, info.metadata) &&
+      if (info.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;
@@ -1475,7 +1475,7 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
       if (setting.primary_pattern.Matches(site_url_)) {
         continue;  // Skip first-party settings.
       }
-      if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+      if (setting.metadata.decided_by_related_website_sets() &&
           !base::FeatureList::IsEnabled(
               permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
         continue;

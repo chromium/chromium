@@ -29,6 +29,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -704,6 +705,8 @@ class CookieControlsInteractiveUi3pcdTest
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, CreateException) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   SetBlockAll3pcToggle(std::get<0>(GetParam()));
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kIncognito);
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -714,6 +717,10 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, CreateException) {
       CheckFeedbackButtonVisible(testing::get<1>(GetParam())),
       EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
       CheckTrackingProtectionAllowedState());
+
+  // Reset browser profile before teardown to avoid profile_destroyer errors.
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kRegular);
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUi3pcdTest, RemoveException) {

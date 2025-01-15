@@ -688,6 +688,9 @@
   <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB" desc="The label for the comparison table list dropdown menu item for opening a comparison table in a new tab.">
     Open in new tab
   </message>
+  <message name="IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT" desc="The label for the comparison table list dropdown menu item for opening comparison table(s) in new tab(s).">
+    Open all (<ph name="ITEMS">$1<ex>3</ex></ph>)
+  </message>
   <message name="IDS_COMPARE_CONTEXT_MENU_RENAME" desc="The label for the comparison table list dropdown menu item for renaming a comparison table.">
     Rename
   </message>
@@ -696,6 +699,9 @@
   </message>
   <message name="IDS_COMPARE_NUM_ITEMS_SELECTED" desc="The number of selected items in the comparison table list when editing it.">
     <ph name="ITEMS">$1<ex>3</ex></ph> selected
+  </message>
+  <message name="IDS_COMPARE_EDIT_MORE" desc="The tooltip for the menu button in the comparison table list bulk edit mode that shows more actions the user can take on selected comparison tables.">
+    More
   </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">

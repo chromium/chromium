@@ -22,17 +22,15 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "chrome/updater/policy/win/group_policy_manager.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
 
 namespace updater {
@@ -781,28 +779,24 @@ TEST(PolicyService, CreateManagers) {
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy,
-                     base::MakeRefCounted<GroupPolicyManager>(
-                         CreateExternalConstants()->IsMachineManaged()));
-  EXPECT_EQ(managers.size(), size_t{4});
-  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "Group Policy");
-  EXPECT_EQ(managers[2]->source(), "Device Management");
-  EXPECT_EQ(managers[3]->source(), "Default");
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+  EXPECT_EQ(managers.managers().size(), size_t{4});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  EXPECT_EQ(managers.managers()[1]->source(), "Default");
+  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers.managers()[3]->source(), "Group Policy");
 
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
                         Wow6432(KEY_WRITE));
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  managers = CreateManagers(CreateExternalConstants(), dm_policy,
-                            base::MakeRefCounted<GroupPolicyManager>(
-                                CreateExternalConstants()->IsMachineManaged()));
-  EXPECT_EQ(managers.size(), size_t{4});
-  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "Device Management");
-  EXPECT_EQ(managers[2]->source(), "Group Policy");
-  EXPECT_EQ(managers[3]->source(), "Default");
+  managers.ResetDeviceManagementManager(dm_policy);
+  EXPECT_EQ(managers.managers().size(), size_t{4});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  EXPECT_EQ(managers.managers()[1]->source(), "Default");
+  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers.managers()[3]->source(), "Group Policy");
 }
 #elif BUILDFLAG(IS_MAC)
 TEST(PolicyService, CreateManagers) {
@@ -810,13 +804,10 @@ TEST(PolicyService, CreateManagers) {
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy, {});
-  EXPECT_EQ(managers.size(), size_t{4});
-  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "Device Management");
-  EXPECT_EQ(managers[2]->source(), "Managed Preferences");
-  EXPECT_EQ(managers[3]->source(), "Default");
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+  EXPECT_EQ(managers.managers().size(), size_t{4});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
 }
 #else
 TEST(PolicyService, CreateManagers) {
@@ -824,12 +815,12 @@ TEST(PolicyService, CreateManagers) {
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy, {});
-  EXPECT_EQ(managers.size(), size_t{3});
-  EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "Device Management");
-  EXPECT_EQ(managers[2]->source(), "Default");
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+  EXPECT_EQ(managers.managers().size(), size_t{3});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  EXPECT_EQ(managers.managers()[1]->source(), "Default");
+  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
 }
 #endif
 

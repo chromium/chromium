@@ -5,13 +5,48 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/net/nss_service.h"
-#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
+#include "net/cert/nss_cert_database.h"
+#endif
 
 namespace net {
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+void GotNSSCertDatabaseOnIOThread(
+    base::OnceCallback<void(crypto::ScopedPK11Slot)> callback,
+    NSSCertDatabase* db) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  std::move(callback).Run(db->GetPublicSlot());
+}
+
+void NssSlotGetter(NssCertDatabaseGetter nss_cert_db_getter,
+                   base::OnceCallback<void(crypto::ScopedPK11Slot)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&GotNSSCertDatabaseOnIOThread, std::move(callback)));
+
+  net::NSSCertDatabase* cert_db =
+      std::move(nss_cert_db_getter).Run(std::move(split_callback.first));
+  // If the NSS database was already available, |cert_db| is non-null and
+  // |did_get_cert_db_callback| has not been called. Call it explicitly.
+  if (cert_db) {
+    std::move(split_callback.second).Run(cert_db);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 ServerCertificateDatabaseService*
 ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
@@ -55,8 +90,11 @@ ServerCertificateDatabaseServiceFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ServerCertificateDatabaseService>(
       profile->GetPath(), profile->GetPrefs(),
-      NssServiceFactory::GetForContext(profile)
-          ->CreateNSSCertDatabaseGetterForIOThread());
+      base::BindPostTask(
+          content::GetIOThreadTaskRunner({}),
+          base::BindOnce(&NssSlotGetter,
+                         NssServiceFactory::GetForContext(profile)
+                             ->CreateNSSCertDatabaseGetterForIOThread())));
 #else
   return std::make_unique<ServerCertificateDatabaseService>(profile->GetPath());
 #endif

@@ -101,14 +101,13 @@ bool ExternalPopupMenu::ShowInternal() {
   // recreate the actual external popup every time.
   Reset();
 
-  int32_t item_height;
   double font_size;
   int32_t selected_item;
   Vector<mojom::blink::MenuItemPtr> menu_items;
   bool right_aligned;
   bool allow_multiple_selection;
-  GetPopupMenuInfo(*owner_element_, &item_height, &font_size, &selected_item,
-                   &menu_items, &right_aligned, &allow_multiple_selection);
+  GetPopupMenuInfo(*owner_element_, &font_size, &selected_item, &menu_items,
+                   &right_aligned, &allow_multiple_selection);
   if (menu_items.empty())
     return false;
 
@@ -138,8 +137,8 @@ bool ExternalPopupMenu::ShowInternal() {
     local_frame_->GetLocalFrameHostRemote().ShowPopupMenu(
         receiver_.BindNewPipeAndPassRemote(execution_context->GetTaskRunner(
             TaskType::kInternalUserInteraction)),
-        bounds, item_height, font_size, selected_item, std::move(menu_items),
-        right_aligned, allow_multiple_selection);
+        bounds, font_size, selected_item, std::move(menu_items), right_aligned,
+        allow_multiple_selection);
     return true;
   }
 
@@ -264,7 +263,6 @@ void ExternalPopupMenu::DidCancel() {
 
 void ExternalPopupMenu::GetPopupMenuInfo(
     HTMLSelectElement& owner_element,
-    int32_t* item_height,
     double* font_size,
     int32_t* selected_item,
     Vector<mojom::blink::MenuItemPtr>* menu_items,
@@ -310,11 +308,8 @@ void ExternalPopupMenu::GetPopupMenuInfo(
   const ComputedStyle& menu_style = owner_element.GetComputedStyle()
                                         ? *owner_element.GetComputedStyle()
                                         : *owner_element.EnsureComputedStyle();
-  const SimpleFontData* font_data = menu_style.GetFont().PrimaryFont();
-  DCHECK(font_data);
   // These coordinates need to be in CSS pixels.
   float dpr = GetDprForSizeAdjustment(owner_element);
-  *item_height = font_data ? font_data->GetFontMetrics().Height() / dpr : 0;
   *font_size = static_cast<int>(
       menu_style.GetFont().GetFontDescription().ComputedSize() / dpr);
   *selected_item = ToExternalPopupMenuItemIndex(

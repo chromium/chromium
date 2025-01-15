@@ -572,12 +572,16 @@ inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
 // Policy manager `source()` constants.
-inline constexpr char kSourceGroupPolicyManager[] = "Group Policy";
 inline constexpr char kSourceDMPolicyManager[] = "Device Management";
-inline constexpr char kSourceManagedPreferencePolicyManager[] =
-    "Managed Preferences";
 inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
 inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kSourcePlatformPolicyManager[] = "Group Policy";
+#elif BUILDFLAG(IS_MAC)
+inline constexpr char kSourcePlatformPolicyManager[] = "Managed Preferences";
+#else
+inline constexpr char kSourcePlatformPolicyManager[] = "not-defined";
+#endif
 
 // Serializes updater installs. Defined in the .cc file so that the updater
 // branding constants don't leak in this public header.

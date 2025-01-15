@@ -50,6 +50,8 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "url/origin.h"
 
+namespace content {
+
 namespace {
 
 // Controls whether the database requests are executed on a foreground sequence.
@@ -133,20 +135,24 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
   for (const auto& site : sites) {
     for (const auto& [scheme, port] :
          {std::make_pair("http", 80), std::make_pair("https", 443)}) {
-      auto key = net::CookiePartitionKey::FromStorageKeyComponents(
-          net::SchemefulSite(
-              url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
-          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
-          /*nonce=*/std::nullopt);
-      if (key.has_value()) {
-        keys.push_back(*key);
+      for (auto ancestorChainBit :
+           {net::CookiePartitionKey::AncestorChainBit::kSameSite,
+            net::CookiePartitionKey::AncestorChainBit::kCrossSite}) {
+        auto key = net::CookiePartitionKey::FromStorageKeyComponents(
+            net::SchemefulSite(
+                url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
+            ancestorChainBit,
+            /*nonce=*/std::nullopt);
+        if (key.has_value()) {
+          keys.push_back(*key);
+        }
       }
     }
   }
   return net::CookiePartitionKeyCollection(keys);
 }
 
-class StateClearer : public content::BrowsingDataRemover::Observer {
+class StateClearer : public BrowsingDataRemover::Observer {
  public:
   StateClearer(const StateClearer&) = delete;
   StateClearer& operator=(const StateClearer&) = delete;
@@ -161,17 +167,17 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
   // eligible don't have user interaction time values. So even though 'remover'
   // will only clear the storage timestamps, that's sufficient to delete the
   // entire row.
-  static void DeleteState(content::BrowsingDataRemover* remover,
+  static void DeleteState(BrowsingDataRemover* remover,
                           std::vector<std::string> sites_to_clear,
-                          content::BrowsingDataRemover::DataType remove_mask,
+                          BrowsingDataRemover::DataType remove_mask,
                           base::OnceClosure callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     // This filter will match unpartitioned cookies and storage, as well as
     // storage (but not cookies) that is partitioned under tracking domains.
-    std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
-        content::BrowsingDataFilterBuilder::Create(
-            content::BrowsingDataFilterBuilder::Mode::kDelete);
+    std::unique_ptr<BrowsingDataFilterBuilder> filter =
+        BrowsingDataFilterBuilder::Create(
+            BrowsingDataFilterBuilder::Mode::kDelete);
     for (const auto& site : sites_to_clear) {
       filter->AddRegisterableDomain(site);
     }
@@ -180,9 +186,9 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
         net::CookiePartitionKeyCollection());
 
     // This filter will match cookies partitioned under tracking domains.
-    std::unique_ptr<content::BrowsingDataFilterBuilder>
-        partitioned_cookie_filter = content::BrowsingDataFilterBuilder::Create(
-            content::BrowsingDataFilterBuilder::Mode::kPreserve);
+    std::unique_ptr<BrowsingDataFilterBuilder> partitioned_cookie_filter =
+        BrowsingDataFilterBuilder::Create(
+            BrowsingDataFilterBuilder::Mode::kPreserve);
     partitioned_cookie_filter->SetCookiePartitionKeyCollection(
         CookiePartitionKeyCollectionForSites(sites_to_clear));
     partitioned_cookie_filter->SetPartitionedCookiesOnly(true);
@@ -194,26 +200,25 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
         new StateClearer(remover, /*callback_count=*/2, std::move(callback));
 
     // Don't delete Privacy Sandbox data - see crbug.com/41488981.
-    remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    remove_mask &= ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
     remover->RemoveWithFilterAndReply(
         base::Time::Min(), base::Time::Max(),
-        remove_mask |
-            content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+        remove_mask | BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+        BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+            BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
         std::move(filter), clearer);
     remover->RemoveWithFilterAndReply(
         base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+        BrowsingDataRemover::DATA_TYPE_COOKIES,
+        BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+            BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
         std::move(partitioned_cookie_filter), clearer);
   }
 
  private:
   // StateClearer will run `callback` and delete itself after
   // OnBrowsingDataRemoverDone() is called `callback_count` times.
-  StateClearer(content::BrowsingDataRemover* remover,
+  StateClearer(BrowsingDataRemover* remover,
                int callback_count,
                base::OnceClosure callback)
       : remover_(remover),
@@ -225,7 +230,7 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
 
   // BrowsingDataRemover::Observer overrides:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
-    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
     if (++callback_count_ == expected_callback_count_) {
       UmaHistogramDeletionLatency(deletion_start_);
       std::move(callback_).Run();
@@ -233,14 +238,14 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
     }
   }
 
-  raw_ptr<content::BrowsingDataRemover> remover_;
+  raw_ptr<BrowsingDataRemover> remover_;
   const base::Time deletion_start_;
   const int expected_callback_count_;
   int callback_count_ = 0;
   base::OnceClosure callback_;
 };
 
-class DipsTimerStorage : public dips::PersistentRepeatingTimer::Storage {
+class DipsTimerStorage : public PersistentRepeatingTimer::Storage {
  public:
   explicit DipsTimerStorage(base::SequenceBound<DIPSStorage>* dips_storage);
   ~DipsTimerStorage() override;
@@ -270,12 +275,12 @@ DipsTimerStorage::~DipsTimerStorage() = default;
 }  // namespace
 
 /* static */
-DIPSService* DIPSService::Get(content::BrowserContext* context) {
+DIPSService* DIPSService::Get(BrowserContext* context) {
   return DIPSServiceImpl::Get(context);
 }
 
-DIPSServiceImpl::DIPSServiceImpl(base::PassKey<content::BrowserContextImpl>,
-                                 content::BrowserContext* context)
+DIPSServiceImpl::DIPSServiceImpl(base::PassKey<BrowserContextImpl>,
+                                 BrowserContext* context)
     : browser_context_(context) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
@@ -306,11 +311,11 @@ DIPSServiceImpl::DIPSServiceImpl(base::PassKey<content::BrowserContextImpl>,
   repeating_timer_->Start();
 }
 
-std::unique_ptr<dips::PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
+std::unique_ptr<PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
   CHECK(!storage_.is_null());
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
-  return std::make_unique<dips::PersistentRepeatingTimer>(
+  return std::make_unique<PersistentRepeatingTimer>(
       std::make_unique<DipsTimerStorage>(&storage_),
       features::kDIPSTimerDelay.Get(),
       base::BindRepeating(&DIPSServiceImpl::OnTimerFired,
@@ -330,8 +335,8 @@ DIPSServiceImpl::~DIPSServiceImpl() {
 }
 
 /* static */
-DIPSServiceImpl* DIPSServiceImpl::Get(content::BrowserContext* context) {
-  return content::BrowserContextImpl::From(context)->GetDipsService();
+DIPSServiceImpl* DIPSServiceImpl::Get(BrowserContext* context) {
+  return BrowserContextImpl::From(context)->GetDipsService();
 }
 
 scoped_refptr<base::SequencedTaskRunner> DIPSServiceImpl::CreateTaskRunner() {
@@ -479,19 +484,19 @@ void DIPSServiceImpl::RecordBounce(
     // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
     bool would_be_cleared = false;
     switch (features::kDIPSTriggeringAction.Get()) {
-      case content::DIPSTriggeringAction::kNone: {
+      case DIPSTriggeringAction::kNone: {
         would_be_cleared = false;
         break;
       }
-      case content::DIPSTriggeringAction::kStorage: {
+      case DIPSTriggeringAction::kStorage: {
         would_be_cleared = false;
         break;
       }
-      case content::DIPSTriggeringAction::kBounce: {
+      case DIPSTriggeringAction::kBounce: {
         would_be_cleared = true;
         break;
       }
-      case content::DIPSTriggeringAction::kStatefulBounce: {
+      case DIPSTriggeringAction::kStatefulBounce: {
         would_be_cleared = stateful;
         break;
       }
@@ -683,10 +688,9 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
 
 void DIPSServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
                                                 base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  uint64_t remove_mask =
-      content::GetContentClient()->browser()->GetDipsRemoveMask();
+  uint64_t remove_mask = GetContentClient()->browser()->GetDipsRemoveMask();
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
                             std::move(sites), remove_mask, std::move(callback));
@@ -707,8 +711,10 @@ void DIPSServiceImpl::RecordBrowserSignIn(std::string_view domain) {
                 base::Time::Now(), GetCookieMode());
 }
 
-void DIPSServiceImpl::NotifyStatefulBounce(content::WebContents* web_contents) {
+void DIPSServiceImpl::NotifyStatefulBounce(WebContents* web_contents) {
   for (auto& observer : observers_) {
     observer.OnStatefulBounce(web_contents);
   }
 }
+
+}  // namespace content

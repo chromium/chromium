@@ -101,6 +101,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleCloseProfileStatistics(const base::Value::List& args);
   void HandleSetProfileName(const base::Value::List& args);
   void HandleUpdateProfileOrder(const base::Value::List& args);
+  void HandleOnLearnMoreClicked(const base::Value::List& args);
 
   void HandleSelectNewAccount(const base::Value::List& args);
   void HandleGetNewProfileSuggestedThemeInfo(const base::Value::List& args);

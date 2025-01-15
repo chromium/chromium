@@ -37,9 +37,6 @@ class EmbeddedPermissionPromptFlowModel {
   // Prompt views shown after the user clicks on the embedded permission prompt.
   // The values represent the priority of each variant, higher number means
   // higher priority.
-  //
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: EmbeddedPromptVariant
   enum class Variant {
     // Default when conditions are not met to show any of the permission views.
     kUninitialized = 0,

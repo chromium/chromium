@@ -60,11 +60,12 @@ namespace {
 //     }
 //   ]
 // }
-void AddMSAuthHeadersFromResponse(net::HttpRequestHeaders& auth_headers,
-                                  NSDictionary* headers_response,
-                                  NSString* headers_key) {
+void AddMSAuthHeadersFromSSOCookiesResponse(
+    net::HttpRequestHeaders& auth_headers,
+    NSDictionary* sso_cookies_response,
+    NSString* headers_key) {
   static NSString* const kHeader(@"header");
-  NSArray* headers = headers_response[headers_key];
+  NSArray* headers = sso_cookies_response[headers_key];
   auto headers_key_str = base::SysNSStringToUTF8(headers_key);
 
   for (NSDictionary* header in headers) {
@@ -175,29 +176,61 @@ void AddMSAuthHeadersFromResponse(net::HttpRequestHeaders& auth_headers,
 // HttpRequestHeaders from `authorization`.
 - (void)authorizationController:(ASAuthorizationController*)controller
     didCompleteWithAuthorization:(ASAuthorization*)authorization {
+  static NSString* const kSSOCookies(@"sso_cookies");
   static NSString* const kPrtHeaders(@"prt_headers");
   static NSString* const kDeviceHeaders(@"device_headers");
 
   VLOG_POLICY(2, EXTENSIBLE_SSO)
       << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
-  NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
-
+  // An example response headers:
+  // {
+  //   "sso_cookies": "JSON formated object"
+  //   "operation": "get_sso_cookies",
+  //   "broker_version": "3.3.23",
+  //   "preferred_auth_config": "preferredAuthNotConfigured",
+  //   "success": "1",
+  //   "wpj_status": "notJoined",
+  //   "operation_response_type": "operation_get_sso_cookies_response",
+  //   "request_received_timestamp": "1736954944.2245578766",
+  //   "extraDeviceInfo": "{}",
+  //   "sso_extension_mode": "full",
+  //   "device_mode": "personal",
+  //   "response_gen_timestamp": "1736954944.7778768539",
+  //   "platform_sso_status": "platformSSONotEnabled"
+  // }
+  NSDictionary* all_headers = credential.authenticatedResponse.allHeaderFields;
   // This is for logging purposes only.
   {
-    NSString* headers_as_json_str = [[NSString alloc]
-        initWithData:[NSJSONSerialization dataWithJSONObject:headers
+    NSString* all_headers_json = [[NSString alloc]
+        initWithData:[NSJSONSerialization dataWithJSONObject:all_headers
                                                      options:0
                                                        error:nil]
             encoding:NSUTF8StringEncoding];
-    VLOG_POLICY(2, EXTENSIBLE_SSO)
-        << "[ExtensibleEnterpriseSSO] Headers: "
-        << base::SysNSStringToUTF8(headers_as_json_str);
+    VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] Headers: "
+                                   << base::SysNSStringToUTF8(all_headers_json);
   }
+  NSString* sso_cookies_json = all_headers[kSSOCookies];
+  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] SSO Cookies: "
+                                 << base::SysNSStringToUTF8(sso_cookies_json);
 
   net::HttpRequestHeaders auth_headers;
-  AddMSAuthHeadersFromResponse(auth_headers, headers, kPrtHeaders);
-  AddMSAuthHeadersFromResponse(auth_headers, headers, kDeviceHeaders);
+  NSDictionary* sso_cookies = [NSJSONSerialization
+      JSONObjectWithData:[sso_cookies_json
+                             dataUsingEncoding:NSUTF8StringEncoding]
+                 options:0
+                   error:nil];
+  if (!sso_cookies) {
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Failed to deserialize sso_cookies";
+    std::move(_callback).Run(std::move(auth_headers));
+    return;
+  }
+
+  AddMSAuthHeadersFromSSOCookiesResponse(auth_headers, sso_cookies,
+                                         kPrtHeaders);
+  AddMSAuthHeadersFromSSOCookiesResponse(auth_headers, sso_cookies,
+                                         kDeviceHeaders);
 
   std::move(_callback).Run(std::move(auth_headers));
 }

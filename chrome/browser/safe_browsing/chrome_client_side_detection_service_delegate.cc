@@ -44,7 +44,9 @@ ChromeClientSideDetectionServiceDelegate::
     : profile_(profile) {}
 
 ChromeClientSideDetectionServiceDelegate::
-    ~ChromeClientSideDetectionServiceDelegate() = default;
+    ~ChromeClientSideDetectionServiceDelegate() {
+  StopListeningToOnDeviceModelUpdate();
+}
 
 PrefService* ChromeClientSideDetectionServiceDelegate::GetPrefs() {
   if (profile_) {

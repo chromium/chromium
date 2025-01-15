@@ -171,9 +171,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 // Tests that user demographics are synced, recorded by UKM, and logged in
 // histograms.
-//
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/ukm_browsertest.cc with features enabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataEnabled_ukmBrowsertest)
 - (void)testUKMDemographicsReportingWithFeatureEnabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -189,12 +187,11 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                                      gender:kTestGender],
                  @"The report should contain the specified user demographics");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are neither recorded by UKM nor logged in
 // histograms when the user is signed-in and history sync is on.
-//
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataDisabled_ukmBrowsertest)
 - (void)testUKMDemographicsReportingWithFeatureDisabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -211,13 +208,12 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertFalse([MetricsAppInterface UKMReportHasUserDemographics],
                   @"The report should not contain user demographics.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are synced, recorded by UMA, and logged in
 // histograms.
 //
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
-// with features enabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataEnabled_msudBrowsertest)
 - (void)testUMADemographicsReportingWithFeatureEnabled {
   // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
@@ -240,13 +236,12 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                    forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents");
 }
+// LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 // Tests that user demographics are neither recorded by UMA nor logged in
 // histograms when the user is signed-in and history sync is on.
 //
-// Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
-// //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
-// with features disabled.
+// LINT.IfChange(AddSyncedUserBirthYearAndGenderToProtoDataDisabled_msudBrowsertest)
 - (void)testUMADemographicsReportingWithFeatureDisabled {
   // See `appConfigurationForTestCase` for feature set-up.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
@@ -260,5 +255,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
                                   forHistogram:@"UMA.UserDemographics.Status"],
                 @"Unexpected histogram contents.");
 }
+// LINT.ThenChange(/chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc:AddSyncedUserBirthYearAndGenderToProtoData)
 
 @end

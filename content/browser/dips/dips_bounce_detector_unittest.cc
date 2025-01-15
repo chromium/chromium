@@ -42,6 +42,8 @@ using testing::IsEmpty;
 using testing::Pair;
 using testing::SizeIs;
 
+namespace content {
+
 // Encodes data about a bounce (the url, time of bounce, and
 // whether it's stateful) for use when testing that the bounce is
 // recorded by the DIPSBounceDetector.
@@ -1723,3 +1725,5 @@ TEST(
   EXPECT_EQ(server_redirects[0]->url.url, "http://a.test/server-redirect/");
   EXPECT_EQ(server_redirects[0]->redirect_type, DIPSRedirectType::kServer);
 }
+
+}  // namespace content

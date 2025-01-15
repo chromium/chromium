@@ -52,7 +52,7 @@ struct DinoGameWidget: Widget {
 struct DinoGameWidgetEntryView: View {
   let background = "widget_dino_background"
   let backgroundPlaceholder = "widget_dino_background_placeholder"
-  var entry: Provider.Entry
+  var entry: ConfigureWidgetEntry
   @Environment(\.redactionReasons) var redactionReasons
   var body: some View {
     // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat

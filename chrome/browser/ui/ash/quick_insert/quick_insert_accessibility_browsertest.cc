@@ -743,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("Open title2");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
-  sm_.ExpectSpeechPattern("2 of 3");
+  sm_.ExpectSpeechPattern("3 of 3");
   sm_.ExpectSpeechPattern("List end");
 
   sm_.Call([search_field_view, item3]() {
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("title3");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("List item");
-  sm_.ExpectSpeechPattern("3 of 3");
+  sm_.ExpectSpeechPattern("2 of 3");
 
   sm_.Replay();
 }

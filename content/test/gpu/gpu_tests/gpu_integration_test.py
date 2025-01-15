@@ -505,9 +505,7 @@ class GpuIntegrationTest(
         cls._EnsureScreenOn()
         cls._CheckBrowserVersion()
         cls._VerifyBrowserFeaturesMatchExpectedValues()
-        # TODO(crbug.com/376498163): Re-enable this once the impact on Windows
-        # builds has been reduced.
-        # cls._RetrieveAboutGpu()
+        cls._RetrieveAboutGpu()
         return
       except Exception as e:  # pylint: disable=broad-except
         last_exception = e
@@ -866,9 +864,7 @@ class GpuIntegrationTest(
       self._HandlePass(test_name, expected_crashes, expected_results)
     finally:
       self.additionalTags[TEST_WAS_SLOW] = json.dumps(self._TestWasSlow())
-      # TODO(crbug.com/376498163): Re-enable this once the impact on Windows
-      # builds has been reduced.
-      # self._ReportAboutGpu(test_name)
+      self._ReportAboutGpu(test_name)
       self._OnAfterTest(args)
 
   def _OnAfterTest(self, args: ct.TestArgs) -> None:
@@ -894,20 +890,21 @@ class GpuIntegrationTest(
     cls = self.__class__
     if not cls._about_gpu_content:
       return
-    # Replacement is necessary to not create an invalid path on Windows.
-    timestamp = datetime.datetime.now().isoformat().replace(':', '_')
+
     if cls._test_that_started_browser is None:
       cls._test_that_started_browser = test_name
+      # Replacement is necessary to not create an invalid path on Windows.
+      timestamp = datetime.datetime.now().isoformat().replace(':', '_')
       self.artifacts.CreateArtifact('about_gpu',
                                     f'about_gpu_{timestamp}.txt',
                                     cls._about_gpu_content,
                                     write_as_text=True)
     else:
-      self.artifacts.CreateArtifact(
-          'about_gpu',
-          f'about_gpu_{timestamp}.txt',
-          f'See artifacts for {cls._test_that_started_browser}',
-          write_as_text=True)
+      # We use an in-memory artifact since this is going to be reported in
+      # in almost every test and large numbers of files negatively impact
+      # Swarming task cleanup, particularly on Windows.
+      self.artifacts.CreateInMemoryTextArtifact(
+          'about_gpu', f'See artifacts for {cls._test_that_started_browser}')
     # pylint: enable=protected-access
 
   def _HandleExpectedFailureOrFlake(self, test_name: str,

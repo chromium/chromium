@@ -57,8 +57,7 @@ class ServerCertificateDatabaseService : public KeyedService {
   explicit ServerCertificateDatabaseService(
       base::FilePath profile_path,
       PrefService* prefs,
-      ServerCertificateDatabaseNSSMigrator::NssCertDatabaseGetter
-          nss_cert_db_getter);
+      ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter);
 #else
   explicit ServerCertificateDatabaseService(base::FilePath profile_path);
 #endif
@@ -116,8 +115,7 @@ class ServerCertificateDatabaseService : public KeyedService {
   base::SequenceBound<net::ServerCertificateDatabase> server_cert_database_;
 #if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<PrefService> prefs_;
-  ServerCertificateDatabaseNSSMigrator::NssCertDatabaseGetter
-      nss_cert_db_getter_;
+  ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter_;
   std::unique_ptr<ServerCertificateDatabaseNSSMigrator> nss_migrator_;
   std::vector<GetCertificatesCallback> get_certificates_pending_migration_;
 #endif

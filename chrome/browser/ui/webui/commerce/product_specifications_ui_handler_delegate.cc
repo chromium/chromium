@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -59,6 +60,30 @@ void ProductSpecificationsUIHandlerDelegate::
       return;
     }
     web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                          /*extra_headers=*/std::string());
+  }
+}
+
+void ProductSpecificationsUIHandlerDelegate::ShowComparePage(bool in_new_tab) {
+  const auto compare_url = GURL(commerce::kChromeUICompareUrl);
+  auto* browser =
+      chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
+  if (!browser) {
+    return;
+  }
+  if (in_new_tab) {
+    content::OpenURLParams params(compare_url, content::Referrer(),
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  ui::PAGE_TRANSITION_LINK, false);
+    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  } else {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return;
+    }
+    web_contents->GetController().LoadURL(compare_url, content::Referrer(),
                                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                           /*extra_headers=*/std::string());
   }

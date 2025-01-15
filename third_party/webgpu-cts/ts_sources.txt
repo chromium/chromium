@@ -181,6 +181,7 @@ src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
 src/webgpu/api/operation/compute_pipeline/overrides.spec.ts
 src/webgpu/api/operation/device/all_limits_and_features.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
+src/webgpu/api/operation/limits/max_combined_limits.spec.ts
 src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
 src/webgpu/api/operation/memory_sync/buffer/multiple_buffers.spec.ts

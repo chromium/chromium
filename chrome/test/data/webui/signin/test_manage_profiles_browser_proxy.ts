@@ -13,14 +13,26 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'initializeMainView', 'launchGuestProfile',
-      'openManageProfileSettingsSubPage', 'launchSelectedProfile',
-      'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
-      'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'closeProfileStatistics', 'selectNewAccount', 'continueWithoutAccount',
-      'setProfileName', 'recordSignInPromoImpression', 'getAvailableIcons',
-      'getSwitchProfile', 'confirmProfileSwitch', 'cancelProfileSwitch',
+      'initializeMainView',
+      'launchGuestProfile',
+      'openManageProfileSettingsSubPage',
+      'launchSelectedProfile',
+      'askOnStartupChanged',
+      'getNewProfileSuggestedThemeInfo',
+      'getProfileThemeInfo',
+      'removeProfile',
+      'getProfileStatistics',
+      'closeProfileStatistics',
+      'selectNewAccount',
+      'continueWithoutAccount',
+      'setProfileName',
+      'recordSignInPromoImpression',
+      'getAvailableIcons',
+      'getSwitchProfile',
+      'confirmProfileSwitch',
+      'cancelProfileSwitch',
       'updateProfileOrder',
+      'onLearnMoreClicked',
     ]);
 
     this.profileThemeInfo = {
@@ -158,5 +170,9 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   updateProfileOrder(fromIndex: number, toIndex: number) {
     this.methodCalled('updateProfileOrder', [fromIndex, toIndex]);
+  }
+
+  onLearnMoreClicked(): void {
+    this.methodCalled('onLearnMoreClicked');
   }
 }

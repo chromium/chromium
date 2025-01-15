@@ -199,4 +199,8 @@ BASE_FEATURE(kRemoveCoreSiteInstance,
              "RemoveCoreSiteInstance",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUserScriptUserExtensionToggle,
+             "UserScriptUserExtensionToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

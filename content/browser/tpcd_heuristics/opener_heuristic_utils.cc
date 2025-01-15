@@ -6,9 +6,13 @@
 
 #include "url/gurl.h"
 
+namespace content {
+
 PopupProvider GetPopupProvider(const GURL& popup_url) {
   if (popup_url.DomainIs("google.com")) {
     return PopupProvider::kGoogle;
   }
   return PopupProvider::kUnknown;
 }
+
+}  // namespace content

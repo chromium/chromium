@@ -749,7 +749,6 @@ class ShowPopupMenuInterceptor
   void ShowPopupMenu(
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int32_t item_height,
       double font_size,
       int32_t selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -757,8 +756,8 @@ class ShowPopupMenuInterceptor
       bool allow_multiple_selection) override {
     CHECK(GetForwardingInterface());
     GetForwardingInterface()->ShowPopupMenu(
-        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, item_height,
-        font_size, selected_item, std::move(menu_items), right_aligned,
+        receiver_.BindNewPipeAndPassRemote(), overriden_bounds_, font_size,
+        selected_item, std::move(menu_items), right_aligned,
         allow_multiple_selection);
   }
 

@@ -17,10 +17,13 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using internal::DIPSDatabaseMigrator;
 using testing::AssertionFailure;
 using testing::AssertionResult;
 using testing::AssertionSuccess;
+
+namespace content {
+
+using internal::DIPSDatabaseMigrator;
 
 class DIPSDatabaseMigrationTest : public testing::Test {
  protected:
@@ -609,3 +612,5 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV7ToV8) {
                                      "is_authentication_interaction");
   }
 }
+
+}  // namespace content

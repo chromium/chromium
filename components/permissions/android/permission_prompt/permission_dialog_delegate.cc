@@ -98,16 +98,16 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       ConvertUTF16ToJavaString(env, annotatedMessageText.text),
       base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
       negativeButtonText, positiveEphemeralButtonText,
-      showPositiveNonEphemeralAsFirstButton,
-      static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant())));
+      showPositiveNonEphemeralAsFirstButton));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(
     content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Send the Java delegate to the Java PermissionDialogController for display.
-  // When the Java delegate is no longer needed it will in turn reset the native
-  // java delegate (PermissionDialogJavaDelegate).
+  // The controller takes over lifetime management; when the Java delegate is no
+  // longer needed it will in turn free the native delegate
+  // (PermissionDialogDelegate).
   Java_PermissionDialogController_createDialog(env, j_delegate_);
 
   if (permission_prompt_->ShouldUseRequestingOriginFavicon()) {
@@ -158,37 +158,29 @@ void PermissionDialogJavaDelegate::DismissDialog() {
   Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
 }
 
-void PermissionDialogJavaDelegate::UpdateDialogWithNewScreenVariant() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PermissionDialogController_updateDialogWithNewScreenVariant(
-      env, j_delegate_,
-      static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant()));
-}
-
 // static
-std::unique_ptr<PermissionDialogDelegate> PermissionDialogDelegate::Create(
+void PermissionDialogDelegate::Create(
     content::WebContents* web_contents,
     PermissionPromptAndroid* permission_prompt) {
   CHECK(web_contents);
   // If we don't have a window, just act as though the prompt was dismissed.
   if (!web_contents->GetTopLevelNativeWindow()) {
     permission_prompt->Closing();
-    return nullptr;
+    return;
   }
   std::unique_ptr<PermissionDialogJavaDelegate> java_delegate(
       std::make_unique<PermissionDialogJavaDelegate>(permission_prompt));
-  return std::make_unique<PermissionDialogDelegate>(
-      web_contents, permission_prompt, std::move(java_delegate));
+  new PermissionDialogDelegate(web_contents, permission_prompt,
+                               std::move(java_delegate));
 }
 
 // static
-std::unique_ptr<PermissionDialogDelegate>
-PermissionDialogDelegate::CreateForTesting(
+PermissionDialogDelegate* PermissionDialogDelegate::CreateForTesting(
     content::WebContents* web_contents,
     PermissionPromptAndroid* permission_prompt,
     std::unique_ptr<PermissionDialogJavaDelegate> java_delegate) {
-  return std::make_unique<PermissionDialogDelegate>(
-      web_contents, permission_prompt, std::move(java_delegate));
+  return new PermissionDialogDelegate(web_contents, permission_prompt,
+                                      std::move(java_delegate));
 }
 
 void PermissionDialogDelegate::Accept(JNIEnv* env,
@@ -235,12 +227,7 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env,
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
-  java_delegate_.reset();
-}
-
-void PermissionDialogDelegate::UpdateDialogWithNewScreenVariant() {
-  CHECK(java_delegate_);
-  java_delegate_->UpdateDialogWithNewScreenVariant();
+  delete this;
 }
 
 PermissionDialogDelegate::PermissionDialogDelegate(
@@ -258,16 +245,9 @@ PermissionDialogDelegate::PermissionDialogDelegate(
   java_delegate_->CreateDialog(web_contents);
 }
 
-PermissionDialogDelegate::~PermissionDialogDelegate() {
-  // When the owning class is destroyed, ensure that any active java delegate
-  // associated with the class is destroyed.
-  if (java_delegate_) {
-    DismissDialog();
-  }
-}
+PermissionDialogDelegate::~PermissionDialogDelegate() = default;
 
 void PermissionDialogDelegate::DismissDialog() {
-  CHECK(java_delegate_);
   java_delegate_->DismissDialog();
 }
 

@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   bool key_is_cached_ = false;
   // The cached AES encryption key.
   std::unique_ptr<crypto::SymmetricKey> cached_encryption_key_;
-  // TODO(dhollowa): Refactor to allow dependency injection of Keychain.
+  // TODO(crbug.com/389737048): Refactor to allow dependency injection of Keychain.
   bool use_mock_keychain_ = false;
   // This flag is used to make the GetEncryptionKey method return NULL if used
   // along with mock Keychain.

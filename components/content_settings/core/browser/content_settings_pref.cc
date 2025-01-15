@@ -446,16 +446,6 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
       metadata.set_decided_by_related_website_sets(
           GetDecidedByRelatedWebsiteSets(settings_dictionary));
 
-      // Migrating grants by Related Website Sets to DURABLE.
-      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
-      // removed.
-      if ((content_type_ == ContentSettingsType::STORAGE_ACCESS ||
-           content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) &&
-          session_model == mojom::SessionModel::NON_RESTORABLE_USER_SESSION) {
-        metadata.set_session_model(mojom::SessionModel::DURABLE);
-        metadata.set_decided_by_related_website_sets(true);
-      }
-
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
                           value->Clone(), metadata, partition_key);
@@ -515,15 +505,6 @@ bool ContentSettingsPref::ShouldRemoveSetting(
   switch (session_model) {
     case content_settings::mojom::SessionModel::DURABLE:
       return false;
-    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      // Restore NON_RESTORABLE_USER_SESSION Storage Access permissions to
-      // migrate them to DURABLE session model.
-      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is removed.
-      if (content_type_ == ContentSettingsType::STORAGE_ACCESS ||
-          content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
-        return false;
-      }
-      return true;
     case content_settings::mojom::SessionModel::USER_SESSION:
     case content_settings::mojom::SessionModel::ONE_TIME:
       return !restore_session_;

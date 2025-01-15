@@ -57,7 +57,11 @@ NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
       "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js;");
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc,
-      base::StringPrintf("default-src %s;", chrome::kChromeUINewTabPageURL));
+      base::StringPrintf("default-src 'self' %s;",
+                         chrome::kChromeUINewTabPageURL));
+  untrusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src https://login.microsoftonline.com;");
 }
 
 NtpMicrosoftAuthUntrustedUI::~NtpMicrosoftAuthUntrustedUI() = default;

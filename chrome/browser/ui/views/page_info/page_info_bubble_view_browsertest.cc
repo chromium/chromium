@@ -1580,8 +1580,10 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
  public:
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features = {privacy_sandbox::kActUserBypassUx,
-                            privacy_sandbox::kFingerprintingProtectionUx},
+        enabled_features =
+            {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
+             privacy_sandbox::kActUserBypassUx,
+             privacy_sandbox::kFingerprintingProtectionUx},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1600,6 +1602,9 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
     ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kIncognito);
+
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
@@ -1627,6 +1632,10 @@ IN_PROC_BROWSER_TEST_P(
       host_content_settings_map()->GetContentSetting(
           GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_BLOCK);
+
+  // Reset browser profile before teardown to avoid profile_destroyer errors.
+  profile_metrics::SetBrowserProfileType(
+      browser()->profile(), profile_metrics::BrowserProfileType::kRegular);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

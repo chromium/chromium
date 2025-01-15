@@ -11,11 +11,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 struct AccountInfo;
-class DIPSService;
 class DIPSBrowserSigninDetectorFactory;
 
 namespace content {
 class BrowserContext;
+class DIPSService;
 }
 
 // DIPSBrowserSigninDetector is a service because it depends on both DIPSService
@@ -28,7 +28,7 @@ class DIPSBrowserSigninDetector : public KeyedService,
                                   signin::IdentityManager::Observer {
  public:
   DIPSBrowserSigninDetector(base::PassKey<DIPSBrowserSigninDetectorFactory>,
-                            DIPSService* dips_service,
+                            content::DIPSService* dips_service,
                             signin::IdentityManager* identity_manager);
   DIPSBrowserSigninDetector(const DIPSBrowserSigninDetector&) = delete;
   DIPSBrowserSigninDetector& operator=(const DIPSBrowserSigninDetector&) =
@@ -51,7 +51,7 @@ class DIPSBrowserSigninDetector : public KeyedService,
   // the account |info| is relevant.
   void RecordInteractionsIfRelevant(const AccountInfo& info);
 
-  raw_ptr<DIPSService> dips_service_;
+  raw_ptr<content::DIPSService> dips_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
