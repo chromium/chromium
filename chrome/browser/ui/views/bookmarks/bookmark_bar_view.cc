@@ -300,6 +300,12 @@ BookmarkMergedSurfaceService* GetBookmarkService(Browser* browser) {
   return BookmarkMergedSurfaceServiceFactory::GetForProfile(browser->profile());
 }
 
+std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> ToRawPtrVector(
+    const std::vector<const BookmarkNode*>& nodes) {
+  return base::ToVector(nodes, [](const BookmarkNode* node) {
+    return raw_ptr<const BookmarkNode, VectorExperimental>(node);
+  });
+}
 }  // namespace
 
 // DropLocation ---------------------------------------------------------------
@@ -1413,13 +1419,16 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     return;
   }
 
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  std::vector<const BookmarkNode*> nodes;
+  BookmarkMergedSurfaceService* bookmark_service = GetBookmarkService(browser_);
   if (source == all_bookmarks_button_) {
     // Do this so the user can open all bookmarks. BookmarkContextMenu makes
     // sure the user can't edit/delete the node in this case.
-    nodes.push_back(bookmark_model_->other_node());
+    nodes = bookmark_service->GetUnderlyingNodes(
+        BookmarkParentFolder::OtherFolder());
   } else if (source == managed_bookmarks_button_) {
-    nodes.push_back(managed_->managed_node());
+    nodes = bookmark_service->GetUnderlyingNodes(
+        BookmarkParentFolder::ManagedFolder());
   } else if (source != this && source != apps_page_shortcut_) {
     // User clicked on one of the bookmark buttons, find which one they
     // clicked on, except for the apps page shortcut, which must behave as if
@@ -1430,7 +1439,8 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     const BookmarkNode* node = bookmark_buttons_[bookmark_button_index].second;
     nodes.push_back(node);
   } else {
-    nodes.push_back(bookmark_model_->bookmark_bar_node());
+    nodes = bookmark_service->GetUnderlyingNodes(
+        BookmarkParentFolder::BookmarkBarFolder());
   }
   // |close_on_remove| only matters for nested menus. We're not nested at this
   // point, so this value has no effect.
@@ -1438,7 +1448,8 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
 
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       GetWidget(), browser_, browser_->profile(),
-      BookmarkLaunchLocation::kAttachedBar, nodes, close_on_remove);
+      BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
+      close_on_remove);
   context_menu_->RunMenuAt(point, source_type);
 }
 
