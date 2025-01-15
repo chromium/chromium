@@ -156,45 +156,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_jacuzzi_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-                # jacuzzi is slow. So that we use more number of shards.
-                "skylab-shards-30",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "chromeos_jacuzzi_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
@@ -224,43 +185,6 @@ targets.legacy_matrix_compound_suite(
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "chromeos_octopus_rel_skylab_tests",
-    basic_suites = {
-        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
-        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            mixins = [
-                "chromeos-tast-public-builder",
-            ],
-            variants = [
-                "CROS_PUBLIC_LKGM",
             ],
         ),
     },

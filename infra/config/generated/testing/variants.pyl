@@ -59,15 +59,6 @@
       'use_lkgm': True,
     },
   },
-  'CROS_PUBLIC_LKGM': {
-    'identifier': 'PUBLIC_LKGM',
-    'skylab': {
-      'use_lkgm': True,
-      'bucket': 'chromiumos-image-archive',
-      'public_builder': 'cros_test_platform_public',
-      'public_builder_bucket': 'testplatform-public',
-    },
-  },
   'CROS_RELEASE_LKGM': {
     'identifier': 'RELEASE_LKGM',
     'skylab': {

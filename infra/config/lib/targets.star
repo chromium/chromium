@@ -270,75 +270,6 @@ def _resultdb(
         inv_extended_properties_dir = inv_extended_properties_dir,
     )
 
-def _skylab(
-        *,
-        cros_board = "",
-        cros_img = "",
-        cros_build_target = "",
-        use_lkgm = False,
-        cros_model = None,
-        cros_cbx = False,
-        autotest_name = None,
-        bucket = None,
-        dut_pool = None,
-        public_builder = None,
-        public_builder_bucket = None,
-        # TODO(gbeaty) Tast tests should have their own test function defined
-        # and this should be removed from this function
-        tast_expr = None,
-        test_level_retries = None,
-        timeout_sec = None,
-        shards = None):
-    """Define a Skylab test target.
-
-    Args:
-        cros_board: The CrOS DUT board name, e.g. "eve", "kevin".
-        cros_build_target: The CrOS build target name, e.g. "eve-arc-t".
-            If unspecified, the build target equals to cros_board will be used.
-        cros_img: ChromeOS image version to be deployed to DUT.
-            Must be empty when use_lkgm is true.
-            For example, "brya-release/R118-15604.42.0"
-        use_lkgm: If True, use a ChromeOS image version derived from
-            chromeos/CHROMEOS_LKGM file.
-        cros_model: Optional ChromeOS DUT model.
-        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
-             board, not all models are CBX-capable.
-        autotest_name: The name of the autotest to be executed in
-            Skylab.
-        bucket: Optional Google Storage bucket where the specified
-            image(s) are stored.
-        dut_pool: The skylab device pool to run the test. By default the
-            quota pool, shared by all CrOS tests.
-        public_builder: Optional Public CTP Builder.
-            The public_builder and public_builder_bucket fields can be
-            used when default CTP builder is not sufficient/advised
-            (ex: chromium cq, satlab for partners).
-        public_builder_bucket: Optional luci bucket. See public_builder
-            above.
-        tast_expr: The tast expression to run.
-        test_level_retries: The number of times to retry tests. Only applicable
-            to skylab tests.
-        timeout_sec: The maximum time the test can take to run.
-        shards: The number of shards used to run the test.
-    """
-    return struct(
-        cros_board = cros_board,
-        cros_build_target = cros_build_target,
-        cros_img = cros_img,
-        use_lkgm = use_lkgm,
-        cros_model = cros_model,
-        cros_cbx = cros_cbx,
-        autotest_name = autotest_name,
-        bucket = bucket,
-        dut_pool = dut_pool,
-        public_builder = public_builder,
-        public_builder_bucket = public_builder_bucket,
-        tast_expr = tast_expr,
-        test_level_retries = test_level_retries,
-        timeout_sec = timeout_sec,
-        shards = shards,
-    )
-
 def _mixin_values(
         description = None,
         args = None,
@@ -806,6 +737,6 @@ targets = struct(
     remove = _targets_common.remove,
     resultdb = _resultdb,
     swarming = _targets_common.swarming,
-    skylab = _skylab,
+    skylab = _targets_common.skylab,
     magic_args = _targets_magic_args,
 )

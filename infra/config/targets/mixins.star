@@ -551,6 +551,7 @@ targets.mixin(
 
 targets.mixin(
     name = "chromeos-tast-public-builder",
+    generate_pyl_entry = False,
     args = [
         # FieldTrial is disabled on ChromeOS builders but not in this builder.
         # Notify Tast to handle the different UI by that.
