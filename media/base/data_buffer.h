@@ -86,11 +86,14 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   // enough space for this method to succeed.
   void Append(base::span<const uint8_t> data);
 
+  // Returns a span over `data_` that is truncated by the valid size().
   base::span<const uint8_t> data() const {
     CHECK(!end_of_stream());
-    return data_;
+    return data_.first(size_);
   }
 
+  // Returns a span over `data_`, including any initialized portion. Care should
+  // be taken that uninitialized memory is written to before being accessed.
   base::span<uint8_t> writable_data() {
     CHECK(!end_of_stream());
     return data_;
