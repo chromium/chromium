@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
@@ -31,6 +32,7 @@
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_data_source_impl.h"
 #include "content/browser/webui/web_ui_main_frame_observer.h"
+#include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -185,6 +187,10 @@ void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
 
 void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
   controller_->WebUIRenderFrameCreated(render_frame_host);
+  if (base::FeatureList::IsEnabled(features::kWebUIInProcessResourceLoading)) {
+    CHECK(frame_host_);
+    frame_host_->UpdateLocalResourceLoader(GetLocalResourceLoaderConfig());
+  }
 }
 
 void WebUIImpl::RenderFrameHostUnloading() {

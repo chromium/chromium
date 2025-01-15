@@ -1850,6 +1850,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/loader/url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/child_url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/tracked_child_url_loader_factory_bundle.cc',
+        ],
+        'allowed': ['mojom::LocalResourceLoaderConfigPtr'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h',
         ],
         # base::RefCounted is prohibited in platform/ as defined above, but

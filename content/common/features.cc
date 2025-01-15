@@ -457,6 +457,11 @@ BASE_FEATURE(kWebAssemblyDynamicTiering,
              "WebAssemblyDynamicTiering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables in-process resource loading for WebUI renderer processes.
+BASE_FEATURE(kWebUIInProcessResourceLoading,
+             "WebUIInProcessResourceLoading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables WebOTP calls in cross-origin iframes if allowed by Permissions
 // Policy.
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy,

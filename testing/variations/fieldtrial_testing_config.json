@@ -25921,6 +25921,24 @@
             ]
         }
     ],
+    "WebUIInProcessResourceLoading": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebUIInProcessResourceLoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUITabStrip": [
         {
             "platforms": [
