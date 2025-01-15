@@ -1366,11 +1366,11 @@
       "external/wpt/html/semantics/popovers/popover-removal-2.html",
       "external/wpt/html/semantics/popovers/popover-removal.html",
       "external/wpt/html/semantics/popovers/popover-shadow-dom.html",
-      "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-types-with-hints.html",
       "external/wpt/html/semantics/popovers/popover-types.html",
-      "external/wpt/html/semantics/popovers/popover-light-dismiss-hint.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-light-dismiss-hint.html",
       "external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html",
-      "wpt_internal/html/semantics/popovers/popover-hint-crash.tentative.html"
+      "wpt_internal/html/semantics/popovers/popover-hint-crash.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint"],
     "expires": "Jun 1, 2025"
