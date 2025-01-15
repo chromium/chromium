@@ -146,12 +146,6 @@ BASE_FEATURE(kCrostiniAdvancedAccessControls,
              "CrostiniAdvancedAccessControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables infrastructure for applying Ansible playbook to default Crostini
-// container.
-BASE_FEATURE(kCrostiniAnsibleInfrastructure,
-             "CrostiniAnsibleInfrastructure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables infrastructure for generating Ansible playbooks for the default
 // Crostini container from software configurations in JSON schema.
 BASE_FEATURE(kCrostiniAnsibleSoftwareManagement,
@@ -466,7 +460,6 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopWhatsNewTime{
         &kHappinessTrackingSurveysForDesktopWhatsNew, "whats-new-time",
         base::Seconds(20)};
-
 
 // Enables or disables the Happiness Tracking System for Chrome security page.
 BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,
