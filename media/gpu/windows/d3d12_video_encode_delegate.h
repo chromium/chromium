@@ -8,10 +8,12 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include "base/functional/callback.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
+#include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -55,6 +57,28 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
       bool force_keyframe) = 0;
+
+  void SetFactoriesForTesting(
+      base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>
+          video_encoder_wrapper_factory,
+      base::RepeatingCallback<
+          decltype(std::make_unique<D3D12VideoProcessorWrapper,
+                                    Microsoft::WRL::ComPtr<ID3D12VideoDevice>>)>
+          video_processor_wrapper_factory) {
+    video_encoder_wrapper_factory_ = std::move(video_encoder_wrapper_factory);
+    video_processor_wrapper_factory_ =
+        std::move(video_processor_wrapper_factory);
+  }
+
+  D3D12VideoEncoderWrapper* GetVideoEncoderWrapperForTesting() {
+    return video_encoder_wrapper_.get();
+  }
+
+  D3D12VideoProcessorWrapper* GetVideoProcessorWrapperForTesting() {
+    return video_processor_wrapper_.get();
+  }
+
+  DXGI_FORMAT GetFormatForTesting() const { return input_format_; }
 
  protected:
   class D3D12VideoEncoderRateControl {
@@ -110,9 +134,20 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // The implementation may use a different profile for compatibility.
   VideoCodecProfile output_profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
 
+  // The video encoder factory that may be changed for testing.
+  base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>
+      video_encoder_wrapper_factory_ =
+          base::BindRepeating(&CreateD3D12VideoEncoderWrapper);
   std::unique_ptr<D3D12VideoEncoderWrapper> video_encoder_wrapper_;
 
  private:
+  // The video processor factory that may be changed for testing.
+  base::RepeatingCallback<
+      decltype(std::make_unique<D3D12VideoProcessorWrapper,
+                                Microsoft::WRL::ComPtr<ID3D12VideoDevice>>)>
+      video_processor_wrapper_factory_ = base::BindRepeating(
+          &std::make_unique<D3D12VideoProcessorWrapper,
+                            Microsoft::WRL::ComPtr<ID3D12VideoDevice>>);
   // The video processor used for possible resolution, format, or color space
   // conversion.
   std::unique_ptr<D3D12VideoProcessorWrapper> video_processor_wrapper_;

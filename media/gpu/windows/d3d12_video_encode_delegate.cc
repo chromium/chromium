@@ -4,6 +4,8 @@
 
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 
+#include <ranges>
+
 #include "base/bits.h"
 #include "base/logging.h"
 #include "media/base/win/mf_helpers.h"
@@ -108,7 +110,7 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   Microsoft::WRL::ComPtr<ID3D12VideoDevice1> video_device1;
   CHECK_EQ(video_device_.As(&video_device1), S_OK);
   video_processor_wrapper_ =
-      std::make_unique<D3D12VideoProcessorWrapper>(video_device1);
+      video_processor_wrapper_factory_.Run(video_device1);
 
   output_profile_ = config.output_profile;
 
@@ -206,8 +208,9 @@ D3D12VideoEncodeDelegate::Encode(
 
   const base::UnsafeSharedMemoryRegion& region = bitstream_buffer.region();
   CHECK(region.IsValid());
-  base::span buffer = region.Map().GetMemoryAsSpan<uint8_t>();
-  auto payload_size_or_error = ReadbackBitstream(buffer);
+  base::WritableSharedMemoryMapping map = region.Map();
+  auto payload_size_or_error =
+      ReadbackBitstream(map.GetMemoryAsSpan<uint8_t>());
   if (!payload_size_or_error.has_value()) {
     return std::move(payload_size_or_error).error();
   }
@@ -399,17 +402,19 @@ D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::GetCurrentFrame() const {
   // Make sure we have initialized.
   CHECK_GT(resources_.size(), 0u);
   // The current frame is at the end of the array to make it convenient for
-  // std::rotate() operation.
+  // std::ranges::rotate() operation.
   return {raw_resources_.back(), subresources_.back()};
 }
 
 template <size_t maxDpbSize>
 void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InsertCurrentFrame(
     size_t position) {
-  std::rotate(raw_resources_.begin() + position, raw_resources_.end() - 1,
-              raw_resources_.end());
-  std::rotate(subresources_.begin() + position, subresources_.end() - 1,
-              subresources_.end());
+  base::span raw_resources_span(raw_resources_);
+  std::ranges::rotate(raw_resources_span.subspan(position),
+                      std::prev(raw_resources_span.end()));
+  base::span subresources_span(subresources_);
+  std::ranges::rotate(subresources_span.subspan(position),
+                      std::prev(subresources_span.end()));
 }
 
 template <size_t maxDpbSize>
