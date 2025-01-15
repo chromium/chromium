@@ -150,6 +150,14 @@ void CloudUploadPromptPrefsHandler::Shutdown() {
 CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
     : profile_(profile),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  // Initially set the syncable prefs to match the local values.
+  // Normally they should match and this won't have any effect, but in case
+  // they're different (e.g. it's the first time this feature is enabled), we
+  // need to make sure that they're updated.
+  OnOfficeFilesAlwaysMoveToDriveChanged();
+  OnOfficeFilesAlwaysMoveToOneDriveChanged();
+  OnOfficeMoveConfirmationShownChanged();
+
   pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(
       prefs::kOfficeFilesAlwaysMoveToDrive,
@@ -185,7 +193,6 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
                                 OnOfficeMoveConfirmationShownSyncableChanged,
                             base::Unretained(this)));
   }
-  // TODO(387268733): Initial sync to syncable prefs if needed.
 
   pref_change_registrar_->Add(
       prefs::kGoogleWorkspaceCloudUpload,
