@@ -39,6 +39,8 @@ class BookmarkLocalDataBatchUploader
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;
+  void TriggerLocalDataMigrationForItems(
+      std::vector<syncer::LocalDataItemModel::DataId> items) override;
 
  private:
   bool CanUpload() const;

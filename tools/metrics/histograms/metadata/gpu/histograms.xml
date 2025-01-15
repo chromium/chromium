@@ -1237,19 +1237,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.OopRaster.GlyphCacheMiss"
-    enum="OopRasterGlyphCacheMissType" expires_after="2023-04-23">
-  <owner>khushalsagar@chromium.org</owner>
-  <owner>penghuang@chromium.org</owner>
-  <summary>
-    During OutOfProcess(Oop) raster, the renderer generates and sends the
-    requisite glyph data for rasterizing a tile with the serialized paint
-    commands. If the data for any glyph is missing, the GPU process attempts to
-    use a fallback glyph from the cache. This records each time we encounter a
-    cache miss on the GPU and whether we could use a fallback.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2025-07-13">
   <owner>hubbe@chromium.org</owner>
   <owner>cassew@chromium.org</owner>
@@ -1379,7 +1366,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
     expires_after="2025-07-13">
-  <owner>penghuang@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     log2() of MSAA sample count of a raster task. Value is in [log2(1),log2(64)]
@@ -1503,20 +1490,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" enum="BooleanSupported"
-    expires_after="2024-06-30">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>penghuang@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <summary>
-    Whether the extension VK_EXT_memory_budget is supported or not. Recorded
-    once during every gpu process initialization.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
     units="microseconds" expires_after="2025-06-22">
-  <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>

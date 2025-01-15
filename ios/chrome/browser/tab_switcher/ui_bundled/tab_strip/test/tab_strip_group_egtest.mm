@@ -353,7 +353,7 @@ void LongPressTabWithTitle(NSString* title) {
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 2 tabs to be present.");
 
   // Then the count that appears in the title should have been increased.
@@ -600,7 +600,7 @@ void LongPressTabWithTitle(NSString* title) {
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Wrong number of opened tabs");
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(aboutTabTitle, newTabTitle,
@@ -736,7 +736,7 @@ void LongPressTabWithTitle(NSString* title) {
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
 
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Three tabs were expected to be open");
 
   // Add the first tab to a new group.
@@ -777,7 +777,7 @@ void LongPressTabWithTitle(NSString* title) {
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
 
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Three tabs were expected to be open");
 
   // Add the first tab to a new group.

@@ -5882,6 +5882,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "move-theme-prefs-to-specifics",
+    "owners": [ "ankushkush@google.com", "chrome-sync-dev@google.com" ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "multi-calendar-in-quick-settings",
     "owners": [ "jiamingc@chromium.org", "amberhaynes@chromium.org", "cros-status-area-eng@google.com" ],
     "expiry_milestone": 136

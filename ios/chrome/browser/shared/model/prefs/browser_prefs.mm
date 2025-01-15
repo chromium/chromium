@@ -129,14 +129,6 @@
 
 namespace {
 
-// Deprecated 01/2024.
-const char kAppStoreRatingTotalDaysOnChromeKey[] =
-    "AppStoreRatingTotalDaysOnChrome";
-const char kAppStoreRatingActiveDaysInPastWeekKey[] =
-    "AppStoreRatingActiveDaysInPastWeek";
-const char kAppStoreRatingLastShownPromoDayKey[] =
-    "AppStoreRatingLastShownPromoDay";
-
 // Deprecated 02/24.
 const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 
@@ -619,11 +611,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
       PrefRegistry::LOSSY_PREF);
 
-  // Preferences related to app store rating.
-  registry->RegisterIntegerPref(kAppStoreRatingTotalDaysOnChromeKey, 0);
-  registry->RegisterListPref(kAppStoreRatingActiveDaysInPastWeekKey);
-  registry->RegisterTimePref(kAppStoreRatingLastShownPromoDayKey, base::Time());
-
   registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
   registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
@@ -1066,20 +1053,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
-
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 01/2024.
-  prefs->ClearPref(kAppStoreRatingActiveDaysInPastWeekKey);
-  [defaults removeObjectForKey:@(kAppStoreRatingActiveDaysInPastWeekKey)];
-
-  // Added 01/2024.
-  prefs->ClearPref(kAppStoreRatingTotalDaysOnChromeKey);
-  [defaults removeObjectForKey:@(kAppStoreRatingTotalDaysOnChromeKey)];
-
-  // Added 01/2024.
-  prefs->ClearPref(kAppStoreRatingLastShownPromoDayKey);
-  [defaults removeObjectForKey:@(kAppStoreRatingLastShownPromoDayKey)];
 
   // Added 02/2024.
   prefs->ClearPref(kIosPromosManagerImpressions);

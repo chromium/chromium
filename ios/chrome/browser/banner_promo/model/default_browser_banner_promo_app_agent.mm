@@ -255,7 +255,9 @@
   if (_promoCurrentlyShown) {
     // Check if session is over.
     if (IsChromeLikelyDefaultBrowser() ||
-        [self promoIsSuppressedOnCurrentURLs] || _sessionDisplayCount >= 10) {
+        [self promoIsSuppressedOnCurrentURLs] ||
+        _sessionDisplayCount >=
+            kDefaultBrowserBannerPromoImpressionLimit.Get()) {
       [self ensurePromoHidden];
       return;
     }

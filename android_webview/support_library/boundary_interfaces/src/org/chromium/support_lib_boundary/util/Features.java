@@ -296,9 +296,9 @@ public class Features {
     // WebViewCompat.startUpWebView
     public static final String ASYNC_WEBVIEW_STARTUP = "ASYNC_WEBVIEW_STARTUP";
 
-    // WebViewCompat.prerenderUrlAsync
-    // WebViewCompat.clearPrerenderAsync
-    public static final String PRERENDER_WITH_URL = "PRERENDER_URL";
+    // WebViewCompat.prerenderUrl
+    // WebViewCompat.clearPrerender
+    public static final String PRERENDER_WITH_URL = "PRERENDER_URL_V2";
 
     // WebStorageCompat.deleteBrowsingData
     // WebStorageCompat.deleteBrowsingDataForSite

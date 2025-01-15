@@ -112,6 +112,10 @@ class ProfileManagerIOS {
   // deleted). Observers will be notified only if the profile is loaded.
   virtual void MarkProfileForDeletion(std::string_view name) = 0;
 
+  // Returns whether the profile with `name` been marked for deletion and
+  // still not fully deleted.
+  virtual bool IsProfileMarkedForDeletion(std::string_view name) const = 0;
+
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
 

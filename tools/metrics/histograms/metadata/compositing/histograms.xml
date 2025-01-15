@@ -794,13 +794,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
-    enum="Boolean" expires_after="2023-06-11">
-  <owner>penghuang@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>
-</histogram>
-
 <histogram name="Compositing.SkiaRenderer.SkipOverlayRenderPassDrawQuad"
     enum="BooleanSkipped" expires_after="2025-07-13">
   <owner>magchen@chromium.org</owner>

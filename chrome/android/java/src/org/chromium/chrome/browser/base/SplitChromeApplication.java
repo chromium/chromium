@@ -37,6 +37,10 @@ public class SplitChromeApplication extends SplitCompatApplication
 
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
+    private static @IdentifierNameString String sChromePreloadName =
+            "org.chromium.chrome.browser.ChromeTabbedActivity$Preload";
+    private static @IdentifierNameString String sGoogle3PreloadName =
+            "org.chromium.chrome.modules.google3.Google3ModuleEntryImpl";
     private static final Object sSplitLock = new Object();
     private static final ArraySet<String> sCachedSplits = new ArraySet<>();
 
@@ -79,6 +83,16 @@ public class SplitChromeApplication extends SplitCompatApplication
         }
     }
 
+    private static String getPreloadClassName(String split) {
+        if (split.equals(CHROME_SPLIT_NAME)) {
+            return sChromePreloadName;
+        }
+        if (split.equals("google3")) {
+            return sGoogle3PreloadName;
+        }
+        return null;
+    }
+
     private Context createContextForSplitNoWait(String name) {
         synchronized (sSplitLock) {
             boolean shouldRecordHistogram = !sCachedSplits.contains(name);
@@ -93,6 +107,27 @@ public class SplitChromeApplication extends SplitCompatApplication
                             "Android.IsolatedSplits.ContextCreateTime2." + name,
                             SystemClock.uptimeMillis() - startTime);
                     sCachedSplits.add(name);
+                    String preloadClass = getPreloadClassName(name);
+                    if (preloadClass != null) {
+                        long loadStartTime = SystemClock.uptimeMillis();
+                        try {
+                            context.getClassLoader().loadClass(preloadClass).newInstance();
+                        } catch (ReflectiveOperationException e) {
+                            throw new RuntimeException(
+                                    "Preload of "
+                                            + preloadClass
+                                            + " for split "
+                                            + name
+                                            + " failed.");
+                        }
+                        long endTime = SystemClock.uptimeMillis();
+                        RecordHistogram.recordTimesHistogram(
+                                "Android.IsolatedSplits.LoadFirstClassTime." + name,
+                                endTime - loadStartTime);
+                        RecordHistogram.recordTimesHistogram(
+                                "Android.IsolatedSplits.ContextCreateTime3." + name,
+                                endTime - startTime);
+                    }
                 }
                 return context;
             } catch (PackageManager.NameNotFoundException e) {
@@ -145,8 +180,7 @@ public class SplitChromeApplication extends SplitCompatApplication
                                                 // background.
                                                 chromeContext
                                                         .getClassLoader()
-                                                        .loadClass(
-                                                                "org.chromium.chrome.browser.ChromeTabbedActivity$Preload")
+                                                        .loadClass(sChromePreloadName)
                                                         .newInstance();
                                             } catch (ReflectiveOperationException e) {
                                                 throw new RuntimeException(e);

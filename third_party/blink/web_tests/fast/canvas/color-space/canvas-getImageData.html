@@ -17,7 +17,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   var canvas = document.createElement('canvas');
   canvas.width = 10;
   canvas.height = 10;
-  var ctx = canvas.getContext('2d', {colorSpace: canvas_color_space, pixelFormat:canvas_pixel_format});
+  var ctx = canvas.getContext('2d', {colorSpace: canvas_color_space, colorType:canvas_pixel_format});
   ctx.fillStyle = color_style;
   ctx.fillRect(0, 0, 10, 10);
 
@@ -73,7 +73,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 
 function drawThenGetImageData() {
   color_spaces = ['srgb', 'display-p3', 'rec2020', null];
-  canvas_pixel_formats = ['uint8', 'float16'];
+  canvas_pixel_formats = ['unorm8', 'float16'];
   image_data_pixel_formats = ['uint8', 'uint16', 'float32'];
   var passed = true;
   for (var i = 0; i < 3; ++i) {

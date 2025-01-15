@@ -49,6 +49,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int TAB_GROUP_HEADER_CXMENU_DELETE_GROUP = 7;
   static constexpr int TAB_GROUP_HEADER_CXMENU_LEAVE_GROUP = 8;
   static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 9;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY = 10;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -87,6 +88,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   bool CanShareGroups() const;
   bool IsGroupSaved() const;
   bool IsGroupShared() const;
+  bool HasRecentActivity() const;
   bool ShouldShowSavedFooter() const;
   // Returns true if the user created the group. Returns false in cases where
   // the user was invited to join the group.
@@ -108,6 +110,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
   std::unique_ptr<views::LabelButton> BuildManageSharedGroupButton();
   std::unique_ptr<views::LabelButton> BuildShareGroupButton();
+  std::unique_ptr<views::LabelButton> BuildRecentActivityButton();
 
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
@@ -117,6 +120,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void DeleteGroupPressed();
   void LeaveGroupPressed();
   void MoveGroupToNewWindowPressed();
+  void RecentActivityPressed();
 
   // The action for moving a group to a new window is only enabled when the
   // tabstrip contains more than just the tabs in the current group.

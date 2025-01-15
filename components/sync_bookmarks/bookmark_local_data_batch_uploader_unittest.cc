@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -153,6 +154,10 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
+  // Local data is only returned if the minimize deletions feature is enabled.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   const bookmarks::BookmarkNode* local_node = bookmark_model()->AddURL(
@@ -183,7 +188,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
-       LocalDescriptionEmptyItemsWhenFeatureDisabled) {
+       LocalDescriptionEmptyItemsWhenSelectedItemsFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       switches::kSyncBookmarksBatchUploadSelectedItems);
@@ -207,7 +212,35 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
+       LocalDescriptionEmptyItemsWhenMinimizeDeletionsFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload);
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Local", GURL("http://local.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Account",
+                           GURL("http://account.com/"));
+  BookmarkLocalDataBatchUploader uploader(bookmark_model());
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
+
+  EXPECT_EQ(description.Get().item_count, 1u);
+  EXPECT_EQ(description.Get().domain_count, 1u);
+  EXPECT_THAT(description.Get().domains, ElementsAre("local.com"));
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionTopLevelEmptyFolder) {
+  // Local data is only returned if the minimize deletions feature is enabled.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   const bookmarks::BookmarkNode* folder = bookmark_model()->AddFolder(
@@ -231,6 +264,10 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionFolderNesting) {
+  // Local data is only returned if the minimize deletions feature is enabled.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
 
@@ -271,6 +308,10 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionFolderNesting) {
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionHasSortedDomains) {
+  // Local data is only returned if the minimize deletions feature is enabled.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -293,6 +334,10 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionHasSortedDomains) {
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionHasNoManagedUrls) {
+  // Local data is only returned if the minimize deletions feature is enabled.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
   // Create a new model with the managed node enabled.
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
   bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
@@ -365,7 +410,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 // Note: Most of the merging logic is verified in the unit tests for
 // LocalBookmarkModelMerger, this test only checks the communication between the
 // 2 layers.
-TEST_F(BookmarkLocalDataBatchUploaderTest, MigrationUploadsLocalBookmarks) {
+TEST_F(BookmarkLocalDataBatchUploaderTest, FullMigrationUploadsLocalBookmarks) {
   base::HistogramTester histogram_tester;
 
   bookmark_model()->LoadEmptyForTest();
@@ -396,6 +441,41 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, MigrationUploadsLocalBookmarks) {
   histogram_tester.ExpectUniqueSample("Bookmarks.BatchUploadOutcomeRatio",
                                       /*sample=*/100,
                                       /*expected_bucket_count=*/1);
+}
+
+// Note: Most of the merging logic is verified in the unit tests for
+// LocalBookmarkModelMerger, this test only checks the communication between the
+// 2 layers.
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       PartialMigrationUploadsSelectedLocalBookmarks) {
+  // Partial migration is only supported with the new upload logic.
+  base::test::ScopedFeatureList feature_list{
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+  const bookmarks::BookmarkNode* local_node1 = bookmark_model()->AddURL(
+      bookmark_model()->bookmark_bar_node(),
+      /*index=*/0, u"Local", GURL("http://local1.com/"));
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
+                           /*index=*/1, u"Local", GURL("http://local2.com/"));
+  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
+                           /*index=*/0, u"Account",
+                           GURL("http://account.com/"));
+  BookmarkLocalDataBatchUploader uploader(bookmark_model());
+
+  uploader.TriggerLocalDataMigrationForItems(
+      {syncer::LocalDataItemModel::DataId(local_node1->id())});
+
+  EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(),
+              ElementsAre(MatchesTitleAndUrl(u"Local", "http://local2.com/")));
+  EXPECT_THAT(bookmark_model()->mobile_node()->children(), IsEmpty());
+  EXPECT_THAT(bookmark_model()->other_node()->children(), IsEmpty());
+  EXPECT_THAT(bookmark_model()->account_bookmark_bar_node()->children(),
+              ElementsAre(MatchesTitleAndUrl(u"Account", "http://account.com/"),
+                          MatchesTitleAndUrl(u"Local", "http://local1.com/")));
+  EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
+  EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
 }
 
 }  // namespace

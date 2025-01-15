@@ -768,7 +768,7 @@ def main(argv):
           'android.app.backup.BackupAgent.onCreate',
           'android.content.ContentProvider.attachInfo',
           'android.content.ContentProvider.onCreate',
-          'android.content.ContentWrapper.attachBaseContext',
+          'android.content.ContextWrapper.attachBaseContext',
       ]
       errorprone_flags += [
           '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)

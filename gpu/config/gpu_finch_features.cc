@@ -405,9 +405,6 @@ BASE_FEATURE(kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage,
 BASE_FEATURE(kRoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage,
              "RoundedDisplayAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "SWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage,
              "ViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -114,7 +114,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
@@ -167,7 +166,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
-  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;

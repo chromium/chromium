@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -664,6 +665,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
         sObserverForTest = observerForTest;
         DropdownFieldView.setEditorObserverForTest(sObserverForTest);
         TextFieldView.setEditorObserverForTest(sObserverForTest);
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     private Drawable getTintedBackIcon() {

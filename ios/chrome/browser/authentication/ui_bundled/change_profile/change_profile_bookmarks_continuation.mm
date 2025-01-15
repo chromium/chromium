@@ -18,7 +18,7 @@ namespace {
 void ChangeProfileBookmarksContinuation(SceneState* scene_state,
                                         base::OnceClosure closure) {
   Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
+      scene_state.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();

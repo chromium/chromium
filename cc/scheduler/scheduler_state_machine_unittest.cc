@@ -120,8 +120,6 @@ const char* ActionToString(SchedulerStateMachine::Action action) {
       return "Action::DRAW_FORCED";
     case Action::DRAW_ABORT:
       return "Action::DRAW_ABORT";
-    case Action::UPDATE_DISPLAY_TREE:
-      return "Action::UPDATE_DISPLAY_TREE";
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return "Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION";
     case Action::PREPARE_TILES:
@@ -306,10 +304,6 @@ void PerformAction(StateMachine* sm, SchedulerStateMachine::Action action) {
       sm->AbortDraw();
       return;
     }
-
-    case SchedulerStateMachine::Action::UPDATE_DISPLAY_TREE:
-      sm->WillUpdateDisplayTree();
-      return;
 
     case SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       sm->WillBeginLayerTreeFrameSinkCreation();

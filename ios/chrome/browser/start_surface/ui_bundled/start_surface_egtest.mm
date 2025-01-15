@@ -95,7 +95,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   // Assert NTP is visible by checking that the fake omnibox is here.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
 }
 
@@ -114,7 +114,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
 }
 
@@ -131,7 +131,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Give time for NTP to be fully loaded so all elements are accessible.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Two tabs were expected to be open");
   // Assert NTP is visible by checking that the fake omnibox is here.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

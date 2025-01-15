@@ -60,7 +60,6 @@ class SchedulerClient {
       const viz::BeginFrameArgs& args) = 0;
   virtual DrawResult ScheduledActionDrawIfPossible() = 0;
   virtual DrawResult ScheduledActionDrawForced() = 0;
-  virtual void ScheduledActionUpdateDisplayTree() = 0;
 
   // The Commit step occurs when the client received the BeginFrame from the
   // source and we perform at most one commit per BeginFrame. In this step the
@@ -162,7 +161,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void SetNeedsOneBeginImplFrame();
 
   void SetNeedsRedraw();
-  void SetNeedsUpdateDisplayTree();
 
   void SetNeedsPrepareTiles();
 
@@ -383,7 +381,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void BeginMainFrameNotExpectedSoon();
   void DrawIfPossible();
   void DrawForced();
-  void UpdateDisplayTree();
   void ProcessScheduledActions();
   void UpdateCompositorTimingHistoryRecordingEnabled();
   void AdvanceCommitStateIfPossible();

@@ -35,8 +35,8 @@ bool ToCanvasContextCreationAttributes(
 #else
   result.desynchronized = result.desynchronized_specified;
 #endif
-  switch (attrs->pixelFormat().AsEnum()) {
-    case V8CanvasPixelFormat::Enum::kUint8:
+  switch (attrs->colorType().AsEnum()) {
+    case V8CanvasPixelFormat::Enum::kUnorm8:
       result.pixel_format = CanvasPixelFormat::kUint8;
       break;
     case V8CanvasPixelFormat::Enum::kFloat16:
@@ -86,12 +86,12 @@ CanvasRenderingContext2DSettings* ToCanvasRenderingContext2DSettings(
   if (RuntimeEnabledFeatures::CanvasFloatingPointEnabled()) {
     switch (attrs.pixel_format) {
       case CanvasPixelFormat::kF16:
-        settings->setPixelFormat(
+        settings->setColorType(
             V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kFloat16));
         break;
       case CanvasPixelFormat::kUint8:
-        settings->setPixelFormat(
-            V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUint8));
+        settings->setColorType(
+            V8CanvasPixelFormat(V8CanvasPixelFormat::Enum::kUnorm8));
         break;
     }
   }

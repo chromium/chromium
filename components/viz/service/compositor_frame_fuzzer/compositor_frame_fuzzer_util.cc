@@ -412,22 +412,23 @@ bool FuzzedCompositorFrameBuilder::TryReserveBitmapBytes(
 FuzzedBitmap* FuzzedCompositorFrameBuilder::AllocateFuzzedBitmap(
     const gfx::Size& size,
     SkColor4f color) {
-  auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
-      {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "FuzzedCompositorFrameBuilder"});
+  auto shared_image =
+      shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+          {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+           "FuzzedCompositorFrameBuilder"});
 
-  CHECK(shared_image_mapping.shared_image);
   gpu::SyncToken sync_token = shared_image_interface_->GenVerifiedSyncToken();
 
   SkBitmap bitmap;
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
-  bitmap.installPixels(info, shared_image_mapping.mapping.memory(),
+  auto mapping = shared_image->Map();
+  bitmap.installPixels(info, mapping->GetMemoryForPlane(0).data(),
                        info.minRowBytes());
   bitmap.eraseColor(color);
 
   data_.allocated_bitmaps.push_back(
-      {size, std::move(shared_image_mapping.mapping),
-       std::move(shared_image_mapping.shared_image), sync_token});
+      {size, std::move(shared_image), sync_token});
 
   return &data_.allocated_bitmaps.back();
 }
@@ -435,11 +436,9 @@ FuzzedBitmap* FuzzedCompositorFrameBuilder::AllocateFuzzedBitmap(
 }  // namespace
 
 FuzzedBitmap::FuzzedBitmap(const gfx::Size& size,
-                           base::WritableSharedMemoryMapping mapping,
                            scoped_refptr<gpu::ClientSharedImage> shared_image,
                            gpu::SyncToken sync_token)
     : size(size),
-      mapping(std::move(mapping)),
       shared_image(std::move(shared_image)),
       sync_token(std::move(sync_token)) {}
 FuzzedBitmap::~FuzzedBitmap() = default;

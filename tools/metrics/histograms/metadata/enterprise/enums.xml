@@ -2192,6 +2192,7 @@ chromium-metrics-reviews@google.com.
   <int value="1328" label="DefaultControlledFrameSetting"/>
   <int value="1329" label="ControlledFrameAllowedForUrls"/>
   <int value="1330" label="ControlledFrameBlockedForUrls"/>
+  <int value="1331" label="ExternalStorageAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

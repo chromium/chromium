@@ -40,18 +40,35 @@ class SimpleScanRunner {
   const ExtensionId& extension_id() const;
 
  private:
-  void OnSimpleScanNamesReceived(bool force_virtual_usb_printer,
-                                 const std::vector<std::string>& scanner_names);
-  void OnSimpleScanCompleted(crosapi::mojom::ScanFailureMode failure_mode,
-                             const std::optional<std::string>& scan_data);
+  void OnSimpleScanListReceived(
+      bool force_virtual_usb_printer,
+      crosapi::mojom::GetScannerListResponsePtr response);
+  void OnOpenScannerResponse(crosapi::mojom::OpenScannerResponsePtr response);
+  void OnStartPreparedScanResponse(
+      crosapi::mojom::StartPreparedScanResponsePtr response);
+  void OnReadScanDataResponse(crosapi::mojom::ReadScanDataResponsePtr response);
+  void OnCloseScannerResponse(crosapi::mojom::CloseScannerResponsePtr response);
+  void OnSimpleScanCompleted(crosapi::mojom::ScanFailureMode failure_mode);
+
+  void OpenFirstScanner();
+  void ReadScanData();
 
   scoped_refptr<const Extension> extension_;
 
   const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
 
+  // List of potential scanners to open.
+  std::vector<std::string> scanner_ids_;
+
   // Parameters for the in-progress call.
   std::vector<std::string> mime_types_;
   SimpleScanCallback callback_;
+
+  // State for the in-progress scan.
+  std::string scanner_handle_;
+  std::string job_handle_;
+  std::vector<uint8_t> scan_data_;
+  crosapi::mojom::ScanFailureMode scan_result_;
 
   base::WeakPtrFactory<SimpleScanRunner> weak_ptr_factory_{this};
 };

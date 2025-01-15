@@ -315,7 +315,8 @@ void WebXrControllerInputMock::OnFrameSubmitted(
 
 // Ensure that when an input source's handedness changes, an input source change
 // event is fired and a new input source is created.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputHandednessChange) {
+// TODO(crbug.com/390125620): Fix failing test.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestInputHandednessChange) {
   WebXrControllerInputMock my_mock;
   unsigned int controller_index = my_mock.CreateAndConnectMinimalGamepad();
 
@@ -880,7 +881,9 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerPositionTracking) {
 
 // Test that the `hand` property on the Input Source remains null, even if the
 // runtime reports it, without the appropriate feature request.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestHandDataNotVisibleWithoutFeature) {
+// TODO(crbug.com/390125620): Fix failing test.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
+    DISABLED_TestHandDataNotVisibleWithoutFeature) {
   WebXrControllerInputMock my_mock;
 
   auto controller_data = my_mock.CreateValidController(

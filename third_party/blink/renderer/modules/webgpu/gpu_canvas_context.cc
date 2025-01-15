@@ -119,6 +119,10 @@ SkColorType GPUCanvasContext::GetSkColorType() const {
   return viz::ToClosestSkColorType(swap_buffers_->Format());
 }
 
+gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
+  return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
+}
+
 sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
   if (!swap_buffers_) {
     return SkColorSpace::MakeSRGB();

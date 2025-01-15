@@ -165,6 +165,10 @@ void ProfileManagerIOSImpl::AddObserver(ProfileManagerObserverIOS* observer) {
 
   // Notify the observer of any pre-existing Profiles.
   for (auto& [name, profile_info] : profiles_map_) {
+    if (IsProfileMarkedForDeletion(name)) {
+      continue;
+    }
+
     ProfileIOS* profile = profile_info.profile();
     DCHECK(profile);
 
@@ -183,6 +187,10 @@ void ProfileManagerIOSImpl::RemoveObserver(
 
 ProfileIOS* ProfileManagerIOSImpl::GetProfileWithName(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do not give access to profiles marked for deletion.
+  if (IsProfileMarkedForDeletion(name)) {
+    return nullptr;
+  }
   // If the profile is already loaded, just return it.
   auto iter = profiles_map_.find(name);
   if (iter != profiles_map_.end()) {
@@ -200,6 +208,10 @@ std::vector<ProfileIOS*> ProfileManagerIOSImpl::GetLoadedProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<ProfileIOS*> loaded_profiles;
   for (const auto& [name, profile_info] : profiles_map_) {
+    if (IsProfileMarkedForDeletion(name)) {
+      continue;
+    }
+
     if (profile_info.is_loaded()) {
       DCHECK(profile_info.profile());
       loaded_profiles.push_back(profile_info.profile());
@@ -227,9 +239,9 @@ bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     return false;
   }
 
-  const base::Value::List& profiles_to_remove =
-      local_state_->GetList(prefs::kProfilesToRemove);
-  if (base::Contains(profiles_to_remove, name)) {
+  // Cannot create a profile that have been marked for deletion, and currently
+  // not fully deleted yet.
+  if (IsProfileMarkedForDeletion(name)) {
     return false;
   }
 
@@ -350,14 +362,37 @@ void ProfileManagerIOSImpl::MarkProfileForDeletion(std::string_view name) {
   ScopedListPrefUpdate update(local_state_, prefs::kProfilesToRemove);
   update->Append(base::Value(name));
 
+  // If the profile is not loaded, nor loading, return.
   auto iter = profiles_map_.find(name);
-  if (iter != profiles_map_.end() && iter->second.is_loaded()) {
-    ProfileIOS* profile = iter->second.profile();
+  if (iter == profiles_map_.end()) {
+    return;
+  }
+
+  // If profile is loaded, notify all observers that it is marked for
+  // deletion.
+  ProfileInfo& info = iter->second;
+  if (info.is_loaded()) {
+    ProfileIOS* profile = info.profile();
     DCHECK(profile);
+
     for (auto& observer : observers_) {
       observer.OnProfileMarkedForPermanentDeletion(this, profile);
     }
+    return;
   }
+
+  // If the profile is still loading, pretend that the loading failed
+  // by calling the ProfileLoadedCallbacks with nullptr.
+  for (auto& callback : info.TakeCallbacks()) {
+    std::move(callback).Run(nullptr);
+  }
+}
+
+bool ProfileManagerIOSImpl::IsProfileMarkedForDeletion(
+    std::string_view name) const {
+  const base::Value::List& profiles_to_remove =
+      local_state_->GetList(prefs::kProfilesToRemove);
+  return base::Contains(profiles_to_remove, name);
 }
 
 ProfileAttributesStorageIOS*
@@ -448,6 +483,16 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
   bool inserted = false;
   bool existing = HasProfileWithName(name);
 
+  // Profile creation is forbiden for profiles that have been marked for
+  // deletion. Fail even if the profile is already loaded, to avoid new
+  // usages after the deletion.
+  if (IsProfileMarkedForDeletion(name)) {
+    if (!initialized_callback.is_null()) {
+      std::move(initialized_callback).Run(nullptr);
+    }
+    return false;
+  }
+
   // As the name may have been registered with ProfileAttributesStorageIOS,
   // a profile is considered as a new profile if the storage does not know
   // about it, or if the IsNewProfile() flag is still set. The flag will be
@@ -466,15 +511,9 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
     can_create &= CanCreateProfileWithName(name);
   }
 
-  // Profile creation is forbiden for profiles that have been marked for
-  // deletion.
-  const base::Value::List& profiles_to_remove =
-      local_state_->GetList(prefs::kProfilesToRemove);
-  const bool marked_for_deletion = base::Contains(profiles_to_remove, name);
-
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
-    if (marked_for_deletion || (is_new_profile && !can_create)) {
+    if (is_new_profile && !can_create) {
       if (!initialized_callback.is_null()) {
         std::move(initialized_callback).Run(nullptr);
       }

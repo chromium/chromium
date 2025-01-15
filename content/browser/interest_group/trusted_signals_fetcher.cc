@@ -204,7 +204,7 @@ cbor::Value::MapValue BuildMapForPartition(
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument(
-      "renderUrls", cbor::Value(scoring_partition.render_url->spec())));
+      "renderURLs", cbor::Value(scoring_partition.render_url->spec())));
 
   if (!scoring_partition.component_render_urls->empty()) {
     cbor::Value::ArrayValue component_urls;
@@ -213,7 +213,7 @@ cbor::Value::MapValue BuildMapForPartition(
       component_urls.emplace_back(cbor::Value(component_render_urls.spec()));
     }
     arguments.emplace_back(
-        MakeArgument("adComponentRenderUrls", std::move(component_urls)));
+        MakeArgument("adComponentRenderURLs", std::move(component_urls)));
   }
 
   partition_cbor_map.try_emplace(cbor::Value("arguments"),

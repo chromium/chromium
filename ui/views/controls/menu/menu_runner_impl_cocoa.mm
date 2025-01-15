@@ -81,7 +81,8 @@ void MenuRunnerImplCocoa::RunMenuAt(
   menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]
       initWithParams:MenuControllerParamsForWidget(parent)];
   menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu_model_
-                                                       delegate:menu_delegate_];
+                                                       delegate:menu_delegate_
+                                         useWithPopUpButtonCell:NO];
 
   closing_event_time_ = base::TimeTicks();
   running_ = true;

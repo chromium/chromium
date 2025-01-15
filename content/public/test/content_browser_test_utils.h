@@ -177,6 +177,8 @@ class ShellAddedObserver {
 // corresponding to the page.
 class RenderWidgetHostViewCocoaObserver {
  public:
+  // The method name for 'didAddSubview'.
+  static constexpr char kDidAddSubview[] = "didAddSubview:";
   static constexpr char kShowDefinitionForAttributedString[] =
       "showDefinitionForAttributedString:atPoint:";
 
@@ -200,12 +202,12 @@ class RenderWidgetHostViewCocoaObserver {
 
   virtual ~RenderWidgetHostViewCocoaObserver();
 
-  // Called when a popup was attempted to be displayed, conveying the bounds of
-  // the popup rectangle (in the RenderWidgetHostViewCocoa coordinate system)
-  // and the initially-selected item. The popup will not actually be triggered.
-  virtual void DidAttemptToShowPopup(const gfx::Rect& bounds,
-                                     int selected_item) {}
-  // Called when RenderWidgetHostViewCocoa is asked to show definition of
+  // Called when a new NSView is added as a subview of RWHVCocoa.
+  // |rect_in_root_view| represents the bounds of the NSView in RWHVCocoa
+  // coordinates. The view will be dismissed shortly after this call.
+  virtual void DidAddSubviewWillBeDismissed(
+      const gfx::Rect& rect_in_root_view) {}
+  // Called when RenderWidgeHostViewCocoa is asked to show definition of
   // |for_word| using Mac's dictionary popup.
   virtual void OnShowDefinitionForAttributedString(
       const std::string& for_word) {}

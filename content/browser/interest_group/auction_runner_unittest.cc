@@ -243,7 +243,7 @@ const char kBidder1ScoringSignalsKVv2Json[] =
       "id": 0,
       "keyGroupOutputs": [{
         "tags": [
-          "renderUrls"
+          "renderURLs"
         ],
         "keyValues": {
           "https://ad1.com/": {
@@ -259,7 +259,7 @@ const char kBidder2ScoringSignalsKVv2Json[] =
       "id": 0,
       "keyGroupOutputs": [{
         "tags": [
-          "renderUrls"
+          "renderURLs"
         ],
         "keyValues": {
           "https://ad2.com/": {
@@ -279,7 +279,7 @@ const char kBidder1Bidder2ScoringSignalsOneParititionKVv2Json[] =
         "id": 0,
         "keyGroupOutputs": [{
           "tags": [
-            "renderUrls"
+            "renderURLs"
           ],
           "keyValues": {
             "https://ad1.com/": {
@@ -295,7 +295,7 @@ const char kBidder1Bidder2ScoringSignalsOneParititionKVv2Json[] =
         "id": 1,
         "keyGroupOutputs": [{
           "tags": [
-            "renderUrls"
+            "renderURLs"
           ],
           "keyValues": {
             "https://ad1.com/": {
@@ -8081,7 +8081,7 @@ function reportResult(auctionConfig, browserSignals) {
           "dataVersion": 2,
           "keyGroupOutputs": [{
             "tags": [
-              "renderUrls"
+              "renderURLs"
             ],
             "keyValues": {
               "https://ad1.com/": {

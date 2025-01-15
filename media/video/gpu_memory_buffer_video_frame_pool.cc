@@ -1206,29 +1206,20 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
                                         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    bool add_scanout_usage = true;
-
-    // SCANOUT usage was historically added unconditionally. However, it
-    // actually should be added only if scanout of SharedImages for this use
-    // case is supported.
-    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
-    if (base::FeatureList::IsEnabled(
-            features::
-                kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-      auto si_caps = sii->GetCapabilities();
-
+    // SCANOUT usage should be added only if scanout of SharedImages for this
+    // use case is supported.
+    auto si_caps = sii->GetCapabilities();
 #if BUILDFLAG(IS_WIN)
-      // On Windows, overlays are in general not supported. However, in some
-      // cases they are supported for the software video frame use case in
-      // particular. This cap details whether that support is present.
-      add_scanout_usage =
-          si_caps.supports_scanout_shared_images_for_software_video_frames;
+    // On Windows, overlays are in general not supported. However, in some
+    // cases they are supported for the software video frame use case in
+    // particular. This cap details whether that support is present.
+    bool add_scanout_usage =
+        si_caps.supports_scanout_shared_images_for_software_video_frames;
 #else
-      // On all other platforms, whether scanout for SharedImages is supported
-      // for this particular use case is no different than the general case.
-      add_scanout_usage = si_caps.supports_scanout_shared_images;
+    // On all other platforms, whether scanout for SharedImages is supported
+    // for this particular use case is no different than the general case.
+    bool add_scanout_usage = si_caps.supports_scanout_shared_images;
 #endif
-    }
 
     if (add_scanout_usage) {
       si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;

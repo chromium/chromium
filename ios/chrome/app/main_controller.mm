@@ -157,6 +157,13 @@
 #import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"  // nogncheck
 #endif
 
+@interface MainController (ForUnloadProfileMarkedForDeletion)
+
+- (void)unloadProfileMarkedForDeletion:(std::string_view)profileName
+                            completion:(ProfileDeletedCallback)completion;
+
+@end
+
 namespace {
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
@@ -276,6 +283,13 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
+void UnloadProfileMarkedForDeletion(MainController* controller,
+                                    std::string_view profile_name,
+                                    ProfileDeletedCallback completion) {
+  [controller unloadProfileMarkedForDeletion:profile_name
+                                  completion:std::move(completion)];
+}
+
 }  // namespace
 
 @interface MainController () <AppStateObserver,
@@ -372,7 +386,7 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   __weak MetricsMediator* _metricsMediator;
 
   // Holds the ProfileController for all loaded profiles.
-  std::map<std::string, ProfileController*> _profileControllers;
+  std::map<std::string, ProfileController*, std::less<>> _profileControllers;
 
   WindowConfigurationRecorder* _windowConfigurationRecorder;
 
@@ -1588,6 +1602,67 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
                  continuation:std::move(continuation)];
 }
 
+- (void)deleteProfile:(std::string_view)profileName
+           completion:(ProfileDeletedCallback)completion {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK_EQ(self.appState.initStage, AppInitStage::kFinal);
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+  CHECK(manager->CanDeleteProfileWithName(profileName));
+  const std::string& personalProfile =
+      manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  DCHECK_GT(personalProfile.size(), 0u);
+
+  manager->MarkProfileForDeletion(profileName);
+  if (auto iter = _profileControllers.find(profileName);
+      iter != _profileControllers.end()) {
+    ProfileController* controller = iter->second;
+    NSArray<SceneState*>* scenes = controller.state.connectedScenes;
+    if (scenes.count > 0) {
+      __weak MainController* weakSelf = self;
+      base::RepeatingClosure closure = BarrierClosure(
+          scenes.count,
+          base::BindOnce(&UnloadProfileMarkedForDeletion, weakSelf, profileName,
+                         std::move(completion)));
+      for (SceneState* scene in scenes) {
+        ChangeProfileContinuation continuation = base::BindOnce(
+            [](base::OnceClosure done_closure, SceneState* scene_state,
+               base::OnceClosure next_closure) {
+              std::move(done_closure).Run();
+              std::move(next_closure).Run();
+            },
+            closure);
+        [self changeProfile:personalProfile
+                   forScene:scene
+               continuation:std::move(continuation)];
+      }
+      return;
+    }
+    _profileControllers.erase(iter);
+  }
+  [self unloadProfileMarkedForDeletion:profileName
+                            completion:std::move(completion)];
+}
+
+#pragma mark - Private
+
+// Removes `profileName` in profile controller if needed and unload
+// `profileName` which should have been marked for deletion.
+- (void)unloadProfileMarkedForDeletion:(std::string_view)profileName
+                            completion:(ProfileDeletedCallback)completion {
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+  CHECK(manager->IsProfileMarkedForDeletion(profileName));
+  if (auto iter = _profileControllers.find(profileName);
+      iter != _profileControllers.end()) {
+    ProfileController* controller = iter->second;
+    NSArray<SceneState*>* scenes = controller.state.connectedScenes;
+    DCHECK_EQ(scenes.count, 0u);
+    _profileControllers.erase(iter);
+  }
+  manager->UnloadProfile(profileName);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(completion), true));
+}
+
 // Attach a Profile to all connected scenes.
 - (void)attachProfilesToAllConnectedScenes {
   ApplicationContext* applicationContext = GetApplicationContext();
@@ -1613,16 +1688,29 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
 
   // The logic to determine which profile to use for the scene is:
   //  1. use the profile recorded in ProfileAttributesStorageIOS,
-  //  2. if there is no mapping, use kLastUsedProfile,
-  //  3. if kLastUsedProfile is unset, generate a new profile.
+  //  2. if the profile is marked for deletion, try to use personal profile,
+  //  3. if there is no mapping,
+  //    3.1. use kLastUsedProfile if set,
+  //    3.2. if kLastUsedProfile is unset, generate a new profile.
   std::string profileName = storage->GetProfileNameForSceneID(sceneID);
+  bool updatedProfileName = false;
+
+  if (manager->IsProfileMarkedForDeletion(profileName)) {
+    // Marked for deletion, try to use personal profile.
+    profileName = storage->GetPersonalProfileName();
+    updatedProfileName = true;
+  }
+
   if (profileName.empty()) {
     profileName = localState->GetString(prefs::kLastUsedProfile);
     if (profileName.empty()) {
       profileName = manager->ReserveNewProfileName();
       DCHECK(!profileName.empty());
     }
+    updatedProfileName = true;
+  }
 
+  if (updatedProfileName) {
     // Store the mapping between the SceneID and the profile in the
     // ProfileAttributesStorageIOS so that it is accessible the next
     // time the window is open.

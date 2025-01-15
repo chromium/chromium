@@ -223,7 +223,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 2 tabs to be present.");
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(kTab1Title, newTabTitle,
@@ -299,7 +299,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
 
   // Tap on the snackbar action.
@@ -331,7 +331,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
 }
 
@@ -350,7 +350,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now 0 tab.
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 0 tab to be present.");
 }
 
@@ -427,7 +427,7 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 
   // Check that there are now two tabs and the current tab has changed.
-  GREYAssertEqual(2, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                   @"Expected 2 tabs to be present.");
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(kTab1Title, newTabTitle,

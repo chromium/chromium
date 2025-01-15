@@ -63,6 +63,10 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
       const GURL& link_url = GURL(),
       bool is_subframe = false);
 
+  static constexpr auto GetFencedFrameUntrustedNetworkStatusGatedCommands() {
+    return kFencedFrameUntrustedNetworkStatusGatedCommands;
+  }
+
   // Returns true if the command specified by |command_id| is present
   // in the menu.
   // A list of command ids can be found in chrome/app/chrome_command_ids.h.

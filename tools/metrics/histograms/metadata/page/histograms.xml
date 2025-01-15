@@ -3878,6 +3878,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The time from navigation start to first contentful paint. This is a version
+    of PageLoad.PaintTiming.NavigationToFirstContentfulPaint recorded only in
+    incognito.
+
+    This metric does not include all page loads, see the description of
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint for details.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI{WebUIName}"
     units="ms" expires_after="2025-06-08">
   <owner>anthonyvd@chromium.org</owner>
@@ -4056,6 +4074,26 @@ chromium-metrics-reviews@google.com.
     the time in milliseconds from navigation timing's navigation start to the
     time when the page first paints the largest content (text or image) in the
     cross-site subframe which is the top candidate of largest contentful paint.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames.
+    Excludes any content painted after user input. Includes content that has
+    been removed from the page. See web.dev/lcp for more details.
+
+    This metric is a version of
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, that is recorded
+    only in incognito mode.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
   </summary>
 </histogram>
 

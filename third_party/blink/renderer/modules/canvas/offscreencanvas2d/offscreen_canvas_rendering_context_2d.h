@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
@@ -68,6 +69,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   }
   SkColorType GetSkColorType() const override {
     return color_params_.GetSkColorType();
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
   }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return color_params_.GetSkColorSpace();

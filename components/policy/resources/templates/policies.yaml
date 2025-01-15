@@ -1329,6 +1329,7 @@ policies:
   1328: DefaultControlledFrameSetting
   1329: ControlledFrameAllowedForUrls
   1330: ControlledFrameBlockedForUrls
+  1331: ExternalStorageAllowlist
 
 atomic_groups:
   1: Homepage

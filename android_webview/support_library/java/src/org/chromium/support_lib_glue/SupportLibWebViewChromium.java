@@ -7,13 +7,13 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
-import androidx.core.os.CancellationSignal;
 
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.SharedWebViewChromium;
@@ -31,12 +31,13 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Executor;
 
 /**
  * Support library glue version of WebViewChromium.
  *
- * A new instance of this class is created transiently for every shared library
- * WebViewCompat call. Do not store state here.
+ * <p>A new instance of this class is created transiently for every shared library WebViewCompat
+ * call. Do not store state here.
  */
 @Lifetime.Temporary
 class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
@@ -224,6 +225,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     public void prerenderUrl(
             String url,
             @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PRERENDER_URL")) {
@@ -239,6 +241,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     public void prerenderUrl(
             String url,
             @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback) {

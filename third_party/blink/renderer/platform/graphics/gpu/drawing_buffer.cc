@@ -388,7 +388,7 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
 
   auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
                            [this](const RegisteredBitmap& registered) {
-                             return registered.bitmap->size() != size_ ||
+                             return registered.shared_image->size() != size_ ||
                                     !registered.sii_provider;
                            });
   recycled_bitmaps_.Shrink(
@@ -705,7 +705,7 @@ void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
                                             const gpu::SyncToken& sync_token,
                                             bool lost_resource) {
   if (destruction_in_progress_ || lost_resource || is_hidden_ ||
-      registered.bitmap->size() != size_) {
+      registered.shared_image->size() != size_) {
     // Just delete the RegisteredBitmap, which will free the memory and
     // unregister it with the compositor.
     return;

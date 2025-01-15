@@ -18,7 +18,7 @@ namespace {
 void ChangeProfileRecentTabsContinuation(SceneState* scene_state,
                                          base::OnceClosure closure) {
   Browser* browser =
-      scene_state.browserProviderInterface.mainBrowserProvider.browser;
+      scene_state.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(

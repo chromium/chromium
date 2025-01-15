@@ -5633,6 +5633,10 @@ SkColorType WebGLRenderingContextBase::GetSkColorType() const {
   return kN32_SkColorType;
 }
 
+gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {
+  return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
+}
+
 sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
   return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
 }

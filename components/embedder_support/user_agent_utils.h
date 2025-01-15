@@ -38,6 +38,10 @@ std::string GetProductAndVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
 
+// Returns a user agent string passed via the kUserAgent command-line argument
+// when it is valid, or std::nullopt if it is not valid.
+std::optional<std::string> GetUserAgentFromCommandLine();
+
 // Returns the full or "reduced" user agent string, depending on the following:
 // 1) UserAgentReduction enterprise policy.
 // 2) Reduce User-Agent reduction phase features.

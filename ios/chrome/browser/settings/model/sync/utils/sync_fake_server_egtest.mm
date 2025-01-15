@@ -1055,7 +1055,7 @@ void ClearRelevantData() {
 
   // Still before signing in, open a second tab.
   [ChromeEarlGrey openNewTab];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tabs left behind from previous test?!");
 
   // Sign in a managed (aka enterprise) account.
@@ -1119,7 +1119,7 @@ void ClearRelevantData() {
                   @"History did not contain the expected entries");
 
   // Both tabs should still be there.
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tab was unexpectedly closed");
 }
 
@@ -1150,7 +1150,7 @@ void ClearRelevantData() {
 
   // Still before signing in, open a second tab.
   [ChromeEarlGrey openNewTab];
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2UL,
                   @"Tabs left behind from previous test?!");
 
   // Sign in a managed (aka enterprise) account.
@@ -1217,7 +1217,7 @@ void ClearRelevantData() {
 
   // The original tab (not used since signing in) should still be there. The
   // second tab, where we navigated while signed in, should have been closed.
-  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1,
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 1UL,
                   @"Tab wasn't closed as expected");
 }
 

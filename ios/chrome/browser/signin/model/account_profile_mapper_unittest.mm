@@ -195,6 +195,9 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   void UnloadAllProfiles() override { NOTREACHED(); }
 
   void MarkProfileForDeletion(std::string_view name) override { NOTREACHED(); }
+  bool IsProfileMarkedForDeletion(std::string_view name) const override {
+    NOTREACHED();
+  }
 
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
     return &profile_attributes_storage_;

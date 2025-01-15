@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '1eaeff9b988df9d6d90092244cbb6636abe5172d',
+  'angle_revision': 'de5286fa682b0bc6298bfb0f120131e713974e98',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '01caeebb0d63dfdb35957de25d2927684964a757',
+  'devtools_frontend_revision': 'b2b8f17d4dcbe2276dc2b46784d0a69ec06107a7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1541,7 +1541,7 @@ deps = {
       'packages' : [
           {
               'package': 'infra/3pp/tools/copybara',
-              'version': 'IGfMEXgS5ZJsyZqZ8RRICpBymRDCShc1fYuAvRggdnMC',
+              'version': '_rad--EmYH2N8Qy7KNGyo4OnjbEVF67u2mqff_Q6lg8C',
           },
       ],
       'condition': 'host_os == "linux" and checkout_copybara',
@@ -1598,7 +1598,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'SgOeixSArJo9SQ6ZkdZfvjynAxizmEsyUgHD9NNB-1oC',
+          'version': 'M1k-NcW82kb60P4IhN249vz2GBCWt78kK0ObbZ1VEVMC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2436,7 +2436,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '7defd12afef82e1859ab2a82ee9702dba7eccfa2',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '3227982dbabb15fcf1f5798e1b43100407e2c8f1',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2657,6 +2657,9 @@ deps = {
 
   'src/third_party/ruy/src':
     Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '83fd40d730feb0804fafbc2d8814bcc19a17b2e5',
+
+  'src/third_party/search_engines_data':
+    Var('chromium_git') + '/external/search_engines_data.git' + '@' + '66ed64db925cbdbf397870f3566c587b0dead98f',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
@@ -4634,7 +4637,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '9e8a2b5150b6e64db3847c871633b21623ca2970',
+        '14fcbec8d9cf0fb7d1f502e175a9d2246e2b62a0',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -1405,7 +1405,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // one, and the that the omnibox is first responder.
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+  GREYAssertEqual(1UL, [ChromeEarlGrey indexOfActiveNormalTab],
                   @"Tab 1 should be active after starting a new search.");
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1445,7 +1445,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // one, and the that the omnibox is first responder.
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  GREYAssertEqual(1, [ChromeEarlGrey indexOfActiveNormalTab],
+  GREYAssertEqual(1UL, [ChromeEarlGrey indexOfActiveNormalTab],
                   @"Tab 1 should be active after starting a new search.");
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]

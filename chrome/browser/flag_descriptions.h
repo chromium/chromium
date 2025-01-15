@@ -1740,9 +1740,6 @@ extern const char kPermissionPredictionsV3Description[];
 extern const char kPermissionsAIv1Name[];
 extern const char kPermissionsAIv1Description[];
 
-extern const char kPermissionQuietChipName[];
-extern const char kPermissionQuietChipDescription[];
-
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];
 
@@ -2966,6 +2963,9 @@ extern const char kReadAnythingDocsLoadMoreButtonDescription[];
 
 extern const char kLinkPreviewName[];
 extern const char kLinkPreviewDescription[];
+
+extern const char kMoveThemePrefsToSpecificsName[];
+extern const char kMoveThemePrefsToSpecificsDescription[];
 
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];

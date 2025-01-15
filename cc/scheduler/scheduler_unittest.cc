@@ -195,7 +195,6 @@ class FakeSchedulerClient : public SchedulerClient,
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
     return DrawResult::kSuccess;
   }
-  void ScheduledActionUpdateDisplayTree() override { NOTIMPLEMENTED(); }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);

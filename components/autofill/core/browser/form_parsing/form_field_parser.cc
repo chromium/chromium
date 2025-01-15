@@ -67,7 +67,7 @@ AutofillRegexCache& GetAutofillRegexCache() {
 }
 
 void MaybePrintMatchLogs(LogManager* log_manager,
-                         const std::string& regex_name,
+                         std::string_view regex_name,
                          std::string_view match_attribute_str,
                          std::u16string_view value,
                          const std::vector<std::u16string>& matches,
@@ -78,10 +78,8 @@ void MaybePrintMatchLogs(LogManager* log_manager,
   CHECK(!matches.empty());
   LogBuffer table_rows;
   LOG_AF(table_rows) << Tr{} << "Match type: Match in " << match_attribute_str;
-  const std::string regex_name_to_log =
-      is_negative_pattern ? base::StrCat({regex_name, " (Negative Pattern)"})
-                          : regex_name;
-  LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name_to_log;
+  LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name
+                     << (is_negative_pattern ? " (Negative Pattern)" : "");
   LOG_AF(table_rows) << Tr{} << "Value: " << HighlightValue(value, matches[0]);
   // The matched substring is reported once more as the highlighting is not
   // particularly copy&paste friendly.
@@ -433,9 +431,8 @@ void FormFieldParser::ParseStandaloneEmailFields(
 std::optional<FormFieldParser::MatchInfo>
 FormFieldParser::FieldMatchesMatchPatternRef(
     ParsingContext& context,
-    base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
-    const char* regex_name,
+    std::string_view regex_name,
     std::initializer_list<MatchParams (*)(const MatchParams&)> projections) {
   // Calling the regex engine with multiple smaller regexes is less efficient
   // than calling it with one larger regex. For this reasons, positive_patterns
@@ -444,6 +441,8 @@ FormFieldParser::FieldMatchesMatchPatternRef(
   // MatchAttributes.
   base::flat_map<DenseSet<MatchAttribute>, std::vector<std::u16string_view>>
       batched_patterns;
+  base::span<const MatchPatternRef> patterns =
+      GetMatchPatterns(regex_name, context.page_language, context.pattern_file);
 
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern = *pattern_ref;
@@ -511,17 +510,16 @@ FormFieldParser::FieldMatchesMatchPatternRef(
 bool FormFieldParser::ParseField(
     ParsingContext& context,
     AutofillScanner* scanner,
-    const char* regex_name,
+    std::string_view regex_name,
     std::optional<FieldAndMatchInfo>* match,
     MatchParams (*projection)(const MatchParams&)) {
   if (scanner->IsEnd()) {
     return false;
   }
-  base::span<const MatchPatternRef> patterns =
-      GetMatchPatterns(regex_name, context.page_language, context.pattern_file);
+
   AutofillField* field = scanner->Cursor();
   if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
-          context, patterns, *field, regex_name, {projection})) {
+          context, *field, regex_name, {projection})) {
     if (match) {
       *match = {.field = field, .match_info = *match_info};
     }
@@ -666,7 +664,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
     const AutofillField& field,
     std::u16string_view pattern,
     DenseSet<MatchAttribute> match_attributes,
-    const char* regex_name,
+    std::string_view regex_name,
     bool is_negative_pattern) {
   // Since `MatchAttribute::kLabel < MatchAttribute::kName`, the logic attempts
   // matching `pattern` against the label first. However, when
@@ -703,7 +701,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
     ParsingContext& context,
     const AutofillField& field,
     std::u16string_view pattern,
-    const char* regex_name,
+    std::string_view regex_name,
     bool is_negative_pattern) {
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
@@ -755,7 +753,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
     ParsingContext& context,
     const AutofillField& field,
     std::u16string_view pattern,
-    const char* regex_name,
+    std::string_view regex_name,
     bool is_negative_pattern) {
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =

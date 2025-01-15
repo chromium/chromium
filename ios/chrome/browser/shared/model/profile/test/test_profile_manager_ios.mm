@@ -155,7 +155,12 @@ void TestProfileManagerIOS::UnloadAllProfiles() {
 }
 
 void TestProfileManagerIOS::MarkProfileForDeletion(std::string_view name) {
-  // No-op
+  NOTREACHED();
+}
+
+bool TestProfileManagerIOS::IsProfileMarkedForDeletion(
+    std::string_view name) const {
+  return false;
 }
 
 ProfileAttributesStorageIOS*

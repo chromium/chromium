@@ -1214,10 +1214,6 @@ DrawResult SingleThreadProxy::ScheduledActionDrawForced() {
   NOTREACHED();
 }
 
-void SingleThreadProxy::ScheduledActionUpdateDisplayTree() {
-  NOTREACHED();
-}
-
 void SingleThreadProxy::ScheduledActionCommit() {
   // DebugScopedSetImplThread here is just a formality; all SchedulerClient
   // methods should have it.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -17,9 +18,11 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/collaboration/public/messaging/activity_log.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
@@ -33,8 +36,15 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_connection.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace tab_groups {
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
@@ -146,11 +156,46 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
     data_sharing_service()->AddGroupDataForTesting(std::move(group_data));
   }
 
+  std::vector<collaboration::messaging::ActivityLogItem> CreateActivityLog(
+      std::string collaboration_id) {
+    using collaboration::messaging::CollaborationEvent;
+    using collaboration::messaging::MessageAttribution;
+    using collaboration::messaging::TabMessageMetadata;
+
+    data_sharing::GroupMember trig_member;
+    trig_member.given_name = "User";
+    trig_member.avatar_url = GURL("https://google.com/avatar");
+
+    TabMessageMetadata tab_metadata;
+    tab_metadata.last_known_url = "https://.google.com";
+
+    MessageAttribution attribution;
+    attribution.triggering_user = trig_member;
+    attribution.tab_metadata = tab_metadata;
+
+    collaboration::messaging::ActivityLogItem item;
+    item.collaboration_event = CollaborationEvent::TAB_ADDED;
+    item.title_text = u"User added a tab";
+    item.description_text = u"google.com";
+    item.time_delta_text = u"2h ago";
+    item.show_favicon = false;
+    item.activity_metadata = attribution;
+
+    return {item};
+  }
+
   data_sharing::DataSharingService* data_sharing_service() {
     data_sharing::DataSharingService* data_sharing_service =
         data_sharing::DataSharingServiceFactory::GetForProfile(
             browser()->profile());
     return data_sharing_service;
+  }
+
+  collaboration::messaging::MessagingBackendService* messaging_service() {
+    collaboration::messaging::MessagingBackendService* messaging_service =
+        collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+            browser()->profile());
+    return messaging_service;
   }
 
  private:
@@ -440,6 +485,26 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       WaitForShow(kDeletionDialogOkButtonId),
       PressButton(kDeletionDialogOkButtonId), FinishTabstripAnimations(),
       WaitForHide(kTabGroupHeaderElementId));
+}
+
+// Verify members see the recent activity button when activity exists.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, RecentActivity) {
+  std::string collaboration_id = "fake_collaboration_id";
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, collaboration_id, data_sharing::MemberRole::kMember,
+                /*should_sign_in=*/false);
+
+  auto log = CreateActivityLog(collaboration_id);
+  messaging_service()->AddActivityLogForTesting(
+      data_sharing::GroupId(collaboration_id), log);
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kTabGroupEditorBubbleId),
+      EnsurePresent(kTabGroupEditorBubbleRecentActivityButtonId), HoverTabAt(0),
+      ClickMouse(), WaitForHide(kRecentActivityBubbleDialogId),
+      FinishTabstripAnimations());
 }
 
 }  // namespace tab_groups

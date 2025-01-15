@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import type {SettingsGlicDataPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, SettingsGlicDataPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('GlicDataPage', function() {
@@ -45,11 +45,11 @@ suite('GlicDataPage', function() {
     assertTrue(!!geolocationToggle);
 
     geolocationToggle.click();
-    assertEquals(true, page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+    assertTrue(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
     assertTrue(geolocationToggle.checked);
 
     geolocationToggle.click();
-    assertEquals(false, page.getPref(PrefName.GEOLOCATION_ENABLED).value);
+    assertFalse(page.getPref(PrefName.GEOLOCATION_ENABLED).value);
     assertFalse(geolocationToggle.checked);
   });
 
@@ -72,11 +72,11 @@ suite('GlicDataPage', function() {
     assertTrue(!!microphoneToggle);
 
     microphoneToggle.click();
-    assertEquals(true, page.getPref(PrefName.MICROPHONE_ENABLED).value);
+    assertTrue(page.getPref(PrefName.MICROPHONE_ENABLED).value);
     assertTrue(microphoneToggle.checked);
 
     microphoneToggle.click();
-    assertEquals(false, page.getPref(PrefName.MICROPHONE_ENABLED).value);
+    assertFalse(page.getPref(PrefName.MICROPHONE_ENABLED).value);
     assertFalse(microphoneToggle.checked);
   });
 
@@ -99,11 +99,11 @@ suite('GlicDataPage', function() {
     assertTrue(!!tabAccessToggle);
 
     tabAccessToggle.click();
-    assertEquals(true, page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
     assertTrue(tabAccessToggle.checked);
 
     tabAccessToggle.click();
-    assertEquals(false, page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
+    assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
     assertFalse(tabAccessToggle.checked);
   });
 

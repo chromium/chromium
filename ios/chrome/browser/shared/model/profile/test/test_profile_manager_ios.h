@@ -50,6 +50,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
   void MarkProfileForDeletion(std::string_view name) override;
+  bool IsProfileMarkedForDeletion(std::string_view name) const override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile

@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -836,9 +837,77 @@ bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
 
   data_sharing::MemberRole member_role =
       collaboration_service->GetCurrentUserRoleForGroup(
-          data_sharing::GroupId(collaboration_id->value()));
+          data_sharing::GroupId(collaboration_id.value().value()));
 
   return data_sharing::MemberRole::kOwner == member_role;
+}
+
+// static
+std::optional<data_sharing::GroupId> SavedTabGroupUtils::GetDataSharingGroupId(
+    Profile* profile,
+    LocalTabGroupID group_id) {
+  auto* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+  CHECK(tab_group_sync_service);
+
+  std::optional<SavedTabGroup> saved_tab_group =
+      tab_group_sync_service->GetGroup(group_id);
+  if (!saved_tab_group) {
+    return std::nullopt;
+  }
+
+  std::optional<CollaborationId> collaboration_id =
+      saved_tab_group->collaboration_id();
+  if (!collaboration_id.has_value()) {
+    return std::nullopt;
+  }
+
+  return data_sharing::GroupId(collaboration_id.value().value());
+}
+
+// static
+bool SavedTabGroupUtils::HasRecentActivity(Profile* profile,
+                                           LocalTabGroupID group_id) {
+  auto* messaging_service =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
+  CHECK(messaging_service);
+
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      SavedTabGroupUtils::GetDataSharingGroupId(profile, group_id);
+  if (!collaboration_group_id.has_value()) {
+    return false;
+  }
+
+  collaboration::messaging::ActivityLogQueryParams activity_log_params;
+  activity_log_params.result_length = 1;
+  activity_log_params.collaboration_id = collaboration_group_id.value();
+
+  auto activity_log = messaging_service->GetActivityLog(activity_log_params);
+  return !activity_log.empty();
+}
+
+// static
+std::vector<collaboration::messaging::ActivityLogItem>
+SavedTabGroupUtils::GetRecentActivity(Profile* profile,
+                                      LocalTabGroupID group_id) {
+  auto* messaging_service =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
+  CHECK(messaging_service);
+
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      SavedTabGroupUtils::GetDataSharingGroupId(profile, group_id);
+  if (!collaboration_group_id.has_value()) {
+    return {};
+  }
+
+  collaboration::messaging::ActivityLogQueryParams activity_log_params;
+  activity_log_params.result_length =
+      RecentActivityBubbleDialogView::kMaxNumberRows;
+  activity_log_params.collaboration_id = collaboration_group_id.value();
+
+  return messaging_service->GetActivityLog(activity_log_params);
 }
 
 }  // namespace tab_groups

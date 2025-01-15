@@ -14,7 +14,7 @@ runCanvasTestsInWorker();
 /** getTextureFormat() should return RGBA16F for a float16 context. */
 canvasPromiseTest(async (canvas) => {
   const ctx = canvas.getContext('2d', {colorSpace: 'display-p3',
-                                       pixelFormat: 'float16'});
+                                       colorType: 'float16'});
   assert_equals(ctx.getTextureFormat(), 'rgba16float');
 }, 'getTextureFormat() returns RGBA16F for a float16 context');
 

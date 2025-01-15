@@ -16,6 +16,7 @@
 #include "components/permissions/permissions_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
@@ -27,38 +28,40 @@ class NotificationServiceInProcessFuzzer
  public:
   using FuzzCase =
       domatolpm::generated::notification_service_fuzzer_grammar::fuzzcase;
-  NotificationServiceInProcessFuzzer() = default;
+  NotificationServiceInProcessFuzzer();
 
   base::CommandLine::StringVector GetChromiumCommandLineArguments() override;
   void SetUpOnMainThread() override;
   int Fuzz(const FuzzCase& fuzz_case) override;
+
+ private:
+  net::EmbeddedTestServer https_test_server_;
 };
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(NotificationServiceInProcessFuzzer)
+
+NotificationServiceInProcessFuzzer::NotificationServiceInProcessFuzzer()
+    : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+}
 
 base::CommandLine::StringVector
 NotificationServiceInProcessFuzzer::GetChromiumCommandLineArguments() {
   return {FILE_PATH_LITERAL("--enable-blink-features=MojoJS")};
 }
 
-base::FilePath GetHtmlFilePath() {
-  base::FilePath exe_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  auto html_file_path = exe_path.Append(
-      FILE_PATH_LITERAL("notification_service_in_process_fuzzer.html"));
-  html_file_path = base::MakeAbsoluteFilePath(html_file_path);
-  // This makes sure that the html file exists.
-  CHECK(!html_file_path.empty());
-  return html_file_path;
-}
-
 void NotificationServiceInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
-  auto html_file_path = GetHtmlFilePath();
+  CHECK(https_test_server_.Start());
+  base::FilePath exe_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+  https_test_server_.ServeFilesFromDirectory(exe_path);
+
   // This html page includes the necessary scripts for the mojo js bindings.
   // Navigate to this page and execute the fuzzer generated JS in this context.
-  CHECK(ui_test_utils::NavigateToURL(browser(),
-                                     net::FilePathToFileURL(html_file_path)));
+  CHECK(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL(
+                     "/notification_service_in_process_fuzzer.html")));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* host_content_setting_map =

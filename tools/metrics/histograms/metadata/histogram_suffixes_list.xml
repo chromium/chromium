@@ -234,6 +234,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
   <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
   <affected-histogram name="Android.IsolatedSplits.ContextCreateTime2"/>
+  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime3"/>
+  <affected-histogram name="Android.IsolatedSplits.LoadFirstClassTime"/>
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
 </histogram_suffixes>
 

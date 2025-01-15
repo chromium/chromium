@@ -277,9 +277,10 @@ public class PageInfoViewTest {
             boolean isModeBUiInCookiesController, int days) {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ACT_USER_BYPASS_UX)
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.FINGERPRINTING_PROTECTION_UX))) {
             var tpController = controller.getTrackingProtectionLaunchControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
         } else {
@@ -1177,7 +1178,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
         ChromeFeatureList.IP_PROTECTION_V1
     })
     @Feature({"RenderTest"})
@@ -1202,7 +1203,8 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
@@ -1227,9 +1229,9 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.ACT_USER_BYPASS_UX,
         ChromeFeatureList.IP_PROTECTION_V1,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")

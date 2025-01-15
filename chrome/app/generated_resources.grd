@@ -11842,6 +11842,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
           Share group
         </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
+          Recent activity
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
           Manage sharing
         </message>
@@ -11889,6 +11892,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
           Share Group
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
+          Recent Activity
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
           Manage Sharing

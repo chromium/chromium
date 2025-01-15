@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -196,6 +197,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
   SkColorType GetSkColorType() const override {
     return color_params_.GetSkColorType();
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
   }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return color_params_.GetSkColorSpace();

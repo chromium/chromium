@@ -211,8 +211,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
   if (net_failure) {
     int net_error = url_loader_->NetError();
-    DLOG(WARNING) << "Could not reach Authorization servers: errno "
-                  << net_error;
     RecordResponseCodeUma(net_error);
     OnGetTokenFailure(GoogleServiceAuthError::FromConnectionError(net_error));
     return;
@@ -230,7 +228,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     } else {
       // Successful (net::HTTP_OK) unexpected format is considered as a
       // transient error.
-      DLOG(WARNING) << "Response doesn't match expected format";
       RecordOAuth2Response(OAuth2Response::kOkUnexpectedFormat);
       OnGetTokenFailure(
           GoogleServiceAuthError::FromServiceUnavailable(response_str));
@@ -272,8 +269,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     case kInvalidClient:
     case kUnauthorizedClient:
     case kUnsuportedGrantType:
-      DLOG(ERROR) << "Unexpected persistent error: error code = "
-                  << oauth2_error;
       error = GoogleServiceAuthError::FromServiceError(response_str);
       break;
 
@@ -281,17 +276,15 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     case kErrorUnexpectedFormat:
       // Failed request with unknown error code or unexpected format is
       // treated as a persistent error case.
-      DLOG(ERROR) << "Unexpected error/format: error code = " << oauth2_error;
       break;
   }
 
   if (!error.has_value()) {
     // Fallback to http status code.
-    if (response_code == net::HTTP_OK) {
-      NOTREACHED();
-    } else if (response_code == net::HTTP_FORBIDDEN ||
-               response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
-               response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
+    CHECK_NE(response_code, net::HTTP_OK);
+    if (response_code == net::HTTP_FORBIDDEN ||
+        response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
+        response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
       // HTTP_FORBIDDEN (403): is treated as transient error, because it may be
       //                       '403 Rate Limit Exeeded.'
       // HTTP_PROXY_AUTHENTICATION_REQUIRED (407): is treated as a network error

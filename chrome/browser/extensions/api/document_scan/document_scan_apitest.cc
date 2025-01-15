@@ -161,6 +161,9 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_PermissionAllowed) {
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(true);
   document_scan()->AddScanner(CreateTestScannerInfo());
+  const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
+  document_scan()->SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   RunTest("perform_scan.html");
   // TODO(b/313494616): Load a second extension to verify (lack of)
   // cross-extension handle sharing.
@@ -174,6 +177,9 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
   base::AutoReset<std::optional<bool>> testing_scope =
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   document_scan()->AddScanner(CreateTestScannerInfo());
+  const std::vector<std::string> scan_data = {"img", "data", "img", "data", ""};
+  document_scan()->SetReadScanDataResponses(
+      scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
   RunTest("perform_scan.html");
 }
 

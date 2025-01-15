@@ -890,10 +890,6 @@ void LayerContextImpl::SetNeedsOneBeginImplFrameOnImplThread() {
   compositor_sink_->SetLayerContextWantsBeginFrames(true);
 }
 
-void LayerContextImpl::SetNeedsUpdateDisplayTreeOnImplThread() {
-  NOTREACHED();
-}
-
 void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
   NOTREACHED();
 }
