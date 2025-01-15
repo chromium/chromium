@@ -40,6 +40,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       Microsoft::WRL::ComPtr<ID3D12Device> device);
   ~D3D12VideoEncodeAccelerator() override;
 
+  void SetEncoderFactoryForTesting(
+      std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory);
+
   SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config,
                   Client* client,
@@ -52,9 +55,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
       const std::optional<gfx::Size>& size) override;
   void Destroy() override;
 
- private:
-  friend class D3D12VideoEncodeAcceleratorTest;
+  base::SingleThreadTaskRunner* GetEncoderTaskRunnerForTesting() const;
+  size_t GetInputFramesQueueSizeForTesting() const;
+  size_t GetBitstreamBuffersSizeForTesting() const;
 
+ private:
   void InitializeTask(const Config& config);
 
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
@@ -108,7 +113,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   std::unique_ptr<D3D12CopyCommandQueueWrapper> copy_command_queue_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
-  // The alternate factory to create the |encoder_| for testing.
   std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory_;
   std::unique_ptr<D3D12VideoEncodeDelegate> encoder_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);

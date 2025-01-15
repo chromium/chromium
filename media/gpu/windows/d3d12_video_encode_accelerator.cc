@@ -24,6 +24,22 @@ namespace {
 // least 4 output bitstream buffer to be allocated for the encoder to operate
 // properly.
 constexpr size_t kMinNumFramesInFlight = 4;
+
+class VideoEncodeDelegateFactory
+    : public D3D12VideoEncodeAccelerator::VideoEncodeDelegateFactoryInterface {
+ public:
+  std::unique_ptr<D3D12VideoEncodeDelegate> CreateVideoEncodeDelegate(
+      ID3D12VideoDevice3* video_device,
+      VideoCodecProfile profile) override {
+    // TODO(crbug.com/40275246): encoder_ will be initialized here.
+    return nullptr;
+  }
+
+  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
+      ID3D12VideoDevice3* video_device) override {
+    return D3D12VideoEncodeDelegate::GetSupportedProfiles(video_device);
+  }
+};
 }  // namespace
 
 struct D3D12VideoEncodeAccelerator::InputFrameRef {
@@ -38,7 +54,8 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
     : device_(std::move(device)),
       child_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      encoder_factory_(std::make_unique<VideoEncodeDelegateFactory>()) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DETACH_FROM_SEQUENCE(encoder_sequence_checker_);
@@ -61,6 +78,11 @@ D3D12VideoEncodeAccelerator::~D3D12VideoEncodeAccelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 }
 
+void D3D12VideoEncodeAccelerator::SetEncoderFactoryForTesting(
+    std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory) {
+  encoder_factory_ = std::move(encoder_factory);
+}
+
 VideoEncodeAccelerator::SupportedProfiles
 D3D12VideoEncodeAccelerator::GetSupportedProfiles() {
   static const base::NoDestructor supported_profiles(
@@ -68,12 +90,7 @@ D3D12VideoEncodeAccelerator::GetSupportedProfiles() {
         if (!video_device_) {
           return {};
         }
-        if (encoder_factory_) {
-          CHECK_IS_TEST();
-          return encoder_factory_->GetSupportedProfiles(video_device_.Get());
-        }
-        return D3D12VideoEncodeDelegate::GetSupportedProfiles(
-            video_device_.Get());
+        return encoder_factory_->GetSupportedProfiles(video_device_.Get());
       }());
   return *supported_profiles.get();
 }
@@ -159,6 +176,21 @@ void D3D12VideoEncodeAccelerator::Destroy() {
       BindOnce(&D3D12VideoEncodeAccelerator::DestroyTask, encoder_weak_this_));
 }
 
+base::SingleThreadTaskRunner*
+D3D12VideoEncodeAccelerator::GetEncoderTaskRunnerForTesting() const {
+  return encoder_task_runner_.get();
+}
+
+size_t D3D12VideoEncodeAccelerator::GetInputFramesQueueSizeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  return input_frames_queue_.size();
+}
+
+size_t D3D12VideoEncodeAccelerator::GetBitstreamBuffersSizeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  return bitstream_buffers_.size();
+}
+
 void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
@@ -191,12 +223,10 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
                         "Failed to create D3D12CopyCommandQueueWrapper"});
   }
 
-  if (encoder_factory_) {
-    CHECK_IS_TEST();
-    encoder_ = encoder_factory_->CreateVideoEncodeDelegate(
-        video_device_.Get(), config.output_profile);
-  } else {
-    // TODO(crbug.com/40275246): encoder_ will be initialized here.
+  encoder_ = encoder_factory_->CreateVideoEncodeDelegate(video_device_.Get(),
+                                                         config.output_profile);
+  if (!encoder_) {
+    return NotifyError(EncoderStatus::Codes::kEncoderUnsupportedCodec);
   }
 
   if (EncoderStatus status = encoder_->Initialize(config); !status.is_ok()) {
