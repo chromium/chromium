@@ -43,6 +43,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** UnitTests for {@link SafetyHubHatsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
 public class SafetyHubHatsHelperUnitTest {
     private static final String EXAMPLE_URL = "http://example1.com";
     private static final PermissionsData PERMISSIONS_DATA =

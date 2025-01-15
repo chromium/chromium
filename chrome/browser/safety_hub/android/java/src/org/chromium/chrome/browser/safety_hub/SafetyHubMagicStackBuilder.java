@@ -77,7 +77,8 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
 
         if (!mProfileSupplier.hasValue()) return false;
 
-        if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
+        if (!ChromeFeatureList.sSafetyHub.isEnabled()
+                && ChromeFeatureList.sSafetyHubAndroidSurvey.isEnabled()) {
             SafetyHubHatsHelper.getForProfile(getRegularProfile())
                     .triggerControlHatsSurvey(mTabModelSelector);
         }
