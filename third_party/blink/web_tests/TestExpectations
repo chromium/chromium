@@ -9102,9 +9102,6 @@ crbug.com/379474211 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text
 crbug.com/389559091 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
 crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-home-end-pagedown-pageup.tentative.html [ Pass Timeout ]
 
-# Gardener 2025-01-14
-crbug.com/384875218 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Pass Timeout ]
-
 # Gardener 2025-01-15
 crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]
 crbug.com/390162925 [ Win ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
