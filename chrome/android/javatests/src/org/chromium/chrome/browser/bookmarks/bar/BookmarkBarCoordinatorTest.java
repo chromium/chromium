@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -42,16 +43,17 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+// TODO(crbug.com): Move to junit tests.
 /** Unit tests for {@link BookmarkBarCoordinator}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class BookmarkBarCoordinatorTest {
 
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private Callback<Integer> mHeightChangeCallback;
@@ -72,19 +74,23 @@ public class BookmarkBarCoordinatorTest {
     }
 
     private void createCoordinator() {
-        final var context = sActivityTestRule.getActivity();
-        final var viewStub = new ViewStub(context, R.layout.bookmark_bar);
+        final var activity = sActivityTestRule.getActivity();
+        final var viewStub = new ViewStub(activity, R.layout.bookmark_bar);
         viewStub.setOnInflateListener((stub, view) -> mView = (BookmarkBar) view);
 
         // NOTE: `viewStub` must be attached to a `viewGroup` in order to inflate.
-        final var viewGroup = new CoordinatorLayoutForPointer(context, /* attrs= */ null);
+        final var viewGroup = new CoordinatorLayoutForPointer(activity, /* attrs= */ null);
         viewGroup.addView(viewStub);
 
-        // NOTE: `viewStub` inflation occurs during construction.
+        // NOTE: `viewStub` inflation occurs during coordinator construction.
         mView = null;
         mCoordinator =
                 new BookmarkBarCoordinator(
-                        mBrowserControlsManager, mHeightChangeCallback, viewStub);
+                        activity,
+                        mBrowserControlsManager,
+                        mHeightChangeCallback,
+                        /* profileSupplier= */ new ObservableSupplierImpl<>(),
+                        viewStub);
         assertNotNull("Verify view stub inflation during construction.", mView);
     }
 
