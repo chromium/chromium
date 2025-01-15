@@ -241,6 +241,12 @@ bool CookieControlsController::ShowActFeatures() {
           tracking_protection_settings_->IsFpProtectionEnabled());
 }
 
+bool CookieControlsController::ShouldUpdateTpContentSetting() {
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
+         is_incognito_profile_;
+}
+
 std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
@@ -341,16 +347,18 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
-    tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    if (ShouldUpdateTpContentSetting()) {
+      tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    }
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  if (ShowActFeatures()) {
+  cookie_settings_->SetCookieSettingForUserBypass(url);
+  if (ShouldUpdateTpContentSetting()) {
     tracking_protection_settings_->AddTrackingProtectionException(url);
   }
-  cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
