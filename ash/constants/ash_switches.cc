@@ -460,6 +460,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
 
+// Skips OOBE network setup even if there is no internet connection.
+const char kOOBESkipNetworkSetupForTesting[] =
+    "oobe-skip-network-setup-for-testing";
+
 // Disables network screen skip check which is based on ethernet connection.
 const char kDisableOOBENetworkScreenSkippingForTesting[] =
     "disable-oobe-network-screen-skipping-for-testing";
@@ -1173,6 +1177,11 @@ bool AreEmptyPasswordsAllowedForForTesting() {
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
+}
+
+bool IsOOBENetworkSetupSkippedForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOOBESkipNetworkSetupForTesting);
 }
 
 bool IsOOBENetworkScreenSkippingDisabledForTesting() {

@@ -148,6 +148,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableMachineCertRequest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOOBESkipNetworkSetupForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableOOBENetworkScreenSkippingForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisablePerUserTimezone[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableRollbackOption[];
@@ -438,6 +440,11 @@ bool IsAueReachedForUpdateRequiredForTest();
 // testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBEChromeVoxHintTimerDisabledForTesting();
+
+// Returns true if the OOBE network setup is skipped even if there is no
+// internet connection.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsOOBENetworkSetupSkippedForTesting();
 
 // Returns true if the OOBE Network screen skipping check based on ethernet
 // connection is disabled for testing.
