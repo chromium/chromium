@@ -17,9 +17,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
-// TODO(https://crbug.com/387302159): Remove this include after dependent files
-// include this on their own.
-#include "chrome/browser/web_applications/web_app_management_type.h"
 
 namespace webapps {
 enum class WebappUninstallSource;

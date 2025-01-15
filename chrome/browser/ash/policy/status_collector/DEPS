@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/pages/storage",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app.h",
+  "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_provider_factory.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
