@@ -1622,7 +1622,7 @@
     // ExpectNoLinkedResources.
     {
       name: "DocumentPolicyExpectNoLinkedResources",
-      status: "experimental",
+      status: "stable",
     },
     // Enables the ability to use Document Policy header to control feature
     // IncludeJSCallStacksInCrashReports. https://chromestatus.com/feature/4731248572628992
