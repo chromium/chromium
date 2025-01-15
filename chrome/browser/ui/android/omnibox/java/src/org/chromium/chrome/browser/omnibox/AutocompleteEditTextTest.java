@@ -464,7 +464,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_CommitText() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -607,7 +607,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAdditionalTextColor() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -648,34 +648,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/false")
-    public void testAppendWithAdditionalText_noFullUrl() {
-        // User types "h".
-        assertTrue(mInputConnection.commitText("h", 1));
-        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
-        mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
-        assertVerifierCallCounts(2, 2);
-
-        mInOrder.verifyNoMoreInteractions();
-        assertTrue(mAutocomplete.shouldAutocomplete());
-
-        // The controller kicks in.
-        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
-        assertFalse(mAutocomplete.isCursorVisible());
-        // "www.foo.com" is not shown since the show full URL parameter set to false.
-        verifyOnPopulateAccessibilityEvent(
-                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hello world", "h", -1, 1, -1, 0, 10);
-        assertVerifierCallCounts(0, 1);
-        mInOrder.verifyNoMoreInteractions();
-        assertTrue(mAutocomplete.shouldAutocomplete());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_minimumCharacters() {
         // User types "h".
         assertTrue(mInputConnection.commitText("h", 1));
@@ -763,7 +736,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_onSelectionChanged() {
         // User types "hel".
         assertTrue(mInputConnection.commitText("hel", 1));
@@ -822,7 +795,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testAppendWithAdditionalText_removeAutocompleteAndAddtionalText() {
         // User types "hello".
         assertTrue(mInputConnection.commitText("hello", 1));
@@ -1423,7 +1396,7 @@ public class AutocompleteEditTextTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION + ":rich_autocomplete_full_url/true")
+    @EnableFeatures(OmniboxFeatureList.RICH_AUTOCOMPLETION)
     public void testPerformEditorAction_withAdditionText() {
         // User types "goo".
         assertTrue(mInputConnection.setComposingText("goo", 1));
