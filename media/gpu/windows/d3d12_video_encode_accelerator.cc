@@ -10,6 +10,8 @@
 #include "base/task/thread_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
+#include "media/gpu/windows/format_utils.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -176,6 +178,12 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
              profile->max_resolution.ToString())});
   }
 
+  copy_command_queue_ = D3D12CopyCommandQueueWrapper::Create(device_.Get());
+  if (!copy_command_queue_) {
+    return NotifyError({EncoderStatus::Codes::kSystemAPICallError,
+                        "Failed to create D3D12CopyCommandQueueWrapper"});
+  }
+
   if (encoder_factory_) {
     CHECK_IS_TEST();
     encoder_ = encoder_factory_->CreateVideoEncodeDelegate(
@@ -247,9 +255,69 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
 Microsoft::WRL::ComPtr<ID3D12Resource>
 D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     const VideoFrame& frame) {
-  // TODO(crbug.com/40275246)
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_SHMEM);
+  CHECK(frame.IsMappable());
+
+  D3D12_RESOURCE_DESC input_texture_desc = CD3DX12_RESOURCE_DESC::Tex2D(
+      DXGI_FORMAT_NV12, config_.input_visible_size.width(),
+      config_.input_visible_size.height(), 1, 1);
+  Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
+  HRESULT hr = device_->CreateCommittedResource(
+      &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &input_texture_desc,
+      D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&input_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
+    return nullptr;
+  }
+
+  gfx::Size y_size = VideoFrame::PlaneSize(
+      PIXEL_FORMAT_NV12, VideoFrame::Plane::kY, config_.input_visible_size);
+  gfx::Size uv_size = VideoFrame::PlaneSize(
+      PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, config_.input_visible_size);
+  uint32_t uv_offset = y_size.GetArea();
+
+  D3D12_RESOURCE_DESC upload_buffer_desc =
+      CD3DX12_RESOURCE_DESC::Buffer(uv_offset + uv_size.GetArea());
+  Microsoft::WRL::ComPtr<ID3D12Resource> upload_buffer;
+  hr = device_->CreateCommittedResource(
+      &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE, &upload_buffer_desc,
+      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&upload_buffer));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
+    return nullptr;
+  }
+
+  {
+    ScopedD3D12ResourceMap map;
+    if (!map.Map(upload_buffer.Get())) {
+      LOG(ERROR) << "Failed to map upload_buffer";
+      return nullptr;
+    }
+    scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
+        PIXEL_FORMAT_NV12, config_.input_visible_size,
+        gfx::Rect(config_.input_visible_size), config_.input_visible_size,
+        y_size.width(), uv_size.width(), map.data().first(uv_offset).data(),
+        map.data().subspan(uv_offset).data(), frame.timestamp());
+    EncoderStatus result =
+        frame_converter_.ConvertAndScale(frame, *upload_frame);
+    if (!result.is_ok()) {
+      LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
+      return nullptr;
+    }
+  }
+
+  copy_command_queue_->CopyBufferToNV12Texture(
+      input_texture.Get(), upload_buffer.Get(), 0, y_size.width(), uv_offset,
+      uv_size.width());
+
+  // TODO(crbug.com/382316466): Let command queue wait on the GPU
+  if (!copy_command_queue_->ExecuteAndWait()) {
+    LOG(ERROR) << "Failed to ExecuteAndWait copy_command_list";
+    return nullptr;
+  }
+
+  return input_texture;
 }
 
 void D3D12VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,

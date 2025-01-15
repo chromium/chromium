@@ -15,7 +15,9 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -98,12 +100,18 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   bool error_occurred_ = false;
 
+  std::unique_ptr<D3D12CopyCommandQueueWrapper> copy_command_queue_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
   // The alternate factory to create the |encoder_| for testing.
   std::unique_ptr<VideoEncodeDelegateFactoryInterface> encoder_factory_;
   std::unique_ptr<D3D12VideoEncodeDelegate> encoder_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   size_t num_frames_in_flight_ = 0;
+
+  // Used for frame format conversion.
+  VideoFrameConverter frame_converter_;
 
   struct InputFrameRef;
 
