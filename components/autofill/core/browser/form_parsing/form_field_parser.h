@@ -192,9 +192,8 @@ class FormFieldParser {
   // Returns a MatchInfo if `field` matches one of the the passed `patterns`.
   static std::optional<MatchInfo> FieldMatchesMatchPatternRef(
       ParsingContext& context,
-      base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
-      const char* regex_name = "",
+      std::string_view regex_name,
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
 
@@ -236,7 +235,7 @@ class FormFieldParser {
   static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
-      const char* regex_name,
+      std::string_view regex_name,
       std::optional<FieldAndMatchInfo>* match = nullptr,
       MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
 
@@ -315,7 +314,7 @@ class FormFieldParser {
       const AutofillField& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
-      const char* regex_name,
+      std::string_view regex_name,
       bool is_negative_pattern = false);
 
   // Like `Match()`, but only for the label or name of the field.
@@ -323,12 +322,12 @@ class FormFieldParser {
       ParsingContext& context,
       const AutofillField& field,
       std::u16string_view pattern,
-      const char* regex_name,
+      std::string_view regex_name,
       bool is_negative_pattern = false);
   static std::optional<MatchInfo> MatchInName(ParsingContext& context,
                                               const AutofillField& field,
                                               std::u16string_view pattern,
-                                              const char* regex_name,
+                                              std::string_view regex_name,
                                               bool is_negative_pattern = false);
 
   // Perform a "pass" over the |fields| where each pass uses the supplied

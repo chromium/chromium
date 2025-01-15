@@ -178,9 +178,9 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_file()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_file()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, LanguageCode(""), pattern_file()),
               Each(Not(IsSupplementary)));
 }
 
@@ -190,8 +190,8 @@ TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   const std::string kSomeName = "ADDRESS_LINE_1";
   const LanguageCode kNonexistingLanguage("foo");
   EXPECT_THAT(GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_file()),
-              ElementsAreArray(
-                  GetMatchPatterns(kSomeName, std::nullopt, pattern_file())));
+              ElementsAreArray(GetMatchPatterns(kSomeName, LanguageCode(""),
+                                                pattern_file())));
 }
 
 // Tests that for a given pattern name, the non-English languages are
