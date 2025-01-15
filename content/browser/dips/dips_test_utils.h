@@ -93,7 +93,7 @@ constexpr char kStorageAccessScript[] = R"(
     access%s();
   )";
 
-using StateForURLCallback = base::OnceCallback<void(BtmState)>;
+using StateForURLCallback = base::OnceCallback<void(DIPSState)>;
 
 // Helper function to close (and waits for closure of) a `web_contents` tab.
 void CloseTab(WebContents* web_contents);
@@ -131,16 +131,16 @@ void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
                                        const GURL& image_url);
 
 // Helper function to block until all DIPS storage requests are complete.
-inline void WaitOnStorage(BtmServiceImpl* dips_service) {
+inline void WaitOnStorage(DIPSServiceImpl* dips_service) {
   dips_service->storage()->FlushPostedTasksForTesting();
 }
 
 // Helper function to query the `url` state from DIPS storage.
-std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
-                                      const GURL& url);
+std::optional<StateValue> GetDIPSState(DIPSServiceImpl* dips_service,
+                                       const GURL& url);
 
-inline BtmServiceImpl* GetDipsService(WebContents* web_contents) {
-  return BtmServiceImpl::Get(web_contents->GetBrowserContext());
+inline DIPSServiceImpl* GetDipsService(WebContents* web_contents) {
+  return DIPSServiceImpl::Get(web_contents->GetBrowserContext());
 }
 
 class URLCookieAccessObserver : public WebContentsObserver {
@@ -241,10 +241,10 @@ class ScopedInitFeature {
 };
 
 // Enables/disables the DIPS Feature.
-class ScopedInitBtmFeature {
+class ScopedInitDIPSFeature {
  public:
-  explicit ScopedInitBtmFeature(bool enable,
-                                const base::FieldTrialParams& params = {});
+  explicit ScopedInitDIPSFeature(bool enable,
+                                 const base::FieldTrialParams& params = {});
 
  private:
   ScopedInitFeature init_feature_;

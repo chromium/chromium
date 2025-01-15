@@ -56,7 +56,7 @@ std::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
 TimestampRange RangeFromColumns(sql::Statement* statement,
                                 int start_column_idx,
                                 int end_column_idx,
-                                std::vector<BtmErrorCode>& errors) {
+                                std::vector<DIPSErrorCode>& errors) {
   std::optional<base::Time> first_time =
       ColumnOptionalTime(statement, start_column_idx);
   std::optional<base::Time> last_time =
@@ -67,12 +67,12 @@ TimestampRange RangeFromColumns(sql::Statement* statement,
   }
 
   if (!first_time.has_value()) {
-    errors.push_back(BtmErrorCode::kRead_OpenEndedRange_NullStart);
+    errors.push_back(DIPSErrorCode::kRead_OpenEndedRange_NullStart);
     return std::nullopt;
   }
 
   if (!last_time.has_value()) {
-    errors.push_back(BtmErrorCode::kRead_OpenEndedRange_NullEnd);
+    errors.push_back(DIPSErrorCode::kRead_OpenEndedRange_NullEnd);
     return std::nullopt;
   }
 
@@ -96,9 +96,9 @@ void BindTimesOrNull(sql::Statement& statement,
 
 }  // namespace
 
-BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
+DIPSDatabase::DIPSDatabase(const std::optional<base::FilePath>& db_path)
     : db_path_(db_path.value_or(base::FilePath())) {
-  DCHECK(base::FeatureList::IsEnabled(features::kBtm));
+  DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
 
   sql::DatabaseOptions db_options{
       .wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase),
@@ -113,7 +113,7 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
   base::AssertLongCPUWorkAllowed();
   if (db_path.has_value()) {
     DCHECK(!db_path->empty())
-        << "To create an in-memory BtmDatabase, explicitly pass an "
+        << "To create an in-memory DIPSDatabase, explicitly pass an "
            "std::nullopt `db_path`.";
   }
 
@@ -122,13 +122,13 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
   }
 }
 
-BtmDatabase::~BtmDatabase() {
+DIPSDatabase::~DIPSDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // Invoked on a db error.
-void BtmDatabase::DatabaseErrorCallback(int extended_error,
-                                        sql::Statement* stmt) {
+void DIPSDatabase::DatabaseErrorCallback(int extended_error,
+                                         sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("Privacy.DIPS.DatabaseErrors", extended_error);
 
@@ -146,7 +146,7 @@ void BtmDatabase::DatabaseErrorCallback(int extended_error,
   }
 }
 
-sql::InitStatus BtmDatabase::OpenDatabase() {
+sql::InitStatus DIPSDatabase::OpenDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -156,7 +156,7 @@ sql::InitStatus BtmDatabase::OpenDatabase() {
   db_->reset_error_callback();
 
   db_->set_error_callback(base::BindRepeating(
-      &BtmDatabase::DatabaseErrorCallback, base::Unretained(this)));
+      &DIPSDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   if (in_memory()) {
     if (!db_->OpenInMemory()) {
@@ -170,7 +170,7 @@ sql::InitStatus BtmDatabase::OpenDatabase() {
   return sql::INIT_OK;
 }
 
-bool BtmDatabase::InitTables() {
+bool DIPSDatabase::InitTables() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kBouncesSql[] =  // clang-format off
     "CREATE TABLE bounces("
@@ -218,7 +218,7 @@ bool BtmDatabase::InitTables() {
   return db_->Execute(kBouncesSql) && db_->Execute(kPopupsSql);
 }
 
-sql::InitStatus BtmDatabase::InitImpl() {
+sql::InitStatus DIPSDatabase::InitImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SCOPED_UMA_HISTOGRAM_TIMER("Privacy.DIPS.Database.Operation.InitTime");
@@ -251,7 +251,7 @@ sql::InitStatus BtmDatabase::InitImpl() {
   }
 
   if (table_already_exists
-          ? !MigrateBtmSchemaToLatestVersion(*(db_.get()), meta_table_)
+          ? !MigrateDIPSSchemaToLatestVersion(*(db_.get()), meta_table_)
           : !InitTables()) {
     return sql::INIT_FAILURE;
   }
@@ -264,7 +264,7 @@ sql::InitStatus BtmDatabase::InitImpl() {
   return sql::INIT_OK;
 }
 
-sql::InitStatus BtmDatabase::Init() {
+sql::InitStatus DIPSDatabase::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::InitStatus status = InitImpl();
@@ -292,7 +292,7 @@ sql::InitStatus BtmDatabase::Init() {
   return status;
 }
 
-void BtmDatabase::LogDatabaseMetrics() {
+void DIPSDatabase::LogDatabaseMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -303,13 +303,13 @@ void BtmDatabase::LogDatabaseMetrics() {
   }
 
   base::UmaHistogramCounts10000("Privacy.DIPS.DatabaseEntryCount",
-                                GetEntryCount(BtmDatabaseTable::kBounces));
+                                GetEntryCount(DIPSDatabaseTable::kBounces));
 
   base::UmaHistogramTimes("Privacy.DIPS.DatabaseHealthMetricsTime",
                           base::TimeTicks::Now() - start_time);
 }
 
-bool BtmDatabase::CheckDBInit() {
+bool DIPSDatabase::CheckDBInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_ || !db_->is_open() || !db_init_) {
     return false;
@@ -326,7 +326,7 @@ bool BtmDatabase::CheckDBInit() {
   return true;
 }
 
-bool BtmDatabase::ExecuteSqlForTesting(const base::cstring_view sql) {
+bool DIPSDatabase::ExecuteSqlForTesting(const base::cstring_view sql) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -334,12 +334,12 @@ bool BtmDatabase::ExecuteSqlForTesting(const base::cstring_view sql) {
   return db_->ExecuteScriptForTesting(sql);  // IN-TEST
 }
 
-bool BtmDatabase::Write(const std::string& site,
-                        const TimestampRange& storage_times,
-                        const TimestampRange& interaction_times,
-                        const TimestampRange& stateful_bounce_times,
-                        const TimestampRange& bounce_times,
-                        const TimestampRange& web_authn_assertion_times) {
+bool DIPSDatabase::Write(const std::string& site,
+                         const TimestampRange& storage_times,
+                         const TimestampRange& interaction_times,
+                         const TimestampRange& stateful_bounce_times,
+                         const TimestampRange& bounce_times,
+                         const TimestampRange& web_authn_assertion_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
       IsNullOrWithin(/*inner=*/stateful_bounce_times, /*outer=*/bounce_times));
@@ -348,8 +348,8 @@ bool BtmDatabase::Write(const std::string& site,
   }
 
   if (site.empty()) {
-    base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
-                                  BtmErrorCode::kWrite_EmptySite);
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                  DIPSErrorCode::kWrite_EmptySite);
     return false;
   }
 
@@ -384,17 +384,17 @@ bool BtmDatabase::Write(const std::string& site,
     return false;
   }
 
-  base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
-                                BtmErrorCode::kWrite_None);
+  base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kWrite_None);
   return true;
 }
 
-bool BtmDatabase::WritePopup(const std::string& opener_site,
-                             const std::string& popup_site,
-                             const uint64_t access_id,
-                             const base::Time& popup_time,
-                             bool is_current_interaction,
-                             bool is_authentication_interaction) {
+bool DIPSDatabase::WritePopup(const std::string& opener_site,
+                              const std::string& popup_site,
+                              const uint64_t access_id,
+                              const base::Time& popup_time,
+                              bool is_current_interaction,
+                              bool is_authentication_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -425,7 +425,7 @@ bool BtmDatabase::WritePopup(const std::string& opener_site,
   return statement.Run();
 }
 
-std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
+std::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return std::nullopt;
@@ -454,8 +454,8 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
 
   if (!statement.Step()) {
     if (statement.Succeeded() && site.empty()) {
-      base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
-                                    BtmErrorCode::kRead_EmptySite_NotInDb);
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                    DIPSErrorCode::kRead_EmptySite_NotInDb);
     }
 
     return std::nullopt;
@@ -477,7 +477,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
     return std::nullopt;
   }
 
-  std::vector<BtmErrorCode> errors;
+  std::vector<DIPSErrorCode> errors;
   TimestampRange site_storage_times =
       RangeFromColumns(&statement, 1, 2, errors);
   TimestampRange user_interaction_times =
@@ -491,7 +491,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   if (!IsNullOrWithin(stateful_bounce_times, bounce_times)) {
     DCHECK(stateful_bounce_times.has_value());
     errors.push_back(
-        BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces);
+        DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces);
     if (!bounce_times.has_value()) {
       bounce_times = stateful_bounce_times;
     } else {
@@ -504,22 +504,22 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
   }
 
   if (site.empty()) {
-    errors.push_back(BtmErrorCode::kRead_EmptySite_InDb);
+    errors.push_back(DIPSErrorCode::kRead_EmptySite_InDb);
   }
 
   if (errors.empty()) {
-    base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes",
-                                  BtmErrorCode::kRead_None);
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                  DIPSErrorCode::kRead_None);
   } else {
-    for (const BtmErrorCode& error : errors) {
-      base::UmaHistogramEnumeration("Privacy.DIPS.BtmErrorCodes", error);
+    for (const DIPSErrorCode& error : errors) {
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
     }
   }
 
   // If `site` is an empty string, treat the entry as not in the database and
   // remove it. See crbug.com/1447035 for context.
   if (site.empty()) {
-    RemoveRow(BtmDatabaseTable::kBounces, site);
+    RemoveRow(DIPSDatabaseTable::kBounces, site);
     return std::nullopt;
   }
 
@@ -528,7 +528,7 @@ std::optional<StateValue> BtmDatabase::Read(const std::string& site) {
                     web_authn_assertion_times};
 }
 
-std::optional<PopupsStateValue> BtmDatabase::ReadPopup(
+std::optional<PopupsStateValue> DIPSDatabase::ReadPopup(
     const std::string& opener_site,
     const std::string& popup_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -571,7 +571,7 @@ std::optional<PopupsStateValue> BtmDatabase::ReadPopup(
                           is_authentication_interaction};
 }
 
-std::vector<PopupWithTime> BtmDatabase::ReadRecentPopupsWithInteraction(
+std::vector<PopupWithTime> DIPSDatabase::ReadRecentPopupsWithInteraction(
     const base::TimeDelta& lookback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -602,8 +602,8 @@ std::vector<PopupWithTime> BtmDatabase::ReadRecentPopupsWithInteraction(
   return popups;
 }
 
-std::vector<std::string> BtmDatabase::GetAllSitesForTesting(
-    BtmDatabaseTable table) {
+std::vector<std::string> DIPSDatabase::GetAllSitesForTesting(
+    DIPSDatabaseTable table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
@@ -611,7 +611,7 @@ std::vector<std::string> BtmDatabase::GetAllSitesForTesting(
 
   std::vector<std::string> sites;
 
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     static constexpr char kReadBounceTableSqlStr[] = "SELECT site FROM bounces";
     DCHECK(db_->IsSQLValid(kReadBounceTableSqlStr));
     sql::Statement s_bounces(
@@ -619,7 +619,7 @@ std::vector<std::string> BtmDatabase::GetAllSitesForTesting(
     while (s_bounces.Step()) {
       sites.push_back(s_bounces.ColumnString(0));
     }
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     static constexpr char kReadPopupTableSqlStr[] =
         "SELECT opener_site,popup_site FROM popups";
     DCHECK(db_->IsSQLValid(kReadPopupTableSqlStr));
@@ -634,7 +634,7 @@ std::vector<std::string> BtmDatabase::GetAllSitesForTesting(
   return sites;
 }
 
-std::vector<std::string> BtmDatabase::GetSitesThatBounced(
+std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
     base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -665,7 +665,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatBounced(
   return sites;
 }
 
-std::vector<std::string> BtmDatabase::GetSitesThatBouncedWithState(
+std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
     base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -697,7 +697,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatBouncedWithState(
   return sites;
 }
 
-std::vector<std::string> BtmDatabase::GetSitesThatUsedStorage(
+std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
     base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -728,7 +728,7 @@ std::vector<std::string> BtmDatabase::GetSitesThatUsedStorage(
   return sites;
 }
 
-std::set<std::string> BtmDatabase::FilterSitesWithProtectiveEvent(
+std::set<std::string> DIPSDatabase::FilterSitesWithProtectiveEvent(
     const std::set<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -768,7 +768,7 @@ std::set<std::string> BtmDatabase::FilterSitesWithProtectiveEvent(
   return sites_with_protective_event;
 }
 
-size_t BtmDatabase::ClearExpiredRows() {
+size_t DIPSDatabase::ClearExpiredRows() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(clock_);
   if (!CheckDBInit()) {
@@ -791,7 +791,7 @@ size_t BtmDatabase::ClearExpiredRows() {
   sql::Statement bounces_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kClearAllExpiredBouncesTableSql));
   bounces_statement.BindTime(
-      0, clock_->Now() - features::kBtmInteractionTtl.Get());
+      0, clock_->Now() - features::kDIPSInteractionTtl.Get());
   if (!bounces_statement.Run()) {
     return 0;
   }
@@ -813,8 +813,8 @@ size_t BtmDatabase::ClearExpiredRows() {
   return change_count;
 }
 
-bool BtmDatabase::RemoveRow(const BtmDatabaseTable table,
-                            const std::string& site) {
+bool DIPSDatabase::RemoveRow(const DIPSDatabaseTable table,
+                             const std::string& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -822,14 +822,14 @@ bool BtmDatabase::RemoveRow(const BtmDatabaseTable table,
 
   ClearExpiredRows();
 
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     static constexpr char kRemoveSql[] = "DELETE FROM bounces WHERE site=?";
     DCHECK(db_->IsSQLValid(kRemoveSql));
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kRemoveSql));
     statement.BindString(0, site);
     return statement.Run();
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     static constexpr char kRemoveSql[] =
         "DELETE FROM popups WHERE opener_site=? OR popup_site=?";
     DCHECK(db_->IsSQLValid(kRemoveSql));
@@ -840,13 +840,13 @@ bool BtmDatabase::RemoveRow(const BtmDatabaseTable table,
     return statement.Run();
   }
 
-  // This should never be called - both BtmDatabaseTable types are handled and
+  // This should never be called - both DIPSDatabaseTable types are handled and
   // return above.
   return false;
 }
 
-bool BtmDatabase::RemoveRows(const BtmDatabaseTable table,
-                             const std::vector<std::string>& sites) {
+bool DIPSDatabase::RemoveRows(const DIPSDatabaseTable table,
+                              const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -861,14 +861,14 @@ bool BtmDatabase::RemoveRows(const BtmDatabaseTable table,
   const std::string site_list =
       base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ",");
 
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     sql::Statement statement(db_->GetUniqueStatement(base::StrCat(
         {"DELETE FROM bounces ", "WHERE site IN(", site_list, ")"})));
     for (size_t i = 0; i < sites.size(); i++) {
       statement.BindString(i, sites[i]);
     }
     return statement.Run();
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     sql::Statement statement(db_->GetUniqueStatement(
         base::StrCat({"DELETE FROM popups ", "WHERE opener_site IN(", site_list,
                       ") OR popup_site IN(", site_list, ")"})));
@@ -881,14 +881,14 @@ bool BtmDatabase::RemoveRows(const BtmDatabaseTable table,
     return statement.Run();
   }
 
-  // This should never be called - both BtmDatabaseTable types are handled and
+  // This should never be called - both DIPSDatabaseTable types are handled and
   // return above.
   return false;
 }
 
-bool BtmDatabase::RemoveEventsByTime(const base::Time& delete_begin,
-                                     const base::Time& delete_end,
-                                     const BtmEventRemovalType type) {
+bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
+                                      const base::Time& delete_end,
+                                      const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -907,9 +907,9 @@ bool BtmDatabase::RemoveEventsByTime(const base::Time& delete_begin,
           transaction.Commit());
 }
 
-bool BtmDatabase::RemoveEventsBySite(bool preserve,
-                                     const std::vector<std::string>& sites,
-                                     const BtmEventRemovalType type) {
+bool DIPSDatabase::RemoveEventsBySite(bool preserve,
+                                      const std::vector<std::string>& sites,
+                                      const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -929,9 +929,9 @@ bool BtmDatabase::RemoveEventsBySite(bool preserve,
   return transaction.Commit();
 }
 
-bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
-                                  const base::Time& delete_end,
-                                  const BtmEventRemovalType type) {
+bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
+                                   const base::Time& delete_end,
+                                   const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -942,7 +942,8 @@ bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
 
   ClearExpiredRows();
 
-  if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kClearInteractionSql[] =  // clang-format off
         "UPDATE bounces SET "
             "first_user_interaction_time=NULL,"
@@ -995,7 +996,8 @@ bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
     }
   }
 
-  if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
+  if ((type & DIPSEventRemovalType::kStorage) ==
+      DIPSEventRemovalType::kStorage) {
     static constexpr char kClearStorageSql[] =  // clang-format off
         "UPDATE bounces SET "
             "first_site_storage_time=NULL,"
@@ -1056,9 +1058,9 @@ bool BtmDatabase::ClearTimestamps(const base::Time& delete_begin,
           AdjustLastTimestamps(delete_begin, delete_end, type));
 }
 
-bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
-                                        const base::Time& delete_end,
-                                        const BtmEventRemovalType type) {
+bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
+                                         const base::Time& delete_end,
+                                         const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -1073,7 +1075,8 @@ bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
     return true;
   }
 
-  if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kUpdateFirstInteractionSql[] =  // clang-format off
         "UPDATE bounces SET first_user_interaction_time=?2 "
             "WHERE first_user_interaction_time>=?1 AND "
@@ -1107,7 +1110,8 @@ bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
     }
   }
 
-  if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
+  if ((type & DIPSEventRemovalType::kStorage) ==
+      DIPSEventRemovalType::kStorage) {
     static constexpr char kUpdateFirstStorageSql[] =  // clang-format off
         "UPDATE bounces SET first_site_storage_time=?2 "
             "WHERE first_site_storage_time>=?1 AND "
@@ -1160,9 +1164,9 @@ bool BtmDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   return true;
 }
 
-bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
-                                       const base::Time& delete_end,
-                                       const BtmEventRemovalType type) {
+bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
+                                        const base::Time& delete_end,
+                                        const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -1177,7 +1181,8 @@ bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
     return true;
   }
 
-  if ((type & BtmEventRemovalType::kHistory) == BtmEventRemovalType::kHistory) {
+  if ((type & DIPSEventRemovalType::kHistory) ==
+      DIPSEventRemovalType::kHistory) {
     static constexpr char kUpdateLastInteractionSql[] =  // clang-format off
         "UPDATE bounces SET last_user_interaction_time=?1 "
             "WHERE last_user_interaction_time>?1 AND "
@@ -1211,7 +1216,8 @@ bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
     }
   }
 
-  if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
+  if ((type & DIPSEventRemovalType::kStorage) ==
+      DIPSEventRemovalType::kStorage) {
     static constexpr char kUpdateLastStorageSql[] =  // clang-format off
         "UPDATE bounces SET last_site_storage_time=?1 "
             "WHERE last_site_storage_time>?1 AND "
@@ -1264,9 +1270,9 @@ bool BtmDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   return true;
 }
 
-bool BtmDatabase::ClearTimestampsBySite(bool preserve,
-                                        const std::vector<std::string>& sites,
-                                        const BtmEventRemovalType type) {
+bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
+                                         const std::vector<std::string>& sites,
+                                         const DIPSEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (sites.empty()) {
@@ -1276,7 +1282,8 @@ bool BtmDatabase::ClearTimestampsBySite(bool preserve,
   std::string placeholders =
       base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ",");
 
-  if ((type & BtmEventRemovalType::kStorage) == BtmEventRemovalType::kStorage) {
+  if ((type & DIPSEventRemovalType::kStorage) ==
+      DIPSEventRemovalType::kStorage) {
     sql::Statement s_clear_storage(db_->GetUniqueStatement(  // clang-format off
         base::StrCat({"UPDATE bounces SET "
                           "first_site_storage_time=NULL,"
@@ -1301,7 +1308,7 @@ bool BtmDatabase::ClearTimestampsBySite(bool preserve,
   return RemoveEmptyRows();
 }
 
-bool BtmDatabase::RemoveEmptyRows() {
+bool DIPSDatabase::RemoveEmptyRows() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static constexpr char kCleanUpSql[] =  // clang-format off
@@ -1326,7 +1333,7 @@ bool BtmDatabase::RemoveEmptyRows() {
   return s_clean.Run();
 }
 
-size_t BtmDatabase::GetEntryCount(const BtmDatabaseTable table) {
+size_t DIPSDatabase::GetEntryCount(const DIPSDatabaseTable table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return 0;
@@ -1334,13 +1341,13 @@ size_t BtmDatabase::GetEntryCount(const BtmDatabaseTable table) {
 
   ClearExpiredRows();
 
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     static constexpr char kBounceTableEntryCountSqlStr[] =
         "SELECT COUNT(*) FROM bounces";
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kBounceTableEntryCountSqlStr));
     return (statement.Step() ? statement.ColumnInt(0) : 0);
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     static constexpr char kPopupTableEntryCountSqlStr[] =
         "SELECT COUNT(*) FROM popups";
     sql::Statement statement(
@@ -1348,12 +1355,12 @@ size_t BtmDatabase::GetEntryCount(const BtmDatabaseTable table) {
     return (statement.Step() ? statement.ColumnInt(0) : 0);
   }
 
-  // This should never be called - both BtmDatabaseTable types are handled and
+  // This should never be called - both DIPSDatabaseTable types are handled and
   // return above.
   return false;
 }
 
-size_t BtmDatabase::GarbageCollect() {
+size_t DIPSDatabase::GarbageCollect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return 0;
@@ -1361,8 +1368,8 @@ size_t BtmDatabase::GarbageCollect() {
 
   size_t num_deleted = ClearExpiredRows();
 
-  for (const BtmDatabaseTable table :
-       {BtmDatabaseTable::kBounces, BtmDatabaseTable::kPopups}) {
+  for (const DIPSDatabaseTable table :
+       {DIPSDatabaseTable::kBounces, DIPSDatabaseTable::kPopups}) {
     // NOTE: `GetEntryCount()` might perform other row deletions whilst
     // re-calling `ClearExpiredRows()`, but possible precision lost in the final
     // num_delete isn't deemed crucial.
@@ -1379,14 +1386,14 @@ size_t BtmDatabase::GarbageCollect() {
   return num_deleted;
 }
 
-size_t BtmDatabase::GarbageCollectOldest(const BtmDatabaseTable table,
-                                         int purge_goal) {
+size_t DIPSDatabase::GarbageCollectOldest(const DIPSDatabaseTable table,
+                                          int purge_goal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return 0;
   }
 
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     static constexpr char kGarbageCollectOldestSql[] =  // clang-format off
     "DELETE FROM bounces "
     "WHERE site IN("
@@ -1421,7 +1428,7 @@ size_t BtmDatabase::GarbageCollectOldest(const BtmDatabaseTable table,
         db_->GetCachedStatement(SQL_FROM_HERE, kGarbageCollectOldestSql));
     statement.BindInt(0, purge_goal);
     return statement.Run() ? db_->GetLastChangeCount() : 0;
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     static constexpr char kGarbageCollectOldestSql[] =  // clang-format off
     "DELETE FROM popups "
     "WHERE (opener_site,popup_site) IN("
@@ -1439,20 +1446,20 @@ size_t BtmDatabase::GarbageCollectOldest(const BtmDatabaseTable table,
     return statement.Run() ? db_->GetLastChangeCount() : 0;
   }
 
-  // This should never be called - both BtmDatabaseTable types are handled and
+  // This should never be called - both DIPSDatabaseTable types are handled and
   // return above.
   return false;
 }
 
-std::vector<std::string> BtmDatabase::GetGarbageCollectOldestSitesForTesting(
-    BtmDatabaseTable table) {
+std::vector<std::string> DIPSDatabase::GetGarbageCollectOldestSitesForTesting(
+    DIPSDatabaseTable table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
   }
 
   std::vector<std::string> sites;
-  if (table == BtmDatabaseTable::kBounces) {
+  if (table == DIPSDatabaseTable::kBounces) {
     static constexpr char kReadSql[] =  // clang-format off
     "SELECT site FROM bounces "
     "ORDER BY "
@@ -1483,7 +1490,7 @@ std::vector<std::string> BtmDatabase::GetGarbageCollectOldestSitesForTesting(
     while (statement.Step()) {
       sites.push_back(statement.ColumnString(0));
     }
-  } else if (table == BtmDatabaseTable::kPopups) {
+  } else if (table == DIPSDatabaseTable::kPopups) {
     static constexpr char kReadSql[] =
         "SELECT opener_site,popup_site "
         "FROM popups "
@@ -1499,7 +1506,7 @@ std::vector<std::string> BtmDatabase::GetGarbageCollectOldestSitesForTesting(
   return sites;
 }
 
-bool BtmDatabase::SetConfigValue(std::string_view key, int64_t value) {
+bool DIPSDatabase::SetConfigValue(std::string_view key, int64_t value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return false;
@@ -1516,7 +1523,7 @@ bool BtmDatabase::SetConfigValue(std::string_view key, int64_t value) {
   return statement.Run();
 }
 
-std::optional<int64_t> BtmDatabase::GetConfigValue(std::string_view key) {
+std::optional<int64_t> DIPSDatabase::GetConfigValue(std::string_view key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return std::nullopt;
@@ -1536,7 +1543,7 @@ std::optional<int64_t> BtmDatabase::GetConfigValue(std::string_view key) {
   return statement.ColumnInt64(0);
 }
 
-std::optional<base::Time> BtmDatabase::GetTimerLastFired() {
+std::optional<base::Time> DIPSDatabase::GetTimerLastFired() {
   std::optional<int64_t> raw_value = GetConfigValue(kTimerLastFiredKey);
   if (!raw_value.has_value()) {
     return std::nullopt;
@@ -1545,7 +1552,7 @@ std::optional<base::Time> BtmDatabase::GetTimerLastFired() {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(*raw_value));
 }
 
-bool BtmDatabase::SetTimerLastFired(base::Time time) {
+bool DIPSDatabase::SetTimerLastFired(base::Time time) {
   return SetConfigValue(kTimerLastFiredKey,
                         time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }

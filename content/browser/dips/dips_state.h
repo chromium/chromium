@@ -14,7 +14,7 @@
 
 namespace content {
 
-class BtmStorage;
+class DIPSStorage;
 
 // A boolean value that gets cleared when moved.
 class DirtyBit {
@@ -43,20 +43,20 @@ class DirtyBit {
 };
 
 // Not to be confused with state stored by sites (e.g. cookies, local storage),
-// BtmState represents the state recorded by BtmService itself.
-class CONTENT_EXPORT BtmState {
+// DIPSState represents the state recorded by DIPSService itself.
+class CONTENT_EXPORT DIPSState {
  public:
-  BtmState(BtmStorage* storage, std::string site);
-  // For loaded BtmState.
-  BtmState(BtmStorage* storage, std::string site, const StateValue& state);
+  DIPSState(DIPSStorage* storage, std::string site);
+  // For loaded DIPSState.
+  DIPSState(DIPSStorage* storage, std::string site, const StateValue& state);
 
-  BtmState(BtmState&&);
-  BtmState& operator=(BtmState&&);
+  DIPSState(DIPSState&&);
+  DIPSState& operator=(DIPSState&&);
   // Flushes changes to storage_.
-  ~BtmState();
+  ~DIPSState();
 
   const std::string& site() const { return site_; }
-  // True iff this BtmState was loaded from BtmStorage (as opposed to being
+  // True iff this DIPSState was loaded from DIPSStorage (as opposed to being
   // default-initialized for a new site).
   bool was_loaded() const { return was_loaded_; }
 
@@ -82,7 +82,7 @@ class CONTENT_EXPORT BtmState {
   StateValue ToStateValue() const { return state_; }
 
  private:
-  raw_ptr<BtmStorage, AcrossTasksDanglingUntriaged> storage_;
+  raw_ptr<DIPSStorage, AcrossTasksDanglingUntriaged> storage_;
   std::string site_;
   bool was_loaded_;
   DirtyBit dirty_;

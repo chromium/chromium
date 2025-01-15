@@ -55,7 +55,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
-    base::PassKey<content::BtmNavigationHandle>,
+    base::PassKey<content::DIPSNavigationHandle>,
     const GURL& redirect_url) {
   return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
                                                SourceIdType::REDIRECT_ID);
@@ -63,7 +63,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(
-    base::PassKey<content::BtmServiceImpl>,
+    base::PassKey<content::DIPSServiceImpl>,
     const std::string& site) {
   // Use REDIRECT_ID because DIPS sites are bounce trackers that redirected the
   // user (see go/dips). This method is used for background reporting of such

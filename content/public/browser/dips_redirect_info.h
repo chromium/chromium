@@ -18,14 +18,14 @@
 
 namespace content {
 
-enum class BtmCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
+enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
 
-enum class BtmRedirectType { kClient, kServer };
+enum class DIPSRedirectType { kClient, kServer };
 
-// BtmDataAccessType:
+// DIPSDataAccessType:
 // NOTE: We use this type as a bitfield and emit it in metrics as the
 // CookieAccessType enum. Don't change the values or add additional members.
-enum class BtmDataAccessType {
+enum class DIPSDataAccessType {
   kUnknown = -1,
   kNone = 0,
   kRead = 1,
@@ -39,14 +39,14 @@ struct UrlAndSourceId {
 };
 
 // Properties of a redirect chain common to all the URLs within the chain.
-struct CONTENT_EXPORT BtmRedirectChainInfo {
+struct CONTENT_EXPORT DIPSRedirectChainInfo {
  public:
-  BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
-                       const UrlAndSourceId& final_url,
-                       size_t length,
-                       bool is_partial_chain);
-  BtmRedirectChainInfo(const BtmRedirectChainInfo&);
-  ~BtmRedirectChainInfo();
+  DIPSRedirectChainInfo(const UrlAndSourceId& initial_url,
+                        const UrlAndSourceId& final_url,
+                        size_t length,
+                        bool is_partial_chain);
+  DIPSRedirectChainInfo(const DIPSRedirectChainInfo&);
+  ~DIPSRedirectChainInfo();
 
   // A randomly-generated ID to associate redirects within the same chain for
   // metrics reporting.
@@ -69,37 +69,37 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
-  std::optional<BtmCookieMode> cookie_mode;
+  std::optional<DIPSCookieMode> cookie_mode;
 };
 
 // Properties of one URL within a redirect chain.
-struct CONTENT_EXPORT BtmRedirectInfo {
+struct CONTENT_EXPORT DIPSRedirectInfo {
  public:
-  static std::unique_ptr<BtmRedirectInfo> CreateForServer(
+  static std::unique_ptr<DIPSRedirectInfo> CreateForServer(
       const UrlAndSourceId& url,
-      BtmDataAccessType access_type,
+      DIPSDataAccessType access_type,
       base::Time time,
       bool was_response_cached,
       int response_code,
       base::TimeDelta server_bounce_delay);
 
-  static std::unique_ptr<BtmRedirectInfo> CreateForClient(
+  static std::unique_ptr<DIPSRedirectInfo> CreateForClient(
       const UrlAndSourceId& url,
-      BtmDataAccessType access_type,
+      DIPSDataAccessType access_type,
       base::Time time,
       base::TimeDelta client_bounce_delay,
       bool has_sticky_activation,
       bool web_authn_assertion_request_succeeded);
 
-  BtmRedirectInfo(const BtmRedirectInfo&);
-  ~BtmRedirectInfo();
+  DIPSRedirectInfo(const DIPSRedirectInfo&);
+  ~DIPSRedirectInfo();
 
   // These properties are required for all redirects:
 
   const UrlAndSourceId url;
-  const std::string site;  // The cached result of GetSiteForBtm(url).
-  const BtmRedirectType redirect_type;
-  BtmDataAccessType
+  const std::string site;  // The cached result of GetSiteForDIPS(url).
+  const DIPSRedirectType redirect_type;
+  DIPSDataAccessType
       access_type;  // May be updated by late cookie notifications.
   const base::Time time;
 
@@ -107,7 +107,7 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   // later:
   std::optional<bool> has_interaction;
   std::optional<size_t> chain_index;
-  // See BtmRedirectChainInfo::chain_id.
+  // See DIPSRedirectChainInfo::chain_id.
   std::optional<int32_t> chain_id;
   std::optional<bool> has_3pc_exception;
 
@@ -129,23 +129,23 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   const base::TimeDelta server_bounce_delay;
 
  private:
-  BtmRedirectInfo(const UrlAndSourceId& url,
-                  BtmRedirectType redirect_type,
-                  BtmDataAccessType access_type,
-                  base::Time time,
-                  base::TimeDelta client_bounce_delay,
-                  bool has_sticky_activation,
-                  bool web_authn_assertion_request_succeeded,
-                  bool was_response_cached,
-                  int response_code,
-                  base::TimeDelta server_bounce_delay);
+  DIPSRedirectInfo(const UrlAndSourceId& url,
+                   DIPSRedirectType redirect_type,
+                   DIPSDataAccessType access_type,
+                   base::Time time,
+                   base::TimeDelta client_bounce_delay,
+                   bool has_sticky_activation,
+                   bool web_authn_assertion_request_succeeded,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
 };
 
-// a movable BtmRedirectInfo, essentially
-using BtmRedirectInfoPtr = std::unique_ptr<BtmRedirectInfo>;
+// a movable DIPSRedirectInfo, essentially
+using DIPSRedirectInfoPtr = std::unique_ptr<DIPSRedirectInfo>;
 
-// a movable BtmRedirectChainInfo, essentially
-using BtmRedirectChainInfoPtr = std::unique_ptr<BtmRedirectChainInfo>;
+// a movable DIPSRedirectChainInfo, essentially
+using DIPSRedirectChainInfoPtr = std::unique_ptr<DIPSRedirectChainInfo>;
 
 }  // namespace content
 

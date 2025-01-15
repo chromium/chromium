@@ -11,30 +11,31 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 struct AccountInfo;
-class BtmBrowserSigninDetectorFactory;
+class DIPSBrowserSigninDetectorFactory;
 
 namespace content {
 class BrowserContext;
-class BtmService;
+class DIPSService;
 }
 
-// BtmBrowserSigninDetector is a service because it depends on both BtmService
+// DIPSBrowserSigninDetector is a service because it depends on both DIPSService
 // and IdentityManager. We need to be sure it gets shutdown before them.
 //
-// If, for example, we made BtmService subclass SupportsUserData and attached
-// BtmBrowserSigninDetector to it as Data, we wouldn't be able to express the
-// dependency of BtmService on IdentityManager.
-class BtmBrowserSigninDetector : public KeyedService,
-                                 signin::IdentityManager::Observer {
+// If, for example, we made DIPSService subclass SupportsUserData and attached
+// DIPSBrowserSigninDetector to it as Data, we wouldn't be able to express the
+// dependency of DIPSService on IdentityManager.
+class DIPSBrowserSigninDetector : public KeyedService,
+                                  signin::IdentityManager::Observer {
  public:
-  BtmBrowserSigninDetector(base::PassKey<BtmBrowserSigninDetectorFactory>,
-                           content::BtmService* dips_service,
-                           signin::IdentityManager* identity_manager);
-  BtmBrowserSigninDetector(const BtmBrowserSigninDetector&) = delete;
-  BtmBrowserSigninDetector& operator=(const BtmBrowserSigninDetector&) = delete;
-  ~BtmBrowserSigninDetector() override;
+  DIPSBrowserSigninDetector(base::PassKey<DIPSBrowserSigninDetectorFactory>,
+                            content::DIPSService* dips_service,
+                            signin::IdentityManager* identity_manager);
+  DIPSBrowserSigninDetector(const DIPSBrowserSigninDetector&) = delete;
+  DIPSBrowserSigninDetector& operator=(const DIPSBrowserSigninDetector&) =
+      delete;
+  ~DIPSBrowserSigninDetector() override;
 
-  static BtmBrowserSigninDetector* Get(
+  static DIPSBrowserSigninDetector* Get(
       content::BrowserContext* browser_context);
 
  private:
@@ -50,7 +51,7 @@ class BtmBrowserSigninDetector : public KeyedService,
   // the account |info| is relevant.
   void RecordInteractionsIfRelevant(const AccountInfo& info);
 
-  raw_ptr<content::BtmService> dips_service_;
+  raw_ptr<content::DIPSService> dips_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

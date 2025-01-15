@@ -879,7 +879,7 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 CookieSwitches.DISABLE_PARTITIONED_COOKIES_SWITCH,
                 "Disables paritioned cookies in WebView"),
-        Flag.baseFeature(ContentFeatures.BTM, "Enables the Bounce Tracking Mitigations feature."),
+        Flag.baseFeature(ContentFeatures.DIPS, "Enables the Bounce Tracking Mitigations feature."),
         Flag.baseFeature(
                 "LevelDBProtoAsyncWrite",
                 "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"

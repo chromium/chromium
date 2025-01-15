@@ -243,7 +243,7 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
-class BtmService;
+class DIPSService;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;
@@ -3063,11 +3063,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // default implementation returns true for all contexts.
   virtual bool ShouldEnableDips(BrowserContext* browser_context);
 
-  // Called once for each BtmService instance when it's created.
-  // BtmService::Get() is guaranteed to return the given instance if called
-  // i.e., BtmService::Get(browser_context) == dips_service.
+  // Called once for each DIPSService instance when it's created.
+  // DIPSService::Get() is guaranteed to return the given instance if called
+  // i.e., DIPSService::Get(browser_context) == dips_service.
   virtual void OnDipsServiceCreated(BrowserContext* browser_context,
-                                    BtmService* dips_service) {}
+                                    DIPSService* dips_service) {}
 
   // The default value returned by ContentBrowserClient::GetDipsRemoveMask().
   // This should contain everything known to //content that can be deleted by

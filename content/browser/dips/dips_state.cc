@@ -9,43 +9,43 @@
 
 namespace content {
 
-BtmState::BtmState(BtmStorage* storage, std::string site)
+DIPSState::DIPSState(DIPSStorage* storage, std::string site)
     : storage_(storage), site_(std::move(site)), was_loaded_(false) {}
 
-BtmState::BtmState(BtmStorage* storage,
-                   std::string site,
-                   const StateValue& state)
+DIPSState::DIPSState(DIPSStorage* storage,
+                     std::string site,
+                     const StateValue& state)
     : storage_(storage),
       site_(std::move(site)),
       was_loaded_(true),
       state_(state) {}
 
-BtmState::BtmState(BtmState&&) = default;
-BtmState& BtmState::operator=(BtmState&&) = default;
+DIPSState::DIPSState(DIPSState&&) = default;
+DIPSState& DIPSState::operator=(DIPSState&&) = default;
 
-BtmState::~BtmState() {
+DIPSState::~DIPSState() {
   if (dirty_) {
     storage_->Write(*this);
   }
 }
 
-void BtmState::update_site_storage_time(base::Time time) {
+void DIPSState::update_site_storage_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.site_storage_times, time);
 }
 
-void BtmState::update_user_interaction_time(base::Time time) {
+void DIPSState::update_user_interaction_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.user_interaction_times, time);
 }
 
-void BtmState::update_stateful_bounce_time(base::Time time) {
+void DIPSState::update_stateful_bounce_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.stateful_bounce_times, time);
 }
 
-void BtmState::update_bounce_time(base::Time time) {
+void DIPSState::update_bounce_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.bounce_times, time);
 }
 
-void BtmState::update_web_authn_assertion_time(base::Time time) {
+void DIPSState::update_web_authn_assertion_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.web_authn_assertion_times, time);
 }
 

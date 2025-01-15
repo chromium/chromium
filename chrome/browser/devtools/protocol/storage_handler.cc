@@ -25,13 +25,13 @@ StorageHandler::~StorageHandler() = default;
 // TODO: crbug.com/380896828 - move CDP support for DIPS to //content.
 void StorageHandler::RunBounceTrackingMitigations(
     std::unique_ptr<RunBounceTrackingMitigationsCallback> callback) {
-  content::BtmService* dips_service =
+  content::DIPSService* dips_service =
       web_contents_
-          ? content::BtmService::Get(web_contents_->GetBrowserContext())
+          ? content::DIPSService::Get(web_contents_->GetBrowserContext())
           : nullptr;
 
   if (!dips_service) {
-    callback->sendFailure(protocol::Response::ServerError("No BtmService"));
+    callback->sendFailure(protocol::Response::ServerError("No DIPSService"));
     return;
   }
 

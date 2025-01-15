@@ -284,32 +284,32 @@ BASE_FEATURE(kDigitalGoodsApi,
 #endif
 );
 
-// Enables the BTM (Bounce Tracking Mitigation) feature.
+// Enables the DIPS (Detect Incidental Party State) feature.
 // On by default to allow for collecting metrics. All potentially dangerous
-// behavior (database persistence, storage deletion) will be gated by params.
-BASE_FEATURE(kBtm, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
+// behavior (database persistence, DIPS deletion) will be gated by params.
+BASE_FEATURE(kDIPS, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Flag used to control |interaction_ttl| separately from the kBtm feature
+// Flag used to control |interaction_ttl| separately from the kDIPS feature
 // flag.
-BASE_FEATURE(kBtmTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDIPSTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set whether DIPS persists its database to disk.
-const base::FeatureParam<bool> kBtmPersistedDatabaseEnabled{
-    &kBtm, "persist_database", true};
+const base::FeatureParam<bool> kDIPSPersistedDatabaseEnabled{
+    &kDIPS, "persist_database", true};
 
 // Set whether DIPS performs deletion.
-const base::FeatureParam<bool> kBtmDeletionEnabled{&kBtm, "delete", true};
+const base::FeatureParam<bool> kDIPSDeletionEnabled{&kDIPS, "delete", true};
 
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.
-const base::FeatureParam<base::TimeDelta> kBtmGracePeriod{&kBtm, "grace_period",
-                                                          base::Hours(1)};
+const base::FeatureParam<base::TimeDelta> kDIPSGracePeriod{
+    &kDIPS, "grace_period", base::Hours(1)};
 
 // Set the cadence at which Chrome will attempt to clear incidental state
 // repeatedly.
-const base::FeatureParam<base::TimeDelta> kBtmTimerDelay{&kBtm, "timer_delay",
-                                                         base::Hours(1)};
+const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay{&kDIPS, "timer_delay",
+                                                          base::Hours(1)};
 
 // Sets how long DIPS maintains interactions and Web Authn Assertions (WAA) for
 // a site.
@@ -320,15 +320,15 @@ const base::FeatureParam<base::TimeDelta> kBtmTimerDelay{&kBtm, "timer_delay",
 // by this param.
 // NOTE: Updating this param name (to reflect WAA) is deemed unnecessary as far
 // as readability is concerned.
-const base::FeatureParam<base::TimeDelta> kBtmInteractionTtl{
-    &kBtmTtl, "interaction_ttl", base::Days(45)};
+const base::FeatureParam<base::TimeDelta> kDIPSInteractionTtl{
+    &kDIPSTtl, "interaction_ttl", base::Days(45)};
 
-constexpr base::FeatureParam<content::BtmTriggeringAction>::Option
-    kBtmTriggeringActionOptions[] = {
-        {content::BtmTriggeringAction::kNone, "none"},
-        {content::BtmTriggeringAction::kStorage, "storage"},
-        {content::BtmTriggeringAction::kBounce, "bounce"},
-        {content::BtmTriggeringAction::kStatefulBounce, "stateful_bounce"}};
+constexpr base::FeatureParam<content::DIPSTriggeringAction>::Option
+    kDIPSTriggeringActionOptions[] = {
+        {content::DIPSTriggeringAction::kNone, "none"},
+        {content::DIPSTriggeringAction::kStorage, "storage"},
+        {content::DIPSTriggeringAction::kBounce, "bounce"},
+        {content::DIPSTriggeringAction::kStatefulBounce, "stateful_bounce"}};
 
 // Sets the actions which will trigger DIPS clearing for a site. The default is
 // to set to kBounce, but can be overridden by Finch experiment groups,
@@ -336,16 +336,16 @@ constexpr base::FeatureParam<content::BtmTriggeringAction>::Option
 //
 // Note: Maintain a matching nomenclature of the options with the feature flag
 // entries at about_flags.cc.
-const base::FeatureParam<content::BtmTriggeringAction> kBtmTriggeringAction{
-    &kBtm, "triggering_action", content::BtmTriggeringAction::kStatefulBounce,
-    &kBtmTriggeringActionOptions};
+const base::FeatureParam<content::DIPSTriggeringAction> kDIPSTriggeringAction{
+    &kDIPS, "triggering_action", content::DIPSTriggeringAction::kStatefulBounce,
+    &kDIPSTriggeringActionOptions};
 
 // Denotes the length of a time interval within which any client-side redirect
 // is viewed as a bounce (provided all other criteria are equally met). The
 // interval starts every time a page finishes a navigation (a.k.a. a commit is
 // registered).
-const base::FeatureParam<base::TimeDelta> kBtmClientBounceDetectionTimeout{
-    &kBtm, "client_bounce_detection_timeout", base::Seconds(10)};
+const base::FeatureParam<base::TimeDelta> kDIPSClientBounceDetectionTimeout{
+    &kDIPS, "client_bounce_detection_timeout", base::Seconds(10)};
 
 // Enables HW decode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWDecoding,

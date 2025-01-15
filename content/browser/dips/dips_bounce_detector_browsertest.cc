@@ -129,20 +129,20 @@ std::string FormatURL(const GURL& url) {
 }
 
 void AppendRedirect(std::vector<std::string>* redirects,
-                    const BtmRedirectInfo& redirect,
-                    const BtmRedirectChainInfo& chain,
+                    const DIPSRedirectInfo& redirect,
+                    const DIPSRedirectChainInfo& chain,
                     size_t redirect_index) {
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
       FormatURL(chain.initial_url.url).c_str(),
       FormatURL(redirect.url.url).c_str(),
-      std::string(BtmDataAccessTypeToString(redirect.access_type)).c_str(),
+      std::string(DIPSDataAccessTypeToString(redirect.access_type)).c_str(),
       FormatURL(chain.final_url.url).c_str()));
 }
 
 void AppendRedirects(std::vector<std::string>* vec,
-                     std::vector<BtmRedirectInfoPtr> redirects,
-                     BtmRedirectChainInfoPtr chain) {
+                     std::vector<DIPSRedirectInfoPtr> redirects,
+                     DIPSRedirectChainInfoPtr chain) {
   size_t redirect_index = chain->length - redirects.size();
   for (const auto& redirect : redirects) {
     AppendRedirect(vec, *redirect, *chain, redirect_index);
@@ -163,8 +163,8 @@ std::vector<url::Origin> GetOrigins(const AttributionData& data) {
   return origins;
 }
 
-bool ContainsWrite(BtmDataAccessType access) {
-  using enum BtmDataAccessType;
+bool ContainsWrite(DIPSDataAccessType access) {
+  using enum DIPSDataAccessType;
   return access == kWrite || access == kReadWrite;
 }
 
@@ -181,7 +181,7 @@ testing::AssertionResult WaitForRedirectCookieWrite(WebContents* web_contents,
   }
 
   // Make sure the last redirect was at the expected URL.
-  const BtmRedirectInfo& redirect =
+  const DIPSRedirectInfo& redirect =
       detector->CommittedRedirectContext()
           [detector->CommittedRedirectContext().size() - 1];
   if (redirect.url.url != redirect_url) {
@@ -383,11 +383,11 @@ void WCOCallbackLogger::NotifyStorageAccessed(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
 
-class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
+class DIPSBounceDetectorBrowserTest : public ContentBrowserTest {
  protected:
-  BtmBounceDetectorBrowserTest()
+  DIPSBounceDetectorBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
-            &BtmBounceDetectorBrowserTest::GetActiveWebContents,
+            &DIPSBounceDetectorBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
     enabled_features_.push_back(
         {network::features::kSkipTpcdMitigationsForAds,
@@ -412,12 +412,12 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
-    SetUpBtmWebContentsObserver();
+    SetUpDIPSWebContentsObserver();
   }
 
-  void SetUpBtmWebContentsObserver() {
+  void SetUpDIPSWebContentsObserver() {
     web_contents_observer_ =
-        BtmWebContentsObserver::FromWebContents(GetActiveWebContents());
+        DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
     CHECK(web_contents_observer_);
   }
 
@@ -437,14 +437,14 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
   // (NOTE: tests using WCOCallbackLogger must call this *after* checking the
   // log, since this navigation will be logged.)
   //
-  // By default (when `wait`=true) this waits for the BtmService to tell
+  // By default (when `wait`=true) this waits for the DIPSService to tell
   // observers that the redirect chain was handled. But some tests override
   // the handling flow so that chains don't reach the service (and so observers
   // are never notified). Such tests should pass `wait`=false.
   void EndRedirectChain(bool wait = true) {
     WebContents* web_contents = GetActiveWebContents();
-    BtmService* dips_service =
-        BtmService::Get(web_contents->GetBrowserContext());
+    DIPSService* dips_service =
+        DIPSService::Get(web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
     DipsRedirectChainObserver chain_observer(dips_service, expected_url);
@@ -525,7 +525,7 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
 
   std::vector<base::test::FeatureRefAndParams> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
-  raw_ptr<BtmWebContentsObserver, AcrossTasksDanglingUntriaged>
+  raw_ptr<DIPSWebContentsObserver, AcrossTasksDanglingUntriaged>
       web_contents_observer_ = nullptr;
 
  private:
@@ -536,7 +536,7 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(
-    BtmBounceDetectorBrowserTest,
+    DIPSBounceDetectorBrowserTest,
     // TODO(crbug.com/40924446): Re-enable this test
     DISABLED_AttributeSameSiteIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
   AttributeSameSiteIframesCookieServerAccessTo1P
 #endif
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        Attribute3PIframesCHIPSClientAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        // TODO(crbug.com/40287072): Re-enable this test
                        DISABLED_Attribute3PIframesCHIPSServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BtmBounceDetectorBrowserTest,
+    DIPSBounceDetectorBrowserTest,
     // TODO(crbug.com/40287072): Re-enable this test
     DISABLED_AttributeSameSiteNestedIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BtmBounceDetectorBrowserTest,
+    DIPSBounceDetectorBrowserTest,
     // TODO(crbug.com/40287072): Re-enable this test
     DISABLED_AttributeSameSiteNestedIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -743,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        Attribute3PNestedIframesCHIPSClientAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        Attribute3PNestedIframesCHIPSServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        Attribute3PSubResourceCHIPSClientAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
            "a.test/page_with_blank_iframe.html (Read) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DiscardFencedFrameCookieClientAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
           ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DiscardFencedFrameCookieServerAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 #define MAYBE_DiscardPrerenderedPageCookieClientAccess \
   DiscardPrerenderedPageCookieClientAccess
 #endif
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        MAYBE_DiscardPrerenderedPageCookieClientAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -977,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 }
 
 // TODO(crbug.com/40269306): flaky test.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DISABLED_DiscardPrerenderedPageCookieServerAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                            expected_access_type + ") -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DetectStatefulBounce_ClientRedirect_SiteDataAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -1055,21 +1055,21 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // The timing of WCO::OnCookiesAccessed() execution is unpredictable for
 // redirects. Sometimes it's called before WCO::DidRedirectNavigation(), and
-// sometimes after. Therefore BtmBounceDetector needs to know when it's safe to
+// sometimes after. Therefore DIPSBounceDetector needs to know when it's safe to
 // judge an HTTP redirect as stateful (accessing cookies) or not. This test
 // tries to verify that OnCookiesAccessed() is always called before
-// DidFinishNavigation(), so that BtmBounceDetector can safely perform that
+// DidFinishNavigation(), so that DIPSBounceDetector can safely perform that
 // judgement in DidFinishNavigation().
 //
 // This test also verifies that OnCookiesAccessed() is called for URLs in the
 // same order that they're visited (and that for redirects that both read and
 // write cookies, OnCookiesAccessed() is called with kRead before it's called
-// with kChange, although BtmBounceDetector doesn't depend on that anymore.)
+// with kChange, although DIPSBounceDetector doesn't depend on that anymore.)
 //
 // If either assumption is incorrect, this test will be flaky. On 2022-04-27 I
 // (rtarpine) ran this test 1000 times in 40 parallel jobs with no failures, so
 // it seems robust.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        AllCookieCallbacksBeforeNavigationFinished) {
   GURL redirect_url = embedded_test_server()->GetURL(
       "a.test",
@@ -1177,7 +1177,7 @@ HandleCrossSiteSameSiteNoneCookieRedirect(
 
 // Ignore iframes because their state will be partitioned under the top-level
 // site anyway.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        IgnoreServerRedirectsInIframes) {
   // We host the iframe content on an HTTPS server, because for it to write a
   // cookie, the cookie needs to be SameSite=None and Secure.
@@ -1210,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 // This test verifies that sites in a redirect chain with previous user
 // interaction are not reported in the resulting issue when a navigation
 // finishes.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        ReportRedirectorsInChain_OmitSitesWithInteraction) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -1225,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
   // Verify interaction was recorded for d.test, before proceeding.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->user_interaction_times.has_value());
 
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 // This test verifies that a third-party cookie access doesn't cause a client
 // bounce to be considered stateful.
 IN_PROC_BROWSER_TEST_F(
-    BtmBounceDetectorBrowserTest,
+    DIPSBounceDetectorBrowserTest,
     DetectStatefulRedirect_Client_IgnoreThirdPartySubresource) {
   // We host the image on an HTTPS server, because for it to read a third-party
   // cookie, it needs to be SameSite=None and Secure.
@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // This test verifies that a same-site cookie access DOES cause a client
 // bounce to be considered stateful.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DetectStatefulRedirect_Client_FirstPartySubresource) {
   GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL bounce_url = embedded_test_server()->GetURL("b.test", "/title1.html");
@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 }
 
 // This test verifies that consecutive redirect chains are combined into one.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DetectStatefulRedirect_ServerClientClientServer) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
                    "f.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DetectStatefulRedirect_ClosingTabEndsChain) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -1471,7 +1471,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // Verifies server redirects that occur while opening a link in a new tab are
 // properly detected.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        OpenServerRedirectURLInNewTab) {
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url(
@@ -1510,7 +1510,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // Verifies client redirects that occur while opening a link in a new tab are
 // properly detected.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        OpenClientRedirectURLInNewTab) {
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url(
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // Verifies the start URL of a redirect chain started by opening a link in a new
 // tab is handled correctly, when that start page has an opaque origin.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        OpenRedirectURLInNewTab_OpaqueOriginInitiator) {
   WebContents* original_tab = GetActiveWebContents();
   GURL original_tab_url("data:text/html,<html></html>");
@@ -1864,7 +1864,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
             false);
   EXPECT_EQ(ukm_entries[0].metrics.at("IsCurrentInteraction"), 1);
   EXPECT_EQ(ukm_entries[0].metrics.at("InteractionType"),
-            static_cast<int32_t>(BtmInteractionType::UserActivation));
+            static_cast<int32_t>(DIPSInteractionType::UserActivation));
 
   // The second cookie access was from a tracking site with an authentication
   // within the last hour, on a site with 3PC access allowed.
@@ -1886,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
             false);
   EXPECT_EQ(ukm_entries[1].metrics.at("IsCurrentInteraction"), 1);
   EXPECT_EQ(ukm_entries[1].metrics.at("InteractionType"),
-            static_cast<int32_t>(BtmInteractionType::Authentication));
+            static_cast<int32_t>(DIPSInteractionType::Authentication));
 
   // The third cookie access was from a tracking site in an iframe of the
   // target, on a site with 3PC access blocked.
@@ -1909,7 +1909,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   EXPECT_EQ(ukm_entries[2].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
   EXPECT_EQ(ukm_entries[2].metrics.at("IsCurrentInteraction"), 0);
   EXPECT_EQ(ukm_entries[2].metrics.at("InteractionType"),
-            static_cast<int32_t>(BtmInteractionType::NoInteraction));
+            static_cast<int32_t>(DIPSInteractionType::NoInteraction));
 
   // Verify there are 3 corresponding CookieAccessThirdParty entries with
   // matching access IDs.
@@ -2149,7 +2149,7 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
             GetParam().write_redirect_grants && !GetParam().require_aba_flow);
 }
 
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        RedirectInfoHttpStatusPersistence) {
   WebContents* const web_contents = GetActiveWebContents();
 
@@ -2175,7 +2175,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
   RedirectChainDetector* wco =
       RedirectChainDetector::FromWebContents(web_contents);
-  const BtmRedirectContext& context = wco->CommittedRedirectContext();
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
 
   ASSERT_EQ(context.size(), 4u);
 
@@ -2218,15 +2218,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kRedirectHeuristicTestCases));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class BtmSiteDataAccessDetectorTest
-    : public BtmBounceDetectorBrowserTest,
+class DIPSSiteDataAccessDetectorTest
+    : public DIPSBounceDetectorBrowserTest,
       public testing::WithParamInterface<StorageTypeAccessed> {
  public:
-  BtmSiteDataAccessDetectorTest(const BtmSiteDataAccessDetectorTest&) = delete;
-  BtmSiteDataAccessDetectorTest& operator=(
-      const BtmSiteDataAccessDetectorTest&) = delete;
+  DIPSSiteDataAccessDetectorTest(const DIPSSiteDataAccessDetectorTest&) =
+      delete;
+  DIPSSiteDataAccessDetectorTest& operator=(
+      const DIPSSiteDataAccessDetectorTest&) = delete;
 
-  BtmSiteDataAccessDetectorTest() = default;
+  DIPSSiteDataAccessDetectorTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -2234,11 +2235,11 @@ class BtmSiteDataAccessDetectorTest
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_https_test_server().Start());
-    SetUpBtmWebContentsObserver();
+    SetUpDIPSWebContentsObserver();
   }
 };
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        DetectSiteDataAccess_Storages) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
@@ -2260,7 +2261,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
                               base::ToString(GetParam()).c_str())})));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        AttributeSameSiteIframesSiteDataAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -2288,7 +2289,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        AttributeSameSiteNestedIframesSiteDataAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -2320,7 +2321,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
                            "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        DiscardFencedFrameCookieClientAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -2352,7 +2353,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
           ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        DiscardPrerenderedPageCookieClientAccess) {
   // Prerendering pages do not have access to `StorageTypeAccessed::kFileSystem`
   // until activation (AKA becoming the primary page, whose test case is already
@@ -2402,7 +2403,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
 // TODO(crbug.com/40269763): Remove `StorageTypeAccessed::kFileSystem` once
 // deprecation is complete.
 INSTANTIATE_TEST_SUITE_P(All,
-                         BtmSiteDataAccessDetectorTest,
+                         DIPSSiteDataAccessDetectorTest,
                          ::testing::Values(StorageTypeAccessed::kLocalStorage,
                                            StorageTypeAccessed::kSessionStorage,
                                            StorageTypeAccessed::kCacheStorage,
@@ -2423,13 +2424,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 // - https://source.chromium.org/chromium/chromium/src/+/main:content/browser/webauth/webauth_browsertest.cc;drc=e8e4ad9096841fae7c55cea1b7d278c58f6160ff
 // - https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/payments/secure_payment_confirmation_authenticator_browsertest.cc;drc=edea5c45c08d151afe67276f08a2ee13814563e1
 // clang-format on
-class BtmWebAuthnBrowserTest : public ContentBrowserTest {
+class DIPSWebAuthnBrowserTest : public ContentBrowserTest {
  public:
-  BtmWebAuthnBrowserTest()
+  DIPSWebAuthnBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  BtmWebAuthnBrowserTest(const BtmWebAuthnBrowserTest&) = delete;
-  BtmWebAuthnBrowserTest& operator=(const BtmWebAuthnBrowserTest&) = delete;
+  DIPSWebAuthnBrowserTest(const DIPSWebAuthnBrowserTest&) = delete;
+  DIPSWebAuthnBrowserTest& operator=(const DIPSWebAuthnBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     mock_cert_verifier_.SetUpCommandLine(command_line);
@@ -2473,7 +2474,7 @@ class BtmWebAuthnBrowserTest : public ContentBrowserTest {
         std::move(virtual_device_factory));
 
     web_contents_observer_ =
-        BtmWebContentsObserver::FromWebContents(GetActiveWebContents());
+        DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
     CHECK(web_contents_observer_);
   }
 
@@ -2544,11 +2545,11 @@ class BtmWebAuthnBrowserTest : public ContentBrowserTest {
  private:
   ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_server_;
-  raw_ptr<BtmWebContentsObserver> web_contents_observer_ = nullptr;
+  raw_ptr<DIPSWebContentsObserver> web_contents_observer_ = nullptr;
   std::unique_ptr<ScopedAuthenticatorEnvironmentForTesting> auth_env_;
 };
 
-IN_PROC_BROWSER_TEST_F(BtmWebAuthnBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSWebAuthnBrowserTest,
                        WebAuthnAssertion_ConfirmWCOCallback) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
@@ -2606,7 +2607,7 @@ IN_PROC_BROWSER_TEST_F(BtmWebAuthnBrowserTest,
 // assertions are not reported in the resulting issue when a navigation
 // finishes.
 IN_PROC_BROWSER_TEST_F(
-    BtmWebAuthnBrowserTest,
+    DIPSWebAuthnBrowserTest,
     ReportRedirectorsInChain_OmitSitesWithWebAuthnAssertions) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -2625,7 +2626,7 @@ IN_PROC_BROWSER_TEST_F(
   // Verify web authn assertion was recorded for `authn_hostname`, before
   // proceeding.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_TRUE(state.has_value());
   ASSERT_FALSE(state->user_interaction_times.has_value());
   ASSERT_TRUE(state->web_authn_assertion_times.has_value());
@@ -2664,7 +2665,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verifies that a successfully registered service worker is tracked as a
 // storage access.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        ServiceWorkerAccess_Storages) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
@@ -2711,7 +2712,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 #endif
 // Verifies that adding a shared worker to a frame is tracked as a storage
 // access.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        MAYBE_SharedWorkerAccess_Storages) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
@@ -2776,7 +2777,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // Verifies that adding a dedicated worker to a frame is tracked as a storage
 // access.
-IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        DedicatedWorkerAccess_Storages) {
   // Start logging `WebContentsObserver` callbacks.
   WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
@@ -2835,51 +2836,51 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
 // Tests that currently only work consistently when the trigger is (any) bounce.
 // TODO(crbug.com/336161248) Make these tests use stateful bounces.
-class BtmBounceTriggerBrowserTest : public BtmBounceDetectorBrowserTest {
+class DIPSBounceTriggerBrowserTest : public DIPSBounceDetectorBrowserTest {
  protected:
-  BtmBounceTriggerBrowserTest() {
+  DIPSBounceTriggerBrowserTest() {
     enabled_features_.push_back(
-        {features::kBtm, {{"triggering_action", "bounce"}}});
+        {features::kDIPS, {{"triggering_action", "bounce"}}});
   }
 
   void SetUpOnMainThread() override {
-    BtmBounceDetectorBrowserTest::SetUpOnMainThread();
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
     // DIPS will only record bounces if 3PCs are blocked.
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
   }
 };
 
 // Verifies that a HTTP 204 (No Content) response is treated like a bounce.
-IN_PROC_BROWSER_TEST_F(BtmBounceTriggerBrowserTest, NoContent) {
+IN_PROC_BROWSER_TEST_F(DIPSBounceTriggerBrowserTest, NoContent) {
   WebContents* web_contents = GetActiveWebContents();
 
   GURL committed_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, committed_url));
 
   DipsRedirectChainObserver observer(
-      BtmService::Get(web_contents->GetBrowserContext()), committed_url);
+      DIPSService::Get(web_contents->GetBrowserContext()), committed_url);
   GURL nocontent_url = embedded_test_server()->GetURL("b.test", "/nocontent");
   ASSERT_TRUE(NavigateToURL(web_contents, nocontent_url, committed_url));
   observer.Wait();
 
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 }
 
-class BtmThrottlingBrowserTest : public BtmBounceDetectorBrowserTest {
+class DIPSThrottlingBrowserTest : public DIPSBounceDetectorBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    BtmBounceDetectorBrowserTest::SetUpOnMainThread();
-    BtmWebContentsObserver::FromWebContents(GetActiveWebContents())
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+    DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
         ->SetClockForTesting(&test_clock_);
   }
 
   base::SimpleTestClock test_clock_;
 };
 
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        InteractionRecording_Throttled) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
@@ -2890,30 +2891,30 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->user_interaction_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
-  // Click again, just before kBtmTimestampUpdateInterval elapses.
-  test_clock_.Advance(kBtmTimestampUpdateInterval - base::Seconds(1));
+  // Click again, just before kDIPSTimestampUpdateInterval elapses.
+  test_clock_.Advance(kDIPSTimestampUpdateInterval - base::Seconds(1));
   SimulateMouseClick();
   // Verify the second interaction was NOT recorded, due to throttling.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->user_interaction_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
-  // Click a third time, after kBtmTimestampUpdateInterval has passed since the
+  // Click a third time, after kDIPSTimestampUpdateInterval has passed since the
   // first click.
   test_clock_.Advance(base::Seconds(1));
   SimulateMouseClick();
   // Verify the third interaction WAS recorded.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->user_interaction_times,
               testing::Optional(testing::Pair(
-                  start_time, start_time + kBtmTimestampUpdateInterval)));
+                  start_time, start_time + kDIPSTimestampUpdateInterval)));
 }
 
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        InteractionRecording_NotThrottled_AfterRefresh) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
@@ -2924,7 +2925,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateMouseClick();
   // Verify the interaction was recorded in the DIPS DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->user_interaction_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2934,14 +2935,14 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateMouseClick();
   // Verify the second interaction was also recorded (not throttled).
-  state = GetBtmState(GetDipsService(web_contents), url2);
+  state = GetDIPSState(GetDipsService(web_contents), url2);
   ASSERT_THAT(state->user_interaction_times,
               testing::Optional(testing::Pair(start_time + base::Seconds(1),
                                               start_time + base::Seconds(1))));
 }
 
 // TODO(crbug.com/325196134): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        DISABLED_StorageRecording_Throttled) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
@@ -2952,31 +2953,31 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateCookieWrite();
   // Verify the write was recorded in the DIPS DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
-  // Write a cookie again, just before kBtmTimestampUpdateInterval elapses.
-  test_clock_.Advance(kBtmTimestampUpdateInterval - base::Seconds(1));
+  // Write a cookie again, just before kDIPSTimestampUpdateInterval elapses.
+  test_clock_.Advance(kDIPSTimestampUpdateInterval - base::Seconds(1));
   SimulateCookieWrite();
   // Verify the second write was NOT recorded, due to throttling.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
-  // Write a third time, after kBtmTimestampUpdateInterval has passed since the
+  // Write a third time, after kDIPSTimestampUpdateInterval has passed since the
   // first write.
   test_clock_.Advance(base::Seconds(1));
   SimulateCookieWrite();
   // Verify the third write WAS recorded.
-  state = GetBtmState(GetDipsService(web_contents), url);
+  state = GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(
-                  start_time, start_time + kBtmTimestampUpdateInterval)));
+                  start_time, start_time + kDIPSTimestampUpdateInterval)));
 }
 
 // TODO(crbug.com/325196134): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
                        DISABLED_StorageRecording_NotThrottled_AfterRefresh) {
   WebContents* web_contents = GetActiveWebContents();
   const base::Time start_time = test_clock_.Now();
@@ -2987,7 +2988,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   SimulateCookieWrite();
   // Verify the write was recorded in the DIPS DB.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), url);
+      GetDIPSState(GetDipsService(web_contents), url);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time, start_time)));
 
@@ -2998,7 +2999,7 @@ IN_PROC_BROWSER_TEST_F(BtmThrottlingBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   SimulateCookieWrite();
   // Verify the second write was also recorded (not throttled).
-  state = GetBtmState(GetDipsService(web_contents), url2);
+  state = GetDIPSState(GetDipsService(web_contents), url2);
   ASSERT_THAT(state->site_storage_times,
               testing::Optional(testing::Pair(start_time + base::Seconds(1),
                                               start_time + base::Seconds(1))));
@@ -3034,7 +3035,7 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
-              testing::ElementsAre(GetSiteForBtm(third_party_url_)));
+              testing::ElementsAre(GetSiteForDIPS(third_party_url_)));
 }
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
@@ -3046,7 +3047,7 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
-              testing::ElementsAre(GetSiteForBtm(third_party_url_)));
+              testing::ElementsAre(GetSiteForDIPS(third_party_url_)));
 }
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest, MultipleSitesIncluded) {
@@ -3057,8 +3058,8 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest, MultipleSitesIncluded) {
 
   EXPECT_THAT(RedirectHeuristicTabHelper::AllSitesFollowingFirstParty(
                   GetActiveWebContents(), first_party_url_),
-              testing::ElementsAre(GetSiteForBtm(third_party_url_),
-                                   GetSiteForBtm(other_url_)));
+              testing::ElementsAre(GetSiteForDIPS(third_party_url_),
+                                   GetSiteForDIPS(other_url_)));
 }
 
 IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
@@ -3082,16 +3083,16 @@ IN_PROC_BROWSER_TEST_F(AllSitesFollowingFirstPartyTest,
               testing::IsEmpty());
 }
 
-class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
+class DIPSPrivacySandboxApiInteractionTest : public ContentBrowserTest {
  public:
-  BtmPrivacySandboxApiInteractionTest()
+  DIPSPrivacySandboxApiInteractionTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.push_back({features::kPrivacySandboxAdsAPIsOverride, {}});
     enabled_features.push_back(
-        {features::kBtm, {{"triggering_action", "stateful_bounce"}}});
+        {features::kDIPS, {{"triggering_action", "stateful_bounce"}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
@@ -3112,7 +3113,7 @@ class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
 
   void EndRedirectChain() {
     WebContents* web_contents = GetActiveWebContents();
-    BtmService* dips_service = GetDipsService(web_contents);
+    DIPSService* dips_service = GetDipsService(web_contents);
     GURL expected_url = web_contents->GetLastCommittedURL();
 
     DipsRedirectChainObserver chain_observer(dips_service, expected_url);
@@ -3268,7 +3269,7 @@ class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
 
 // Verify that accessing storage via the PAT Protected Audience API doesn't
 // trigger DIPS deletion for the accessing site.
-IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
+IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
                        DontTriggerDeletionOnProtectedAudienceApiStorageAccess) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3326,7 +3327,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Expect DIPS to not have recorded user interaction.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_interaction_times, std::nullopt);
 
@@ -3337,7 +3338,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Trigger DIPS deletion, and expect DIPS to not have deleted data for the
   // PAT-using site.
-  BtmService* dips = GetDipsService(web_contents);
+  DIPSService* dips = GetDipsService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3350,7 +3351,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 // Verify that accessing storage via the PAT Attribution Reporting API doesn't
 // trigger DIPS deletion for the accessing site.
 IN_PROC_BROWSER_TEST_F(
-    BtmPrivacySandboxApiInteractionTest,
+    DIPSPrivacySandboxApiInteractionTest,
     DontTriggerDeletionOnAttributionReportingApiStorageAccess) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3401,7 +3402,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expect DIPS to not have recorded user interaction.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_interaction_times, std::nullopt);
 
@@ -3412,7 +3413,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger DIPS deletion, and expect DIPS to not have deleted data for the
   // PAT-using site.
-  BtmService* dips = GetDipsService(web_contents);
+  DIPSService* dips = GetDipsService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3425,7 +3426,7 @@ IN_PROC_BROWSER_TEST_F(
 // Verify that accessing storage via the PAT Private State Tokens API doesn't
 // trigger DIPS deletion for the accessing site.
 IN_PROC_BROWSER_TEST_F(
-    BtmPrivacySandboxApiInteractionTest,
+    DIPSPrivacySandboxApiInteractionTest,
     DontTriggerDeletionOnPrivateStateTokensApiStorageAccess) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3479,7 +3480,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expect DIPS to not have recorded user interaction.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_interaction_times, std::nullopt);
 
@@ -3490,7 +3491,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger DIPS deletion, and expect DIPS to not have deleted data for the
   // PAT-using site.
-  BtmService* dips = GetDipsService(web_contents);
+  DIPSService* dips = GetDipsService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3502,7 +3503,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verify that accessing storage via the PAT Topics API doesn't trigger DIPS
 // deletion for the accessing site.
-IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
+IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
                        DontTriggerDeletionOnTopicsApiStorageAccess) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3544,7 +3545,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Expect DIPS to not have recorded user interaction.
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->user_interaction_times, std::nullopt);
 
@@ -3555,7 +3556,7 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
 
   // Trigger DIPS deletion, and expect DIPS to not have deleted data for the
   // PAT-using site.
-  BtmService* dips = GetDipsService(web_contents);
+  DIPSService* dips = GetDipsService(web_contents);
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   EXPECT_THAT(deleted_sites.Get(), IsEmpty());
@@ -3565,10 +3566,10 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxApiInteractionTest,
             "name=value");
 }
 
-class BtmPrivacySandboxDataPreservationTest
-    : public BtmPrivacySandboxApiInteractionTest {
+class DIPSPrivacySandboxDataPreservationTest
+    : public DIPSPrivacySandboxApiInteractionTest {
  public:
-  BtmPrivacySandboxDataPreservationTest() {
+  DIPSPrivacySandboxDataPreservationTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -3578,7 +3579,7 @@ class BtmPrivacySandboxDataPreservationTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxDataPreservationTest,
+IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxDataPreservationTest,
                        DontClearAttributionReportingApiData) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3602,11 +3603,12 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxDataPreservationTest,
               ElementsAre(url::Origin::Create(attribution_url)));
 
   // Make the attribution site eligible for DIPS deletion.
-  BtmServiceImpl* dips = BtmServiceImpl::Get(web_contents->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
   ASSERT_TRUE(dips != nullptr);
   base::test::TestFuture<void> record_bounce;
   dips->storage()
-      ->AsyncCall(&BtmStorage::RecordBounce)
+      ->AsyncCall(&DIPSStorage::RecordBounce)
       .WithArgs(attribution_url, base::Time::Now(), /*stateful=*/true)
       .Then(record_bounce.GetCallback());
   ASSERT_TRUE(record_bounce.Wait());
@@ -3614,7 +3616,8 @@ IN_PROC_BROWSER_TEST_F(BtmPrivacySandboxDataPreservationTest,
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
   dips->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
-  EXPECT_THAT(deleted_sites.Get(), ElementsAre(GetSiteForBtm(attribution_url)));
+  EXPECT_THAT(deleted_sites.Get(),
+              ElementsAre(GetSiteForDIPS(attribution_url)));
 
   base::test::TestFuture<AttributionData> post_deletion_data;
   web_contents->GetBrowserContext()
@@ -3707,12 +3710,12 @@ static constexpr CookieStorage kCookieStorage;
 static constexpr LocalStorage kLocalStorage;
 }  // namespace
 
-class BtmDataDeletionBrowserTest
-    : public BtmBounceDetectorBrowserTest,
+class DIPSDataDeletionBrowserTest
+    : public DIPSBounceDetectorBrowserTest,
       public testing::WithParamInterface<const SiteStorage*> {
  public:
   void SetUpOnMainThread() override {
-    BtmBounceDetectorBrowserTest::SetUpOnMainThread();
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(kContentTestDataDir);
     ASSERT_TRUE(https_server_.Start());
@@ -3848,7 +3851,7 @@ class BtmDataDeletionBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteDomain) {
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteDomain) {
   WebContents* web_contents = GetActiveWebContents();
 
   // Perform a stateful bounce on b.test to make it eligible for deletion.
@@ -3862,7 +3865,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteDomain) {
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -3870,7 +3873,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteDomain) {
   EXPECT_THAT(ReadFromStorage("b.test"), base::test::ValueIs(""));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DontDeleteOtherDomains) {
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DontDeleteOtherDomains) {
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test
@@ -3883,7 +3886,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DontDeleteOtherDomains) {
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -3891,7 +3894,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DontDeleteOtherDomains) {
   EXPECT_THAT(ReadFromStorage("a.test"), base::test::ValueIs("foo=bar"));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DontDeleteDomainWhenPartitioned) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3906,7 +3909,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -3915,7 +3918,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
               base::test::ValueIs("foo=bar"));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteSubdomains) {
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteSubdomains) {
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on sub.b.test
@@ -3928,7 +3931,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteSubdomains) {
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -3936,7 +3939,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteSubdomains) {
   EXPECT_THAT(ReadFromStorage("sub.b.test"), base::test::ValueIs(""));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded3Ps) {
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded3Ps) {
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test embedded in b.test.
@@ -3950,7 +3953,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded3Ps) {
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -3959,7 +3962,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded3Ps) {
               base::test::ValueIs(""));
 }
 
-IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DeleteEmbedded3Ps_Subdomain) {
   WebContents* web_contents = GetActiveWebContents();
 
@@ -3974,7 +3977,7 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
 
   // Trigger DIPS deletion.
   base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
-  BtmService::Get(web_contents->GetBrowserContext())
+  DIPSService::Get(web_contents->GetBrowserContext())
       ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
   ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 
@@ -4007,18 +4010,18 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded1Ps) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         BtmDataDeletionBrowserTest,
+                         DIPSDataDeletionBrowserTest,
                          ::testing::Values(&kCookieStorage, &kLocalStorage));
 
-class BtmBounceDetectorBFCacheTest : public BtmBounceDetectorBrowserTest,
-                                     public testing::WithParamInterface<bool> {
+class DIPSBounceDetectorBFCacheTest : public DIPSBounceDetectorBrowserTest,
+                                      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     if (IsBFCacheEnabled() &&
         !base::FeatureList::IsEnabled(features::kBackForwardCache)) {
       GTEST_SKIP() << "BFCache disabled";
     }
-    BtmBounceDetectorBrowserTest::SetUp();
+    DIPSBounceDetectorBrowserTest::SetUp();
   }
   bool IsBFCacheEnabled() const { return GetParam(); }
   void SetUpOnMainThread() override {
@@ -4028,13 +4031,13 @@ class BtmBounceDetectorBFCacheTest : public BtmBounceDetectorBrowserTest,
           BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
     }
 
-    BtmBounceDetectorBrowserTest::SetUpOnMainThread();
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
   }
 };
 
 // Confirm that DIPS records a bounce that writes a cookie as stateful, even if
 // the user immediately navigates away.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, LateCookieAccessTest) {
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
   const GURL bounce_url =
       embedded_test_server()->GetURL("b.test", "/empty.html");
   const GURL final_url =
@@ -4062,20 +4065,20 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, LateCookieAccessTest) {
   // Since cookies are reported serially, both cookie writes should have been
   // reported by now.
 
-  const BtmRedirectContext& context = wco->CommittedRedirectContext();
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const BtmRedirectInfo& redirect = context[0];
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   // A request to /favicon.ico may cause a cookie read in addition to the write
   // we explicitly performed.
-  EXPECT_THAT(
-      redirect.access_type,
-      testing::AnyOf(BtmDataAccessType::kWrite, BtmDataAccessType::kReadWrite));
+  EXPECT_THAT(redirect.access_type,
+              testing::AnyOf(DIPSDataAccessType::kWrite,
+                             DIPSDataAccessType::kReadWrite));
 }
 
 // Confirm that DIPS records a bounce that writes a cookie as stateful, even if
 // the chain ends immediately afterwards.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, QuickEndChainTest) {
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, QuickEndChainTest) {
   // Block 3PCs so DIPS will record bounces.
   browser_client().SetBlockThirdPartyCookiesByDefault(true);
 
@@ -4097,14 +4100,14 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, QuickEndChainTest) {
   EndRedirectChain();
 
   std::optional<StateValue> state =
-      GetBtmState(GetDipsService(web_contents), bounce_url);
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
   ASSERT_TRUE(state.has_value());
   ASSERT_TRUE(state->stateful_bounce_times.has_value());
 }
 
 // Confirm that WCO::OnCookiesAccessed() is always called even if the user
 // immediately navigates away.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, CookieAccessReported) {
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, CookieAccessReported) {
   const GURL url1 = embedded_test_server()->GetURL("a.test", "/empty.html");
   const GURL url2 = embedded_test_server()->GetURL("b.test", "/empty.html");
   const GURL url3 = embedded_test_server()->GetURL("c.test", "/empty.html");
@@ -4137,7 +4140,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, CookieAccessReported) {
 // because the navigation to final_url unexpectedly sometimes has a user
 // gesture. Because there's no indication of a fault in DIPS, we disabled this
 // test to get the move done, but we should try to fix and re-enable it.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
                        DISABLED_LateInteractionTest) {
   const GURL bounce_url =
       embedded_test_server()->GetURL("b.test", "/empty.html");
@@ -4177,14 +4180,14 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
                                 blink::WebMouseEvent::Button::kLeft);
   interaction_observer.Wait();
 
-  const BtmRedirectContext& context = wco->CommittedRedirectContext();
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const BtmRedirectInfo& redirect = context[0];
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   EXPECT_THAT(redirect.has_sticky_activation, true);
 }
 
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
   WebContents* const web_contents = GetActiveWebContents();
 
   ASSERT_TRUE(NavigateToURL(
@@ -4250,7 +4253,7 @@ void PrerenderingObserver::RenderFrameCreated(
 
 // Confirm that IsOrWasInPrimaryPage() returns false for prerendered pages that
 // are never activated.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
                        PrerenderedPagesAreNotPrimary) {
   WebContents* const web_contents = GetActiveWebContents();
 
@@ -4287,7 +4290,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
 // Confirm that IsOrWasInPrimaryPage() returns true for prerendered pages that
 // get activated.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
                        PrerenderedPagesCanBecomePrimary) {
   WebContents* const web_contents = GetActiveWebContents();
 
@@ -4327,6 +4330,6 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All, BtmBounceDetectorBFCacheTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, DIPSBounceDetectorBFCacheTest, ::testing::Bool());
 
 }  // namespace content

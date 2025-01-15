@@ -56,24 +56,24 @@ dips::DirectNavigationSource ToDirectNavigationSource(
 // Looks for a redirect to the current page that qualifies as a server-redirect
 // exit from a suspected tracker flow (i.e., a single-hop server-side redirect)
 // and returns it, if one exists. Returns nullptr otherwise.
-const BtmRedirectInfo* GetEntrypointExitServerRedirect(
-    const BtmRedirectContext& redirect_context) {
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+const DIPSRedirectInfo* GetEntrypointExitServerRedirect(
+    const DIPSRedirectContext& redirect_context) {
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
       redirect_context.GetServerRedirectsSinceLastPrimaryPageChange();
   return server_redirects.size() == 1 ? server_redirects.front().get()
                                       : nullptr;
 }
 
-const BtmRedirectInfo* GetFirstServerRedirect(
-    const BtmRedirectContext& redirect_context) {
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+const DIPSRedirectInfo* GetFirstServerRedirect(
+    const DIPSRedirectContext& redirect_context) {
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
       redirect_context.GetServerRedirectsSinceLastPrimaryPageChange();
   return server_redirects.empty() ? nullptr : server_redirects.front().get();
 }
 
 QuantityBucket GetCrossSiteRedirectQuantity(
     const std::string& initial_site,
-    base::span<const BtmRedirectInfoPtr> server_redirects,
+    base::span<const DIPSRedirectInfoPtr> server_redirects,
     const std::string& final_site) {
   const std::string* referring_site = &initial_site;
   size_t num_cross_site_redirects = 0;
@@ -104,7 +104,7 @@ QuantityBucket GetCrossSiteRedirectQuantity(
 void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
                                  ukm::SourceId entrypoint_source_id,
                                  int32_t flow_id,
-                                 BtmRedirectType exit_redirect_type) {
+                                 DIPSRedirectType exit_redirect_type) {
   ukm::builders::DIPS_SuspectedTrackerFlowReferrerV2(referrer_source_id)
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());
@@ -116,13 +116,13 @@ void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
 }
 
 void MaybeEmitDirectNavigationUkm(NavigationHandle* navigation_handle,
-                                  const BtmRedirectContext& redirect_context) {
+                                  const DIPSRedirectContext& redirect_context) {
   if (!IsPageTransitionDirectNavigation(
           navigation_handle->GetPageTransition())) {
     return;
   }
 
-  const BtmRedirectInfo* first_server_redirect =
+  const DIPSRedirectInfo* first_server_redirect =
       GetFirstServerRedirect(redirect_context);
   ukm::SourceId source_id = first_server_redirect
                                 ? first_server_redirect->url.source_id
@@ -159,13 +159,13 @@ bool PageVisitInfo::WasNavigationToPageClientRedirect() const {
          !*was_navigation_to_page_user_initiated;
 }
 
-EntrypointInfo::EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
+EntrypointInfo::EntrypointInfo(const DIPSRedirectInfo& server_redirect_info,
                                const dips::PageVisitInfo& exit_page_info)
     : site(server_redirect_info.site),
       source_id(server_redirect_info.url.source_id),
       had_triggering_storage_access(
-          server_redirect_info.access_type == BtmDataAccessType::kWrite ||
-          server_redirect_info.access_type == BtmDataAccessType::kReadWrite),
+          server_redirect_info.access_type == DIPSDataAccessType::kWrite ||
+          server_redirect_info.access_type == DIPSDataAccessType::kReadWrite),
       was_referral_client_redirect(
           exit_page_info.WasNavigationToPageClientRedirect()) {}
 
@@ -245,7 +245,7 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
   current_page_visit_info_.emplace();
 
   current_page_visit_info_->url = current_page_url;
-  current_page_visit_info_->site = GetSiteForBtm(current_page_url);
+  current_page_visit_info_->site = GetSiteForDIPS(current_page_url);
   current_page_visit_info_->source_id = render_frame_host->GetPageUkmSourceId();
   current_page_visit_info_->was_navigation_to_page_renderer_initiated =
       navigation_handle->IsRendererInitiated();
@@ -266,7 +266,7 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
   }
   last_page_change_time_ = now;
 
-  const BtmRedirectContext& redirect_context = GetRedirectContext();
+  const DIPSRedirectContext& redirect_context = GetRedirectContext();
 
   bool did_start_new_flow = MaybeInitializeSuccessorInteractionTrackingState();
 
@@ -287,7 +287,7 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
   MaybeEmitNavFlowNodeUkmForPreviousPage();
 
   int32_t flow_id = static_cast<int32_t>(base::RandUint64());
-  const BtmRedirectInfo* server_redirect_entrypoint_exit =
+  const DIPSRedirectInfo* server_redirect_entrypoint_exit =
       GetEntrypointExitServerRedirect(redirect_context);
   if (server_redirect_entrypoint_exit != nullptr) {
     MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
@@ -349,7 +349,7 @@ bool DipsNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
 
 void DipsNavigationFlowDetector::
     MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-        const BtmRedirectInfo* exit_info,
+        const DIPSRedirectInfo* exit_info,
         int32_t flow_id) {
   if (!CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(exit_info)) {
     return;
@@ -357,12 +357,12 @@ void DipsNavigationFlowDetector::
 
   EmitSuspectedTrackerFlowUkm(previous_page_visit_info_->source_id,
                               exit_info->url.source_id, flow_id,
-                              BtmRedirectType::kServer);
+                              DIPSRedirectType::kServer);
 }
 
 bool DipsNavigationFlowDetector::
     CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-        const BtmRedirectInfo* exit_info) const {
+        const DIPSRedirectInfo* exit_info) const {
   if (!previous_page_visit_info_.has_value() || exit_info == nullptr ||
       !current_page_visit_info_.has_value()) {
     return false;
@@ -383,7 +383,7 @@ void DipsNavigationFlowDetector::
 
   EmitSuspectedTrackerFlowUkm(two_pages_ago_visit_info_->source_id,
                               previous_page_visit_info_->source_id, flow_id,
-                              BtmRedirectType::kClient);
+                              DIPSRedirectType::kClient);
 }
 
 bool DipsNavigationFlowDetector::
@@ -468,7 +468,7 @@ dips::FlowStatus DipsNavigationFlowDetector::FlowStatusAfterNavigation(
     return dips::kFlowInvalidated;
   }
 
-  const base::span<const BtmRedirectInfoPtr> server_redirects =
+  const base::span<const DIPSRedirectInfoPtr> server_redirects =
       GetRedirectContext().GetServerRedirectsSinceLastPrimaryPageChange();
 
   if (did_most_recent_navigation_start_new_flow) {
@@ -512,7 +512,7 @@ bool DipsNavigationFlowDetector::
   // Look for an entrypoint, which must either be the current page or the first
   // server redirect since the prior page.
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
       GetRedirectContext().GetServerRedirectsSinceLastPrimaryPageChange();
   bool can_entrypoint_be_current_page = server_redirects.empty();
 
@@ -525,7 +525,7 @@ bool DipsNavigationFlowDetector::
     return false;
   }
 
-  const BtmRedirectInfo* possible_entrypoint = server_redirects.front().get();
+  const DIPSRedirectInfo* possible_entrypoint = server_redirects.front().get();
   if (possible_entrypoint->site == previous_page_visit_info_->site) {
     return false;
   }
@@ -544,7 +544,7 @@ bool DipsNavigationFlowDetector::
   return true;
 }
 
-const BtmRedirectContext& DipsNavigationFlowDetector::GetRedirectContext()
+const DIPSRedirectContext& DipsNavigationFlowDetector::GetRedirectContext()
     const {
   return redirect_chain_observation_.GetSource()->CommittedRedirectContext();
 }
@@ -567,7 +567,7 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
   // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
   // mirror that behavior by ignoring non-CHIPS 3PC accesses.
   if (!HasCHIPS(details.cookie_access_result_list) &&
-      !IsSameSiteForBtm(first_party_url.value(), details.url)) {
+      !IsSameSiteForDIPS(first_party_url.value(), details.url)) {
     return;
   }
 
@@ -599,7 +599,7 @@ void DipsNavigationFlowDetector::OnCookiesAccessed(
     // DIPS mitigations are only turned on when non-CHIPS 3PCs are blocked, so
     // mirror that behavior by ignoring non-CHIPS 3PC accesses.
     if (!HasCHIPS(details.cookie_access_result_list) &&
-        !IsSameSiteForBtm(first_party_url.value(), details.url)) {
+        !IsSameSiteForDIPS(first_party_url.value(), details.url)) {
       return;
     }
 

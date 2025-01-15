@@ -21,8 +21,8 @@ class Clock;
 
 namespace content {
 
-// TODO(rtarpine): remove dependence on BtmService.
-class BtmState;
+// TODO(rtarpine): remove dependence on DIPSService.
+class DIPSState;
 
 // Observers a WebContents to detect pop-ups with user interaction, in order to
 // grant storage access.
@@ -63,7 +63,7 @@ class CONTENT_EXPORT OpenerHeuristicTabHelper
     void EmitTopLevelAndCreateGrant(const GURL& tracker_url,
                                     OptionalBool has_iframe,
                                     bool is_current_interaction,
-                                    BtmInteractionType interaction_type,
+                                    DIPSInteractionType interaction_type,
                                     bool should_record_popup_and_maybe_grant,
                                     base::TimeDelta grant_duration);
 
@@ -80,7 +80,7 @@ class CONTENT_EXPORT OpenerHeuristicTabHelper
     void WebAuthnAssertionRequestSucceeded(
         RenderFrameHost* render_frame_host) override;
     void RecordInteractionAndCreateGrant(RenderFrameHost* render_frame_host,
-                                         BtmInteractionType interaction_type);
+                                         DIPSInteractionType interaction_type);
 
     const int32_t popup_id_;
     // The URL originally passed to window.open().
@@ -98,7 +98,7 @@ class CONTENT_EXPORT OpenerHeuristicTabHelper
     struct NoInteraction {};
     absl::variant<FieldNotSet, NoInteraction, base::TimeDelta>
         time_since_interaction_;
-    BtmInteractionType past_interaction_type_;
+    DIPSInteractionType past_interaction_type_;
     // A source ID for `initial_url_`.
     std::optional<ukm::SourceId> initial_source_id_;
     std::optional<base::Time> commit_time_;
@@ -130,8 +130,8 @@ class CONTENT_EXPORT OpenerHeuristicTabHelper
   void InitPopup(const GURL& popup_url,
                  base::WeakPtr<OpenerHeuristicTabHelper> opener);
   // Asynchronous callback for reading past interaction timestamps from the
-  // BtmService.
-  void GotPopupDipsState(const BtmState& state);
+  // DIPSService.
+  void GotPopupDipsState(const DIPSState& state);
   // Record a OpenerHeuristic.PostPopupCookieAccess event, if there has been a
   // corresponding popup event for the provided source and target sites.
   void OnCookiesAccessed(const ukm::SourceId& source_id,

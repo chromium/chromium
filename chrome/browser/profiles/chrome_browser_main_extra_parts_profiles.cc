@@ -815,7 +815,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DiceResponseHandlerFactory::GetInstance();
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
-  BtmBrowserSigninDetectorFactory::GetInstance();
+  DIPSBrowserSigninDetectorFactory::GetInstance();
   DocumentSuggestionsServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();

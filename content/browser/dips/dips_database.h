@@ -24,7 +24,7 @@
 namespace content {
 
 // Encapsulates an SQL database that holds DIPS info.
-class CONTENT_EXPORT BtmDatabase {
+class CONTENT_EXPORT DIPSDatabase {
  public:
   // Version number of the database schema.
   // NOTE: When changing the version, add a new golden file for the new version
@@ -44,16 +44,16 @@ class CONTENT_EXPORT BtmDatabase {
   static constexpr base::TimeDelta kPopupTtl = base::Days(60);
 
   // Passing in an std::nullopt `db_path` causes the db to be created in
-  // memory. Init() must be called before using the BtmDatabase to make sure it
+  // memory. Init() must be called before using the DIPSDatabase to make sure it
   // is initialized.
-  explicit BtmDatabase(const std::optional<base::FilePath>& db_path);
+  explicit DIPSDatabase(const std::optional<base::FilePath>& db_path);
 
   // This object must be destroyed on the thread where all accesses are
   // happening to avoid thread-safety problems.
-  ~BtmDatabase();
+  ~DIPSDatabase();
 
-  BtmDatabase(const BtmDatabase&) = delete;
-  BtmDatabase& operator=(const BtmDatabase&) = delete;
+  DIPSDatabase(const DIPSDatabase&) = delete;
+  DIPSDatabase& operator=(const DIPSDatabase&) = delete;
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -73,7 +73,7 @@ class CONTENT_EXPORT BtmDatabase {
   // This is implicitly `inline`. Don't move its definition to the .cc file.
   bool HasExpired(std::optional<base::Time> time) {
     return time.has_value() &&
-           (time.value() + features::kBtmInteractionTtl.Get()) < clock_->Now();
+           (time.value() + features::kDIPSInteractionTtl.Get()) < clock_->Now();
   }
 
   std::optional<StateValue> Read(const std::string& site);
@@ -88,7 +88,7 @@ class CONTENT_EXPORT BtmDatabase {
 
   // Note: this doesn't clear expired interactions from the database unlike
   // the other database querying methods.
-  std::vector<std::string> GetAllSitesForTesting(const BtmDatabaseTable table);
+  std::vector<std::string> GetAllSitesForTesting(const DIPSDatabaseTable table);
 
   // Returns the subset of sites in |sites| WITH a protective event recorded.
   // A protective event is a user interaction or successful WebAuthn assertion.
@@ -160,28 +160,28 @@ class CONTENT_EXPORT BtmDatabase {
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
-  bool RemoveRow(const BtmDatabaseTable table, const std::string& site);
+  bool RemoveRow(const DIPSDatabaseTable table, const std::string& site);
 
-  bool RemoveRows(const BtmDatabaseTable table,
+  bool RemoveRows(const DIPSDatabaseTable table,
                   const std::vector<std::string>& sites);
 
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
   bool RemoveEventsByTime(const base::Time& delete_begin,
                           const base::Time& delete_end,
-                          const BtmEventRemovalType type);
+                          const DIPSEventRemovalType type);
 
   // Because |sites| is taken from a ClearDataFilter, this only removes
   // storage and stateful bounce timestamps at the moment.
   bool RemoveEventsBySite(bool preserve,
                           const std::vector<std::string>& sites,
-                          const BtmEventRemovalType type);
+                          const DIPSEventRemovalType type);
 
   // Returns the number of entries present in the database.
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
-  size_t GetEntryCount(const BtmDatabaseTable table);
+  size_t GetEntryCount(const DIPSDatabaseTable table);
 
   // If the number of entries in the database is greater than
   // |GetMaxEntries()|, garbage collect. Returns the number of entries deleted
@@ -194,14 +194,14 @@ class CONTENT_EXPORT BtmDatabase {
   //
   // NOTE: The SQLITE sub-query in this method must match that of
   // `GetGarbageCollectOldestSitesForTesting()`'s query.
-  size_t GarbageCollectOldest(const BtmDatabaseTable table, int purge_goal);
+  size_t GarbageCollectOldest(const DIPSDatabaseTable table, int purge_goal);
 
   // Used for testing the intended behavior `GarbageCollectOldest()`.
   //
   // NOTE: The SQLITE query in this method must match that of
   // `GarbageCollectOldest()`'s sub-query.
   std::vector<std::string> GetGarbageCollectOldestSitesForTesting(
-      const BtmDatabaseTable table);
+      const DIPSDatabaseTable table);
 
   bool in_memory() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -244,10 +244,10 @@ class CONTENT_EXPORT BtmDatabase {
   // `ClearExpiredRows()`.
   bool ClearTimestamps(const base::Time& delete_begin,
                        const base::Time& delete_end,
-                       const BtmEventRemovalType type);
+                       const DIPSEventRemovalType type);
   bool ClearTimestampsBySite(bool preserve,
                              const std::vector<std::string>& sites,
-                             const BtmEventRemovalType type);
+                             const DIPSEventRemovalType type);
   bool RemoveEmptyRows();
 
   void LogDatabaseMetrics();
@@ -262,14 +262,14 @@ class CONTENT_EXPORT BtmDatabase {
   // `ClearExpiredRows()`.
   bool AdjustFirstTimestamps(const base::Time& delete_begin,
                              const base::Time& delete_end,
-                             const BtmEventRemovalType type);
+                             const DIPSEventRemovalType type);
   // Only ClearTimestamps() should call this method.
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
   bool AdjustLastTimestamps(const base::Time& delete_begin,
                             const base::Time& delete_end,
-                            const BtmEventRemovalType type);
+                            const DIPSEventRemovalType type);
 
   // Upsert the row for `key` in the config table to contain `value`.
   bool SetConfigValue(std::string_view key, int64_t value);

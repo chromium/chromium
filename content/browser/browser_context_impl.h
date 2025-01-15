@@ -117,7 +117,7 @@ class CONTENT_EXPORT BrowserContextImpl {
     return resource_context_.get();
   }
 
-  BtmServiceImpl* GetDipsService();
+  DIPSServiceImpl* GetDipsService();
   // If the DIPS database file should be deleted, wait for it. Otherwise, return
   // immediately.
   //
@@ -171,7 +171,7 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
   // Manages DIPS for all WebContentses using this browser context.
-  std::unique_ptr<BtmServiceImpl> dips_service_;
+  std::unique_ptr<DIPSServiceImpl> dips_service_;
   // If DIPS is disabled, any existing database file is asynchronously deleted
   // when the BrowserContextImpl is created. This RunLoop allows tests to wait
   // for the deletion to complete.

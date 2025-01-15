@@ -25,7 +25,7 @@ class GURL;
 
 namespace content {
 
-class BtmServiceImpl;
+class DIPSServiceImpl;
 class Page;
 class RenderFrameHost;
 class WebContents;
@@ -57,7 +57,7 @@ class RedirectHeuristicTabHelper
       const CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
-      BtmInteractionType interaction_type,
+      DIPSInteractionType interaction_type,
       std::optional<base::Time> last_user_interaction_time);
 
   // Create all eligible RedirectHeuristic grants for the current redirect
@@ -79,7 +79,7 @@ class RedirectHeuristicTabHelper
   void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
 
   raw_ptr<RedirectChainDetector> detector_;
-  raw_ptr<BtmServiceImpl> dips_service_;
+  raw_ptr<DIPSServiceImpl> dips_service_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   std::optional<base::Time> last_commit_timestamp_;
 

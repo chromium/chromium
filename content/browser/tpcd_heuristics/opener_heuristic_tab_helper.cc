@@ -63,8 +63,8 @@ void OpenerHeuristicTabHelper::InitPopup(
   popup_observer_ =
       std::make_unique<PopupObserver>(web_contents(), popup_url, opener);
 
-  BtmServiceImpl* dips =
-      BtmServiceImpl::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past interaction.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -72,13 +72,13 @@ void OpenerHeuristicTabHelper::InitPopup(
   }
 
   dips->storage()
-      ->AsyncCall(&BtmStorage::Read)
+      ->AsyncCall(&DIPSStorage::Read)
       .WithArgs(popup_url)
       .Then(base::BindOnce(&OpenerHeuristicTabHelper::GotPopupDipsState,
                            weak_factory_.GetWeakPtr()));
 }
 
-void OpenerHeuristicTabHelper::GotPopupDipsState(const BtmState& state) {
+void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
   popup_observer_->SetPastInteractionTimeAndType(
       state.user_interaction_times(), state.web_authn_assertion_times());
 }
@@ -138,11 +138,11 @@ bool OpenerHeuristicTabHelper::PassesIframeInitiatorCheck(
       return true;
     case EnableForIframeTypes::kFirstParty: {
       // Check that the frame tree consists of only first-party iframes.
-      std::string main_frame_site = GetSiteForBtm(
+      std::string main_frame_site = GetSiteForDIPS(
           source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
       RenderFrameHost* rfh_itr = source_render_frame_host;
       while (rfh_itr->GetParent() != nullptr) {
-        if (GetSiteForBtm(rfh_itr->GetLastCommittedURL()) != main_frame_site) {
+        if (GetSiteForDIPS(rfh_itr->GetLastCommittedURL()) != main_frame_site) {
           return false;
         }
         rfh_itr = rfh_itr->GetParent();
@@ -187,10 +187,10 @@ void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
   base::Time most_recent_interaction;
   if (most_recent_user_activation >= most_recent_authentication) {
     most_recent_interaction = most_recent_user_activation;
-    past_interaction_type_ = BtmInteractionType::UserActivation;
+    past_interaction_type_ = DIPSInteractionType::UserActivation;
   } else {
     most_recent_interaction = most_recent_authentication;
-    past_interaction_type_ = BtmInteractionType::UserActivation;
+    past_interaction_type_ = DIPSInteractionType::UserActivation;
   }
 
   if (most_recent_interaction != base::Time::Min()) {
@@ -200,7 +200,7 @@ void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
     time_since_interaction_ = GetClock()->Now() - most_recent_interaction;
   } else {
     time_since_interaction_ = NoInteraction();
-    past_interaction_type_ = BtmInteractionType::NoInteraction;
+    past_interaction_type_ = DIPSInteractionType::NoInteraction;
   }
 
   // TODO(rtarpine): consider ignoring interactions that are too old. (This
@@ -234,7 +234,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
 
   EmitTopLevelAndCreateGrant(
       initial_url_, has_iframe, /*is_current_interaction=*/false,
-      /*interaction_type=*/BtmInteractionType::UserActivation,
+      /*interaction_type=*/DIPSInteractionType::UserActivation,
       /*should_record_popup_and_maybe_grant=*/
       absl::holds_alternative<base::TimeDelta>(time_since_interaction_),
       /*grant_duration=*/
@@ -279,18 +279,18 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
 void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
     RenderFrameHost* render_frame_host) {
   RecordInteractionAndCreateGrant(render_frame_host,
-                                  BtmInteractionType::UserActivation);
+                                  DIPSInteractionType::UserActivation);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::WebAuthnAssertionRequestSucceeded(
     RenderFrameHost* render_frame_host) {
   RecordInteractionAndCreateGrant(render_frame_host,
-                                  BtmInteractionType::Authentication);
+                                  DIPSInteractionType::Authentication);
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
     RenderFrameHost* render_frame_host,
-    BtmInteractionType interaction_type) {
+    DIPSInteractionType interaction_type) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -349,8 +349,8 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
     const ukm::SourceId& source_id,
     const CookieAccessDetails& details) {
-  BtmServiceImpl* dips =
-      BtmServiceImpl::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past popup events.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -359,14 +359,14 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 
   // Ignore same-domain cookie access.
   if (details.first_party_url.is_empty() ||
-      GetSiteForBtm(details.first_party_url) == GetSiteForBtm(details.url)) {
+      GetSiteForDIPS(details.first_party_url) == GetSiteForDIPS(details.url)) {
     return;
   }
 
   dips->storage()
-      ->AsyncCall(&BtmStorage::ReadPopup)
-      .WithArgs(GetSiteForBtm(details.first_party_url),
-                GetSiteForBtm(details.url))
+      ->AsyncCall(&DIPSStorage::ReadPopup)
+      .WithArgs(GetSiteForDIPS(details.first_party_url),
+                GetSiteForDIPS(details.url))
       .Then(base::BindOnce(&OpenerHeuristicTabHelper::EmitPostPopupCookieAccess,
                            weak_factory_.GetWeakPtr(), source_id, details));
 }
@@ -395,21 +395,21 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
     const GURL& popup_url,
     OptionalBool has_iframe,
     bool is_current_interaction,
-    BtmInteractionType interaction_type,
+    DIPSInteractionType interaction_type,
     bool should_record_popup_and_maybe_grant,
     base::TimeDelta grant_duration) {
   uint64_t access_id = base::RandUint64();
 
   if (should_record_popup_and_maybe_grant) {
-    if (BtmServiceImpl* dips =
-            BtmServiceImpl::Get(web_contents()->GetBrowserContext())) {
+    if (DIPSServiceImpl* dips =
+            DIPSServiceImpl::Get(web_contents()->GetBrowserContext())) {
       dips->storage()
-          ->AsyncCall(&BtmStorage::WritePopup)
-          .WithArgs(GetSiteForBtm(opener_origin_), GetSiteForBtm(popup_url),
+          ->AsyncCall(&DIPSStorage::WritePopup)
+          .WithArgs(GetSiteForDIPS(opener_origin_), GetSiteForDIPS(popup_url),
                     access_id,
                     /*popup_time=*/GetClock()->Now(), is_current_interaction,
                     /*is_authentication_interaction=*/interaction_type ==
-                        BtmInteractionType::Authentication)
+                        DIPSInteractionType::Authentication)
           .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
     }
 

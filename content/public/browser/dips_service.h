@@ -23,11 +23,11 @@ namespace content {
 class BrowserContext;
 class WebContents;
 
-// The primary purpose of BtmService is to allow clients to observe redirect
+// The primary purpose of DIPSService is to allow clients to observe redirect
 // chains as soon as the bounce tracking mitigation system detects them. It also
 // has a few methods for recording user behavior outside of navigations,
 // querying the DIPS database, and triggering tracker storage deletion.
-class CONTENT_EXPORT BtmService : public base::SupportsUserData {
+class CONTENT_EXPORT DIPSService : public base::SupportsUserData {
  public:
   using DeletedSitesCallback =
       base::OnceCallback<void(const std::vector<std::string>& sites)>;
@@ -38,14 +38,14 @@ class CONTENT_EXPORT BtmService : public base::SupportsUserData {
     // Called whenever a site bounces the user while accessing storage (e.g.
     // cookies or local storage) in any primary main frame.
     virtual void OnStatefulBounce(WebContents* web_contents) {}
-    // Called whenever the BtmService finishes handling a redirect chain (so
+    // Called whenever the DIPSService finishes handling a redirect chain (so
     // metadata for its redirects have been written to the DIPS database).
     virtual void OnChainHandled(
-        const std::vector<BtmRedirectInfoPtr>& redirects,
-        const BtmRedirectChainInfoPtr& chain) {}
+        const std::vector<DIPSRedirectInfoPtr>& redirects,
+        const DIPSRedirectChainInfoPtr& chain) {}
   };
 
-  static BtmService* Get(BrowserContext* context);
+  static DIPSService* Get(BrowserContext* context);
 
   // Some embedders support the user signing into the browser. In order to
   // protect the cookies (or other storage) that keeps the user logged in,

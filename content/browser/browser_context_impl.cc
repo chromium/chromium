@@ -80,7 +80,7 @@ void BrowserContextImpl::MaybeCleanupDips() {
   base::ScopedClosureRunner quit_runner(dips_cleanup_loop_.QuitClosure());
   // Don't attempt to delete the database if the DIPS feature is enabled; we
   // need it.
-  if (base::FeatureList::IsEnabled(features::kBtm)) {
+  if (base::FeatureList::IsEnabled(features::kDIPS)) {
     return;
   }
 
@@ -99,7 +99,8 @@ void BrowserContextImpl::MaybeCleanupDips() {
     return;
   }
 
-  BtmStorage::DeleteDatabaseFiles(GetBtmFilePath(self_), quit_runner.Release());
+  DIPSStorage::DeleteDatabaseFiles(GetDIPSFilePath(self_),
+                                   quit_runner.Release());
 }
 
 void BrowserContextImpl::WaitForDipsCleanupForTesting() {
@@ -292,7 +293,7 @@ void BrowserContextImpl::ShutdownStoragePartitions() {
 
   storage_partition_map_.reset();
 
-  // Delete the BtmService, causing its SQLite database file to be closed. This
+  // Delete the DIPSService, causing its SQLite database file to be closed. This
   // is necessary for TestBrowserContext to be able to delete its temporary
   // directory.
   dips_service_.reset();
@@ -399,7 +400,7 @@ void BrowserContextImpl::WriteIntoTrace(
 
 namespace {
 bool ShouldEnableDips(BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kBtm)) {
+  if (!base::FeatureList::IsEnabled(features::kDIPS)) {
     return false;
   }
 
@@ -411,12 +412,12 @@ bool ShouldEnableDips(BrowserContext* browser_context) {
 }
 }  // namespace
 
-BtmServiceImpl* BrowserContextImpl::GetDipsService() {
+DIPSServiceImpl* BrowserContextImpl::GetDipsService() {
   if (!dips_service_) {
     if (!ShouldEnableDips(self_)) {
       return nullptr;
     }
-    dips_service_ = std::make_unique<BtmServiceImpl>(
+    dips_service_ = std::make_unique<DIPSServiceImpl>(
         base::PassKey<BrowserContextImpl>(), self_);
     GetContentClient()->browser()->OnDipsServiceCreated(self_,
                                                         dips_service_.get());
@@ -443,7 +444,7 @@ void CreatePopupHeuristicGrants(base::WeakPtr<BrowserContext> browser_context,
     }
 
     // `popup_site` and `opener_site` were read from the DIPS database,
-    // and were originally computed by calling GetSiteForBtm().
+    // and were originally computed by calling GetSiteForDIPS().
     // GrantCookieAccessDueToHeuristic() takes SchemefulSites, so we create some
     // here, but since we pass ignore_schemes=true the scheme doesn't matter
     // (and port never matters for SchemefulSites), so we hardcode http and 80.
@@ -474,7 +475,7 @@ void BrowserContextImpl::BackfillPopupHeuristicGrants(
   // shutdown or crashes.
   GetDipsService()
       ->storage()
-      ->AsyncCall(&BtmStorage::ReadRecentPopupsWithInteraction)
+      ->AsyncCall(&DIPSStorage::ReadRecentPopupsWithInteraction)
       .WithArgs(
           content_settings::features::kTpcdBackfillPopupHeuristicsGrants.Get())
       .Then(base::BindOnce(&CreatePopupHeuristicGrants, self_->GetWeakPtr(),

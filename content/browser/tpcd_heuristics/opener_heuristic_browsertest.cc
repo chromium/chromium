@@ -205,7 +205,7 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
     //     {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
     //      subresource_filter::testing::CreateSuffixRule("isad=1")});
 
-    BtmServiceImpl::Get(GetActiveWebContents()->GetBrowserContext())
+    DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
 
     ukm::InitializeSourceUrlRecorderForWebContents(GetActiveWebContents());
@@ -229,14 +229,14 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
     return OpenerHeuristicTabHelper::FromWebContents(GetActiveWebContents());
   }
 
-  BtmServiceImpl* GetDipsService() {
-    return BtmServiceImpl::Get(GetActiveWebContents()->GetBrowserContext());
+  DIPSServiceImpl* GetDipsService() {
+    return DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext());
   }
 
   void RecordUserActivationInteraction(const GURL& url, base::Time time) {
     auto* dips = GetDipsService();
     dips->storage()
-        ->AsyncCall(&BtmStorage::RecordInteraction)
+        ->AsyncCall(&DIPSStorage::RecordInteraction)
         .WithArgs(url, time, dips->GetCookieMode());
     dips->storage()->FlushPostedTasksForTesting();
   }
@@ -244,7 +244,7 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
   void RecordAuthenticationInteraction(const GURL& url, base::Time time) {
     auto* dips = GetDipsService();
     dips->storage()
-        ->AsyncCall(&BtmStorage::RecordWebAuthnAssertion)
+        ->AsyncCall(&DIPSStorage::RecordWebAuthnAssertion)
         .WithArgs(url, time, dips->GetCookieMode());
     dips->storage()->FlushPostedTasksForTesting();
   }
@@ -347,8 +347,8 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
 
     GetDipsService()
         ->storage()
-        ->AsyncCall(&BtmStorage::ReadPopup)
-        .WithArgs(GetSiteForBtm(opener_url), GetSiteForBtm(popup_url))
+        ->AsyncCall(&DIPSStorage::ReadPopup)
+        .WithArgs(GetSiteForDIPS(opener_url), GetSiteForDIPS(popup_url))
         .Then(base::BindLambdaForTesting(
             [&state](std::optional<PopupsStateValue> db_state) {
               state = db_state;
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   // HoursSinceLastInteraction field is set to -1.
   EXPECT_EQ(entries[0].metrics["HoursSinceLastInteraction"], -1);
   EXPECT_EQ(entries[0].metrics["InteractionType"],
-            static_cast<int32_t>(BtmInteractionType::NoInteraction));
+            static_cast<int32_t>(DIPSInteractionType::NoInteraction));
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -976,8 +976,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
       });
   GetDipsService()
       ->storage()
-      ->AsyncCall(&BtmStorage::ReadPopup)
-      .WithArgs(GetSiteForBtm(opener_url), GetSiteForBtm(popup_url))
+      ->AsyncCall(&DIPSStorage::ReadPopup)
+      .WithArgs(GetSiteForDIPS(opener_url), GetSiteForDIPS(popup_url))
       .Then(std::move(assert_popup));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
@@ -1047,8 +1047,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicInteractionTypesBrowserTest,
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
   EXPECT_EQ(entries[0].metrics["InteractionType"],
             isAuthenticationInteraction()
-                ? static_cast<int32_t>(BtmInteractionType::Authentication)
-                : static_cast<int32_t>(BtmInteractionType::UserActivation));
+                ? static_cast<int32_t>(DIPSInteractionType::Authentication)
+                : static_cast<int32_t>(DIPSInteractionType::UserActivation));
 }
 
 // chrome/browser/ui/browser.h (for changing profile prefs) is not available on
@@ -1248,8 +1248,8 @@ IN_PROC_BROWSER_TEST_P(
       });
   GetDipsService()
       ->storage()
-      ->AsyncCall(&BtmStorage::ReadPopup)
-      .WithArgs(GetSiteForBtm(opener_url), GetSiteForBtm(popup_url_3))
+      ->AsyncCall(&DIPSStorage::ReadPopup)
+      .WithArgs(GetSiteForDIPS(opener_url), GetSiteForDIPS(popup_url_3))
       .Then(std::move(assert_popup));
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 

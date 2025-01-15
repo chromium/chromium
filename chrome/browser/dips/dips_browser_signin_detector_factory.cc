@@ -13,39 +13,41 @@
 #include "content/public/common/content_features.h"
 
 /*static*/
-BtmBrowserSigninDetector* BtmBrowserSigninDetector::Get(
+DIPSBrowserSigninDetector* DIPSBrowserSigninDetector::Get(
     content::BrowserContext* browser_context) {
-  return BtmBrowserSigninDetectorFactory::GetForBrowserContext(browser_context);
+  return DIPSBrowserSigninDetectorFactory::GetForBrowserContext(
+      browser_context);
 }
 
 /*static*/
-BtmBrowserSigninDetectorFactory*
-BtmBrowserSigninDetectorFactory::GetInstance() {
-  static base::NoDestructor<BtmBrowserSigninDetectorFactory> instance(
+DIPSBrowserSigninDetectorFactory*
+DIPSBrowserSigninDetectorFactory::GetInstance() {
+  static base::NoDestructor<DIPSBrowserSigninDetectorFactory> instance(
       PassKey{});
   return instance.get();
 }
 
 /*static*/
-BtmBrowserSigninDetector* BtmBrowserSigninDetectorFactory::GetForBrowserContext(
+DIPSBrowserSigninDetector*
+DIPSBrowserSigninDetectorFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<BtmBrowserSigninDetector*>(
+  return static_cast<DIPSBrowserSigninDetector*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
-BtmBrowserSigninDetectorFactory::BtmBrowserSigninDetectorFactory(PassKey)
+DIPSBrowserSigninDetectorFactory::DIPSBrowserSigninDetectorFactory(PassKey)
     : BrowserContextKeyedServiceFactory(
-          "BtmBrowserSigninDetector",
+          "DIPSBrowserSigninDetector",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-BtmBrowserSigninDetectorFactory::~BtmBrowserSigninDetectorFactory() = default;
+DIPSBrowserSigninDetectorFactory::~DIPSBrowserSigninDetectorFactory() = default;
 
 content::BrowserContext*
-BtmBrowserSigninDetectorFactory::GetBrowserContextToUse(
+DIPSBrowserSigninDetectorFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kBtm)) {
+  if (!base::FeatureList::IsEnabled(features::kDIPS)) {
     return nullptr;
   }
 
@@ -56,26 +58,26 @@ BtmBrowserSigninDetectorFactory::GetBrowserContextToUse(
   return context;
 }
 
-void BtmBrowserSigninDetectorFactory::EnableWaitForServiceForTesting() {
+void DIPSBrowserSigninDetectorFactory::EnableWaitForServiceForTesting() {
   context_runloops_for_testing_.emplace();
 }
 
 std::unique_ptr<KeyedService>
-BtmBrowserSigninDetectorFactory::BuildServiceInstanceForBrowserContext(
+DIPSBrowserSigninDetectorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context_runloops_for_testing_.has_value()) {
     // Unblock any calls to `WaitForServiceForTesting()` with `context`.
     context_runloops_for_testing_.value()[context->UniqueId()].Quit();
   }
 
-  return std::make_unique<BtmBrowserSigninDetector>(
-      base::PassKey<BtmBrowserSigninDetectorFactory>(),
-      content::BtmService::Get(context),
+  return std::make_unique<DIPSBrowserSigninDetector>(
+      base::PassKey<DIPSBrowserSigninDetectorFactory>(),
+      content::DIPSService::Get(context),
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(context)));
 }
 
-void BtmBrowserSigninDetectorFactory::WaitForServiceForTesting(
+void DIPSBrowserSigninDetectorFactory::WaitForServiceForTesting(
     content::BrowserContext* browser_context) {
   context_runloops_for_testing_.value()[browser_context->UniqueId()].Run();
   CHECK(GetServiceForBrowserContext(browser_context, /*create=*/false));

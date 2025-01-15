@@ -12,24 +12,24 @@
 
 namespace content {
 
-class DipsRedirectChainObserver : public BtmService::Observer {
+class DipsRedirectChainObserver : public DIPSService::Observer {
  public:
-  DipsRedirectChainObserver(BtmService* service, GURL final_url);
+  DipsRedirectChainObserver(DIPSService* service, GURL final_url);
   ~DipsRedirectChainObserver() override;
 
   void Wait();
-  const std::optional<std::vector<BtmRedirectInfoPtr>>& redirects() const {
+  const std::optional<std::vector<DIPSRedirectInfoPtr>>& redirects() const {
     return redirects_;
   }
 
  private:
-  void OnChainHandled(const std::vector<BtmRedirectInfoPtr>& redirects,
-                      const BtmRedirectChainInfoPtr& chain) override;
+  void OnChainHandled(const std::vector<DIPSRedirectInfoPtr>& redirects,
+                      const DIPSRedirectChainInfoPtr& chain) override;
 
   GURL final_url_;
   base::RunLoop run_loop_;
-  std::optional<std::vector<BtmRedirectInfoPtr>> redirects_;
-  base::ScopedObservation<BtmService, Observer> observation_{this};
+  std::optional<std::vector<DIPSRedirectInfoPtr>> redirects_;
+  base::ScopedObservation<DIPSService, Observer> observation_{this};
 };
 
 }  // namespace content
