@@ -1916,10 +1916,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Privacy settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
-        Test your mic sound
+        Test your mic
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
-        You can test your microphone sound. Close panel to stop.
+        Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
         Connect wired headphone
@@ -1928,7 +1928,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
-        <ph name="TITLE">$1<ex>Test your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can test your microphone sound. Close panel to stop.</ex></ph>
+        <ph name="TITLE">$1<ex>Test your mic</ex></ph>. <ph name="DESCRIPTION">$2<ex>Hear how you’ll sound to others. To stop, click the test icon or close the video call panel.</ex></ph>
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
