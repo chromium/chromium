@@ -6,6 +6,7 @@ import 'chrome://compare/comparison_table_list.js';
 
 import {ProductSpecificationsBrowserProxyImpl} from '//resources/cr_components/commerce/product_specifications_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {ComparisonTableListElement} from 'chrome://compare/comparison_table_list.js';
 import type {ComparisonTableListItemElement} from 'chrome://compare/comparison_table_list_item.js';
@@ -20,6 +21,7 @@ suite('ComparisonTableListTest', () => {
   let listElement: ComparisonTableListElement;
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecsProxy = new TestProductSpecificationsBrowserProxy();
 
   const TABLES = [
     {
@@ -56,7 +58,7 @@ suite('ComparisonTableListTest', () => {
     const pluralStringProxy = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
-    const productSpecsProxy = new TestProductSpecificationsBrowserProxy();
+    productSpecsProxy.reset();
     ProductSpecificationsBrowserProxyImpl.setInstance(productSpecsProxy);
 
     shoppingServiceApi.reset();
@@ -132,5 +134,63 @@ suite('ComparisonTableListTest', () => {
             assertFalse(items[i]!.hasCheckbox);
           }
         });
+
+
+    suite('context menu', () => {
+      let menu: CrActionMenuElement;
+
+      setup(async () => {
+        listElement.$.more.click();
+        await microtasksFinished();
+
+        menu = listElement.$.menu.get();
+        assertTrue(!!menu);
+      });
+
+      test('can open multiple comparison tables', async () => {
+        const openAllFinishedPromise =
+            eventToPromise('open-all-finished-for-testing', listElement);
+        const openAllButton =
+            menu.querySelector<HTMLButtonElement>('#menuOpenAll');
+        assertTrue(!!openAllButton);
+        openAllButton.click();
+        await openAllFinishedPromise;
+
+        assertEquals(
+            2,
+            productSpecsProxy.getCallCount(
+                'showProductSpecificationsSetForUuid'));
+        const firstCallArgs =
+            productSpecsProxy.getArgs('showProductSpecificationsSetForUuid')[0];
+        const secondCallArgs =
+            productSpecsProxy.getArgs('showProductSpecificationsSetForUuid')[1];
+        assertEquals(TABLES[0]!.uuid, firstCallArgs[0]);
+        assertEquals(
+            /*inNewTab=*/ true, firstCallArgs[1]);
+        assertEquals(TABLES[1]!.uuid, secondCallArgs[0]);
+        assertEquals(
+            /*inNewTab=*/ true, secondCallArgs[1]);
+      });
+
+      test('can delete multiple comparison tables', async () => {
+        const deleteFinishedPromise =
+            eventToPromise('delete-finished-for-testing', listElement);
+        const deleteButton =
+            menu.querySelector<HTMLButtonElement>('#menuDelete');
+        assertTrue(!!deleteButton);
+        deleteButton.click();
+        await deleteFinishedPromise;
+
+        assertEquals(
+            2,
+            shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+        assertEquals(
+            TABLES[0]!.uuid,
+            shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
+        assertEquals(
+            TABLES[1]!.uuid,
+            shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
+      });
+    });
   });
 });
