@@ -150,6 +150,16 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
     }
 
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImagePool:
+      // Future CLs will add implementation.
+      NOTIMPLEMENTED();
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::kDestroySharedImagePool:
+      // Future CLs will add implementation.
+      NOTIMPLEMENTED();
+      break;
+
 #if BUILDFLAG(IS_WIN)
     case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
       OnCreateSwapChain(std::move(request->get_create_swap_chain()));

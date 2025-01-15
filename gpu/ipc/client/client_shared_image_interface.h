@@ -131,6 +131,12 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
 
   const SharedImageCapabilities& GetCapabilities() override;
 
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote)
+      override;
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id) override;
+
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
 
  protected:

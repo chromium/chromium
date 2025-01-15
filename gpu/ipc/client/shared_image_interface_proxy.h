@@ -135,6 +135,11 @@ class SharedImageInterfaceProxy {
     return capabilities_;
   }
 
+  void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+  void DestroySharedImagePool(const SharedImagePoolId& pool_id);
+
  private:
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,
                           size_t* shm_offset,

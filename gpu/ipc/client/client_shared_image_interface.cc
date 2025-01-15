@@ -392,4 +392,15 @@ const SharedImageCapabilities& ClientSharedImageInterface::GetCapabilities() {
   return proxy_->GetCapabilities();
 }
 
+void ClientSharedImageInterface::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  proxy_->CreateSharedImagePool(pool_id, std::move(client_remote));
+}
+
+void ClientSharedImageInterface::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  proxy_->DestroySharedImagePool(pool_id);
+}
+
 }  // namespace gpu
