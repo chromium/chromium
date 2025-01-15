@@ -35,8 +35,8 @@ class PrefetchNetworkContextTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    test_content_browser_client_ =
-        std::make_unique<ScopedMockContentBrowserClient>();
+    test_content_browser_client_ = std::make_unique<
+        ::testing::StrictMock<ScopedMockContentBrowserClient>>();
 
     prefetch_service_ = std::make_unique<PrefetchService>(browser_context());
   }

@@ -19,6 +19,8 @@
 
 namespace content {
 
+using ::testing::_;
+
 namespace {
 
 // Make some broadly reasonable redirect info.
@@ -441,6 +443,19 @@ void PrefetchTestURLLoaderClient::OnDataComplete() {
 
 ScopedMockContentBrowserClient::ScopedMockContentBrowserClient() {
   old_browser_client_ = SetBrowserClientForTesting(this);
+
+  // Ignore `WillCreateURLLoaderFactory(kDocumentSubResource)` calls (triggered
+  // by e.g. `RenderFrameHostImpl::CommitNavigation()`) to suppress gmock
+  // warning/failures. This is safe to ignore, because prefetch-related tests
+  // are only for navigational prefetch and don't care about unrelated
+  // subresource URLLoaderFactories.
+  EXPECT_CALL(
+      *this,
+      WillCreateURLLoaderFactory(
+          _, _, _,
+          ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource, _,
+          _, _, _, _, _, _, _, _, _))
+      .Times(::testing::AnyNumber());
 }
 
 ScopedMockContentBrowserClient::~ScopedMockContentBrowserClient() {

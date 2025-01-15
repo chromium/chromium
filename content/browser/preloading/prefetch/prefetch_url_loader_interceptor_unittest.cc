@@ -56,6 +56,9 @@
 #include "url/gurl.h"
 
 namespace content {
+
+using ::testing::_;
+
 namespace {
 
 // These tests leak mojo objects (like the PrefetchFromStringURLLoader) because
@@ -205,8 +208,8 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    test_content_browser_client_ =
-        std::make_unique<ScopedMockContentBrowserClient>();
+    test_content_browser_client_ = std::make_unique<
+        ::testing::StrictMock<ScopedMockContentBrowserClient>>();
 
     std::unique_ptr<TestPrefetchService> prefetch_service =
         std::make_unique<TestPrefetchService>(browser_context());
@@ -466,6 +469,17 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     reader.OnIsolatedCookieCopyStart();
     task_environment()->FastForwardBy(base::Milliseconds(10));
     reader.OnIsolatedCookieCopyComplete();
+  }
+
+  // When prefetch is served for navigation (depending on the `GetParam()`
+  // value), `WillCreateURLLoaderFactory()` can be called with `kNavigation`.
+  void IgnoreWillCreateURLLoaderFactoryForNavigation() {
+    EXPECT_CALL(
+        *test_content_browser_client(),
+        WillCreateURLLoaderFactory(
+            _, _, _, ContentBrowserClient::URLLoaderFactoryType::kNavigation, _,
+            _, _, _, _, _, _, _, _, _))
+        .Times(::testing::AtMost(1));
   }
 
  protected:
@@ -1153,6 +1167,8 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
   // gets the prefetch and when it tries to serve it. This can happen when
   // waiting for a probe to complete or the cookie copy to complete.
 
+  IgnoreWillCreateURLLoaderFactoryForNavigation();
+
   const GURL kTestUrl("https://example.com");
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
@@ -1465,6 +1481,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(HandleRedirectsWithCookieChange)) {
+  IgnoreWillCreateURLLoaderFactoryForNavigation();
+
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
