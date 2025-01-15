@@ -72,7 +72,7 @@ FrameResource* FrameResourceConverter::GetOriginalFrame(
     FrameResource& frame) const {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   if (!get_original_frame_cb_.is_null()) {
-    return get_original_frame_cb_.Run(frame.GetSharedMemoryId());
+    return get_original_frame_cb_.Run(frame.tracking_token());
   }
   return &frame;
 }
