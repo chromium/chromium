@@ -185,10 +185,14 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
 
   // Disable cookies for this request. The credentials mode should be omit by
   // default, only change to include for debug purpose.
-  resource_request->credentials_mode =
-      base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)
-          ? network::mojom::CredentialsMode::kInclude
-          : network::mojom::CredentialsMode::kOmit;
+  if (base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)) {
+    resource_request->credentials_mode =
+        network::mojom::CredentialsMode::kInclude;
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(request_url);
+  } else {
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
 
   // Semantic details for this "Resolve" request:
   net::NetworkTrafficAnnotationTag traffic_annotation =
