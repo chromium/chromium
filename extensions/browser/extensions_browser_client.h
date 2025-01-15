@@ -449,10 +449,6 @@ class ExtensionsBrowserClient {
   virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
 
   // Returns true if `tab_id` exists on `browser_context`.
-  // TODO(emiliapaz): Migrate callers to use IsValidTabId() with all the
-  // parameters.
-  virtual bool IsValidTabId(content::BrowserContext* browser_context,
-                            int tab_id) const;
   virtual bool IsValidTabId(content::BrowserContext* browser_context,
                             int tab_id,
                             bool include_incognito,

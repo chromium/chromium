@@ -775,13 +775,6 @@ bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
 
 bool ChromeExtensionsBrowserClient::IsValidTabId(
     content::BrowserContext* context,
-    int tab_id) const {
-  return ExtensionTabUtil::GetTabById(
-      tab_id, context, true /* include_incognito */, nullptr /* contents */);
-}
-
-bool ChromeExtensionsBrowserClient::IsValidTabId(
-    content::BrowserContext* context,
     int tab_id,
     bool include_incognito,
     content::WebContents** web_contents) const {
