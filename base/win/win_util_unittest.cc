@@ -6,17 +6,24 @@
 
 #include <objbase.h>
 
+#include <ntstatus.h>
+
 #include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -162,6 +169,76 @@ TEST(BaseWinUtilTest, ExpandEnvironmentVariablesUndefinedValue) {
 
   EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
             path_expanded);
+}
+
+TEST(GetObjectTypeNameTest, NullHandle) {
+  auto name_or_error = GetObjectTypeName(kNullProcessHandle);
+  ASSERT_FALSE(name_or_error.has_value());
+  ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(GetObjectTypeNameTest, InvalidHandle) {
+  auto name_or_error = GetObjectTypeName(INVALID_HANDLE_VALUE);
+  ASSERT_FALSE(name_or_error.has_value());
+  ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(GetObjectTypeNameTest, CurrentProcess) {
+  auto name_or_error = GetObjectTypeName(::GetCurrentProcess());
+  ASSERT_FALSE(name_or_error.has_value());
+  ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(GetObjectTypeNameTest, CrazyHandle) {
+  auto name_or_error = GetObjectTypeName(Uint32ToHandle(0x12345678U));
+  ASSERT_FALSE(name_or_error.has_value());
+  ASSERT_EQ(name_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(GetObjectTypeNameTest, ProcessHandle) {
+  Process this_process = Process::Open(GetCurrentProcId());
+  ASSERT_OK_AND_ASSIGN(std::wstring type_name,
+                       GetObjectTypeName(this_process.Handle()));
+  ASSERT_EQ(type_name, L"Process");
+}
+
+TEST(TakeHandleOfTypeTest, NullHandle) {
+  auto handle_or_error = TakeHandleOfType(kNullProcessHandle, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, InvalidHandle) {
+  auto handle_or_error = TakeHandleOfType(INVALID_HANDLE_VALUE, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, CurrentProcess) {
+  auto handle_or_error = TakeHandleOfType(::GetCurrentProcess(), L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, CrazyHandle) {
+  auto handle_or_error =
+      TakeHandleOfType(Uint32ToHandle(0x12345678U), L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, ValidTypeMatch) {
+  Process this_process = Process::Open(GetCurrentProcId());
+  HANDLE process_handle = this_process.Handle();
+  ASSERT_OK_AND_ASSIGN(ScopedHandle process,
+                       TakeHandleOfType(this_process.Release(), L"Process"));
+  ASSERT_TRUE(process.is_valid());
+  ASSERT_EQ(process.get(), process_handle);
+}
+
+TEST(TakeHandleOfTypeDeathTest, ValidTypeMismatch) {
+  EXPECT_CHECK_DEATH((void)TakeHandleOfType(
+      Process::Open(GetCurrentProcId()).Release(), L"Section"));
 }
 
 TEST(DeviceConvertibilityTest, None) {

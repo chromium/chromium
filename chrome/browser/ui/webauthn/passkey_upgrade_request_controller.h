@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPGRADE_REQUEST_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPGRADE_REQUEST_CONTROLLER_H_
 
+#include <memory>
+#include <string>
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "content/public/browser/document_user_data.h"

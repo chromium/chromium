@@ -1485,6 +1485,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.SdpMunging.{DescriptionType}.{Stage}"
+    enum="SdpMungingType" expires_after="2025-12-31">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifies the type of non-spec SDP munging used between
+    createOffer/createAnswer and setLocalDescription, split by description type
+    and the stage at which the measurement occured, before the first local
+    description, when the connection is first established and when the
+    connection is closed. SdpMungingType an enum for the modification that
+    should eventually lead to an error.
+  </summary>
+  <token key="DescriptionType">
+    <variant name="Answer"/>
+    <variant name="Offer"/>
+    <variant name="PrAnswer"/>
+  </token>
+  <token key="Stage">
+    <variant name="ConnectionClosed"/>
+    <variant name="ConnectionEstablished"/>
+    <variant name="Initial"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SpeedLimit" units="%"
     expires_after="2024-04-28">
   <owner>handellm@google.com</owner>

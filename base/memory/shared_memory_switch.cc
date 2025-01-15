@@ -220,14 +220,32 @@ expected<PlatformSharedMemoryRegion, SharedMemoryError> Deserialize(
     DCHECK(IsCurrentProcessElevated());
     // LaunchProcess doesn't have a way to duplicate the handle, but this
     // process can since by definition it's not sandboxed.
-    win::ScopedHandle parent_handle(OpenProcess(
-        PROCESS_ALL_ACCESS, FALSE, GetParentProcessId(GetCurrentProcess())));
-    DuplicateHandle(parent_handle.get(), handle, GetCurrentProcess(), &handle,
-                    0, FALSE, DUPLICATE_SAME_ACCESS);
+    if (ProcessId parent_pid = GetParentProcessId(GetCurrentProcessHandle());
+        parent_pid == kNullProcessId) {
+      return unexpected(SharedMemoryError::kInvalidHandle);
+    } else if (auto parent =
+                   Process::OpenWithAccess(parent_pid, PROCESS_ALL_ACCESS);
+               !parent.IsValid() ||
+               !::DuplicateHandle(parent.Handle(), handle,
+                                  ::GetCurrentProcess(), &handle, 0, FALSE,
+                                  DUPLICATE_SAME_ACCESS)) {
+      return unexpected(SharedMemoryError::kInvalidHandle);
+    }
   } else if (tokens[1] != "i") {
     return unexpected(SharedMemoryError::kUnexpectedHandleType);
   }
-  win::ScopedHandle scoped_handle(handle);
+  // Under some situations, the handle value provided on the command line does
+  // not refer to a valid Section object. Fail gracefully rather than wrapping
+  // the value in a ScopedHandle, as that will lead to a crash when CloseHandle
+  // fails; see https://crbug.com/40071993.
+  win::ScopedHandle scoped_handle;
+  if (auto handle_or_error = win::TakeHandleOfType(
+          std::exchange(handle, kNullProcessHandle), L"Section");
+      !handle_or_error.has_value()) {
+    return unexpected(SharedMemoryError::kInvalidHandle);
+  } else {
+    scoped_handle = *std::move(handle_or_error);
+  }
 #elif BUILDFLAG(IS_APPLE)
   DCHECK_EQ(tokens[1], "r");
   auto* rendezvous = MachPortRendezvousClient::GetInstance();

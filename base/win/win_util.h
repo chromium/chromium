@@ -33,6 +33,8 @@
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/cstring_view.h"
+#include "base/types/expected.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
 struct IPropertyStore;
@@ -313,6 +315,21 @@ BASE_EXPORT bool IsAppVerifierLoaded();
 // If `ExpandEnvironmentStrings` fails, `std::nullopt` is returned.
 BASE_EXPORT std::optional<std::wstring> ExpandEnvironmentVariables(
     wcstring_view str);
+
+// Returns the name of the type of object referenced by `handle` (e.g.,
+// "Process" or "Section"), or an error code. This function will fail with
+// STATUS_INVALID_HANDLE if called with the pseudo handle returned by
+// `::GetCurrentProcess()` or `GetCurrentProcessHandle()`.
+BASE_EXPORT expected<std::wstring, NTSTATUS> GetObjectTypeName(HANDLE handle);
+
+// Returns a smart pointer wrapping `handle` if it references an object of type
+// `object_type_name`. Crashes the process if `handle` is valid but of an
+// unexpected type. This function will fail with STATUS_INVALID_HANDLE if called
+// with the pseudo handle returned by `::GetCurrentProcess()` or
+// `GetCurrentProcessHandle()`.
+BASE_EXPORT expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
+    HANDLE handle,
+    std::wstring_view object_type_name);
 
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.

@@ -5925,12 +5925,6 @@ const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";
 
-const char kAutocorrectUseReplaceSurroundingTextName[] =
-    "Use ReplaceSurroundingText API for autocorrect.";
-const char kAutocorrectUseReplaceSurroundingTextDescription[] =
-    "When autocorrect is enabled, use the ReplaceSurroundingText API "
-    "for better app compatibility.";
-
 const char kBatteryBadgeIconName[] = "Enables smaller battery badge icon";
 const char kBatteryBadgeIconDescription[] =
     "Enables smaller battery badge icons for increased legibility of the "

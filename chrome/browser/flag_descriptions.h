@@ -3475,9 +3475,6 @@ extern const char kAutocorrectByDefaultDescription[];
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 
-extern const char kAutocorrectUseReplaceSurroundingTextName[];
-extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
-
 extern const char kBatteryBadgeIconName[];
 extern const char kBatteryBadgeIconDescription[];
 

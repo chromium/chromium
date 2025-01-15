@@ -243,8 +243,14 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                     ->GetBytesAllocated());
 }
 
+// TODO(crbug.com/364379688): This test is flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CheckReleaseMemory DISABLED_CheckReleaseMemory
+#else
+#define MAYBE_CheckReleaseMemory CheckReleaseMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       CheckReleaseMemory) {
+                       MAYBE_CheckReleaseMemory) {
   std::vector<std::unique_ptr<base::DiscardableMemory>> all_memory;
   auto* allocator =
       static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(

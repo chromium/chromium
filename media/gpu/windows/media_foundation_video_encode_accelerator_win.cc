@@ -639,8 +639,9 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
     scoped_refptr<VideoFrame> frame,
     const EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Avoid corruption triggered by consecutive key frames on Intel drivers.
+  // See also https://crbug.com/40069818 and https://crbug.com/378681055.
   if (codec_ == VideoCodec::kVP9 &&
-      workarounds_.avoid_consecutive_keyframes_for_vp9 &&
       last_frame_was_keyframe_request_ && options.key_frame) {
     // Force a fake frame in between two key frames that come in a row. The
     // MFVEA will discard the output of this frame, and the client will never
