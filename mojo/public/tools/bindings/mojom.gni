@@ -2126,11 +2126,6 @@ template("mojom") {
             "$root_gen_dir/$base_path-lite.js",
             "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
-
-          if (defined(invoker.webui_module_path) &&
-              !use_typescript_for_target) {
-            outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.js" ]
-          }
         }
 
         response_file_contents = filelist
