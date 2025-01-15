@@ -37,7 +37,7 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisablePromoManagerFullScreenPromos() {
+bool DisablePromoManagerDisplayingPromo() {
   return true;
 }
 
