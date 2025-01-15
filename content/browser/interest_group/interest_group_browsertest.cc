@@ -59,6 +59,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -1865,7 +1866,8 @@ class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesDefaultMode, {}}},
+         {blink::features::kFencedFramesDefaultMode, {}},
+         {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
         /*disabled_features=*/{});
   }
 
@@ -20503,9 +20505,10 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-// Set the event data to an empty string. The beacon should be sent.
+// Set the event data to a string. The beacon should be sent, but without the
+// data.
 IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
-                       AdComponentEmptyEventData) {
+                       AdComponentEventData) {
   GURL ad_component_url = embedded_https_test_server().GetURL(
       "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
 
@@ -20523,11 +20526,20 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
                             eventType: 'reserved.top_navigation_commit',
-                            eventData: '',
+                            eventData: 'this is the data',
                             destination: ['seller']
                           }
                         );
                       )")));
+
+  FencedDocumentData* fenced_document_data =
+      FencedDocumentData::GetForCurrentDocument(ad_component_frame);
+  std::string saved_beacon_data =
+      fenced_document_data
+          ->GetAutomaticBeaconInfo(
+              blink::mojom::AutomaticBeaconType::kTopNavigationCommit)
+          ->data;
+  EXPECT_EQ(saved_beacon_data, "");
 
   // Perform a cross-origin `_unfencedTop` navigation.
   GURL navigation_url = embedded_https_test_server().GetURL(
