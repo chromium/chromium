@@ -158,7 +158,7 @@ class PhysicalFragmentRareData
     bit_field_ = bit_field_ & ~FieldIdBit(field_id);
   }
 
-  Vector<RareField> field_list_;
+  Vector<RareField, 1> field_list_;
   RareBitFieldType bit_field_ = 0u;
   // A garbage-collected field is not stored in the Vector in order to avoid
   // troublesome conditional tracing.
