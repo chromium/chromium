@@ -4,11 +4,9 @@
 
 #include "ash/scanner/scanner_action_view_model.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate.h"
@@ -167,9 +165,10 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
                             base::TimeTicks request_start_time,
                             base::WeakPtr<ScannerCommandDelegate> delegate,
                             ScannerCommandCallback action_finished_callback,
-                            std::optional<ScannerAction> populated_action) {
+                            manta::proto::ScannerAction populated_action) {
   RecordPopulateActionTimer(action_case, request_start_time);
-  if (!populated_action.has_value()) {
+  if (populated_action.action_case() ==
+      manta::proto::ScannerAction::ACTION_NOT_SET) {
     RecordPopulateActionFailure(action_case);
     std::move(action_finished_callback).Run(false);
     return;
@@ -180,7 +179,7 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
       std::move(action_finished_callback));
 
   HandleScannerCommand(std::move(delegate),
-                       ScannerActionToCommand(std::move(*populated_action)),
+                       ScannerActionToCommand(std::move(populated_action)),
                        std::move(record_metrics_callback));
 }
 
@@ -259,7 +258,7 @@ manta::proto::ScannerAction::ActionCase ScannerActionViewModel::GetActionCase()
 
 void ScannerActionViewModel::ExecuteAction(
     ScannerCommandCallback action_finished_callback) const {
-  unpopulated_action_.PopulateToVariant(base::BindOnce(
+  unpopulated_action_.Populate(base::BindOnce(
       &ExecutePopulatedAction, unpopulated_action_.action_case(),
       base::TimeTicks::Now(), delegate_, std::move(action_finished_callback)));
 }

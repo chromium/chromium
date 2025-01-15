@@ -13,7 +13,6 @@
 #include <variant>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/scanner/scanner_command.h"
 #include "ash/scanner/scanner_command_delegate.h"
 #include "base/check.h"
@@ -334,35 +333,38 @@ void OnContactCreated(base::WeakPtr<ScannerCommandDelegate> delegate,
 
 }  // namespace
 
-ScannerCommand ScannerActionToCommand(ScannerAction action) {
-  return std::visit(
-      base::Overloaded{
-          [&](manta::proto::NewEventAction& action) -> ScannerCommand {
-            return OpenUrlCommand(GetCalendarEventUrl(action));
-          },
-          [&](manta::proto::NewContactAction& action) -> ScannerCommand {
-            return CreateContactCommand(ContactFromAction(std::move(action)));
-          },
-          [&](manta::proto::NewGoogleDocAction& action) -> ScannerCommand {
-            return DriveUploadCommand(
-                std::move(*action.mutable_title()),
-                std::move(*action.mutable_html_contents()),
-                /*contents_mime_type=*/"text/html",
-                /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType);
-          },
-          [&](manta::proto::NewGoogleSheetAction& action) -> ScannerCommand {
-            return DriveUploadCommand(std::move(*action.mutable_title()),
-                                      std::move(*action.mutable_csv_contents()),
-                                      /*contents_mime_type=*/"text/csv",
-                                      /*converted_mime_type=*/
-                                      drive::util::kGoogleSpreadsheetMimeType);
-          },
-          [&](manta::proto::CopyToClipboardAction& action) -> ScannerCommand {
-            return CopyToClipboardCommand(
-                ClipboardDataFromAction(std::move(action)));
-          },
-      },
-      action);
+ScannerCommand ScannerActionToCommand(manta::proto::ScannerAction action) {
+  switch (action.action_case()) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return OpenUrlCommand(
+          GetCalendarEventUrl(std::move(*action.mutable_new_event())));
+
+    case manta::proto::ScannerAction::kNewContact:
+      return CreateContactCommand(
+          ContactFromAction(std::move(*action.mutable_new_contact())));
+
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return DriveUploadCommand(
+          std::move(*action.mutable_new_google_doc()->mutable_title()),
+          std::move(*action.mutable_new_google_doc()->mutable_html_contents()),
+          /*contents_mime_type=*/"text/html",
+          /*converted_mime_type=*/drive::util::kGoogleDocumentMimeType);
+
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return DriveUploadCommand(
+          std::move(*action.mutable_new_google_sheet()->mutable_title()),
+          std::move(*action.mutable_new_google_sheet()->mutable_csv_contents()),
+          /*contents_mime_type=*/"text/csv",
+          /*converted_mime_type=*/
+          drive::util::kGoogleSpreadsheetMimeType);
+
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      return CopyToClipboardCommand(ClipboardDataFromAction(
+          std::move(*action.mutable_copy_to_clipboard())));
+
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      NOTREACHED();
+  }
 }
 
 void HandleScannerCommand(base::WeakPtr<ScannerCommandDelegate> delegate,
