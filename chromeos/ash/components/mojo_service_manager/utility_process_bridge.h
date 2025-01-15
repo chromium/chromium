@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
-#define CHROME_BROWSER_ASH_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
+#define CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
 
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,4 +20,4 @@ void EstablishUtilityProcessBridge(
 
 }  // namespace ash::mojo_service_manager
 
-#endif  // CHROME_BROWSER_ASH_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_MOJO_SERVICE_MANAGER_UTILITY_PROCESS_BRIDGE_H_
