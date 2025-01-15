@@ -427,6 +427,35 @@ suite('SeaPenInputQueryElementTest', function() {
     assert.notSameOrderedMembers(originalSuggestions, getSuggestions());
   });
 
+  test('searching using empty text input works like inspire me', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const textValue = '  ';
+    await setTextInputValue(textValue);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
+            '#queryInput');
+    assertEquals(
+        textValue, inputElement!.value, 'input should show empty spaces');
+
+    personalizationStore.expectAction(
+        SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS);
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+
+    searchButton!.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    assertTrue(!!inputElement?.value.trim(), 'input should show text');
+    const action = await personalizationStore.waitForAction(
+                       SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS) as
+        BeginSearchSeaPenThumbnailsAction;
+    assertEquals(
+        inputElement?.value, action.query.textQuery,
+        'search query should match input value');
+  });
+
   test('inspires me', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
