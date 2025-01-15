@@ -330,9 +330,10 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = normalized_event.PositionInWidget();
-  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp(),
-                                           ink::StrokeInput::ToolType::kMouse)
-                             : StartEraseStroke(position);
+  return is_drawing_stroke()
+             ? StartStroke(position, event.TimeStamp(),
+                           ink::StrokeInput::ToolType::kMouse)
+             : StartEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
 }
 
 bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
@@ -343,9 +344,10 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp(),
-                                            ink::StrokeInput::ToolType::kMouse)
-                             : FinishEraseStroke(position);
+  return is_drawing_stroke()
+             ? FinishStroke(position, event.TimeStamp(),
+                            ink::StrokeInput::ToolType::kMouse)
+             : FinishEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
 }
 
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
@@ -358,7 +360,8 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
     return is_drawing_stroke()
                ? ContinueStroke(position, event.TimeStamp(),
                                 ink::StrokeInput::ToolType::kMouse)
-               : ContinueEraseStroke(position);
+               : ContinueEraseStroke(position,
+                                     ink::StrokeInput::ToolType::kMouse);
   }
 
   // Some other view consumed the input events sometime after the stroke was
@@ -402,7 +405,7 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
              ? StartStroke(position, event.TimeStamp(), tool_type)
-             : StartEraseStroke(position);
+             : StartEraseStroke(position, tool_type);
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
@@ -416,7 +419,7 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
              ? FinishStroke(position, event.TimeStamp(), tool_type)
-             : FinishEraseStroke(position);
+             : FinishEraseStroke(position, tool_type);
 }
 
 bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
@@ -430,7 +433,7 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   return is_drawing_stroke()
              ? ContinueStroke(position, event.TimeStamp(), tool_type)
-             : ContinueEraseStroke(position);
+             : ContinueEraseStroke(position, tool_type);
 }
 
 bool PdfInkModule::StartStroke(const gfx::PointF& position,
@@ -594,7 +597,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
 
-  ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush());
+  ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush(), tool_type);
 
   // Reset `state` now that the stroke operation is done.
   state.inputs.clear();
@@ -607,7 +610,8 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   return true;
 }
 
-bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
+bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
+                                    ink::StrokeInput::ToolType tool_type) {
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index < 0) {
     // Do not erase when not on a page.
@@ -631,16 +635,20 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   // Remember this position to possibly compensate for missed input events.
   CHECK(!state.input_last_event_position.has_value());
   state.input_last_event_position = position;
+  state.tool_type = tool_type;
 
   return true;
 }
 
-bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
+bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position,
+                                       ink::StrokeInput::ToolType tool_type) {
   CHECK(is_erasing_stroke());
   EraserState& state = erasing_stroke_state();
   if (!state.erasing) {
     return false;
   }
+
+  state.tool_type = tool_type;
 
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index < 0) {
@@ -662,10 +670,11 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
+bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position,
+                                     ink::StrokeInput::ToolType tool_type) {
   // Process `position` as though it was the last point of movement first,
   // before moving on to various bookkeeping tasks.
-  if (!ContinueEraseStroke(position)) {
+  if (!ContinueEraseStroke(position, tool_type)) {
     return false;
   }
 
@@ -680,13 +689,14 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
       client_->UpdateThumbnail(page_index);
     }
 
-    ReportEraseStroke(eraser_size_);
+    ReportEraseStroke(eraser_size_, tool_type);
   }
 
   // Reset `state` now that the erase operation is done.
   state.erasing = false;
   state.page_indices_with_erasures.clear();
   state.input_last_event_position.reset();
+  state.tool_type = ink::StrokeInput::ToolType::kUnknown;
 
   MaybeSetDrawingBrushAndCursor();
 
@@ -863,7 +873,8 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
       // An erasing stroke is in-progress.  Finish that off before
       // transitioning, using the last known input.
       CHECK(state.input_last_event_position.has_value());
-      FinishEraseStroke(state.input_last_event_position.value());
+      FinishEraseStroke(state.input_last_event_position.value(),
+                        state.tool_type);
     }
   }
 

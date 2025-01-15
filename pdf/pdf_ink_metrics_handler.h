@@ -7,6 +7,7 @@
 
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -60,6 +61,18 @@ enum class StrokeMetricHighlighterColor {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(PDFInk2StrokeInputDeviceType)
+enum class StrokeMetricInputDeviceType {
+  kMouse = 0,
+  kTouch = 1,
+  kPen = 2,
+  kMaxValue = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeInputDeviceType)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(PDFInk2StrokePenColor)
 enum class StrokeMetricPenColor {
   kBlack = 0,
@@ -86,9 +99,11 @@ enum class StrokeMetricPenColor {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokePenColor)
 
-void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush);
+void ReportDrawStroke(PdfInkBrush::Type type,
+                      const ink::Brush& brush,
+                      ink::StrokeInput::ToolType tool_type);
 
-void ReportEraseStroke(float size);
+void ReportEraseStroke(float size, ink::StrokeInput::ToolType tool_type);
 
 }  // namespace chrome_pdf
 
