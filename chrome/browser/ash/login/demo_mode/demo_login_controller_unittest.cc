@@ -27,6 +27,10 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -116,6 +120,29 @@ class DemoLoginControllerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+
+    SetUpPolicyClient();
+  }
+
+  void SetUpPolicyClient() {
+    std::unique_ptr<policy::MockCloudPolicyStore> store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+    std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client =
+        std::make_unique<policy::MockCloudPolicyClient>();
+    policy::CloudPolicyClient* client_ptr = cloud_policy_client.get();
+    auto service = std::make_unique<policy::MockCloudPolicyService>(
+        client_ptr, store.get());
+
+    cloud_policy_client->SetDMToken("fake-dm-token");
+    cloud_policy_client->client_id_ = "fake-client-id";
+
+    cloud_policy_manager_ = std::make_unique<policy::MockCloudPolicyManager>(
+        std::move(store), task_environment_.GetMainThreadTaskRunner());
+    cloud_policy_manager_->core()->ConnectForTesting(
+        std::move(service), std::move(cloud_policy_client));
+
+    demo_login_controller()->SetDeviceCloudPolicyManagerForTesting(
+        cloud_policy_manager_.get());
   }
 
   void TearDown() override {
@@ -222,6 +249,8 @@ class DemoLoginControllerTest : public testing::Test {
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
 
   std::unique_ptr<DemoLoginController> demo_login_controller_;
+
+  std::unique_ptr<policy::MockCloudPolicyManager> cloud_policy_manager_;
 };
 
 TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
@@ -264,6 +293,28 @@ TEST_F(DemoLoginControllerTest, InValidGaia) {
                       DemoLoginController::ResultCode::kInvalidCreds);
             loop.Quit();
           }));
+  login_screen_client()->OnLoginScreenShown();
+  loop.Run();
+}
+
+TEST_F(DemoLoginControllerTest, CannotObtainDMTokenAndClientID) {
+  // In unit tests, there is no real cloud policy manager as
+  // `policy_connector_ash->GetDeviceCloudPolicyManager()` is null. We remove
+  // the fake one here so `DemoLoginController::GetDeviceIntegrity()` cannot
+  // find any policy managers, and it will return failure (an empty
+  // base::Value::Dict), causing the request to fail.
+  demo_login_controller()->SetDeviceCloudPolicyManagerForTesting(nullptr);
+  ExpectGetExistingController();
+  base::RunLoop loop;
+  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
+  demo_login_controller()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting([&](const DemoLoginController::ResultCode
+                                         result_code) {
+        EXPECT_EQ(
+            result_code,
+            DemoLoginController::ResultCode::kCannotObtainDMTokenAndClientID);
+        loop.Quit();
+      }));
   login_screen_client()->OnLoginScreenShown();
   loop.Run();
 }

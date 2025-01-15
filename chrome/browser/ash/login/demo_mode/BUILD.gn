@@ -94,12 +94,16 @@ static_library("demo_mode_login") {
     "demo_login_controller.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/demo_mode",

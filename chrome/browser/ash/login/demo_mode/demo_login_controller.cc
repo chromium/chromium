@@ -16,7 +16,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
@@ -60,6 +62,8 @@ const char kDeviceIdentifier[] = "device_identifier";
 const char kDeviceMachineId[] = "serial_number";
 const char kLoginScopeDeviceId[] = "login_scope_device_id";
 const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
+const char kDMToken[] = "dm_token";
+const char kClientID[] = "client_id";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -261,13 +265,6 @@ std::string_view GetMachineID() {
       .value_or(std::string_view());
 }
 
-base::Value::Dict GetDeviceIdentifier(
-    const std::string& login_scope_device_id) {
-  return base::Value::Dict()
-      .Set(kDeviceMachineId, GetMachineID())
-      .Set(kLoginScopeDeviceId, login_scope_device_id);
-}
-
 void RemoveGaiaUsersOnDevice() {
   auto* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
@@ -328,14 +325,26 @@ void DemoLoginController::SetCleanUpFailedCallbackForTest(
   clean_up_failed_callback_for_testing_ = std::move(callback);
 }
 
+void DemoLoginController::SetDeviceCloudPolicyManagerForTesting(
+    policy::CloudPolicyManager* policy_manager) {
+  policy_manager_for_testing_ = policy_manager;
+}
+
 void DemoLoginController::SendSetupDemoAccountRequest() {
   CHECK(!url_loader_);
 
   // TODO(crbug.com/372333479): Demo server use auth the request with device
   // integrity check. Attach credential to the request once it is ready.
   const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
+  std::optional<base::Value::Dict> device_identifier =
+      GetDeviceIdentifier(sign_in_scoped_device_id);
+  if (!device_identifier) {
+    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    return;
+  }
+
   auto post_data = base::Value::Dict().Set(
-      kDeviceIdentifier, GetDeviceIdentifier(sign_in_scoped_device_id));
+      kDeviceIdentifier, std::move(device_identifier.value()));
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kSetupDemoAccountEndpoint),
                                  kSetupAccountTrafficAnnotation);
@@ -391,8 +400,6 @@ void DemoLoginController::OnSetupDemoAccountError(
     const DemoLoginController::ResultCode result_code) {
   // TODO(crbug.com/372333479): Instruct how to do retry on failed according to
   // the error code.
-  LOG(ERROR) << "Failed to set up demo account. Result code: "
-             << static_cast<int>(result_code);
   if (setup_failed_callback_for_testing_) {
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
@@ -426,7 +433,14 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
 
   auto post_data = base::Value::Dict();
 
-  post_data.Set(kDeviceIdentifier, GetDeviceIdentifier(login_scope_device_id));
+  std::optional<base::Value::Dict> device_identifier =
+      GetDeviceIdentifier(login_scope_device_id);
+  if (!device_identifier) {
+    OnSetupDemoAccountError(ResultCode::kCannotObtainDMTokenAndClientID);
+    return;
+  }
+
+  post_data.Set(kDeviceIdentifier, std::move(device_identifier.value()));
   post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up.ToString());
 
   url_loader_ =
@@ -453,6 +467,49 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
   url_loader_.reset();
   // Try request for new demo account regardless clean up result.
   SendSetupDemoAccountRequest();
+}
+
+std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
+    const std::string& login_scope_device_id) {
+  auto* platform_part = g_browser_process->platform_part();
+  if (!platform_part) {
+    LOG(ERROR) << "platform_part is null.";
+    return std::nullopt;
+  }
+  auto* policy_connector_ash = platform_part->browser_policy_connector_ash();
+  if (!policy_connector_ash) {
+    LOG(ERROR) << "browser_policy_connector_ash is null.";
+    return std::nullopt;
+  }
+  // The class member `policy_manager_for_testing_` is set during testing.
+  // If it's not set, it means we're not in the testing environment, so we
+  // can get the real policy manager from `policy_connector_ash`.
+  policy::CloudPolicyManager* policy_manager =
+      policy_manager_for_testing_
+          ? policy_manager_for_testing_
+          : policy_connector_ash->GetDeviceCloudPolicyManager();
+  if (!policy_manager) {
+    LOG(ERROR)
+        << "device_cloud_policy_manager is null, or it's not set for testing.";
+    return std::nullopt;
+  }
+  auto* core = policy_manager->core();
+  if (!core) {
+    LOG(ERROR) << "Cloud_policy_core is null.";
+    return std::nullopt;
+  }
+  policy::CloudPolicyClient* client = core->client();
+  if (!client) {
+    LOG(ERROR) << "cloud_policy_client is null.";
+    return std::nullopt;
+  }
+  std::string dm_token = client->dm_token();
+  std::string client_id = client->client_id();
+  return base::Value::Dict()
+      .Set(kDMToken, dm_token)
+      .Set(kClientID, client_id)
+      .Set(kDeviceMachineId, GetMachineID())
+      .Set(kLoginScopeDeviceId, login_scope_device_id);
 }
 
 }  // namespace ash

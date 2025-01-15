@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chromeos/ash/experiences/login/login_screen_shown_observer.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace ash {
@@ -27,6 +28,8 @@ class DemoLoginController : public LoginScreenShownObserver {
     kEmptyReponse = 3,          // Empty Http response.
     kNetworkError = 4,          // Network error.
     kRequestFailed = 5,         // Server side error or out of quota.
+    kCannotObtainDMTokenAndClientID =
+        6,  // Unbale to obtain the DM Token and the Client ID.
   };
 
   using FailedRequestCallback =
@@ -44,6 +47,8 @@ class DemoLoginController : public LoginScreenShownObserver {
       base::OnceCallback<void(const ResultCode result_code)> callback);
   void SetCleanUpFailedCallbackForTest(
       base::OnceCallback<void(const ResultCode result_code)> callback);
+  void SetDeviceCloudPolicyManagerForTesting(
+      policy::CloudPolicyManager* policy_manager);
 
  private:
   // Maybe send clean up request to clean up account used in last session if
@@ -65,6 +70,12 @@ class DemoLoginController : public LoginScreenShownObserver {
   // Called on clean up demo account complete.
   void OnCleanUpDemoAccountComplete(std::unique_ptr<std::string> response_body);
 
+  // We keep this function in-class because it needs to access the member
+  // `policy_manager_for_testing_`, which is set by unit tests through
+  // SetDeviceCloudPolicyManagerForTesting().
+  std::optional<base::Value::Dict> GetDeviceIdentifier(
+      const std::string& login_scope_device_id);
+
   // We only allow 1 demo account request at a time.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
@@ -74,6 +85,10 @@ class DemoLoginController : public LoginScreenShownObserver {
   base::ScopedObservation<LoginScreenClientImpl, LoginScreenShownObserver>
       scoped_observation_{this};
 
+  raw_ptr<policy::CloudPolicyManager> policy_manager_for_testing_ = nullptr;
+
+  // WeakPtrFactory members which refer to their outer class must be the last
+  // member in the outer class definition.
   base::WeakPtrFactory<DemoLoginController> weak_ptr_factory_{this};
 };
 
