@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
     // be placed in the same process as the main frame.
     EXPECT_FALSE(frame_host->IsCrossProcessSubframe());
     EXPECT_FALSE(subframe_instance->RequiresDedicatedProcess());
-    EXPECT_EQ(content::AreDefaultSiteInstancesEnabled(),
+    EXPECT_EQ(!content::AreAllSitesIsolatedForTesting(),
               main_instance == subframe_instance);
   }
 

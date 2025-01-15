@@ -2041,9 +2041,9 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
 
   // Make sure we did a process transfer back to "b.is".
   const std::string kExpectedSiteURL =
-      AreDefaultSiteInstancesEnabled()
-          ? SiteInstanceImpl::GetDefaultSiteURL().spec()
-          : "http://a.com/";
+      AreAllSitesIsolatedForTesting()
+          ? "http://a.com/"
+          : SiteInstanceImpl::GetDefaultSiteURL().spec();
   const std::string kExpectedSubframeSiteURL =
       SiteIsolationPolicy::IsErrorPageIsolationEnabled(/*in_main_frame*/ false)
           ? "chrome-error://chromewebdata/"

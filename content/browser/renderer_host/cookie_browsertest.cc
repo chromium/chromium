@@ -146,17 +146,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
       static_cast<WebContentsImpl*>(shell2->web_contents());
   WebContentsImpl* web_contents_http =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  if (AreDefaultSiteInstancesEnabled()) {
-    // Note: Both use the default SiteInstance because the URLs don't require
-    // a dedicated process, but these default SiteInstances are not the same
-    // object because they come from different BrowsingInstances.
-    EXPECT_TRUE(web_contents_http->GetSiteInstance()->IsDefaultSiteInstance());
-    EXPECT_TRUE(web_contents_https->GetSiteInstance()->IsDefaultSiteInstance());
-    EXPECT_NE(web_contents_http->GetSiteInstance(),
-              web_contents_https->GetSiteInstance());
-    EXPECT_FALSE(web_contents_http->GetSiteInstance()->IsRelatedSiteInstance(
-        web_contents_https->GetSiteInstance()));
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ("http://a.test/",
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
     // Create expected site url, including port if origin isolation is enabled.
@@ -166,6 +156,16 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
             : std::string("https://a.test/");
     EXPECT_EQ(expected_site_url,
               web_contents_https->GetSiteInstance()->GetSiteURL().spec());
+  } else {
+    // Note: Both use the default SiteInstance because the URLs don't require
+    // a dedicated process, but these default SiteInstances are not the same
+    // object because they come from different BrowsingInstances.
+    EXPECT_TRUE(web_contents_http->GetSiteInstance()->IsDefaultSiteInstance());
+    EXPECT_TRUE(web_contents_https->GetSiteInstance()->IsDefaultSiteInstance());
+    EXPECT_NE(web_contents_http->GetSiteInstance(),
+              web_contents_https->GetSiteInstance());
+    EXPECT_FALSE(web_contents_http->GetSiteInstance()->IsRelatedSiteInstance(
+        web_contents_https->GetSiteInstance()));
   }
 
   EXPECT_NE(web_contents_http->GetSiteInstance()->GetProcess(),

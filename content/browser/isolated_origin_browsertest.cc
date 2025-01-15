@@ -3875,17 +3875,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   const SiteInstanceImpl* const newshell_site_instance_impl =
       static_cast<SiteInstanceImpl*>(
           new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
-  if (AreDefaultSiteInstancesEnabled()) {
-    // When default SiteInstances are enabled, all sites that do not
-    // require a dedicated process all end up in the same default SiteInstance.
-    EXPECT_EQ(newshell_site_instance_impl, root_site_instance_impl);
-    EXPECT_TRUE(newshell_site_instance_impl->IsDefaultSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     // At this point, the popup and the opener should still be in separate
     // SiteInstances.
     EXPECT_NE(newshell_site_instance_impl, root_site_instance_impl);
     EXPECT_FALSE(newshell_site_instance_impl->IsDefaultSiteInstance());
     EXPECT_FALSE(root_site_instance_impl->IsDefaultSiteInstance());
+  } else {
+    // Without full site isolation, all sites that do not require a dedicated
+    // process all end up in the same default SiteInstance.
+    EXPECT_EQ(newshell_site_instance_impl, root_site_instance_impl);
+    EXPECT_TRUE(newshell_site_instance_impl->IsDefaultSiteInstance());
   }
 
   // Simulate the isolated origin in the popup navigating to www.foo.com.
@@ -5115,7 +5115,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
     EXPECT_FALSE(HasDefaultSiteInstance(a));
     EXPECT_FALSE(HasDefaultSiteInstance(b));
     EXPECT_FALSE(HasDefaultSiteInstance(c));
-  } else if (AreDefaultSiteInstancesEnabled()) {
+  } else {
     // All sites that are not isolated should be in the same default
     // SiteInstance process.
     EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
@@ -5130,24 +5130,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
 
     EXPECT_TRUE(HasDefaultSiteInstance(a));
     EXPECT_FALSE(HasDefaultSiteInstance(b));
-  } else if (AreStrictSiteInstancesEnabled()) {
-    // All sites have their own SiteInstance and sites that are not isolated
-    // are all placed in the same process.
-    EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
-              b->GetProcess()->GetDeprecatedID());
-    EXPECT_EQ(a->GetProcess()->GetDeprecatedID(),
-              c->GetProcess()->GetDeprecatedID());
-
-    EXPECT_NE(a->GetSiteInstance(), b->GetSiteInstance());
-    EXPECT_NE(a->GetSiteInstance(), c->GetSiteInstance());
-    EXPECT_EQ(a->GetSiteInstance(), d->GetSiteInstance());
-    EXPECT_NE(b->GetSiteInstance(), c->GetSiteInstance());
-
-    EXPECT_FALSE(HasDefaultSiteInstance(a));
-    EXPECT_FALSE(HasDefaultSiteInstance(b));
-    EXPECT_FALSE(HasDefaultSiteInstance(c));
-  } else {
-    FAIL() << "Unexpected process model configuration.";
   }
 }
 
