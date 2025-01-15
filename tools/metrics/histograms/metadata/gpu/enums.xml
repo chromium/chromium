@@ -1199,18 +1199,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
 </enum>
 
-<enum name="OopRasterGlyphCacheMissType">
-  <int value="0"
-      label="Missing font metrics, indicating an incorrect SkDescriptor"/>
-  <int value="1" label="Missing glyph metrics"/>
-  <int value="2" label="Missing glyph image"/>
-  <int value="3" label="Missing glyph path"/>
-  <int value="4"
-      label="Missing glyph image, but a fallback was found (deprecated)"/>
-  <int value="5"
-      label="Missing glyph path, but a fallback was found (deprecated)"/>
-</enum>
-
 <enum name="OverlayQuadMaterial">
   <int value="0" label="Invalid"/>
   <int value="1" label="DebugBorder"/>
