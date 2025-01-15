@@ -280,11 +280,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'a6e93c6fc2b6119e8277d1fa448b1ebf1dc2b056',
+  'skia_revision': '78b812cc745223c9f4e40e6902699be6e1e04be0',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f23ad92eccf5c8da9e0c48496a6f34b9471da83f',
+  'v8_revision': '56fb5ea542008e000b0d02cc09928f5776060623',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -364,7 +364,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'be49f904cc1419e27305282e6d9a60cbc1231350',
+  'fuzztest_revision': 'abb3cb2320fcc7c59e5e18a64177b1977866cd1f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '51f3712f32f47cdc23ea93200eecfb3a67d87c5c',
+  'dawn_revision': '24b44efe681e21678e3522591359c35f93b4c3db',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1439,12 +1439,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '7878f69bff2464f1f9fb4692b243c88cbcd1cc4b',
+    '6c3888f42768e45a189a2152e62f21319bbea2f8',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + 'ad2a20e6ea93a53e01eaf8b47f90aa1b470ffc46',
+    'url': Var('chromium_git') + '/website.git' + '@' + '2d75ac955d488d7d8a79156a9317d81995198f58',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -2946,7 +2946,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'guLLlNgDqmtXuPwkSv8vLQueFFMXFg7lw3w1BOVjgnEC',
+        'version': '_42z7HRvU0MzjfNDN6nBdzUEN-301j0-_hQuNoHEePwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

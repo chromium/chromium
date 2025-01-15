@@ -117,6 +117,11 @@ class LensOverlaySidePanelCoordinator
   // URL of the current open tab.
   bool ShouldHandleTextDirectives(const GURL& nav_url);
 
+  // Whether the side panel should send an extension event to update the
+  // viewport since the URL being navigated to corresponds to the URL on the
+  // current page and may contain viewport parameters to be parsed.
+  bool ShouldHandlePDFViewportChange(const GURL& nav_url);
+
   // Callback for when the `text_finder` identifies the provided text directives
   // on the page. If all the directives were found, then this function will
   // create highlights on the page for each. Otherwise, it will open the

@@ -253,7 +253,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
         this.viewport_!.setPosition(this.lastViewportPosition);
       }
       this.paramsParser!.getViewportFromUrlParams(this.originalUrl)
-          .then(params => this.handleUrlParams_(params));
+          .then(params => this.handleUrlParams(params));
       this.setLoadState(LoadState.SUCCESS);
       this.sendDocumentLoadedMessage();
       while (this.delayedScriptingMessages_.length > 0) {
@@ -448,7 +448,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
    * later actions can override the effects of previous actions.
    * @param params The open params passed in the URL.
    */
-  private handleUrlParams_(params: OpenPdfParams) {
+  handleUrlParams(params: OpenPdfParams) {
     assert(this.viewport_);
 
     if (params.zoom) {
@@ -471,7 +471,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
       this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);
       this.isUserInitiatedEvent = true;
-    } else if (!params.position && params.page) {
+    } else if (!params.position && params.page !== undefined) {
       // No fitting type provided, so just go to page.
       this.viewport_.goToPage(params.page);
     }

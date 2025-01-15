@@ -17,6 +17,34 @@ namespace optimization_guide {
 
 namespace {
 
+void ApplyOptionsOverridesForWebContents(
+    content::WebContents* web_contents,
+    blink::mojom::AIPageContentOptions& options) {
+  // TODO(crbug.com/389735650): Renderers with no visible Documents will
+  // throttle idle tasks after a duration of 10 seconds. In order to avoid the
+  // page content request from getting starved, force critical path for hidden
+  // WebContents.
+  if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+    options.on_critical_path = true;
+  }
+}
+
+blink::mojom::AIPageContentOptionsPtr ApplyOptionsOverridesForSubframe(
+    const content::RenderProcessHost* main_process,
+    const content::RenderProcessHost* subframe_process,
+    const blink::mojom::AIPageContentOptions& input) {
+  if (main_process == subframe_process) {
+    return input.Clone();
+  }
+
+  // TODO(crbug.com/389737599): There's a bug with scheduling idle tasks in an
+  // OOPIF with site isolation if there are no other main frames in the process.
+  // See crbug.com/40785325.
+  auto new_options = blink::mojom::AIPageContentOptions::New(input);
+  new_options->on_critical_path = true;
+  return new_options;
+}
+
 std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
     int child_process_id,
     blink::FrameToken frame_token) {
@@ -58,6 +86,8 @@ void OnGotAIPageContentForAllFrames(
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
     UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
                         base::TimeTicks::Now() - start_time);
+    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.AnnotatedPageContent.TotalSize",
+                            proto.ByteSizeLong() / 1024);
     std::move(done_callback).Run(std::move(proto));
     return;
   }
@@ -91,14 +121,17 @@ blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
 }
 
 void GetAIPageContent(content::WebContents* web_contents,
-                      blink::mojom::AIPageContentOptionsPtr request,
+                      blink::mojom::AIPageContentOptionsPtr options,
                       OnAIPageContentDone done_callback) {
   DCHECK(web_contents);
   DCHECK(web_contents->GetPrimaryMainFrame());
 
+  ApplyOptionsOverridesForWebContents(web_contents, *options);
   auto page_content_map =
       std::make_unique<optimization_guide::AIPageContentMap>();
   base::ConcurrentClosures concurrent;
+  const auto* main_frame_rph =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&](content::RenderFrameHost* rfh) {
@@ -113,12 +146,18 @@ void GetAIPageContent(content::WebContents* web_contents,
           return;
         }
 
+        const bool is_subframe = parent_frame != nullptr;
+        auto options_to_use =
+            is_subframe ? ApplyOptionsOverridesForSubframe(
+                              main_frame_rph, rfh->GetProcess(), *options)
+                        : options.Clone();
+
         mojo::Remote<blink::mojom::AIPageContentAgent> agent;
         rfh->GetRemoteInterfaces()->GetInterface(
             agent.BindNewPipeAndPassReceiver());
         auto* agent_ptr = agent.get();
         agent_ptr->GetAIPageContent(
-            request.Clone(),
+            std::move(options_to_use),
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                 base::BindOnce(&OnGotAIPageContentForFrame,
                                rfh->GetGlobalFrameToken(), std::move(agent),

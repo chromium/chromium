@@ -223,7 +223,7 @@
 }
 
 - (void)displayPromo:(PromoDisplayData)promoData {
-  if (tests_hook::DisablePromoManagerFullScreenPromos()) {
+  if (tests_hook::DisablePromoManagerDisplayingPromo()) {
     return;
   }
 

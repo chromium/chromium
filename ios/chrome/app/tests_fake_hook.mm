@@ -30,7 +30,7 @@ bool DisableDefaultSearchEngineChoice() {
 bool DisableGeolocation() {
   return false;
 }
-bool DisablePromoManagerFullScreenPromos() {
+bool DisablePromoManagerDisplayingPromo() {
   return false;
 }
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(

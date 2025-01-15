@@ -79,9 +79,9 @@ bool DisableDefaultFirstRun();
 // prompt displaying for the omnibox.
 bool DisableGeolocation();
 
-// Returns true if the Promo Manager should avoid displaying full-screen promos
+// Returns true if the Promo Manager should avoid displaying promos
 // on app startup to allow tests to run unimpeded.
-bool DisablePromoManagerFullScreenPromos();
+bool DisablePromoManagerDisplayingPromo();
 
 // Returns true if the search engine choice view, which would interfere with
 // many tests, should by default be skipped. Note that even in a target where

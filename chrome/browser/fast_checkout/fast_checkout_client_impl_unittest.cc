@@ -1110,7 +1110,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
       StartRunAndSelectOptions({address_form->form_signature()});
   AddFormToAutofillManagerCache(std::move(address_form));
 
-  personal_data_manager()->RemoveByGUID(autofill_profile->guid());
+  personal_data_manager()->address_data_manager().RemoveProfile(
+      autofill_profile->guid());
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   EXPECT_CALL(*autofill_manager(), FillOrPreviewProfileForm).Times(0);

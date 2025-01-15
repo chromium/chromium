@@ -992,6 +992,12 @@ void PDFiumEngine::SetFormHighlight(bool enable_form) {
   KillFormFocus();
 }
 
+void PDFiumEngine::HighlightTextFragments(
+    base::span<const std::string> text_fragments) {
+  // TODO(crbug.com/383575917): Implement parsing, searching, and rendering of
+  // text fragments.
+}
+
 void PDFiumEngine::ClearTextSelection() {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();

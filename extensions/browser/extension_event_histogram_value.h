@@ -582,6 +582,7 @@ enum HistogramValue {
   TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST = 560,
   TTS_ENGINE_ON_LANGUAGE_STATUS_REQUEST = 561,
   TTS_ENGINE_ON_UNINSTALL_LANGUAGE_REQUEST = 562,
+  PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT = 563,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

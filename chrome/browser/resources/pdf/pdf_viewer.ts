@@ -379,6 +379,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
 
+    // Listen for hash updates from the browser.
+    chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
+        this.handleMaybeUpdateViewport_.bind(this));
+
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
     if (this.pdfOopifEnabled && !this.embedded_) {
@@ -737,6 +741,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+
+    // Text fragment directives should be handled after the document is set to
+    // finished loading.
+    if (progress === 100) {
+      this.maybeRenderTextDirectiveHighlights_();
+    }
   }
 
   protected onErrorDialog_() {
@@ -1011,6 +1021,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.navigator_!.navigate(url, disposition);
   }
 
+  /** Handles updating viewport params based on the `newUrl` provided. */
+  private handleMaybeUpdateViewport_(newUrl: string) {
+    assert(this.paramsParser);
+    this.paramsParser.getViewportFromUrlParams(newUrl).then(
+        params => this.handleUrlParams(params));
+  }
+
   // <if expr="enable_pdf_ink2">
   /** Handles a new ink stroke in annotation mode. */
   private handleFinishInkStroke_() {
@@ -1256,6 +1273,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     });
   }
   // </if>
+
+  /**
+   * Sends a message to the PDF plugin to highlight the provided text
+   * directives if any.
+   */
+  private maybeRenderTextDirectiveHighlights_() {
+    assert(this.paramsParser);
+    const textDirectives = this.paramsParser.getTextFragments(this.originalUrl);
+    if (textDirectives.length > 0) {
+      this.pluginController_.highlightTextFragments(textDirectives);
+    }
+  }
 
   /**
    * Saves the current PDF document to disk.

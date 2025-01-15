@@ -3615,7 +3615,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
       {ConstructProfileFromTypeValuePairs(type_value_pairs)});
 
   // Remove the profile through external means.
-  personal_data_manager().RemoveByGUID(
+  address_data_manager().RemoveProfile(
       address_data_manager().GetProfiles()[0]->guid());
 
   // Expect that the removed profile cannot be updated with an email address.

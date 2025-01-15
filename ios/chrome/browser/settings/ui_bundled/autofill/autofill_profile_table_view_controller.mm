@@ -676,7 +676,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     AutofillProfileItem* item =
         base::apple::ObjCCastStrict<AutofillProfileItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
-    _personalDataManager->RemoveByGUID([item GUID]);
+    _personalDataManager->address_data_manager().RemoveProfile([item GUID]);
   }
 
   [self.tableView

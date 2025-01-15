@@ -170,7 +170,10 @@ source_set("impl") {
   ]
 
   if (enable_pdf) {
-    deps += [ "//components/pdf/browser" ]
+    deps += [
+      "//chrome/browser/pdf",
+      "//components/pdf/browser",
+    ]
   }
 }
 

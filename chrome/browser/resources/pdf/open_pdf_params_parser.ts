@@ -29,6 +29,8 @@ export enum ViewMode {
   XYZ = 'xyz',
 }
 
+const FRAGMENT_DIRECTIVE_DELIMITER = ':~:';
+
 type GetNamedDestinationCallback = (name: string) =>
     Promise<NamedDestinationMessageData>;
 
@@ -304,6 +306,26 @@ export class OpenPdfParamsParser {
     }
 
     return navpanes === '1';
+  }
+
+  /**
+   * Fetch text fragment directives that appear in the PDF URL if any.
+   *
+   * @param url that needs to be parsed.
+   * @return The text fragment directives or an empty array if they do not
+   *     exist.
+   */
+  getTextFragments(url: string): string[] {
+    const hash = new URL(url).hash;
+    // Handle the case of text directives included in the URL.
+    if (!hash.includes(FRAGMENT_DIRECTIVE_DELIMITER)) {
+      return [];
+    }
+
+    // Splitting the hash by the delimiter should always have at least two
+    // items since there was already a check for if the delimiter existed.
+    return new URLSearchParams(hash.split(FRAGMENT_DIRECTIVE_DELIMITER)[1])
+        .getAll('text');
   }
 
   /**

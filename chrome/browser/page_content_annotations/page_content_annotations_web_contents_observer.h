@@ -19,6 +19,10 @@ namespace prerender {
 class NoStatePrefetchManager;
 }  // namespace prerender
 
+namespace content {
+class Page;
+}  // namespace content
+
 namespace page_content_annotations {
 
 class PageContentAnnotationsService;
@@ -42,18 +46,25 @@ class PageContentAnnotationsWebContentsObserver
       content::WebContents* web_contents);
 
  private:
+  class AnnotatedPageContentRequest;
+
   friend class content::WebContentsUserData<
       PageContentAnnotationsWebContentsObserver>;
   friend class PageContentAnnotationsWebContentsObserverTest;
 
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidStopLoading() override;
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnFirstContentfulPaintInPrimaryMainFrame() override;
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(
       const HistoryVisit& visit,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
+
+  std::unique_ptr<AnnotatedPageContentRequest> annotated_page_content_request_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<TemplateURLService> template_url_service_;

@@ -728,27 +728,19 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(device::kWebAuthnICloudRecoveryKey)) {
-    MaybeAddICloudRecoveryKey();
-    return;
-  }
-#endif
-
+  MaybeAddICloudRecoveryKey();
+#else
   OnEnclaveAccountSetUpComplete();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void GPMEnclaveController::RecoverSecurityDomain() {
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnRecoverFromICloudRecoveryKey)) {
-    model_->DisableUiOrShowLoadingDialog();
-    device::enclave::ICloudRecoveryKey::Retrieve(
-        base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kICloudKeychainRecoveryKeyAccessGroup);
-  } else {
-    model_->SetStep(Step::kRecoverSecurityDomain);
-  }
+  model_->DisableUiOrShowLoadingDialog();
+  device::enclave::ICloudRecoveryKey::Retrieve(
+      base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
+                      weak_ptr_factory_.GetWeakPtr()),
+      kICloudKeychainRecoveryKeyAccessGroup);
 #else
   model_->SetStep(Step::kRecoverSecurityDomain);
 #endif  // BUILDFLAG(IS_MAC)

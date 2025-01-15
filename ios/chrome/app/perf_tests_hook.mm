@@ -44,7 +44,7 @@ bool DisableDefaultSearchEngineChoice() {
 bool DisableGeolocation() {
   return false;
 }
-bool DisablePromoManagerFullScreenPromos() {
+bool DisablePromoManagerDisplayingPromo() {
   // Always disable full-screen promos for perf tests.
   return true;
 }

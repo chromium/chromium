@@ -120,13 +120,18 @@ void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
 }
 
 void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
-  if (guest_view->attached())
+  if (guest_view->attached()) {
     return;
+  }
 
-  instance_waiting_for_attach_ = guest_view->guest_instance_id();
+  // It's possible attachment is in progress, so first check if we've already
+  // seen the `AttachGuest` for this guest, before trying to wait for it.
+  if (!reverse_instance_id_map_.contains(guest_view->guest_instance_id())) {
+    instance_waiting_for_attach_ = guest_view->guest_instance_id();
 
-  attached_run_loop_ = std::make_unique<base::RunLoop>();
-  attached_run_loop_->Run();
+    attached_run_loop_ = std::make_unique<base::RunLoop>();
+    attached_run_loop_->Run();
+  }
 
   // Completion of the attachment process may be delayed despite AttachGuest
   // having been called. We need to wait until the attachment is no longer

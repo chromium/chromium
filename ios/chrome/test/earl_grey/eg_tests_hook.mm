@@ -88,9 +88,10 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisablePromoManagerFullScreenPromos() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnablePromoManagerFullscreenPromos);
+bool DisablePromoManagerDisplayingPromo() {
+  // In EG tests, all promos are disabled unless explicitly activated by
+  // `kEnableIPH`.
+  return false;
 }
 
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(

@@ -305,7 +305,7 @@ void AddProfile(int profile, const AutofillProfile& autofill_profile) {
 void RemoveProfile(int profile, const std::string& guid) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
-  pdm->RemoveByGUID(guid);
+  pdm->address_data_manager().RemoveProfile(guid);
   std::move(waiter).Wait();
 }
 
