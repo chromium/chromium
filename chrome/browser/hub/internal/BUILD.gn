@@ -59,6 +59,7 @@ android_library("java") {
     "//chrome/browser/hub:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/searchactivityutils:java",

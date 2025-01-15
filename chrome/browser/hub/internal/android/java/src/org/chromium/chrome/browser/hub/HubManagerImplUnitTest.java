@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -92,6 +93,8 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
     private final int mSnackbarOverrideToken = 1;
 
     private Activity mActivity;
@@ -161,6 +164,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
 
         PaneManager paneManager = hubManager.getPaneManager();
@@ -192,6 +196,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
@@ -255,6 +260,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
@@ -293,6 +299,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
@@ -335,6 +342,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
@@ -384,6 +392,7 @@ public class HubManagerImplUnitTest {
                         mTabSupplier,
                         mMenuButtonCoordinator,
                         mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 

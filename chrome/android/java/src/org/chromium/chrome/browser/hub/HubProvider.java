@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -50,6 +51,7 @@ public class HubProvider {
      *     activity.
      * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
      * @param menuButtonCoordinatorSupplier A supplier for the root component for the app menu.
+     * @param edgeToEdgeSupplier A supplier for the {@link EdgeToEdgeController}.
      * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubProvider(
@@ -61,6 +63,7 @@ public class HubProvider {
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull SearchActivityClient searchActivityClient) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -85,6 +88,7 @@ public class HubProvider {
                                     tabSupplier,
                                     menuButtonCoordinatorSupplier.get(),
                                     mHubShowPaneHelper,
+                                    edgeToEdgeSupplier,
                                     searchActivityClient);
                         });
 
