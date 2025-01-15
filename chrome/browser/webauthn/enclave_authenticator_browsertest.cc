@@ -1112,12 +1112,10 @@ class EnclaveAuthenticatorWithPinBrowserTest
  public:
   EnclaveAuthenticatorWithPinBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{
+        /*enabled_features=*/{{
              device::kWebAuthnEnclaveAuthenticator,
              {{device::kWebAuthnGpmPin.name, "true"}},
-         },
-         {device::kWebAuthnRecoverFromICloudRecoveryKey, {}},
-         {device::kWebAuthnICloudRecoveryKey, {}}},
+         }},
         /*disabled_features=*/{
             device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
   }
@@ -3264,8 +3262,6 @@ constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
 class EnclaveICloudRecoveryKeyTest
     : public EnclaveAuthenticatorWithPinBrowserTest {
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnICloudRecoveryKey};
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kICloudKeychainRecoveryKeyAccessGroup};
 };
