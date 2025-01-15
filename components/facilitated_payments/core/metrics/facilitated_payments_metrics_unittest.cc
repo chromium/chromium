@@ -40,7 +40,18 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelected) {
+TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogFopSelected) {
   base::HistogramTester histogram_tester;
 
   LogPixFopSelected();
@@ -307,6 +318,17 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
       {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
+      {ukm::builders::FacilitatedPayments_PaymentLinkDetected::
+           kPaymentLinkDetectedName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PaymentLinkDetected"), true);
 }
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {

@@ -27,7 +27,10 @@
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -104,7 +107,32 @@ class EwalletManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
+
+// Verify that metrics are logged correctly when a supported payment link is
+// detected.
+TEST_F(EwalletManagerTest, LogPaymentLinkDetected) {
+  base::HistogramTester histogram_tester;
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
+      {ukm::builders::FacilitatedPayments_PaymentLinkDetected::
+           kPaymentLinkDetectedName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PaymentLinkDetected"), true);
+}
 
 // The manager checks for API availability after payment link validation.
 TEST_F(EwalletManagerTest, ApiClientCheckedForAvailability) {
@@ -122,14 +150,15 @@ TEST_F(EwalletManagerTest, ApiClientCheckedForAvailability) {
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if payment link is not supported by available
 // eWallet accounts.
 TEST_F(EwalletManagerTest,
-       UnsupportedPaymentLink_ApiClientNotCheckedForAvailability) {
+       Unsupported_payment_link_ApiClientNotCheckedForAvailability) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -143,8 +172,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(unsupported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      unsupported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if payment link is invalid.
@@ -163,8 +193,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(invalidPaymentLink,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      invalidPaymentLink, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -186,8 +217,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -219,8 +251,9 @@ TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -252,8 +285,9 @@ TEST_F(EwalletManagerTest,
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if the user has opted out of the eWallet
@@ -276,8 +310,9 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -306,8 +341,9 @@ TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 
   EXPECT_CALL(client_,
               ShowEwalletPaymentPrompt(
@@ -385,8 +421,9 @@ TEST_F(EwalletManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   EXPECT_CALL(client_, LoadRiskData(testing::_));
   EXPECT_CALL(client_, ShowProgressScreen());
 
@@ -408,8 +445,9 @@ TEST_F(EwalletManagerTest, DeviceIsBound) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   test_api(*ewallet_manager_)
       .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
                                     /*selected_instrument_id=*/100L);
@@ -430,8 +468,9 @@ TEST_F(EwalletManagerTest, DeviceIsNotBound) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   test_api(*ewallet_manager_)
       .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
                                     /*selected_instrument_id=*/100L);
@@ -793,7 +832,8 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kTrue));
   EXPECT_CALL(GetApiClient(), IsAvailable);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 // Test that API availability is not invoked for webpages not in the
@@ -825,7 +865,8 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kFalse));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -866,7 +907,8 @@ TEST_F(
           optimization_guide::OptimizationGuideDecision::kUnknown));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 // Test that when the eWallet FOP selector is shown, its latency is logged.
@@ -887,7 +929,8 @@ TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramLogged) {
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
   // Simulate eWallet payment flow is triggered.
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));
   // Simulate that the FOP selector was shown successfully.
@@ -1160,8 +1203,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supportedPaymentLink, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   test_api(*ewallet_manager_)
       .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
                                     /*selected_instrument_id=*/100L);
@@ -1189,8 +1233,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supportedPaymentLink, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   test_api(*ewallet_manager_)
       .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
                                     /*selected_instrument_id=*/100L);
@@ -1226,8 +1271,9 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
-                                              GURL("https://www.example.com"));
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supportedPaymentLink, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
   test_api(*ewallet_manager_)
       .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
                                     /*selected_instrument_id=*/100L);

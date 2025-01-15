@@ -8177,6 +8177,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.PaymentLinkDetected">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after a given payment link in a certain page for an
+    eWallet push payment flow is detected. This metric is different from
+    blink::WebFeature::kLinkRelPayment because the
+    blink::WebFeature::kLinkRelPayment metric counts when a link with payment
+    rel is present, no matter whether it triggers eWallet payment flow or not,
+    while this metric counts only when the eWallet payment flow is triggered.
+  </summary>
+  <metric name="PaymentLinkDetected" enum="Boolean">
+    <summary>
+      Always set to true and serves as a counter when analyzing the vents.
+    </summary>
+  </metric>
+</event>
+
 <event name="FacilitatedPayments.Pix.FopSelectorResult">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>

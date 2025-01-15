@@ -19,6 +19,7 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -54,7 +55,8 @@ class EwalletManager {
   // payment link is detected. More details on payment links can be found at
   // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
   virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
-                                         const GURL& page_url);
+                                         const GURL& page_url,
+                                         ukm::SourceId ukm_source_id);
 
   // Resets `this` to initial state.
   void Reset();
@@ -159,6 +161,8 @@ class EwalletManager {
   // is eligible for eWallet push payments.
   const raw_ref<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
+
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   // The scheme of the detected payment link.
   PaymentLinkValidator::Scheme scheme_;

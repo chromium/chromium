@@ -77,7 +77,7 @@ class MockEwalletManager : public EwalletManager {
 
   MOCK_METHOD(void,
               TriggerEwalletPushPayment,
-              (const GURL&, const GURL&),
+              (const GURL&, const GURL&, ukm::SourceId),
               (override));
 };
 

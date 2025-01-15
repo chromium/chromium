@@ -50,7 +50,8 @@ class FacilitatedPaymentsDriver {
   // payment information is included in the `payment_link_url` contained by the
   // page with URL as `page_url`.
   virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
-                                         const GURL& page_url);
+                                         const GURL& page_url,
+                                         ukm::SourceId ukm_source_id);
 
   virtual void SetPixManagerForTesting(std::unique_ptr<PixManager> pix_manager);
   virtual void SetEwalletManagerForTesting(
