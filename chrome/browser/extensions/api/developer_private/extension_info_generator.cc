@@ -73,7 +73,6 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/accelerators/command.h"
-#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -617,9 +616,6 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   // Commands.
   if (is_enabled)
     ConstructCommands(command_service_, extension.id(), &info->commands);
-  info->is_command_registration_handled_externally =
-      ui::GlobalAcceleratorListener::GetInstance()
-          ->IsRegistrationHandledExternally();
 
   // Dependent extensions.
   if (extension.is_shared_module()) {

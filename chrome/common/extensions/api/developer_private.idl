@@ -257,7 +257,6 @@ namespace developerPrivate {
     DOMString id;
     AccessModifier incognitoAccess;
     DOMString[] installWarnings;
-    boolean isCommandRegistrationHandledExternally;
     DOMString? launchUrl;
     Location location;
     DOMString? locationText;

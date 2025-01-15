@@ -306,7 +306,6 @@ export function createDummyExtensionInfo():
     chrome.developerPrivate.ExtensionInfo {
   return {
     commands: [],
-    isCommandRegistrationHandledExternally: false,
     dependentExtensions: [],
     description: '',
     disableReasons: {
