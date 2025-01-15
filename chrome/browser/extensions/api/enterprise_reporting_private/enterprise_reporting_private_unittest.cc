@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 #include <tuple>
@@ -918,15 +913,15 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     const NET_FW_PROFILE_TYPE2 kProfileTypes[] = {NET_FW_PROFILE2_PUBLIC,
                                                   NET_FW_PROFILE2_PRIVATE,
                                                   NET_FW_PROFILE2_DOMAIN};
-    for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
-      if ((profile_types & kProfileTypes[i]) != 0) {
-        hr = firewall_policy_->get_FirewallEnabled(kProfileTypes[i], &enabled_);
+    for (auto profile_type : kProfileTypes) {
+      if (profile_types & profile_type) {
+        hr = firewall_policy_->get_FirewallEnabled(profile_type, &enabled_);
         EXPECT_GE(hr, 0);
-        active_profile_ = kProfileTypes[i];
+        active_profile_ = profile_type;
         hr = firewall_policy_->put_FirewallEnabled(
-            kProfileTypes[i], firewall_value_ == SettingValue::ENABLED
-                                  ? VARIANT_TRUE
-                                  : VARIANT_FALSE);
+            profile_type, firewall_value_ == SettingValue::ENABLED
+                              ? VARIANT_TRUE
+                              : VARIANT_FALSE);
         EXPECT_GE(hr, 0);
         break;
       }
