@@ -880,7 +880,11 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
-  EXPECT_FALSE(future.IsReady());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
@@ -947,7 +951,11 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
 
-  EXPECT_FALSE(future.IsReady());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,

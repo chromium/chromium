@@ -417,6 +417,13 @@ void OnDataControlsCopyWarning(
     IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
     return;
   }
+
+  // Once a pending write has been initiated, something must be written to the
+  // clipboard to avoid being stuck in a pending write state, which would
+  // prevent future writes to the clipboard. Since copying was not allowed,
+  // the callback should be run with empty data instead.
+  std::move(callback).Run(metadata.format_type, content::ClipboardPasteData(),
+                          /*replacement_data=*/std::nullopt);
 }
 
 void IsCopyRestrictedByDialog(
