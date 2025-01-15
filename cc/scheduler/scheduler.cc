@@ -179,11 +179,6 @@ void Scheduler::SetNeedsRedraw() {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetNeedsUpdateDisplayTree() {
-  state_machine_.SetNeedsUpdateDisplayTree();
-  ProcessScheduledActions();
-}
-
 void Scheduler::SetNeedsPrepareTiles() {
   DCHECK(!IsInsideAction(SchedulerStateMachine::Action::PREPARE_TILES));
   state_machine_.SetNeedsPrepareTiles();
@@ -891,15 +886,6 @@ void Scheduler::DrawForced() {
   compositor_timing_history_->DidDraw();
 }
 
-void Scheduler::UpdateDisplayTree() {
-  DCHECK(!inside_scheduled_action_);
-  base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-
-  // TODO(rockot): Update CompositorTimingHistory.
-  state_machine_.WillUpdateDisplayTree();
-  client_->ScheduledActionUpdateDisplayTree();
-}
-
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {
   {
     TRACE_EVENT1("cc", "Scheduler::SetDeferBeginMainFrame",
@@ -1008,9 +994,6 @@ void Scheduler::ProcessScheduledActions() {
         // No action is actually performed, but this allows the state machine to
         // drain the pipeline without actually drawing.
         state_machine_.AbortDraw();
-        break;
-      case SchedulerStateMachine::Action::UPDATE_DISPLAY_TREE:
-        UpdateDisplayTree();
         break;
       case SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
         state_machine_.WillBeginLayerTreeFrameSinkCreation();

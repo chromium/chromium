@@ -58,7 +58,6 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;

@@ -1328,13 +1328,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK(!active_tree_->LayerListIsEmpty());
 
-  if (use_layer_context_for_display_) {
-    TRACE_EVENT0(
-        "cc",
-        "LayerTreeHostImpl::CalculateRenderPasses::SkippedForLayerContext");
-    return DrawResult::kSuccess;
-  }
-
   // For now, we use damage tracking to compute a global scissor. To do this, we
   // must compute all damage tracking before drawing anything, so that we know
   // the root damage rect. The root damage rect is then used to scissor each
@@ -1433,95 +1426,102 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
-  for (EffectTreeLayerListIterator it(active_tree());
-       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
-    auto target_render_pass_id = it.target_render_surface()->render_pass_id();
-    viz::CompositorRenderPass* target_render_pass =
-        FindRenderPassById(frame->render_passes, target_render_pass_id);
 
-    AppendQuadsData append_quads_data;
+  if (!use_layer_context_for_display_) {
+    for (EffectTreeLayerListIterator it(active_tree());
+         it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+      auto target_render_pass_id = it.target_render_surface()->render_pass_id();
+      viz::CompositorRenderPass* target_render_pass =
+          FindRenderPassById(frame->render_passes, target_render_pass_id);
 
-    if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
-      RenderSurfaceImpl* render_surface = it.target_render_surface();
-      if (render_surface->HasCopyRequest()) {
-        active_tree()
-            ->property_trees()
-            ->effect_tree_mutable()
-            .TakeCopyRequestsAndTransformToSurface(
-                render_surface->EffectTreeIndex(),
-                &target_render_pass->copy_requests);
-      }
-      if (settings_.enable_compositing_based_throttling && target_render_pass)
-        throttle_decider_.ProcessRenderPass(*target_render_pass);
-    } else if (it.state() ==
-               EffectTreeLayerListIterator::State::kContributingSurface) {
-      RenderSurfaceImpl* render_surface = it.current_render_surface();
-      if (render_surface->contributes_to_drawn_surface()) {
-        render_surface->AppendQuads(draw_mode, target_render_pass,
-                                    &append_quads_data);
-      }
-    } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-      LayerImpl* layer = it.current_layer();
-      if (layer->WillDraw(draw_mode, resource_provider_.get())) {
-        DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
+      AppendQuadsData append_quads_data;
 
-        frame->will_draw_layers.push_back(layer);
-        if (layer->may_contain_video()) {
-          num_of_layers_with_videos++;
-          frame->may_contain_video = true;
+      if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
+        RenderSurfaceImpl* render_surface = it.target_render_surface();
+        if (render_surface->HasCopyRequest()) {
+          active_tree()
+              ->property_trees()
+              ->effect_tree_mutable()
+              .TakeCopyRequestsAndTransformToSurface(
+                  render_surface->EffectTreeIndex(),
+                  &target_render_pass->copy_requests);
         }
-        if (compute_video_layer_preferred_interval &&
-            layer->GetLayerType() == mojom::LayerType::kVideo) {
-          VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
-          std::optional<base::TimeDelta> video_preferred_interval =
-              video_layer->GetPreferredRenderInterval();
-          if (video_preferred_interval) {
-            frame->video_layer_preferred_intervals[video_preferred_interval
-                                                       .value()]++;
+        if (settings_.enable_compositing_based_throttling &&
+            target_render_pass) {
+          throttle_decider_.ProcessRenderPass(*target_render_pass);
+        }
+      } else if (it.state() ==
+                 EffectTreeLayerListIterator::State::kContributingSurface) {
+        RenderSurfaceImpl* render_surface = it.current_render_surface();
+        if (render_surface->contributes_to_drawn_surface()) {
+          render_surface->AppendQuads(draw_mode, target_render_pass,
+                                      &append_quads_data);
+        }
+      } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
+        LayerImpl* layer = it.current_layer();
+        if (layer->WillDraw(draw_mode, resource_provider_.get())) {
+          DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
+
+          frame->will_draw_layers.push_back(layer);
+          if (layer->may_contain_video()) {
+            num_of_layers_with_videos++;
+            frame->may_contain_video = true;
+          }
+          if (compute_video_layer_preferred_interval &&
+              layer->GetLayerType() == mojom::LayerType::kVideo) {
+            VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
+            std::optional<base::TimeDelta> video_preferred_interval =
+                video_layer->GetPreferredRenderInterval();
+            if (video_preferred_interval) {
+              frame->video_layer_preferred_intervals[video_preferred_interval
+                                                         .value()]++;
+            }
+          }
+          layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
+          layer->AppendQuads(target_render_pass, &append_quads_data);
+        } else {
+          if (settings_.enable_compositing_based_throttling) {
+            throttle_decider_.ProcessLayerNotToDraw(layer);
           }
         }
-        layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
-        layer->AppendQuads(target_render_pass, &append_quads_data);
-      } else {
-        if (settings_.enable_compositing_based_throttling)
-          throttle_decider_.ProcessLayerNotToDraw(layer);
-      }
 
-      rendering_stats_instrumentation_->AddVisibleContentArea(
-          append_quads_data.visible_layer_area);
-      rendering_stats_instrumentation_->AddApproximatedVisibleContentArea(
-          append_quads_data.approximated_visible_content_area);
+        rendering_stats_instrumentation_->AddVisibleContentArea(
+            append_quads_data.visible_layer_area);
+        rendering_stats_instrumentation_->AddApproximatedVisibleContentArea(
+            append_quads_data.approximated_visible_content_area);
 
-      num_missing_tiles += append_quads_data.num_missing_tiles;
-      frame->checkerboarded_needs_raster |=
-          append_quads_data.checkerboarded_needs_raster;
-      frame->checkerboarded_needs_record |=
-          append_quads_data.checkerboarded_needs_record;
+        num_missing_tiles += append_quads_data.num_missing_tiles;
+        frame->checkerboarded_needs_raster |=
+            append_quads_data.checkerboarded_needs_raster;
+        frame->checkerboarded_needs_record |=
+            append_quads_data.checkerboarded_needs_record;
 
-      if (append_quads_data.num_missing_tiles > 0) {
-        have_missing_animated_tiles |=
-            layer->screen_space_transform_is_animating();
+        if (append_quads_data.num_missing_tiles > 0) {
+          have_missing_animated_tiles |=
+              layer->screen_space_transform_is_animating();
+        }
+        if (settings_.is_layer_tree_for_ui) {
+          AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
+        }
       }
-      if (settings_.is_layer_tree_for_ui) {
-        AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
+      frame->activation_dependencies.insert(
+          frame->activation_dependencies.end(),
+          append_quads_data.activation_dependencies.begin(),
+          append_quads_data.activation_dependencies.end());
+      if (append_quads_data.deadline_in_frames) {
+        if (!frame->deadline_in_frames) {
+          frame->deadline_in_frames = append_quads_data.deadline_in_frames;
+        } else {
+          frame->deadline_in_frames =
+              std::max(*frame->deadline_in_frames,
+                       *append_quads_data.deadline_in_frames);
+        }
       }
+      frame->use_default_lower_bound_deadline |=
+          append_quads_data.use_default_lower_bound_deadline;
+      frame->has_shared_element_resources |=
+          append_quads_data.has_shared_element_resources;
     }
-    frame->activation_dependencies.insert(
-        frame->activation_dependencies.end(),
-        append_quads_data.activation_dependencies.begin(),
-        append_quads_data.activation_dependencies.end());
-    if (append_quads_data.deadline_in_frames) {
-      if (!frame->deadline_in_frames) {
-        frame->deadline_in_frames = append_quads_data.deadline_in_frames;
-      } else {
-        frame->deadline_in_frames = std::max(
-            *frame->deadline_in_frames, *append_quads_data.deadline_in_frames);
-      }
-    }
-    frame->use_default_lower_bound_deadline |=
-        append_quads_data.use_default_lower_bound_deadline;
-    frame->has_shared_element_resources |=
-        append_quads_data.has_shared_element_resources;
   }
 
   // If CommitsToActiveTree() is true, then we wait to draw until
@@ -1687,6 +1687,10 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
     // completed, which will add damage for visible tiles to the frame for them
     // so they appear as part of the current frame being drawn.
     tile_manager_.PrepareToDraw();
+  }
+
+  if (use_layer_context_for_display_) {
+    UpdateDisplayTree(*frame);
   }
 
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
@@ -2774,11 +2778,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
 
 std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   DCHECK(CanDraw());
-  if (!use_layer_context_for_display_) {
-    DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
-  } else {
-    DCHECK(frame->render_passes.empty());
-  }
+  DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
   ResetRequiresHighResToDraw();
 
   if (frame->has_no_damage) {
@@ -2855,7 +2855,14 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
 
-  if (!use_layer_context_for_display_) {
+  if (use_layer_context_for_display_) {
+    // For the display compositor we should have already submitted at display
+    // Immediately queue a DidReceiveCompositorFrameAck.
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LayerTreeHostImpl::DidReceiveCompositorFrameAck,
+                       weak_factory_.GetWeakPtr()));
+  } else {
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
@@ -3221,18 +3228,9 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
   DCHECK(use_layer_context_for_display_);
   DCHECK(layer_context_);
 
-  if (!active_tree()->LayerListIsEmpty()) {
-    bool ok = active_tree()->UpdateDrawProperties(
-        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
-    DCHECK(ok) << "UpdateDrawProperties failed during display tree update";
-  }
-
-  tile_manager_.PrepareToDraw();
   layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
       *layer_tree_frame_sink_->context_provider());
-  UpdateAnimationState(true);
-  active_tree()->ResetAllChangeTracking();
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {
@@ -4023,7 +4021,7 @@ void LayerTreeHostImpl::SetNeedsRedraw(bool animation_only) {
 
   if (use_layer_context_for_display_) {
     if (!animation_only || !use_layer_context_for_animations_) {
-      client_->SetNeedsUpdateDisplayTreeOnImplThread();
+      client_->SetNeedsRedrawOnImplThread();
     }
   } else {
     client_->SetNeedsRedrawOnImplThread();

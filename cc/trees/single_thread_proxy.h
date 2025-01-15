@@ -107,7 +107,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
-  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;
@@ -131,7 +130,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;

@@ -140,7 +140,6 @@ class CC_EXPORT SchedulerStateMachine {
     DRAW_IF_POSSIBLE,
     DRAW_FORCED,
     DRAW_ABORT,
-    UPDATE_DISPLAY_TREE,
     BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
     PREPARE_TILES,
     INVALIDATE_LAYER_TREE_FRAME_SINK,
@@ -162,7 +161,6 @@ class CC_EXPORT SchedulerStateMachine {
   void DidPostCommit();
   void WillActivate();
   void WillDraw();
-  void WillUpdateDisplayTree();
   void WillBeginLayerTreeFrameSinkCreation();
   void WillPrepareTiles();
   void WillInvalidateLayerTreeFrameSink();
@@ -238,10 +236,6 @@ class CC_EXPORT SchedulerStateMachine {
   void SetNeedsRedraw();
   bool needs_redraw() const { return needs_redraw_; }
 
-  // Indicates that the display tree needs an update, implying that the active
-  // tree has changed in some meaningful way since the last update.
-  void SetNeedsUpdateDisplayTree();
-  bool needs_update_display_tree() const { return needs_update_display_tree_; }
 
   bool did_invalidate_layer_tree_frame_sink() const {
     return did_invalidate_layer_tree_frame_sink_;
@@ -415,7 +409,6 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool ShouldBeginLayerTreeFrameSinkCreation() const;
   bool ShouldDraw() const;
-  bool ShouldUpdateDisplayTree() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
   bool ShouldCommit() const;
@@ -470,7 +463,6 @@ class CC_EXPORT SchedulerStateMachine {
   // These are used to ensure that an action only happens once per frame,
   // deadline, etc.
   bool did_draw_ = false;
-  bool did_update_display_tree_ = false;
   bool did_send_begin_main_frame_for_current_frame_ = true;
 
   // Initialized to true to prevent begin main frame before begin frames have
@@ -491,7 +483,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_begin_main_frame_ = false;
   bool needs_one_begin_impl_frame_ = false;
   bool needs_post_commit_ = false;
-  bool needs_update_display_tree_ = false;
   bool visible_ = false;
   bool should_warm_up_ = false;
   bool begin_frame_source_paused_ = false;
