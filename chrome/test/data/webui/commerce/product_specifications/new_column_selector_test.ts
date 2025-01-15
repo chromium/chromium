@@ -8,9 +8,8 @@ import type {NewColumnSelectorElement} from 'chrome://compare/new_column_selecto
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('NewColumnSelectorTest', () => {
   const shoppingServiceApi =
@@ -19,7 +18,7 @@ suite('NewColumnSelectorTest', () => {
   async function createSelector(): Promise<NewColumnSelectorElement> {
     const selector = document.createElement('new-column-selector');
     document.body.appendChild(selector);
-    await flushTasks();
+    await microtasksFinished();
     return selector;
   }
 
@@ -56,7 +55,7 @@ suite('NewColumnSelectorTest', () => {
 
     selector.$.button.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
+    await microtasksFinished();
 
     assertNotEquals(menu.$.menu.getIfExists(), null);
     assertTrue(selector.$.button.classList.contains(showingMenuClass));
@@ -70,7 +69,7 @@ suite('NewColumnSelectorTest', () => {
     assertFalse(selector.$.button.classList.contains(showingMenuClass));
 
     selector.$.button.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(selector.$.button.classList.contains(showingMenuClass));
 
