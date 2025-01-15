@@ -600,7 +600,7 @@ TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   profile_manager().MarkProfileForDeletion(kProfileName2);
 
   EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
-  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
   EXPECT_TRUE(observer.on_profile_marked_for_permanent_deletation_called());
 }
 

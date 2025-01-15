@@ -1588,6 +1588,8 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
                  continuation:std::move(continuation)];
 }
 
+#pragma mark - Private
+
 // Attach a Profile to all connected scenes.
 - (void)attachProfilesToAllConnectedScenes {
   ApplicationContext* applicationContext = GetApplicationContext();
@@ -1613,16 +1615,29 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
 
   // The logic to determine which profile to use for the scene is:
   //  1. use the profile recorded in ProfileAttributesStorageIOS,
-  //  2. if there is no mapping, use kLastUsedProfile,
-  //  3. if kLastUsedProfile is unset, generate a new profile.
+  //  2. if the profile is marked for deletion, try to use personal profile,
+  //  3. if there is no mapping,
+  //    3.1. use kLastUsedProfile if set,
+  //    3.2. if kLastUsedProfile is unset, generate a new profile.
   std::string profileName = storage->GetProfileNameForSceneID(sceneID);
+  bool updatedProfileName = false;
+
+  if (manager->IsProfileMarkedForDeletion(profileName)) {
+    // Marked for deletion, try to use personal profile.
+    profileName = storage->GetPersonalProfileName();
+    updatedProfileName = true;
+  }
+
   if (profileName.empty()) {
     profileName = localState->GetString(prefs::kLastUsedProfile);
     if (profileName.empty()) {
       profileName = manager->ReserveNewProfileName();
       DCHECK(!profileName.empty());
     }
+    updatedProfileName = true;
+  }
 
+  if (updatedProfileName) {
     // Store the mapping between the SceneID and the profile in the
     // ProfileAttributesStorageIOS so that it is accessible the next
     // time the window is open.
