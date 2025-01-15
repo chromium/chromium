@@ -12,6 +12,7 @@
 #include <fontconfig/fontconfig.h>
 
 #include <memory>
+#include <set>
 
 #include "base/check_op.h"
 #include "base/location.h"
