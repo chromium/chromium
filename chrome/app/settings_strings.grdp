@@ -4604,12 +4604,16 @@
   <message name="IDS_SETTINGS_GLIC_DATA_SECTION" translateable="false" desc="Name of the Glic settings section related to user data.">
     Data
   </message>
-  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu.">
-    Feature in your menu
-  </message>
-  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Subheading for the 'feature in your menu' toggle.">
-    Access feature on the toolbar
-  </message>
+  <if expr="is_macosx">
+    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Mac only).">
+      Feature in your toolbar
+    </message>
+  </if>
+  <if expr="not is_macosx">
+    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu (on Windows and Linux).">
+      Feature in your Toolbar
+    </message>
+  </if>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the Glic setting for the keyboard shortcut.">
     Keyboard shortcut
   </message>
