@@ -436,6 +436,17 @@ void DataSharingServiceImpl::Shutdown() {
   }
 }
 
+// static
+std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
+    const GroupToken& group_token) {
+  GURL url = GURL(data_sharing::features::kDataSharingURL.Get());
+
+  url =
+      net::AppendQueryParameter(url, kGroupIdKey, group_token.group_id.value());
+  url = net::AppendQueryParameter(url, kTokenBlobKey, group_token.access_token);
+  return std::make_unique<GURL>(url);
+}
+
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
@@ -549,14 +560,7 @@ std::unique_ptr<GURL> DataSharingServiceImpl::GetDataSharingUrl(
   if (!group_data.group_token.IsValid()) {
     return nullptr;
   }
-
-  GURL url = GURL(data_sharing::features::kDataSharingURL.Get());
-
-  url = net::AppendQueryParameter(url, kGroupIdKey,
-                                  group_data.group_token.group_id.value());
-  url = net::AppendQueryParameter(url, kTokenBlobKey,
-                                  group_data.group_token.access_token);
-  return std::make_unique<GURL>(url);
+  return GetDataSharingUrl(group_data.group_token);
 }
 
 DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(

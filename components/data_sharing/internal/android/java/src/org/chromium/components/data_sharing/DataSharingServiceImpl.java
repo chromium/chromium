@@ -144,6 +144,12 @@ public class DataSharingServiceImpl implements DataSharingService {
         ResettersForTesting.register(() -> sSharedEntitiesPreviewForTesting = null);
     }
 
+    /** Static utility to get the data sharing URL for testing. */
+    public static GURL getDataSharingUrlForTesting(GroupToken groupToken) {
+        return DataSharingServiceImplJni.get()
+                .getDataSharingUrlForTesting(groupToken.groupId, groupToken.accessToken);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -208,5 +214,7 @@ public class DataSharingServiceImpl implements DataSharingService {
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
         DataSharingUIDelegate getUiDelegate(long nativeDataSharingServiceAndroid);
+
+        GURL getDataSharingUrlForTesting(String groupId, String accessToken);
     }
 }
