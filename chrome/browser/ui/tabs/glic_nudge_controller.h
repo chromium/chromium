@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/tabs/glic_nudge_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace tabs {
 
 // Controller that mediates Glic Nudges and ensures that only the active tab is
@@ -32,6 +36,9 @@ class GlicNudgeController {
   bool HasObserver(GlicNudgeObserver* observer) {
     return observers_.HasObserver(observer);
   }
+
+  void UpdateNudgeLabel(content::WebContents* web_contents,
+                        const std::string& nudge_label);
 
  private:
   // Returns whether the nudge should be shown in the tabstrip for glic.

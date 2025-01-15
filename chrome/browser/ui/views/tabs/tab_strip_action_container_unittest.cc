@@ -20,6 +20,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -71,6 +75,9 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
   }
@@ -121,8 +128,14 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<FakeGlicTabStripController> controller_;
   std::unique_ptr<TabStripActionContainer> tab_strip_action_container_;
 
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
  private:
   // Owned by TabStrip.
+
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
@@ -184,3 +197,12 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
             tab_strip_action_container_->children()[4]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  glic_nudge_controller_->UpdateNudgeLabel(web_contents(), "TEST");
+  ASSERT_EQ(tab_strip_action_container_->glic_nudge_button()->GetText(),
+            u"TEST");
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)

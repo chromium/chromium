@@ -394,9 +394,8 @@ void TabStripActionContainer::OnTriggerDeclutterUIVisibility() {
 }
 
 void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
-  // TODO(crbug.com/388341403) Show custom string in nudge.
   CHECK(glic_nudge_button_);
-
+  glic_nudge_button_->SetText(base::UTF8ToUTF16(label));
   ShowTabStripNudge(glic_nudge_button_);
 }
 
