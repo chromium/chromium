@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/views/webauthn/passkey_not_accepted_bubble_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/browser/ui/webauthn/passkey_not_accepted_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents.h"
@@ -18,9 +22,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(

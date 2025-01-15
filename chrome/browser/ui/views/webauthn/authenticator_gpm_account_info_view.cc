@@ -7,14 +7,16 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 constexpr int kBetweenChildSpacing = 12;

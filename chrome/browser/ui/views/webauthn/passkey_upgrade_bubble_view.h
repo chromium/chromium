@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_UPGRADE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_UPGRADE_BUBBLE_VIEW_H_
 
+#include <memory>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 
 class PasswordBubbleControllerBase;
 class PasskeyUpgradeBubbleController;

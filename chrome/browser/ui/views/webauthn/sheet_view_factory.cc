@@ -35,6 +35,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/webauthn/authenticator_touch_id_view.h"

@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_TEXTFIELD_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"

@@ -4,18 +4,28 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
 
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
-#include "ui/accessibility/ax_node_data.h"
+#include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/render_text.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/style/typography.h"

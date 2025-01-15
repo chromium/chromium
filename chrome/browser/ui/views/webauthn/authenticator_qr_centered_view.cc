@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
