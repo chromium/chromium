@@ -5355,15 +5355,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult"
+    name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult{JobType}"
     enum="NetErrorCodes" expires_after="2025-05-18">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The network error code of the session creation for preconnect to
-    GoogleSearch using Quic. This is recorded everytime a preconnect is
-    attempted to GoogleSearch, after preconnect attempt is finished.
+    GoogleSearch using Quic for {JobType} job type. This is recorded everytime a
+    preconnect is attempted to GoogleSearch, after preconnect attempt is
+    finished.
   </summary>
+  <token key="JobType">
+    <variant name="" summary="any"/>
+    <variant name=".PreconnectDnsAlpnH3Job" summary="PRECONNECT_DNS_ALPN_H3"/>
+    <variant name=".PreconnectJob" summary="PRECONNECT"/>
+  </token>
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySizeKB" units="KB"

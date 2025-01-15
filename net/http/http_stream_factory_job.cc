@@ -1278,14 +1278,20 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
 }
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {
+  CHECK(job_type_ == PRECONNECT || job_type_ == PRECONNECT_DNS_ALPN_H3);
   if (!IsGoogleHost(destination_.host())) {
     return;
   }
   if (using_quic_) {
+    constexpr std::string_view kHistogramName =
+        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult";
     // TODO(crbug.com/376304027): Expand this to non-Quic as well. Currently,
     // H1 and H2 does not return precise failure reason.
+    base::UmaHistogramSparse(kHistogramName, -result);
     base::UmaHistogramSparse(
-        "Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult",
+        base::StrCat({kHistogramName, job_type_ == PRECONNECT
+                                          ? ".PreconnectJob"
+                                          : ".PreconnectDnsAlpnH3Job"}),
         -result);
   }
 }
