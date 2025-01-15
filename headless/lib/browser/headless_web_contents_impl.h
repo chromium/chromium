@@ -92,7 +92,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
   explicit HeadlessWebContentsImpl(
       std::unique_ptr<content::WebContents> web_contents);
 
-  void InitializeWindow(const gfx::Rect& initial_bounds);
+  void InitializeWindow(const gfx::Rect& bounds,
+                        const std::string& window_state);
 
   uint64_t begin_frame_sequence_number_ =
       viz::BeginFrameArgs::kStartingFrameNumber;

@@ -4,6 +4,9 @@
 
 #include "headless/lib/browser/protocol/target_handler.h"
 
+#include <ranges>
+#include <string_view>
+
 #include "build/build_config.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -46,6 +49,20 @@ Response TargetHandler::CreateTarget(
   }
 #endif
 
+  if (window_state) {
+    static std::string_view kWindowStates[] = {
+        protocol::Target::WindowStateEnum::Normal,
+        protocol::Target::WindowStateEnum::Minimized,
+        protocol::Target::WindowStateEnum::Maximized,
+        protocol::Target::WindowStateEnum::Fullscreen,
+    };
+    if (std::ranges::find(kWindowStates, *window_state) ==
+        std::end(kWindowStates)) {
+      return protocol::Response::ServerError("Invalid target window state: " +
+                                             *window_state);
+    }
+  }
+
   HeadlessBrowserContext* context;
   if (context_id.has_value()) {
     context = browser_->GetBrowserContextForId(context_id.value());
@@ -73,6 +90,8 @@ Response TargetHandler::CreateTarget(
               left.value_or(0), top.value_or(0),
               width.value_or(browser_->options()->window_size.width()),
               height.value_or(browser_->options()->window_size.height())))
+          .SetWindowState(
+              window_state.value_or(protocol::Target::WindowStateEnum::Normal))
           .SetEnableBeginFrameControl(
               enable_begin_frame_control.value_or(false))
           .Build());
