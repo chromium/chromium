@@ -10,13 +10,12 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "cc/trees/property_tree.h"
+#include "base/memory/stack_allocated.h"
+#include "cc/trees/property_ids.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if DCHECK_IS_ON()
