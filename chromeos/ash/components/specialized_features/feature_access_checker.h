@@ -120,18 +120,20 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessChecker {
  public:
+  using VariationsServiceCallback =
+      base::RepeatingCallback<variations::VariationsService*()>;
+
   // The config determines which dependencies to check.
   // The following objects should not be destroyed before this class is
   // destroyed:
   // - prefs
   // - identity_manager
-  // - variation_service
   // If any checks require the above dependency and it is destroy, the check
   // will return a failure.
   FeatureAccessChecker(FeatureAccessConfig config,
                        PrefService* prefs,
                        signin::IdentityManager* identity_manager,
-                       variations::VariationsService* variations_service);
+                       VariationsServiceCallback variations_service_callback);
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
@@ -150,7 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // The following raw_ptrs are not owned by this class.
   raw_ptr<const PrefService> prefs_;
   raw_ptr<const signin::IdentityManager> identity_manager_;
-  raw_ptr<const variations::VariationsService> variations_service_;
+  VariationsServiceCallback variations_service_callback_;
 };
 
 }  // namespace specialized_features
