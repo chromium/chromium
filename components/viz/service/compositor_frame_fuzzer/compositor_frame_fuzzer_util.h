@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/read_only_shared_memory_region.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/compositor_frame_fuzzer/compositor_frame_fuzzer.pb.h"
 
@@ -16,7 +15,6 @@ namespace viz {
 
 struct FuzzedBitmap {
   FuzzedBitmap(const gfx::Size& size,
-               base::WritableSharedMemoryMapping mapping,
                scoped_refptr<gpu::ClientSharedImage> shared_image,
                gpu::SyncToken sync_token);
   ~FuzzedBitmap();
@@ -25,7 +23,6 @@ struct FuzzedBitmap {
   FuzzedBitmap& operator=(FuzzedBitmap&& other) = default;
 
   gfx::Size size;
-  base::WritableSharedMemoryMapping mapping;
   scoped_refptr<gpu::ClientSharedImage> shared_image;
   gpu::SyncToken sync_token;
 };
