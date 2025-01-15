@@ -152,7 +152,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
           mojom::UserDisplayMode::kBrowser) {
     return base::BindOnce(
         [](bool accept, mojom::UserDisplayMode user_display_mode,
-           std::optional<base::WeakPtr<WebAppScreenshotFetcher>>,
+           base::WeakPtr<WebAppScreenshotFetcher>,
            content::WebContents* initiator_web_contents,
            std::unique_ptr<WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
@@ -327,7 +327,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   base::RunLoop dialog_runloop;
   auto dialog_callback = base::BindLambdaForTesting(
-      [&](std::optional<base::WeakPtr<WebAppScreenshotFetcher>>,
+      [&](base::WeakPtr<WebAppScreenshotFetcher>,
           content::WebContents* initiator_web_contents,
           std::unique_ptr<WebAppInstallInfo> web_app_info,
           WebAppInstallationAcceptanceCallback acceptance_callback) {

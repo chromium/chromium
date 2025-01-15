@@ -58,7 +58,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     PwaInProductHelpState iph_state,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> screenshot_fetcher,
+    base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -80,7 +80,7 @@ void OnWebAppInstallShowInstallDialog(
         ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
-            screenshot_fetcher.value(), iph_state);
+            screenshot_fetcher, iph_state);
         return;
       } else if (web_app_info->is_diy_app) {
         ShowDiyAppInstallDialog(initiator_web_contents, std::move(web_app_info),

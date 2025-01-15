@@ -690,13 +690,10 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
   if (!dialog_callback_) {
     OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info_));
   } else {
-    std::optional<base::WeakPtr<WebAppScreenshotFetcher>> fetcher =
-        (!screenshot_sizes_.empty())
-            ? std::optional<base::WeakPtr<WebAppScreenshotFetcher>>(
-                  weak_ptr_factory_.GetWeakPtr())
-            : std::nullopt;
     std::move(dialog_callback_)
-        .Run(fetcher, web_contents_.get(), std::move(web_app_info_),
+        .Run((!screenshot_sizes_.empty() ? weak_ptr_factory_.GetWeakPtr()
+                                         : nullptr),
+             web_contents_.get(), std::move(web_app_info_),
              base::BindOnce(&FetchManifestAndInstallCommand::OnDialogCompleted,
                             weak_ptr_factory_.GetWeakPtr()));
   }
