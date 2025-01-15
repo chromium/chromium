@@ -158,9 +158,9 @@ will remove it before installing itself. The application is installed to
 `{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`. E.g.
 `C:\Program Files\Google\ChromeEnterpriseCompanion`.
 
-On Mac the application is distributed via a PKG installer which bundles the
-application binary and a postinstall script which launches CECA with the
-`--install` flag. The application is installed to
+On Mac the application is distributed via a DMG installer which bundles the
+application binary and install script which launches CECA with server-instructed
+flags. The application is installed to
 `/Library/Application Support/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}`.
 
 On Linux the application is installed to

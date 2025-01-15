@@ -5,16 +5,7 @@
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
 import("//chrome/enterprise_companion/branding.gni")
-import("//chrome/enterprise_companion/mac/pkgbuild.gni")
 import("//chrome/process_version_rc_template.gni")
-
-group("mac") {
-  deps = []
-
-  if (host_os == "mac") {
-    deps += [ ":enterprise_companion_installer_unsigned" ]
-  }
-}
 
 tweak_info_plist("enterprise_companion_plist") {
   info_plist = "Info.plist"
@@ -93,26 +84,6 @@ group("enterprise_companion_bundle_test") {
   if (is_asan) {
     public_deps += [ ":test_bundle_copy_asan_dylib" ]
     data += get_target_outputs(":test_bundle_copy_asan_dylib")
-  }
-}
-
-process_version("postinstall") {
-  extra_args = [
-    "-e",
-    "PRODUCT_FULLNAME=\"$enterprise_companion_product_full_name\"",
-  ]
-  executable = true
-  process_only = true
-  template_file = "postinstall.in"
-  output = "$root_out_dir/enterprise_companion_postinstall"
-}
-
-if (host_os == "mac") {
-  mac_pkg_installer("enterprise_companion_installer_unsigned") {
-    bundle_target = ":enterprise_companion_bundle"
-    bundle_identifier = mac_enterprise_companion_bundle_identifier
-    install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
-    postinstall_script_target = ":postinstall"
   }
 }
 
