@@ -1654,6 +1654,10 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
   AtomicString local_name = ConsumeVariableName(stream);
+  if (resolver.DetectCycle(local_name)) {
+    return false;
+  }
+  CascadeResolver::AutoLock lock(local_name, resolver);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();
@@ -1666,11 +1670,24 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   const String& attribute_value = element.getAttributeNS(
       /*namespace_uri=*/g_null_atom, element.LowercaseIfNecessary(local_name));
 
-  const CSSValue* substitution_value =
-      attribute_value.IsNull() ? nullptr
-                               : attr_type->Parse(attribute_value, context);
+  String substituted_attribute_value = attribute_value;
+  if (!attribute_value.IsNull() && !attr_type->IsString()) {
+    TokenSequence substituted_attribute_token_sequence;
+    CSSParserTokenStream attribute_value_stream(attribute_value);
+    if (!ResolveTokensInto(
+            attribute_value_stream, resolver, context, FunctionContext{},
+            /* stop_type */ kEOFToken, substituted_attribute_token_sequence)) {
+      return false;
+    }
+    substituted_attribute_value =
+        substituted_attribute_token_sequence.OriginalText();
+  }
 
-  // Validate fallback value.
+  const CSSValue* substitution_value =
+      (!attribute_value || !substituted_attribute_value)
+          ? nullptr
+          : attr_type->Parse(substituted_attribute_value, context);
+
   if (ConsumeComma(stream)) {
     stream.ConsumeWhitespace();
 
