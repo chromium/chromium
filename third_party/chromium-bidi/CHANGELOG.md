@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.12.0...chromium-bidi-v1.0.0) (2025-01-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 134.0.6958.0 ([#2986](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2986))
+
+### Features
+
+* **chrome:** update the pinned browser version to 134.0.6958.0 ([#2986](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2986)) ([7e57049](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7e57049d23a6a36042d0389fc636c43a2e2a5bf5))
+* heuristic for request's `initiatorType` and `destination` ([#2947](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2947)) ([357d5be](https://github.com/GoogleChromeLabs/chromium-bidi/commit/357d5be2efe030c2fbfeb0276fbc07dc4195b731))
+* implement context locator ([#2968](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2968)) ([5bf3b18](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5bf3b1829eb3041b5a51ad9ef5c7082b7fb16d98))
+* implement subscription IDs ([#2954](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2954)) ([23642a4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/23642a40bad6cbe475f78bcdefcff497e8876ccb))
+
+
+### Bug Fixes
+
+* **network:** url for interception ([#2962](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2962)) ([2a3d277](https://github.com/GoogleChromeLabs/chromium-bidi/commit/2a3d277da0c453684da6487bcd01c708f57c97ce))
+* wait for fragment navigation to finish before finishing navigation command ([#2964](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2964)) ([b761bc3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b761bc301f011afa96fa0167ae8f9550f6471656))
+
 ## [0.12.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.11.1...chromium-bidi-v0.12.0) (2025-01-03)
 
 
