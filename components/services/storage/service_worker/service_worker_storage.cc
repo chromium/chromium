@@ -95,15 +95,12 @@ ServiceWorkerStorage::DidDeleteRegistrationParams::
 ServiceWorkerStorage::~ServiceWorkerStorage() {
   ClearSessionOnlyOrigins();
   weak_factory_.InvalidateWeakPtrs();
-  database_task_runner_->DeleteSoon(FROM_HERE, std::move(database_));
 }
 
 // static
 std::unique_ptr<ServiceWorkerStorage> ServiceWorkerStorage::Create(
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner) {
-  return base::WrapUnique(new ServiceWorkerStorage(
-      user_data_directory, std::move(database_task_runner)));
+    const base::FilePath& user_data_directory) {
+  return base::WrapUnique(new ServiceWorkerStorage(user_data_directory));
 }
 
 void ServiceWorkerStorage::GetRegisteredStorageKeys(
@@ -1201,21 +1198,16 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
 }
 
 ServiceWorkerStorage::ServiceWorkerStorage(
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
+    const base::FilePath& user_data_directory)
     : next_registration_id_(blink::mojom::kInvalidServiceWorkerRegistrationId),
       next_version_id_(blink::mojom::kInvalidServiceWorkerVersionId),
       next_resource_id_(blink::mojom::kInvalidServiceWorkerResourceId),
       state_(STORAGE_STATE_UNINITIALIZED),
       expecting_done_with_disk_on_disable_(false),
       user_data_directory_(user_data_directory),
-      database_task_runner_(std::move(database_task_runner)),
       is_purge_pending_(false),
       has_checked_for_stale_resources_(false) {
   database_ = std::make_unique<ServiceWorkerDatabase>(GetDatabasePath());
-  // Confirms that this is running on `database_task_runner_`.
-  CHECK_EQ(database_task_runner_.get(),
-           base::SequencedTaskRunner::GetCurrentDefault().get());
 }
 
 base::FilePath ServiceWorkerStorage::GetDatabasePath() {

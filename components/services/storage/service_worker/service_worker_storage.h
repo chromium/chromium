@@ -117,8 +117,7 @@ class ServiceWorkerStorage {
   ~ServiceWorkerStorage();
 
   static std::unique_ptr<ServiceWorkerStorage> Create(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+      const base::FilePath& user_data_directory);
 
   // Returns all StorageKeys which have service worker registrations.
   void GetRegisteredStorageKeys(GetRegisteredStorageKeysCallback callback);
@@ -380,9 +379,7 @@ class ServiceWorkerStorage {
       base::OnceCallback<void(const std::vector<int64_t>& resource_ids,
                               ServiceWorkerDatabase::Status status)>;
 
-  ServiceWorkerStorage(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
+  explicit ServiceWorkerStorage(const base::FilePath& user_data_directory);
 
   base::FilePath GetDatabasePath();
   base::FilePath GetDiskCachePath();
@@ -576,9 +573,7 @@ class ServiceWorkerStorage {
 
   base::FilePath user_data_directory_;
 
-  // |database_| is only accessed using |database_task_runner_|.
   std::unique_ptr<ServiceWorkerDatabase> database_;
-  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   std::unique_ptr<ServiceWorkerDiskCache> disk_cache_;
 

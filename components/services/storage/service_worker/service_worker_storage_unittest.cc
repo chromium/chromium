@@ -84,10 +84,7 @@ class ServiceWorkerStorageTest : public testing::Test {
   ~ServiceWorkerStorageTest() override = default;
 
   void SetUp() override {
-    storage_ = ServiceWorkerStorage::Create(
-        user_data_directory_path_,
-        /*database_task_runner=*/base::SingleThreadTaskRunner::
-            GetCurrentDefault());
+    storage_ = ServiceWorkerStorage::Create(user_data_directory_path_);
   }
 
   void TearDown() override {
