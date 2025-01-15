@@ -170,7 +170,8 @@ public class PostTask {
      * @param c The task to be run with the specified traits.
      * @return The result of the callable
      */
-    public static <T> T runSynchronously(@TaskTraits int taskTraits, Callable<T> c) {
+    public static <T extends @Nullable Object> T runSynchronously(
+            @TaskTraits int taskTraits, Callable<T> c) {
         return runSynchronouslyInternal(taskTraits, new FutureTask<T>(c));
     }
 
@@ -188,7 +189,8 @@ public class PostTask {
         runSynchronouslyInternal(taskTraits, new FutureTask<Void>(r, null));
     }
 
-    private static <T> T runSynchronouslyInternal(@TaskTraits int taskTraits, FutureTask<T> task) {
+    private static <T extends @Nullable Object> T runSynchronouslyInternal(
+            @TaskTraits int taskTraits, FutureTask<T> task) {
         // Ensure no task origin "caused by" is added, since we are wrapping in a RuntimeException
         // anyways.
         Runnable r = ENABLE_TASK_ORIGINS ? populateTaskOrigin(null, task) : task;
