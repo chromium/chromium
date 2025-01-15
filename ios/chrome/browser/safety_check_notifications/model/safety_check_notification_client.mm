@@ -453,20 +453,13 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
   if ([interacted_notification_metadata_ count]) {
     Browser* browser = GetSceneLevelForegroundActiveBrowser();
 
-    // Create a local copy of `interacted_notification_metadata_` to ensure
-    // `ShowUIForNotificationMetadata(…)` has valid data. The original might be
-    // asynchronously set to `nil` in `OnNotificationsCleared(…)` before this
-    // runs.
-    NSDictionary* interactedNotificationMetadata =
-        [interacted_notification_metadata_ copy];
-
     if (browser) {
       [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
           prepareToPresentModal:
               base::CallbackToBlock(base::BindOnce(
                   &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
                   weak_ptr_factory_.GetWeakPtr(),
-                  interactedNotificationMetadata, browser))];
+                  interacted_notification_metadata_, browser->AsWeakPtr()))];
     }
   }
 
@@ -485,9 +478,13 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
 
 void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     NSDictionary* notification_metadata,
-    Browser* browser) {
+    base::WeakPtr<Browser> weak_browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(browser);
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    // The Scene has been closed while preparing to present the notification.
+    return;
+  }
 
   // The notification metadata must correspond to one of the Safety Check
   // notification types.
