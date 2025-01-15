@@ -3921,7 +3921,7 @@ Si cette règle est désactivée ou si elle n'est pas configurée, les règles c
 
 Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
 
-Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si les deux règles sont activées, les règles cloud utilisateurs prévalent aussi sur les règles de la plate-forme en conflit.</translation>
+Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si les deux règles sont activées, les règles cloud utilisateur prévalent aussi sur les règles de la plate-forme en conflit.</translation>
 <translation id="390296766888987595">Le clavier à l'écran n'est affiché que si l'utilisateur ou l'application le demande.</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="3904304709151553598">Désactiver les rapports sur les ventilateurs de l'appareil</translation>
@@ -11170,7 +11170,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="981346395360763138">Services de localisation Google</translation>
 <translation id="982192230088110287">Si cette règle est activée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est obligatoire. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> est bloqué.
 
-Si cette règle est désactivée ou si elle n'est pas configurée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est facultative. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
+Si cette règle est désactivée ou si elle n'est pas configurée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est facultatif. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
 
 Cette règle est utilisée pour l'enregistrement de la règle cloud s'appliquant aux ordinateurs de bureau. Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Activer <ph name="DBSC_FEATURE_NAME" />.</translation>
