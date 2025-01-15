@@ -472,6 +472,10 @@ class _Variant():
 
     def generate_expected_image(self, output_dirs: _OutputPaths) -> None:
         """Creates an expected image using Cairo and save filename in params."""
+        # Expected images are only needed for HTML canvas tests.
+        if _CanvasType.HTML_CANVAS not in self.params['canvas_types']:
+            return
+
         expected = self.params['expected']
 
         if expected == 'green':
@@ -487,7 +491,7 @@ class _Variant():
 
         img_filename = f'{self.params["name"]}.png'
         _write_cairo_images(expected, output_dirs.sub_path(img_filename),
-                            self.params['canvas_types'])
+                            frozenset({_CanvasType.HTML_CANVAS}))
         self._params['expected_img'] = img_filename
 
 
