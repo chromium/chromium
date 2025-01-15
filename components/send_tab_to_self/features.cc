@@ -48,6 +48,18 @@ bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() {
   }
   return false;
 }
+
+const char kSendTabIOSPushNotificationsWithTabRemindersParam[] =
+    "variant_with_tab_reminders";
+
+bool IsSendTabIOSPushNotificationsEnabledWithTabReminders() {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kSendTabToSelfIOSPushNotifications,
+        kSendTabIOSPushNotificationsWithTabRemindersParam, false);
+  }
+  return false;
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace send_tab_to_self
