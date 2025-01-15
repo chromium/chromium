@@ -95,7 +95,7 @@ if (is_android) {
       "//components/messages/android/test:test_support_java",
       "//components/metrics:metrics_java",
       "//components/payments/content/android:java",
-      "//components/payments/content/android:spc_java",
+      "//components/payments/content/android/spc:java",
       "//components/payments/mojom:mojom_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

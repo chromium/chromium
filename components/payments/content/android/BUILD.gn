@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//components/payments/content/android/payments_java_resources.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -159,32 +158,6 @@ android_library("feature_list_java") {
   ]
 }
 
-android_library("spc_java") {
-  sources = [
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java",
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
-    "spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
-  ]
-  deps = [
-    ":java_resources",
-    "//base:callback_java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//components/payments/content/android/ui:java",
-    "//components/payments/mojom:mojom_java",
-    "//components/url_formatter/android:url_formatter_java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//ui/android:ui_no_recycler_view_java",
-    "//url:url_java",
-  ]
-  resources_package = "org.chromium.components.payments"
-}
-
 android_library("full_java") {
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
@@ -232,16 +205,16 @@ android_library("full_java") {
     ":minimal_java",
     ":pre_purchase_query_enum_java",
     ":service_java",
-
-    # TODO(crbug.com/383334934): Core PaymentRequest code should not depend on
-    # Secure Payment Confirmation (SPC) code.
-    ":spc_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
+
+    # TODO(crbug.com/383334934): Core PaymentRequest code should not depend on
+    # Secure Payment Confirmation (SPC) code.
+    "//components/payments/content/android/spc:java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
@@ -431,38 +404,6 @@ robolectric_library("junit_test_support") {
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
-    "//url/mojom:url_mojom_origin_java",
-  ]
-}
-
-robolectric_library("junit_spc") {
-  sources = [
-    "spc/junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
-    "spc/junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",
-  ]
-  deps = [
-    ":spc_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//components/payments/content/android:service_java",
-    "//components/payments/content/android/ui:java",
-    "//components/payments/content/android/ui:payments_java_test_support",
-    "//components/payments/mojom:mojom_java",
-    "//components/url_formatter/android:url_formatter_java",
-    "//content/public/android:content_java",
-    "//mojo/public/java:system_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_collection_collection_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_no_recycler_view_java",
-    "//url:gurl_java",
-    "//url:gurl_junit_test_support",
-    "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]
 }
