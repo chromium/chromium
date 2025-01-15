@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_INCOGNITO_SESSION_TRACKER_H_
-#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_INCOGNITO_SESSION_TRACKER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INCOGNITO_SESSION_TRACKER_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INCOGNITO_SESSION_TRACKER_H_
 
 #import "base/callback_list.h"
 #import "base/containers/flat_map.h"
@@ -76,4 +76,4 @@ class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_INCOGNITO_SESSION_TRACKER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_INCOGNITO_SESSION_TRACKER_H_

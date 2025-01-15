@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 
 #import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
