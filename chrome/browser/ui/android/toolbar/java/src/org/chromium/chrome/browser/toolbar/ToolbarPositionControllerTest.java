@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -28,9 +29,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -45,8 +48,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransition;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link ToolbarPositionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -249,7 +255,6 @@ public class ToolbarPositionControllerTest {
             return mIsShowing;
         }
     }
-    ;
 
     private FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             new FakeKeyboardVisibilityDelegate();
@@ -272,6 +277,10 @@ public class ToolbarPositionControllerTest {
         mProgressBarLayoutParams.gravity = Gravity.TOP;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
+
+        ResettersForTesting.register(
+                ToolbarPositionController::resetCachedToolbarConfigurationForTesting);
+
         mController =
                 new ToolbarPositionController(
                         mBrowserControlsSizer,
@@ -287,6 +296,24 @@ public class ToolbarPositionControllerTest {
                         mBottomToolbarOffsetSupplier,
                         mProgressBarContainer,
                         mContext);
+    }
+
+    /**
+     * Simulate user changing toolbar anchor preference.
+     *
+     * @param showToolbarOnTop desired preference, or null to remove the key from settings,
+     *     simulating the "default" state.
+     */
+    void setUserToolbarAnchorPreference(Boolean showToolbarOnTop) {
+        var editor = ContextUtils.getAppSharedPreferences().edit();
+        if (showToolbarOnTop == null) {
+            editor.remove(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
+            ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        } else {
+            editor.putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, showToolbarOnTop);
+        }
+        editor.apply();
+        ShadowLooper.runUiThreadTasks();
     }
 
     @Test
@@ -332,16 +359,10 @@ public class ToolbarPositionControllerTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithPref() {
         assertControlsAtTop();
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         assertControlsAtTop();
     }
 
@@ -349,10 +370,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithNtpState() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         mIsNtpShowing.set(true);
@@ -366,10 +384,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithTabSwitcherState() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         mIsTabSwitcherShowing.set(true);
@@ -383,10 +398,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithOmniboxFocusState() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         mIsOmniboxFocused.set(true);
@@ -400,10 +412,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithFormFieldFocusState() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
@@ -426,10 +435,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithFindInPage() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         mIsFindInPageShowing.set(true);
@@ -443,10 +449,7 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testBottomControlsStacker() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
 
         assertEquals(mBottomControlsStacker.getTotalHeight(), TOOLBAR_HEIGHT);
@@ -480,18 +483,12 @@ public class ToolbarPositionControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testGetToolbarPositionResId() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
         assertEquals(
                 R.string.address_bar_settings_top,
                 ToolbarPositionController.getToolbarPositionResId());
 
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false)
-                .commit();
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertEquals(
                 R.string.address_bar_settings_bottom,
                 ToolbarPositionController.getToolbarPositionResId());
@@ -638,6 +635,72 @@ public class ToolbarPositionControllerTest {
                         isFormFieldFocusedWithKeyboardVisible,
                         doesUserPreferTopToolbar,
                         ControlsPosition.TOP));
+    }
+
+    @Test
+    public void shouldShowToolbarOnTop_withNtpUrl() {
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstants.NTP_URL)).when(tab).getUrl();
+
+        // By default, Toolbar should be anchored on top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // When the user explicitly asks for bottom toolbar, NTP should still show that toolbar on
+        // top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // ... NTP always shows toolbar on top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+    }
+
+    @Test
+    public void shouldShowToolbarOnTop_withNonNtpUrl() {
+        // This test does not instantiate ToolbarPositionController, meaning there is no Preference
+        // observer watching for settings changes.
+        Tab tab = mock(Tab.class);
+        doReturn(new GURL(UrlConstants.ABOUT_URL)).when(tab).getUrl();
+
+        // By default, Toolbar should be anchored on top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // When the user explicitly asks for bottom toolbar, non-NTP URLs should obey.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // ... same if the User wants explicitly Top toolbar.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+    }
+
+    @Test
+    public void shouldShowToolbarOnTop_edgeCases() {
+        // This test does not instantiate ToolbarPositionController, meaning there is no Preference
+        // observer watching for settings changes.
+        Tab tab = mock(Tab.class);
+
+        // By default, Toolbar should be anchored on top.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ null);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(null));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        // In the absence of relevant signals, assume regular tab.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(null));
+        assertFalse(ToolbarPositionController.shouldShowToolbarOnTop(tab));
+
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(null));
+        assertTrue(ToolbarPositionController.shouldShowToolbarOnTop(tab));
     }
 
     private void assertControlsAtBottom() {
