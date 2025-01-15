@@ -356,6 +356,13 @@ TEST_F(ArcActivationNecessityCheckerTest, ManagementTransition) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(ArcActivationNecessityCheckerTest, AlwaysOnVpn) {
+  profile_->GetPrefs()->SetString(prefs::kAlwaysOnVpnPackage, "vpn.app.fake");
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 }  // namespace
 
 }  // namespace arc
