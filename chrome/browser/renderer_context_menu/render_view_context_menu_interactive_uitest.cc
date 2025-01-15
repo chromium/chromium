@@ -425,6 +425,49 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
                             IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
+// Check that all fenced frame untrusted network status gated commands are
+// disabled if the context menu is inside a fenced frame that has revoked
+// untrusted network.
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    FencedFrameNetworkStatusGatedCommandsDisabledAfterNetworkCutoff) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  // Set up the fenced frame.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(embedded_https_test_server().GetURL(
+          "a.test", "/fenced_frames/title1.html"));
+
+  // Create a context menu for the fenced frame.
+  TestRenderViewContextMenu menu(*fenced_frame_rfh,
+                                 content::ContextMenuParams());
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+      (async () => {
+        return window.fence.disableUntrustedNetwork();
+      })();
+    )"));
+
+  auto is_command_id_enabled = [&menu](int command_id) {
+    return menu.IsCommandIdEnabled(command_id);
+  };
+
+  // Check that the commands that are gated on fenced frame untrusted
+  // network status should all be disabled.
+  //
+  // NOTE: This only checks that the command is disabled. It does not check
+  // whether the command is in the context menu. For example, when the context
+  // menu opens upon an anchor element, commands that operate on images are not
+  // in the menu. However, the `RenderViewContextMenu::IsCommandIdEnabled()`
+  // check is independent of whether the command exists in the menu. So it is
+  // fine to check it without checking the existence of the command.
+  ASSERT_THAT(TestRenderViewContextMenu::
+                  GetFencedFrameUntrustedNetworkStatusGatedCommands(),
+              testing::Each(testing::ResultOf(is_command_id_enabled,
+                                              testing::IsFalse())));
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextMenuFencedFrameTest,
     CommonOpenLinkCommandsDisabledInFencedFrameAfterNetworkCutoff) {

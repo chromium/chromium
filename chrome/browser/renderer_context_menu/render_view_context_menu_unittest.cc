@@ -419,6 +419,20 @@ TEST_F(RenderViewContextMenuTest, TargetIgnoredForSelectionOnImage) {
   EXPECT_TRUE(ExtensionContextAndPatternMatch(params, contexts, patterns));
 }
 
+// Check that the fenced frame untrusted network status gated command ids are
+// within the valid command id range.
+TEST_F(RenderViewContextMenuTest,
+       CommandsGatedOnFencedFrameUntrustedNetworkStatus) {
+  ASSERT_GE(
+      *std::cbegin(TestRenderViewContextMenu::
+                       GetFencedFrameUntrustedNetworkStatusGatedCommands()),
+      IDC_MinimumLabelValue);
+  ASSERT_LT(
+      *std::crbegin(TestRenderViewContextMenu::
+                        GetFencedFrameUntrustedNetworkStatusGatedCommands()),
+      IDC_FIRST_UNBOUNDED_MENU);
+}
+
 class RenderViewContextMenuExtensionsTest : public RenderViewContextMenuTest {
  protected:
   RenderViewContextMenuExtensionsTest()

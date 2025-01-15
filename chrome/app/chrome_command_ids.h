@@ -16,6 +16,11 @@
 
 // clang-format off
 
+// Note: Add `NO_IFTTT=<reason>` in the CL description if the linter is not
+// applicable.
+//
+// LINT.IfChange(ChromeCommandIds)
+
 // Values below IDC_MinimumLabelValue are reserved for dynamic menu items.
 #define IDC_MinimumLabelValue           4000
 
@@ -566,5 +571,7 @@
 // each other, by only using every Nth id (where N is the number of unbounded
 // menus).
 #define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
+
+// LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.h:CommandsGatedOnFencedFrameUntrustedNetworkStatus)
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_

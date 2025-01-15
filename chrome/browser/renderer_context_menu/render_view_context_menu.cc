@@ -637,38 +637,6 @@ bool IsCommandForOpenLink(int id) {
           id <= IDC_OPEN_LINK_IN_PROFILE_LAST);
 }
 
-// Returns true if the command makes a network request.
-bool IsCommandForNetworkRequest(int id) {
-  // Common open link commands.
-  if (IsCommandForOpenLink(id)) {
-    return true;
-  }
-
-  // Open link commands that appear in certain scenarios.
-  if (id == IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP ||
-      id == IDC_CONTENT_CONTEXT_OPENLINKINPROFILE ||
-      id == IDC_CONTENT_CONTEXT_GOTOURL ||
-      id == IDC_CONTENT_CONTEXT_OPENLINKWITH) {
-    return true;
-  }
-
-  // Link preview feature.
-  if (id == IDC_CONTENT_CONTEXT_OPENLINKPREVIEW) {
-    return true;
-  }
-
-  // Download commands.
-  if (id == IDC_CONTENT_CONTEXT_SAVELINKAS ||
-      id == IDC_CONTENT_CONTEXT_SAVEIMAGEAS ||
-      id == IDC_CONTENT_CONTEXT_SAVEAVAS ||
-      id == IDC_CONTENT_CONTEXT_SAVEPLUGINAS ||
-      id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS) {
-    return true;
-  }
-
-  return false;
-}
-
 // Returns the preference of the profile represented by the |context|.
 PrefService* GetPrefs(content::BrowserContext* context) {
   return user_prefs::UserPrefs::Get(context);
@@ -1068,6 +1036,12 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
                                         /*is_action_menu=*/false, title);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// static
+bool RenderViewContextMenu::IsCommandGatedByFencedFrameUntrustedNetworkStatus(
+    int id) {
+  return kFencedFrameUntrustedNetworkStatusGatedCommands.contains(id);
+}
 
 std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
   DCHECK(!url.is_empty());
@@ -2714,11 +2688,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
-  //
-  // NOTE: If new commands that make network requests are being added, add them
-  // to `IsCommandForNetworkRequest()` so that they are subject to the fenced
-  // frame untrusted network status check. See comments on
-  // `content::RenderFrameHost::IsUntrustedNetworkDisabled()`.
   Browser* const browser = GetBrowser();
   if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
     bool should_disable_command_for_locked_fullscreen = true;
@@ -2745,7 +2714,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
   // If the command makes network requests and the frame does not have untrusted
   // network access, the command is disabled.
-  if (IsCommandForNetworkRequest(id) && !IsAllowedByUntrustedNetworkStatus()) {
+  if (IsCommandGatedByFencedFrameUntrustedNetworkStatus(id) &&
+      IsUntrustedNetworkDisabled()) {
     return false;
   }
 
@@ -3580,14 +3550,9 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
   return true;
 }
 
-bool RenderViewContextMenu::IsAllowedByUntrustedNetworkStatus() const {
-  if (!GetRenderFrameHost()) {
-    return true;
-  }
-
-  // Network requests are not allowed in a frame tree that has untrusted network
-  // access disabled.
-  return !GetRenderFrameHost()->IsUntrustedNetworkDisabled();
+bool RenderViewContextMenu::IsUntrustedNetworkDisabled() const {
+  return GetRenderFrameHost() &&
+         GetRenderFrameHost()->IsUntrustedNetworkDisabled();
 }
 
 // Controller functions --------------------------------------------------------
