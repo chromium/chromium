@@ -131,7 +131,7 @@ jobs:
           FAIL_NO_TEST: false
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
           path: |
@@ -224,7 +224,7 @@ jobs:
           mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
       - name: Upload artifacts
         if: success()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
           path: ./artifacts
@@ -256,7 +256,7 @@ jobs:
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7.0.5
+        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # v7.0.6
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: ${{ github.head_ref }}-update-expectations
