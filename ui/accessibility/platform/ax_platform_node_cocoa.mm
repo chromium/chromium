@@ -3206,6 +3206,55 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 }
 
+- (id)accessibilityDisclosedByRow {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // The row that contains this row.
+  // It should be the same as the first parent that is a treeitem.
+  return nil;
+}
+
+- (id)accessibilityDisclosedRows {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // The rows that are considered inside this row.
+  return nil;
+}
+
+- (NSInteger)accessibilityDisclosureLevel {
+  if (![self instanceActive]) {
+    return 0;
+  }
+
+  ax::mojom::Role role = [self internalRole];
+  if (role == ax::mojom::Role::kRow || role == ax::mojom::Role::kTreeItem ||
+      role == ax::mojom::Role::kHeading) {
+    int level =
+        _node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+    // Mac disclosureLevel is 0-based, but web levels are 1-based.
+    if (level > 0) {
+      level--;
+    }
+    return level;
+  }
+  return 0;
+}
+
+- (BOOL)isAccessibilityDisclosed {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  if ([self internalRole] == ax::mojom::Role::kTreeItem) {
+    return _node->HasState(ax::mojom::State::kExpanded);
+  }
+  return NO;
+}
+
 // NSAccessibility: Setting the Focus.
 - (void)setAccessibilityFocused:(BOOL)isFocused {
   if (!_node)
