@@ -196,6 +196,8 @@ def compare_files(first_filepath, second_filepath):
   Returns None if the files are equal, a string otherwise.
   """
   if not os.path.exists(first_filepath):
+    if not os.path.exists(second_filepath):
+      return 'missing'
     return 'file does not exist %s' % first_filepath
   if not os.path.exists(second_filepath):
     return 'file does not exist %s' % second_filepath
@@ -287,7 +289,8 @@ def compare_deps(first_dir, second_dir, ninja_path, targets):
       result = compare_files(first_file, second_file)
       if result:
         print('  %-*s: %s' % (max_filepath_len, d, result))
-        diffs.add(d)
+        if result != 'missing':
+          diffs.add(d)
   return list(diffs)
 
 
@@ -338,6 +341,7 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
   print()
   print('Differences of files in build directories:')
   equals = []
+  missings = []
   expected_diffs = []
   unexpected_diffs = []
   unexpected_equals = []
@@ -360,6 +364,8 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
       equals.append(f)
       if f in ignorelist:
         unexpected_equals.append(f)
+    elif result == 'missing':
+      missings.append(f)
     else:
       if f in ignorelist:
         expected_diffs.append(f)
@@ -372,6 +378,7 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
   unexpected_diffs.sort()
 
   print('Equals:           %d' % len(equals))
+  print('Missings:         %d' % len(missings))
   print('Expected diffs:   %d' % len(expected_diffs))
   print('Unexpected diffs: %d' % len(unexpected_diffs))
   if unexpected_diffs:
