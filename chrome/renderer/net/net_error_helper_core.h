@@ -135,8 +135,6 @@ class NetErrorHelperCore {
   void OnCommitLoad(FrameType frame_type, const GURL& url);
   void OnFinishLoad(FrameType frame_type);
 
-  void CancelPendingAutoReload();
-
   // Notifies |this| that network error information from the browser process
   // has been received.
   void OnNetErrorInfo(error_page::DnsProbeStatus status);

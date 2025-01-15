@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'd9c0aa4aff162e408ef6906ff767290c0d242dc9',
+  'angle_revision': '0501d32f7adeee718e5578c77526995c2e6553ec',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '0783a8d746d9264a8ee949cca7549ddff26d49cb',
+  'devtools_frontend_revision': 'eb238929f5cee614c420d63b1c0cc03e15a6ec17',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '60a78b1ae59d6724d658e1eb3d8e2813afb29cb9',
+  'dawn_revision': 'b7143cc4f3bf86a78ffff816dec53d9e40ce9518',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -2859,7 +2859,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'wJuGySZSXWYzSSYnrikBGF40Jt9Np2sryaAZDgPktSMC',
+          'version': 'GkPik3ZR82JcwVHk-pBTePz2HPYzW8LateYL4h_d-bIC',
         },
       ],
       'dep_type': 'cipd',
@@ -2869,7 +2869,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': 'ZbpG6l6nZTf_9CzhFx_mAhpawgzPaR_4DWHooNZRWTEC',
+          'version': 'ByYUybN8CyRSJhmE5wfxU9m1DBFbhBX5-F5M0Cuk84YC',
         },
       ],
       'dep_type': 'cipd',
@@ -2880,7 +2880,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'GdyWLemYJthJSy9vVJ_qtCqO3aTkj_LWZ7X6I15d-PoC',
+          'version': 'j7rDa6kTN-TMvPfBmX1peSexyGPSajiQ5st1zCqBrEYC',
         },
       ],
       'dep_type': 'cipd',
@@ -2891,7 +2891,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-arm64',
-          'version': '5D08ylQHoTIb5hVQwEIQ_f_lopZUOXEtntUD_naP1goC',
+          'version': 'BD_Os35akIixtA0Ooa6coXpJ4hjQUVHonW0WJTsPfWAC',
         },
       ],
       'dep_type': 'cipd',
@@ -4568,7 +4568,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        '7ad9de4680ccf12403171846ac8553448e518c1f',
+        '435b5ac210638f9e18e7957a4c065bc4b5096452',
       'condition': 'checkout_src_internal',
   },
 

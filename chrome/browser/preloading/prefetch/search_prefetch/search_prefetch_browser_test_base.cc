@@ -95,9 +95,6 @@ void SearchPrefetchBaseBrowserTest::SetUpCommandLine(base::CommandLine* cmd) {
   cmd->AppendSwitch("ignore-certificate-errors");
 
   mock_cert_verifier_.SetUpCommandLine(cmd);
-
-  // TODO(crbug.com/40285326): This fails with the field trial testing config.
-  cmd->AppendSwitch("disable-field-trial-config");
 }
 
 GURL SearchPrefetchBaseBrowserTest::GetSearchServerQueryURL(

@@ -1800,6 +1800,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Navigation.Prerender.NoVarySearchCommitDeferTime.{NVSTriggerType}"
+    units="ms" expires_after="2025-05-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@chromium.org</owner>
+  <summary>
+    Measures time a PrerenderNoVarySearchCommitDeferringCondition defers
+    activation waiting to commit an ongoing mainframe prerender navigation.
+    Logged whenever a PrerenderNoVarySearchCommitDeferringCondition defers
+    navigation.
+  </summary>
+  <token key="NVSTriggerType">
+    <variant name="Embedder_DefaultSearchEngine"/>
+    <variant name="Embedder_WebView"/>
+    <variant name="SpeculationRule"/>
+  </token>
+</histogram>
+
+<histogram
     name="Navigation.ProcessNavigationThrottlesTime.WillStartRequest.{FrameType}"
     units="ms" expires_after="2025-06-22">
   <owner>sisidovski@chromium.org</owner>

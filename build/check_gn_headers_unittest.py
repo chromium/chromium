@@ -51,7 +51,7 @@ gn_input = json.loads(r'''
 ''')
 
 
-whitelist = r'''
+allowlist = r'''
    white-front.c
 a/b/c/white-end.c # comment
  dir/white-both.c  #more comment
@@ -85,8 +85,8 @@ class CheckGnHeadersTest(unittest.TestCase):
     ])
     self.assertEqual(headers, expected)
 
-  def testWhitelist(self):
-    output = check_gn_headers.ParseWhiteList(whitelist)
+  def testAllowlist(self):
+    output = check_gn_headers.ParseAllowlist(allowlist)
     expected = set([
         'white-front.c',
         'a/b/c/white-end.c',
