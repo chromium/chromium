@@ -86,6 +86,8 @@ void OnGotAIPageContentForAllFrames(
           base::BindRepeating(&GetRenderFrameInfo), &proto)) {
     UMA_HISTOGRAM_TIMES("OptimizationGuide.AIPageContent.TotalLatency",
                         base::TimeTicks::Now() - start_time);
+    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.AnnotatedPageContent.TotalSize",
+                            proto.ByteSizeLong() / 1024);
     std::move(done_callback).Run(std::move(proto));
     return;
   }

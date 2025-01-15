@@ -424,6 +424,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.AnnotatedPageContent.TotalSize" units="KB"
+    expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the size of AnnotatedPageContent proto extracted from 1 WebContents
+    instance. Recorded once per extraction.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.ApplyDecision.{OptimizationType}"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="2025-06-01">
   <owner>sophiechang@chromium.org</owner>
