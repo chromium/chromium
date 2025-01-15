@@ -2207,7 +2207,7 @@ TEST_F(AutocompleteControllerTest,
   }
 
   // In keyword mode, all limit provider params on by default, limit document
-  //  and history cluster suggestions as well.
+  // and history cluster suggestions as well.
   controller_.input_.UpdateText(u"keyword", 0, {});
   controller_.input_.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
@@ -2277,6 +2277,67 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
   controller_.input_ = AutocompleteInput(
       u"a", 1u, metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
       TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
+
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_EnterpriseSearchAggregator) {
+  // Populate template URL service.
+  auto add_template_url = [&](const std::string& name,
+                              TemplateURLData::PolicyOrigin policy_origin,
+                              bool featured) {
+    TemplateURLData data;
+    data.SetShortName(base::UTF8ToUTF16(name));
+    data.SetKeyword(base::UTF8ToUTF16(name));
+    data.SetURL("https://" + name + ".com/q={searchTerms}");
+    data.policy_origin = policy_origin;
+    data.featured_by_policy = featured;
+    controller_.template_url_service_->Add(std::make_unique<TemplateURL>(data));
+  };
+
+  add_template_url("site_search_not_featured",
+                   TemplateURLData::PolicyOrigin::kSiteSearch, false);
+  add_template_url("site_search_featured",
+                   TemplateURLData::PolicyOrigin::kSiteSearch, true);
+  add_template_url("aggregator_not_featured",
+                   TemplateURLData::PolicyOrigin::kSearchAggregator, false);
+  add_template_url("aggregator_featured",
+                   TemplateURLData::PolicyOrigin::kSearchAggregator, true);
+
+  auto aggregator_provider = base::MakeRefCounted<FakeAutocompleteProvider>(
+      AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
+  controller_.providers_.push_back(aggregator_provider);
+
+  // Aggregator not ran when not in keyword mode.
+  controller_.input_ = AutocompleteInput(
+      u"a", 1u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  // Aggregator not ran when in site search mode.
+  controller_.input_.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  controller_.input_.UpdateText(u"site_search_not_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+  controller_.input_.UpdateText(u"site_search_featured", 0, {});
+  EXPECT_FALSE(controller_.ShouldRunProvider(aggregator_provider.get()));
+
+  // Only search, keyword, and aggregator providers ran when in aggregator mode.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_KEYWORD,
+      AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR};
+  controller_.input_.UpdateText(u"aggregator_not_featured", 0, {});
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+  controller_.input_.UpdateText(u"aggregator_featured", 0, {});
   for (auto& provider : controller_.providers()) {
     EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
               expected_provider_types.contains(provider->type()))
