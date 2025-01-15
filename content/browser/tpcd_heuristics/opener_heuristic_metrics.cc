@@ -10,6 +10,8 @@
 
 #include "base/metrics/histogram.h"
 
+namespace content {
+
 int32_t Bucketize3PCDHeuristicSample(int64_t sample, int64_t maximum) {
   static constexpr size_t kBucketCount = 50;
 
@@ -56,3 +58,5 @@ int32_t Bucketize3PCDHeuristicSample(int64_t sample, int64_t maximum) {
   }
   return maximum;
 }
+
+}  // namespace content

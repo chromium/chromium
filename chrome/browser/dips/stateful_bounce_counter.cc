@@ -12,7 +12,8 @@
 
 namespace dips {
 
-StatefulBounceCounter::StatefulBounceCounter(PassKey, DIPSService* dips_service)
+StatefulBounceCounter::StatefulBounceCounter(PassKey,
+                                             content::DIPSService* dips_service)
     : dips_service_(dips_service) {
   dips_service_->AddObserver(this);
 }
@@ -22,7 +23,7 @@ StatefulBounceCounter::~StatefulBounceCounter() {
 }
 
 /*static*/
-void StatefulBounceCounter::CreateFor(DIPSService* dips_service) {
+void StatefulBounceCounter::CreateFor(content::DIPSService* dips_service) {
   CHECK(!dips_service->GetUserData(&kUserDataKey));
   dips_service->SetUserData(
       &kUserDataKey,

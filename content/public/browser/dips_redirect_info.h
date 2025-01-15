@@ -16,6 +16,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
+namespace content {
+
 enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
 
 enum class DIPSRedirectType { kClient, kServer };
@@ -144,5 +146,7 @@ using DIPSRedirectInfoPtr = std::unique_ptr<DIPSRedirectInfo>;
 
 // a movable DIPSRedirectChainInfo, essentially
 using DIPSRedirectChainInfoPtr = std::unique_ptr<DIPSRedirectChainInfo>;
+
+}  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_DIPS_REDIRECT_INFO_H_

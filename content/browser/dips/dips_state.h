@@ -12,6 +12,8 @@
 #include "content/browser/dips/dips_utils.h"
 #include "content/common/content_export.h"
 
+namespace content {
+
 class DIPSStorage;
 
 // A boolean value that gets cleared when moved.
@@ -86,5 +88,7 @@ class CONTENT_EXPORT DIPSState {
   DirtyBit dirty_;
   StateValue state_;
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_STATE_H_

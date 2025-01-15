@@ -21,41 +21,40 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class GURL;
+
 namespace content {
+
+class DIPSServiceImpl;
 class Page;
 class RenderFrameHost;
 class WebContents;
-}  // namespace content
-
-class DIPSServiceImpl;
-class GURL;
 
 class RedirectHeuristicTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<RedirectHeuristicTabHelper>,
+    : public WebContentsObserver,
+      public WebContentsUserData<RedirectHeuristicTabHelper>,
       public RedirectChainDetector::Observer {
  public:
   ~RedirectHeuristicTabHelper() override;
 
   CONTENT_EXPORT static std::set<std::string> AllSitesFollowingFirstParty(
-      content::WebContents* web_contents,
+      WebContents* web_contents,
       const GURL& first_party_url);
 
  private:
-  explicit RedirectHeuristicTabHelper(content::WebContents* web_contents);
+  explicit RedirectHeuristicTabHelper(WebContents* web_contents);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class content::WebContentsUserData<RedirectHeuristicTabHelper>;
+  friend class WebContentsUserData<RedirectHeuristicTabHelper>;
 
   // Record a RedirectHeuristic event for a cookie access, if eligible. This
   // applies when the tracking site has appeared previously in the current
   // redirect context.
-  void MaybeRecordRedirectHeuristic(
-      const ukm::SourceId& first_party_source_id,
-      const content::CookieAccessDetails& details);
+  void MaybeRecordRedirectHeuristic(const ukm::SourceId& first_party_source_id,
+                                    const CookieAccessDetails& details);
   void RecordRedirectHeuristic(
       const ukm::SourceId& first_party_source_id,
       const ukm::SourceId& third_party_source_id,
-      const content::CookieAccessDetails& details,
+      const CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
       DIPSInteractionType interaction_type,
@@ -71,14 +70,13 @@ class RedirectHeuristicTabHelper
                                     bool has_interaction);
 
   // Start WebContentsObserver overrides:
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
-  void PrimaryPageChanged(content::Page& page) override;
+  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
+  void PrimaryPageChanged(Page& page) override;
   void WebContentsDestroyed() override;
 
   // Start RedirectChainDetector::Observer overrides:
-  void OnNavigationCommitted(
-      content::NavigationHandle* navigation_handle) override;
+  void OnNavigationCommitted(NavigationHandle* navigation_handle) override;
 
   raw_ptr<RedirectChainDetector> detector_;
   raw_ptr<DIPSServiceImpl> dips_service_;
@@ -91,5 +89,7 @@ class RedirectHeuristicTabHelper
   base::WeakPtrFactory<RedirectHeuristicTabHelper> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_TPCD_HEURISTICS_REDIRECT_HEURISTIC_TAB_HELPER_H_

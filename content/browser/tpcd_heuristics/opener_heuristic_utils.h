@@ -9,6 +9,8 @@
 
 class GURL;
 
+namespace content {
+
 // Common identity providers that open pop-ups, to help estimate the impact of
 // third-party cookie blocking and prioritize mitigations. These values are
 // emitted in metrics and should not be renumbered.
@@ -18,5 +20,7 @@ enum class PopupProvider {
 };
 
 CONTENT_EXPORT PopupProvider GetPopupProvider(const GURL& popup_url);
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_UTILS_H_

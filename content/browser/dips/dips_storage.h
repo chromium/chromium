@@ -22,7 +22,7 @@
 
 class GURL;
 
-using UrlPredicate = base::RepeatingCallback<bool(const GURL&)>;
+namespace content {
 
 // Manages the storage of DIPSState values.
 class CONTENT_EXPORT DIPSStorage {
@@ -147,5 +147,7 @@ class CONTENT_EXPORT DIPSStorage {
 
   base::WeakPtrFactory<DIPSStorage> weak_factory_{this};
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_STORAGE_H_

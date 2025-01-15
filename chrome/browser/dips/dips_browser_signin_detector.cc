@@ -23,7 +23,7 @@ const char kIdentityProviderDomain[] = "google.com";
 
 DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
     base::PassKey<DIPSBrowserSigninDetectorFactory>,
-    DIPSService* dips_service,
+    content::DIPSService* dips_service,
     signin::IdentityManager* identity_manager)
     : dips_service_(dips_service), identity_manager_(identity_manager) {
   CHECK(dips_service_);

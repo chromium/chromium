@@ -6,6 +6,8 @@
 
 #include "content/browser/dips/dips_utils.h"
 
+namespace content {
+
 CookieAccessFilter::CookieAccessFilter() = default;
 CookieAccessFilter::~CookieAccessFilter() = default;
 
@@ -85,3 +87,5 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   std::fill(result->begin(), result->end(), DIPSDataAccessType::kUnknown);
   return false;
 }
+
+}  // namespace content

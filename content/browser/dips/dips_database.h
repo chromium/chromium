@@ -21,6 +21,8 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 
+namespace content {
+
 // Encapsulates an SQL database that holds DIPS info.
 class CONTENT_EXPORT DIPSDatabase {
  public:
@@ -287,5 +289,7 @@ class CONTENT_EXPORT DIPSDatabase {
       GUARDED_BY_CONTEXT(sequence_checker_) = base::Time::Min();
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_DATABASE_H_

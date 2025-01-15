@@ -15,12 +15,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 
-// We copied this class from
-// //components/signin/public/base/persistent_repeating_timer.h in order to
-// modify it for moving to //content. To ensure the copies don't get mixed up,
-// we temporarily put it in the `dips` namespace. After the move, it will be in
-// ::content.
-namespace dips {
+namespace content {
 
 // This class fires a task repeatedly, across application restarts. The timer
 // stores the date of the last invocation in a preference, which is persisted
@@ -59,6 +54,6 @@ class CONTENT_EXPORT PersistentRepeatingTimer {
   base::WeakPtrFactory<PersistentRepeatingTimer> weak_factory_{this};
 };
 
-}  // namespace dips
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_

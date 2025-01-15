@@ -7,6 +7,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace content {
+
 TEST(CookieAccessType, BitwiseOrOperator) {
   ASSERT_EQ(DIPSDataAccessType::kRead,
             DIPSDataAccessType::kNone | DIPSDataAccessType::kRead);
@@ -230,3 +232,5 @@ TEST(CookieAccessFilter, SameURLTwiceWithDifferentAccessTypes) {
                                            DIPSDataAccessType::kReadWrite,
                                            DIPSDataAccessType::kRead));
 }
+
+}  // namespace content

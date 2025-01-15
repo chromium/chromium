@@ -114,7 +114,6 @@ class SiteForCookies;
 class IsolationInfo;
 }  // namespace net
 
-class DIPSService;
 class GURL;
 
 // TODO(ellyjones): This synonym shouldn't need to exist - call sites should get
@@ -244,6 +243,7 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
+class DIPSService;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;

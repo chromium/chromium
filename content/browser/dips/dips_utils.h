@@ -25,13 +25,13 @@ namespace base {
 class TimeDelta;
 }
 
-namespace content {
-class BrowserContext;
-}
-
 namespace url {
 class Origin;
 }
+
+namespace content {
+
+class BrowserContext;
 
 // For use in tests/debugging.
 CONTENT_EXPORT base::cstring_view DIPSCookieModeToString(DIPSCookieMode mode);
@@ -52,7 +52,7 @@ const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
 // if one exists.
 // NOTE: This returns the same value regardless of if there is actually a
 // persisted DIPSDatabase for the BrowserContext or not.
-CONTENT_EXPORT base::FilePath GetDIPSFilePath(content::BrowserContext* context);
+CONTENT_EXPORT base::FilePath GetDIPSFilePath(BrowserContext* context);
 
 inline DIPSDataAccessType ToDIPSDataAccessType(CookieOperation op) {
   return (op == CookieOperation::kChange ? DIPSDataAccessType::kWrite
@@ -179,21 +179,20 @@ CONTENT_EXPORT std::string GetSiteForDIPS(const url::Origin& origin);
 
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.
-bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
+bool HasSameSiteIframe(WebContents* web_contents, const GURL& url);
 
 // Returns whether the provided cookie access was ad-tagged, based on the cookie
 // settings overrides. Returns Unknown if kSkipTpcdMitigationsForAdsHeuristics
 // is false and the override is not set regardless.
 CONTENT_EXPORT OptionalBool
-IsAdTaggedCookieForHeuristics(const content::CookieAccessDetails& details);
+IsAdTaggedCookieForHeuristics(const CookieAccessDetails& details);
 
 CONTENT_EXPORT bool HasCHIPS(
     const net::CookieAccessResultList& cookie_access_result_list);
 
 // Returns `True` iff the `navigation_handle` represents a navigation
 // happening in an iframe of the primary frame tree.
-inline bool IsInPrimaryPageIFrame(
-    content::NavigationHandle* navigation_handle) {
+inline bool IsInPrimaryPageIFrame(NavigationHandle* navigation_handle) {
   return navigation_handle && navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
              : false;
@@ -208,7 +207,7 @@ inline bool IsSameSiteForDIPS(const GURL& url1, const GURL& url2) {
 // Returns `True` iff the `navigation_handle` represents a navigation happening
 // in any frame of the primary page.
 // NOTE: This does not include fenced frames.
-inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
+inline bool IsInPrimaryPage(NavigationHandle* navigation_handle) {
   return navigation_handle && navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
              : navigation_handle->IsInPrimaryMainFrame();
@@ -216,14 +215,14 @@ inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
 
 // Returns `True` iff the 'rfh' exists and represents a frame in the primary
 // page.
-inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
+inline bool IsInPrimaryPage(RenderFrameHost* rfh) {
   return rfh && rfh->GetPage().IsPrimary();
 }
 
 // Returns the last committed or the to be committed url of the main frame of
 // the page containing the `navigation_handle`.
 inline std::optional<GURL> GetFirstPartyURL(
-    content::NavigationHandle* navigation_handle) {
+    NavigationHandle* navigation_handle) {
   if (!navigation_handle) {
     return std::nullopt;
   }
@@ -236,7 +235,7 @@ inline std::optional<GURL> GetFirstPartyURL(
 
 // Returns an optional last committed url of the main frame of the page
 // containing the `rfh`.
-inline std::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
+inline std::optional<GURL> GetFirstPartyURL(RenderFrameHost* rfh) {
   return rfh ? std::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
              : std::nullopt;
 }
@@ -328,5 +327,7 @@ enum class DIPSDatabaseTable {
   kPopups = 2,
   kMaxValue = kPopups,
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_UTILS_H_

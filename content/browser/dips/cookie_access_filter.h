@@ -11,6 +11,8 @@
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
+namespace content {
+
 // Filters a chain of URLs to the ones which accessed cookies.
 //
 // Intended for use by a WebContentsObserver which overrides OnCookiesAccessed
@@ -46,5 +48,7 @@ class CONTENT_EXPORT CookieAccessFilter {
   // between them.
   std::vector<CookieAccess> accesses_;
 };
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_COOKIE_ACCESS_FILTER_H_

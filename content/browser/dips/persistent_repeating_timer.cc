@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
-namespace dips {
+namespace content {
 
 PersistentRepeatingTimer::Storage::~Storage() = default;
 
@@ -57,4 +57,4 @@ void PersistentRepeatingTimer::OnTimerFired() {
   StartWithLastFired(now);
 }
 
-}  // namespace dips
+}  // namespace content

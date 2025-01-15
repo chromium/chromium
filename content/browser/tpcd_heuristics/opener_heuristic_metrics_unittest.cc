@@ -13,6 +13,8 @@
 
 using base::TimeDelta;
 
+namespace content {
+
 TEST(OpenerHeuristicsMetricsTest, BucketizeHoursSinceLastInteraction) {
   constexpr int kMaximum = base::Days(30).InHours();
 
@@ -61,3 +63,5 @@ TEST(OpenerHeuristicsMetricsTest, DISABLED_BucketizeSecondsSinceCommitted) {
   // Exactly 50 buckets
   ASSERT_EQ(seen_values.size(), 50u);
 }
+
+}  // namespace content

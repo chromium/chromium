@@ -25,6 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace content {
+
 namespace {
 
 class TestStorage : public DIPSStorage {
@@ -786,9 +788,9 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
-  std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
-      content::BrowsingDataFilterBuilder::Create(
-          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  std::unique_ptr<BrowsingDataFilterBuilder> builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete);
   builder->AddRegisterableDomain(GetSiteForDIPS(url1));
   builder->AddRegisterableDomain(GetSiteForDIPS(url3));
   storage_.RemoveEvents(base::Time(), base::Time::Max(),
@@ -848,9 +850,9 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(4)}}});
 
-  std::unique_ptr<content::BrowsingDataFilterBuilder> builder =
-      content::BrowsingDataFilterBuilder::Create(
-          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  std::unique_ptr<BrowsingDataFilterBuilder> builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete);
   builder->AddRegisterableDomain(GetSiteForDIPS(url1));
   storage_.RemoveEvents(delete_begin, delete_end,
                         builder->BuildNetworkServiceFilter(),
@@ -943,3 +945,5 @@ TEST_F(DIPSStorageTest, GetTimerLastFired_ReturnsLastSetValue) {
   ASSERT_TRUE(storage_.SetTimerLastFired(time2));
   ASSERT_THAT(storage_.GetTimerLastFired(), testing::Optional(time2));
 }
+
+}  // namespace content

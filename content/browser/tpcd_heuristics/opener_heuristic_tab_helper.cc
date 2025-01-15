@@ -30,10 +30,9 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-using content::NavigationHandle;
-using content::RenderFrameHost;
-using content::WebContents;
 using content_settings::features::EnableForIframeTypes;
+
+namespace content {
 
 namespace {
 
@@ -48,8 +47,8 @@ base::Clock* GetClock() {
 }  // namespace
 
 OpenerHeuristicTabHelper::OpenerHeuristicTabHelper(WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<OpenerHeuristicTabHelper>(*web_contents) {}
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<OpenerHeuristicTabHelper>(*web_contents) {}
 
 OpenerHeuristicTabHelper::~OpenerHeuristicTabHelper() = default;
 
@@ -84,7 +83,7 @@ void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
       state.user_interaction_times(), state.web_authn_assertion_times());
 }
 
-void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
+void OpenerHeuristicTabHelper::PrimaryPageChanged(Page& page) {
   page_id_++;
 }
 
@@ -92,7 +91,7 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     WebContents* new_contents,
     RenderFrameHost* source_render_frame_host,
     const GURL& url,
-    const content::Referrer& referrer,
+    const Referrer& referrer,
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
@@ -125,7 +124,7 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
 }
 
 bool OpenerHeuristicTabHelper::PassesIframeInitiatorCheck(
-    content::RenderFrameHost* source_render_frame_host) {
+    RenderFrameHost* source_render_frame_host) {
   if (source_render_frame_host->IsInPrimaryMainFrame()) {
     return true;
   }
@@ -159,7 +158,7 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
     WebContents* web_contents,
     const GURL& initial_url,
     base::WeakPtr<OpenerHeuristicTabHelper> opener)
-    : content::WebContentsObserver(web_contents),
+    : WebContentsObserver(web_contents),
       popup_id_(static_cast<int32_t>(base::RandUint64())),
       initial_url_(initial_url),
       opener_(opener),
@@ -333,23 +332,23 @@ void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
 }
 
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
+    RenderFrameHost* render_frame_host,
+    const CookieAccessDetails& details) {
   if (!render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+          RenderFrameHost::LifecycleState::kPrerendering)) {
     OnCookiesAccessed(render_frame_host->GetPageUkmSourceId(), details);
   }
 }
 
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
-    content::NavigationHandle* navigation_handle,
-    const content::CookieAccessDetails& details) {
+    NavigationHandle* navigation_handle,
+    const CookieAccessDetails& details) {
   OnCookiesAccessed(navigation_handle->GetNextPageUkmSourceId(), details);
 }
 
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
     const ukm::SourceId& source_id,
-    const content::CookieAccessDetails& details) {
+    const CookieAccessDetails& details) {
   DIPSServiceImpl* dips =
       DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
@@ -374,7 +373,7 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 
 void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
     const ukm::SourceId& source_id,
-    const content::CookieAccessDetails& details,
+    const CookieAccessDetails& details,
     std::optional<PopupsStateValue> value) {
   if (!value.has_value()) {
     return;
@@ -446,7 +445,7 @@ void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
     return;
   }
 
-  content::GetContentClient()->browser()->GrantCookieAccessDueToHeuristic(
+  GetContentClient()->browser()->GrantCookieAccessDueToHeuristic(
       web_contents()->GetBrowserContext(), net::SchemefulSite(opener_origin_),
       net::SchemefulSite(url::Origin::Create(url)), grant_duration,
       /*ignore_schemes=*/false);
@@ -462,3 +461,5 @@ OpenerHeuristicTabHelper::PopupObserver::GetOpenerHasSameSiteIframe(
 
   return OptionalBool::kUnknown;
 }
+
+}  // namespace content

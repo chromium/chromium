@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace content {
+
 TEST(OpenerHeuristicUtilsTest, GetPopupProvider) {
   // Any google.com subdomain.
   EXPECT_EQ(GetPopupProvider(GURL("https://accounts.google.com/")),
@@ -21,3 +23,5 @@ TEST(OpenerHeuristicUtilsTest, GetPopupProvider) {
   EXPECT_EQ(GetPopupProvider(GURL("https://www.example.com/")),
             PopupProvider::kUnknown);
 }
+
+}  // namespace content

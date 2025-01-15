@@ -13,9 +13,9 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
+namespace content {
 
-using dips::PersistentRepeatingTimer;
+namespace {
 
 // How long calls to SlowStorage::{Get,Set}LastFired() take.
 constexpr base::TimeDelta kStorageDelay = base::Minutes(1);
@@ -166,3 +166,5 @@ TEST_F(PersistentRepeatingTimerTest, OldPref) {
   task_environment_.FastForwardBy(kTimerDelay);
   CheckCallCount(2);
 }
+
+}  // namespace content

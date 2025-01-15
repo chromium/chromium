@@ -42,13 +42,13 @@ class Clock;
 class TickClock;
 }  // namespace base
 
-namespace content {
-class WebContents;
-}
-
 namespace url {
 class Origin;
 }
+
+namespace content {
+
+class WebContents;
 
 using DIPSRedirectChainHandler =
     base::RepeatingCallback<void(std::vector<DIPSRedirectInfoPtr>,
@@ -219,7 +219,7 @@ class CONTENT_EXPORT DIPSBounceDetectorDelegate {
 // SupportsUserData subclass) to store data needed to detect stateful
 // server-side redirects.
 class CONTENT_EXPORT ServerBounceDetectionState
-    : public content::NavigationHandleUserData<ServerBounceDetectionState> {
+    : public NavigationHandleUserData<ServerBounceDetectionState> {
  public:
   ServerBounceDetectionState();
   ~ServerBounceDetectionState() override;
@@ -237,21 +237,20 @@ class CONTENT_EXPORT ServerBounceDetectionState
   base::TimeTicks last_server_redirect;
 
  private:
-  explicit ServerBounceDetectionState(
-      content::NavigationHandle& navigation_handle);
+  explicit ServerBounceDetectionState(NavigationHandle& navigation_handle);
 
   friend NavigationHandleUserData;
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-// A simplified interface to content::NavigationHandle that can be faked in
+// A simplified interface to NavigationHandle that can be faked in
 // tests. Needed to allow unit testing DIPSBounceDetector.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
 class CONTENT_EXPORT DIPSNavigationHandle {
  public:
   virtual ~DIPSNavigationHandle();
 
-  // See content::NavigationHandle for an explanation of these methods:
+  // See NavigationHandle for an explanation of these methods:
   const GURL& GetURL() const { return GetRedirectChain().back(); }
   virtual ukm::SourceId GetNextPageUkmSourceId() = 0;
   virtual const GURL& GetPreviousPrimaryMainFrameURL() const = 0;
@@ -261,10 +260,10 @@ class CONTENT_EXPORT DIPSNavigationHandle {
   // Get the HTTP response code from the navigation.
   virtual int GetHTTPResponseCode() = 0;
   // This method has one important (simplifying) change from
-  // content::NavigationHandle::HasUserGesture(): it returns true if the
+  // NavigationHandle::HasUserGesture(): it returns true if the
   // navigation was not renderer-initiated.
   virtual bool HasUserGesture() const = 0;
-  //  This method doesn't have a direct equivalent in content::NavigationHandle,
+  //  This method doesn't have a direct equivalent in NavigationHandle,
   //  as it relies on GetInitiatorOrigin(), but returns what is effectively a
   //  base URL. Also, this returns `about:blank` if the initiator origin is
   //  unspecified or opaque.
@@ -277,7 +276,7 @@ class CONTENT_EXPORT DIPSNavigationHandle {
   // declare this instead of making DIPSNavigationHandle a subclass of
   // SupportsUserData, because ServerBounceDetectionState inherits from
   // NavigationHandleUserData, whose helper functions only work with actual
-  // content::NavigationHandle, not any SupportsUserData.
+  // NavigationHandle, not any SupportsUserData.
   virtual ServerBounceDetectionState* GetServerState() = 0;
 };
 
@@ -376,8 +375,8 @@ class DelayedChainHandler {
 // Detects chains of server- and client redirects, and notifies observers.
 // TODO: crbug.com/324573485 - move to separate file.
 class CONTENT_EXPORT RedirectChainDetector
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<RedirectChainDetector>,
+    : public WebContentsObserver,
+      public WebContentsUserData<RedirectChainDetector>,
       public DIPSBounceDetectorDelegate {
  public:
   class Observer : public base::CheckedObserver {
@@ -385,8 +384,7 @@ class CONTENT_EXPORT RedirectChainDetector
     // Called when a navigation has committed and the redirect context has been
     // updated. (If you override WebContentsObserver::DidFinishNavigation()
     // directly, you could be called before the context has been updated.)
-    virtual void OnNavigationCommitted(
-        content::NavigationHandle* navigation_handle) {}
+    virtual void OnNavigationCommitted(NavigationHandle* navigation_handle) {}
     // Called when any redirect chain ends, including ones that end with an
     // uncommitted navigation.
     virtual void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>&,
@@ -421,9 +419,9 @@ class CONTENT_EXPORT RedirectChainDetector
   }
 
  private:
-  explicit RedirectChainDetector(content::WebContents* web_contents);
+  explicit RedirectChainDetector(WebContents* web_contents);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class content::WebContentsUserData<RedirectChainDetector>;
+  friend class WebContentsUserData<RedirectChainDetector>;
 
   // DIPSBounceDetectorDelegate overrides:
   UrlAndSourceId GetLastCommittedURL() const override;
@@ -436,24 +434,20 @@ class CONTENT_EXPORT RedirectChainDetector
   // End DIPSBounceDetectorDelegate overrides.
 
   // Start WebContentsObserver overrides:
-  void PrimaryPageChanged(content::Page& page) override;
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidRedirectNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
-  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
-                         const content::CookieAccessDetails& details) override;
-  void NotifyStorageAccessed(content::RenderFrameHost* render_frame_host,
+  void PrimaryPageChanged(Page& page) override;
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
+  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
+                         const CookieAccessDetails& details) override;
+  void OnCookiesAccessed(NavigationHandle* navigation_handle,
+                         const CookieAccessDetails& details) override;
+  void NotifyStorageAccessed(RenderFrameHost* render_frame_host,
                              blink::mojom::StorageTypeAccessed storage_type,
                              bool blocked) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void FrameReceivedUserActivation(
-      content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
-      content::RenderFrameHost* render_frame_host) override;
+      RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
 
@@ -471,13 +465,13 @@ class CONTENT_EXPORT RedirectChainDetector
 // Populates the DIPS Database with site metadata, for the DIPS Service to
 // recognize and delete the storage of sites that perform bounce tracking.
 class CONTENT_EXPORT DIPSWebContentsObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<DIPSWebContentsObserver>,
-      public content::SharedWorkerService::Observer,
-      public content::DedicatedWorkerService::Observer,
+    : public WebContentsObserver,
+      public WebContentsUserData<DIPSWebContentsObserver>,
+      public SharedWorkerService::Observer,
+      public DedicatedWorkerService::Observer,
       public RedirectChainDetector::Observer {
  public:
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  static void MaybeCreateForWebContents(WebContents* web_contents);
 
   ~DIPSWebContentsObserver() override;
 
@@ -499,10 +493,10 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   }
 
  private:
-  DIPSWebContentsObserver(content::WebContents* web_contents,
+  DIPSWebContentsObserver(WebContents* web_contents,
                           DIPSServiceImpl* dips_service);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class content::WebContentsUserData<DIPSWebContentsObserver>;
+  friend class WebContentsUserData<DIPSWebContentsObserver>;
 
   void EmitDIPSIssue(const std::set<std::string>& sites);
 
@@ -521,26 +515,22 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   // End RedirectChainDetector::Observer overrides.
 
   // Start WebContentsObserver overrides:
-  void PrimaryPageChanged(content::Page& page) override;
-  void OnServiceWorkerAccessed(
-      content::RenderFrameHost* render_frame_host,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
-  void OnServiceWorkerAccessed(
-      content::NavigationHandle* navigation_handle,
-      const GURL& scope,
-      content::AllowServiceWorkerResult allowed) override;
-  void FrameReceivedUserActivation(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryPageChanged(Page& page) override;
+  void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
+                               const GURL& scope,
+                               AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
+                               const GURL& scope,
+                               AllowServiceWorkerResult allowed) override;
+  void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
   void WebAuthnAssertionRequestSucceeded(
-      content::RenderFrameHost* render_frame_host) override;
+      RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
 
   // Start SharedWorkerService.Observer overrides:
-  void OnClientAdded(
-      const blink::SharedWorkerToken& token,
-      content::GlobalRenderFrameHostId render_frame_host_id) override;
+  void OnClientAdded(const blink::SharedWorkerToken& token,
+                     GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
                        int worker_process_id,
                        const url::Origin& security_origin,
@@ -548,20 +538,18 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   }
   void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
   }
-  void OnClientRemoved(
-      const blink::SharedWorkerToken& token,
-      content::GlobalRenderFrameHostId render_frame_host_id) override {}
-  using content::SharedWorkerService::Observer::OnFinalResponseURLDetermined;
+  void OnClientRemoved(const blink::SharedWorkerToken& token,
+                       GlobalRenderFrameHostId render_frame_host_id) override {}
+  using SharedWorkerService::Observer::OnFinalResponseURLDetermined;
   // End SharedWorkerService.Observer overrides.
 
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
                        const url::Origin& security_origin,
-                       content::DedicatedWorkerCreator creator) override;
-  void OnBeforeWorkerDestroyed(
-      const blink::DedicatedWorkerToken& worker_token,
-      content::DedicatedWorkerCreator creator) override {}
+                       DedicatedWorkerCreator creator) override;
+  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
+                               DedicatedWorkerCreator creator) override {}
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& worker_token,
       const GURL& url) override {}
@@ -586,20 +574,20 @@ class CONTENT_EXPORT DIPSWebContentsObserver
 
 namespace dips {
 
-ukm::SourceId GetInitialRedirectSourceId(
-    content::NavigationHandle* navigation_handle);
+ukm::SourceId GetInitialRedirectSourceId(NavigationHandle* navigation_handle);
 
-CONTENT_EXPORT bool IsOrWasInPrimaryPage(
-    content::RenderFrameHost* render_frame_host);
+CONTENT_EXPORT bool IsOrWasInPrimaryPage(RenderFrameHost* render_frame_host);
 
 // Sets the `has_3pc_exception` field of each element of `redirects`.
 CONTENT_EXPORT void Populate3PcExceptions(
-    content::BrowserContext* browser_context,
-    content::WebContents* web_contents,
+    BrowserContext* browser_context,
+    WebContents* web_contents,
     const GURL& initial_url,
     const GURL& final_url,
     base::span<DIPSRedirectInfoPtr> redirects);
 
 }  // namespace dips
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_
