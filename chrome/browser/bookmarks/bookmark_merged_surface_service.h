@@ -128,10 +128,13 @@ class BookmarkMergedSurfaceService : public KeyedService {
       const BookmarkParentFolder& folder) const;
 
   // Moves `node` to `new_parent` at position `index`.
-  // Note: If `BookmarkParentFolder` is a permanent bookmark folder, `index` is
-  // expected to be the position across storages. This can result in a move
-  // operation within the local/account storage and within the
-  // `BookmarkPermanentFolderOrderingTracker`.
+  // Note:
+  // - If `BookmarkParentFolder` is a permanent bookmark folder, `index` is
+  //   expected to be the position across storages. This can result in a move
+  //   operation within the local/account storage and within the
+  //   `BookmarkPermanentFolderOrderingTracker`.
+  // - There are two possible target indices (index) that result in a no-op.
+  //   This is similar to what `BookmarkModel::Move()` does.
   void Move(const bookmarks::BookmarkNode* node,
             const BookmarkParentFolder& new_parent,
             size_t index);
@@ -160,6 +163,9 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   const PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(
       BookmarkParentFolder::PermanentFolderType folder_type) const;
+
+  PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(
+      BookmarkParentFolder::PermanentFolderType folder_type);
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;

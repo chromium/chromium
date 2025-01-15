@@ -243,8 +243,8 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         size_t index) {
   CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
-    model_->Move(node, PermanentFolderToNode(*new_parent.as_permanent_folder()),
-                 index);
+    GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
+        .MoveToIndex(node, index);
   } else {
     model_->Move(node, new_parent.as_non_permanent_folder(), index);
   }
@@ -314,6 +314,13 @@ const BookmarkNode* BookmarkMergedSurfaceService::managed_permanent_node()
 const PermanentFolderOrderingTracker&
 BookmarkMergedSurfaceService::GetPermanentFolderOrderingTracker(
     PermanentFolderType folder_type) const {
+  CHECK_NE(folder_type, PermanentFolderType::kManagedNode);
+  return *permanent_folder_to_tracker_.find(folder_type)->second;
+}
+
+PermanentFolderOrderingTracker&
+BookmarkMergedSurfaceService::GetPermanentFolderOrderingTracker(
+    PermanentFolderType folder_type) {
   CHECK_NE(folder_type, PermanentFolderType::kManagedNode);
   return *permanent_folder_to_tracker_.find(folder_type)->second;
 }
