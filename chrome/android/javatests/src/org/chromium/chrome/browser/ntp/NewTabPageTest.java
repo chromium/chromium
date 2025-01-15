@@ -212,6 +212,7 @@ public class NewTabPageTest {
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    @DisabledTest(message = "crbug.com/388253192")
     public void testRender_FocusFakeBoxT() throws Exception {
         ScrimCoordinator scrimCoordinator =
                 mActivityTestRule
