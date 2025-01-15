@@ -60,10 +60,11 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
 }
 
 std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value || !value->is_dict())
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  if (!value) {
     return std::nullopt;
-  return FromValue(std::move(*value).TakeDict());
+  }
+  return FromValue(std::move(*value));
 }
 
 }  // namespace

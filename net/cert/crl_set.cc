@@ -70,13 +70,13 @@ std::optional<base::Value> ReadHeader(std::string_view* data) {
   const std::string_view header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
-  std::optional<base::Value> header =
-      base::JSONReader::Read(header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!header || !header->is_dict()) {
+  std::optional<base::Value::Dict> header = base::JSONReader::ReadDict(
+      header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!header) {
     return std::nullopt;
   }
 
-  return header;
+  return base::Value(std::move(*header));
 }
 
 // kCurrentFileVersion is the version of the CRLSet file format that we

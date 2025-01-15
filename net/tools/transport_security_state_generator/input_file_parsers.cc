@@ -339,20 +339,17 @@ bool ParseJSON(std::string_view hsts_json,
       "test",        "public-suffix", "google",      "custom",
       "bulk-legacy", "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"};
 
-  std::optional<base::Value> hsts_value = base::JSONReader::Read(hsts_json);
-  if (!hsts_value.has_value() || !hsts_value->is_dict()) {
+  std::optional<base::Value::Dict> hsts_dict =
+      base::JSONReader::ReadDict(hsts_json);
+  if (!hsts_dict) {
     LOG(ERROR) << "Could not parse the input HSTS JSON file";
     return false;
   }
 
-  std::optional<base::Value> pins_value = base::JSONReader::Read(pins_json);
-  if (!pins_value.has_value()) {
-    LOG(ERROR) << "Could not parse the input pins JSON file";
-    return false;
-  }
-  base::Value::Dict* pins_dict = pins_value->GetIfDict();
+  std::optional<base::Value::Dict> pins_dict =
+      base::JSONReader::ReadDict(pins_json);
   if (!pins_dict) {
-    LOG(ERROR) << "Input pins JSON file does not contain a dictionary";
+    LOG(ERROR) << "Could not parse the input pins JSON file";
     return false;
   }
 
@@ -410,7 +407,7 @@ bool ParseJSON(std::string_view hsts_json,
   }
 
   const base::Value::List* preload_entries_list =
-      hsts_value->GetDict().FindList("entries");
+      hsts_dict->FindList("entries");
   if (!preload_entries_list) {
     LOG(ERROR) << "Could not parse the entries in the input HSTS JSON";
     return false;
