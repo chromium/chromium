@@ -140,8 +140,6 @@ WebAppBrowserController::WebAppBrowserController(
       system_app_(system_app)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 {
-  manifest_display_mode_ =
-      registrar().GetEffectiveDisplayModeFromManifest(this->app_id());
   effective_display_mode_ =
       registrar().GetAppEffectiveDisplayMode(this->app_id());
   install_manager_observation_.Observe(&provider.install_manager());
@@ -154,8 +152,7 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip()) {
     return false;
   }
-  return manifest_display_mode_ == DisplayMode::kBrowser ||
-         manifest_display_mode_ == DisplayMode::kMinimalUi;
+  return effective_display_mode_ == DisplayMode::kMinimalUi;
 }
 
 bool WebAppBrowserController::IsHostedApp() const {

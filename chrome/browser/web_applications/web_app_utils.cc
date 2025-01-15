@@ -519,7 +519,10 @@ DisplayMode ResolveEffectiveDisplayMode(
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(
           app_display_mode, app_display_mode_overrides, user_display_mode);
-  if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
+  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
+  // are added to the WebAppProvider system.
+  if (is_isolated && (resolved_display_mode == DisplayMode::kBrowser ||
+                      resolved_display_mode == DisplayMode::kMinimalUi)) {
     return DisplayMode::kStandalone;
   }
 
