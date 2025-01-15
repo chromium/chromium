@@ -2033,6 +2033,9 @@
       status: "stable",
     },
     {
+      name: "FledgeBiddingAndAuctionServerAPIMultiSeller",
+    },
+    {
       name: "FledgeCustomMaxAuctionAdComponents",
       status: "stable",
     },

@@ -21,6 +21,7 @@ dictionary AdAuctionDataConfig {
   // provided.
   USVString seller;
   USVString coordinatorOrigin;
+  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPIMultiSeller]
   sequence<AdAuctionOneSeller> sellers;
 
   unsigned long requestSize;
@@ -42,5 +43,6 @@ dictionary AdAuctionData {
   // Required When `AdAuctionDataConfig.seller` is provided.
   Uint8Array request;
   // Required When `AdAuctionDataConfig.sellers` is provided.
+  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPIMultiSeller]
   sequence<AdAuctionPerSellerData> requests;
 };

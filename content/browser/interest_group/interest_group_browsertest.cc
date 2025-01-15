@@ -20683,7 +20683,8 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
   InterestGroupBiddingAndAuctionServerBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFledgeBiddingAndAuctionServer,
-          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}}},
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
+         {blink::features::kFledgeBiddingAndAuctionServerAPIMultiSeller, {}}},
         {});
   }
 
@@ -21415,6 +21416,47 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+}
+
+class InterestGroupBiddingAndAuctionMultiSellerServerDisabledBrowserTest
+    : public InterestGroupBiddingAndAuctionServerBrowserTest {
+ public:
+  InterestGroupBiddingAndAuctionMultiSellerServerDisabledBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFledgeBiddingAndAuctionServer,
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}}},
+        {blink::features::kFledgeBiddingAndAuctionServerAPIMultiSeller});
+  }
+
+ protected:
+  const GURL kKeyUrl =
+      GURL("https://example.test/interest_group/b_and_a_keys.json");
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBiddingAndAuctionMultiSellerServerDisabledBrowserTest,
+    MissingRequiredSeller) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  std::vector<std::pair<url::Origin, std::string>> sellers = {
+      {test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin}};
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': Failed to read the 'seller' property from "
+      "'AdAuctionDataConfig': Required member is undefined.",
+      GetInterestGroupAdAuctionData(
+          /*seller=*/std::nullopt,
+          /*coordinator=*/std::nullopt, std::move(sellers)));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
 }
 
 // TODO(crbug.com/40927353): Re-enable this test
