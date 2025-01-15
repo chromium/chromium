@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">Зачувајте ја сликата во…</translation>
 <translation id="5511959326926949696">Екстремна незадолжителна заштита за вашиот прелистувач. Треба да се користи само ако сметате дека можеби сте цел на прилично софистициран компјутерски напад.</translation>
 <translation id="5513681519188741830">пред <ph name="TIME" /> ч.</translation>
+<translation id="5520668942302483373">Напушти ја групата</translation>
 <translation id="5524590039848017563">Копче за собран примарен алатник</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
 <translation id="5532545557415295622">Дијалог за истек на време при неактивност</translation>
@@ -1030,6 +1031,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5646284034397250191">Етикетата е создадена. Се чека датум</translation>
 <translation id="5647096944343801045">Голема влезна точка</translation>
 <translation id="5647193778876139879">Допрете и задржете некоја адреса.</translation>
+<translation id="5647702255748985085">Да се напушти групата?</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
 <translation id="5652623411397330904">Производите што ги следите ќе се појават тука.</translation>
 <translation id="5657156137487675418">Дозволувај ги сите колачиња</translation>
@@ -1115,6 +1117,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6027619584715411062">Најавете се за да ги добиете обележувачите, лозинките и друго на сите ваши уреди.</translation>
 <translation id="6027945736510816438">Дали мислевте на <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">нова функција</translation>
+<translation id="6038823991892265570">Управувајте со просторот на Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6042308850641462728">Повеќе</translation>
@@ -1150,6 +1153,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6160780110287872296">Да се преземе датотеката?</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6168647875670665004">Предлози за статии</translation>
+<translation id="6169031022444660352">За да ги избришете сите зачувани акредитиви, прво мора да поставите код за најавување на уредот.</translation>
 <translation id="6173499589275053515">Лозинката е зачувана на вашата сметка на Google, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Создадено на <ph name="DATE" /></translation>
@@ -1201,6 +1205,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6355820205320395730">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Изберете пребарувач од списокот.</translation>
+<translation id="6368102751067608420">За да ги избришете сите податоци во Password Manager</translation>
 <translation id="6374469231428023295">Обидете се повторно</translation>
 <translation id="6387994324662817823">Лозинките се зачувани во „Управникот со лозинки на Google“ само на уредов.</translation>
 <translation id="6404422529625928907">Отвори во Google Drive</translation>

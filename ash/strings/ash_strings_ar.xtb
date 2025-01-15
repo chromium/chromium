@@ -283,6 +283,7 @@
 <translation id="1948405482892809935">التبديل إلى المستخدم التالي</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1954252331066828794">اكتمل تسجيل الشاشة.</translation>
+<translation id="1956087014741188812">إيقاف استخدام مفاتيح الماوس مؤقتًا</translation>
 <translation id="1957958912175573503">تعيين اللغة</translation>
 <translation id="1961239773406905488">تم إخفاء معاينة الكاميرا</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> و<ph name="TIME" /></translation>
@@ -351,6 +352,7 @@
 <translation id="225680501294068881">جارٍ البحث عن أجهزة...</translation>
 <translation id="2257486738914982088">حدث خطأ أثناء تنزيل الملف <ph name="FILENAME" />.</translation>
 <translation id="2258734398699965611">الملفات المقترَحة</translation>
+<translation id="2266607665880926261">تمّ إيقاف استخدام مفاتيح الماوس مؤقتًا</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
 <translation id="2268731132310444948">الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: بعد تفعيل "مشغِّل التطبيقات"، سيظهر لك شريط بحث محسَّن. يمكنك بدء الكتابة للبحث عن ملفاتك وتطبيقاتك وغير ذلك. بإمكانك أيضًا الحصول على إجابات عن الأسئلة حول <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">خروج من كل الحسابات</translation>
@@ -539,6 +541,7 @@
 <translation id="2876338922445400217">التكبير على الشاشة</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
 <translation id="2880541185262491188">تم إدخال رقم التعريف الشخصي مرات كثيرة جدًا. يُرجى الانتظار لمدة <ph name="TIME_LEFT" /> وإعادة المحاولة</translation>
+<translation id="2883271196820422439">استئناف استخدام مفاتيح الماوس</translation>
 <translation id="2885950158625301909">مزيد من المعلومات</translation>
 <translation id="2891209721153296020">"إلغاء الاختيار"</translation>
 <translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
@@ -724,6 +727,7 @@
 <translation id="3539957339480430241">نقطة الاتصال في <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">عدم إعداد ميزة عرض الصور والوسائط الحديثة في هاتفك</translation>
 <translation id="3542066395059568317">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر بزر الماوس الأيمن لإزالة هذه الاقتراحات.</translation>
+<translation id="3545224667633138205">تم استئناف استخدام مفاتيح الماوس</translation>
 <translation id="3552189655002856821">‏تم إيقاف شبكة Wi-Fi.</translation>
 <translation id="3554215588514239132">إظهار لوحة "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="3554637740840164787">تم تثبيت <ph name="ITEM_TITLE" /></translation>
@@ -799,6 +803,7 @@
 <translation id="3735740477244556633">الترتيب حسب
 </translation>
 <translation id="3738664582935948253">يمكنك الآن مشاهدة أثر النقرات واختصارات لوحة المفاتيح في تسجيلات الشاشة.</translation>
+<translation id="3741482431277446954">زر الماوس الأيمن</translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
 <translation id="3743775386021959186">"وضع التركيز" مفعَّل، ويتبقّى <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">إخفاء اقتراح الطقس</translation>
@@ -856,7 +861,6 @@
 <translation id="3958714870339660776">طوال اليوم</translation>
 <translation id="3962859241508114581">المقطع الصوتي السابق</translation>
 <translation id="3963124517343721543">يمكنك المتابعة بسهولة من حيث توقفت من خلال فتح النوافذ وعلامات التبويب السابقة. ستظهر لك أيضًا اقتراحات مخصّصة للأنشطة التي يمكنك تنفيذها بعد ذلك.</translation>
-<translation id="396506362088290977">اختبار صوت الميكروفون</translation>
 <translation id="3969043077941541451">متوقفة</translation>
 <translation id="3970324493235864154">عرض الإشعارات في هاتفك</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
@@ -1298,7 +1302,6 @@
 <translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5361524080961918551">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> جزئيًا</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> الانتقال إلى علامة التبويب هذه</translation>
-<translation id="5363835273551457276">يمكنك اختبار صوت الميكروفون. أغلِق اللوحة للإيقاف.</translation>
 <translation id="5364693579536176785">مساحة التخزين</translation>
 <translation id="5369573834963677938">‏سيتمكّن المستخدمون الآخرون من التحكّم في ميزة FaceGaze على الجهاز</translation>
 <translation id="5369717264580061086">معاينة ملف في تطبيق "الملفات"</translation>
@@ -1828,6 +1831,7 @@
 <translation id="7118268675952955085">لقطة شاشة</translation>
 <translation id="7118597077555700347">فتح "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">اختيار الكلمة أو الحرف التاليَين</translation>
+<translation id="7124556000457919678">عند تفعيل هذا الخيار، يمكن إيقاف مفاتيح الماوس مؤقتًا أو استئناف استخدامها</translation>
 <translation id="7126996685418858413">تم فتحه في الأسبوع الماضي.</translation>
 <translation id="7130207228079676353">التطبيقات التي يرجح النقر عليها</translation>
 <translation id="7131634465328662194">سيتم تسجيل خروجك تلقائيًا.</translation>
@@ -1849,6 +1853,7 @@
 <translation id="7198435252016571249">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="7219573373513695352">ما مِن أجهزة متصلة.</translation>
 <translation id="7229029500464092426">الذاكرة المستخدمة: <ph name="AVAILABLE_MEMORY" /> | إجمالي الذاكرة: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">كلا زرَّي الماوس</translation>
 <translation id="7244725679040769470">‏يتبقّى ‎<ph name="PERCENTAGE" />%.
 يُرجى توصيل الجهاز بمصدر طاقة.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. يجب إعادة تشغيل جهاز Chromebook لتطبيق التحديث. قد يستغرق هذا الإجراء مدة تصل إلى دقيقة واحدة.</translation>
@@ -2151,6 +2156,7 @@
 <translation id="8203224998425013577">‏عرض المزيد من رموز الإيموجي وصور GIF</translation>
 <translation id="8203795194971602413">النقر بالزر الأيمن</translation>
 <translation id="8205469348819768313">‏هل تحاول استخدام مفتاح Page Down؟ استخدِم</translation>
+<translation id="8213376797713070611">زر الماوس الأيسر</translation>
 <translation id="8214996719228530800">‏قناة إصدار Canary</translation>
 <translation id="8219451629189078428">‏يجب أن يكون جهاز Chromebook قيد التشغيل ومتّصلاً بمصدر طاقة خلال هذه المدة. ويجب توصيل كابلات الشاحن أو المحوِّل بشكل محكم بكلٍ من جهاز Chromebook والمقبس الكهربائي. يُرجى عدم إيقاف تشغيل جهاز Chromebook.</translation>
 <translation id="8220076512072059941">إضافة <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2376,6 +2382,7 @@
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">البلوتوث غير متوفّر</translation>
+<translation id="9050999376345823055">اضغط على "." للإفلات</translation>
 <translation id="906458777597946297">تكبير النافذة</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9070640332319875144">إعدادات المساعد</translation>

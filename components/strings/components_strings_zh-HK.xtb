@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chromium 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
 <translation id="1652887625750064647">AI 最佳配對結果</translation>
+<translation id="1653465303147789530">無需切換應用程式即可使用 <ph name="PAYMENT_METHOD" /> 付款</translation>
 <translation id="1656024727720460136">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過安全連線擷取原始網頁。</translation>
 <translation id="1656489000284462475">取貨</translation>
 <translation id="1658111267661135323">電視節目和影片</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />將您瀏覽的部分網頁網址、有限的系統資料以及部分網頁內容<ph name="END_WHITEPAPER_LINK" />傳送給 Google，以協助改善其他使用者的網絡安全性。<ph name="BEGIN_PRIVACY_PAGE_LINK" />私隱權政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">你的文字和網頁內容會傳送給 Google，且可能會用於改善此功能。
   <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">完成一次性的安全檢查，加快付款程序</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
 <translation id="1973785048533660168">文書及行政職位空缺</translation>
@@ -701,6 +703,7 @@
 <translation id="2215539479425228550">攀岩和登山運動</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2215963164070968490">狗</translation>
+<translation id="2219376942605837404">將分頁加入比較表格</translation>
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2221227930294879156">美食節</translation>
@@ -1151,6 +1154,7 @@
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3067505415088964188">價格偏低</translation>
 <translation id="3068118691172921711">檔案將於 1 分鐘後開始上載至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="3068976060094139647">你的帳戶已連結至 Google Pay，因此可以自動填入此卡的資料。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個項目}other{{ITEMS} 個項目}}</translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
@@ -1585,6 +1589,7 @@
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」的最相符項目</translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
+<translation id="3791118028061680614">無需切換應用程式即可付款</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類和獨立電影</translation>
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
@@ -1785,6 +1790,7 @@
 <translation id="4151403195736952345">使用全域預設值 (偵測)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
 <translation id="4154277373259957087">Chrome 現在將驗證您的身分，然後才填入付款方法。您可隨時在<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />變更此項目。</translation>
+<translation id="415440494507469262">將分頁加入比較表格</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">喺新分頁度打開說明中心文章</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -3391,6 +3397,7 @@
 <translation id="706960991003274248">比較表格會儲存到你的帳戶 <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">系統設定</translation>
 <translation id="70705239631109039">您的連線並非完全安全</translation>
+<translation id="7071122206197538392">新比較表格</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4102,6 +4109,7 @@
 <translation id="8298115750975731693">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8301894345671534559">輸入驗證碼</translation>
 <translation id="8303854710873047864">顯示咗「<ph name="SECTION" />」部分</translation>
+<translation id="8304912090860925649">新比較表格</translation>
 <translation id="830498451218851433">對摺</translation>
 <translation id="8308653357438598313">直播影片串流</translation>
 <translation id="8311895354659782580">房地產出售</translation>

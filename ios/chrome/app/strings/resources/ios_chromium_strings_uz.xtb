@@ -54,6 +54,7 @@
 <translation id="2236584955986023187">Bunda Chromium har safar saytning kompyuter versiyasini talab qiladi.</translation>
 <translation id="2270466829363945454">Xaridlar</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
+<translation id="2314220608288760290">Chromium YouTube Inkognito havolalarini Inkognito rejimida avtomatik tarzda ochadi.</translation>
 <translation id="231828342043114302">Qiziqishlar asosida moslangan kontent olish uchun Chromium hisobiga kiring.</translation>
 <translation id="2326738825692478496">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
 
@@ -283,6 +284,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8240981428553046115">Chromium yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="8254729934443216898">Chromiumdan unumli foydalanishga yordam beruvchi yangi funksiyalar bilan tanishing.</translation>
 <translation id="829047622686389424">Siz uchun maxsus tasma.</translation>
+<translation id="8293572045658095405">Siz Chromium Inkognito rejimidasiz</translation>
 <translation id="830951810931292870">Kiritilgan URL manzillar Chromium brauzerida Inkognito rejimda ochiladi.</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>

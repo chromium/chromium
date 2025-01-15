@@ -282,6 +282,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1948405482892809935">Canvia a l'usuari següent</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">La gravació de pantalla s'ha completat</translation>
+<translation id="1956087014741188812">Posa en pausa les tecles del ratolí</translation>
 <translation id="1957958912175573503">Estableix el teu idioma</translation>
 <translation id="1961239773406905488">La previsualització de la càmera està amagada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2257486738914982088">Hi ha hagut un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fitxers suggerits</translation>
+<translation id="2266607665880926261">Les tecles del ratolí estan en pausa</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268731132310444948">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Un cop s'hagi activat el menú d'aplicacions, tindràs una barra de cerca millorada. Podràs començar a escriure-hi per cercar fitxers, aplicacions i més. També hi podràs obtenir respostes a preguntes sobre el teu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
@@ -540,6 +542,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2876338922445400217">Amplia la pantalla</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
 <translation id="2880541185262491188">S'ha intentat introduir el PIN massa vegades. Espera <ph name="TIME_LEFT" /> i torna-ho a provar.</translation>
+<translation id="2883271196820422439">Reprèn les tecles del ratolí</translation>
 <translation id="2885950158625301909">Més informació</translation>
 <translation id="2891209721153296020">"Desselecciona"</translation>
 <translation id="2894949423239620203">És possible que el cable afecti el rendiment</translation>
@@ -727,6 +730,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3539957339480430241">Punt d'accés Wi‑Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignora la configuració de visualització dels fitxers multimèdia i de les fotos recents del telèfon</translation>
 <translation id="3542066395059568317">Veuràs recomanacions per poder continuar des d'on ho vas deixar. Pots fer clic amb el botó dret en qualsevol recomanació per suprimir-la.</translation>
+<translation id="3545224667633138205">S'han reprès les tecles del ratolí</translation>
 <translation id="3552189655002856821">La Wi-Fi està desactivada</translation>
 <translation id="3554215588514239132">Mostra o amaga el tauler d'eines per a desenvolupadors</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> s'ha fixat</translation>
@@ -801,6 +805,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3727231512028252576">No s'han pogut carregar els elements. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3738664582935948253">Ara pots mostrar els clics i les tecles de drecera a les gravacions de pantalla</translation>
+<translation id="3741482431277446954">Botó dret del ratolí</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3743775386021959186">El mode Sense distraccions està activat, amb <ph name="REMAINING_TIME" /> de temps restant</translation>
 <translation id="3750403286520637847">Amaga el suggeriment del temps</translation>
@@ -858,7 +863,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3958714870339660776">Tot el dia</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Obre les teves finestres i pestanyes anteriors perquè et resulti fàcil continuar des d'on ho havies deixat. També veuràs suggeriments personalitzats de coses a fer a continuació.</translation>
-<translation id="396506362088290977">Prova el so del micròfon</translation>
 <translation id="3969043077941541451">Desactivada</translation>
 <translation id="3970324493235864154">Consulta les notificacions del telèfon</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
@@ -1300,7 +1304,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="536019650977002321">L'administrador no permet la captura d'àudio. Contacta-hi per obtenir més informació.</translation>
 <translation id="5361524080961918551">Fitxers de parla en <ph name="LANGUAGE" /> baixats parcialment</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ves a aquesta pestanya</translation>
-<translation id="5363835273551457276">Pots provar el so del micròfon. Tanca el tauler per aturar-ho.</translation>
 <translation id="5364693579536176785">espai d'emmagatzematge</translation>
 <translation id="5369573834963677938">El control facial estarà disponible per a altres usuaris al dispositiu</translation>
 <translation id="5369717264580061086">Previsualitza el fitxer a l'aplicació Fitxers</translation>
@@ -1830,6 +1833,7 @@ Instal·lació nova</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7118597077555700347">Obre <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Selecciona la paraula o la lletra següent</translation>
+<translation id="7124556000457919678">Quan l'opció està activada, posa en pausa i reprèn les tecles del ratolí</translation>
 <translation id="7126996685418858413">Obert durant la darrera setmana</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
@@ -1851,6 +1855,7 @@ Instal·lació nova</translation>
 <translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="7219573373513695352">Cap dispositiu connectat</translation>
 <translation id="7229029500464092426">Memòria: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Ambdós botons del ratolí</translation>
 <translation id="7244725679040769470">Queda un <ph name="PERCENTAGE" /> % de bateria. Connecta el dispositiu a l'alimentació.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2152,6 +2157,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8203224998425013577">Mostra més emojis i GIF</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>
 <translation id="8205469348819768313">Estàs provant d'utilitzar Av Pàg? Utilitza:</translation>
+<translation id="8213376797713070611">Botó esquerre del ratolí</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8220076512072059941">Afegeix <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2377,6 +2383,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">El Bluetooth no està disponible</translation>
+<translation id="9050999376345823055">Prem "." per deixar anar</translation>
 <translation id="906458777597946297">Maximitza la finestra</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>

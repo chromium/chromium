@@ -282,6 +282,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1948405482892809935">Cambiar a siguiente usuario</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1954252331066828794">Grabación de pantalla completada</translation>
+<translation id="1956087014741188812">Pausar teclas del ratón</translation>
 <translation id="1957958912175573503">Elegir el idioma</translation>
 <translation id="1961239773406905488">Vista previa de cámara ocultada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">No se ha podido descargar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Archivos sugeridos</translation>
+<translation id="2266607665880926261">Teclas del ratón pausadas</translation>
 <translation id="2268130516524549846">Bluetooth inhabilitado</translation>
 <translation id="2268731132310444948">Sigue el paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" />. Una vez que el menú de aplicaciones esté activado, dispondrás de una barra de búsqueda mejorada. Puedes empezar a escribir para buscar tus archivos, aplicaciones y más. También puedes encontrar respuestas a preguntas sobre tu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Cerrar sesiones</translation>
@@ -540,6 +542,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="2876338922445400217">Ampliar la pantalla</translation>
 <translation id="2878884018241093801">No hay nada reciente</translation>
 <translation id="2880541185262491188">Demasiados intentos de introducción de PIN. Espera <ph name="TIME_LEFT" /> e inténtalo de nuevo.</translation>
+<translation id="2883271196820422439">Reanudar teclas del ratón</translation>
 <translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">Deseleccionar</translation>
 <translation id="2894949423239620203">El cable podría afectar al rendimiento</translation>
@@ -727,6 +730,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="3539957339480430241">Punto de acceso de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Cierra la configuración de la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
 <translation id="3542066395059568317">Aparecerán recomendaciones para que puedas seguir donde lo dejaste. Puedes hacer clic con el botón derecho para quitar las recomendaciones.</translation>
+<translation id="3545224667633138205">Teclas del ratón reanudadas</translation>
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
 <translation id="3554215588514239132">Mostrar u ocultar el panel de herramientas de desarrollo</translation>
 <translation id="3554637740840164787">Se ha fijado <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3727231512028252576">No se han podido cargar los elementos. Vuelve a intentarlo cuando tengas conexión a Internet.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738664582935948253">Ahora puedes mostrar clics y combinaciones de teclas en las grabaciones de pantalla</translation>
+<translation id="3741482431277446954">Botón derecho del ratón</translation>
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
 <translation id="3743775386021959186">El modo Sin distracciones está activado. Tiempo restante: <ph name="REMAINING_TIME" />.</translation>
 <translation id="3750403286520637847">Ocultar sugerencia de tiempo</translation>
@@ -859,7 +864,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3958714870339660776">Todo el día</translation>
 <translation id="3962859241508114581">Canción anterior</translation>
 <translation id="3963124517343721543">Continúa fácilmente donde lo dejaste abriendo las ventanas y pestañas anteriores. También verás sugerencias personalizadas de cosas que puedes hacer a continuación.</translation>
-<translation id="396506362088290977">Prueba el sonido de tu micrófono</translation>
 <translation id="3969043077941541451">Desactivado</translation>
 <translation id="3970324493235864154">Consulta las notificaciones de tu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1301,7 +1305,6 @@ No hay dispositivos conectados.</translation>
 <translation id="536019650977002321">Tu administrador no permite grabar audio. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="5361524080961918551">Archivos de voz de <ph name="LANGUAGE" /> descargados parcialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestaña</translation>
-<translation id="5363835273551457276">Puedes probar el sonido de tu micrófono. Cierra el panel para detenerlo.</translation>
 <translation id="5364693579536176785">espacio de almacenamiento</translation>
 <translation id="5369573834963677938">El control facial estará disponible para otros usuarios del dispositivo</translation>
 <translation id="5369717264580061086">Vista previa de un archivo en la aplicación Archivos</translation>
@@ -1831,6 +1834,7 @@ Nueva instalación</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7118597077555700347">Abrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Seleccionar la palabra o la letra siguiente</translation>
+<translation id="7124556000457919678">Si está activada, pausa y reanuda las teclas del ratón</translation>
 <translation id="7126996685418858413">Abierto hace menos de una semana</translation>
 <translation id="7130207228079676353">MÁS PROBABLES</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
@@ -1852,6 +1856,7 @@ Nueva instalación</translation>
 <translation id="7198435252016571249">Cámara ajustada a la esquina inferior derecha. Conflicto con la superficie del sistema.</translation>
 <translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | Memoria total: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Ambos botones del ratón</translation>
 <translation id="7244725679040769470">Queda un <ph name="PERCENTAGE" /> % de batería. Conecta tu dispositivo a la corriente.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. El Chromebook debe reiniciarse para aplicar una actualización. Este proceso puede tardar hasta 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2153,6 +2158,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8203224998425013577">Mostrar más emojis y GIFs</translation>
 <translation id="8203795194971602413">Clic derecho</translation>
 <translation id="8205469348819768313">¿Estás intentando usar Av Pág? Usa</translation>
+<translation id="8213376797713070611">Botón izquierdo del ratón</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">Mientras tanto, tu Chromebook debe estar encendido y conectado a la corriente. Asegúrate de que los cables del cargador o del adaptador estén enchufados correctamente al Chromebook y a la toma de corriente. No apagues el Chromebook.</translation>
 <translation id="8220076512072059941">Añadir <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2378,6 +2384,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">El Bluetooth no está disponible</translation>
+<translation id="9050999376345823055">Pulsa "." para soltar</translation>
 <translation id="906458777597946297">Maximizar ventana</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Ajustes del Asistente</translation>

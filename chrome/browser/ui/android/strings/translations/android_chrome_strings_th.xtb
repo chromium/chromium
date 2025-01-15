@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">สร้างของฉันเอง</translation>
 <translation id="2574249610672786438">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) จะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และจะไม่สามารถโต้ตอบกับคุณในบริการของ Google ได้อีกต่อไป</translation>
-<translation id="2578337197553672982">เนื้อหาโดย Google สำหรับเด็ก</translation>
 <translation id="2579297619530305344">รหัสผ่านในอุปกรณ์ทุกเครื่องเปิดแบบเต็มหน้า</translation>
 <translation id="2581165646603367611">การดำเนินการนี้จะล้างคุกกี้ แคช และข้อมูลอื่นๆ ของเว็บไซต์ที่ Chrome คิดว่าไม่สำคัญ</translation>
 <translation id="2587052924345400782">มีเวอร์ชันใหม่กว่าให้ใช้งาน</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="4425173294238317796">ชีตการยืนยันพาสคีย์</translation>
 <translation id="442518031075347249">คุณจะใช้บัตรเสมือนกับ Google Pay ไม่ได้อีกต่อไป <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">บุ๊กมาร์กทั้งหมด</translation>
 <translation id="4430277756566635951">เลือก <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4749960740855309258">เปิดแท็บใหม่</translation>
-<translation id="4750356170202299988">เนื้อหาสำหรับเด็ก</translation>
 <translation id="4758061975920522644">แชร์รูปภาพเท่านั้น</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4763480195061959176">วิดีโอ</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">แท็บเปิดในพื้นหลัง</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{คุณควรเปลี่ยนรหัสผ่านตอนนี้เลย}other{คุณควรเปลี่ยนรหัสผ่านเหล่านี้ตอนนี้เลย}}</translation>
 <translation id="7196215469483532480">คำอธิบายคู่มือความเป็นส่วนตัวเปิดแบบเต็มหน้า</translation>
-<translation id="7205672015775254816">เนื้อหาโดย Google สำหรับเด็ก - ปิดอยู่</translation>
 <translation id="7207760545532569765">คืนค่า <ph name="TAB_COUNT" /> แท็บเป็นแท็บใหม่ในเบื้องหลัง</translation>
 <translation id="7217781228893594884">แท็บที่ไม่ระบุตัวตนจะล็อกเมื่อคุณออกจาก Chrome</translation>
 <translation id="7221869452894271364">โหลดหน้านี้ใหม่</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">ลบทั้งหมด</translation>
 <translation id="7886917304091689118">กำลังทำงานใน Chrome</translation>
 <translation id="7887174313503389866">ดูทัวร์ชมพร้อมคำแนะนำเกี่ยวกับการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัย หากต้องการดูตัวเลือกเพิ่มเติม ให้ไปที่การตั้งค่าแต่ละรายการ</translation>
-<translation id="7896724475402191389">เนื้อหาสำหรับเด็ก - ปิดอยู่</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 รายการถูกบล็อกโดยองค์กรของคุณ}other{# รายการถูกบล็อกโดยองค์กรของคุณ}}</translation>
 <translation id="7914399737746719723">ติดตั้งแอปแล้ว</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8393700583063109961">ส่งข้อความ</translation>
+<translation id="8396098434728053815">แชร์เสียงของแท็บด้วย</translation>
 <translation id="8398389123831319859">แตะสองครั้งค้างไว้เพื่อเปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="8402673309244746971">ไปยังฟีด "กำลังติดตาม"</translation>
 <translation id="8413126021676339697">แสดงประวัติการเข้าชมทั้งหมด</translation>

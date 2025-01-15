@@ -340,7 +340,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2571834852878229351">Zelf een maken</translation>
 <translation id="2574249610672786438">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en kan niet meer met jou communiceren via Google-services.</translation>
-<translation id="2578337197553672982">Content van Google voor jongeren</translation>
 <translation id="2579297619530305344">Wachtwoorden op al je apparaten geopend op volle hoogte</translation>
 <translation id="2581165646603367611">Hiermee worden cookies, het cachegeheugen en andere gegevens gewist van sites waarvan Chrome denkt dat deze niet belangrijk zijn.</translation>
 <translation id="2587052924345400782">Nieuwere versie beschikbaar</translation>
@@ -734,6 +733,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
 <translation id="4425173294238317796">Bevestigingsblad voor toegangssleutel</translation>
 <translation id="442518031075347249">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Alle bookmarks</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> is op dit moment geselecteerd. Kies een account.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
-<translation id="4750356170202299988">Content voor jongeren</translation>
 <translation id="4758061975920522644">Alleen afbeelding delen</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Wijzig het nu}other{Wijzig deze nu}}</translation>
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
-<translation id="7205672015775254816">Content van Google voor jongeren: uit</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabbladen herstellen als nieuwe tabbladen op de achtergrond.</translation>
 <translation id="7217781228893594884">Incognitotabbladen worden vergrendeld als je Chrome verlaat</translation>
 <translation id="7221869452894271364">Deze pagina opnieuw laden</translation>
@@ -1533,7 +1531,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7876243839304621966">Alles verwijderen</translation>
 <translation id="7886917304091689118">Actief in Chrome</translation>
 <translation id="7887174313503389866">Volg een rondleiding langs belangrijke privacy- en beveiligingsopties. Ga voor meer opties naar de afzonderlijke instellingen.</translation>
-<translation id="7896724475402191389">Content voor jongeren: uit</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 is geblokkeerd door je organisatie}other{# zijn geblokkeerd door je organisatie}}</translation>
 <translation id="7914399737746719723">App geïnstalleerd</translation>
@@ -1647,6 +1644,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8378850197701296741">Je hebt bookmarks, geschiedenis en andere instellingen van <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiëren dat jij het bent</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
+<translation id="8396098434728053815">Tabbladaudio ook delen</translation>
 <translation id="8398389123831319859">Dubbeltik en houd je vinger hierop om te wisselen naar de incognitomodus</translation>
 <translation id="8402673309244746971">Naar Je volgt</translation>
 <translation id="8413126021676339697">Hele geschiedenis bekijken</translation>

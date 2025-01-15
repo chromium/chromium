@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">Альпинизм және құзға өрмелеу</translation>
 <translation id="2215727959747642672">Файлды өңдеу</translation>
 <translation id="2215963164070968490">Иттер</translation>
+<translation id="2219376942605837404">Қойындыны салыстыру кестесіне қосу</translation>
 <translation id="2219658597883514593">Оқулықты қайта бастау</translation>
 <translation id="2219735899272417925">Құрылғыны бастапқы күйге қайтару қажет.</translation>
 <translation id="2221227930294879156">Тағам мен сусын іс-шаралары</translation>
@@ -1151,6 +1152,7 @@
 <translation id="306573536155379004">Ойын басталды.</translation>
 <translation id="3067505415088964188">Бағасы төмен</translation>
 <translation id="3068118691172921711">Файлды <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салу 1 минуттан кейін басталады.</translation>
+<translation id="3068976060094139647">Бұл картаны автоматты түрде толтыра аласыз, себебі аккаунтыңыз Google Pay-мен байланыстырылған.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} тауар}other{{ITEMS} тауар}}</translation>
 <translation id="3076865167425975822">Операциялық жүйелер</translation>
 <translation id="3080254622891793721">Кескін</translation>
@@ -1785,6 +1787,7 @@
 <translation id="4151403195736952345">Ғаламдық әдепкі мәнді пайдалану (анықтау)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
 <translation id="4154277373259957087">Chrome енді төлеу әдістерін толтырмас бұрын жеке басыңызды растайды. Мұны <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ішінде кез келген уақытта жаңартуға болады.</translation>
+<translation id="415440494507469262">Қойындыны салыстыру кестесіне қосу</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4165422751765527461">Анықтамалық орталық мақаласын жаңа қойындыдан ашады.</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
@@ -2149,6 +2152,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
 <translation id="4827283332383516812">Картаны жою</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> таңдалды</translation>
 <translation id="4831993743164297314">Сурет теру құралының қағазы</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4832961164064927107">Гриль және барбекю</translation>
@@ -3391,6 +3395,7 @@
 <translation id="706960991003274248">Салыстыру кестелері <ph name="EMAIL" /> аккаунтыңызға сақталады.</translation>
 <translation id="7070144569727915108">жүйе параметрлері</translation>
 <translation id="70705239631109039">Байланысыңыз толықтай қауіпсіз емес</translation>
+<translation id="7071122206197538392">Жаңа салыстыру кестесі</translation>
 <translation id="7075452647191940183">Сұрау өлшемі өте үлкен.</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4101,6 +4106,7 @@
 <translation id="8298115750975731693">Сіз пайдаланып жатқан Wi-Fi желісі (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
 <translation id="8301894345671534559">Кодты енгізу</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" бөлімі көрсетілді.</translation>
+<translation id="8304912090860925649">Жаңа салыстыру кестесі</translation>
 <translation id="830498451218851433">Жартылай бүктеу</translation>
 <translation id="8308653357438598313">Тікелей трансляция</translation>
 <translation id="8311895354659782580">Сатылымға қойылған жылжымайтын мүлік</translation>

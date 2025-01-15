@@ -991,6 +991,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5506763544823940561">Uložit obrázek do…</translation>
 <translation id="5511959326926949696">Extrémní volitelná ochrana pro váš prohlížeč. Měli byste ji používat, pouze pokud se domníváte, že byste se mohli stát terčem vysoce sofistikovaného kybernetického útoku.</translation>
 <translation id="5513681519188741830">Před <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Opustit skupinu</translation>
 <translation id="5524590039848017563">Tlačítko sbalené primární lišty</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabá hesla}many{{COUNT} slabého hesla}other{{COUNT} slabých hesel}}</translation>
 <translation id="5532545557415295622">Dialogové okno časového limitu nečinnosti</translation>
@@ -1030,6 +1031,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5646284034397250191">Byl vytvořen štítek. Datum bude upřesněno</translation>
 <translation id="5647096944343801045">Velký vstupní bod</translation>
 <translation id="5647193778876139879">Podržte adresu.</translation>
+<translation id="5647702255748985085">Opustit skupinu?</translation>
 <translation id="5648166631817621825">Posledních 7 dní</translation>
 <translation id="5652623411397330904">Zde se zobrazí produkty, které sledujete.</translation>
 <translation id="5657156137487675418">Povolit všechny soubory cookie</translation>
@@ -1115,6 +1117,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6027619584715411062">Přihlaste se a používejte záložky, hesla a další obsah na všech svých zařízeních.</translation>
 <translation id="6027945736510816438">Měli jste na mysli <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nová funkce</translation>
+<translation id="6038823991892265570">Spravovat úložiště Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
@@ -1150,6 +1153,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6160780110287872296">Stáhnout soubor?</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6168647875670665004">Návrhy článků</translation>
+<translation id="6169031022444660352">Pokud chcete vymazat všechny uložené identifikační údaje, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="6173499589275053515">Heslo bylo uloženo do vašeho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="6187302354554850004">Synchronizace: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Vytvořeno <ph name="DATE" /></translation>
@@ -1201,6 +1205,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6355820205320395730">Slabá hesla lze snadno uhodnout. Vždy se snažte vytvářet silná hesla. <ph name="BEGIN_LINK" />Další tipy k zabezpečení<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Sledovat <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Vyberte vyhledávač ze seznamu.</translation>
+<translation id="6368102751067608420">Ke smazání všech dat správce hesel</translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="6387994324662817823">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení.</translation>
 <translation id="6404422529625928907">Otevřít na Disku Google</translation>

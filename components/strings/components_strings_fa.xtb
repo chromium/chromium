@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">صخره‌نوردی و کوهنوردی</translation>
 <translation id="2215727959747642672">ویرایش فایل</translation>
 <translation id="2215963164070968490">سگ</translation>
+<translation id="2219376942605837404">افزودن برگه به جدول مقایسه</translation>
 <translation id="2219658597883514593">بازراه‌اندازی آموزش گام‌به‌گام</translation>
 <translation id="2219735899272417925">بازنشانی دستگاه لازم است</translation>
 <translation id="2221227930294879156">رویدادهای غذایی و نوشیدنی</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">بازی شروع شد.</translation>
 <translation id="3067505415088964188">قیمت پایین است</translation>
 <translation id="3068118691172921711">بارگذاری فایل در <ph name="CLOUD_PROVIDER" /> تا ۱ دقیقه دیگر شروع خواهد شد</translation>
+<translation id="3068976060094139647">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب شما به Google Pay پیوند شده است.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{‫{ITEMS} مورد}one{‫{ITEMS} مورد}other{‫{ITEMS} مورد}}</translation>
 <translation id="3076865167425975822">سیستم‌عامل</translation>
 <translation id="3080254622891793721">ترسیمی</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4151403195736952345">استفاده از پیش‌فرض کلی (تشخیص)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{صفحه ۱}one{صفحه {COUNT}}other{صفحه {COUNT}}}</translation>
 <translation id="4154277373259957087">‏Chrome‌ اکنون پیش‌از پر کردن روش‌های پرداخت، هویت شما را به‌تأیید می‌رساند. هرزمان بخواهید می‌توانید این گزینه را در <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> به‌روز کنید.</translation>
+<translation id="415440494507469262">افزودن برگه به جدول مقایسه</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4165422751765527461">مقاله «مرکز راهنمایی» را در برگه جدید باز می‌کند</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
@@ -3395,6 +3398,7 @@
 <translation id="706960991003274248">جدول‌های مقایسه در حساب <ph name="EMAIL" /> شما ذخیره می‌شود</translation>
 <translation id="7070144569727915108">تنظیمات سیستم</translation>
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
+<translation id="7071122206197538392">جدول مقایسه جدید</translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4106,6 +4110,7 @@
 <translation id="8298115750975731693">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>
 <translation id="8301894345671534559">کد را وارد کنید</translation>
 <translation id="8303854710873047864">بخش «<ph name="SECTION" />» نمایش داده شد</translation>
+<translation id="8304912090860925649">جدول مقایسه جدید</translation>
 <translation id="830498451218851433">تاخوردگی از وسط</translation>
 <translation id="8308653357438598313">جاری‌سازی ویدیویی زنده</translation>
 <translation id="8311895354659782580">فهرست مستغلات</translation>

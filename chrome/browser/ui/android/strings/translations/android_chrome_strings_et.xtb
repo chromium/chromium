@@ -340,7 +340,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2571834852878229351">Loon ise</translation>
 <translation id="2574249610672786438">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) kaotab kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ega saa enam teiega Google’i teenustes suhelda.</translation>
-<translation id="2578337197553672982">Google'i sisu lastele</translation>
 <translation id="2579297619530305344">Kõigi teie seadmete paroolid on avatud täiskõrgusel</translation>
 <translation id="2581165646603367611">See tühjendab vahemälu, kustutab küpsised ja muud andmed, mis pärinevad Chrome'i arvates ebatähtsatelt saitidelt.</translation>
 <translation id="2587052924345400782">Saadaval on uuem versioon</translation>
@@ -734,6 +733,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
 <translation id="4425173294238317796">Pääsuvõtme kinnitusleht</translation>
 <translation id="442518031075347249">Te ei saa enam Google Payga virtuaalkaarti kasutada. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Kõik järjehoidjad</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
 <translation id="4452548195519783679">Lisatud järjehoidjana kausta <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>
 <translation id="4742970037960872810">Eemalda esiletõstmine</translation>
 <translation id="4749960740855309258">Uue vahelehe avamine</translation>
-<translation id="4750356170202299988">Sisu lastele</translation>
 <translation id="4758061975920522644">Jagatakse vaid pilti</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7191430249889272776">Taustal on avatud vaheleht.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Peaksite seda kohe muutma}other{Peaksite neid kohe muutma}}</translation>
 <translation id="7196215469483532480">Privaatsusjuhendi selgitus on avatud täiskõrgusel</translation>
-<translation id="7205672015775254816">Google'i sisu lastele – väljas</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7217781228893594884">Chrome'ist lahkumisel lukustatakse inkognito vahelehed</translation>
 <translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
@@ -1533,7 +1531,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7886917304091689118">Töötab Chrome'is</translation>
 <translation id="7887174313503389866">Vaadake peamiste privaatsus- ja turvaseadete tutvustust. Lisavalikute nägemiseks avage individuaalsed seaded.</translation>
-<translation id="7896724475402191389">Sisu lastele – väljas</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Teie organisatsioon blokeeris 1 allalaadimise}other{Teie organisatsioon blokeeris # allalaadimist}}</translation>
 <translation id="7914399737746719723">Rakendus on installitud</translation>
@@ -1647,6 +1644,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8378850197701296741">Teil on järjehoidjad, ajalugu ja muud seaded kontolt <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Kinnitage oma isik</translation>
 <translation id="8393700583063109961">Saatke sõnum</translation>
+<translation id="8396098434728053815">Jaga ka vahekaardi heli</translation>
 <translation id="8398389123831319859">Inkognito režiimile lülitumiseks topeltpuudutage pikalt</translation>
 <translation id="8402673309244746971">Ava voog Jälgitav</translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>

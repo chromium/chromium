@@ -1206,6 +1206,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3156511682997763015">Előre 10 másodpercet</translation>
 <translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="3158539265159265653">Lemez</translation>
+<translation id="3162070126914310576">Ezt az eszközt jelenleg nem lehet regisztrálni, mert a szervezeti egység elérte a kezdeti regisztrációs korlátot. Segítségért forduljon az adminisztrátorhoz.</translation>
 <translation id="3162559335345991374">Az Ön által használt Wi-Fi-hálózat megkövetelheti bejelentkezési oldalának felkeresését.</translation>
 <translation id="316638481603975524">Engedélyt kérhet internetes alkalmazások telepítésére</translation>
 <translation id="3168744840365648658">Rádiótechnika</translation>
@@ -1937,6 +1938,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">A Microsoft OneDrive szolgáltatásba való fájlfeltöltés szünetel</translation>
 <translation id="4390472908992056574">Perem</translation>
+<translation id="4395550503472021297">Ez a házirend a következő házirendek alapértelmezett viselkedését szabályozza: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Megnyílik egy előugró ablak a bank webhelyén történő igazoláshoz</translation>
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406896451731180161">keresési találat</translation>
@@ -2379,6 +2381,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5244521145258281926">Google-fiók kezelése gomb. Nyomja meg az adatai, az adatvédelem és a biztonság Google-fiókjában való kezeléséhez.</translation>
 <translation id="5244732203286792411">Betöltés…
     Ez eltarthat néhány percig.</translation>
+<translation id="5248543496748975054">Nincs kitöltve a kártyaszám?</translation>
 <translation id="5250209940322997802">„Csatlakozás a hálózathoz”</translation>
 <translation id="52517543715119994">További információ a Chrome funkcióiról</translation>
 <translation id="5251803541071282808">Felhő</translation>
@@ -3995,6 +3998,7 @@ További részletek:
 <translation id="8116925261070264013">Némítva</translation>
 <translation id="8118489163946903409">Fizetési mód</translation>
 <translation id="8118506371121007279">Visszajelzés</translation>
+<translation id="8120720167840853945">Ez a házirend nem szabályozza más házirendek alapértelmezett viselkedését.</translation>
 <translation id="8127301229239896662">A(z) „<ph name="SOFTWARE_NAME" />” nem megfelelően lett telepítve a számítógépre vagy a hálózatra. A probléma elhárítása érdekében forduljon rendszergazdájához.</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8133495915926741232">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához. Egy adott tágabb kategória kikapcsolásával a hozzá kapcsolódó témákat is letiltja. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>

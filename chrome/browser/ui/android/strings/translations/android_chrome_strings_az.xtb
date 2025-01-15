@@ -340,7 +340,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2571834852878229351">Fərdi parol yaradıram</translation>
 <translation id="2574249610672786438">Chrome istifadə etdiyiniz hər yerdən tabları görmək üçün bütün cihazlarda daxil olun</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) "<ph name="GROUP_NAME" />" dərhal tab qrupuna girişini itirəcək və daha Google xidmətlərində sizinlə əlaqə saxlaya bilməyəcək.</translation>
-<translation id="2578337197553672982">Gənclər üçün Google tərəfindən kontent</translation>
 <translation id="2579297619530305344">Bütün cihazlarınızda parollar tam hündürlükdə açıldı</translation>
 <translation id="2581165646603367611">Bu, Chrome'un vacib hesab etmədiyi kukilər, keş və digər sayt datalarını siləcək.</translation>
 <translation id="2587052924345400782">Ən yeni versiya əlçatandır</translation>
@@ -734,6 +733,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="4425173294238317796">Giriş açarı təsdiqi üçün vərəq</translation>
 <translation id="442518031075347249">Artıq virtual kartınızı Google Pay ilə istifadə edə bilməyəcəksiniz. <ph name="BEGIN_LINK1" />Virtual kartlar haqqında ətraflı məlumat<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Bütün Əlfəcinlər</translation>
 <translation id="4430277756566635951">Seçilib: <ph name="EMAIL" />. Hesab seçin.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
@@ -806,7 +806,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4742795653798179840">Chrome datası silindi</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>
 <translation id="4749960740855309258">Yeni panel açın</translation>
-<translation id="4750356170202299988">Gənclər üçün kontent</translation>
 <translation id="4758061975920522644">Yalnız şəkil paylaşın</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1376,7 +1375,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7191430249889272776">Panel arxa fonda açıldı.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bunu indi dəyişməlisiniz}other{Bunları indi dəyişməlisiniz}}</translation>
 <translation id="7196215469483532480">Məxfilik bələdçisi izahı tam hündürlükdə açılıb</translation>
-<translation id="7205672015775254816">Gənclər üçün Google tərəfindən kontent - deaktiv</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabı yeni arxa fon tabları olaraq bərpa edin.</translation>
 <translation id="7217781228893594884">Chrome'dan çıxdığınız zaman anonim tablar kilidlənəcək</translation>
 <translation id="7221869452894271364">Bu səhifəni yenidən yükləyin</translation>
@@ -1531,7 +1529,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7876243839304621966">Hamısını silin</translation>
 <translation id="7886917304091689118">Chrome'da istifadə edilir</translation>
 <translation id="7887174313503389866">Əsas məxfilik və təhlükəsizlik nəzarətlərinə bələdçi ilə baxış keçirin. Digər seçimlər üçün fərdi ayarlara keçin.</translation>
-<translation id="7896724475402191389">Gənclər üçün kontent - deaktiv</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 endirmə təşkilatınız tərəfindən bloklanıb}other{# endirmə təşkilatınız tərəfindən bloklanıb}}</translation>
 <translation id="7914399737746719723">Tətbiq quraşdırılıb</translation>
@@ -1645,6 +1642,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> hesabında əlfəcin, tarixçə və digər ayarlar var.</translation>
 <translation id="8387617938027387193">Kimliyinizi doğrulayın</translation>
 <translation id="8393700583063109961">Mesaj göndərin</translation>
+<translation id="8396098434728053815">Tab audiosunu da paylaşın</translation>
 <translation id="8398389123831319859">Anonim rejimə keçmək üçün iki dəfə toxunub saxlayın</translation>
 <translation id="8402673309244746971">İzlənənlərə keçin</translation>
 <translation id="8413126021676339697">Tam tarixçəni göstərin</translation>

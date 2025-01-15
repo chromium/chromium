@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">स्क्रीन रिकॉर्डिंग पूरी हुई</translation>
+<translation id="1956087014741188812">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा रोकें</translation>
 <translation id="1957958912175573503">अपनी भाषा सेट करें</translation>
 <translation id="1961239773406905488">वीडियो कैमरे में झलक नहीं दिखाई जा रही है</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">डिवाइस स्कैन किए जा रहे हैं...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> डाउनलोड करते समय कोई गड़बड़ी हुई</translation>
 <translation id="2258734398699965611">सुझाई गई फ़ाइलें</translation>
+<translation id="2266607665880926261">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा रोकी गई</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम किया गया</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> में से <ph name="STEP" /> चरण. लॉन्चर चालू होने पर, आपको एक बेहतर खोज बार दिखेगा. फ़ाइलें, ऐप्लिकेशन वगैरह खोजने के लिए, इस खोज बार में टाइप किया जा सकता है. यहां आपको अपने <ph name="PRODUCT_NAME" /> से जुड़े सवालों के जवाब भी मिल सकते हैं.</translation>
 <translation id="2268813581635650749">सभी को साइन आउट करें</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">स्क्रीन पर ज़ूम इन करें</translation>
 <translation id="2878884018241093801">हाल का कोई आइटम नहीं</translation>
 <translation id="2880541185262491188">आपने पिन डालने की कोशिश कई बार कर ली है. <ph name="TIME_LEFT" /> तक इंतज़ार करें और फिर से कोशिश करें</translation>
+<translation id="2883271196820422439">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा चालू करें</translation>
 <translation id="2885950158625301909">ज़्यादा जानें</translation>
 <translation id="2891209721153296020">"चुने हुए का निशान हटाएं"</translation>
 <translation id="2894949423239620203">केबल कनेक्ट करने से, परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> हॉटस्पॉट</translation>
 <translation id="3540893133818942399">अपने फ़ोन में मौजूद हाल ही की फ़ोटो और कॉन्टेंट को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="3542066395059568317">जहां पिछली बार छोड़ा था वहीं से इस्तेमाल शुरू करने के लिए, आपको सुझाव दिखेंगे. दायां क्लिक करके, इन सुझावों को बंद किया जा सकता है.</translation>
+<translation id="3545224667633138205">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा चालू की गई</translation>
 <translation id="3552189655002856821">वाई-फ़ाई बंद है</translation>
 <translation id="3554215588514239132">डेवलपर टूल पैनल दिखाएं या छिपाएं</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> को पिन किया गया</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">आइटम लोड नहीं किए जा सके. ऑनलाइन होने पर फिर से कोशिश करें.</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3738664582935948253">अब स्क्रीन रिकॉर्डिंग के दौरान, कीबोर्ड शॉर्टकट और क्लिक दिखाए जा सकते हैं</translation>
+<translation id="3741482431277446954">माउस का दायां बटन</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
 <translation id="3743775386021959186">फ़ोकस मोड चालू है और <ph name="REMAINING_TIME" /> का समय बाकी है</translation>
 <translation id="3750403286520637847">मौसम से जुडे़ सुझाव को छिपाएं</translation>
@@ -859,7 +864,6 @@
 <translation id="3958714870339660776">पूरा दिन</translation>
 <translation id="3962859241508114581">पिछला ट्रैक</translation>
 <translation id="3963124517343721543">अपनी पिछली विंडो और टैब खोलकर आसानी से वहीं से काम शुरू करें जहां आपने छोड़ा था. आपको आगे के कामों के लिए मनमुताबिक सुझाव भी दिखेंगे.</translation>
-<translation id="396506362088290977">माइक के साउंड की जांच करें</translation>
 <translation id="3969043077941541451">बंद है</translation>
 <translation id="3970324493235864154">अपने फ़ोन की सूचनाएं देखें</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
@@ -1301,7 +1305,6 @@
 <translation id="536019650977002321">आपका एडमिन, ऑडियो कैप्चर करने की अनुमति नहीं देता. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> की बोली पहचानने वाली फ़ाइलों का कुछ हिस्सा डाउनलोड हो गया है</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> इस टैब पर जाएं</translation>
-<translation id="5363835273551457276">आपके पास माइक्रोफ़ोन के साउंड की जांच करने का विकल्प होता है. जांच रोकने के लिए पैनल बंद करें.</translation>
 <translation id="5364693579536176785">स्टोरेज के लिए बची जगह</translation>
 <translation id="5369573834963677938">फ़ेस कंट्रोल की सुविधा, इस डिवाइस का इस्तेमाल करने वाले अन्य लोगों के लिए उपलब्ध होगी</translation>
 <translation id="5369717264580061086">Files ऐप्लिकेशन में फ़ाइल की झलक देखने के लिए</translation>
@@ -1831,6 +1834,7 @@
 <translation id="7118268675952955085">स्क्रीनशॉट</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> खोलें</translation>
 <translation id="7119327711295338600">अगला शब्द या अक्षर चुनें</translation>
+<translation id="7124556000457919678">इसके चालू होने पर, कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा चालू या बंद करें</translation>
 <translation id="7126996685418858413">इसे पिछले हफ़्ते खोला गया था</translation>
 <translation id="7130207228079676353">सबसे ज़्यादा संभावना है</translation>
 <translation id="7131634465328662194">आप अपने आप साइन आउट कर जाएंगे.</translation>
@@ -1852,6 +1856,7 @@
 <translation id="7198435252016571249">कैमरा इनपुट की झलक, अब नीचे दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="7219573373513695352">कोई डिवाइस कनेक्ट नहीं है</translation>
 <translation id="7229029500464092426">मेमोरी उपलब्ध <ph name="AVAILABLE_MEMORY" /> | कुल मेमोरी <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">माउस के दोनों बटन</translation>
 <translation id="7244725679040769470">बैटरी <ph name="PERCENTAGE" />% बची है. अपने डिवाइस को चार्ज करें.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. किसी अपडेट को लागू करने के लिए इस Chromebook को रीस्टार्ट करना ज़रूरी है. इसमें एक मिनट तक लग सकता है.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2153,6 +2158,7 @@
 <translation id="8203224998425013577">ज़्यादा इमोजी और GIF दिखाएं</translation>
 <translation id="8203795194971602413">राइट क्लिक करें</translation>
 <translation id="8205469348819768313">क्या आपको Page Down का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
+<translation id="8213376797713070611">माउस का दायां बटन</translation>
 <translation id="8214996719228530800">कैनरी चैनल</translation>
 <translation id="8219451629189078428">इस दौरान यह ज़रूरी है कि आपका Chromebook चालू रहे और चार्ज हो रहा हो. पक्का करें कि चार्जर या अडैप्टर केबल आपके Chromebook और पावर सॉकेट में अच्छी तरह से प्लग इन हैं. अपने Chromebook को बंद न करें.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> जोड़ें</translation>
@@ -2378,6 +2384,7 @@
 <translation id="9034924485347205037">Linux की फ़ाइलें</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> के लिए सेटिंग खोलें</translation>
 <translation id="9050012935252397793">ब्लूटूथ उपलब्ध नहीं है</translation>
+<translation id="9050999376345823055">छोड़ने के लिए "." दबाएं</translation>
 <translation id="906458777597946297">विंडो को बड़ा करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9070640332319875144">Assistant की सेटिंग</translation>

@@ -700,6 +700,7 @@
 <translation id="2215539479425228550">攀岩與登山運動</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2215963164070968490">狗</translation>
+<translation id="2219376942605837404">將分頁加入比較表</translation>
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2221227930294879156">餐飲活動</translation>
@@ -1150,6 +1151,7 @@
 <translation id="306573536155379004">已啟動遊戲。</translation>
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3068118691172921711">1 分鐘後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="3068976060094139647">你的帳戶已連結至 Google Pay，因此可以自動填入這張卡片的資訊。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個項目}other{{ITEMS} 個項目}}</translation>
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
@@ -1784,6 +1786,7 @@
 <translation id="4151403195736952345">使用全域預設設定 (偵測)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
 <translation id="4154277373259957087">Chrome 會先驗證你的身分，再填入付款方式。你隨時可以前往<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />更新相關資料。</translation>
+<translation id="415440494507469262">將分頁加入比較表</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新分頁中開啟說明中心文章</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -1936,6 +1939,7 @@
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">已暫停 Microsoft OneDrive 檔案上傳作業</translation>
 <translation id="4390472908992056574">邊裙</translation>
+<translation id="4395550503472021297">這項政策會控管下列政策的預設行為：<ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">開啟彈出式視窗，將你導向至銀行網站進行驗證</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
@@ -3389,6 +3393,7 @@
 <translation id="706960991003274248">比較表會儲存到你的帳戶：<ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">系統設定</translation>
 <translation id="70705239631109039">你的連線可能有安全漏洞</translation>
+<translation id="7071122206197538392">新比較表</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -3995,6 +4000,7 @@
 <translation id="8116925261070264013">已設為靜音</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8118506371121007279">提供意見</translation>
+<translation id="8120720167840853945">這項政策並未控管任何其他政策的預設行為。</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8133495915926741232">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果停用廣泛類別，系統也會一併封鎖相關主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -4099,6 +4105,7 @@
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8301894345671534559">輸入驗證碼</translation>
 <translation id="8303854710873047864">已顯示「<ph name="SECTION" />」區段</translation>
+<translation id="8304912090860925649">新比較表</translation>
 <translation id="830498451218851433">對折</translation>
 <translation id="8308653357438598313">即時影片串流</translation>
 <translation id="8311895354659782580">房地產資訊</translation>

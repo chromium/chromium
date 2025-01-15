@@ -991,6 +991,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5506763544823940561">Saglabāt attēlu šeit:</translation>
 <translation id="5511959326926949696">Neobligāta papildu aizsardzība jūsu pārlūkam. Šo funkciju drīkst izmantot tikai tad, ja uzskatāt, ka pret jums var tikt vērsti īpaši sarežģīti kiberuzbrukumi.</translation>
 <translation id="5513681519188741830">Pirms <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Pamest grupu</translation>
 <translation id="5524590039848017563">Sakļautas galvenās rīkjoslas poga</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nedroša parole}zero{{COUNT} nedrošu paroļu}one{{COUNT} nedroša parole}other{{COUNT} nedrošas paroles}}</translation>
 <translation id="5532545557415295622">Dīkstāves noildzes dialoglodziņš</translation>
@@ -1030,6 +1031,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5646284034397250191">Iezīme izveidota. Vēl nav datuma.</translation>
 <translation id="5647096944343801045">Liels ieejas punkts</translation>
 <translation id="5647193778876139879">Pieskarieties adresei un turiet to.</translation>
+<translation id="5647702255748985085">Vai pamest grupu?</translation>
 <translation id="5648166631817621825">Pēdējās 7 dienas</translation>
 <translation id="5652623411397330904">Šeit tiks parādīti produkti, ko izsekojat.</translation>
 <translation id="5657156137487675418">Atļaut visus sīkfailus</translation>
@@ -1115,6 +1117,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6027619584715411062">Pierakstieties, lai piekļūtu grāmatzīmēm, parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="6027945736510816438">Vai domājāt <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">jauna funkcija</translation>
+<translation id="6038823991892265570">Pārvaldīt Google krātuvi</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />. <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6042308850641462728">Vairāk</translation>

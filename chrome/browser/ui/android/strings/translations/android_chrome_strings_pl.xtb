@@ -340,7 +340,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2571834852878229351">Utwórz własne</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="2577981599306533385">Użytkownik <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) natychmiast utraci dostęp do grupy kart <ph name="GROUP_NAME" /> i nie będzie mógł kontaktować się z Tobą w usługach Google.</translation>
-<translation id="2578337197553672982">Treści od Google dla młodych umysłów</translation>
 <translation id="2579297619530305344">Hasła na wszystkich urządzeniach są otwarte na całą wysokość</translation>
 <translation id="2581165646603367611">Spowoduje to skasowanie plików cookie, pamięci podręcznej i innych danych witryn, które Chrome uzna za nieistotne.</translation>
 <translation id="2587052924345400782">Dostępna jest nowsza wersja</translation>
@@ -734,6 +733,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
 <translation id="4425173294238317796">Arkusz potwierdzenia klucza dostępu</translation>
 <translation id="442518031075347249">Stracisz możliwość korzystania z karty wirtualnej w Google Pay. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Wszystkie zakładki</translation>
 <translation id="4430277756566635951">Obecnie wybrana liczba osób: <ph name="EMAIL" />. Wybierz konto.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4742795653798179840">Usunięte dane Chrome</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
 <translation id="4749960740855309258">Otwórz nową kartę</translation>
-<translation id="4750356170202299988">Treści dla młodych umysłów</translation>
 <translation id="4758061975920522644">Udostępnij tylko obraz</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4763480195061959176">film</translation>
@@ -1378,7 +1377,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Zmień je teraz}few{Zmień je teraz}many{Zmień je teraz}other{Zmień je teraz}}</translation>
 <translation id="7196215469483532480">Wyjaśnienie dotyczące Przewodnika po prywatności jest otwarte na całą wysokość</translation>
-<translation id="7205672015775254816">Treści od Google dla młodych umysłów – wyłączone</translation>
 <translation id="7207760545532569765">Przywróć karty (<ph name="TAB_COUNT" />) jako nowe karty w tle.</translation>
 <translation id="7217781228893594884">Gdy opuścisz Chrome, karty incognito zostaną zablokowane</translation>
 <translation id="7221869452894271364">Odśwież stronę</translation>
@@ -1533,7 +1531,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7876243839304621966">Usuń wszystkie</translation>
 <translation id="7886917304091689118">Otwarta w Chrome</translation>
 <translation id="7887174313503389866">Zapoznaj się z prezentacją najważniejszych funkcji prywatności i bezpieczeństwa. Więcej opcji znajdziesz w poszczególnych ustawieniach.</translation>
-<translation id="7896724475402191389">Treści dla młodych umysłów – wyłączone</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 został zablokowany przez organizację}few{# zostały zablokowane przez organizację}many{# zostało zablokowanych przez organizację}other{# zostało zablokowane przez organizację}}</translation>
 <translation id="7914399737746719723">Aplikacja została zainstalowana</translation>
@@ -1647,6 +1644,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8378850197701296741">Masz zakładki, historię i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
+<translation id="8396098434728053815">Udostępnij też dźwięk z karty</translation>
 <translation id="8398389123831319859">Kliknij dwukrotnie i przytrzymaj, aby przełączyć się na tryb incognito</translation>
 <translation id="8402673309244746971">Przejdź do obserwowanych</translation>
 <translation id="8413126021676339697">Wyświetl całą historię</translation>

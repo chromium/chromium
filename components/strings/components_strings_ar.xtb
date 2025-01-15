@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">تسلُّق جبال</translation>
 <translation id="2215727959747642672">تعديل الملف</translation>
 <translation id="2215963164070968490">كلاب</translation>
+<translation id="2219376942605837404">إضافة علامة تبويب إلى "جدول مقارنة"</translation>
 <translation id="2219658597883514593">إعادة تشغيل البرنامج التعليمي</translation>
 <translation id="2219735899272417925">مطلوب إعادة ضبط الجهاز</translation>
 <translation id="2221227930294879156">فعاليات حول أطعمة ومشروبات</translation>
@@ -1152,6 +1153,7 @@
 <translation id="306573536155379004">بدأت اللعبة.</translation>
 <translation id="3067505415088964188">السعر منخفض</translation>
 <translation id="3068118691172921711">سيبدأ تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> بعد دقيقة واحدة</translation>
+<translation id="3068976060094139647">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك مرتبط بحساب Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{عنصر واحد ({ITEMS})}zero{‫{ITEMS} عنصر}two{عنصران ({ITEMS})}few{‫{ITEMS} عناصر}many{‫{ITEMS} عنصرًا}other{‫{ITEMS} عنصر}}</translation>
 <translation id="3076865167425975822">أنظمة تشغيل</translation>
 <translation id="3080254622891793721">الرسم البياني</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4151403195736952345">استخدام الإعدادات العمومية التلقائية (كشف)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{الصفحة 1}zero{الصفحة {COUNT}}two{الصفحة {COUNT}}few{الصفحة {COUNT}}many{الصفحة {COUNT}}other{الصفحة {COUNT}}}</translation>
 <translation id="4154277373259957087">‏سيبدأ Chrome الآن في إثبات هويتك قبل إدخال طرق الدفع. يمكنك متى شئت تعديل ذلك من خلال <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">إضافة علامة التبويب إلى "جدول مقارنة"</translation>
 <translation id="4159784952369912983">أرجواني</translation>
 <translation id="4165422751765527461">يفتح هذا الرابط مقالة مركز المساعدة في علامة تبويب جديدة</translation>
 <translation id="4165986682804962316">إعدادات الموقع الإلكتروني</translation>
@@ -3394,6 +3397,7 @@
 <translation id="706960991003274248">يتم حفظ جداول المقارنة في حساب "<ph name="EMAIL" />"</translation>
 <translation id="7070144569727915108">إعدادات النظام</translation>
 <translation id="70705239631109039">اتصالك بهذا الموقع تتخلله ثغرات أمنية.</translation>
+<translation id="7071122206197538392">إضافة إلى "جدول مقارنة" جديد</translation>
 <translation id="7075452647191940183">الطلب كبير جدًا</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4106,6 +4110,7 @@
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">أدخِل الرمز</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">إضافة إلى "جدول مقارنة" جديد</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
 <translation id="8308653357438598313">بث فيديوهات مباشرة</translation>
 <translation id="8311895354659782580">قوائم عقارات</translation>

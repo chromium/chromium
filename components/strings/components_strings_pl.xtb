@@ -701,6 +701,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2215539479425228550">Wspinaczka i turystyka górska</translation>
 <translation id="2215727959747642672">Edytowanie pliku</translation>
 <translation id="2215963164070968490">Psy</translation>
+<translation id="2219376942605837404">Dodaj kartę do tabeli porównawczej</translation>
 <translation id="2219658597883514593">Ponownie wyświetl samouczek</translation>
 <translation id="2219735899272417925">Wymagane zresetowanie urządzenia</translation>
 <translation id="2221227930294879156">Wydarzenia kulinarne</translation>
@@ -1151,6 +1152,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="306573536155379004">Gra się rozpoczęła.</translation>
 <translation id="3067505415088964188">Cena jest niska</translation>
 <translation id="3068118691172921711">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za minutę</translation>
+<translation id="3068976060094139647">Dane tej karty mogą być uzupełniane automatycznie, ponieważ Twoje konto jest połączone z Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}few{{ITEMS} elementy}many{{ITEMS} elementów}other{{ITEMS} elementu}}</translation>
 <translation id="3076865167425975822">Systemy operacyjne</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -1786,6 +1788,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4151403195736952345">Użyj globalnego ustawienia domyślnego (Wykrywaj)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Strona 1}few{Strona {COUNT}}many{Strona {COUNT}}other{Strona {COUNT}}}</translation>
 <translation id="4154277373259957087">Teraz przed wypełnieniem form płatności Chrome będzie weryfikować Twoją tożsamość. Aby to zmienić, w dowolnym momencie otwórz <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Dodaj kartę do tabeli porównawczej</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165422751765527461">Otwiera artykuł w Centrum pomocy w nowej karcie</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
@@ -3392,6 +3395,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="706960991003274248">Tabele porównawcze są zapisywane na Twoim koncie <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">ustawienia systemu</translation>
 <translation id="70705239631109039">Połączenie nie jest całkowicie bezpieczne</translation>
+<translation id="7071122206197538392">Nowa tabela porównawcza</translation>
 <translation id="7075452647191940183">Żądanie jest za duże</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4107,7 @@ Dodatkowe informacje:
 <translation id="8298115750975731693">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Wpisz kod</translation>
 <translation id="8303854710873047864">Wyświetlam sekcję „<ph name="SECTION" />”</translation>
+<translation id="8304912090860925649">Nowa tabela porównawcza</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="8308653357438598313">Transmisje na żywo</translation>
 <translation id="8311895354659782580">Wykazy nieruchomości na sprzedaż</translation>

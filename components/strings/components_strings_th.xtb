@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">หากต้องการใช้เครื่องมือจัดการรหัสผ่านกับ Keychain ของ macOS ให้เปิด Chromium อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="1652887625750064647">ตรงที่สุดจาก AI</translation>
+<translation id="1653465303147789530">ชำระเงินด้วย <ph name="PAYMENT_METHOD" /> โดยไม่ต้องเปลี่ยนแอป</translation>
 <translation id="1656024727720460136">Chrome ทำให้หน้านี้อ่านง่ายขึ้น Chrome ดึงข้อมูลหน้าต้นฉบับผ่านการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="1656489000284462475">การรับ</translation>
 <translation id="1658111267661135323">ทีวีและวิดีโอ</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตสำหรับทุกคนโดยการส่ง <ph name="BEGIN_WHITEPAPER_LINK" />URL ของหน้าเว็บบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้า<ph name="END_WHITEPAPER_LINK" />ให้ Google <ph name="BEGIN_PRIVACY_PAGE_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">ระบบจะส่งข้อความและเนื้อหาหน้าเว็บของคุณไปยัง Google และอาจนำไปใช้เพื่อปรับปรุงฟีเจอร์นี้
   <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">ตรวจสอบความปลอดภัยแบบครั้งเดียวให้เสร็จสมบูรณ์เพื่อชำระเงินได้เร็วขึ้น</translation>
 <translation id="1962204205936693436">บุ๊กมาร์กของ <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">ข้อผิดพลาดในการจัดเรียง</translation>
 <translation id="1973785048533660168">งานเสมียนและธุรการ</translation>
@@ -701,6 +703,7 @@
 <translation id="2215539479425228550">ปีนเขาและไต่เขา</translation>
 <translation id="2215727959747642672">การแก้ไขไฟล์</translation>
 <translation id="2215963164070968490">สุนัข</translation>
+<translation id="2219376942605837404">เพิ่มแท็บลงในตารางเปรียบเทียบ</translation>
 <translation id="2219658597883514593">เริ่มต้นบทแนะนำใหม่อีกครั้ง</translation>
 <translation id="2219735899272417925">ต้องรีเซ็ตอุปกรณ์</translation>
 <translation id="2221227930294879156">เทศกาลอาหารและเครื่องดื่ม</translation>
@@ -1151,6 +1154,7 @@
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3067505415088964188">ราคาต่ำ</translation>
 <translation id="3068118691172921711">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก 1 นาที</translation>
+<translation id="3068976060094139647">คุณป้อนข้อมูลบัตรนี้โดยอัตโนมัติได้เนื่องจากบัญชีของคุณลิงก์กับ Google Pay</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} รายการ}other{{ITEMS} รายการ}}</translation>
 <translation id="3076865167425975822">ระบบปฏิบัติการ</translation>
 <translation id="3080254622891793721">กราฟิก</translation>
@@ -1585,6 +1589,7 @@
 <translation id="378611282717571199">ผลลัพธ์ที่ตรงที่สุดสำหรับ "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">ขนาด 16</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
+<translation id="3791118028061680614">ชำระเงินโดยไม่ต้องเปลี่ยนแอป</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> นิ้ว)</translation>
 <translation id="3792826587784915501">ภาพยนตร์แนวศิลปะและอินดี้</translation>
 <translation id="3793574014653384240">จำนวนและสาเหตุของการขัดข้องที่เกิดขึ้นเมื่อเร็วๆ นี้</translation>
@@ -1785,6 +1790,7 @@
 <translation id="4151403195736952345">ใช้ค่าเริ่มต้นส่วนกลาง (ตรวจหา)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{หน้า 1}other{หน้า {COUNT}}}</translation>
 <translation id="4154277373259957087">ตอนนี้ Chrome จะยืนยันตัวตนของคุณก่อนกรอกวิธีการชําระเงิน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /></translation>
+<translation id="415440494507469262">เพิ่มแท็บลงในตารางเปรียบเทียบ</translation>
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4165422751765527461">เปิดบทความในศูนย์ช่วยเหลือในแท็บใหม่</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>
@@ -2149,6 +2155,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="4827283332383516812">ลบบัตร</translation>
+<translation id="4830443836091007686">เลือกไว้ <ph name="ITEMS" /> รายการ</translation>
 <translation id="4831993743164297314">กระดาษสำหรับเครื่องยิงฟิล์ม</translation>
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4832961164064927107">ปิ้งย่างและบาร์บีคิว</translation>
@@ -3391,6 +3398,7 @@
 <translation id="706960991003274248">ระบบจะบันทึกตารางเปรียบเทียบไว้ในบัญชี <ph name="EMAIL" /> ของคุณ</translation>
 <translation id="7070144569727915108">การตั้งค่าระบบ</translation>
 <translation id="70705239631109039">การเชื่อมต่อไม่ปลอดภัยอย่างสมบูรณ์</translation>
+<translation id="7071122206197538392">ตารางเปรียบเทียบใหม่</translation>
 <translation id="7075452647191940183">คำขอมีขนาดใหญ่เกินไป</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4102,6 +4110,7 @@
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8301894345671534559">ป้อนรหัส</translation>
 <translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">ตารางเปรียบเทียบใหม่</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8308653357438598313">สตรีมมิงวิดีโอสด</translation>
 <translation id="8311895354659782580">การซื้อขายอสังหาริมทรัพย์</translation>

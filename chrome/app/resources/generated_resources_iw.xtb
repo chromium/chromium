@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{סיסמה אחת}one{‫{COUNT} סיסמאות}two{‫{COUNT} סיסמאות}other{‫{COUNT} סיסמאות}}</translation>
 <translation id="1102759278139578486">אי אפשר להוריד את קובצי הרישומים של הצומת הראשי. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
+<translation id="1104098698795583187">הגישה שלך לקבוצת הכרטיסיות הזו תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="1106350001632362876">הגדלת הסף</translation>
 <translation id="1107482171728500359">שיתוף המיקרופון</translation>
 <translation id="110850812463801904">‏התחברות ידנית ל-OneDrive</translation>
@@ -322,7 +323,6 @@
 <translation id="1210678701920254279">הצגה או הוספה של מדפסות והצגת משימות הדפסה פעילות</translation>
 <translation id="1211769675100312947">קיצורי הדרך מנוהלים על-ידך</translation>
 <translation id="1213254615020057352">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לתרום לשיפור חוויית המשתמש של הילד/ה ב-Android, אפשר לשלוח אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה לא ישמשו כדי לזהות את הילד/ה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. ההגדרה הזו נאכפת על-ידי הבעלים. ייתכן שהבעלים יבחרו לשלוח אל Google נתוני אבחון ונתוני שימוש של המכשיר. אם ההגדרה 'פעילות באתרי אינטרנט ובאפליקציות נוספים' הופעלה עבור הילד/ה שלך, ייתכן שהנתונים יישמרו בחשבון Google שלהם.</translation>
-<translation id="1214004433265298541">אישור מהאדמין עם ההרשאה לראות פרטי כניסה אל <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">נוסף יישום רקע חדש</translation>
 <translation id="1216542092748365687">הסרה של טביעת אצבע</translation>
 <translation id="1216891999012841486">מידע נוסף על תיקון של שגיאות עדכון</translation>
@@ -1702,6 +1702,7 @@
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2173801458090845390">הוספת מזהה דרישה למכשיר זה</translation>
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
+<translation id="2175526076681939329">שימוש במקלדת הראשית</translation>
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="217631816678106981">לא להדביק</translation>
@@ -3426,6 +3427,7 @@
 <translation id="3407392651057365886">‏יותר דפים נטענים מראש. דפים יכולים להיטען מראש באמצעות השרתים של Google כשמתקבלת בקשה מאתרים אחרים.</translation>
 <translation id="3407967630066378878">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבצד שמאל של מכשיר <ph name="DEVICE_TYPE" /> הזה. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="3408555740610481810">המצלמה והמיקרופון בשימוש</translation>
+<translation id="3409157109901479672">צד שמאל</translation>
 <translation id="3409513286451883969">&amp;תרגום הטקסט שנבחר ל<ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">מעבר אל בחירה</translation>
 <translation id="3413122095806433232">מנפיקי רשות אישורים: <ph name="LOCATION" /></translation>
@@ -4711,6 +4713,7 @@
 <translation id="4290826901752066702">משתמש אחד (<ph name="NUM" />)</translation>
 <translation id="4290898381118933198">אפשר להחליק כדי לעבור בין הדפים</translation>
 <translation id="4291265871880246274">תיבת דו-שיח להתחברות</translation>
+<translation id="4292613336957320546">שינוי המהירות</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="4294392694389031609">מחקת את <ph name="FILE_NAME" /> מהיסטוריית ההורדות, אבל הקובץ עדיין שמור במכשיר</translation>
 <translation id="4295072614469448764">האפליקציה זמינה במסוף שלך. בחלק מהמקרים מופיע סמל במרכז האפליקציות.</translation>
@@ -5880,6 +5883,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, חיפוש ב-<ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">יש להזין את קוד האימות של מפתח האבטחה. אם לא ידוע לך מהו קוד האימות, יהיה עליך לאפס את מפתח האבטחה.</translation>
 <translation id="5139955368427980650">&amp;פתיחה</translation>
+<translation id="5140742218917419811">מקשים לשימוש</translation>
 <translation id="5141421572306659464">חשבון ראשי</translation>
 <translation id="5141957579434225843">‏לדגמה, אפשר להקליד oà, oè, uỳ במקום òa, òe, ùy</translation>
 <translation id="5143374789336132547">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג בלחיצה על הכפתור 'דף הבית'.</translation>
@@ -5898,6 +5902,7 @@
 <translation id="5149602533174716626">העתקת הפריים</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
 <translation id="5151354047782775295">אם לא מפנים שטח אחסון, ייבחרו נתונים למחיקה אוטומטית</translation>
+<translation id="5153074793829217329">אפשר לשלוט בסמן העכבר באמצעות המקלדת או במקלדת נומרית</translation>
 <translation id="5153234146675181447">מחיקת הטלפון</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">הגדרות מתקדמות עבור <ph name="PRINTING_DESTINATION" /></translation>
@@ -6786,7 +6791,7 @@
 <translation id="5805697420284793859">מנהל החלונות</translation>
 <translation id="5806447147478173900">נפח האחסון הכולל שבשימוש של האתרים המוצגים: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ברירת מחדל)</translation>
-<translation id="5807774529265708172">הצגה או הסתרה של המקלדת שמופיעה במסך</translation>
+<translation id="5807774529265708172">הצגה או הסתרה של המקלדת הווירטואלית</translation>
 <translation id="5809835394668218762">עוד פעולות לגבי האתר <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">קוד האימות חייב להיות באורך של 6 ספרות</translation>
 <translation id="5810809306422959727">החשבון הזה לא מתאים לבקרת הורים</translation>
@@ -7994,6 +7999,7 @@
 <translation id="6689714331348768690">‏צריך לבקש מ<ph name="SUPERVISED_USER_NAME" /> לגשת למחשב. הילד או הילדה יקריאו מספר ביטויים שיופיעו במסך הזה כדי ליצור את תבנית הקול שלהם.
     <ph name="BR" />
     אם ל<ph name="SUPERVISED_USER_NAME" /> נדרשת עזרה בקריאה, אפשר להציע לילד או לילדה לחזור על הביטוי אחריך. צריך ללחוש הרחק מהמיקרופון כדי ש-Assistant תלמד להכיר את הקול של הילד או הילדה ולא את הקול שלך.</translation>
+<translation id="6689948774466767379">שליטה בעכבר מהמקלדת</translation>
 <translation id="6690659332373509948">לא ניתן לנתח את הקובץ: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;קדימה</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{עמוד אחד}one{{COUNT} עמודים}two{{COUNT} עמודים}other{{COUNT} עמודים}}</translation>
@@ -9428,7 +9434,7 @@
 <translation id="7717014941119698257">הורדה: <ph name="STATUS" /></translation>
 <translation id="771721654176725387">הפעולה הזו תמחק באופן סופי את נתוני הגלישה שלך במכשיר הזה. כדי לשחזר את הנתונים, יש להפעיל סנכרון</translation>
 <translation id="7717845620320228976">חיפוש עדכונים</translation>
-<translation id="7718490543420739837">מקלדת שמופיעה במסך, הכתבה, גישה באמצעות מתג ועוד</translation>
+<translation id="7718490543420739837">מקלדת וירטואלית, הכתבה, גישה באמצעות מתג ועוד</translation>
 <translation id="7719367874908701697">מרחק מתצוגה בדף</translation>
 <translation id="7719588063158526969">שם המכשיר ארוך מדי</translation>
 <translation id="7721105961977907890"><ph name="WEBSITE" />, פרטים נוספים</translation>
@@ -9570,7 +9576,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="7815680994978050279">הורדה מסוכנת נחסמה</translation>
-<translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
+<translation id="7817361223956157679">‏המקלדת הווירטואלית לא עובדת עדיין באפליקציות Linux</translation>
 <translation id="7818135753970109980">עיצוב חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7820400255539998692">יש למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
 <translation id="7820561748632634942">להקצות עוד מתגים?</translation>
@@ -10082,6 +10088,7 @@
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{הוספת הכרטיסייה לרשימת הקריאה}one{הוספת הכרטיסיות לרשימת הקריאה}two{הוספת הכרטיסיות לרשימת הקריאה}other{הוספת הכרטיסיות לרשימת הקריאה}}</translation>
 <translation id="8169177848833352618">‏לצערנו, המכשיר הזה לא עומד בדרישות להתקנת Bruschetta. קוד השגיאה הוא <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">צד ימין</translation>
 <translation id="8174047975335711832">מידע מהמכשיר</translation>
 <translation id="8176332201990304395">ורוד ולבן</translation>
 <translation id="8176529144855282213">להפעלת הגישה למיקרופון, מפעילים את מתג המיקרופון הפיזי במכשיר</translation>

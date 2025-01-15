@@ -702,6 +702,7 @@
 <translation id="2215539479425228550">क्लाइंबिंग और माउंटेनियरिंग</translation>
 <translation id="2215727959747642672">फ़ाइल में बदलाव करना</translation>
 <translation id="2215963164070968490">कुत्ते</translation>
+<translation id="2219376942605837404">तुलना करने वाली टेबल में टैब जोड़ें</translation>
 <translation id="2219658597883514593">ट्यूटोरियल को रीस्टार्ट करें</translation>
 <translation id="2219735899272417925">डिवाइस को रीसेट करना ज़रूरी है</translation>
 <translation id="2221227930294879156">खाने-पीने के इवेंट</translation>
@@ -1152,6 +1153,7 @@
 <translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3067505415088964188">कीमत कम है</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> पर फ़ाइल अपलोड करने की प्रोसेस एक मिनट में शुरू होगी</translation>
+<translation id="3068976060094139647">आपका खाता, Google Pay से लिंक है. इसलिए, कार्ड की जानकारी को ऑटोमैटिक भरने की सुविधा का इस्तेमाल किया जा सकता है.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आइटम}one{{ITEMS} आइटम}other{{ITEMS} आइटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टम</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
@@ -1786,6 +1788,7 @@
 <translation id="4151403195736952345">वैश्‍विक डिफ़ॉल्‍ट का उपयोग करें (पता करें)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
+<translation id="415440494507469262">तुलना करने वाली टेबल में टैब जोड़ें</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165422751765527461">इससे एक नए टैब में 'सहायता केंद्र लेख' खुलता है</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
@@ -3392,6 +3395,7 @@
 <translation id="706960991003274248">तुलना करने वाली टेबल, आपके <ph name="EMAIL" /> खाते में सेव की गई हैं</translation>
 <translation id="7070144569727915108">सिस्टम सेटिंग</translation>
 <translation id="70705239631109039">आपका कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
+<translation id="7071122206197538392">तुलना करने वाली नई टेबल</translation>
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4107,7 @@
 <translation id="8298115750975731693">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं (<ph name="WIFI_NAME" />) उसके लिए आपको <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> पर जाने की ज़रूरत हो सकती है.</translation>
 <translation id="8301894345671534559">कोड डालें</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" वाला सेक्शन दिखाया गया</translation>
+<translation id="8304912090860925649">तुलना करने वाली नई टेबल</translation>
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
 <translation id="8308653357438598313">लाइव वीडियो स्ट्रीमिंग</translation>
 <translation id="8311895354659782580">रीयल एस्टेट की सूची</translation>

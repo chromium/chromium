@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Isto significa que o Chromium irá pedir sempre o site para computador.</translation>
 <translation id="2270466829363945454">Faça compras</translation>
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
+<translation id="2314220608288760290">O Chromium abre automaticamente links de Navegação anónima do YouTube na Navegação anónima.</translation>
 <translation id="231828342043114302">Para receber conteúdo personalizado com base nos seus interesses, inicie sessão no Chromium.</translation>
 <translation id="2326738825692478496">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google.
 
@@ -284,6 +285,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>
 <translation id="8254729934443216898">Explore novas funcionalidades que ajudam a tirar o máximo partido do Chromium.</translation>
 <translation id="829047622686389424">Um feed personalizado criado para si.</translation>
+<translation id="8293572045658095405">Está na Navegação anónima do Chromium</translation>
 <translation id="830951810931292870">Abre os URLs introduzidos no Chromium na Navegação anónima.</translation>
 <translation id="8409374867500149834">Tem a segurança mais avançada do Chromium contra Websites prejudiciais</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}}</translation>

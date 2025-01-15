@@ -340,7 +340,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2571834852878229351">Izradi moju zaporku</translation>
 <translation id="2574249610672786438">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se na svim svojim uređajima</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) odmah će izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i više neće moći komunicirati s vama na Googleovim uslugama.</translation>
-<translation id="2578337197553672982">Googleov sadržaj za mlade umove</translation>
 <translation id="2579297619530305344">Zaporke na svim vašim uređajima otvorene su u punoj visini</translation>
 <translation id="2581165646603367611">Time će se izbrisati kolačići, predmemorija i ostali podaci o web-lokacijama koje Chrome ne smatra važnima.</translation>
 <translation id="2587052924345400782">Dostupna je novija verzija</translation>
@@ -734,6 +733,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4425140285732600465">Praćenje cijene. Dobivajte upozorenja ako se cijena snizi na bilo kojoj web-lokaciji.</translation>
 <translation id="4425173294238317796">List za potvrdu pristupnog ključa</translation>
 <translation id="442518031075347249">Više nećete moći upotrebljavati svoju virtualnu karticu s Google Payom. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Sve oznake</translation>
 <translation id="4430277756566635951">Trenutačno je odabrano: <ph name="EMAIL" />. Odaberite račun.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Oznaka dodana u mapu <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4742795653798179840">Izbrisani Chromeovi podaci</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvaranje nove kartice</translation>
-<translation id="4750356170202299988">Sadržaj za mlade umove</translation>
 <translation id="4758061975920522644">Podijeli samo sliku</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4763480195061959176">videozapis</translation>
@@ -1378,7 +1377,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Trebali biste je odmah promijeniti}one{Trebali biste ih odmah promijeniti}few{Trebali biste ih odmah promijeniti}other{Trebali biste ih odmah promijeniti}}</translation>
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost otvoreno u punoj visini</translation>
-<translation id="7205672015775254816">Googleov sadržaj za mlade umove – isključeno</translation>
 <translation id="7207760545532569765">Vratite <ph name="TAB_COUNT" /> kartica kao nove pozadinske kartice.</translation>
 <translation id="7217781228893594884">Anonimne kartice zaključat će se kada napustite Chrome</translation>
 <translation id="7221869452894271364">Ponovno učitaj ovu stranicu</translation>
@@ -1533,7 +1531,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7886917304091689118">Pokrenuto u Chromeu</translation>
 <translation id="7887174313503389866">Krenite u vođeni obilazak ključnih kontrola privatnosti i sigurnosti. Za više opcija pogledajte pojedinačne postavke.</translation>
-<translation id="7896724475402191389">Sadržaj za mlade umove – isključen</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 preuzimanje blokirala je vaša organizacija}one{# preuzimanje blokirala je vaša organizacija}few{# preuzimanja blokirala je vaša organizacija}other{# preuzimanja blokirala je vaša organizacija}}</translation>
 <translation id="7914399737746719723">Aplikacija je instalirana</translation>
@@ -1647,6 +1644,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8378850197701296741">Imate oznake, povijest i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potvrdite da ste to vi</translation>
 <translation id="8393700583063109961">Pošaljite poruku</translation>
+<translation id="8396098434728053815">Dijelite i zvuk kartice</translation>
 <translation id="8398389123831319859">Dodirnite dvaput i zadržite da biste prešli na anonimni način</translation>
 <translation id="8402673309244746971">Otvorite feed Praćeno</translation>
 <translation id="8413126021676339697">Pokaži cijelu povijest</translation>

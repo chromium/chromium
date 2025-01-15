@@ -991,6 +991,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5506763544823940561">Salvar imagem no…</translation>
 <translation id="5511959326926949696">Proteção extrema e opcional para o navegador. Só use esse modo se você achar que pode ser alvo de ataques cibernéticos altamente sofisticados.</translation>
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
+<translation id="5520668942302483373">Sair do grupo</translation>
 <translation id="5524590039848017563">Botão principal da barra de ferramentas fechado</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5532545557415295622">Caixa de diálogo de tempo limite de inatividade</translation>
@@ -1030,6 +1031,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5646284034397250191">Marcador criado. Data pendente.</translation>
 <translation id="5647096944343801045">Ponto de entrada grande</translation>
 <translation id="5647193778876139879">Toque em um endereço e pressione.</translation>
+<translation id="5647702255748985085">Quer sair do grupo?</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5652623411397330904">Os produtos que você acompanha vão aparecer aqui.</translation>
 <translation id="5657156137487675418">Permitir todos os cookies</translation>
@@ -1115,6 +1117,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6027619584715411062">Faça login para ter acesso a favoritos, senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">novo recurso</translation>
+<translation id="6038823991892265570">Gerenciar o armazenamento do Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>

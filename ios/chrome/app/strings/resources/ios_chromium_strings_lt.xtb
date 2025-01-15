@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
 <translation id="2270466829363945454">Apsipirkimas</translation>
 <translation id="2313870531055795960">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chromium“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
+<translation id="2314220608288760290">„Chromium“ automatiškai atidaro „YouTube“ inkognito nuorodas inkognito režimu.</translation>
 <translation id="231828342043114302">Jei norite gauti pagal pomėgius suasmeninto turinio, prisijunkite prie „Chromium“.</translation>
 <translation id="2326738825692478496">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
 
@@ -284,6 +285,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="8254729934443216898">Peržiūrėkite naujas funkcijas, kurios padės išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="829047622686389424">Tinkintas jums skirtas sklaidos kanalas.</translation>
+<translation id="8293572045658095405">Naudojate „Chromium“ inkognito režimą</translation>
 <translation id="830951810931292870">Atidaromi įvesti URL naršyklėje „Chromium“ inkognito režimu.</translation>
 <translation id="8409374867500149834">Turite patikimiausią „Chromium“ apsaugą nuo žalingų svetainių</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}one{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}few{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutes. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}many{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutės. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}other{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minučių. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}}</translation>

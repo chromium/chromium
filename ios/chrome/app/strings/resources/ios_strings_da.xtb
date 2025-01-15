@@ -991,6 +991,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5506763544823940561">Gem billede i…</translation>
 <translation id="5511959326926949696">Valgfri ekstrem beskyttelse af din browser. Funktionen bør kun bruges, hvis du mener, at du bliver udsat for et meget sofistikeret cyberangreb.</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t. siden</translation>
+<translation id="5520668942302483373">Forlad gruppe</translation>
 <translation id="5524590039848017563">Den primære knap til værktøjslinjen er skjult</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svag adgangskode}one{{COUNT} svag adgangskode}other{{COUNT} svage adgangskoder}}</translation>
 <translation id="5532545557415295622">Dialogboks for timeout ved inaktivitet</translation>
@@ -1030,6 +1031,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5646284034397250191">Etiket oprettet. Afventer dato</translation>
 <translation id="5647096944343801045">Stort indgangspunkt</translation>
 <translation id="5647193778876139879">Hold fingeren på en adresse.</translation>
+<translation id="5647702255748985085">Vil du forlade gruppen?</translation>
 <translation id="5648166631817621825">De seneste 7 dage</translation>
 <translation id="5652623411397330904">De produkter, hvis pris du holder øje med, vises her.</translation>
 <translation id="5657156137487675418">Tillad alle cookies</translation>

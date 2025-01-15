@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">เปลี่ยนเป็นผู้ใช้ถัดไป</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1954252331066828794">บันทึกหน้าจอเรียบร้อยแล้ว</translation>
+<translation id="1956087014741188812">หยุดแป้นเมาส์ชั่วคราว</translation>
 <translation id="1957958912175573503">ตั้งค่าภาษา</translation>
 <translation id="1961239773406905488">การแสดงตัวอย่างจากกล้องถ่ายรูปซ่อนอยู่</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">กำลังสแกนหาอุปกรณ์...</translation>
 <translation id="2257486738914982088">เกิดข้อผิดพลาดขณะดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">ไฟล์ที่แนะนำ</translation>
+<translation id="2266607665880926261">แป้นเมาส์หยุดชั่วคราว</translation>
 <translation id="2268130516524549846">ปิดใช้งานบลูทูธแล้ว</translation>
 <translation id="2268731132310444948">ดูการแนะนำขั้นตอนที่ <ph name="STEP" /> จาก <ph name="TOTAL_STEPS" /> เมื่อเปิดใช้งาน Launcher แล้ว คุณจะเห็นแถบค้นหาที่มีประสิทธิภาพมากขึ้น คุณจะเริ่มพิมพ์เพื่อค้นหาไฟล์ แอป และอื่นๆ ได้ คุณยังหาคำตอบสำหรับคำถามเกี่ยวกับ <ph name="PRODUCT_NAME" /> ได้ด้วย</translation>
 <translation id="2268813581635650749">ออกจากระบบทั้งหมด</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">ซูมเข้าบนหน้าจอ</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
 <translation id="2880541185262491188">พยายามป้อน PIN หลายครั้งเกินไป โปรดรอ <ph name="TIME_LEFT" /> แล้วลองอีกครั้ง</translation>
+<translation id="2883271196820422439">แป้นเมาส์กลับมาทำงานอีกครั้ง</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
 <translation id="2894949423239620203">สายสัญญาณอาจส่งผลต่อประสิทธิภาพ</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">ฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ปิดการตั้งค่าการดูรูปภาพและสื่อล่าสุดของโทรศัพท์</translation>
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
+<translation id="3545224667633138205">แป้นเมาส์กลับมาทำงานอีกครั้งแล้ว</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
 <translation id="3554215588514239132">แสดงหรือซ่อนแผงเครื่องมือสำหรับนักพัฒนาแอป</translation>
 <translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -797,6 +801,7 @@
 <translation id="3727231512028252576">โหลดรายการไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="3735740477244556633">จัดเรียงตาม</translation>
 <translation id="3738664582935948253">ตอนนี้คุณแสดงการคลิกและแป้นพิมพ์ลัดในการบันทึกหน้าจอได้แล้ว</translation>
+<translation id="3741482431277446954">ปุ่มขวาของเมาส์</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3743775386021959186">โหมดโฟกัสเปิดอยู่ เหลืออีก <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">ซ่อนคำแนะนำสภาพอากาศ</translation>
@@ -854,7 +859,6 @@
 <translation id="3958714870339660776">ตลอดวัน</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963124517343721543">ดำเนินการต่อจากที่ค้างไว้ได้ง่ายๆ ด้วยการเปิดหน้าต่างและแท็บก่อนหน้า นอกจากนี้ คุณยังจะเห็นคำแนะนำที่ปรับเปลี่ยนในแบบของคุณสำหรับสิ่งที่ต้องทำต่อไปด้วย</translation>
-<translation id="396506362088290977">ทดสอบเสียงไมโครโฟน</translation>
 <translation id="3969043077941541451">ปิด</translation>
 <translation id="3970324493235864154">ดูการแจ้งเตือนของโทรศัพท์</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
@@ -1295,7 +1299,6 @@
 <translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5361524080961918551">ดาวน์โหลดไฟล์คําพูดภาษา<ph name="LANGUAGE" />แล้วบางส่วน</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ไปที่แท็บนี้</translation>
-<translation id="5363835273551457276">คุณทดสอบเสียงไมโครโฟนได้ ปิดแผงเพื่อหยุด</translation>
 <translation id="5364693579536176785">พื้นที่เก็บข้อมูล</translation>
 <translation id="5369573834963677938">ผู้ใช้รายอื่นในอุปกรณ์จะใช้การควบคุมด้วยใบหน้าได้</translation>
 <translation id="5369717264580061086">แสดงตัวอย่างไฟล์ในแอป Files</translation>
@@ -1825,6 +1828,7 @@
 <translation id="7118268675952955085">ภาพหน้าจอ</translation>
 <translation id="7118597077555700347">เปิด <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">เลือกคำหรือตัวอักษรถัดไป</translation>
+<translation id="7124556000457919678">เมื่อเปิด แป้นเมาส์จะเป็นการหยุดชั่วคราวและกลับมาทำงานอีกครั้ง</translation>
 <translation id="7126996685418858413">เปิดในสัปดาห์ที่ผ่านมา</translation>
 <translation id="7130207228079676353">น่าจะใช้มากที่สุด</translation>
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>
@@ -1846,6 +1850,7 @@
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="7219573373513695352">ไม่ได้เชื่อมต่ออุปกรณ์</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">ปุ่มเมาส์ทั้งสองปุ่ม</translation>
 <translation id="7244725679040769470">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2147,6 +2152,7 @@
 <translation id="8203224998425013577">แสดงอีโมจิและ GIF เพิ่มเติม</translation>
 <translation id="8203795194971602413">คลิกขวา</translation>
 <translation id="8205469348819768313">หากต้องการใช้ฟังก์ชัน Page Down ให้ใช้แป้น</translation>
+<translation id="8213376797713070611">ปุ่มซ้ายของเมาส์</translation>
 <translation id="8214996719228530800">เวอร์ชัน Canary</translation>
 <translation id="8219451629189078428">คุณต้องเปิด Chromebook และเสียบปลั๊กไว้ตลอดในระหว่างนี้ ตรวจดูว่าได้เสียบสายที่ชาร์จและอะแดปเตอร์ไว้แน่นดีแล้ว ทั้งกับ Chromebook และเต้ารับ และอย่าปิด Chromebook</translation>
 <translation id="8220076512072059941">เพิ่ม <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2372,6 +2378,7 @@
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">บลูทูธไม่พร้อมใช้งาน</translation>
+<translation id="9050999376345823055">กด "." เพื่อปล่อย</translation>
 <translation id="906458777597946297">ขยายหน้าต่างเต็มหน้าจอ</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9070640332319875144">การตั้งค่า Assistant</translation>

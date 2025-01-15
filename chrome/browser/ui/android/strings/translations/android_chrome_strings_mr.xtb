@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">माझा स्वतःचा पासवर्ड तयार करा</translation>
 <translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) हे त्वरित “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील आणि त्यांना यापुढे तुमच्याशी संपूर्ण Google सेवांवर संवाद साधता येणार नाही.</translation>
-<translation id="2578337197553672982">Google चा लहान मुलांसाठीचा आशय</translation>
 <translation id="2579297619530305344">तुमच्या सर्व डिव्हाइसवरील पासवर्ड फुल स्क्रीनवर सुरू केलेले आहेत</translation>
 <translation id="2581165646603367611">हे सर्व कुकी, कॅशे  आणि साइटचा अन्य डेटा साफ करेल जो Chrome ला महत्त्वाचा वाटत नाही.</translation>
 <translation id="2587052924345400782">अधिक नवीन आवृत्ती उपलब्ध आहे</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
 <translation id="4425173294238317796">पासकी कन्फर्मेशन शीट</translation>
 <translation id="442518031075347249">तुम्ही यापुढे तुमचे व्हर्च्युअल कार्ड Google Pay सोबत वापरू शकणार नाही. <ph name="BEGIN_LINK1" />व्हर्च्युअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">सर्व बुकमार्क</translation>
 <translation id="4430277756566635951">सध्या <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">Chrome डेटा हटवला</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
-<translation id="4750356170202299988">लहान मुलांसाठीचा आशय</translation>
 <translation id="4758061975920522644">फक्त इमेज शेअर करा</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4763480195061959176">व्हिडिओ</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{तुम्ही आता तो बदलला पाहिजे}other{तुम्ही आता ते बदलले पाहिजेत}}</translation>
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
-<translation id="7205672015775254816">Google चा लहान मुलांसाठीचा आशय - बंद केला आहे</translation>
 <translation id="7207760545532569765">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅब रिस्टोअर करा.</translation>
 <translation id="7217781228893594884">तुम्ही Chrome मधून बाहेर पडता, तेव्हा गुप्त टॅब लॉक केले जातील</translation>
 <translation id="7221869452894271364">हे पेज रीलोड करा</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">सर्व काढून टाका</translation>
 <translation id="7886917304091689118">Chrome मध्ये चालत आहे</translation>
 <translation id="7887174313503389866">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचा डेमो पहा. अधिक पर्यायांसाठी, वैयक्तिक सेटिंग्जवर जा.</translation>
-<translation id="7896724475402191389">लहान मुलांसाठीचा आशय - बंद केला आहे</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{तुमच्या संस्थेने १ ब्लॉक केला आहे}other{तुमच्या संस्थेने # ब्लॉक केले आहेत}}</translation>
 <translation id="7914399737746719723">अ‍ॅप इंस्टॉल केले</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">तुमच्याकडे <ph name="FROM_ACCOUNT" /> चे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आहेत.</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
+<translation id="8396098434728053815">टॅब ऑडिओदेखील शेअर करा</translation>
 <translation id="8398389123831319859">गुप्त मोडवर स्विच करण्यासाठी दोनदा टॅप करून धरून ठेवा</translation>
 <translation id="8402673309244746971">फॉलो करत आहे वर जा</translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>

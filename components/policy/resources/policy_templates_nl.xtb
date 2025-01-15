@@ -182,6 +182,17 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Als je dit beleid niet toepast, is de functie voor boodschappenlijstjes niet beschikbaar.
       </translation>
 <translation id="1144147113722324623">Automatische upgrades naar HTTPS aanzetten voor audio en video en een waarschuwing Niet beveiligd tonen voor afbeeldingen.</translation>
+<translation id="1146804230175611166">AI-gestuurd zoeken in geschiedenis is een functie waarmee gebruikers in hun browsegeschiedenis kunnen zoeken en gegenereerde antwoorden kunnen krijgen op basis van paginacontent, niet alleen op basis van de paginatitel en -URL.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="1147732569915511430">De SHA-256-hash van de avatarafbeelding.</translation>
 <translation id="1148415065145333943">Geavanceerde batterijoplaadmodus uitzetten</translation>
 <translation id="1149203480502386713">Post-quantum sleutelovereenkomst voor TLS aanzetten</translation>
@@ -202,6 +213,19 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Als je het beleid niet toepast, wordt geen dialoogvenster voor onderschepping bij inloggen getoond.
       Als je het beleid niet toepast, wordt er toch een dialoogvenster getoond als de scheiding van profielen voor beheerde accounts wordt afgedwongen door <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">Kerberos-configuratie (één regel per matrixitem), zie https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
+<translation id="1159241725763211010">Met Lensoverlay kunnen gebruikers Google-zoekopdrachten uitvoeren via interactie met een screenshot van de huidige pagina die boven op de daadwerkelijke webcontent wordt geplaatst. Daarnaast kunnen gebruikers Google-zoekopdrachten uitvoeren die contextafhankelijk zijn van de huidige pagina. Om contextuele antwoorden te geven, stuurt Lensoverlay paginacontent naar Google om de query van de gebruiker te beantwoorden met de context van de pagina waarop de gebruiker zich bevindt.
+
+Er is geen gebruikersinstelling om deze functie te beheren. Deze wordt over het algemeen beschikbaar gesteld aan alle gebruikers die Google als standaard zoekmachine hebben, tenzij de functie is uitgezet op basis van dit beleid.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="1160479894929412407">QUIC-protocol toestaan</translation>
 <translation id="1160939557934457296">Doorgaan vanaf de Safe Browsing-waarschuwingspagina uitzetten</translation>
 <translation id="1161685818042751282">Importeer geen door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
@@ -2144,6 +2168,17 @@ Als je het beleid niet toepast of niet instelt, kunnen de logboeken niet worden 
       * De standaardactie die wordt ondernomen voor inactief bij gebruik op netstroom, is uitzetten.
 
       Als je dit beleid of een van de bijbehorende instellingen niet instelt, worden de standaardwaarden voor de verschillende stroominstellingen gebruikt.</translation>
+<translation id="2589944745979739478">Dit beleid beheert de instellingen van de functie voor fotobewerking met generatieve AI voor <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2591775699187375408">Het audioproces altijd in een sandbox plaatsen</translation>
 <translation id="2592091433672667839">Duur van inactiviteit voordat de schermbeveiliging zichtbaar is in het inlogvenster in de winkelmodus</translation>
 <translation id="259289618675490104">Als je het beleid instelt op Alle (waarde 0) of niet instelt, mogen gebruikers certificaten beheren. Als je het beleid instelt op Geen (waarde 2), kunnen gebruikers certificaten alleen bekijken (niet beheren).
@@ -2303,6 +2338,17 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
 <translation id="2727844239611930002">Sta <ph name="PRODUCT_NAME" /> toe te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-prompt wordt getoond.</translation>
+<translation id="2729889068935597630">Dit beleid definieert de standaardinstelling voor alle gedekte generatieve AI-functies. Als je dit beleid bijvoorbeeld instelt op de waarde 1, is 1 de standaardinstelling voor alle gedekte generatieve AI-functies. Dit heeft geen invloed op handmatig ingestelde beleidswaarden. Raadpleeg de lijst met gedekte functies op https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als een gedekte functie geen gelijkwaardige beleidswaarde heeft, wordt de dichtstbijliggende hogere waarde gebruikt. Neem de documentatie voor die functie door voor meer informatie over hoe deze omgaat met waarden in dit beleid.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2730200383593984228">Toestaan dat niet-gelieerde gebruikers Android-apps gebruiken</translation>
 <translation id="2730419309754848345">Pdf standaard afdrukken als afbeelding</translation>
 <translation id="2730644640965800157">Als je het beleid toepast, wordt <ph name="GOOGLE_DRIVE_NAME" />-synchronisatie in de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> uitgezet. Er worden geen gegevens geüpload naar Drive.
@@ -4588,6 +4634,7 @@ Dit beleid voorkomt dat bedrijfsbeheerders verbinding kunnen maken met beheerde 
 Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</translation>
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
 <translation id="449561952193478261">Blauwe achtergrondverlichting van toetsenbord</translation>
+<translation id="4497491764379007385">Hiermee worden blob-URL's gepartitioneerd tijdens ophalen en navigeren.</translation>
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="4498626728750662965">De pdf-viewer gebruikt het Skia-weergaveprogramma.</translation>
 <translation id="4499376951770369935">ChromeOS-updates zijn ingesteld volgens de versie die is gedefinieerd in het manifest van de kiosk-app</translation>
@@ -5035,6 +5082,17 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
 <translation id="4857223512478723171">Modus voor volledig scherm niet toestaan</translation>
 <translation id="4857888176748302062">Toestaan dat oorsprongen query's voor apparaatkenmerken uitvoeren</translation>
 <translation id="4858735034935305895">Modus voor volledig scherm toestaan</translation>
+<translation id="4858882153530729282">Met dit beleid bepaal je of blob-URL's worden gepartitioneerd tijdens ophalen en navigeren.
+Als je dit beleid toepast of niet instelt, worden blob-URL's gepartitioneerd.
+Als je dit beleid niet toepast, worden blob-URL's niet gepartitioneerd.
+
+Als partitionering van opslag voor een bepaalde oorsprong op het hoogste niveau is uitgezet door <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> of <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, worden blob-URL's ook niet gepartitioneerd.
+
+Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {janiceliu, awillia}@chromium.org, waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 138 van <ph name="PRODUCT_NAME" />, waarna de oude implementatie wordt verwijderd.
+
+OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.
+
+Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="4860900625632464759">Toestaan dat gebruikers sms-berichten synchroniseren tussen hun telefoon en Chromebook</translation>
 <translation id="486146220825734683">Gebruikers niet toestaan in te stellen dat Kerberos-wachtwoorden worden onthouden</translation>
 <translation id="4861767323695239729">De toegestane invoermethoden in een gebruikerssessie configureren</translation>
@@ -5300,6 +5358,17 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="504689994545234073">Gebruikersbestanden lokaal opslaan aanzetten</translation>
 <translation id="5048890362473520096">LPAC-sandbox voor afdrukservices aanzetten</translation>
 <translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
+<translation id="5055513974503523022">Met VC-achtergrond met generatieve AI kunnen gebruikers zichzelf uiten door met generatieve AI-functies gepersonaliseerde achtergronden voor videovergaderingen te maken in <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5056708224511062314">Vergrootglas staat uit</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>
 <translation id="5061114193960158745">Met dit beleid wordt de lijst met websites bepaald die nooit een schakeling tussen browsers veroorzaken. Elk item wordt als regel behandeld. Bij overeenkomende regels wordt er geen alternatieve browser geopend. Anders dan bij het beleid <ph name="URL_LIST_POLICY_NAME" /> zijn de regels in beide richtingen van toepassing. Als de add-in van <ph name="IE_PRODUCT_NAME" /> aanstaat, bepaalt deze ook of <ph name="IE_PRODUCT_NAME" /> deze URL's moet openen in <ph name="PRODUCT_NAME" />.
@@ -5319,6 +5388,17 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, worden de meeste gebruikersgegevens verwijderd. Alleen bestanden die niet afhankelijk zijn van de browser worden bewaard (zoals downloads).
 
       Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, worden alle gebruikersgegevens bewaard. Deze optie heeft een hoog risico op fouten en vereist een Powerwash om te herstellen.</translation>
+<translation id="507032775281485106">Met Generatieve AI-achtergrond kunnen gebruikers zichzelf uiten door met generatieve AI-functies gepersonaliseerde achtergronden te maken in <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 
@@ -6118,6 +6198,17 @@ Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</tra
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="USER_PRINTERS_ALLOWED" />.
       </translation>
+<translation id="5582570632838248297">Tabbladen vergelijken is een AI-gestuurde tool om informatie op de tabbladen van een gebruiker te vergelijken. De functie kan bijvoorbeeld worden aangeboden aan de gebruiker als er meerdere tabbladen met producten in een vergelijkbare categorie zijn geopend.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5583806683960333345">Als deze instelling aanstaat, kunnen gebruikers instant tethering gebruiken, waarmee hun Google-telefoon mobiele data kan delen met hun apparaat.
 
       Als deze instelling uitstaat, kunnen gebruikers instant tethering niet gebruiken.
@@ -6896,6 +6987,17 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="6203715554101884845">Als je het beleid instelt, kun je een lijst met URL's opgeven met de sites die op het inlogscherm automatisch toegangsrechten krijgen voor een HID-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="DEVICES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat, anders wordt het item genegeerd. Elk item in het veld <ph name="DEVICES_FIELD_NAME" /> moet een veld <ph name="VENDOR_ID_FIELD_NAME" /> hebben en kan een veld <ph name="PRODUCT_ID_FIELD_NAME" /> hebben. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een item dat het veld <ph name="PRODUCT_ID_FIELD_NAME" /> heeft zonder het veld <ph name="VENDOR_ID_FIELD_NAME" />, is ongeldig en wordt genegeerd.
 
 Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites (geen automatische toegang).</translation>
+<translation id="6205472215607025971">Tabbladorganisator is een op AI gebaseerde tool die automatisch tabbladgroepen maakt op basis van de geopende tabbladen van een gebruiker. Suggesties zijn gebaseerd op geopende tabbladen (maar niet op paginacontent).
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6207607210601267301">Verificatie zonder pincode uitzetten voor de host voor externe toegang</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
@@ -7227,6 +7329,23 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6389858262577493180">Gebruik van <ph name="GLIC" /> aanzetten</translation>
+<translation id="6390338862225976270">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+De generatieve AI-functies in DevTools zijn onder andere:
+
+- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.
+
+- AI-ondersteuning: Krijg hulp bij het begrijpen van css-stijlen (vanaf versie 131), netwerkverzoeken, prestaties en bestanden (allemaal vanaf versie 132).
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
@@ -7978,6 +8097,7 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="692096803256767290">De doelversie van het OS herstellen</translation>
 <translation id="6921241119085515674">Het <ph name="CLOUD_UPLOAD_NAME" />-proces toestaan voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Apparaten toestaan virtuele machines uit te voeren op Chrome OS</translation>
+<translation id="6922265559343919728">Kiezen of blob-URL's worden gepartitioneerd tijdens ophalen en navigeren</translation>
 <translation id="6922884955650325312">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren</translation>
 <translation id="6924223708804692571">Spellingcontrole van talen wordt verplicht uitgezet. Niet-herkende talen in de lijst worden genegeerd.
 
@@ -10033,6 +10153,17 @@ Rollback naar <ph name="PRODUCT_OS_NAME" /> versie 106 of lager wordt niet onder
 
       Dit beleid overschrijft <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.</translation>
 <translation id="8528951285051082869">Geen web-apps toestemming geven voor toegang tot bestandstypen via de File Handling API</translation>
+<translation id="8529958869261780079">Dit beleid beheert de instellingen van de functie Help me met lezen voor <ph name="PRODUCT_OS_NAME" />.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8533145294731270627">Schadelijke downloads en gevaarlijke bestandstypen blokkeren.</translation>
 <translation id="8543108307976719751">Verbindingen voor externe toegang tot deze machine voorkomen</translation>
 <translation id="8543639085146778837">Verzamelen van WebRTC-tekstlogboeken van Google-services toestaan</translation>
@@ -10065,6 +10196,17 @@ Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRI
 Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> instellen op Uit.</translation>
 <translation id="8559221882677768248">'Selecteer om voor te lezen' op het inlogscherm uitzetten</translation>
 <translation id="8561512522781085002">De instellingen voor PageUp/PageDown gebruiken de sneltoets met de functietoets Zoeken</translation>
+<translation id="8562398722263115493">Help me met schrijven is een op AI gebaseerde schrijfassistent voor korte content op het web. Voorgestelde content is gebaseerd op prompts die de gebruiker heeft ingevoerd en de content van de webpagina.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
 <translation id="8571119890730528225">Partitionering van opslag door derden uitzetten</translation>
 <translation id="8571314270766672278">Een rollback uitvoeren en het apparaat resetten bij een kanaaldowngrade en de inschrijving proberen te behouden</translation>
@@ -10631,6 +10773,17 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="8983537551095611459">De lijst met extensie-ID's instellen die zijn vrijgesteld van de opschoonprocedure voor beperkte beheerde gastsessies</translation>
 <translation id="8983539044126123594">Inloggen met extra Google-accounts aanzetten</translation>
 <translation id="8985219286836584291">Rapportage van systeeminformatie van apparaat aanzetten</translation>
+<translation id="8986457452582123237">Met de functie Thema's maken met AI kunnen gebruikers aangepaste thema's of achtergronden maken door ze vooraf te selecteren in een lijst met opties.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="8986738188516411168">Verbeter de productiviteit door toe te staan dat informatie uit Google-apps en -services wordt getoond op systeemplatforms van <ph name="PRODUCT_OS_NAME" />.
 
 Als je dit beleid toepast of niet instelt, staan de in <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" /> geselecteerde integraties aan.
@@ -10825,7 +10978,19 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9107635531763682565">Als je het beleid instelt op 1, kunnen websites bureaubladmeldingen tonen. Als je het beleid instelt op 2, worden bureaubladmeldingen geblokkeerd.
 
 Als je het beleid niet instelt, is <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="910929592571075861">Hiermee worden blob-URL's niet gepartitioneerd tijdens ophalen en navigeren.</translation>
 <translation id="9110194749335632373">Verbindingen voor externe toegang van bedrijfsbeheerders voor deze machine voorkomen</translation>
+<translation id="9110198768621013941">Hiermee worden de instellingen voor voorspellingen voor Automatisch invullen aangezet.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="9110251436602897914">Informatie rapporteren over randapparaten die zijn aangesloten op het apparaat</translation>
 <translation id="9110485853581788150">Een lijst met certificaten die niet worden vertrouwd in <ph name="PRODUCT_NAME" />, maar kunnen worden gebruikt als hints om paden te maken. Certificaten moeten base64-gecodeerd zijn.</translation>
 <translation id="9111850884577810507">Dit veld moet overeenkomen met een van de tekenreeksen die een door <ph name="PRODUCT_NAME" /> ondersteunde printer vertegenwoordigen. De tekenreeks wordt gebruikt om de juiste PPD voor de printer te identificeren en te installeren. Meer informatie hierover vind je op https://support.google.com/chrome?p=noncloudprint.</translation>

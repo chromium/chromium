@@ -991,6 +991,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5506763544823940561">Desa la imatge a…</translation>
 <translation id="5511959326926949696">Protecció extrema opcional per al teu navegador. Només s'ha d'utilitzar si creus que pots ser objecte d'un ciberatac molt sofisticat.</translation>
 <translation id="5513681519188741830">Fa <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Surt del grup</translation>
 <translation id="5524590039848017563">Botó de la barra d'eines principal plegat</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="5532545557415295622">Quadre de diàleg del temps d'espera d'inactivitat</translation>
@@ -1030,6 +1031,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5646284034397250191">Etiqueta creada. Data pendent.</translation>
 <translation id="5647096944343801045">Punt d'entrada gran</translation>
 <translation id="5647193778876139879">Mantén premuda una adreça.</translation>
+<translation id="5647702255748985085">Vols sortir del grup?</translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5652623411397330904">Els productes que segueixis es mostraran aquí.</translation>
 <translation id="5657156137487675418">Permet totes les galetes</translation>

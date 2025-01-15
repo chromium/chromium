@@ -320,7 +320,6 @@
 <translation id="1210678701920254279">Yazıcıları görüntüleyebilir veya ekleyebilir ve etkin durumdaki yazdırma işlerini görebilirsiniz</translation>
 <translation id="1211769675100312947">Kısayollar sizin tarafınızdan seçilir</translation>
 <translation id="1213254615020057352">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek çocuğunuzun Android deneyiminin iyileştirilmesine yardımcı olun. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu ayar, cihazın sahibi tarafından zorunlu kılınmıştır. Cihazın sahibi bu cihazın teşhis ve kullanım verilerini Google'a göndermeyi seçebilir. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google Hesabına kaydedilebilir.</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" /> kimlik bilgilerini görüntüleyebilen yöneticinizin verdiği sertifika</translation>
 <translation id="1215411991991485844">Yeni arka plan uygulaması eklendi</translation>
 <translation id="1216542092748365687">Parmak izini kaldır</translation>
 <translation id="1216891999012841486">Güncelleme hatalarını düzeltme hakkında daha fazla bilgi</translation>
@@ -793,6 +792,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> birimine erişmek istiyor. Uygulama, dosyalarınızı değiştirebilir veya silebilir.</translation>
 <translation id="1549966883323105187">Kayıtlı şifrelerinize daha hızlı ulaşın</translation>
 <translation id="1550656959113606473">Chrome Varsayılanı</translation>
+<translation id="1552065819535218588">Chrome, <ph name="URL" /> adresinden gönderilen bildirimleri spam olarak işaretlemeyi durduracak</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="SEARCH_PROVIDER_DOMAIN" /> alan adını kullanacak şekilde aramayı değiştirdi.</translation>
 <translation id="1552752544932680961">Uzantıyı yönet</translation>
 <translation id="1553538517812678578">sınırsız</translation>
@@ -3081,6 +3081,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3159978855457658359">Cihaz adını düzenleyin</translation>
 <translation id="3160928651883997588">VPN Tercihleri</translation>
 <translation id="3161522574479303604">Tüm diller</translation>
+<translation id="3162070126914310576">Kuruluş biriminiz ilk kayıt sınırına ulaştığı için bu cihaz şu anda kaydedilemiyor. Yardım için yöneticinizle iletişime geçin.</translation>
 <translation id="3162766632262775911">V8 optimize ediciyi kullanmasına her zaman izin verilenler</translation>
 <translation id="3162853326462195145">Okul hesabı</translation>
 <translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir.</translation>
@@ -9051,6 +9052,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="746861123368584540">Uzantı yüklendi</translation>
 <translation id="7469612367552312334">Açık • Günlük dil kullanarak tarama geçmişinizde arama yapabilir ve ziyaret ettiğiniz siteleri bulabilirsiniz</translation>
 <translation id="7470131554696493512">Thunderbolt veya USB4 aksesuarlarının, belleğe (RAM) erişmesini ve belleği paylaşmasını engelle</translation>
+<translation id="7470284766345262333">Bu hesap Google ile ilişkilendirilmediğinden Chrome Senkronizasyonu gibi özellikler kullanılamaz</translation>
 <translation id="7470424110735398630">Panonuzu görmesine izin verilenler</translation>
 <translation id="747114903913869239">Hata: Uzantının kodu çözülemiyor</translation>
 <translation id="7471520329163184433">Daha yavaş</translation>

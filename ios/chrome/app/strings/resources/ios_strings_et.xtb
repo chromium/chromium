@@ -991,6 +991,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5506763544823940561">Salvesta pilt asukohta …</translation>
 <translation id="5511959326926949696">Erakordselt tõhus valikuline kaitse teie brauserile. Seda tuleks kasutada ainult juhul, kui arvate, et teid võidakse sihtida keeruka küberrünnakuga.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h tagasi</translation>
+<translation id="5520668942302483373">Lahku grupist</translation>
 <translation id="5524590039848017563">Peamise tööriistariba ahendamise nupp</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nõrk parool}other{{COUNT} nõrka parooli}}</translation>
 <translation id="5532545557415295622">Tegevusetuse ajalõpu dialoog</translation>
@@ -1030,6 +1031,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5646284034397250191">Silt on loodud. Kuupäeva ei ole veel</translation>
 <translation id="5647096944343801045">Suur sisenemispunkt</translation>
 <translation id="5647193778876139879">Puudutage pikalt aadressi.</translation>
+<translation id="5647702255748985085">Kas soovite grupist lahkuda?</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5652623411397330904">Sinu jälgitavad tooted ilmuvad siin.</translation>
 <translation id="5657156137487675418">Luba kõik küpsised</translation>

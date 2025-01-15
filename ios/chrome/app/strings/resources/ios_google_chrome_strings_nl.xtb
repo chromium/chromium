@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1066101356081285416">Chrome herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Google gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome opent YouTube-incognitolinks automatisch in de incognitomodus.</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Nieuw tabblad openen in Chrome</translation>
@@ -126,6 +127,7 @@ Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegeve
 <translation id="4636900170638246267">Log in bij deze site en Chrome.</translation>
 <translation id="4646014602299206846">Chrome neemt nummers voor pakkettracking waar op sites die je bezoekt en toont je pakketupdates op de pagina Nieuw tabblad. Je gegevens worden gedeeld met Google om deze functie te bieden en Shopping voor iedereen te verbeteren.</translation>
 <translation id="4647910807533196601">Open mijn nieuwste tabblad in Chrome.</translation>
+<translation id="4693084815234024320">Je bent in de Chrome-incognitomodus</translation>
 <translation id="4724297637870447613">Chrome overal gebruiken</translation>
 <translation id="4738647308035481133">Google Chrome-pagina</translation>
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>

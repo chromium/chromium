@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">קירות טיפוס וטיפוס הרים</translation>
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2215963164070968490">כלבים</translation>
+<translation id="2219376942605837404">הוספת כרטיסייה לטבלת ההשוואה</translation>
 <translation id="2219658597883514593">חזרה על המדריך</translation>
 <translation id="2219735899272417925">יש לאתחל את המכשיר</translation>
 <translation id="2221227930294879156">אירועים בתחום המזון והמשקאות</translation>
@@ -1151,6 +1152,7 @@
 <translation id="306573536155379004">המשחק התחיל.</translation>
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3068118691172921711">העלאת הקבצים אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד דקה</translation>
+<translation id="3068976060094139647">‏אפשר למלא את הפרטים של הכרטיס הזה באופן אוטומטי כי החשבון שלך מקושר ל-Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{פריט אחד ({ITEMS})}one{‫{ITEMS} פריטים}two{‫{ITEMS} פריטים}other{‫{ITEMS} פריטים}}</translation>
 <translation id="3076865167425975822">מערכות הפעלה</translation>
 <translation id="3080254622891793721">גרפיקה</translation>
@@ -1786,6 +1788,7 @@
 <translation id="4151403195736952345">שימוש בברירת מחדל גלובלית (זיהוי)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{דף 1}one{דף {COUNT}}two{דף {COUNT}}other{דף {COUNT}}}</translation>
 <translation id="4154277373259957087">‏Chrome יאמת עכשיו את הזהות שלך לפני מילוי אמצעי התשלום. תמיד אפשר לעדכן את האפשרות הזו ב<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">הוספת כרטיסייה לטבלת ההשוואה</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165422751765527461">פתיחת מאמר במרכז העזרה בכרטיסייה חדשה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
@@ -2154,6 +2157,7 @@ Del</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
 <translation id="4827283332383516812">מחיקת הכרטיס</translation>
+<translation id="4830443836091007686">נבחרו <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Image Setter Paper</translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
 <translation id="4832961164064927107">ברביקיו וצלייה</translation>
@@ -3397,6 +3401,7 @@ Del</translation>
 <translation id="706960991003274248">טבלאות ההשוואה נשמרות בחשבון שלך <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">הגדרות המערכת</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
+<translation id="7071122206197538392">טבלת השוואה חדשה</translation>
 <translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4108,6 +4113,7 @@ Del</translation>
 <translation id="8298115750975731693">‏ייתכן שרשת ה-Wi-Fi שנעשה בה שימוש (<ph name="WIFI_NAME" />) תחייב כניסה ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">הזנת הקוד</translation>
 <translation id="8303854710873047864">הקטע "<ph name="SECTION" />" מוצג</translation>
+<translation id="8304912090860925649">טבלת השוואה חדשה</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="8308653357438598313">וידאו סטרימינג בשידור חי</translation>
 <translation id="8311895354659782580">מודעות נדל"ן</translation>

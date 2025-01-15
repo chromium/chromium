@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">మీ స్వంత పాస్‌వర్డ్‌ను క్రియేట్ చేసుకోండి</translation>
 <translation id="2574249610672786438">Chromeను ఎక్కడ ఉపయోగించినా మీ ట్యాబ్‌లను చూసేందుకు, మీ పరికరాలన్నింటిలో సైన్ ఇన్ చేయండి</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) తక్షణమే “<ph name="GROUP_NAME" />” ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, ఇకపై వారు Google సర్వీస్‌లలో మీతో ఇంటరాక్ట్ అవ్వలేరు.</translation>
-<translation id="2578337197553672982">టీనేజర్‌ల కోసం Google కంటెంట్</translation>
 <translation id="2579297619530305344">పూర్తి ఎత్తులో తెరిచిన మీ పరికరాలన్నింటిలోని పాస్‌వర్డ్‌‌లు</translation>
 <translation id="2581165646603367611">ఇది Chrome ముఖ్యమైనదిగా భావించని కుక్కీలు, కాష్, సైట్‌ల ఇతర డేటాను తీసివేస్తుంది.</translation>
 <translation id="2587052924345400782">సరికొత్త వెర్షన్ ఉంది</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">ధరను ట్రాక్ చేయడం. ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి.</translation>
 <translation id="4425173294238317796">పాస్-కీ నిర్ధారణ షీట్</translation>
 <translation id="442518031075347249">Google Payతో మీ వర్చువల్ కార్డ్‌ను మీరు ఇకపై ఉపయోగించలేరు. <ph name="BEGIN_LINK1" />వర్చువల్ కార్డ్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">అన్ని బుక్‌మార్క్‌లు</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ప్రస్తుతం ఎంచుకోబడింది. ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />కి బుక్‌మార్క్ చేశారు</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">Chrome డేటాను తొలగించడం జరిగింది</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4749960740855309258">కొత్త ట్యాబ్‌ను తెరవండి</translation>
-<translation id="4750356170202299988">టీనేజర్‌ల Google కంటెంట్</translation>
 <translation id="4758061975920522644">ఇమేజ్‌ను మాత్రమే షేర్ చేయండి</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4763480195061959176">వీడియో</translation>
@@ -1376,7 +1375,6 @@
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ఇప్పుడే మీరు దీనిని మార్చాలి}other{ఇప్పుడే మీరు వీటిని మార్చాలి}}</translation>
 <translation id="7196215469483532480">గోప్యతా గైడ్ వివరణ షీట్ ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
-<translation id="7205672015775254816">టీనేజర్‌ల కోసం Google కంటెంట్ - ఆఫ్</translation>
 <translation id="7207760545532569765">బ్యాక్‌గ్రౌండ్ ట్యాబ్‌లుగా <ph name="TAB_COUNT" />ట్యాబ్‌లను రీస్టోర్ చేయండి.</translation>
 <translation id="7217781228893594884">మీరు Chrome నుండి నిష్క్రమించినప్పుడు అజ్ఞాత ట్యాబ్‌లు లాక్ అవుతాయి</translation>
 <translation id="7221869452894271364">ఈ పేజీని మళ్లీ లోడ్ చేయి</translation>
@@ -1531,7 +1529,6 @@
 <translation id="7876243839304621966">అన్నీ తొలగించండి</translation>
 <translation id="7886917304091689118">Chromeలో అమలు అవుతోంది</translation>
 <translation id="7887174313503389866">ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్ ఉత్పత్తి పరిచయ వివరాలను తెలుసుకోండి. మరిన్ని ఆప్షన్‌ల కోసం, ఒక్కో సెట్టింగ్‌కు వెళ్లండి.</translation>
-<translation id="7896724475402191389">టీనేజర్‌ల కోసం కంటెంట్ - ఆఫ్</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{మీ సంస్థ 1 డౌన్‌లోడ్‌ను బ్లాక్ చేసింది}other{మీ సంస్థ # డౌన్‌లోడ్‌లను బ్లాక్ చేసింది}}</translation>
 <translation id="7914399737746719723">యాప్ ఇన్‌స్టాల్ చేయబడింది</translation>
@@ -1645,6 +1642,7 @@
 <translation id="8378850197701296741">మీరు <ph name="FROM_ACCOUNT" />‌లో బుక్‌మార్క్‌లు, హిస్టరీ, ఇతర సెట్టింగ్‌లను కలిగి ఉన్నారు.</translation>
 <translation id="8387617938027387193">ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8393700583063109961">మెసేజ్‌ను పంపండి</translation>
+<translation id="8396098434728053815">ట్యాబ్ ఆడియోను కూడా షేర్ చేయండి</translation>
 <translation id="8398389123831319859">అజ్ఞాత మోడ్‌లోకి మారడానికి, డబుల్ ట్యాప్ చేసి ఉంచండి</translation>
 <translation id="8402673309244746971">తర్వాతి దానికి వెళ్లండి</translation>
 <translation id="8413126021676339697">పూర్తి హిస్టరీని చూపించు</translation>

@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">ცოცვა და ალპინიზმი</translation>
 <translation id="2215727959747642672">ფაილების რედაქტირება</translation>
 <translation id="2215963164070968490">ძაღლები</translation>
+<translation id="2219376942605837404">შედარების ცხრილში ჩანართის დამატება</translation>
 <translation id="2219658597883514593">სახელმძღვანელოს თავიდან გაშვება</translation>
 <translation id="2219735899272417925">საჭიროა მოწყობილობის გადაყენება</translation>
 <translation id="2221227930294879156">საკვები და სასმელი პროდუქტებით გამასპინძლების ღონისძიებები</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-ზე ფაილის ატვირთვის პროცესი 1 წუთში დაიწყება</translation>
+<translation id="3068976060094139647">თქვენ ამ ბარათის მონაცემების ავტომატური შევსება შეგიძლიათ, რადგან თქვენი ანგარიში მიბმულია Google Pay-სთან.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ერთეული}other{{ITEMS} ერთეული}}</translation>
 <translation id="3076865167425975822">ოპერაციული სისტემები</translation>
 <translation id="3080254622891793721">გრაფიკა</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4151403195736952345">გამოიყენოთ გლობალური ნაგილისხმევი (გამოვლენა)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{გვერდი 1}other{გვერდი {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ამიერიდან შეამოწმებს თქვენს ვინაობას გადახდის მეთოდების შევსებამდე. ამ ვარიანტის განახლება ნებისმიერ დროს შეგიძლიათ სექციიდან „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
+<translation id="415440494507469262">შედარების ცხრილში ჩანართის დამატება</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4165422751765527461">გახსნის დახმარების ცენტრის სტატიას ახალ ჩანართში</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
@@ -2153,6 +2156,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ახალი Google Sheet-ის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4826588772550366629">კამერა და მიკროფონი</translation>
 <translation id="4827283332383516812">ბარათის წაშლა</translation>
+<translation id="4830443836091007686">არჩეულია <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">ფოტოასაწყობი ქაღალდი</translation>
 <translation id="483241715238664915">გაფრთხილებების ჩართვა</translation>
 <translation id="4832961164064927107">ბარბექიუ და გრილი</translation>
@@ -3395,6 +3399,7 @@
 <translation id="706960991003274248">შედარების ცხრილები ინახება თქვენს ანგარიშში (<ph name="EMAIL" />)</translation>
 <translation id="7070144569727915108">სისტემის პარამეტრები</translation>
 <translation id="70705239631109039">თქვენი კავშირი სრულად დაცული არ არის</translation>
+<translation id="7071122206197538392">შედარების ახალი ცხრილი</translation>
 <translation id="7075452647191940183">მოთხოვნა მეტისმეტად დიდია</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4105,6 +4110,7 @@
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">შეიყვანეთ კოდი</translation>
 <translation id="8303854710873047864">ნაჩვენებია სექცია „<ph name="SECTION" />“</translation>
+<translation id="8304912090860925649">შედარების ახალი ცხრილი</translation>
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
 <translation id="8308653357438598313">პირდაპირი ვიდეოსტრიმინგი</translation>
 <translation id="8311895354659782580">განცხადებები უძრავი ქონების თაობაზე</translation>

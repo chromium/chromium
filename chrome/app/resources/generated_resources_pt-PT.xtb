@@ -160,6 +160,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1101254380285078812">{COUNT,plural, =1{1 palavra-passe}other{{COUNT} palavras-passe}}</translation>
 <translation id="1102759278139578486">Não é possível transferir os ficheiros de anotações do nó principal. Tente mais tarde.</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Vai perder imediatamente o acesso a este grupo de separadores, e este vai ser eliminado de todos os seus dispositivos</translation>
 <translation id="1106350001632362876">Aumentar limite</translation>
 <translation id="1107482171728500359">Partilhar microfone</translation>
 <translation id="110850812463801904">Ligar manualmente ao OneDrive</translation>
@@ -320,7 +321,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1210678701920254279">Veja ou adicione impressoras e veja as tarefas de impressão ativas</translation>
 <translation id="1211769675100312947">Os atalhos são organizados por si</translation>
 <translation id="1213254615020057352">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android da criança ao enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google.</translation>
-<translation id="1214004433265298541">Certificado fornecido pelo seu administrador, que pode ver as credenciais de <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nova aplicação de segundo plano adicionada</translation>
 <translation id="1216542092748365687">Remover impressão digital</translation>
 <translation id="1216891999012841486">Saiba como corrigir erros de atualização</translation>
@@ -1693,6 +1693,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2173801458090845390">Adicionar ID de requisição a este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Gerir motores de pesquisa e a pesquisa de sites</translation>
+<translation id="2175526076681939329">Usar teclas principais</translation>
 <translation id="217576141146192373">Não é possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="217631816678106981">Não colar</translation>
@@ -3415,6 +3416,7 @@ Quer pará-lo?</translation>
 <translation id="3407392651057365886">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas através dos servidores da Google quando solicitado por outros sites.</translation>
 <translation id="3407967630066378878">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no lado esquerdo deste dispositivo <ph name="DEVICE_TYPE" />. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">A câmara e o microfone estão a ser usados</translation>
+<translation id="3409157109901479672">Lado esquerdo</translation>
 <translation id="3409513286451883969">&amp;Traduzir seleção para <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Passar para a selecção</translation>
 <translation id="3413122095806433232">Emissores de AC: <ph name="LOCATION" /></translation>
@@ -4700,6 +4702,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Deslize rapidamente para navegar entre páginas</translation>
 <translation id="4291265871880246274">Caixa de diálogo de início de sessão</translation>
+<translation id="4292613336957320546">Aceleração</translation>
 <translation id="429312253194641664">Um site está a reproduzir multimédia.</translation>
 <translation id="4294392694389031609">Eliminou o ficheiro <ph name="FILE_NAME" /> do histórico de transferências, mas este ainda está no seu dispositivo</translation>
 <translation id="4295072614469448764">A aplicação está disponível no terminal. Também pode existir um ícone no Launcher.</translation>
@@ -5868,6 +5871,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, pesquisa no <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Introduza o PIN da sua chave de segurança. Se não souber o PIN, terá de repor a chave de segurança.</translation>
 <translation id="5139955368427980650">&amp;Abrir</translation>
+<translation id="5140742218917419811">Teclas a usar</translation>
 <translation id="5141421572306659464">Conta principal</translation>
 <translation id="5141957579434225843">Por exemplo, use oà, oè, uỳ em vez de òa, òe, ùy</translation>
 <translation id="5143374789336132547">A extensão "<ph name="EXTENSION_NAME" />" alterou a página apresentada quando clica no botão Página inicial.</translation>
@@ -5886,6 +5890,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5149602533174716626">Cop&amp;iar frame do vídeo</translation>
 <translation id="5150254825601720210">Nome do servidor SSL do certificado Netscape</translation>
 <translation id="5151354047782775295">Liberte espaço em disco ou determinados dados poderão ser automaticamente eliminados</translation>
+<translation id="5153074793829217329">Use o teclado ou um teclado numérico para controlar o cursor do rato</translation>
 <translation id="5153234146675181447">Esquecer telemóvel</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Definições avançadas de <ph name="PRINTING_DESTINATION" /></translation>
@@ -7979,6 +7984,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6689714331348768690">Peça a <ph name="SUPERVISED_USER_NAME" /> para se dirigir ao computador A criança vai ler algumas expressões neste ecrã para criar o respetivo modelo de voz.
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> precisar de ajuda na leitura, peça-lhe que repita consigo. Afaste-se do microfone para que o Assistente aprenda a voz da criança em vez da sua.</translation>
+<translation id="6689948774466767379">Teclas do rato</translation>
 <translation id="6690659332373509948">Impossível analisar o ficheiro: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">A&amp;vançar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}other{{COUNT} páginas}}</translation>
@@ -10066,6 +10072,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Adicionar separador à lista de leitura}other{Adicionar separadores à lista de leitura}}</translation>
 <translation id="8169177848833352618">Infelizmente, este computador não cumpre os requisitos para instalar o Bruschetta. O código de erro é <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Lado direito</translation>
 <translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8176332201990304395">Cor-de-rosa e branco</translation>
 <translation id="8176529144855282213">Para ativar o acesso ao microfone, ative o interruptor físico do microfone no dispositivo</translation>

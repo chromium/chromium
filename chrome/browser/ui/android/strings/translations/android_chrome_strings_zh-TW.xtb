@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">建立自己的密碼</translation>
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，也無法再透過各項 Google 服務與你互動。</translation>
-<translation id="2578337197553672982">Google 為兒少提供的內容</translation>
 <translation id="2579297619530305344">「在所有裝置上都能使用自己的密碼」說明已開啟，顯示於整個畫面</translation>
 <translation id="2581165646603367611">這項操作會清除不重要的網站 Cookie、快取等其他資料 (Chrome 會自動判斷資料的重要性)。</translation>
 <translation id="2587052924345400782">已推出新版本</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="4425173294238317796">密碼金鑰確認工作表</translation>
 <translation id="442518031075347249">你將無法再透過 Google Pay 使用虛擬卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">所有書籤</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
-<translation id="4750356170202299988">適合兒少的內容</translation>
 <translation id="4758061975920522644">僅分享圖片</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4763480195061959176">影片</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{建議你立即變更}other{建議你立即變更}}</translation>
 <translation id="7196215469483532480">隱私權指南說明已開啟，顯示於整個畫面</translation>
-<translation id="7205672015775254816">Google 為兒少提供的內容 - 已關閉</translation>
 <translation id="7207760545532569765">將 <ph name="TAB_COUNT" /> 個分頁還原為新的背景分頁。</translation>
 <translation id="7217781228893594884">系統會在你離開 Chrome 後鎖定無痕分頁</translation>
 <translation id="7221869452894271364">重新載入此頁</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
-<translation id="7896724475402191389">適合兒少的內容 - 已關閉</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{貴機構已封鎖這 1 個下載項目}other{貴機構已封鎖這 # 個下載項目}}</translation>
 <translation id="7914399737746719723">應用程式已安裝</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、歷史記錄和其他設定。</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
+<translation id="8396098434728053815">一併分享分頁音訊</translation>
 <translation id="8398389123831319859">輕觸兩下並按住即可切換到無痕模式</translation>
 <translation id="8402673309244746971">前往「追蹤中」</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>

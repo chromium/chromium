@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">Зургийг дараахад хадгалах…</translation>
 <translation id="5511959326926949696">Таны хөтчид зориулсан нэмэлт дээд зэргийн хамгаалалт. Үүнийг зөвхөн та маш нарийн төвөгтэй кибер халдлагын бай болсон гэж үзэж байвал ашиглах хэрэгтэй.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
+<translation id="5520668942302483373">Бүлгээс гарах</translation>
 <translation id="5524590039848017563">Хураасан үндсэн самбарын товч</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{Сул {COUNT} нууц үг}other{Сул {COUNT} нууц үг}}</translation>
 <translation id="5532545557415295622">Идэвхгүй хугацааны харилцах цонх</translation>
@@ -1030,6 +1031,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5646284034397250191">Шошго үүсгэсэн. Огноо хүлээгдэж байна</translation>
 <translation id="5647096944343801045">Том нэвтрэх цэг</translation>
 <translation id="5647193778876139879">Хаягийг удаан дарна уу.</translation>
+<translation id="5647702255748985085">Бүлгээс гарах уу?</translation>
 <translation id="5648166631817621825">Сүүлийн 7 хоног</translation>
 <translation id="5652623411397330904">Таны хянаж буй бүтээгдэхүүнүүдийг энд харуулна.</translation>
 <translation id="5657156137487675418">Бүх күүкиг зөвшөөрөх</translation>
@@ -1151,6 +1153,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6160780110287872296">Файлыг татах уу?</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6168647875670665004">Нийтлэлийн зөвлөмж</translation>
+<translation id="6169031022444660352">Бүх хадгалсан мандат үнэмлэхийг устгахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
 <translation id="6173499589275053515">Таны <ph name="EMAIL" /> Google Бүртгэлд нууц үг хадгалсан</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
@@ -1202,6 +1205,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6355820205320395730">Сул нууц үгнүүдийг таахад хялбар байдаг. Сайн нууц үгнүүд үүсгэж байгаа эсэхээ шалгаарай. <ph name="BEGIN_LINK" />Аюулгүй байдлын бусад зөвлөгөөг харна уу.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />-г дагах</translation>
 <translation id="6368038301482806847">Жагсаалтаас хайлтын системийг сонгоно уу.</translation>
+<translation id="6368102751067608420">Нууц үгний менежерийн бүх өгөгдлийг устгахын тулд</translation>
 <translation id="6374469231428023295">Дахин оролдоно уу</translation>
 <translation id="6387994324662817823">Зөвхөн энэ төхөөрөмж дээр нууц үгийг Google-н Нууц үгний менежерт хадгалдаг.</translation>
 <translation id="6404422529625928907">Google Драйвт нээх</translation>

@@ -387,6 +387,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chromium in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="1652887625750064647">Najboljše ujemanje z umetno inteligenco</translation>
+<translation id="1653465303147789530">Plačujte s storitvijo <ph name="PAYMENT_METHOD" /> brez preklapljanja aplikacij</translation>
 <translation id="1656024727720460136">Chrome je prilagodil to stran za lažje branje. Chrome je prenesel izvirno stran prek varne povezave.</translation>
 <translation id="1656489000284462475">Prevzem</translation>
 <translation id="1658111267661135323">TV in videoposnetki</translation>
@@ -557,6 +558,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1959001866257244765">S pošiljanjem <ph name="BEGIN_WHITEPAPER_LINK" />URL-jev nekaterih strani, ki jih obiščete, omejenih podatkov o sistemu in nekatere vsebine strani<ph name="END_WHITEPAPER_LINK" /> Googlu lahko pomagate izboljšati varnost v spletu za vse. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravilnik o zasebnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Vaše besedilo in vsebina strani sta poslana Googlu in se morda uporabita za izboljšanje te funkcije.
   <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Opravite enkratno varnostno preverjanje, da boste lahko hitreje plačevali</translation>
 <translation id="1962204205936693436">Zaznamki domene <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Napaka pri serializaciji</translation>
 <translation id="1973785048533660168">Zaposlitev v administraciji</translation>
@@ -701,6 +703,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2215539479425228550">Alpinizem in gorništvo</translation>
 <translation id="2215727959747642672">Urejanje datotek</translation>
 <translation id="2215963164070968490">Psi</translation>
+<translation id="2219376942605837404">Dodajanje zavihka v primerjalno tabelo</translation>
 <translation id="2219658597883514593">Znova zaženi vadnico</translation>
 <translation id="2219735899272417925">Potrebna je ponastavitev naprave</translation>
 <translation id="2221227930294879156">Gastronomski dogodki</translation>
@@ -1151,6 +1154,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="306573536155379004">Igra se je začela.</translation>
 <translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3068118691172921711">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 minuto</translation>
+<translation id="3068976060094139647">To kartico lahko samodejno izpolnite, ker je vaš račun povezan z Googlom Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}one{{ITEMS} element}two{{ITEMS} elementa}few{{ITEMS} elementi}other{{ITEMS} elementov}}</translation>
 <translation id="3076865167425975822">Operacijski sistemi</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
@@ -1586,6 +1590,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="378611282717571199">Najboljša ujemanja za »<ph name="SEARCH_QUERY" />«</translation>
 <translation id="3789155188480882154">Velikost 16</translation>
 <translation id="3789841737615482174">Namesti</translation>
+<translation id="3791118028061680614">Plačevanje brez preklapljanja med aplikacijami</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> palcev)</translation>
 <translation id="3792826587784915501">Kultni in neodvisni filmi</translation>
 <translation id="3793574014653384240">Številke in vzroki razširitev, do katerih je prišlo nedavno</translation>
@@ -1786,6 +1791,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4151403195736952345">Globalno uporabi privzete nastavitve (zaznavanje)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stran}one{{COUNT}. stran}two{{COUNT}. stran}few{{COUNT}. stran}other{{COUNT}. stran}}</translation>
 <translation id="4154277373259957087">Chrome bo zdaj preveril vašo identiteto, preden vnesete podatke o plačilnih sredstvih. To lahko kadar koli posodobite v <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Dodajanje zavihka v primerjalno tabelo</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4165422751765527461">Odpre članek v centru za pomoč na novem zavihku</translation>
 <translation id="4165986682804962316">Nastavitve spletnih mest</translation>
@@ -3392,6 +3398,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="706960991003274248">Primerjalne tabele so shranjene v vašem računu <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">sistemskih nastavitvah</translation>
 <translation id="70705239631109039">Povezava ni v celoti varna</translation>
+<translation id="7071122206197538392">Nova primerjalna tabela</translation>
 <translation id="7075452647191940183">Zahteva je prevelika</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4110,7 @@ Dodatne podrobnosti:
 <translation id="8298115750975731693">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Vnos kode</translation>
 <translation id="8303854710873047864">Razdelek »<ph name="SECTION" />« je prikazan</translation>
+<translation id="8304912090860925649">Nova primerjalna tabela</translation>
 <translation id="830498451218851433">Prepogibanje na pol</translation>
 <translation id="8308653357438598313">Oddajanje prek videa v živo</translation>
 <translation id="8311895354659782580">Nepremičninski trg</translation>

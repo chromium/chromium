@@ -340,7 +340,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2571834852878229351">Create my own</translation>
 <translation id="2574249610672786438">To see your tabs from wherever you use Chrome, sign in on all of your devices</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and will no longer be able to interact with you across Google services.</translation>
-<translation id="2578337197553672982">Content by Google for young minds</translation>
 <translation id="2579297619530305344">Passwords on all your devices opened at full height</translation>
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
 <translation id="2587052924345400782">Newer version is available</translation>
@@ -734,6 +733,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
 <translation id="4425173294238317796">Passkey confirmation sheet</translation>
 <translation id="442518031075347249">You’ll no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">All Bookmarks</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4749960740855309258">Open a new tab</translation>
-<translation id="4750356170202299988">Content for young minds</translation>
 <translation id="4758061975920522644">Share image only</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{You should change this now}other{You should change these now}}</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
-<translation id="7205672015775254816">Content by Google for young minds – off</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
 <translation id="7221869452894271364">Reload this page</translation>
@@ -1533,7 +1531,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7886917304091689118">Running in Chrome</translation>
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
-<translation id="7896724475402191389">Content for young minds – off</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 was blocked by your organisation}other{# were blocked by your organisation}}</translation>
 <translation id="7914399737746719723">App installed</translation>
@@ -1647,6 +1644,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8378850197701296741">You have bookmarks, history and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
+<translation id="8396098434728053815">Also share tab audio</translation>
 <translation id="8398389123831319859">Double-tap and hold to switch to Incognito</translation>
 <translation id="8402673309244746971">Go to Following</translation>
 <translation id="8413126021676339697">Show full history</translation>

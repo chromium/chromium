@@ -1204,6 +1204,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3156511682997763015">Spoel 10 sekondes vorentoe</translation>
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3158539265159265653">Skyf</translation>
+<translation id="3162070126914310576">Hierdie toestel kan nie op die oomblik ingeskryf word nie omdat jou organisasie-eenheid hul aanvanklike inskrywinglimiet bereik het. Kontak jou administrateur vir bystand.</translation>
 <translation id="3162559335345991374">Die Wi-Fi wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="316638481603975524">Kan vra om webapps te installeer</translation>
 <translation id="3168744840365648658">Radiotoerusting</translation>
@@ -1937,6 +1938,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Oplaai van lêer na Microsoft OneDrive is onderbreek</translation>
 <translation id="4390472908992056574">Rand</translation>
+<translation id="4395550503472021297">Hierdie beleid beheer die verstekoptrede van die volgende beleide: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Maak ’n opspringer oop om op jou bank se webwerf te verifieer</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4406896451731180161">soekresultate</translation>
@@ -2379,6 +2381,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5244521145258281926">Knoppie om jou Google-rekening te bestuur; aktiveer om jou inligting, privaatheid en sekuriteit in jou Google-rekening te bestuur</translation>
 <translation id="5244732203286792411">Laai tans …
     Dit kan ’n rukkie neem.</translation>
+<translation id="5248543496748975054">Is jou kaartnommer nie ingevul nie?</translation>
 <translation id="5250209940322997802">"Koppel aan netwerk"</translation>
 <translation id="52517543715119994">Leer meer oor Chrome-kenmerke</translation>
 <translation id="5251803541071282808">Wolk</translation>
@@ -3994,6 +3997,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8116925261070264013">Gedemp</translation>
 <translation id="8118489163946903409">Betalingmetode</translation>
 <translation id="8118506371121007279">Gee terugvoer</translation>
+<translation id="8120720167840853945">Hierdie beleid beheer nie die verstekoptrede van enige ander beleid nie.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" is nie behoorlik op jou rekenaar of netwerk geïnstalleer nie. Vra jou IT-administrateur om hierdie probleem op te los.</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8133495915926741232">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer. As ’n breër kategorie afgeskakel word, sal dit ook die verwante onderwerpe van die kategorie blokkeer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>

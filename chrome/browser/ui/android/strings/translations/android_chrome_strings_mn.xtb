@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">Минийхийг үүсгэ</translation>
 <translation id="2574249610672786438">Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд бүх төхөөрөмж дээрээ нэвтэрнэ үү</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тантай цаашид Google-н үйлчилгээн дээр харилцан үйлдэл хийх боломжгүй болно.</translation>
-<translation id="2578337197553672982">Залуу сэтгэлгээнд зориулсан Google-н контент</translation>
 <translation id="2579297619530305344">Таны бүх төхөөрөмж дээрх нууц үгний хуудсыг бүтэн өндрөөр нээсэн</translation>
 <translation id="2581165646603367611">Энэ нь күүки, кэш болон Chrome-н чухалд тооцдоггүй бусад сайтын өгөгдлийг устгах болно.</translation>
 <translation id="2587052924345400782">Сүүлийн үеийн хувилбарыг ашиглах боломжтой</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">Үнийг хянаж байна. Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай.</translation>
 <translation id="4425173294238317796">Нэвтрэх түлхүүрийн баталгаажуулалт</translation>
 <translation id="442518031075347249">Та цаашид виртуал картаа Google Pay-тэй ашиглах боломжгүй болно. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Бүх хавчуурга</translation>
 <translation id="4430277756566635951">Одоогоор <ph name="EMAIL" />-г сонгосон. Бүртгэл сонгоно уу.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> чихтэй хуудсыг хаах</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />-д хавчуулсан</translation>
@@ -806,7 +806,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4742795653798179840">Chrome-н өгөгдлийг устгалаа</translation>
 <translation id="4742970037960872810">Тодруулгыг хасах</translation>
 <translation id="4749960740855309258">Шинэ таб нээх</translation>
-<translation id="4750356170202299988">Залуу сэтгэлгээнд зориулсан контент</translation>
 <translation id="4758061975920522644">Зөвхөн зураг хуваалцана уу</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -1378,7 +1377,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Та үүнийг одоо өөрчлөх хэрэгтэй}other{Та эдгээрийг одоо өөрчлөх хэрэгтэй}}</translation>
 <translation id="7196215469483532480">Нууцлалын хөтчийн тайлбарыг бүтэн хэмжээгээр нээсэн</translation>
-<translation id="7205672015775254816">Залуу сэтгэлгээнд зориулсан Google-н контент - унтраалттай</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> табыг шинэ дэвсгэр табаар сэргээнэ үү.</translation>
 <translation id="7217781228893594884">Таныг Chrome-с гарах үед нууцлалтай табуудыг түгжинэ</translation>
 <translation id="7221869452894271364">Энэ хуудсыг дахин ачаалла</translation>
@@ -1533,7 +1531,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7876243839304621966">Бүгдийг устгах</translation>
 <translation id="7886917304091689118">Chrome-д ажиллаж байна</translation>
 <translation id="7887174313503389866">Нууцлал болон аюулгүй байдлын үндсэн хяналтын талаар хөтөчтэй аялалд хамрагдаарай. Нэмэлт сонголтуудыг харахын тулд хувийн тохиргоо руу очно уу.</translation>
-<translation id="7896724475402191389">Залуу сэтгэлгээнд зориулсан контент - унтраалттай</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Танай байгууллагаас 1-ийг блоклосон}other{Танай байгууллагаас #-г блоклосон}}</translation>
 <translation id="7914399737746719723">Аппыг суулгасан</translation>
@@ -1647,6 +1644,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8378850197701296741">Танд <ph name="FROM_ACCOUNT" />-н хавчуурга, түүх болон бусад тохиргоо байна.</translation>
 <translation id="8387617938027387193">Өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="8393700583063109961">Мессеж илгээх</translation>
+<translation id="8396098434728053815">Мөн табын аудио хуваалцах</translation>
 <translation id="8398389123831319859">Нууцлалтай горим руу сэлгэхийн тулд хоёр товшоод удаан дарна уу</translation>
 <translation id="8402673309244746971">Дагаж буй руу очих</translation>
 <translation id="8413126021676339697">Бүрэн түүхийг харуулах</translation>

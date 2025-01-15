@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">画像を保存…</translation>
 <translation id="5511959326926949696">極めて強力なブラウザの保護設定。非常に高度なサイバー攻撃の標的になっている可能性がある場合にのみ使用してください。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
+<translation id="5520668942302483373">グループから退出</translation>
 <translation id="5524590039848017563">折りたたまれたメインのツールバー ボタン</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
 <translation id="5532545557415295622">アイドル タイムアウト ダイアログ</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">ラベルを作成しました。日付は未定です</translation>
 <translation id="5647096944343801045">大きなエントリー ポイント</translation>
 <translation id="5647193778876139879">住所を長押しする。</translation>
+<translation id="5647702255748985085">グループから退出しますか？</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
 <translation id="5652623411397330904">トラッキングしている商品がここに表示されます。</translation>
 <translation id="5657156137487675418">Cookie をすべて受け入れる</translation>

@@ -282,6 +282,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1948405482892809935">Keyingi foydalanuvchiga almashish</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Ekranni yozib olish tugadi</translation>
+<translation id="1956087014741188812">Sichqoncha tugmalarini pauza qilish</translation>
 <translation id="1957958912175573503">Tilni tanlash</translation>
 <translation id="1961239773406905488">Kamera orqali razm solish berkitilgan</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="225680501294068881">Qurilma qidirilmoqda...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> yuklab olinayotganda xatolik yuz berdi</translation>
 <translation id="2258734398699965611">Takfil qilingan fayllar</translation>
+<translation id="2266607665880926261">Sichqoncha tugmalari pauza qilindi</translation>
 <translation id="2268130516524549846">Bluetooth o‘chirildi</translation>
 <translation id="2268731132310444948">Tanishuv bosqichi: <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Launcher faollantirilganda yaxshilangan qidiruv panelidan foydalanish mumkin. Fayl, ilova va boshqalarni qidirish uchun nomini yozishni boshlang. Shuningdek, <ph name="PRODUCT_NAME" /> haqidagi savollaringizga javob olishingiz mumkin.</translation>
 <translation id="2268813581635650749">Hammasidan chiqish</translation>
@@ -540,6 +542,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="2876338922445400217">Ekranda kattalashtirish</translation>
 <translation id="2878884018241093801">Hozircha hech narsa yo‘q</translation>
 <translation id="2880541185262491188">PIN kod juda koʻp marta kiritildi. <ph name="TIME_LEFT" /> kuting, keyin qaytadan urining</translation>
+<translation id="2883271196820422439">Sichqoncha tugmalarini tiklash</translation>
 <translation id="2885950158625301909">Batafsil</translation>
 <translation id="2891209721153296020">“Belgilamaslik”</translation>
 <translation id="2894949423239620203">Kabel unumdorlikka taʼsir qilishi mumkin</translation>
@@ -727,6 +730,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Telefondagi oxirgi surat va media fayllarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="3542066395059568317">Siz uchun takliflar kelgan joyidan davom etadi. Takliflarni oʻng klik bilan olib tashlash mumkin.</translation>
+<translation id="3545224667633138205">Sichqoncha tugmalari tiklandi</translation>
 <translation id="3552189655002856821">Wi-Fi yoqilmagan</translation>
 <translation id="3554215588514239132">Dasturchi vositalari panelini ochish va yopish</translation>
 <translation id="3554637740840164787">Mahkamlandi: <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3727231512028252576">Yuklanmadi. Internetga ulanganda qayta urining.</translation>
 <translation id="3735740477244556633">Saralash tartibi</translation>
 <translation id="3738664582935948253">Endi ekran yozuvlarida kliklar va tezkor tugmalarni koʻrsatishingiz mumkin</translation>
+<translation id="3741482431277446954">Sichqoncha oʻng tugmasi</translation>
 <translation id="3742055079367172538">Ekran suratga olindi</translation>
 <translation id="3743775386021959186">Focus yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="3750403286520637847">Ob-havo taklifini berkitish</translation>
@@ -858,7 +863,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3958714870339660776">Butun kun</translation>
 <translation id="3962859241508114581">Avvalgi trek</translation>
 <translation id="3963124517343721543">Avvalgi oynalar va varaqlarni ochish orqali ishni qolgan joydan oson davom ettiring. Shuningdek, keyingi qadamlar haqidagi moslangan tavsiyalar chiqadi.</translation>
-<translation id="396506362088290977">Mikrofon tovushini sinash</translation>
 <translation id="3969043077941541451">Oʻchiq</translation>
 <translation id="3970324493235864154">Telefondagi bildirishnomalarni koʻring</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
@@ -1300,7 +1304,6 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="536019650977002321">Administrator audio yozib olishni taqiqlagan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> tilidagi nutq fayllari qisman yuklab olindi</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu varaqni ochish</translation>
-<translation id="5363835273551457276">Mikrofon tovushini sinash mumkin. Toʻxtatish uchun panelni yoping.</translation>
 <translation id="5364693579536176785">xotiradagi joy</translation>
 <translation id="5369573834963677938">Qurilmaning barcha foydalanuvchilari yuz nazorati funksiyasidan foydalanishi mumkin</translation>
 <translation id="5369717264580061086">Faylni Fayllar ilovasida koʻrish</translation>
@@ -1830,6 +1833,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7118268675952955085">skrinshot</translation>
 <translation id="7118597077555700347">Ochish: <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Keyingi soʻz yoki harfni tanlash</translation>
+<translation id="7124556000457919678">Yoqilganda sichqoncha tugmalarini pauza qiling va tiklang</translation>
 <translation id="7126996685418858413">Oxirgi haftada ochilgan</translation>
 <translation id="7130207228079676353">ENG SEVIMLI</translation>
 <translation id="7131634465328662194">Seansingiz avtomatik yakunlanadi.</translation>
@@ -1851,6 +1855,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7198435252016571249">Kamera pastki oʻng burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="7219573373513695352">Hech qanday qurilma ulanmagan</translation>
 <translation id="7229029500464092426">Xotira: <ph name="AVAILABLE_MEMORY" /> | jami: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Sichqonchaning ikkala tugmasi</translation>
 <translation id="7244725679040769470">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi. Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Yangilanish amalga oshishi uchun Chromebook qayta ishga tushirilishi lozim. Bu 1 daqiqacha vaqt olishi mumkin.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2152,6 +2157,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8203224998425013577">Boshqa emojilar va GIF rasmlar</translation>
 <translation id="8203795194971602413">Oʻng klik</translation>
 <translation id="8205469348819768313">Page Down bosish kerakmi? Buni ishlating:</translation>
+<translation id="8213376797713070611">Sichqoncha chap tugmasi</translation>
 <translation id="8214996719228530800">Canary kanali</translation>
 <translation id="8219451629189078428">Bu vaqt orasida Chromebook yoniq va quvvat manbasiga ulangan boʻlishi kerak. Quvvatlagich va kabel adapterlari Chromebook va rozetkaga ulanganini tekshiring. Chromebook qurilmasini oʻchirmang.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> qoʻshish</translation>
@@ -2377,6 +2383,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="9034924485347205037">Linux fayllari</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> sozlamalarini ochish</translation>
 <translation id="9050012935252397793">Bluetooth ishlamayapti</translation>
+<translation id="9050999376345823055">Qoʻyib yuborish uchun "." tugmasini bosing</translation>
 <translation id="906458777597946297">Oynani yoyish</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9070640332319875144">Google Assistent sozlamalari</translation>

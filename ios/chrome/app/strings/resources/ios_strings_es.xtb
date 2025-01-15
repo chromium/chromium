@@ -991,6 +991,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5506763544823940561">Guardar imagen en…</translation>
 <translation id="5511959326926949696">Protección opcional extrema para tu navegador. Solo se debe usar si crees que es posible que sufras un ciberataque muy sofisticado.</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Salir del grupo</translation>
 <translation id="5524590039848017563">Botón de la barra de herramientas principal contraído</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5532545557415295622">Cuadro de diálogo de tiempo de espera de inactividad</translation>
@@ -1030,6 +1031,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5646284034397250191">Etiqueta creada. Fecha pendiente.</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5647193778876139879">Mantén pulsada una dirección.</translation>
+<translation id="5647702255748985085">¿Salir del grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Los productos que sigas aparecerán aquí.</translation>
 <translation id="5657156137487675418">Permitir todas las cookies</translation>

@@ -160,6 +160,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1101254380285078812">{COUNT,plural, =1{1 hasło}few{{COUNT} hasła}many{{COUNT} haseł}other{{COUNT} hasła}}</translation>
 <translation id="1102759278139578486">Nie udało się pobrać plików z adnotacjami głównego węzła. Spróbuj ponownie później.</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Natychmiast utracisz dostęp do tej grupy kart i zostanie ona usunięta ze wszystkich Twoich urządzeń</translation>
 <translation id="1106350001632362876">Zwiększ próg</translation>
 <translation id="1107482171728500359">Udostępnij mikrofon</translation>
 <translation id="110850812463801904">Połącz się z OneDrive ręcznie</translation>
@@ -322,7 +323,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1210678701920254279">Wyświetl lub dodaj drukarki i sprawdź aktywne zadania drukowania</translation>
 <translation id="1211769675100312947">Ty wybierasz skróty</translation>
 <translation id="1213254615020057352">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
-<translation id="1214004433265298541">Certyfikat dostarczony przez administratora, który może wyświetlać dane logowania do domeny <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nowa aplikacja działająca w tle została dodana</translation>
 <translation id="1216542092748365687">Usuwanie odcisku palca</translation>
 <translation id="1216891999012841486">Dowiedz się więcej o poprawianiu błędów aktualizacji</translation>
@@ -1694,6 +1694,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2173801458090845390">Dodaj identyfikator przeznaczenia do tego urządzenia</translation>
 <translation id="2175384018164129879">&amp;Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
+<translation id="2175526076681939329">Użyj klawiszy podstawowych</translation>
 <translation id="217576141146192373">Nie można dodać drukarki. Sprawdź jej konfigurację i spróbuj ponownie.</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="217631816678106981">Nie wklejaj</translation>
@@ -3398,6 +3399,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3407392651057365886">Wczytywanych jest więcej stron. Serwery Google mogą wstępnie wczytywać strony, gdy żądają tego inne witryny.</translation>
 <translation id="3407967630066378878">Aby skonfigurować odcisk palca, poproś dziecko, aby dotknęło czytnika linii papilarnych po lewej stronie tego urządzenia <ph name="DEVICE_TYPE" />. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Kamera i mikrofon w użyciu</translation>
+<translation id="3409157109901479672">Lewa strona</translation>
 <translation id="3409513286451883969">&amp;Przetłumacz zaznaczony fragment na <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Przejdź do zaznaczenia</translation>
 <translation id="3413122095806433232">Wystawcy urzędu certyfikacji: <ph name="LOCATION" /></translation>
@@ -4683,6 +4685,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4290826901752066702"><ph name="NUM" /> członek</translation>
 <translation id="4290898381118933198">Przesuwaj palcem, aby przechodzić między stronami</translation>
 <translation id="4291265871880246274">Okno logowania</translation>
+<translation id="4292613336957320546">Przyspieszenie</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="4294392694389031609">Plik <ph name="FILE_NAME" /> został usunięty z historii pobierania, ale nadal znajduje się na urządzeniu</translation>
 <translation id="4295072614469448764">Aplikacja jest teraz dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
@@ -5850,6 +5853,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, szukaj w: <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Wpisz kod PIN klucza bezpieczeństwa. Jeśli go nie znasz, musisz zresetować klucz.</translation>
 <translation id="5139955368427980650">&amp;Otwórz</translation>
+<translation id="5140742218917419811">Klawisze do użycia</translation>
 <translation id="5141421572306659464">Konto główne</translation>
 <translation id="5141957579434225843">Na przykład użyj oà, oè, uỳ zamiast òa, òe, ùy</translation>
 <translation id="5143374789336132547">Rozszerzenie „<ph name="EXTENSION_NAME" />” ustawiło inną stronę wyświetlaną po kliknięciu przycisku strony głównej.</translation>
@@ -5868,6 +5872,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5149602533174716626">Kopiu&amp;j klatkę wideo</translation>
 <translation id="5150254825601720210">Nazwa serwera SSL certyfikatu firmy Netscape</translation>
 <translation id="5151354047782775295">Zwolnij miejsce na dysku albo wybierz dane, które mogą być usuwane automatycznie</translation>
+<translation id="5153074793829217329">Używaj klawiatury lub klawiatury numerycznej do sterowania kursorem myszy</translation>
 <translation id="5153234146675181447">Zapomnij telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Ustawienia zaawansowane dla <ph name="PRINTING_DESTINATION" /></translation>
@@ -7962,6 +7967,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6689714331348768690">Niech <ph name="SUPERVISED_USER_NAME" /> podejdzie teraz do komputera. Poproś dziecko o przeczytanie kilku wyrażeń z ekranu. Jest to konieczne, aby można było utworzyć model jego głosu.
     <ph name="BR" />
     Jeśli <ph name="SUPERVISED_USER_NAME" /> potrzebuje pomocy w czytaniu, niech powtarza za Tobą. Mów szeptem z dala od mikrofonu, aby Asystent nauczył się głosu dziecka, a nie Twojego.</translation>
+<translation id="6689948774466767379">Klawisze myszy</translation>
 <translation id="6690659332373509948">Nie można przeanalizować pliku: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Dalej</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 strona}few{{COUNT} strony}many{{COUNT} stron}other{{COUNT} strony}}</translation>
@@ -10046,6 +10052,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj kartę do listy Do przeczytania}few{Dodaj karty do listy Do przeczytania}many{Dodaj karty do listy Do przeczytania}other{Dodaj karty do listy Do przeczytania}}</translation>
 <translation id="8169177848833352618">Ten komputer nie spełnia wymagań do zainstalowania Bruschetta. Kod błędu: <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Prawa strona</translation>
 <translation id="8174047975335711832">Informacje o urządzeniu</translation>
 <translation id="8176332201990304395">Różowo-biały</translation>
 <translation id="8176529144855282213">Aby korzystać z mikrofonu, włącz go odpowiednim fizycznym przełącznikiem na urządzeniu</translation>

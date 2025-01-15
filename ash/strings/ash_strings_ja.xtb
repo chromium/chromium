@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">次のユーザーに切り替えます</translation>
 <translation id="1951012854035635156">アシスタント</translation>
 <translation id="1954252331066828794">画面の録画が完了しました</translation>
+<translation id="1956087014741188812">マウスキーを一時停止</translation>
 <translation id="1957958912175573503">言語を設定</translation>
 <translation id="1961239773406905488">カメラ プレビューが非表示になっています</translation>
 <translation id="1961832440516943645"><ph name="DATE" />、<ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">デバイスをスキャンしています...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> のダウンロード中にエラーが発生しました</translation>
 <translation id="2258734398699965611">候補のファイル</translation>
+<translation id="2266607665880926261">マウスキーを一時停止しました</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268731132310444948">ステップ <ph name="STEP" />/<ph name="TOTAL_STEPS" />。ランチャーを有効にすると強化された検索バーが表示されます。ファイルやアプリなどの名前の入力を始めると、検索結果が返されます。<ph name="PRODUCT_NAME" /> に関する質問の回答を見ることもできます。</translation>
 <translation id="2268813581635650749">すべてログアウト</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">画面を拡大する</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
 <translation id="2880541185262491188">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> ほど待ってから、もう一度お試しください</translation>
+<translation id="2883271196820422439">マウスキーを再開</translation>
 <translation id="2885950158625301909">詳細</translation>
 <translation id="2891209721153296020">「選択解除」</translation>
 <translation id="2894949423239620203">ケーブルがパフォーマンスに影響している可能性があります</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> アクセス ポイント</translation>
 <translation id="3540893133818942399">スマートフォンの最近の写真とメディアの表示の設定を行わない</translation>
 <translation id="3542066395059568317">前回中断したところから再開できるように、おすすめが表示されます。おすすめは右クリックで削除できます。</translation>
+<translation id="3545224667633138205">マウスキーを再開しました</translation>
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
 <translation id="3554215588514239132">デベロッパー ツール パネルの表示と非表示を切り替える</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> を固定しました</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">アイテムを読み込めませんでした。オンラインになったらもう一度お試しください。</translation>
 <translation id="3735740477244556633">並べ替え</translation>
 <translation id="3738664582935948253">画面の録画でクリックとキーボード ショートカットを表示できるようになりました</translation>
+<translation id="3741482431277446954">マウスの右ボタン</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3743775386021959186">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です</translation>
 <translation id="3750403286520637847">天気情報の提案を非表示にする</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">終日</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963124517343721543">以前のウィンドウやタブが開かれ、中断したところから簡単に再開できます。また、次のアクティビティに関するパーソナライズされた候補も表示されます。</translation>
-<translation id="396506362088290977">マイクの音声のテスト</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="3970324493235864154">スマートフォンの通知を表示する</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -1300,7 +1304,6 @@
 <translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> の音声ファイルを部分的にダウンロードしました</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> このタブに移動</translation>
-<translation id="5363835273551457276">マイクの音声をテストできます。パネルを閉じるとテストを停止します。</translation>
 <translation id="5364693579536176785">保存容量</translation>
 <translation id="5369573834963677938">同じデバイスを使用している他のユーザーもフェイス コントロールを利用できるようになります</translation>
 <translation id="5369717264580061086">ファイルアプリでファイルをプレビューします</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7118268675952955085">スクリーンショット</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> を開きます</translation>
 <translation id="7119327711295338600">次の単語または文字を選択する</translation>
+<translation id="7124556000457919678">オンになっているときに、マウスキーを一時停止または再開する</translation>
 <translation id="7126996685418858413">過去 1 週間以内に開いたファイル</translation>
 <translation id="7130207228079676353">これですか？</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="7219573373513695352">接続されているデバイスはありません</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">マウスの両方のボタン</translation>
 <translation id="7244725679040769470">バッテリー残量が <ph name="PERCENTAGE" />% です。デバイスを電源に接続してください。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2153,6 +2158,7 @@
 <translation id="8203224998425013577">他の絵文字と GIF を表示</translation>
 <translation id="8203795194971602413">右クリック</translation>
 <translation id="8205469348819768313">PageDown キーの代わりに次のキーを使用してください</translation>
+<translation id="8213376797713070611">マウスの左ボタン</translation>
 <translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> 延長</translation>
@@ -2377,6 +2383,7 @@
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9050012935252397793">Bluetooth は使用できません</translation>
+<translation id="9050999376345823055">離すには「.」を押します</translation>
 <translation id="906458777597946297">ウィンドウを最大化</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9070640332319875144">アシスタントの設定</translation>

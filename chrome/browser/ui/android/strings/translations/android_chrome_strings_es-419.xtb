@@ -340,7 +340,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2571834852878229351">Crear una propia</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y ya no podrá interactuar contigo en los servicios de Google.</translation>
-<translation id="2578337197553672982">Contenido de Google para mentes jóvenes</translation>
 <translation id="2579297619530305344">La hoja Contraseñas en todos tus dispositivos está totalmente abierta</translation>
 <translation id="2581165646603367611">Esta acción borrará la caché, cookies y otros datos de sitios que Chrome no considera importantes.</translation>
 <translation id="2587052924345400782">Nueva versión disponible</translation>
@@ -734,6 +733,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
 <translation id="4425173294238317796">Hoja de confirmación de la llave de acceso</translation>
 <translation id="442518031075347249">Ya no podrás usar tu tarjeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Obtén más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Todos los favoritos</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Se agregó a favoritos en <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4742795653798179840">Se borraron los datos de Chrome</translation>
 <translation id="4742970037960872810">Dejar de destacar</translation>
 <translation id="4749960740855309258">Abrir una pestaña nueva</translation>
-<translation id="4750356170202299988">Contenido para mentes jóvenes</translation>
 <translation id="4758061975920522644">Compartir solo la imagen</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7191430249889272776">Pestaña abierta en segundo plano</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Debes cambiarla ahora}other{Debes cambiarlas ahora}}</translation>
 <translation id="7196215469483532480">La explicación de la guía sobre privacidad está totalmente abierta.</translation>
-<translation id="7205672015775254816">Contenido de Google para mentes jóvenes (desactivado)</translation>
 <translation id="7207760545532569765">Restablece <ph name="TAB_COUNT" /> pestañas como nuevas pestañas en segundo plano.</translation>
 <translation id="7217781228893594884">Las pestañas de incógnito se bloquearán cuando salgas de Chrome</translation>
 <translation id="7221869452894271364">Volver a cargar esta página</translation>
@@ -1533,7 +1531,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7886917304091689118">Se está ejecutando en Chrome</translation>
 <translation id="7887174313503389866">Realiza una visita guiada de los controles de seguridad y privacidad más importantes. Para ver más opciones, ve a la configuración individual.</translation>
-<translation id="7896724475402191389">Contenido para mentes jóvenes (desactivado)</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tu organización bloqueó 1}other{Tu organización bloqueó #}}</translation>
 <translation id="7914399737746719723">Se instaló la app</translation>
@@ -1647,6 +1644,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8378850197701296741">Tienes favoritos, historial y otros parámetros de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
+<translation id="8396098434728053815">Compartir también el audio de la pestaña</translation>
 <translation id="8398389123831319859">Presiona dos veces y mantén presionado para cambiar al modo Incógnito</translation>
 <translation id="8402673309244746971">Ir a Seguidos</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>

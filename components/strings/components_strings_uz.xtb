@@ -702,6 +702,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2215539479425228550">Toqqa chiqish va alpinizm</translation>
 <translation id="2215727959747642672">Fayllarni tahrirlash</translation>
 <translation id="2215963164070968490">Itlar</translation>
+<translation id="2219376942605837404">Taqqoslash jadvaliga sahifa qoʻshish</translation>
 <translation id="2219658597883514593">Qoʻllanmani boshidan boshlash</translation>
 <translation id="2219735899272417925">Qurilmani asliga qaytarish kerak</translation>
 <translation id="2221227930294879156">Oziq-ovqat va ichimliklar tadbirlari</translation>
@@ -1152,6 +1153,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="306573536155379004">Oʻyin boshlandi.</translation>
 <translation id="3067505415088964188">Narx past</translation>
 <translation id="3068118691172921711">Fayllar 1 daqiqadan keyin <ph name="CLOUD_PROVIDER" /> xizmatiga yuklanadi</translation>
+<translation id="3068976060094139647">Hisobingiz Google Pay xizmatiga ulangani sababli bu karta maʼlumotlarini avtomatik kiritish mumkin.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ta element}other{{ITEMS} ta element}}</translation>
 <translation id="3076865167425975822">Operatsion tizimlar</translation>
 <translation id="3080254622891793721">Tasvirlar</translation>
@@ -1784,6 +1786,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4151403195736952345">Global birlamchi parametrdan foydalanish (Topilsin)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-sahifa}other{{COUNT}-sahifa}}</translation>
 <translation id="4154277373259957087">Chrome toʻlov usulini kiritishdan oldin shaxsingizni tasdiqlaydi Buni istalgan vaqtda <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> orqali yangilash mumkin.</translation>
+<translation id="415440494507469262">Taqqoslash jadvaliga sahifa qoʻshish</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4165422751765527461">Yangi varaqda Yordam markazi maqolasi ochiladi</translation>
 <translation id="4165986682804962316">Sayt sozlamalari</translation>
@@ -2148,6 +2151,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Google Sheetda yangi jadvalni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
 <translation id="4827283332383516812">Kartani olib tashlash</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> tanlandi</translation>
 <translation id="4831993743164297314">Fotonabor mashinasi uchun qogʻoz</translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
 <translation id="4832961164064927107">Barbekyu va grill</translation>
@@ -3389,6 +3393,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="706960991003274248">Taqqoslash jadvallari <ph name="EMAIL" /> hisobingizda saqlanadi</translation>
 <translation id="7070144569727915108">tizim sozlamalari</translation>
 <translation id="70705239631109039">Saytga ulanish butunlay xavfsiz emas</translation>
+<translation id="7071122206197538392">Yangi taqqoslash jadvali</translation>
 <translation id="7075452647191940183">Yuborilgan soʻrov juda katta</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4099,6 +4104,7 @@ Batafsil axborot:
 <translation id="8298115750975731693">Siz ulangan Wi-Fi (<ph name="WIFI_NAME" />) tarmog‘idan foydalanish uchun <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tish talab qilinishi mumkin.</translation>
 <translation id="8301894345671534559">Kodni kiriting</translation>
 <translation id="8303854710873047864">“<ph name="SECTION" />” rukni ochildi</translation>
+<translation id="8304912090860925649">Yangi taqqoslash jadvali</translation>
 <translation id="830498451218851433">Yarim taxlash</translation>
 <translation id="8308653357438598313">Jonli video strimingi</translation>
 <translation id="8311895354659782580">Koʻchmas mulk eʼlonlari</translation>

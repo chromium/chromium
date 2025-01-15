@@ -320,7 +320,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1210678701920254279">Ikusi edo gehitu inprimagailuak eta ikusi aktibo dauden inprimatze-lanak</translation>
 <translation id="1211769675100312947">Zeuk aukeratzen dituzu lasterbideak</translation>
 <translation id="1213254615020057352">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilera-datuak Google-ri automatikoki haurrak Android-en darabiltzan zerbitzuak hobetzeko. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du ezarpen hori. Gailu honen diagnostiko- eta erabilera-datuak Google-ri bidaltzea aukera dezake jabeak. Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea.</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" /> domeinuaren kredentzialak ikus ditzakeen administratzaileak emandako ziurtagiria</translation>
 <translation id="1215411991991485844">Atzeko planoko beste aplikazio bat gehitu da</translation>
 <translation id="1216542092748365687">Kendu hatz-marka</translation>
 <translation id="1216891999012841486">Lortu eguneratze-erroreak konpontzeari buruzko informazio gehiago</translation>
@@ -793,6 +792,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1549788673239553762"><ph name="APP_NAME" /> aplikazioak <ph name="VOLUME_NAME" /> atzitu nahi du. Fitxategiak alda edo ezaba ditzake.</translation>
 <translation id="1549966883323105187">Lortu gordetako pasahitzak bizkorrago</translation>
 <translation id="1550656959113606473">Chrome lehenetsia</translation>
+<translation id="1552065819535218588">Chrome-k <ph name="URL" /> URLaren jakinarazpenak spam gisa markatzeari utziko dio</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" luzapenak bidalketa-hornitzailea aldatu du, eta <ph name="SEARCH_PROVIDER_DOMAIN" /> erabiliko da hemendik aurrera</translation>
 <translation id="1552752544932680961">Kudeatu luzapena</translation>
 <translation id="1553538517812678578">mugagabea</translation>
@@ -3083,6 +3083,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3159978855457658359">Editatu gailuaren izena</translation>
 <translation id="3160928651883997588">VPNaren lehentasunak</translation>
 <translation id="3161522574479303604">Hizkuntza guztiak</translation>
+<translation id="3162070126914310576">Une honetan ezin da erregistratu gailua, erakundearen unitatea hasierako erregistro-mugara iritsi delako. Laguntza jasotzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="3162766632262775911">V8 optimizatzailea beti erabiltzeko baimena dutenak</translation>
 <translation id="3162853326462195145">Ikastetxeko kontua</translation>
 <translation id="3162899666601560689">Webguneek cookieak erabil ditzakete arakatze-zerbitzua hobetzeko; adibidez, saioa hasita mantentzeko edo erosketa-saskiko produktuak gogoratzeko.</translation>
@@ -9047,6 +9048,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="746861123368584540">Kargatu da luzapena</translation>
 <translation id="7469612367552312334">Aktibatuta • Erabili eguneroko hizkera arakatze-historian bilaketak egiteko eta bisitatu dituzun webguneak aurkitzeko</translation>
 <translation id="7470131554696493512">Ez eman Thunderbolt edo USB4 osagarriei memoria (RAMa) erabiltzeko eta partekatzeko baimenik</translation>
+<translation id="7470284766345262333">Kontu hau ez dago Google-rekin lotuta; beraz, Chrome-ren Sinkronizazioa eta antzeko eginbideak ez daude erabilgarri</translation>
 <translation id="7470424110735398630">Zure arbela ikus dezakete</translation>
 <translation id="747114903913869239">Errorea: ezin izan da deskodetu luzapena</translation>
 <translation id="7471520329163184433">Motelago</translation>

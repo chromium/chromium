@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">આરોહણ અને પર્વતારોહણ</translation>
 <translation id="2215727959747642672">ફાઇલમાં ફેરફાર કરવો</translation>
 <translation id="2215963164070968490">શ્વાનો</translation>
+<translation id="2219376942605837404">તુલનાત્મક ટેબલમાં ટૅબ ઉમેરો</translation>
 <translation id="2219658597883514593">ટ્યૂટૉરિઅલ ફરી શરૂ કરો</translation>
 <translation id="2219735899272417925">ડિવાઇસ રીસેટ કરવું જરૂરી છે</translation>
 <translation id="2221227930294879156">ખાણીપીણી સંબંધિત ઇવેન્ટ</translation>
@@ -1151,6 +1152,7 @@
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3068118691172921711">તમારી ફાઇલને <ph name="CLOUD_PROVIDER" />માં અપલોડ કરવાની પ્રક્રિયા 1 મિનિટમાં શરૂ થશે</translation>
+<translation id="3068976060094139647">તમે આ કાર્ડને ઑટોમૅટિક રીતે ભરી શકો છો કારણ કે તમારું એકાઉન્ટ Google Pay સાથે લિંક થયેલું છે.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} આઇટમ}one{{ITEMS} આઇટમ}other{{ITEMS} આઇટમ}}</translation>
 <translation id="3076865167425975822">ઑપરેટિંગ સિસ્ટમ</translation>
 <translation id="3080254622891793721">ગ્રાફિક</translation>
@@ -1786,6 +1788,7 @@
 <translation id="4151403195736952345">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (શોધો)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{પેજ 1}one{પેજ {COUNT}}other{પેજ {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome હવે ચુકવણી પદ્ધતિઓ ભરતા પહેલાં તે તમે જ છો તેની ચકાસણી કરશે. તમે કોઈપણ સમયે <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
+<translation id="415440494507469262">તુલનાત્મક ટેબલમાં ટૅબ ઉમેરો</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4165422751765527461">નવા ટૅબમાં સહાયતા કેન્દ્ર પરનો લેખ ખોલે છે</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
@@ -3392,6 +3395,7 @@
 <translation id="706960991003274248">સરખામણીના ટેબલ તમારા એકાઉન્ટ <ph name="EMAIL" />માં સાચવવામાં આવે છે</translation>
 <translation id="7070144569727915108">સિસ્ટમ સેટિંગ</translation>
 <translation id="70705239631109039">તમારું કનેક્શન પૂર્ણપણે સુરક્ષિત નથી</translation>
+<translation id="7071122206197538392">નવું તુલનાત્મક ટેબલ</translation>
 <translation id="7075452647191940183">વિનંતી ખૂબ મોટી છે.</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4107,7 @@
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
 <translation id="8301894345671534559">કોડ દાખલ કરો</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" વિભાગ બતાવ્યો</translation>
+<translation id="8304912090860925649">નવું તુલનાત્મક ટેબલ</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
 <translation id="8308653357438598313">લાઇવ વીડિયો સ્ટ્રીમ</translation>
 <translation id="8311895354659782580">રિઅલ એસ્ટેટની સૂચિઓ</translation>

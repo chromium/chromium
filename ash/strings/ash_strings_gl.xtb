@@ -586,7 +586,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="304417730895741346">As túas aplicacións fixadas e abertas están no andel. Para fixar unha aplicación no andel, fai clic nela co botón dereito ou toca o panel táctil con dous dedos.</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
-<translation id="3053407068093039599">Activar ou desactivar acceso á cámara</translation>
+<translation id="3053407068093039599">Activar ou desactivar o acceso á cámara</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Función non admitida</translation>
 <translation id="3068622547379332530">Versión <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -859,7 +859,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3958714870339660776">Todo o día</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963124517343721543">Abre as ventás e pestanas anteriores para continuar facilmente onde o deixases. Tamén verás suxestións personalizadas sobre cousas que podes facer a continuación.</translation>
-<translation id="396506362088290977">Proba o son do micrófono</translation>
 <translation id="3969043077941541451">Desactivar</translation>
 <translation id="3970324493235864154">Consulta as notificacións do teu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1301,7 +1300,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="536019650977002321">O teu administrador non permite o rexistro de audio. Para obter máis información, ponte en contacto con el.</translation>
 <translation id="5361524080961918551">Os ficheiros de voz (<ph name="LANGUAGE" />) descargáronse parcialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestana</translation>
-<translation id="5363835273551457276">Podes probar o son do micrófono. Pecha o panel para parar.</translation>
 <translation id="5364693579536176785">espazo de almacenamento</translation>
 <translation id="5369573834963677938">O control facial estará dispoñible para outros usuarios do dispositivo</translation>
 <translation id="5369717264580061086">Previsualiza o ficheiro na aplicación Ficheiros</translation>

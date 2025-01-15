@@ -1204,6 +1204,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Denne enhed kan ikke tilmeldes lige nu, fordi din organisationsenhed har nået sin grænse for indledende tilmelding. Kontakt din administrator for at få hjælp.</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
 <translation id="316638481603975524">Kan anmode om at installere webapps</translation>
 <translation id="3168744840365648658">Radioudstyr</translation>
@@ -2380,6 +2381,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5244521145258281926">Administrer Google-konto, aktivér for at administrere oplysninger, privatliv og sikkerhed på din Google-konto</translation>
 <translation id="5244732203286792411">Indlæser…
     Dette kan tage et øjeblik.</translation>
+<translation id="5248543496748975054">Er kortnummeret ikke udfyldt?</translation>
 <translation id="5250209940322997802">"Opret forbindelse til netværk"</translation>
 <translation id="52517543715119994">Få flere oplysninger om Chrome-funktioner</translation>
 <translation id="5251803541071282808">Skyen</translation>

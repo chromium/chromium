@@ -991,6 +991,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5506763544823940561">Lagre bildet i…</translation>
 <translation id="5511959326926949696">Ekstrem, valgfri beskyttelse for nettleseren din. Den skal bare brukes hvis du mener at du kan bli offer for et svært sofistikert cyberangrep.</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
+<translation id="5520668942302483373">Forlat gruppen</translation>
 <translation id="5524590039848017563">Skjult hovedknapp på verktøylinjen</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5532545557415295622">Dialogboks for tidsavbrudd ved inaktivitet</translation>
@@ -1030,6 +1031,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5646284034397250191">Etiketten er opprettet. Venter på dato</translation>
 <translation id="5647096944343801045">Stort inngangspunkt</translation>
 <translation id="5647193778876139879">Trykk og hold på en adresse.</translation>
+<translation id="5647702255748985085">Vil du forlate gruppen?</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
 <translation id="5657156137487675418">Tillat alle informasjonskapsler</translation>

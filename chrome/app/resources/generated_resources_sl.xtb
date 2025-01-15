@@ -160,6 +160,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1101254380285078812">{COUNT,plural, =1{1 geslo}one{{COUNT} geslo}two{{COUNT} gesli}few{{COUNT} gesla}other{{COUNT} gesel}}</translation>
 <translation id="1102759278139578486">Datotek z obvestili glavnega vozlišča ni mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Takoj boste izgubili dostop do te skupine zavihkov in izbrisana bo iz vseh vaših naprav</translation>
 <translation id="1106350001632362876">Povečaj prag</translation>
 <translation id="1107482171728500359">Deli mikrofon</translation>
 <translation id="110850812463801904">Ročna povezava s storitvijo OneDrive</translation>
@@ -323,7 +324,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1210678701920254279">Ogled ali dodajanje tiskalnikov in ogled aktivnih tiskalnih opravil</translation>
 <translation id="1211769675100312947">Bližnjice izberete vi</translation>
 <translation id="1213254615020057352">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google.</translation>
-<translation id="1214004433265298541">Potrdilo je zagotovil skrbnik, ki si lahko ogleda poverilnice za domeno <ph name="DOMAIN" />.</translation>
 <translation id="1215411991991485844">Dodan je nov program, ki se izvaja v ozadju</translation>
 <translation id="1216542092748365687">Odstranitev prstnega odtisa</translation>
 <translation id="1216891999012841486">Preberite več o odpravljanju napak posodobitev.</translation>
@@ -1706,6 +1706,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2173801458090845390">Dodajanje ID-ja zahteve tej napravi</translation>
 <translation id="2175384018164129879">&amp;Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
+<translation id="2175526076681939329">Uporabi primarne ključe</translation>
 <translation id="217576141146192373">Tiskalnika ni mogoče dodati. Preverite konfiguracijo tiskalnika in poskusite znova.</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="217631816678106981">Ne prilepi</translation>
@@ -3430,6 +3431,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3407392651057365886">Več strani je vnaprej naloženih. Strani so morda vnaprej naložene prek Googlovih strežnikov, ko tako zahtevajo druga spletna mesta.</translation>
 <translation id="3407967630066378878">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov na levi strani te naprave <ph name="DEVICE_TYPE" />. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Kamera in mikrofon sta v uporabi</translation>
+<translation id="3409157109901479672">Leva stran</translation>
 <translation id="3409513286451883969">&amp;Prevedi izbor v jezik <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Skoči na izbor</translation>
 <translation id="3413122095806433232">Izdajatelji overiteljev potrdil: <ph name="LOCATION" /></translation>
@@ -4715,6 +4717,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Povlecite, če se želite pomikati med stranmi</translation>
 <translation id="4291265871880246274">Pogovorno okno za prijavo</translation>
+<translation id="4292613336957320546">Pospeševanje</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="4294392694389031609">Datoteka <ph name="FILE_NAME" /> je bila izbrisana iz zgodovine prenosov, vendar je še vedno v napravi</translation>
 <translation id="4295072614469448764">Aplikacija je na voljo v terminalu. Morda je na voljo tudi ikona v zaganjalniku.</translation>
@@ -5883,6 +5886,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, iskanje z iskalnikom <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Vnesite kodo PIN za varnostni ključ. Če ne veste kode PIN, morate ponastaviti varnostni ključ.</translation>
 <translation id="5139955368427980650">&amp;Odpri</translation>
+<translation id="5140742218917419811">Tipke, ki jih želite uporabiti</translation>
 <translation id="5141421572306659464">Glavni račun</translation>
 <translation id="5141957579434225843">Uporabite na primer oà, oè, uỳ namesto òa, òe, ùy</translation>
 <translation id="5143374789336132547">Zaradi razširitve <ph name="EXTENSION_NAME" /> se je spremenila stran, ki je prikazana, ko kliknete gumb za začetno stran.</translation>
@@ -5901,6 +5905,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5149602533174716626">Kopira&amp;j videosličico</translation>
 <translation id="5150254825601720210">Ime strežnika SLL Netscapeovega potrdila</translation>
 <translation id="5151354047782775295">Sprostite prostor na disku, sicer bodo nekateri podatki morda samodejno izbrisani</translation>
+<translation id="5153074793829217329">Upravljanje kazalca miške s tipkovnico ali številsko tipkovnico</translation>
 <translation id="5153234146675181447">Pozabi telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Dodatne nastavitve za: <ph name="PRINTING_DESTINATION" /></translation>
@@ -8001,6 +8006,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6689714331348768690">Prosite otroka <ph name="SUPERVISED_USER_NAME" />, naj pride k računalniku. Otrok bo prebral nekaj besednih zvez na zaslonu zaradi ustvarjanja glasovnega modela.
     <ph name="BR" />
     Če <ph name="SUPERVISED_USER_NAME" /> potrebuje pomoč pri branju, naj otrok ponovi za vami. Šepetajte proč od mikrofona, da se bo Pomočnik naučil otrokovega glasu, ne pa vašega.</translation>
+<translation id="6689948774466767379">Tipke za miško</translation>
 <translation id="6690659332373509948">Ni mogoče razčleniti datoteke: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Posreduj</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stran}one{{COUNT} stran}two{{COUNT} strani}few{{COUNT} strani}other{{COUNT} strani}}</translation>
@@ -10088,6 +10094,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8168435359814927499">Vsebina</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj zavihek na bralni seznam}one{Dodaj zavihke na bralni seznam}two{Dodaj zavihke na bralni seznam}few{Dodaj zavihke na bralni seznam}other{Dodaj zavihke na bralni seznam}}</translation>
 <translation id="8169177848833352618">Ta računalnik ne izpolnjuje zahtev za namestitev Bruschette. Koda napake je <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Desna stran</translation>
 <translation id="8174047975335711832">Podatki o napravi</translation>
 <translation id="8176332201990304395">Rožnata in bela</translation>
 <translation id="8176529144855282213">Če želite vklopiti dostop do mikrofona, vklopite fizično stikalo za mikrofon na napravi.</translation>

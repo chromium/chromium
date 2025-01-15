@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
+<translation id="1076643793026027628">Chrome 会自动在无痕模式下打开 YouTube 无痕式链接。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="1146503048444965320">在 Chrome 中打开新标签页</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
 <translation id="4646014602299206846">Chrome 将检测您所访问的网站上的包裹跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。</translation>
 <translation id="4647910807533196601">在 Chrome 中打开我最近打开的标签页。</translation>
+<translation id="4693084815234024320">您正在使用 Chrome 无痕模式</translation>
 <translation id="4724297637870447613">随时随地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 页面</translation>
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>

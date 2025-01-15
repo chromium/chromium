@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Pretrage u trendu</translation>
 <translation id="21133533946938348">Zakači karticu</translation>
 <translation id="2119636449201577317">Otvori u…</translation>
+<translation id="2120553909046681540">Organizacija je isključila privatno pregledanje.</translation>
 <translation id="2122754583996902531">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Potražite tekst koji ste kopirali</translation>
 <translation id="2147127444698817042">Dostupno samo na iPhone-u</translation>
@@ -337,6 +338,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2384692388811649784">Sakrij kartice bez arhiviranja</translation>
 <translation id="2386793615875593361">Izabrana je 1 slika</translation>
 <translation id="2390457533592708044">Sakrij „<ph name="MODULE_NAME" />“</translation>
+<translation id="2394659309569789395">Ipak otvori sajt</translation>
 <translation id="2403129868389095715">Nije moguće isporučiti paket</translation>
 <translation id="2410754283952462441">Izaberite nalog</translation>
 <translation id="2424805048070062787">Nastavite sa ovom karticom</translation>
@@ -991,6 +993,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5506763544823940561">Sačuvaj sliku u…</translation>
 <translation id="5511959326926949696">Zaštita za pregledač koju treba da koristite samo u krajnjem slučaju. Treba da je koristite samo ako smatrate da ste možda ciljani veoma sofisticiranim sajber napadom.</translation>
 <translation id="5513681519188741830">pre <ph name="TIME" /> s</translation>
+<translation id="5520668942302483373">Izađi iz grupe</translation>
 <translation id="5524590039848017563">Skupljeno dugme primarne trake s alatkama</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
 <translation id="5532545557415295622">Dijalog za vremensko ograničenje za neaktivnost</translation>
@@ -1030,6 +1033,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5646284034397250191">Oznaka je napravljena. Datum je na čekanju</translation>
 <translation id="5647096944343801045">Velika ulazna tačka</translation>
 <translation id="5647193778876139879">Dodirnite i zadržite adresu.</translation>
+<translation id="5647702255748985085">Želite da napustite grupu?</translation>
 <translation id="5648166631817621825">Poslednjih 7 dana</translation>
 <translation id="5652623411397330904">Proizvodi koje pratite će se prikazivati ovde.</translation>
 <translation id="5657156137487675418">Dozvoli sve kolačiće</translation>

@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">ምስል አስቀምጥ በ…</translation>
 <translation id="5511959326926949696">ለአሳሽዎ ከፍተኛ የጥበቃ አማራጭ። እሱ ጥቅም ላይ መዋል ያለበት በጣም የተወሳሰበ የሳይበር ጥቃት እያነጣጠረዎ እንደሆነ ካመኑ ብቻ ነው።</translation>
 <translation id="5513681519188741830">ከ<ph name="TIME" /> ሰ በፊት</translation>
+<translation id="5520668942302483373">ከቡድኑ ውጣ</translation>
 <translation id="5524590039848017563">ዋና የመሣሪያ አሞሌ አዝራር ተሰብስቧል</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃሎች}}</translation>
 <translation id="5532545557415295622">የስራ መፍታት ጊዜ መገናኛ</translation>
@@ -1030,6 +1031,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5646284034397250191">መሰየሚያ ተፈጥሯል። ቀንን በመጠባበቅ ላይ</translation>
 <translation id="5647096944343801045">ትልቅ የመግቢያ ነጥብ</translation>
 <translation id="5647193778876139879">አድራሻን ይንኩ እና ይያዙ።</translation>
+<translation id="5647702255748985085">ቡድኑን ለቅቀው ይወጣሉ?</translation>
 <translation id="5648166631817621825">ያለፉት 7 ቀኖች</translation>
 <translation id="5652623411397330904">እርስዎ የሚከታተሏቸው ምርቶች እዚህ ላይ ይታያሉ።</translation>
 <translation id="5657156137487675418">ሁሉንም ኩኪዎች ፍቀድ</translation>

@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 組密碼}other{{COUNT} 組密碼}}</translation>
 <translation id="1102759278139578486">無法下載主節點註解檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">你將立即失去這個分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
 <translation id="1106350001632362876">提高門檻</translation>
 <translation id="1107482171728500359">共用麥克風</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -320,7 +321,6 @@
 <translation id="1210678701920254279">查看或新增印表機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善貴子女的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
-<translation id="1214004433265298541">這個憑證的提供者為系統管理員 (可查看 <ph name="DOMAIN" /> 的憑證)</translation>
 <translation id="1215411991991485844">已新增新的背景應用程式</translation>
 <translation id="1216542092748365687">移除指紋</translation>
 <translation id="1216891999012841486">進一步瞭解如何修正更新錯誤</translation>
@@ -793,6 +793,7 @@
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1549966883323105187">快速查看已儲存的密碼</translation>
 <translation id="1550656959113606473">預設的 Chrome</translation>
+<translation id="1552065819535218588">Chrome 不會再將來自 <ph name="URL" /> 的通知標示為垃圾訊息</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">管理擴充功能</translation>
 <translation id="1553538517812678578">無限制</translation>
@@ -1692,6 +1693,7 @@
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
+<translation id="2175526076681939329">使用主按鍵</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="217631816678106981">不要貼上</translation>
@@ -3410,6 +3412,7 @@
 <translation id="3407392651057365886">預先載入更多網頁。當其他網站要求連入網頁時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="3407967630066378878">如要設定指紋，請讓孩子輕觸這部「<ph name="DEVICE_TYPE" />」左側的指紋感應器。孩子的指紋資料會安全地儲存在這部「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="3408555740610481810">正在使用攝影機和麥克風</translation>
+<translation id="3409157109901479672">左側</translation>
 <translation id="3409513286451883969">將所選內容翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="3412265149091626468">跳至所選範圍</translation>
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
@@ -4694,6 +4697,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> 位成員</translation>
 <translation id="4290898381118933198">使用滑動手勢瀏覽不同頁面</translation>
 <translation id="4291265871880246274">登入對話方塊</translation>
+<translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="4294392694389031609">已從下載記錄中刪除「<ph name="FILE_NAME" />」，但這個檔案仍保存在你的裝置上</translation>
 <translation id="4295072614469448764">應用程式已出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
@@ -5861,6 +5865,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，「<ph name="DEFAULT_SEARCH_ENGINE_NAME" />」搜尋</translation>
 <translation id="5139823398361067371">請輸入安全金鑰的 PIN 碼。如果你不知道 PIN 碼，則必須重設安全金鑰。</translation>
 <translation id="5139955368427980650">開啟(&amp;O)</translation>
+<translation id="5140742218917419811">要使用的按鍵</translation>
 <translation id="5141421572306659464">主要帳戶</translation>
 <translation id="5141957579434225843">例如，請使用 oà、oè、uỳ，而非 òa、òe、ùy</translation>
 <translation id="5143374789336132547">擴充功能「<ph name="EXTENSION_NAME" />」已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
@@ -5879,6 +5884,7 @@
 <translation id="5149602533174716626">複製影片影格(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 憑證 SSL 伺服器名稱</translation>
 <translation id="5151354047782775295">請釋出磁碟空間，或選取系統可自動刪除的資料</translation>
+<translation id="5153074793829217329">使用鍵盤或數字鍵盤控制滑鼠游標</translation>
 <translation id="5153234146675181447">移除手機</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">「<ph name="PRINTING_DESTINATION" />」進階設定</translation>
@@ -7966,6 +7972,7 @@
 <translation id="6689714331348768690">請<ph name="SUPERVISED_USER_NAME" />坐到電腦前。你的孩子將朗讀螢幕畫面上的一些短句，藉此建立他們的語音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />在朗讀過程中需要協助，請讓孩子跟著你朗讀。你必須遠離麥克風並降低音量，這樣 Google 助理才能學習辨識你孩子的聲音，而非你的聲音。</translation>
+<translation id="6689948774466767379">滑鼠按鍵</translation>
 <translation id="6690659332373509948">無法剖析檔案：<ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">下一頁(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 頁}other{{COUNT} 頁}}</translation>
@@ -10052,6 +10059,7 @@
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8169177848833352618">很抱歉，這部電腦不符合 Bruschetta 的安裝需求。錯誤代碼：<ph name="ERROR" />。</translation>
+<translation id="8172303073969862496">右側</translation>
 <translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8176332201990304395">粉紅色與白色</translation>
 <translation id="8176529144855282213">如要開啟麥克風存取權，請打開裝置的麥克風實體開關</translation>

@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">મારો પોતાનો પાસવર્ડ બનાવો</translation>
 <translation id="2574249610672786438">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેઓ Googleની બધી સેવાઓમાં તમારી સાથે ક્રિયાપ્રતિક્રિયા કરી શકશે નહીં.</translation>
-<translation id="2578337197553672982">બાળકો માટે Googleનું કન્ટેન્ટ</translation>
 <translation id="2579297619530305344">'તમારા બધા ડિવાઇસ પર પાસવર્ડ' શીટ પૂરી ઊંચાઈ સુધી ખોલી</translation>
 <translation id="2581165646603367611">આ કુકી, કૅશ અને Chromeને લાગતું હોય કે આ મહત્વનું નથી એવા સાઇટના બીજા ડેટાને સાફ કરશે.</translation>
 <translation id="2587052924345400782">નવું વર્ઝન ઉપલબ્ધ છે</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">કિંમત ટ્રૅક કરી રહ્યાં છીએ. જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
 <translation id="4425173294238317796">પાસકી કન્ફર્મેશન શીટ</translation>
 <translation id="442518031075347249">હવેથી તમે Google Pay સાથે તમારા વર્ચ્યુઅલ કાર્ડનો ઉપયોગ કરી શકશો નહીં. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">બધા બુકમાર્ક્સ</translation>
 <translation id="4430277756566635951">હાલમાં <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
-<translation id="4750356170202299988">બાળકો માટે કન્ટેન્ટ</translation>
 <translation id="4758061975920522644">માત્ર છબી શેર કરો</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4763480195061959176">વીડિયો</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">ટૅબ બૅકગ્રાઉન્ડમાં ખોલવામાં આવી છે.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{તમારે હમણાં જ આ બદલવો જોઈએ}one{તમારે હમણાં જ આ બદલવો જોઈએ}other{તમારે હમણાં જ આ બદલવા જોઈએ}}</translation>
 <translation id="7196215469483532480">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી પૂરી ઊંચાઈ સુધી ખોલી છે</translation>
-<translation id="7205672015775254816">બાળકો માટે Googleનું કન્ટેન્ટ - બંધ છે</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ટૅબને નવી બૅકગ્રાઉન્ડ ટૅબ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="7217781228893594884">જ્યારે તમે Chrome છોડશો, ત્યારે છૂપી ટૅબ લૉક થઈ જશે</translation>
 <translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7886917304091689118">Chromeમાં ચાલી રહ્યું છે</translation>
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
-<translation id="7896724475402191389">બાળકો માટે કન્ટેન્ટ - બંધ છે</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{તમારી સંસ્થા દ્વારા 1 ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}one{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યું હતું}other{તમારી સંસ્થા દ્વારા # ડાઉનલોડ બ્લૉક કરવામાં આવ્યા હતા}}</translation>
 <translation id="7914399737746719723">ઍપ ઇન્સ્ટૉલ કરી</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, અને અન્ય સેટિંગ છે.</translation>
 <translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>
 <translation id="8393700583063109961">મેસેજ મોકલો</translation>
+<translation id="8396098434728053815">ટૅબ ઑડિયો પણ શેર કરો</translation>
 <translation id="8398389123831319859">છૂપા મોડ પર સ્વિચ કરવા માટે, બે વાર ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="8402673309244746971">અનુસરે છે ફીડ પર જાઓ</translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>

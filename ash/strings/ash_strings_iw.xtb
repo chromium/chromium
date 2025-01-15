@@ -88,7 +88,7 @@
 <translation id="1255033239764210633">מה מזג האוויר?</translation>
 <translation id="1256734167083229794">‏לחצת על מקש הקיצור של 'מגדיל למסך מלא'. אפשר להשתמש ב-<ph name="ZOOM_IN_ACCELERATOR" /> כדי להגדיל את התצוגה וב-<ph name="ZOOM_OUT_ACCELERATOR" /> כדי להקטין את התצוגה. כדי לזוז במסך כשמגדילים את התצוגה, משתמשים ב-Ctrl‏ + Alt + מקשי החיצים.</translation>
 <translation id="1269405891096105529">אין תמיכה בציוד היקפי במצב אורח</translation>
-<translation id="1270290102613614947">המקלדת שמופיעה במסך מושבתת</translation>
+<translation id="1270290102613614947">המקלדת הווירטואלית מושבתת</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1275285675049378717">מספק חשמל ל-<ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">נבחר</translation>
@@ -229,7 +229,7 @@
 <translation id="1744435831291625602">{HOURS,plural, =0{תוך שעה}=1{לפני שעה}one{לפני # שעות}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="1746730358044914197">מנהל המערכת שלך מגדיר את שיטות הקלט.</translation>
 <translation id="1747336645387973286">מועד ההגשה בתאריך <ph name="DUE_DATE" /></translation>
-<translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
+<translation id="1747827819627189109">המקלדת הווירטואלית מופעלת</translation>
 <translation id="1749109475624620922">החלון <ph name="WINDOW_TITLE" /> מוקצה לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="1750088060796401187">מותר להשתמש ב-<ph name="MAX_DESK_LIMIT" /> שולחנות עבודה וירטואליים לכל היותר. צריך להסיר שולחן עבודה וירטואלי כדי לפתוח אחד חדש.</translation>
 <translation id="1751335846119670066">עזרה בקריאה</translation>
@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">מעבר אל המשתמש הבא</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">הקלטת המסך הושלמה</translation>
+<translation id="1956087014741188812">השהיית השליטה בעכבר מהמקלדת</translation>
 <translation id="1957958912175573503">בחירת שפה</translation>
 <translation id="1961239773406905488">התצוגה המקדימה של המצלמה מוסתרת</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">מתבצעת סריקה לאיתור מכשירים...</translation>
 <translation id="2257486738914982088">משהו השתבש במהלך ההורדה של <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">הצעות לקבצים</translation>
+<translation id="2266607665880926261">השליטה בעכבר מהמקלדת הושהתה</translation>
 <translation id="2268130516524549846">‏Bluetooth מושבת</translation>
 <translation id="2268731132310444948">שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. אחרי שמפעילים את מרכז האפליקציות מופיע סרגל חיפוש משופר. אפשר להתחיל להקליד כדי לחפש קבצים, אפליקציות ועוד. אפשר גם לקבל תשובות לשאלות לגבי <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">יציאה מכל החשבונות</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">הגדלת התצוגה במסך</translation>
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
 <translation id="2880541185262491188">היו יותר מדי ניסיונות להזנת קוד האימות. צריך להמתין <ph name="TIME_LEFT" /> ולנסות שוב</translation>
+<translation id="2883271196820422439">המשך השליטה בעכבר מהמקלדת</translation>
 <translation id="2885950158625301909">מידע נוסף</translation>
 <translation id="2891209721153296020">"ביטול הבחירה"</translation>
 <translation id="2894949423239620203">חיבור כבל עשוי להשפיע על הביצועים</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">הנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ביטול ההגדרה של הצגת התמונות והמדיה שבטלפון מהזמן האחרון</translation>
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
+<translation id="3545224667633138205">השליטה בעכבר מהמקלדת נמשכת</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554215588514239132">הצגה או הסתרה של חלונית הכלים למפתחים</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">לא ניתן לטעון את הפריטים. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3738664582935948253">עכשיו אפשר להציג את הקליקים ומקשי הקיצור בהקלטות המסך</translation>
+<translation id="3741482431277446954">לחצן עכבר ימני</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3743775386021959186">מצב הריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">הסתרת ההצעה לתחזית מזג האוויר</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">כל היום</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963124517343721543">אפשר לפתוח את הכרטיסיות והחלונות הקודמים כדי להמשיך בקלות מהמקום שבו הפסקת. יוצגו לך גם הצעות בהתאמה אישית לדברים שאפשר לעשות.</translation>
-<translation id="396506362088290977">בדיקת צליל המיקרופון</translation>
 <translation id="3969043077941541451">כבוי</translation>
 <translation id="3970324493235864154">הצגת ההתראות שבטלפון</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -1300,7 +1304,6 @@
 <translation id="536019650977002321">אין הרשאה מהאדמין להקליט אודיו. צריך לפנות לאדמין לקבלת מידע נוסף.</translation>
 <translation id="5361524080961918551">קובצי הדיבור ב<ph name="LANGUAGE" /> הורדו חלקית</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> מעבר לכרטיסייה הזו</translation>
-<translation id="5363835273551457276">אפשר לבדוק את הצליל של המיקרופון. כדי להפסיק את הפעולה, צריך לסגור את החלונית.</translation>
 <translation id="5364693579536176785">שטח אחסון</translation>
 <translation id="5369573834963677938">התכונה 'שליטה באמצעות תנועות הפנים' תהיה זמינה למשתמשים אחרים במכשיר</translation>
 <translation id="5369717264580061086">תצוגה מקדימה של קובץ באפליקציה 'קבצים'</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="7118597077555700347">פתיחה של <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">בחירת המילה או האות הבאה</translation>
+<translation id="7124556000457919678">כשההגדרה מופעלת, אפשר להשהות או להמשיך את השליטה בעכבר מהמקלדת</translation>
 <translation id="7126996685418858413">נפתח בשבוע האחרון</translation>
 <translation id="7130207228079676353">סבירות גבוהה</translation>
 <translation id="7131634465328662194">המערכת תוציא אותך מהחשבון באופן אוטומטי.</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">שני לחצני העכבר</translation>
 <translation id="7244725679040769470">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" />. צריך לחבר את המכשיר למקור חשמל.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2154,6 +2159,7 @@
 <translation id="8203224998425013577">‏הצגה של סמלי אמוג'י וקובצי GIF נוספים</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
 <translation id="8205469348819768313">‏רוצה להשתמש במקש Page Down? שימוש במקש</translation>
+<translation id="8213376797713070611">לחצן עכבר שמאלי</translation>
 <translation id="8214996719228530800">‏ערוץ Canary</translation>
 <translation id="8219451629189078428">‏בפרק הזמן הזה, יש להקפיד להשאיר את ה-Chromebook פועל ומחובר לחשמל. יש לוודא שהכבלים של המטען או של המתאם מחוברים כראוי אל ה-Chromebook ואל שקע החשמל. אין לכבות את ה-Chromebook.</translation>
 <translation id="8220076512072059941">הוספה של <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2379,6 +2385,7 @@
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">‏Bluetooth לא זמין</translation>
+<translation id="9050999376345823055">כדי לשחרר, צריך ללחוץ על "."</translation>
 <translation id="906458777597946297">הגדלת החלון</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9070640332319875144">‏הגדרות Assistant</translation>

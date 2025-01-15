@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">若要将密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chromium 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="1652887625750064647">AI 最佳匹配</translation>
+<translation id="1653465303147789530">使用<ph name="PAYMENT_METHOD" />付款，无需切换应用</translation>
 <translation id="1656024727720460136">Chrome 已简化该页面，让内容更易于阅读，并且通过安全的连接检索到了原始网页。</translation>
 <translation id="1656489000284462475">取货</translation>
 <translation id="1658111267661135323">电视节目和视频</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">向 Google 发送<ph name="BEGIN_WHITEPAPER_LINK" />您访问的部分网页的网址、有限的系统信息以及部分网页内容<ph name="END_WHITEPAPER_LINK" />，帮助我们为所有人改善网络安全环境。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隐私权政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">您的文字和网页内容会发送给 Google，并可能会用于改进此功能。
   <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">完成一次性安全检查，即可更快地付款</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />书签</translation>
 <translation id="1973335181906896915">序列化错误</translation>
 <translation id="1973785048533660168">文员和行政职位</translation>
@@ -1584,6 +1586,7 @@
 <translation id="378611282717571199">与“<ph name="SEARCH_QUERY" />”最相符的搜索结果</translation>
 <translation id="3789155188480882154">大小：16</translation>
 <translation id="3789841737615482174">安装</translation>
+<translation id="3791118028061680614">无需切换应用即可付款</translation>
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
@@ -2149,6 +2152,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4827283332383516812">删除卡</translation>
+<translation id="4830443836091007686">已选择 <ph name="ITEMS" /> 个</translation>
 <translation id="4831993743164297314">照排机用纸</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4832961164064927107">烧烤</translation>

@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">ການປີນ ແລະ ກິລາປີນພູ</translation>
 <translation id="2215727959747642672">ການແກ້ໄຂໄຟລ໌</translation>
 <translation id="2215963164070968490">ໝາ</translation>
+<translation id="2219376942605837404">ເພີ່ມແຖບໃສ່ຕາຕະລາງປຽບທຽບ</translation>
 <translation id="2219658597883514593">ຣີສະຕາດການສອນການນຳໃຊ້</translation>
 <translation id="2219735899272417925">ຕ້ອງຣີເຊັດອຸປະກອນ</translation>
 <translation id="2221227930294879156">ກິດຈະກຳອາຫານ ແລະ ເຄື່ອງດື່ມ</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
 <translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
 <translation id="3068118691172921711">ການອັບໂຫຼດໄຟລ໌ຂອງທ່ານໃສ່ <ph name="CLOUD_PROVIDER" /> ຈະເລີ່ມໃນອີກ 1 ນາທີ</translation>
+<translation id="3068976060094139647">ທ່ານສາມາດຕື່ມຂໍ້ມູນບັດນີ້ໂດຍອັດຕະໂນມັດໄດ້ເນື່ອງຈາກບັນຊີຂອງທ່ານຖືກລິ້ງກັບ Google Pay ແລ້ວ.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} ລາຍການ}other{{ITEMS} ລາຍການ}}</translation>
 <translation id="3076865167425975822">ລະບົບປະຕິບັດການ</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4151403195736952345">ໃຊ້​ຄ່າ​ມາດ​ຕະ​ຖານ​ທົ່ວ​ໄປ (ກ​ວດ​ຫາ)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{ໜ້າ 1}other{ໜ້າ {COUNT}}}</translation>
 <translation id="4154277373259957087">ຕອນນີ້ Chrome ຈະຢັ້ງຢືນວ່າມັນແມ່ນທ່ານກ່ອນທີ່ຈະຕື່ມຂໍ້ມູນໃສ່ໃນວິທີການຈ່າຍເງິນ. ທ່ານສາມາດອັບເດດສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">ເພີ່ມແຖບໃສ່ຕາຕະລາງປຽບທຽບ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4165422751765527461">ເປີດບົດຄວາມສູນຊ່ວຍເຫຼືອໃນແຖບໃໝ່</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
@@ -2153,6 +2156,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງ Google Sheet ໃໝ່ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="4826588772550366629">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="4827283332383516812">ລຶບບັດອອກ</translation>
+<translation id="4830443836091007686">ເລືອກ <ph name="ITEMS" /> ແລ້ວ</translation>
 <translation id="4831993743164297314">ເຈ້ຍສຳລັບເຄື່ອງຍິງຟີມ</translation>
 <translation id="483241715238664915">ເປີດໃຊ້ຄຳເຕືອນ</translation>
 <translation id="4832961164064927107">ບາບີຄິວ ແລະ ການປີ້ງ</translation>
@@ -3395,6 +3399,7 @@
 <translation id="706960991003274248">ລະບົບຈະບັນທຶກຕາຕະລາງປຽບທຽບໄວ້ໃນບັນຊີ <ph name="EMAIL" /> ຂອງທ່ານ</translation>
 <translation id="7070144569727915108">ການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="70705239631109039">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ປອດໄພຢ່າງສົມບູນ</translation>
+<translation id="7071122206197538392">ຕາຕະລາງປຽບທຽບໃໝ່</translation>
 <translation id="7075452647191940183">ຄຳຂໍໃຫຍ່ເກີນໄປ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4105,6 +4110,7 @@
 <translation id="8298115750975731693">Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ຢູ່ (<ph name="WIFI_NAME" />) ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ຂອງ​ມັນ.</translation>
 <translation id="8301894345671534559">ປ້ອນລະຫັດ</translation>
 <translation id="8303854710873047864">ສະແດງ "<ph name="SECTION" />" ແລ້ວ</translation>
+<translation id="8304912090860925649">ຕາຕະລາງປຽບທຽບໃໝ່</translation>
 <translation id="830498451218851433">ພັບເຄິ່ງ</translation>
 <translation id="8308653357438598313">ການສະຕຣີມວິດີໂອສົດ</translation>
 <translation id="8311895354659782580">ລາຍຊື່ອະສັງຫາລິມະຊັບ</translation>

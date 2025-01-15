@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">切換至下一位使用者</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1954252331066828794">錄咗螢幕畫面</translation>
+<translation id="1956087014741188812">暫停滑鼠鍵</translation>
 <translation id="1957958912175573503">設定語言</translation>
 <translation id="1961239773406905488">隱藏咗攝錄機預覽</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2257486738914982088">下載「<ph name="FILENAME" />」時發生錯誤</translation>
 <translation id="2258734398699965611">建議檔案</translation>
+<translation id="2266607665880926261">滑鼠鍵已暫停</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268731132310444948">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。「啟動器」啟動後，搜尋列的功能就會更強大。你可輸入文字搜尋檔案、應用程式等內容，亦可尋找與 <ph name="PRODUCT_NAME" /> 相關的問題解答。</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">放大螢幕</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
 <translation id="2880541185262491188">嘗試輸入 PIN 的次數過多。請等候 <ph name="TIME_LEFT" />，然後再試一次</translation>
+<translation id="2883271196820422439">重新啟用滑鼠鍵</translation>
 <translation id="2885950158625301909">瞭解詳情</translation>
 <translation id="2891209721153296020">「取消選取」</translation>
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3540893133818942399">取消設定查看手機最近的相片和媒體</translation>
 <translation id="3542066395059568317">系統會顯示建議，讓您繼續使用上次開啟的內容。只要在建議上按一下右鍵即可移除。</translation>
+<translation id="3545224667633138205">滑鼠鍵已重新啟用</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏 Developer Tools 面板</translation>
 <translation id="3554637740840164787">已經將<ph name="ITEM_TITLE" />置頂</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">無法載入項目。請在連線後再試一次。</translation>
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3738664582935948253">螢幕畫面擷取內容現可顯示您點擊的項目和使用的鍵盤快速鍵</translation>
+<translation id="3741482431277446954">滑鼠右邊按鈕</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3743775386021959186">開咗「專注模式」，淨返 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隱藏天氣建議</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">全日</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963124517343721543">開啟之前使用的視窗和分頁，輕鬆繼續未完成的操作。你也可以查看個人化的後續步驟建議。</translation>
-<translation id="396506362088290977">測試麥克風音訊</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="3970324493235864154">查看手機的通知</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -1299,7 +1303,6 @@
 <translation id="536019650977002321">管理員禁止擷取音訊。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5361524080961918551">已下載部分<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此分頁</translation>
-<translation id="5363835273551457276">你可以測試麥克風音訊，關閉面板即可停止。</translation>
 <translation id="5364693579536176785">儲存空間</translation>
 <translation id="5369573834963677938">面部控制功能將可供裝置的其他使用者取用</translation>
 <translation id="5369717264580061086">在「檔案」應用程式中預覽檔案</translation>
@@ -1828,6 +1831,7 @@
 <translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="7118597077555700347">開啟<ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">選取下一個字詞或字母</translation>
+<translation id="7124556000457919678">開啟時，你可以暫停及重新啟用滑鼠鍵</translation>
 <translation id="7126996685418858413">上星期開啟過</translation>
 <translation id="7130207228079676353">最常用到的應用程式</translation>
 <translation id="7131634465328662194">您將會自動登出。</translation>
@@ -1849,6 +1853,7 @@
 <translation id="7198435252016571249">攝錄機已經對齊右下角，同系統平台有衝突。</translation>
 <translation id="7219573373513695352">未連接到任何裝置</translation>
 <translation id="7229029500464092426">記憶體用量：<ph name="AVAILABLE_MEMORY" /> (總記憶體：<ph name="TOTAL_MEMORY" />)</translation>
+<translation id="7239814253344511868">兩個滑鼠按鈕</translation>
 <translation id="7244725679040769470">剩餘 <ph name="PERCENTAGE" />% 電量。請將裝置接上電源。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新啟動才能套用更新。過程可能需時 1 分鐘。</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2150,6 +2155,7 @@
 <translation id="8203224998425013577">顯示更多 Emoji 和 GIF</translation>
 <translation id="8203795194971602413">按一下右鍵</translation>
 <translation id="8205469348819768313">要使用 Page Down 鍵嗎？使用</translation>
+<translation id="8213376797713070611">滑鼠左邊按鈕</translation>
 <translation id="8214996719228530800">Canary 版本</translation>
 <translation id="8219451629189078428">Chromebook 在這段期間需要保持開啟並接上電源。請確保充電器或適配器連接線完全插入 Chromebook 和電源插座。請勿關閉 Chromebook。</translation>
 <translation id="8220076512072059941">加 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9050012935252397793">藍牙無法使用</translation>
+<translation id="9050999376345823055">按下「.」即可放開</translation>
 <translation id="906458777597946297">將視窗放到最大</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9070640332319875144">Google 助理設定</translation>

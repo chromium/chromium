@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">Зберегти зображення в…</translation>
 <translation id="5511959326926949696">Посилений захист веб-переглядача (необов’язково). Використовуйте цю функцію, лише якщо вважаєте, що можете стати жертвою потужної кібератаки.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> год тому</translation>
+<translation id="5520668942302483373">Вийти з групи</translation>
 <translation id="5524590039848017563">Згорнута кнопка на основній панелі інструментів</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ненадійний пароль}one{{COUNT} ненадійний пароль}few{{COUNT} ненадійні паролі}many{{COUNT} ненадійних паролів}other{{COUNT} ненадійного пароля}}</translation>
 <translation id="5532545557415295622">Вікно часу бездіяльності</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">Мітку створено. Дата визначається.</translation>
 <translation id="5647096944343801045">Основна точка входу</translation>
 <translation id="5647193778876139879">Натисніть і утримуйте адресу.</translation>
+<translation id="5647702255748985085">Вийти з групи?</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
 <translation id="5652623411397330904">Тут показуватимуться товари, ціни на які ви відстежуєте.</translation>
 <translation id="5657156137487675418">Дозволити всі файли cookie</translation>

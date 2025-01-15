@@ -160,6 +160,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1101254380285078812">{COUNT,plural, =1{Jedna zaporka}one{{COUNT} zaporka}few{{COUNT} zaporke}other{{COUNT} zaporki}}</translation>
 <translation id="1102759278139578486">Ne mogu se preuzeti datoteke sa zabilješkama glavnog čvora. Pokušajte ponovo kasnije.</translation>
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Odmah ćete izgubiti pristup grupi kartica i ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="1106350001632362876">Povećaj prag</translation>
 <translation id="1107482171728500359">Dijeljenje mikrofona</translation>
 <translation id="110850812463801904">Ručno se povežite s OneDriveom</translation>
@@ -322,7 +323,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1210678701920254279">Pregled ili dodavanje pisača i pregled aktivnih zadataka ispisa</translation>
 <translation id="1211769675100312947">Vi birate prečace</translation>
 <translation id="1213254615020057352">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati djetetov doživljaj Androida automatskim slanjem dijagnostičkih podataka i podataka o upotrebi uređaja i aplikacija Googleu. Ti se podaci neće upotrebljavati za identifikaciju vašeg djeteta, a pomoći će poboljšati sustav, stabilnost aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Tu postavku zadao je vlasnik. Vlasnik može Googleu slati dijagnostiku i podatke o upotrebi za ovaj uređaj. Ako je za vaše dijete uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na djetetov Google račun.</translation>
-<translation id="1214004433265298541">Certifikat koji vam je dao administrator koji može vidjeti vjerodajnice za <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Dodana je nova pozadinska aplikacija</translation>
 <translation id="1216542092748365687">Uklanjanje otiska prsta</translation>
 <translation id="1216891999012841486">Saznajte više o ispravljanju pogrešaka pri ažuriranju</translation>
@@ -1695,6 +1695,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2173302385160625112">Provjerite internetsku vezu</translation>
 <translation id="2173801458090845390">Dodavanje ID-a zahtjeva uređaju</translation>
 <translation id="2175384018164129879">Upravljanje tražilicama i pretraživanje web-lokacija</translation>
+<translation id="2175526076681939329">Upotrijebi primarne ključeve</translation>
 <translation id="217576141146192373">Nije moguće dodati pisač. Provjerite konfiguraciju pisača i pokušajte ponovno.</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="217631816678106981">Nemoj zalijepiti</translation>
@@ -3416,6 +3417,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3407392651057365886">Predučitava se više stranica. Stranice se mogu predučitati putem Googleovih poslužitelja kad to zatraže druge web-lokacije.</translation>
 <translation id="3407967630066378878">Da biste postavili otisak prsta, neka vaše dijete dodirne senzor otiska prsta s lijeve strane uređaja <ph name="DEVICE_TYPE" />. Podaci o otisku prsta vašeg djeteta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Upotrebljavaju se kamera i mikrofon</translation>
+<translation id="3409157109901479672">Lijeva strana</translation>
 <translation id="3409513286451883969">Prevedi odabir na <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Skoči na odabir</translation>
 <translation id="3413122095806433232">CA izdavači: <ph name="LOCATION" /></translation>
@@ -4701,6 +4703,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4290826901752066702"><ph name="NUM" /> član</translation>
 <translation id="4290898381118933198">Prijeđite prstom da biste prelazili s jedne stranice na drugu</translation>
 <translation id="4291265871880246274">Dijalog za prijavu</translation>
+<translation id="4292613336957320546">Ubrzanje</translation>
 <translation id="429312253194641664">Web-lokacija reproducira medije</translation>
 <translation id="4294392694389031609">Datoteka <ph name="FILE_NAME" /> izbrisana je iz povijesti preuzimanja, ali je još uvijek na vašem uređaju</translation>
 <translation id="4295072614469448764">Aplikacija je dostupna na vašem terminalu. Možda se i u Pokretaču prikazuje ikona.</translation>
@@ -5868,6 +5871,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> pretraživanje</translation>
 <translation id="5139823398361067371">Unesite PIN za sigurnosni ključ. Ako ne znate PIN, morat ćete vratiti sigurnosni ključ na zadano.</translation>
 <translation id="5139955368427980650">&amp;Otvori</translation>
+<translation id="5140742218917419811">Tipke za upotrebu</translation>
 <translation id="5141421572306659464">Primarni račun</translation>
 <translation id="5141957579434225843">Na primjer, upotrijebite oà, oè, uỳ umjesto òa, òe, ùy</translation>
 <translation id="5143374789336132547">Proširenje "<ph name="EXTENSION_NAME" />" promijenilo je stranicu koja se prikazuje kada se klikne gumb Početna.</translation>
@@ -5886,6 +5890,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5149602533174716626">Kopira&amp;j kadar videozapisa</translation>
 <translation id="5150254825601720210">Naziv certifikata SSL poslužitelja za Netscape</translation>
 <translation id="5151354047782775295">Oslobodite prostor na disku ili će se određeni podaci automatski izbrisati.</translation>
+<translation id="5153074793829217329">Upravljajte pokazivačem miša pomoću tipkovnice ili numeričke tipkovnice</translation>
 <translation id="5153234146675181447">Zaboravljanje telefona</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Napredne postavke za <ph name="PRINTING_DESTINATION" /></translation>
@@ -7978,6 +7983,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6689714331348768690">Neka <ph name="SUPERVISED_USER_NAME" /> dođe do računala. Dijete će pročitati nekoliko izraza na ovom zaslonu da bi se izradio njegov glasovni model.
     <ph name="BR" />
     Ako <ph name="SUPERVISED_USER_NAME" /> treba pomoć s čitanjem, neka ponavlja za vama. Šapćite dalje od mikrofona kako bi Asistent naučio prepoznavati djetetov, a ne vaš glas.</translation>
+<translation id="6689948774466767379">Tipke za pokrete mišem</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Proslijedi</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{Jedna stranica}one{Broj stranica: {COUNT}}few{Broj stranica: {COUNT}}other{Broj stranica: {COUNT}}}</translation>
@@ -10065,6 +10071,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj karticu na popis za čitanje}one{Dodaj kartice na popis za čitanje}few{Dodaj kartice na popis za čitanje}other{Dodaj kartice na popis za čitanje}}</translation>
 <translation id="8169177848833352618">Nažalost, ovo računalo ne ispunjava zahtjeve za instaliranje Bruschette. Kôd pogreške je <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Desna strana</translation>
 <translation id="8174047975335711832">Informacije o uređaju</translation>
 <translation id="8176332201990304395">Ružičasta i bijela</translation>
 <translation id="8176529144855282213">Da biste uključili pristup mikrofonu, uključite fizički prekidač mikrofona na uređaju</translation>

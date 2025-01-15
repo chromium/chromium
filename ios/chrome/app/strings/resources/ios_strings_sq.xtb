@@ -991,6 +991,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5506763544823940561">Ruaj imazhin në…</translation>
 <translation id="5511959326926949696">Mbrojtja ekstreme opsionale për shfletuesin tënd. Duhet të përdoret vetëm nëse beson se mund të jesh objektiv i një sulmi kibernetik shumë të sofistikuar.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> orë më parë</translation>
+<translation id="5520668942302483373">Largohu nga grupi</translation>
 <translation id="5524590039848017563">Butoni i shiritit kryesor të veglave u palos</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5532545557415295622">Dialogu i kohës së pritjes në gjendje joaktive</translation>
@@ -1030,6 +1031,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5646284034397250191">Etiketa u krijua. Data në pritje</translation>
 <translation id="5647096944343801045">Pika e madhe e hyrjes</translation>
 <translation id="5647193778876139879">Prek dhe mbaj të shtypur një adresë.</translation>
+<translation id="5647702255748985085">Dëshiron të largohesh nga grupi?</translation>
 <translation id="5648166631817621825">7 ditët e fundit</translation>
 <translation id="5652623411397330904">Produktet që monitoron do të shfaqen këtu.</translation>
 <translation id="5657156137487675418">Lejo të gjitha kukit</translation>
@@ -1115,6 +1117,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6027619584715411062">Identifikohu për të marrë faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua.</translation>
 <translation id="6027945736510816438">Mos dëshiron të thuash <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">veçori e re</translation>
+<translation id="6038823991892265570">Menaxho hapësirën ruajtëse të Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6042308850641462728">Më shumë</translation>

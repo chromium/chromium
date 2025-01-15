@@ -991,6 +991,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5506763544823940561">Enregistrer l'image dans…</translation>
 <translation id="5511959326926949696">Une protection facultative renforcée de votre navigateur. Nous vous recommandons de ne l'utiliser que si vous pensez être la cible d'une cyberattaque très sophistiquée.</translation>
 <translation id="5513681519188741830">Il y a <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Quitter le groupe</translation>
 <translation id="5524590039848017563">Bouton de la barre d'outils principale réduit</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mot de passe peu sécurisé}one{{COUNT} mot de passe peu sécurisé}other{{COUNT} mots de passe peu sécurisés}}</translation>
 <translation id="5532545557415295622">Boîte de dialogue du délai d'inactivité</translation>
@@ -1030,6 +1031,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5646284034397250191">Étiquette créée. En attente de la date.</translation>
 <translation id="5647096944343801045">Grand point d'entrée</translation>
 <translation id="5647193778876139879">Appuyez de manière prolongée sur une adresse.</translation>
+<translation id="5647702255748985085">Quitter le groupe ?</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
 <translation id="5657156137487675418">Autoriser tous les cookies</translation>
@@ -1115,6 +1117,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6027619584715411062">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils.</translation>
 <translation id="6027945736510816438">Vous vouliez dire <ph name="WEBSITE" /> ?</translation>
 <translation id="6032845897905314562">nouvelle fonctionnalité</translation>
+<translation id="6038823991892265570">Gérer l'espace de stockage Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>

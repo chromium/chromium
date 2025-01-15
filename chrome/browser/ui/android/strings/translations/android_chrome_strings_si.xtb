@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">මගේම එකක් තනන්න</translation>
 <translation id="2574249610672786438">ඔබ Chrome භාවිත කරන ඕනෑම ස්ථානයක සිට ඔබේ ටැබ බැලීමට, ඔබේ සියලු උපාංගවල පුරන්න</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) හට “<ph name="GROUP_NAME" />” පටිති සමූහයට වහාම ප්‍රවේශය අහිමි වනු ඇති අතර, තවදුරටත් Google සේවා හරහා ඔබ සමග අන්තර් ක්‍රියා කිරීමට නොහැකි වනු ඇත.</translation>
-<translation id="2578337197553672982">තරුණ මනස සඳහා Google විසින් අන්තර්ගතය</translation>
 <translation id="2579297619530305344">ඔබේ සියලුම උපාංග මත මුරපද පූර්ණ මට්ටමින් විවිෘත විය</translation>
 <translation id="2581165646603367611">මෙය Chrome වැදගත් යැයි නොසිතන කුකීස්, හැඹිලිය, සහ අඩවිවල අනෙකුත් දත්ත හිස් කරනු ඇත.</translation>
 <translation id="2587052924345400782">වඩා අලුත් අනුවාදයක් තිබේ</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">මිල හඹා යාම කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඇඟවීම් ලබා ගන්න.</translation>
 <translation id="4425173294238317796">මුරයතුර තහවුරු කිරීමේ පත්‍රිකාව</translation>
 <translation id="442518031075347249">ඔබට තවදුරටත් Google Pay සමඟ ඔබගේ අතථ්‍ය කාඩ්පත භාවිත කළ නොහැකි වනු ඇත <ph name="BEGIN_LINK1" />අතථ්‍ය කාඩ්පත් ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">සියලු පිටුසන්</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> දැනට තෝරා ඇත. ගිණුමක් තෝරන්න.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> පටිත්ත වසන්න</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> වෙත පිටුසන් යොදන ලදී</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">මකන ලද Chrome දත්ත</translation>
 <translation id="4742970037960872810">උද්දීපනය ඉවත් කරන්න</translation>
 <translation id="4749960740855309258">නව ටැබයක් විවෘත කරන්න</translation>
-<translation id="4750356170202299988">තරුණ මනස සඳහා අන්තර්ගතය</translation>
 <translation id="4758061975920522644">රූපය පමණක් බෙදා ගන්න</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
 <translation id="4763480195061959176">වීඩියෝ</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">පසුබිමින් පටිත්ත විවෘත කරන ලදි.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ඔබ දැන් මෙය වෙනස් කළ යුතු ය}one{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}other{ඔබ දැන් මේවා වෙනස් කළ යුතු ය}}</translation>
 <translation id="7196215469483532480">පෞද්ගලිකත්ව මාර්ගෝපදේශ පැහැදිලි කිරීම පූර්ණ උසකින් විවෘත වේ</translation>
-<translation id="7205672015775254816">තරුණ මනස සඳහා Google විසින් අන්තර්ගතය - ක්‍රියාවිරහිතයි</translation>
 <translation id="7207760545532569765">නව පසුබිම් ටැබ සමූහයක් ලෙස ටැබ <ph name="TAB_COUNT" />ක් ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="7217781228893594884">ඔබ Chrome වෙතින් පිටවන විට අප්‍රකට පටිති අගුළු දමනු ඇත</translation>
 <translation id="7221869452894271364">මෙම පිටුව නැවත ලබාගන්න</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">සියල්ල ඉවත් කරන්න</translation>
 <translation id="7886917304091689118">Chrome තුළ ධාවනය වේ</translation>
 <translation id="7887174313503389866">ප්‍රධාන පෞද්ගලිකත්ව සහ ආරක්ෂක පාලන පිළිබඳ මාර්ගෝපදේශය සහිත චාරිකාවක් සිදු කරන්න. තවත් විකල්ප සඳහා, තනි සැකසීම් වෙත යන්න.</translation>
-<translation id="7896724475402191389">තරුණ මනස සඳහා අන්තර්ගතය - ක්‍රියාවිරහිතයි</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{ඔබේ සංවිධානය විසින් 1ක් අවහිර කර ඇත}one{ඔබේ සංවිධානය විසින් #ක් අවහිර කර ඇත}other{ඔබේ සංවිධානය විසින් #ක් අවහිර කර ඇත}}</translation>
 <translation id="7914399737746719723">යෙදුම ස්ථාපනය කරන ලදි</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">ඔබට <ph name="FROM_ACCOUNT" /> වෙතින් පිටුසන්, ඉතිහාසය සහ වෙනත් සැකසීම් ඇත</translation>
 <translation id="8387617938027387193">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
+<translation id="8396098434728053815">පටිති ශ්‍රව්‍ය ද බෙදා ගන්න</translation>
 <translation id="8398389123831319859">අප්‍රකට වෙත මාරු වීමට දෙවරක් තට්ටු කර සිටින්න</translation>
 <translation id="8402673309244746971">පහත දේ වෙත යන්න</translation>
 <translation id="8413126021676339697">සම්පූර්ණ ඉතිහාසය පෙන්වන්න</translation>

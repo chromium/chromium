@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Populiarios paieškos</translation>
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
 <translation id="2119636449201577317">Atidaryti…</translation>
+<translation id="2120553909046681540">Organizacija išjungė privatų naršymą.</translation>
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Ieškoti nukopijuoto teksto</translation>
 <translation id="2147127444698817042">Pasiekiama tik „iPhone“</translation>
@@ -337,6 +338,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2384692388811649784">Slėpti inkognito skirtukus</translation>
 <translation id="2386793615875593361">Pasirinkta: 1</translation>
 <translation id="2390457533592708044">Slėpti „<ph name="MODULE_NAME" />“</translation>
+<translation id="2394659309569789395">Vis tiek atidaryti svetainę</translation>
 <translation id="2403129868389095715">Siuntinio pristatyti negalima</translation>
 <translation id="2410754283952462441">Pasirinkite paskyrą</translation>
 <translation id="2424805048070062787">Tęsti naudojant šį skirtuką</translation>
@@ -991,6 +993,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5506763544823940561">Išsaugoti vaizdą…</translation>
 <translation id="5511959326926949696">Ypatinga pasirenkama naršyklės apsauga. Funkciją reikėtų naudoti, tik jei manote, kad jums gali grėsti itin sudėtinga kibernetinė ataka.</translation>
 <translation id="5513681519188741830">Prieš <ph name="TIME" /> val.</translation>
+<translation id="5520668942302483373">Išeiti iš grupės</translation>
 <translation id="5524590039848017563">Sutrauktas pagrindinės įrankių juostos mygtukas</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} nesudėtingas slaptažodis}one{{COUNT} nesudėtingas slaptažodis}few{{COUNT} nesudėtingi slaptažodžiai}many{{COUNT} nesudėtingo slaptažodžio}other{{COUNT} nesudėtingų slaptažodžių}}</translation>
 <translation id="5532545557415295622">Neveikos skirtojo laiko dialogo langas</translation>
@@ -1030,6 +1033,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5646284034397250191">Etiketė sukurta. Laukiama datos</translation>
 <translation id="5647096944343801045">Didelis įėjimo taškas</translation>
 <translation id="5647193778876139879">Palieskite ir palaikykite adresą.</translation>
+<translation id="5647702255748985085">Išeiti iš grupės?</translation>
 <translation id="5648166631817621825">Pastarosios 7 dienos</translation>
 <translation id="5652623411397330904">Čia bus rodomi jūsų stebimi produktai.</translation>
 <translation id="5657156137487675418">Leisti visus slapukus</translation>

@@ -1204,6 +1204,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3156511682997763015">Patīt uz priekšu par 10 sekundēm</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158539265159265653">Disks</translation>
+<translation id="3162070126914310576">Šo ierīci pašlaik nevar reģistrēt, jo jūsu organizācijas vienībai ir sasniegts sākotnējās reģistrācijas ierobežojums. Lai saņemtu palīdzību, sazinieties ar administratoru.</translation>
 <translation id="3162559335345991374">Iespējams, izmantotajā Wi-Fi tīklā tiks pieprasīts apmeklēt pieteikšanās lapu.</translation>
 <translation id="316638481603975524">Drīkst lūgt atļauju instalēt tīmekļa lietotnes</translation>
 <translation id="3168744840365648658">Radioiekārtas</translation>
@@ -1935,6 +1936,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Failu augšupielāde pakalpojumā Microsoft OneDrive ir pārtraukta</translation>
 <translation id="4390472908992056574">Apmale</translation>
+<translation id="4395550503472021297">Šī politika nosaka tālāk norādīto politiku noklusējuma darbību: <ph name="POLICIES" />.</translation>
 <translation id="4397978002248035985">Tiks atvērts uznirstošs logs, lai veiktu verifikāciju bankas vietnē</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4406896451731180161">meklēšanas rezultāti</translation>
@@ -2377,6 +2379,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5244521145258281926">Poga “Pārvaldīt Google kontu”. Aktivizējiet, lai Google kontā pārvaldītu informāciju, konfidencialitātes un drošības iestatījumus.</translation>
 <translation id="5244732203286792411">Notiek ielāde…
     Tā var ilgt kādu brīdi.</translation>
+<translation id="5248543496748975054">Vai nav aizpildīts kartes numurs?</translation>
 <translation id="5250209940322997802">“Izveidojiet savienojumu ar tīklu”</translation>
 <translation id="52517543715119994">Uzzināt vairāk par Chrome funkcijām</translation>
 <translation id="5251803541071282808">Mākonis</translation>
@@ -3993,6 +3996,7 @@ Papildu informācija:
 <translation id="8116925261070264013">Izslēgta skaņa</translation>
 <translation id="8118489163946903409">Maksājuma veids</translation>
 <translation id="8118506371121007279">Sniegt atsauksmes</translation>
+<translation id="8120720167840853945">Šī politika nenosaka citu politiku noklusējuma darbību.</translation>
 <translation id="8127301229239896662">Programmatūra <ph name="SOFTWARE_NAME" /> netika pareizi instalēta datorā vai tīklā. Lūdziet IT administratoram atrisināt šo problēmu.</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8133495915926741232">Izvēlieties, kuras plašās tēmu kategorijas drīkst izmantot, lai personalizētu reklāmas. Izslēdzot plašāku kategoriju, tiks bloķētas arī ar to saistītās tēmas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>

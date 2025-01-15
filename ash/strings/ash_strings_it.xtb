@@ -282,6 +282,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1948405482892809935">Passa all'utente successivo</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954252331066828794">Registrazione dello schermo completata</translation>
+<translation id="1956087014741188812">Metti in pausa i tasti mouse</translation>
 <translation id="1957958912175573503">Imposta la lingua</translation>
 <translation id="1961239773406905488">Anteprima della videocamera nascosta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="225680501294068881">Ricerca dispositivi in corso...</translation>
 <translation id="2257486738914982088">Si è verificato un errore durante il download del file <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">File suggeriti</translation>
+<translation id="2266607665880926261">Tasti mouse in pausa</translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
 <translation id="2268731132310444948">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Una volta attivato Avvio app, vedrai una barra di ricerca avanzata. Puoi iniziare a digitare per cercare file, app e altro ancora. Inoltre puoi ricevere risposte a domande relative al tuo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Disconnetti tutti</translation>
@@ -540,6 +542,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2876338922445400217">Aumenta lo zoom dello schermo</translation>
 <translation id="2878884018241093801">Nessun elemento recente</translation>
 <translation id="2880541185262491188">Troppi tentativi di inserimento del PIN. Aspetta <ph name="TIME_LEFT" /> e riprova.</translation>
+<translation id="2883271196820422439">Riprendi i tasti mouse</translation>
 <translation id="2885950158625301909">Scopri di più</translation>
 <translation id="2891209721153296020">"Deseleziona"</translation>
 <translation id="2894949423239620203">Il cavo può influire sulle prestazioni</translation>
@@ -727,6 +730,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Chiudi la configurazione della visualizzazione di contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="3542066395059568317">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi fare clic con il tasto destro del mouse sui consigli per rimuoverli.</translation>
+<translation id="3545224667633138205">Tasti mouse ripristinati</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554215588514239132">Mostra o nascondi il riquadro Strumenti per sviluppatori</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
@@ -797,6 +801,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3727231512028252576">Impossibile caricare gli elementi. Riprova quando sei online.</translation>
 <translation id="3735740477244556633">Ordina per</translation>
 <translation id="3738664582935948253">Ora puoi mostrare i clic e le scorciatoie da tastiera nelle registrazioni dello schermo</translation>
+<translation id="3741482431277446954">Tasto destro del mouse</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3743775386021959186">La modalità Niente distrazioni è attiva, mancano <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Nascondi suggerimento meteo</translation>
@@ -855,7 +860,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963124517343721543">Continua facilmente da dove avevi interrotto aprendo le finestre e le schede precedenti. Vedrai anche suggerimenti personalizzati su cosa fare dopo.</translation>
-<translation id="396506362088290977">Testa il suono del microfono</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">Visualizza le notifiche dello smartphone</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
@@ -1297,7 +1301,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="536019650977002321">L'amministratore non consente l'acquisizione dell'audio. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> file vocali scaricati parzialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Vai a questa scheda</translation>
-<translation id="5363835273551457276">Puoi testare il suono del microfono. Chiudi il riquadro per interrompere.</translation>
 <translation id="5364693579536176785">spazio di archiviazione</translation>
 <translation id="5369573834963677938">Il controllo del volto sarà disponibile per gli altri utenti sul dispositivo</translation>
 <translation id="5369717264580061086">Visualizza l'anteprima del file nell'app File</translation>
@@ -1827,6 +1830,7 @@ Nuova installazione</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7118597077555700347">Apri <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Consente di selezionare la parola o la lettera successiva</translation>
+<translation id="7124556000457919678">Quando l'impostazione è attiva, metti in pausa e riprendi i tasti mouse</translation>
 <translation id="7126996685418858413">Aperto la settimana scorsa</translation>
 <translation id="7130207228079676353">PIÙ PROBABILI</translation>
 <translation id="7131634465328662194">Verrai disconnesso automaticamente.</translation>
@@ -1848,6 +1852,7 @@ Nuova installazione</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="7219573373513695352">Nessun dispositivo collegato</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Entrambi i tasti mouse</translation>
 <translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2149,6 +2154,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8203224998425013577">Mostra altre emoji e GIF</translation>
 <translation id="8203795194971602413">Clic con il pulsante destro</translation>
 <translation id="8205469348819768313">Stai cercando di usare Pagina giù? Usa</translation>
+<translation id="8213376797713070611">Tasto sinistro del mouse</translation>
 <translation id="8214996719228530800">Canale Canary</translation>
 <translation id="8219451629189078428">Durante questo periodo di tempo, il Chromebook deve rimanere acceso e collegato all'alimentazione. Assicurati che il caricabatterie o i cavi dell'adattatore siano ben collegati al Chromebook e alla presa di corrente. Non spegnere il Chromebook.</translation>
 <translation id="8220076512072059941">Aggiungi <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2373,6 +2379,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9034924485347205037">File Linux</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Il Bluetooth non è disponibile</translation>
+<translation id="9050999376345823055">Premi "." per rilasciare</translation>
 <translation id="906458777597946297">Ingrandisci la finestra</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9070640332319875144">Impostazioni assistente</translation>

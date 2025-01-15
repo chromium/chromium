@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{비밀번호 1개}other{비밀번호 {COUNT}개}}</translation>
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
+<translation id="1104098698795583187">이 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="1106350001632362876">기준 높이기</translation>
 <translation id="1107482171728500359">마이크 공유</translation>
 <translation id="110850812463801904">수동으로 OneDrive에 연결</translation>
@@ -320,7 +321,6 @@
 <translation id="1210678701920254279">프린터를 확인 또는 추가하고 활성화된 인쇄 작업 보기</translation>
 <translation id="1211769675100312947">내가 선별한 바로가기입니다.</translation>
 <translation id="1213254615020057352">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" />의 사용자 인증 정보를 볼 수 있는 관리자가 인증서를 제공합니다.</translation>
 <translation id="1215411991991485844">새 백그라운드 앱을 추가함</translation>
 <translation id="1216542092748365687">지문 삭제</translation>
 <translation id="1216891999012841486">업데이트 오류 수정에 관해 자세히 알아보기</translation>
@@ -1704,6 +1704,7 @@
 <translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
+<translation id="2175526076681939329">기본 키 사용</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="217631816678106981">붙여넣지 않음</translation>
@@ -3429,6 +3430,7 @@
 <translation id="3407392651057365886">더 많은 페이지가 미리 로드됩니다. 다른 사이트에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="3407967630066378878">지문을 설정하려면 자녀가 <ph name="DEVICE_TYPE" /> 왼쪽에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="3408555740610481810">카메라 및 마이크 사용 중</translation>
+<translation id="3409157109901479672">왼쪽</translation>
 <translation id="3409513286451883969">선택사항을 <ph name="LANGUAGE" />로 번역(&amp;T)</translation>
 <translation id="3412265149091626468">선택 부분으로 이동</translation>
 <translation id="3413122095806433232">CA 발행기관: <ph name="LOCATION" /></translation>
@@ -4712,6 +4714,7 @@
 <translation id="4290826901752066702">멤버 <ph name="NUM" />명</translation>
 <translation id="4290898381118933198">스와이프하여 다른 페이지로 이동</translation>
 <translation id="4291265871880246274">로그인 대화상자</translation>
+<translation id="4292613336957320546">가속력</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="4294392694389031609">다운로드 기록에서 <ph name="FILE_NAME" /> 파일을 삭제했지만, 기기에는 계속 남아 있습니다.</translation>
 <translation id="4295072614469448764">단말기에서 앱을 사용할 수 있습니다. 런처에 아이콘이 있을 수도 있습니다.</translation>
@@ -5881,6 +5884,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 검색</translation>
 <translation id="5139823398361067371">보안 키의 PIN을 입력하세요. PIN을 모른다면 보안 키를 재설정해야 합니다.</translation>
 <translation id="5139955368427980650">열기(&amp;O)</translation>
+<translation id="5140742218917419811">사용할 키</translation>
 <translation id="5141421572306659464">기본 계정</translation>
 <translation id="5141957579434225843">예를 들어 òa, òe, ùy 대신 oà, oè, uỳ를 사용하세요.</translation>
 <translation id="5143374789336132547">홈 버튼을 클릭하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
@@ -5899,6 +5903,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5149602533174716626">동영상 프레임 복사(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">디스크 저장 공간을 확보하지 않으면 일부 데이터가 자동으로 삭제됩니다.</translation>
+<translation id="5153074793829217329">키보드 또는 숫자 키패드를 사용하여 마우스 커서를 제어합니다.</translation>
 <translation id="5153234146675181447">휴대전화 지우기</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> 고급 설정</translation>
@@ -7991,6 +7996,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />님을 컴퓨터 앞으로 부르세요. 화면에 표시되는 몇 개의 구문을 읽으면 음성 모델이 생성됩니다.
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" />님이 읽는 데 도움이 필요하다면 먼저 읽어준 후 따라 하라고 하세요. 마이크 멀리서 작게 이야기하여 어시스턴트가 부모님이 아닌 자녀의 음성을 학습하게 하세요.</translation>
+<translation id="6689948774466767379">마우스 키</translation>
 <translation id="6690659332373509948">파일을 파싱할 수 없음: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>
@@ -10078,6 +10084,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="8169177848833352618">이 머신은 Bruschetta 설치 요구사항을 충족하지 않습니다. 오류 코드는 <ph name="ERROR" />입니다.</translation>
+<translation id="8172303073969862496">오른쪽</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
 <translation id="8176529144855282213">마이크 액세스를 사용 설정하려면 기기에서 실제 마이크 스위치를 켜세요.</translation>
