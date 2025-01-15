@@ -16,6 +16,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
@@ -189,6 +190,9 @@ class ImageCarouselView : public views::View {
         std::make_unique<views::BoxLayoutView>());
     image_inner_container_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
+    image_inner_container_->SetProperty(
+        views::kElementIdentifierKey,
+        web_app::kDetailedInstallDialogImageContainer);
 
     // Create the loading icons that have the same width as the calculated
     // downloaded size of the screenshots, with similar padding as when images
@@ -389,6 +393,8 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 }  // namespace
 
 namespace web_app {
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kDetailedInstallDialogImageContainer);
 
 void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,

@@ -165,6 +165,8 @@ void ShowDiyAppInstallDialog(
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kDetailedInstallDialogImageContainer);
+
 // Shows the Web App detailed install dialog.
 // The dialog shows app's detailed information including screenshots. Users then
 // confirm or cancel install in this dialog.
