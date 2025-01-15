@@ -5,17 +5,17 @@
 package org.chromium.support_lib_boundary;
 
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.Nullable;
-import androidx.core.os.CancellationSignal;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Executor;
 
-/**
- */
+/** */
 public interface WebViewProviderBoundaryInterface {
     void insertVisualStateCallback(
             long requestId, /* VisualStateCallback */ InvocationHandler callback);
@@ -56,12 +56,14 @@ public interface WebViewProviderBoundaryInterface {
     void prerenderUrl(
             String url,
             @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
 
     void prerenderUrl(
             String url,
             @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
