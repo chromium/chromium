@@ -116,6 +116,7 @@ const char kHistogramGWSIsFirstNavigationForGWS[] =
 
 const char kHistogramGWSConnectionReuseStatus[] =
     HISTOGRAM_PREFIX "ConnectionReuseStatus";
+const char kHistogramIncognitoSuffix[] = ".Incognito";
 
 const char kHistogramGWSAllHeadersExpected[] =
     HISTOGRAM_PREFIX "SyntheticResponse.AllHeadersExpected";
@@ -755,6 +756,12 @@ void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
   }
   base::UmaHistogramEnumeration(internal::kHistogramGWSConnectionReuseStatus,
                                 status);
+  if (IsIncognitoProfile()) {
+    auto histogram_name =
+        base::StrCat({internal::kHistogramGWSConnectionReuseStatus,
+                      internal::kHistogramIncognitoSuffix});
+    base::UmaHistogramEnumeration(histogram_name, status);
+  }
 
   switch (status) {
     case ConnectionReuseStatus::kNonReuse:
