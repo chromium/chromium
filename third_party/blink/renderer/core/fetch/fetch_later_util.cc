@@ -179,4 +179,14 @@ FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
              : FramePolicy::DeferredFetchPolicy::kDisabled;
 }
 
+// static
+bool FetchLaterUtil::ShouldClearDeferredFetchPolicy(Frame* frame) {
+  CHECK(frame);
+  // if document’s node navigable’s container document is not null, and its
+  // origin is same origin with document:
+  // then set document’s node navigable’s navigable container’s reserved
+  // deferred-fetch quota to 0.
+  return frame->Parent() && AreSameOrigin(frame, frame->Parent());
+}
+
 }  // namespace blink
