@@ -9100,3 +9100,6 @@ crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element
 
 # Gardener 2025-01-14
 crbug.com/384875218 external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Pass Timeout ]
+
+# Gardener 2025-01-15
+crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]
