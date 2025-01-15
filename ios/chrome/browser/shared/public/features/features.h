@@ -971,6 +971,9 @@ extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
 // Feature flag to control whether the Default Browser banner promo is enabled.
 BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);
 
+// Parameter for the number of impressions to show the promo for.
+extern const base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit;
+
 // Returns whether `kDefaultBrowserBannerPromo` is enabled.
 bool IsDefaultBrowserBannerPromoEnabled();
 

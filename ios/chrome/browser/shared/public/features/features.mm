@@ -1183,6 +1183,10 @@ BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit{
+    &kDefaultBrowserBannerPromo, "DefaultBrowserBannerPromoImpressionLimit",
+    10};
+
 bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
 }
