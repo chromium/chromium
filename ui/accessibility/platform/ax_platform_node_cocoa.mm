@@ -2460,12 +2460,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  if (![parameter isKindOfClass:[NSNumber class]])
+  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!indexNumber) {
     return nil;
-
-  // TODO(crbug.com/41456329): Implement this for real.
+  }
   return [NSValue
-      valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
+      valueWithRange:[self accessibilityStyleRangeForIndex:[indexNumber
+                                                               intValue]]];
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
@@ -3362,10 +3363,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSRange)accessibilityStyleRangeForIndex:(NSInteger)index {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
+  }
 
-  return [[self AXStyleRangeForIndex:@(index)] rangeValue];
+  // TODO(crbug.com/41456329): Implement this for real.
+  return NSMakeRange(0, [self accessibilityNumberOfCharacters]);
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line {
