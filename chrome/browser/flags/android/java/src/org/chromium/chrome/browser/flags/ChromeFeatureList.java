@@ -338,8 +338,6 @@ public abstract class ChromeFeatureList {
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FINGERPRINTING_PROTECTION_UX = "FingerprintingProtectionUx";
-    public static final String FINGERPRINTING_PROTECTION_USER_BYPASS =
-            "FingerprintingProtectionUserBypass";
     public static final String FLOATING_SNACKBAR = "FloatingSnackbar";
     public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
             "ForceBrowserControlsUponExitingFullscreen";
@@ -365,7 +363,6 @@ public abstract class ChromeFeatureList {
     public static final String INSTALL_MESSAGE_THROTTLE = "InstallMessageThrottle";
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
-    public static final String IP_PROTECTION_USER_BYPASS = "IpProtectionUserBypass";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
