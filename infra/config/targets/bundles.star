@@ -4023,22 +4023,91 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
+)
+
+# Copy of gpu_passthrough_telemetry_tests that forces running with Skia/Ganesh.
+targets.bundle(
+    name = "gpu_passthrough_ganesh_telemetry_tests",
+    targets = [
+        "context_lost_passthrough_ganesh_tests",
+        "expected_color_pixel_passthrough_ganesh_test",
+        "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "pixel_skia_gold_passthrough_ganesh_test",
+        "screenshot_sync_passthrough_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "context_lost_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "expected_color_pixel_passthrough_ganesh_test": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--test-machine-name",
+                    "${buildername}",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "gpu_process_launch_tests": [
+            "gpu_integration_test_common_args",
+        ],
+        "hardware_accelerated_feature_tests": [
+            "gpu_integration_test_common_args",
+        ],
+        "pixel_skia_gold_passthrough_ganesh_test": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--test-machine-name",
+                    "${buildername}",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "screenshot_sync_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
 )
 
 targets.bundle(
     name = "gpu_pixel_4_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
+        "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
 )
@@ -4047,15 +4116,15 @@ targets.bundle(
     name = "gpu_pixel_6_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_passthrough_graphite_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_validating_telemetry_tests",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webcodecs_validating_graphite_telemetry_test",
-        "gpu_webcodecs_validating_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
 )
@@ -4085,6 +4154,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_webcodecs_validating_ganesh_telemetry_test",
+    targets = [
+        "webcodecs_tests",
+    ],
+    per_test_modifications = {
+        "webcodecs_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_webcodecs_validating_graphite_telemetry_test",
     targets = [
         "webcodecs_graphite_tests",
@@ -4094,23 +4180,6 @@ targets.bundle(
             targets.mixin(
                 args = [
                     "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
-                ],
-            ),
-            "gpu_integration_test_common_args",
-        ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_webcodecs_validating_telemetry_test",
-    targets = [
-        "webcodecs_tests",
-    ],
-    per_test_modifications = {
-        "webcodecs_tests": [
-            targets.mixin(
-                args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating",
                 ],
             ),
             "gpu_integration_test_common_args",
@@ -4136,6 +4205,27 @@ targets.bundle(
                     # These tests currently take about an hour and fifteen minutes
                     # to run. Split them into roughly 5-minute shards.
                     shards = 20,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
+    targets = [
+        "webgl_conformance_gles_passthrough_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_gles_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                swarming = targets.swarming(
+                    shards = 6,
                 ),
             ),
             "gpu_integration_test_common_args",

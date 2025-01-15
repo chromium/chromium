@@ -784,6 +784,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "context_lost_passthrough_ganesh_tests",
+    telemetry_test_name = "context_lost",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "context_lost_passthrough_graphite_tests",
     telemetry_test_name = "context_lost",
     mixins = [
@@ -933,6 +941,15 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "expected_color_pixel_metal_passthrough_graphite_test",
+    telemetry_test_name = "expected_color",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "expected_color_pixel_passthrough_ganesh_test",
     telemetry_test_name = "expected_color",
     mixins = [
         "skia_gold_test",
@@ -1913,6 +1930,15 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "pixel_skia_gold_passthrough_ganesh_test",
+    telemetry_test_name = "pixel",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "pixel_skia_gold_passthrough_graphite_test",
     telemetry_test_name = "pixel",
     mixins = [
@@ -2032,6 +2058,14 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "screenshot_sync_metal_passthrough_graphite_tests",
+    telemetry_test_name = "screenshot_sync",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "screenshot_sync_passthrough_ganesh_tests",
     telemetry_test_name = "screenshot_sync",
     mixins = [
         "has_native_resultdb_integration",
@@ -2685,6 +2719,14 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "webgl_conformance_gles_passthrough_tests",
+    telemetry_test_name = "webgl1_conformance",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webgl_conformance_gles_passthrough_ganesh_tests",
     telemetry_test_name = "webgl1_conformance",
     mixins = [
         "has_native_resultdb_integration",
