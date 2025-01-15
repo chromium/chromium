@@ -72,12 +72,17 @@ class PermissionPromptAndroid : public PermissionPrompt {
   virtual bool ShouldUseRequestingOriginFavicon() const;
   GURL GetRequestingOrigin() const;
   content::WebContents* web_contents() { return web_contents_; }
+  PermissionDialogDelegate* permission_dialog_delegate() const {
+    return permission_dialog_delegate_.get();
+  }
+  void ClearPermissionDialogDelegate() { permission_dialog_delegate_.reset(); }
 
  protected:
   Delegate* delegate() const { return delegate_; }
 
   void CreatePermissionDialogDelegate() {
-    PermissionDialogDelegate::Create(web_contents_, this);
+    permission_dialog_delegate_ =
+        PermissionDialogDelegate::Create(web_contents_, this);
   }
 
  private:
@@ -88,6 +93,9 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   // |delegate_| is the PermissionRequestManager, which owns this object.
   const raw_ptr<Delegate> delegate_;
+
+  // Owns a `PermissionDialogDelegate` object.
+  std::unique_ptr<PermissionDialogDelegate> permission_dialog_delegate_;
 };
 
 }  // namespace permissions

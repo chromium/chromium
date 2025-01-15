@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -42,6 +43,8 @@ class PermissionDialogJavaDelegate {
 
   virtual void DismissDialog();
 
+  virtual void UpdateDialogWithNewScreenVariant();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
   raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
@@ -55,12 +58,19 @@ class PermissionDialogJavaDelegate {
 // decision.
 class PermissionDialogDelegate : public content::WebContentsObserver {
  public:
+  PermissionDialogDelegate(
+      content::WebContents* web_contents,
+      PermissionPromptAndroid* permission_prompt,
+      std::unique_ptr<PermissionDialogJavaDelegate> java_delegate);
+  ~PermissionDialogDelegate() override;
+
   // The interface for creating a modal dialog when the PermissionRequestManager
   // is enabled.
-  static void Create(content::WebContents* web_contents,
-                     PermissionPromptAndroid* permission_prompt);
+  static std::unique_ptr<PermissionDialogDelegate> Create(
+      content::WebContents* web_contents,
+      PermissionPromptAndroid* permission_prompt);
 
-  static PermissionDialogDelegate* CreateForTesting(
+  static std::unique_ptr<PermissionDialogDelegate> CreateForTesting(
       content::WebContents* web_contents,
       PermissionPromptAndroid* permission_prompt,
       std::unique_ptr<PermissionDialogJavaDelegate> java_delegate);
@@ -76,17 +86,15 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
                  const JavaParamRef<jobject>& obj,
                  int dismissalType);
 
-  // Frees this object. Called from Java once the permission dialog has been
-  // responded to.
+  // Reset the java JNI object object. Called from Java once the permission
+  // dialog has been responded to.
   void Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
- private:
-  PermissionDialogDelegate(
-      content::WebContents* web_contents,
-      PermissionPromptAndroid* permission_prompt,
-      std::unique_ptr<PermissionDialogJavaDelegate> java_delegate);
-  ~PermissionDialogDelegate() override;
+  // Notify Java side to update content view of the dialog associated with this
+  // object.
+  void UpdateDialogWithNewScreenVariant();
 
+ private:
   // On navigation or page destruction, hide the dialog.
   void DismissDialog();
 
@@ -94,10 +102,8 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page&) override;
   void WebContentsDestroyed() override;
 
-  // The PermissionPromptAndroid is deleted when either the dialog is resolved
-  // or the tab is navigated/closed. We close the prompt on DidFinishNavigation
-  // and WebContentsDestroyed, so it should always be safe to use this pointer.
-  raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
+  // `permission_prompt_` owns and outlives this object, this is safe to use.
+  raw_ptr<PermissionPromptAndroid> permission_prompt_;
 
   // The PermissionDialogJavaDelegate abstracts away JNI connectivity from
   // native to Java in order to facilicate unit testing.
