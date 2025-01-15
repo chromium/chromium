@@ -809,6 +809,7 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
 
   spoken_feedback_enabled_ = enabled;
 
+  AccessibilityController::Get()->ShowNotificationForChromeVox(enabled);
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleSpokenFeedback, enabled);
   NotifyAccessibilityStatusChanged(details);
