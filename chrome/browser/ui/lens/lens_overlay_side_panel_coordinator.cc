@@ -42,6 +42,11 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_util.h"
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace lens {
 
 namespace {
@@ -273,6 +278,23 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
       lens::GetSearchResultsUrlFromRedirectUrl(nav_url).is_empty()) {
     navigation_handle->SetSilentlyIgnoreErrors();
 
+    content::WebContents* web_contents =
+        lens_overlay_controller_->GetTabInterface()->GetContents();
+
+#if BUILDFLAG(ENABLE_PDF)
+    // If a PDFDocumentHelper is found attached to the current web contents,
+    // that means that the PDF viewer is currently loaded in it.
+    if (ShouldHandlePDFViewportChange(nav_url)) {
+      auto* pdf_helper =
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      if (pdf_helper) {
+        pdf_extension_util::DispatchShouldUpdateViewportEvent(
+            web_contents->GetPrimaryMainFrame(), nav_url);
+        return;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
     // If the contextual search box is enabled, cross-origin navigations could
     // be a citation that should be rendered as text highlights in the current
     // tab.
@@ -360,6 +382,26 @@ bool LensOverlaySidePanelCoordinator::ShouldHandleTextDirectives(
   // If the url that is being navigated to does not have a text directive, then
   // it cannot be handled.
   return !text_fragments.empty();
+}
+
+bool LensOverlaySidePanelCoordinator::ShouldHandlePDFViewportChange(
+    const GURL& nav_url) {
+  // Only handle text directives if the feature is enabled and the overlay is
+  // not covering the current tab.
+  if (!lens::features::HandleSidePanelTextDirectivesEnabled() ||
+      lens_overlay_controller_->IsOverlayShowing()) {
+    return false;
+  }
+
+  const GURL& page_url = lens_overlay_controller_->GetTabInterface()
+                             ->GetContents()
+                             ->GetLastCommittedURL();
+  // Handle the PDF hash change if the URL being navigated to is the same as the
+  // URL loaded in the main tab. The URL being navigated to should also contain
+  // a fragment with viewport parameters that will be parsed in the extension.
+  return !nav_url.ref().empty() && page_url.host() == nav_url.host() &&
+         page_url.path() == nav_url.path() &&
+         page_url.query() == nav_url.query();
 }
 
 void LensOverlaySidePanelCoordinator::OnTextFinderLookupComplete(

@@ -301,4 +301,19 @@ bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
   return true;
 }
 
+void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
+                                       const GURL& new_pdf_url) {
+  base::Value::List args;
+  args.Append(new_pdf_url.spec());
+
+  content::BrowserContext* context = embedder_host->GetBrowserContext();
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT,
+      extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName,
+      std::move(args), context);
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(context);
+  event_router->DispatchEventToExtension(extension_misc::kPdfExtensionId,
+                                         std::move(event));
+}
+
 }  // namespace pdf_extension_util
