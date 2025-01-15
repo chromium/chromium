@@ -2505,14 +2505,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // Selects 1 tab out of 4, drags it out and closes the new browser window while
 // dragging.
-// TODO(crbug.com/389923113): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DeleteTabsWhileDetached DISABLED_DeleteTabsWhileDetached
-#else
-#define MAYBE_DeleteTabsWhileDetached DeleteTabsWhileDetached
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DeleteTabsWhileDetached) {
+                       DeleteTabsWhileDetached) {
   AddTabsAndResetBrowser(browser(), 3);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));

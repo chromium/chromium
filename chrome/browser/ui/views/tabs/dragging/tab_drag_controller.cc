@@ -1100,6 +1100,12 @@ void TabDragController::OnTabThumbnailAvailable(float window_scale,
   constexpr size_t kTargetHeightDip = 200;
   constexpr int kRoundedCornerRadius = 4;
 
+  // Exit early if CopyFromSurface() failed, e.g. because the tab was deleted
+  // after the drag started.
+  if (thumbnail.drawsNothing()) {
+    return;
+  }
+
   const float scale = static_cast<float>(kTargetHeightDip) / thumbnail.height();
   drag_image_ = gfx::ImageSkia::CreateFromBitmap(thumbnail, window_scale);
   const gfx::Size target_size =
