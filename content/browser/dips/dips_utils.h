@@ -34,51 +34,50 @@ namespace content {
 class BrowserContext;
 
 // For use in tests/debugging.
-CONTENT_EXPORT base::cstring_view DIPSCookieModeToString(DIPSCookieMode mode);
-CONTENT_EXPORT base::cstring_view DIPSRedirectTypeToString(
-    DIPSRedirectType type);
-CONTENT_EXPORT base::cstring_view DIPSDataAccessTypeToString(
-    DIPSDataAccessType type);
+CONTENT_EXPORT base::cstring_view BtmCookieModeToString(BtmCookieMode mode);
+CONTENT_EXPORT base::cstring_view BtmRedirectTypeToString(BtmRedirectType type);
+CONTENT_EXPORT base::cstring_view BtmDataAccessTypeToString(
+    BtmDataAccessType type);
 
 // A single cookie-accessing operation (either read or write). Not to be
-// confused with DIPSDataAccessType, which can also represent no access or both
+// confused with BtmDataAccessType, which can also represent no access or both
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
 
 // The filename for the DIPS database.
-const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
+const base::FilePath::CharType kBtmFilename[] = FILE_PATH_LITERAL("DIPS");
 
-// The FilePath for the ON-DISK DIPSDatabase associated with a BrowserContext,
+// The FilePath for the ON-DISK BtmDatabase associated with a BrowserContext,
 // if one exists.
 // NOTE: This returns the same value regardless of if there is actually a
-// persisted DIPSDatabase for the BrowserContext or not.
-CONTENT_EXPORT base::FilePath GetDIPSFilePath(BrowserContext* context);
+// persisted BtmDatabase for the BrowserContext or not.
+CONTENT_EXPORT base::FilePath GetBtmFilePath(BrowserContext* context);
 
-inline DIPSDataAccessType ToDIPSDataAccessType(CookieOperation op) {
-  return (op == CookieOperation::kChange ? DIPSDataAccessType::kWrite
-                                         : DIPSDataAccessType::kRead);
+inline BtmDataAccessType ToBtmDataAccessType(CookieOperation op) {
+  return (op == CookieOperation::kChange ? BtmDataAccessType::kWrite
+                                         : BtmDataAccessType::kRead);
 }
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& os,
-                                        DIPSDataAccessType access_type);
+                                        BtmDataAccessType access_type);
 
-constexpr DIPSDataAccessType operator|(DIPSDataAccessType lhs,
-                                       DIPSDataAccessType rhs) {
-  return static_cast<DIPSDataAccessType>(static_cast<int>(lhs) |
-                                         static_cast<int>(rhs));
+constexpr BtmDataAccessType operator|(BtmDataAccessType lhs,
+                                      BtmDataAccessType rhs) {
+  return static_cast<BtmDataAccessType>(static_cast<int>(lhs) |
+                                        static_cast<int>(rhs));
 }
-inline DIPSDataAccessType& operator|=(DIPSDataAccessType& lhs,
-                                      DIPSDataAccessType rhs) {
+inline BtmDataAccessType& operator|=(BtmDataAccessType& lhs,
+                                     BtmDataAccessType rhs) {
   return (lhs = lhs | rhs);
 }
 
-DIPSCookieMode GetDIPSCookieMode(bool is_otr);
-std::string_view GetHistogramSuffix(DIPSCookieMode mode);
-std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
+BtmCookieMode GetBtmCookieMode(bool is_otr);
+std::string_view GetHistogramSuffix(BtmCookieMode mode);
+std::ostream& operator<<(std::ostream& os, BtmCookieMode mode);
 
-// DIPSEventRemovalType:
+// BtmEventRemovalType:
 // NOTE: We use this type as a bitfield don't change existing values other than
 // kAll, which should be updated to include any new fields.
-enum class DIPSEventRemovalType {
+enum class BtmEventRemovalType {
   kNone = 0,
   kHistory = 1 << 0,
   kStorage = 1 << 1,
@@ -86,31 +85,30 @@ enum class DIPSEventRemovalType {
   kAll = kHistory | kStorage
 };
 
-constexpr DIPSEventRemovalType operator|(DIPSEventRemovalType lhs,
-                                         DIPSEventRemovalType rhs) {
-  return static_cast<DIPSEventRemovalType>(static_cast<int>(lhs) |
-                                           static_cast<int>(rhs));
+constexpr BtmEventRemovalType operator|(BtmEventRemovalType lhs,
+                                        BtmEventRemovalType rhs) {
+  return static_cast<BtmEventRemovalType>(static_cast<int>(lhs) |
+                                          static_cast<int>(rhs));
 }
 
-constexpr DIPSEventRemovalType operator&(DIPSEventRemovalType lhs,
-                                         DIPSEventRemovalType rhs) {
-  return static_cast<DIPSEventRemovalType>(static_cast<int>(lhs) &
-                                           static_cast<int>(rhs));
+constexpr BtmEventRemovalType operator&(BtmEventRemovalType lhs,
+                                        BtmEventRemovalType rhs) {
+  return static_cast<BtmEventRemovalType>(static_cast<int>(lhs) &
+                                          static_cast<int>(rhs));
 }
 
-constexpr DIPSEventRemovalType& operator|=(DIPSEventRemovalType& lhs,
-                                           DIPSEventRemovalType rhs) {
+constexpr BtmEventRemovalType& operator|=(BtmEventRemovalType& lhs,
+                                          BtmEventRemovalType rhs) {
   return lhs = lhs | rhs;
 }
 
-constexpr DIPSEventRemovalType& operator&=(DIPSEventRemovalType& lhs,
-                                           DIPSEventRemovalType rhs) {
+constexpr BtmEventRemovalType& operator&=(BtmEventRemovalType& lhs,
+                                          BtmEventRemovalType rhs) {
   return lhs = lhs & rhs;
 }
 
-std::string_view GetHistogramPiece(DIPSRedirectType type);
-CONTENT_EXPORT std::ostream& operator<<(std::ostream& os,
-                                        DIPSRedirectType type);
+std::string_view GetHistogramPiece(BtmRedirectType type);
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& os, BtmRedirectType type);
 
 using TimestampRange = std::optional<std::pair<base::Time, base::Time>>;
 // Expand the range to include `time` if necessary. Returns true iff the range
@@ -169,13 +167,13 @@ inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
 
 // Return the number of seconds in `delta`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.
-CONTENT_EXPORT int64_t BucketizeDIPSBounceDelay(base::TimeDelta delta);
+CONTENT_EXPORT int64_t BucketizeBtmBounceDelay(base::TimeDelta delta);
 
 // Returns an opaque value representing the "privacy boundary" that the URL
 // belongs to. Currently returns eTLD+1, but this is an implementation detail
 // and may change.
-CONTENT_EXPORT std::string GetSiteForDIPS(const GURL& url);
-CONTENT_EXPORT std::string GetSiteForDIPS(const url::Origin& origin);
+CONTENT_EXPORT std::string GetSiteForBtm(const GURL& url);
+CONTENT_EXPORT std::string GetSiteForBtm(const url::Origin& origin);
 
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.
@@ -199,9 +197,9 @@ inline bool IsInPrimaryPageIFrame(NavigationHandle* navigation_handle) {
 }
 
 // Returns `True` iff both urls return a similar outcome off of
-// `GetSiteForDIPS()`.
-inline bool IsSameSiteForDIPS(const GURL& url1, const GURL& url2) {
-  return GetSiteForDIPS(url1) == GetSiteForDIPS(url2);
+// `GetSiteForBtm()`.
+inline bool IsSameSiteForBtm(const GURL& url1, const GURL& url2) {
+  return GetSiteForBtm(url1) == GetSiteForBtm(url2);
 }
 
 // Returns `True` iff the `navigation_handle` represents a navigation happening
@@ -243,34 +241,33 @@ inline std::optional<GURL> GetFirstPartyURL(RenderFrameHost* rfh) {
 // The amount of time since a page last received user interaction before a
 // subsequent user interaction event may be recorded to DIPS Storage for the
 // same page.
-inline constexpr base::TimeDelta kDIPSTimestampUpdateInterval =
-    base::Minutes(1);
+inline constexpr base::TimeDelta kBtmTimestampUpdateInterval = base::Minutes(1);
 
 [[nodiscard]] CONTENT_EXPORT bool UpdateTimestamp(
     std::optional<base::Time>& last_time,
     base::Time now);
 
-// DIPSInteractionType is used in UKM to record the way the user interacted with
+// BtmInteractionType is used in UKM to record the way the user interacted with
 // the site. It should match CookieHeuristicInteractionType in
 // tools/metrics/ukm/ukm.xml
-enum class DIPSInteractionType {
+enum class BtmInteractionType {
   Authentication = 0,
   UserActivation = 1,
   NoInteraction = 2,
 };
 
-enum class DIPSRecordedEvent {
+enum class BtmRecordedEvent {
   kStorage,
   kInteraction,
   kWebAuthnAssertion,
 };
 
-// DIPSRedirectCategory is basically the cross-product of DIPSDataAccessType and
+// BtmRedirectCategory is basically the cross-product of BtmDataAccessType and
 // a boolean value indicating site engagement. It's used in UMA enum histograms.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class DIPSRedirectCategory {
+enum class BtmRedirectCategory {
   kNoCookies_NoEngagement = 0,
   kReadCookies_NoEngagement = 1,
   kWriteCookies_NoEngagement = 2,
@@ -284,15 +281,15 @@ enum class DIPSRedirectCategory {
   kMaxValue = kUnknownCookies_HasEngagement,
 };
 
-// DIPSErrorCode is used in UMA enum histograms to monitor certain errors and
+// BtmErrorCode is used in UMA enum histograms to monitor certain errors and
 // verify that they are being fixed.
 //
-// When adding an error to this enum, update the DIPSErrorCode enum in
+// When adding an error to this enum, update the BtmErrorCode enum in
 // tools/metrics/histograms/enums.xml as well.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class DIPSErrorCode {
+enum class BtmErrorCode {
   kRead_None = 0,
   kRead_OpenEndedRange_NullStart = 1,
   kRead_OpenEndedRange_NullEnd = 2,
@@ -304,15 +301,15 @@ enum class DIPSErrorCode {
   kMaxValue = kWrite_EmptySite,
 };
 
-// DIPSDeletionAction is used in UMA enum histograms to record the actual
+// BtmDeletionAction is used in UMA enum histograms to record the actual
 // deletion action taken on DIPS-eligible (incidental) site.
 //
-// When adding an action to this enum, update the DIPSDeletionAction enum in
+// When adding an action to this enum, update the BtmDeletionAction enum in
 // tools/metrics/histograms/enums.xml as well.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class DIPSDeletionAction {
+enum class BtmDeletionAction {
   kDisallowed = 0,
   kExceptedAs1p = 1,  // No longer used - merged into 'kExcepted' below.
   kExceptedAs3p = 2,  // No longer used - merged into 'kExcepted' below.
@@ -322,7 +319,7 @@ enum class DIPSDeletionAction {
   kMaxValue = kExcepted,
 };
 
-enum class DIPSDatabaseTable {
+enum class BtmDatabaseTable {
   kBounces = 1,
   kPopups = 2,
   kMaxValue = kPopups,

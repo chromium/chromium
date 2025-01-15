@@ -29,22 +29,22 @@ namespace content {
 
 namespace {
 
-class TestStorage : public DIPSStorage {
+class TestStorage : public BtmStorage {
  public:
-  TestStorage() : DIPSStorage(std::nullopt) {}
+  TestStorage() : BtmStorage(std::nullopt) {}
 
   void WriteForTesting(GURL url, const StateValue& state) {
-    Write(DIPSState(this, GetSiteForDIPS(url), state));
+    Write(BtmState(this, GetSiteForBtm(url), state));
   }
 };
 
 // TODO(crbug.com/376754761): Remove this class, since it no longer sets the
 // main DIPS feature
-class ScopedDIPSInteractionTtlFeatureEnabledWithParams {
+class ScopedBtmInteractionTtlFeatureEnabledWithParams {
  public:
-  explicit ScopedDIPSInteractionTtlFeatureEnabledWithParams(
+  explicit ScopedBtmInteractionTtlFeatureEnabledWithParams(
       const base::FieldTrialParams& params) {
-    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl, params);
+    features_.InitAndEnableFeatureWithParameters(features::kBtmTtl, params);
   }
 
  private:
@@ -53,7 +53,7 @@ class ScopedDIPSInteractionTtlFeatureEnabledWithParams {
 
 }  // namespace
 
-TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
+TEST(BtmGetSitesToClearTest, FiltersByTriggerParam) {
   TestStorage storage;
 
   GURL kBounceUrl("https://bounce.com");
@@ -72,38 +72,38 @@ TEST(DIPSGetSitesToClearTest, FiltersByTriggerParam) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "none"}});
+        features::kBtm, {{"triggering_action", "none"}});
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
   }
   // Call 'GetSitesToClear' when DIPS is triggered by bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "bounce"}});
+        features::kBtm, {{"triggering_action", "bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
-                testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
-                                     GetSiteForDIPS(kStatefulBounceUrl)));
+                testing::ElementsAre(GetSiteForBtm(kBounceUrl),
+                                     GetSiteForBtm(kStatefulBounceUrl)));
   }
   // Call 'GetSitesToClear' when DIPS is triggered by storage.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "storage"}});
+        features::kBtm, {{"triggering_action", "storage"}});
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
-                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
-                                     GetSiteForDIPS(kStorageUrl)));
+                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl),
+                                     GetSiteForBtm(kStorageUrl)));
   }
   // Call 'GetSitesToClear' when DIPS is triggered by stateful bounces.
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
+        features::kBtm, {{"triggering_action", "stateful_bounce"}});
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt),
-                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
+                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl)));
   }
 }
 
-TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
+TEST(BtmGetSitesToClearTest, CustomGracePeriod) {
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   base::Time start = clock.Now();
@@ -129,10 +129,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kDIPS,
+      features::kBtm,
       {{"grace_period", "30s"}, {"triggering_action", "stateful_bounce"}});
 
-  // Advance time by less than `features::kDIPSGracePeriod` but greater than
+  // Advance time by less than `features::kBtmGracePeriod` but greater than
   // `start + custom_grace_period` and verify that no sites are returned without
   // using the custom grace period.
   clock.Advance(base::Seconds(10));
@@ -141,10 +141,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod) {
   // advanced returns only `kUrl` since `kLateUrl` is still within its grace
   // period.
   EXPECT_THAT(storage.GetSitesToClear(custom_grace_period),
-              testing::ElementsAre(GetSiteForDIPS(kUrl)));
+              testing::ElementsAre(GetSiteForBtm(kUrl)));
 }
 
-TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
+TEST(BtmGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   base::SimpleTestClock clock;
   base::Time start = clock.Now();
   base::TimeDelta grace_period = base::Seconds(1);
@@ -168,10 +168,10 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   // unset.
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(features::kDIPS);
-    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+    features.InitAndEnableFeature(features::kBtm);
+    // Advance time by less than `features::kBtmGracePeriod` and verify that
     // no sites are returned
-    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
+    clock.Advance(features::kBtmGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced still returns nothing when the trigger is unset.
@@ -186,16 +186,16 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "bounce"}});
-    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+        features::kBtm, {{"triggering_action", "bounce"}});
+    // Advance time by less than `features::kBtmGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
-    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
+    clock.Advance(features::kBtmGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on bounces.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
-                testing::ElementsAre(GetSiteForDIPS(kBounceUrl),
-                                     GetSiteForDIPS(kStatefulBounceUrl)));
+                testing::ElementsAre(GetSiteForBtm(kBounceUrl),
+                                     GetSiteForBtm(kStatefulBounceUrl)));
 
     // Reset `clock` to `start`.
     clock.SetNow(start);
@@ -206,16 +206,16 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "storage"}});
-    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+        features::kBtm, {{"triggering_action", "storage"}});
+    // Advance time by less than `features::kBtmGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
-    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
+    clock.Advance(features::kBtmGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on storage.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
-                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl),
-                                     GetSiteForDIPS(kStorageUrl)));
+                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl),
+                                     GetSiteForBtm(kStorageUrl)));
 
     // Reset `clock` to `start`.
     clock.SetNow(start);
@@ -226,21 +226,21 @@ TEST(DIPSGetSitesToClearTest, CustomGracePeriod_AllTriggers) {
   {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeatureWithParameters(
-        features::kDIPS, {{"triggering_action", "stateful_bounce"}});
-    // Advance time by less than `features::kDIPSGracePeriod` and verify that
+        features::kBtm, {{"triggering_action", "stateful_bounce"}});
+    // Advance time by less than `features::kBtmGracePeriod` and verify that
     // no sites are returned without using a custom grace period.
-    clock.Advance(features::kDIPSGracePeriod.Get() / 2);
+    clock.Advance(features::kBtmGracePeriod.Get() / 2);
     EXPECT_THAT(storage.GetSitesToClear(std::nullopt), testing::IsEmpty());
     // Verify that using a custom grace period less than the amount time was
     // advanced returns the expected sites for triggering on stateful bounces.
     EXPECT_THAT(storage.GetSitesToClear(grace_period),
-                testing::ElementsAre(GetSiteForDIPS(kStatefulBounceUrl)));
+                testing::ElementsAre(GetSiteForBtm(kStatefulBounceUrl)));
   }
 }
 
-class DIPSStorageTest : public testing::Test {
+class BtmStorageTest : public testing::Test {
  public:
-  DIPSStorageTest() = default;
+  BtmStorageTest() = default;
 
   void SetUp() override { storage_.SetClockForTesting(&clock_); }
 
@@ -250,7 +250,7 @@ class DIPSStorageTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment env_;
-  ScopedDIPSInteractionTtlFeatureEnabledWithParams feature{
+  ScopedBtmInteractionTtlFeatureEnabledWithParams feature{
       {{"interaction_ttl", "inf"}}};
   TestStorage storage_;
   base::SimpleTestClock clock_;
@@ -280,47 +280,46 @@ TEST(DirtyBit, Move) {
   ASSERT_FALSE(bit);  // NOLINT
 }
 
-TEST(DIPSUtilsTest, GetSiteForDIPS) {
-  EXPECT_EQ("example.com", GetSiteForDIPS(GURL("http://example.com/foo")));
-  EXPECT_EQ("example.com", GetSiteForDIPS(GURL("https://www.example.com/bar")));
-  EXPECT_EQ("example.com",
-            GetSiteForDIPS(GURL("http://other.example.com/baz")));
+TEST(BtmUtilsTest, GetSiteForBtm) {
+  EXPECT_EQ("example.com", GetSiteForBtm(GURL("http://example.com/foo")));
+  EXPECT_EQ("example.com", GetSiteForBtm(GURL("https://www.example.com/bar")));
+  EXPECT_EQ("example.com", GetSiteForBtm(GURL("http://other.example.com/baz")));
   EXPECT_EQ("bar.baz.r.appspot.com",
-            GetSiteForDIPS(GURL("http://foo.bar.baz.r.appspot.com/baz")));
-  EXPECT_EQ("localhost", GetSiteForDIPS(GURL("http://localhost:8000/qux")));
-  EXPECT_EQ("127.0.0.1", GetSiteForDIPS(GURL("http://127.0.0.1:8888/")));
-  EXPECT_EQ("[::1]", GetSiteForDIPS(GURL("http://[::1]/")));
+            GetSiteForBtm(GURL("http://foo.bar.baz.r.appspot.com/baz")));
+  EXPECT_EQ("localhost", GetSiteForBtm(GURL("http://localhost:8000/qux")));
+  EXPECT_EQ("127.0.0.1", GetSiteForBtm(GURL("http://127.0.0.1:8888/")));
+  EXPECT_EQ("[::1]", GetSiteForBtm(GURL("http://[::1]/")));
 }
 
-TEST_F(DIPSStorageTest, NewURL) {
-  DIPSState state = storage_.Read(GURL("http://example.com/"));
+TEST_F(BtmStorageTest, NewURL) {
+  BtmState state = storage_.Read(GURL("http://example.com/"));
   EXPECT_FALSE(state.was_loaded());
   EXPECT_FALSE(state.site_storage_times().has_value());
   EXPECT_FALSE(state.user_interaction_times().has_value());
   EXPECT_FALSE(state.web_authn_assertion_times().has_value());
 }
 
-TEST_F(DIPSStorageTest, SetValues) {
+TEST_F(BtmStorageTest, SetValues) {
   GURL url("https://example.com");
   auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
   auto time2 = base::Time::FromSecondsSinceUnixEpoch(2);
   auto time3 = base::Time::FromSecondsSinceUnixEpoch(3);
 
   {
-    DIPSState state = storage_.Read(url);
+    BtmState state = storage_.Read(url);
     state.update_site_storage_time(time1);
     state.update_user_interaction_time(time2);
     state.update_web_authn_assertion_time(time3);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
-    DIPSState state2 = storage_.Read(url);
+    BtmState state2 = storage_.Read(url);
     EXPECT_FALSE(state2.site_storage_times().has_value());
     EXPECT_FALSE(state2.user_interaction_times().has_value());
     EXPECT_FALSE(state2.web_authn_assertion_times().has_value());
   }
 
-  DIPSState state = storage_.Read(url);
+  BtmState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
   EXPECT_EQ(state.site_storage_times()->first, std::make_optional(time1));
   EXPECT_EQ(state.user_interaction_times()->first, std::make_optional(time2));
@@ -328,7 +327,7 @@ TEST_F(DIPSStorageTest, SetValues) {
             std::make_optional(time3));
 }
 
-TEST_F(DIPSStorageTest, SameSiteSameState) {
+TEST_F(BtmStorageTest, SameSiteSameState) {
   // The two urls use different subdomains of example.com; and one is HTTPS
   // while the other is HTTP.
   GURL url1("https://subdomain1.example.com");
@@ -337,13 +336,13 @@ TEST_F(DIPSStorageTest, SameSiteSameState) {
 
   storage_.Read(url1).update_site_storage_time(time);
 
-  DIPSState state = storage_.Read(url2);
+  BtmState state = storage_.Read(url2);
   // State was recorded for url1, but can be read for url2.
   EXPECT_EQ(time, state.site_storage_times()->first);
   EXPECT_FALSE(state.user_interaction_times().has_value());
 }
 
-TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
+TEST_F(BtmStorageTest, DifferentSiteDifferentState) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   auto time1 = base::Time::FromSecondsSinceUnixEpoch(1);
@@ -361,7 +360,7 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
 
 // This test is not all-inclusive as only fucuses on some (deemed) important
 // overlapping scenarios.
-TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
+TEST_F(BtmStorageTest, RemoveByTime_WebAuthnAssertion) {
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(100));
   auto tiny_delta = base::Milliseconds(1);
@@ -374,7 +373,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
   }
 
@@ -383,7 +382,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin + tiny_delta, delete_end)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
   }
 
@@ -392,7 +391,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
     storage_.WriteForTesting(
         url, {{}, {}, {}, {}, ToRange(delete_begin, delete_end - tiny_delta)});
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_FALSE(storage_.Read(url).was_loaded());
   }
 
@@ -403,7 +402,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
         ToRange(delete_begin, delete_end + tiny_delta);
     storage_.WriteForTesting(url, init_state);
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_EQ(
         storage_.Read(url).web_authn_assertion_times(),
         ToRange(delete_end, init_state.web_authn_assertion_times->second));
@@ -416,7 +415,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
         ToRange(delete_begin - tiny_delta, delete_end);
     storage_.WriteForTesting(url, init_state);
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_EQ(
         storage_.Read(url).web_authn_assertion_times(),
         ToRange(init_state.web_authn_assertion_times->first, delete_begin));
@@ -429,7 +428,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
         ToRange(delete_begin - tiny_delta, delete_end + tiny_delta);
     storage_.WriteForTesting(url, init_state);
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
               init_state.web_authn_assertion_times);
   }
@@ -441,7 +440,7 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
         ToRange(delete_end + tiny_delta, delete_end + tiny_delta * 2);
     storage_.WriteForTesting(url, init_state);
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
               init_state.web_authn_assertion_times);
   }
@@ -453,13 +452,13 @@ TEST_F(DIPSStorageTest, RemoveByTime_WebAuthnAssertion) {
         ToRange(delete_begin - tiny_delta * 2, delete_begin - tiny_delta);
     storage_.WriteForTesting(url, init_state);
     storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                          DIPSEventRemovalType::kHistory);
+                          BtmEventRemovalType::kHistory);
     EXPECT_EQ(storage_.Read(url).web_authn_assertion_times(),
               init_state.web_authn_assertion_times);
   }
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
+TEST_F(BtmStorageTest, RemoveByTimeWithNullRangeEndTime) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
@@ -478,9 +477,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
                                 {base::Time::FromSecondsSinceUnixEpoch(3),
                                  base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kAll);
+                        BtmEventRemovalType::kAll);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -489,11 +488,11 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeEndTime) {
   EXPECT_EQ(state1.user_interaction_times(),
             std::nullopt);  // removed
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
+TEST_F(BtmStorageTest, RemoveByTimeWithNullRangeBeginTime) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::Min();
@@ -512,9 +511,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
                                 {base::Time::FromSecondsSinceUnixEpoch(3),
                                  base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kAll);
+                        BtmEventRemovalType::kAll);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times(), std::nullopt);  // removed
   EXPECT_EQ(state1.user_interaction_times()->first,
             std::make_optional(delete_end));  // adjusted
@@ -522,11 +521,11 @@ TEST_F(DIPSStorageTest, RemoveByTimeWithNullRangeBeginTime) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
+TEST_F(BtmStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
@@ -542,9 +541,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kAll);
+                        BtmEventRemovalType::kAll);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -556,11 +555,11 @@ TEST_F(DIPSStorageTest, RemoveByTimeAdjustsOverlappingTimes) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
+TEST_F(BtmStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
@@ -572,9 +571,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
                             {{base::Time::FromSecondsSinceUnixEpoch(5),
                               base::Time::FromSecondsSinceUnixEpoch(8)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kAll);
+                        BtmEventRemovalType::kAll);
 
-  DIPSState state = storage_.Read(url1);
+  BtmState state = storage_.Read(url1);
   EXPECT_EQ(state.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -589,7 +588,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeDoesNotAffectTouchingWindowEndpoints) {
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
+TEST_F(BtmStorageTest, RemoveByTimeStorageOnly) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
@@ -605,9 +604,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kStorage);
+                        BtmEventRemovalType::kStorage);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -620,7 +619,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.user_interaction_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
@@ -629,7 +628,7 @@ TEST_F(DIPSStorageTest, RemoveByTimeStorageOnly) {
                 base::Time::FromSecondsSinceUnixEpoch(5)));  // no change
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
+TEST_F(BtmStorageTest, RemoveByTimeInteractionOnly) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
@@ -645,9 +644,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kHistory);
+                        BtmEventRemovalType::kHistory);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -660,14 +659,14 @@ TEST_F(DIPSStorageTest, RemoveByTimeInteractionOnly) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
-  std::string site1 = GetSiteForDIPS(GURL("https://example1.com"));
-  std::string site2 = GetSiteForDIPS(GURL("https://example2.com"));
-  std::string site3 = GetSiteForDIPS(GURL("https://example3.com"));
+TEST_F(BtmStorageTest, RemovePopupEventsByTime) {
+  std::string site1 = GetSiteForBtm(GURL("https://example1.com"));
+  std::string site2 = GetSiteForBtm(GURL("https://example2.com"));
+  std::string site3 = GetSiteForBtm(GURL("https://example3.com"));
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
 
@@ -684,7 +683,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
                                   /*is_authentication_interaction=*/false));
 
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kHistory);
+                        BtmEventRemovalType::kHistory);
 
   // Verify that only the second popup event (with timestamp 4) was cleared.
 
@@ -708,7 +707,7 @@ TEST_F(DIPSStorageTest, RemovePopupEventsByTime) {
   EXPECT_FALSE(popup3.value().is_authentication_interaction);
 }
 
-TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
+TEST_F(BtmStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
@@ -728,9 +727,9 @@ TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
                             {{base::Time::FromSecondsSinceUnixEpoch(3),
                               base::Time::FromSecondsSinceUnixEpoch(5)}}});
   storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        DIPSEventRemovalType::kStorage);
+                        BtmEventRemovalType::kStorage);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.stateful_bounce_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -743,11 +742,11 @@ TEST_F(DIPSStorageTest, RemoveByTimeBounces) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(8)));  // no change
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(DIPSStorageTest, RemoveBySite) {
+TEST_F(BtmStorageTest, RemoveBySite) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   GURL url3("https://example3.com");
@@ -791,13 +790,13 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   std::unique_ptr<BrowsingDataFilterBuilder> builder =
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete);
-  builder->AddRegisterableDomain(GetSiteForDIPS(url1));
-  builder->AddRegisterableDomain(GetSiteForDIPS(url3));
+  builder->AddRegisterableDomain(GetSiteForBtm(url1));
+  builder->AddRegisterableDomain(GetSiteForBtm(url3));
   storage_.RemoveEvents(base::Time(), base::Time::Max(),
                         builder->BuildNetworkServiceFilter(),
-                        DIPSEventRemovalType::kStorage);
+                        BtmEventRemovalType::kStorage);
 
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // removed
   EXPECT_EQ(state1.user_interaction_times()->first,
             std::make_optional(
@@ -805,7 +804,7 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
   EXPECT_FALSE(state1.stateful_bounce_times().has_value());  // removed
   EXPECT_FALSE(state1.bounce_times().has_value());           // removed
 
-  DIPSState state2 = storage_.Read(url2);
+  BtmState state2 = storage_.Read(url2);
   EXPECT_EQ(state2.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -819,10 +818,10 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 
-  DIPSState state3 = storage_.Read(url3);
+  BtmState state3 = storage_.Read(url3);
   EXPECT_FALSE(state3.was_loaded());  // removed
 
-  DIPSState state4 = storage_.Read(url2);
+  BtmState state4 = storage_.Read(url2);
   EXPECT_FALSE(state1.site_storage_times().has_value());  // no change
   EXPECT_EQ(state4.user_interaction_times()->first,
             std::make_optional(
@@ -835,7 +834,7 @@ TEST_F(DIPSStorageTest, RemoveBySite) {
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
-TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
+TEST_F(BtmStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   GURL url1("https://example1.com");
   base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(2);
   base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(6);
@@ -853,15 +852,15 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
   std::unique_ptr<BrowsingDataFilterBuilder> builder =
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete);
-  builder->AddRegisterableDomain(GetSiteForDIPS(url1));
+  builder->AddRegisterableDomain(GetSiteForBtm(url1));
   storage_.RemoveEvents(delete_begin, delete_end,
                         builder->BuildNetworkServiceFilter(),
-                        DIPSEventRemovalType::kStorage);
+                        BtmEventRemovalType::kStorage);
 
   // Removing events by site (i.e. by using a non-null filter) with a time-range
   // (other than base::Time() to base::Time::Max()), is currently unsupported.
   // So url1's DIPS Storage entry should be unaffected.
-  DIPSState state1 = storage_.Read(url1);
+  BtmState state1 = storage_.Read(url1);
   EXPECT_EQ(state1.site_storage_times()->first,
             std::make_optional(
                 base::Time::FromSecondsSinceUnixEpoch(1)));  // no change
@@ -876,7 +875,7 @@ TEST_F(DIPSStorageTest, RemoveBySiteIgnoresDeletionWithTimeRange) {
                 base::Time::FromSecondsSinceUnixEpoch(3)));  // no change
 }
 
-TEST_F(DIPSStorageTest, RemoveRows) {
+TEST_F(BtmStorageTest, RemoveRows) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   ASSERT_TRUE(url1.is_valid());
@@ -897,13 +896,13 @@ TEST_F(DIPSStorageTest, RemoveRows) {
   ASSERT_EQ(storage_.Read(url1).ToStateValue(), test_value);
   ASSERT_EQ(storage_.Read(url2).ToStateValue(), test_value);
 
-  storage_.RemoveRows({GetSiteForDIPS(url1), GetSiteForDIPS(url2)});
+  storage_.RemoveRows({GetSiteForBtm(url1), GetSiteForBtm(url2)});
 
   EXPECT_FALSE(storage_.Read(url1).was_loaded());
   EXPECT_FALSE(storage_.Read(url2).was_loaded());
 }
 
-TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
+TEST_F(BtmStorageTest, DidSiteHaveInteractionSince) {
   GURL url1("https://example1.com");
 
   EXPECT_FALSE(storage_.DidSiteHaveInteractionSince(
@@ -933,11 +932,11 @@ TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
       url1, base::Time::FromSecondsSinceUnixEpoch(4)));
 }
 
-TEST_F(DIPSStorageTest, GetTimerLastFired_InitiallyReturnsEmpty) {
+TEST_F(BtmStorageTest, GetTimerLastFired_InitiallyReturnsEmpty) {
   ASSERT_EQ(storage_.GetTimerLastFired(), std::nullopt);
 }
 
-TEST_F(DIPSStorageTest, GetTimerLastFired_ReturnsLastSetValue) {
+TEST_F(BtmStorageTest, GetTimerLastFired_ReturnsLastSetValue) {
   const base::Time time1 = base::Time::FromTimeT(1);
   const base::Time time2 = base::Time::FromTimeT(2);
 

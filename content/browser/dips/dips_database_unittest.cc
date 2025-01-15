@@ -39,10 +39,10 @@ namespace content {
 
 namespace {
 
-class TestDatabase : public DIPSDatabase {
+class TestDatabase : public BtmDatabase {
  public:
   explicit TestDatabase(const std::optional<base::FilePath>& db_path)
-      : DIPSDatabase(db_path) {}
+      : BtmDatabase(db_path) {}
   void LogDatabaseMetricsForTesting() { LogDatabaseMetrics(); }
 };
 
@@ -55,9 +55,9 @@ enum ColumnType {
 };
 }  // namespace
 
-class DIPSDatabaseTest : public testing::Test {
+class BtmDatabaseTest : public testing::Test {
  public:
-  explicit DIPSDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
+  explicit BtmDatabaseTest(bool in_memory) : in_memory_(in_memory) {}
 
   // Small delta used to test before/after timestamps made with
   // FromSecondsSinceUnixEpoch.
@@ -108,22 +108,22 @@ class DIPSDatabaseTest : public testing::Test {
   bool in_memory_;
 };
 
-class DIPSDatabaseErrorHistogramsTest
-    : public DIPSDatabaseTest,
+class BtmDatabaseErrorHistogramsTest
+    : public BtmDatabaseTest,
       public testing::WithParamInterface<bool> {
  public:
-  DIPSDatabaseErrorHistogramsTest() : DIPSDatabaseTest(GetParam()) {}
+  BtmDatabaseErrorHistogramsTest() : BtmDatabaseTest(GetParam()) {}
 
   void SetUp() override {
-    DIPSDatabaseTest::SetUp();
+    BtmDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including web authn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
+    features_.InitAndEnableFeatureWithParameters(features::kBtmTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 };
 
-TEST_P(DIPSDatabaseErrorHistogramsTest,
+TEST_P(BtmDatabaseErrorHistogramsTest,
        StatefulBounceTimesNotWithinBounceTimes) {
   base::HistogramTester histograms;
   // `stateful_bounce` start is outside of `bounce_times`.
@@ -133,8 +133,8 @@ TEST_P(DIPSDatabaseErrorHistogramsTest,
       "first_bounce_time,last_bounce_time) VALUES ('site.test',1,3,2,5)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.DIPSErrorCodes",
-      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 1);
+      "Privacy.DIPS.BtmErrorCodes",
+      BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 1);
   // `stateful_bounce` end is outside of `bounce_times`.
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
       "INSERT OR REPLACE INTO "
@@ -142,8 +142,8 @@ TEST_P(DIPSDatabaseErrorHistogramsTest,
       "first_bounce_time,last_bounce_time) VALUES ('site.test',2,5,2,3)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.DIPSErrorCodes",
-      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 2);
+      "Privacy.DIPS.BtmErrorCodes",
+      BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 2);
 
   // stateful_bounce is set but `bounce_times` is NULL.
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
@@ -153,13 +153,12 @@ TEST_P(DIPSDatabaseErrorHistogramsTest,
       "('site.test',2,3,NULL,NULL)"));
   db_->Read("site.test");
   histograms.ExpectUniqueSample(
-      "Privacy.DIPS.DIPSErrorCodes",
-      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 3);
+      "Privacy.DIPS.BtmErrorCodes",
+      BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 3);
 }
 
 // Verifies the histograms logged for the success case.
-TEST_P(DIPSDatabaseErrorHistogramsTest,
-       StatefulBounceTimesIsWithinBounceTimes) {
+TEST_P(BtmDatabaseErrorHistogramsTest, StatefulBounceTimesIsWithinBounceTimes) {
   base::HistogramTester histograms;
   // Both `stateful_bounce_time` fall within the `bounce_time` range.
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
@@ -168,80 +167,80 @@ TEST_P(DIPSDatabaseErrorHistogramsTest,
       "first_bounce_time,last_bounce_time) VALUES ('site.test',2,4,1,5)"));
   db_->Read("site.test");
   histograms.ExpectBucketCount(
-      "Privacy.DIPS.DIPSErrorCodes",
-      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 0);
-  histograms.ExpectBucketCount("Privacy.DIPS.DIPSErrorCodes",
-                               DIPSErrorCode::kRead_None, 1);
+      "Privacy.DIPS.BtmErrorCodes",
+      BtmErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 0);
+  histograms.ExpectBucketCount("Privacy.DIPS.BtmErrorCodes",
+                               BtmErrorCode::kRead_None, 1);
 }
 
-TEST_P(DIPSDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
+TEST_P(BtmDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
   base::HistogramTester histograms;
   // Manually write an entry with an empty string `site`, then try to read it.
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
       "INSERT INTO "
       "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
       "first_bounce_time,last_bounce_time) VALUES ('',2,4,1,5)"));
-  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 1u);
+  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 1u);
   EXPECT_EQ(db_->Read(""), std::nullopt);
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kRead_EmptySite_InDb, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
-  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces), 0u);
+  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 0u);
 }
 
-TEST_P(DIPSDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
+TEST_P(BtmDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
   base::HistogramTester histograms;
   EXPECT_EQ(db_->Read(""), std::nullopt);
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kRead_EmptySite_NotInDb, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kRead_EmptySite_NotInDb, 1);
 }
 
-TEST_P(DIPSDatabaseErrorHistogramsTest, Write_EmptySite) {
+TEST_P(BtmDatabaseErrorHistogramsTest, Write_EmptySite) {
   base::HistogramTester histograms;
   // Attempt to add a bounce for an empty site.
-  const std::string empty_site = GetSiteForDIPS(GURL(""));
+  const std::string empty_site = GetSiteForBtm(GURL(""));
   TimestampRange bounce(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_FALSE(db_->Write(empty_site, TimestampRange(), TimestampRange(),
                           TimestampRange(), bounce, TimestampRange()));
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kWrite_EmptySite, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kWrite_EmptySite, 1);
 }
 
 // Verifies the histograms logged for the success case (i.e., writing an entry
 // with a non-empty site).
-TEST_P(DIPSDatabaseErrorHistogramsTest, Write_None) {
+TEST_P(BtmDatabaseErrorHistogramsTest, Write_None) {
   base::HistogramTester histograms;
   // Add a bounce for a non-empty site.
-  const std::string site = GetSiteForDIPS(GURL("https://example.test"));
+  const std::string site = GetSiteForBtm(GURL("https://example.test"));
   TimestampRange bounce(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(db_->Write(site, TimestampRange(), TimestampRange(),
                          TimestampRange(), bounce, TimestampRange()));
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kWrite_None, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kWrite_None, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         DIPSDatabaseErrorHistogramsTest,
+                         BtmDatabaseErrorHistogramsTest,
                          ::testing::Bool());
 
 // A test class that lets us ensure that we can add, read, update, and delete
-// bounces for all columns in the DIPSDatabase. Parameterized over whether the
+// bounces for all columns in the BtmDatabase. Parameterized over whether the
 // db is in memory, and what column we're testing.
-class DIPSDatabaseAllColumnTest
-    : public DIPSDatabaseTest,
+class BtmDatabaseAllColumnTest
+    : public BtmDatabaseTest,
       public testing::WithParamInterface<std::tuple<bool, ColumnType>> {
  public:
-  DIPSDatabaseAllColumnTest()
-      : DIPSDatabaseTest(std::get<0>(GetParam())),
+  BtmDatabaseAllColumnTest()
+      : BtmDatabaseTest(std::get<0>(GetParam())),
         column_(std::get<1>(GetParam())) {}
 
   void SetUp() override {
-    DIPSDatabaseTest::SetUp();
+    BtmDatabaseTest::SetUp();
     // Use inf ttl to prevent interactions (including webauthn assertions) from
     // expiring unintentionally.
-    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
+    features_.InitAndEnableFeatureWithParameters(features::kBtmTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -297,10 +296,10 @@ class DIPSDatabaseAllColumnTest
   ColumnType column_;
 };
 
-// Test adding entries in the `bounces` table of the DIPSDatabase.
-TEST_P(DIPSDatabaseAllColumnTest, AddBounce) {
+// Test adding entries in the `bounces` table of the BtmDatabase.
+TEST_P(BtmDatabaseAllColumnTest, AddBounce) {
   // Add a bounce for site.
-  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string site = GetSiteForBtm(GURL("http://www.youtube.com/"));
   TimestampRange bounce_1(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
@@ -308,10 +307,10 @@ TEST_P(DIPSDatabaseAllColumnTest, AddBounce) {
   EXPECT_TRUE(db_->Read(site).has_value());
 }
 
-// Test updating entries in the `bounces` table of the DIPSDatabase.
-TEST_P(DIPSDatabaseAllColumnTest, UpdateBounce) {
+// Test updating entries in the `bounces` table of the BtmDatabase.
+TEST_P(BtmDatabaseAllColumnTest, UpdateBounce) {
   // Add a bounce for site.
-  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string site = GetSiteForBtm(GURL("http://www.youtube.com/"));
   TimestampRange bounce_1(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce_1));
@@ -328,10 +327,10 @@ TEST_P(DIPSDatabaseAllColumnTest, UpdateBounce) {
   EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce_2);
 }
 
-// Test deleting an entry from the `bounces` table of the DIPSDatabase.
-TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
+// Test deleting an entry from the `bounces` table of the BtmDatabase.
+TEST_P(BtmDatabaseAllColumnTest, DeleteBounce) {
   // Add a bounce for site.
-  const std::string site = GetSiteForDIPS(GURL("http://www.youtube.com/"));
+  const std::string site = GetSiteForBtm(GURL("http://www.youtube.com/"));
   TimestampRange bounce(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
   EXPECT_TRUE(WriteToVariableColumn(site, bounce));
@@ -340,17 +339,17 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteBounce) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kBounces, site));
+  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kBounces, site));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site).has_value());
 }
 
-// Test deleting many entries from the `bounces` table of the DIPSDatabase.
-TEST_P(DIPSDatabaseAllColumnTest, DeleteSeveralBounces) {
+// Test deleting many entries from the `bounces` table of the BtmDatabase.
+TEST_P(BtmDatabaseAllColumnTest, DeleteSeveralBounces) {
   // Add a bounce for site.
-  const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
-  const std::string site2 = GetSiteForDIPS(GURL("http://www.picasa.com/"));
+  const std::string site1 = GetSiteForBtm(GURL("http://www.youtube.com/"));
+  const std::string site2 = GetSiteForBtm(GURL("http://www.picasa.com/"));
 
   TimestampRange bounce(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
@@ -362,17 +361,17 @@ TEST_P(DIPSDatabaseAllColumnTest, DeleteSeveralBounces) {
   EXPECT_TRUE(db_->Read(site2).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRows(DIPSDatabaseTable::kBounces, {site1, site2}));
+  EXPECT_TRUE(db_->RemoveRows(BtmDatabaseTable::kBounces, {site1, site2}));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site1).has_value());
   EXPECT_FALSE(db_->Read(site2).has_value());
 }
 
-// Test reading the `bounces` table of the DIPSDatabase.
-TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
+// Test reading the `bounces` table of the BtmDatabase.
+TEST_P(BtmDatabaseAllColumnTest, ReadBounce) {
   // Add a bounce for site.
-  const std::string site = GetSiteForDIPS(GURL("https://example.test"));
+  const std::string site = GetSiteForBtm(GURL("https://example.test"));
 
   TimestampRange bounce(
       {Time::FromSecondsSinceUnixEpoch(1), Time::FromSecondsSinceUnixEpoch(1)});
@@ -380,23 +379,23 @@ TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
   EXPECT_EQ(ReadValueForVariableColumn(db_->Read(site)), bounce);
 
   // Query a site that never had DIPS State, verifying that is has no entry.
-  EXPECT_FALSE(db_->Read(GetSiteForDIPS(GURL("https://www.not-in-db.com/")))
-                   .has_value());
+  EXPECT_FALSE(
+      db_->Read(GetSiteForBtm(GURL("https://www.not-in-db.com/"))).has_value());
 }
 
 // Verifies actions on the `popups` table of the DIPS database.
-class DIPSDatabasePopupsTest : public DIPSDatabaseTest,
-                               public testing::WithParamInterface<bool> {
+class BtmDatabasePopupsTest : public BtmDatabaseTest,
+                              public testing::WithParamInterface<bool> {
  public:
-  DIPSDatabasePopupsTest() : DIPSDatabaseTest(GetParam()) {}
+  BtmDatabasePopupsTest() : BtmDatabaseTest(GetParam()) {}
 };
 
-// Test adding entries in the `popups` table of the DIPSDatabase.
-TEST_P(DIPSDatabasePopupsTest, AddPopup) {
+// Test adding entries in the `popups` table of the BtmDatabase.
+TEST_P(BtmDatabasePopupsTest, AddPopup) {
   const std::string opener_site =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   uint64_t access_id = 123;
   base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
   bool is_current_interaction = true;
@@ -416,12 +415,12 @@ TEST_P(DIPSDatabasePopupsTest, AddPopup) {
             is_authentication_interaction);
 }
 
-// Test updating entries in the `popups` table of the DIPSDatabase.
-TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
+// Test updating entries in the `popups` table of the BtmDatabase.
+TEST_P(BtmDatabasePopupsTest, UpdatePopup) {
   const std::string opener_site =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   uint64_t first_access_id = 123;
   uint64_t second_access_id = 456;
   base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
@@ -452,14 +451,14 @@ TEST_P(DIPSDatabasePopupsTest, UpdatePopup) {
   EXPECT_EQ(popups_state_value.value().is_authentication_interaction, false);
 }
 
-// Test deleting an entry from the `popups` table of the DIPSDatabase. An entry
+// Test deleting an entry from the `popups` table of the BtmDatabase. An entry
 // should be deleted if the input site matches either opener_site or
 // popup_site.
-TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
+TEST_P(BtmDatabasePopupsTest, DeletePopup) {
   const std::string opener_site =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   uint64_t access_id = 123;
   base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
 
@@ -470,7 +469,7 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by opener_site, and verify.
-  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kPopups, opener_site));
+  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kPopups, opener_site));
   EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Write the popup to db, and verify.
@@ -480,19 +479,19 @@ TEST_P(DIPSDatabasePopupsTest, DeletePopup) {
   EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
 
   // Delete the entry in db by popup_site, and verify.
-  EXPECT_TRUE(db_->RemoveRow(DIPSDatabaseTable::kPopups, popup_site));
+  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kPopups, popup_site));
   EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
 }
 
-// Test deleting many entries from the `popups` table of the DIPSDatabase.
-TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
+// Test deleting many entries from the `popups` table of the BtmDatabase.
+TEST_P(BtmDatabasePopupsTest, DeleteSeveralPopups) {
   // Add popups to db.
   const std::string opener_site_1 =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string opener_site_2 =
-      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+      GetSiteForBtm(GURL("http://www.picasa.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   EXPECT_TRUE(db_->WritePopup(
       opener_site_1, popup_site,
       /*access_id=*/123, Time::FromSecondsSinceUnixEpoch(1),
@@ -508,7 +507,7 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
   EXPECT_TRUE(db_->ReadPopup(opener_site_2, popup_site).has_value());
 
   // Delete site's entry in `popups`.
-  EXPECT_TRUE(db_->RemoveRows(DIPSDatabaseTable::kBounces,
+  EXPECT_TRUE(db_->RemoveRows(BtmDatabaseTable::kBounces,
                               {opener_site_1, opener_site_2}));
 
   // Verify that both sites are deleted from the `popups` table.
@@ -518,18 +517,18 @@ TEST_P(DIPSDatabasePopupsTest, DeleteSeveralPopups) {
 
 // Test the `ReadRecentPopupsWithInteraction` function which retrieves a list of
 // `popups` table entries with recent popup timestamps.
-TEST_P(DIPSDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
+TEST_P(BtmDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
   base::Time now = Now();
 
   // Add popups to db.
   const std::string opener_site_1 =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string opener_site_2 =
-      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+      GetSiteForBtm(GURL("http://www.picasa.com/"));
   const std::string opener_site_3 =
-      GetSiteForDIPS(GURL("http://www.google.com/"));
+      GetSiteForBtm(GURL("http://www.google.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
                               /*access_id=*/123, now - base::Seconds(10),
                               /*is_current_interaction=*/true,
@@ -562,9 +561,9 @@ TEST_P(DIPSDatabasePopupsTest, ReadRecentPopupsWithInteraction) {
   EXPECT_EQ(recent_popups.at(0).last_popup_time, now - base::Seconds(10));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, DIPSDatabasePopupsTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, BtmDatabasePopupsTest, ::testing::Bool());
 
-TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
+TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
   base::HistogramTester histograms;
 
   ASSERT_TRUE(db_->ExecuteSqlForTesting(base::StringPrintf(
@@ -572,24 +571,24 @@ TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
       GetVariableColumnNames().first.c_str(),
       GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kRead_OpenEndedRange_NullStart,
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kRead_OpenEndedRange_NullStart,
                                 1);
 }
 
-TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullEnd) {
+TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullEnd) {
   base::HistogramTester histograms;
   ASSERT_TRUE(db_->ExecuteSqlForTesting(base::StringPrintf(
       "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',0,NULL)",
       GetVariableColumnNames().first.c_str(),
       GetVariableColumnNames().second.c_str())));
   db_->Read("site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kRead_OpenEndedRange_NullEnd, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kRead_OpenEndedRange_NullEnd, 1);
 }
 
 // Verifies the histograms logged for the success case.
-TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
+TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
   base::HistogramTester histograms;
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
       base::StringPrintf("INSERT INTO bounces(site,%s,%s) VALUES "
@@ -597,13 +596,13 @@ TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
                          GetVariableColumnNames().first.c_str(),
                          GetVariableColumnNames().second.c_str())));
   db_->Read("empty-site.test");
-  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
-                                DIPSErrorCode::kRead_None, 1);
+  histograms.ExpectUniqueSample("Privacy.DIPS.BtmErrorCodes",
+                                BtmErrorCode::kRead_None, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DIPSDatabaseAllColumnTest,
+    BtmDatabaseAllColumnTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(ColumnType::kSiteStorage,
                                          ColumnType::kUserInteraction,
@@ -611,15 +610,15 @@ INSTANTIATE_TEST_SUITE_P(
                                          ColumnType::kBounce,
                                          ColumnType::kWebAuthnAssertion)));
 
-// A test class that verifies the behavior of the DIPSDatabase with respect to
+// A test class that verifies the behavior of the BtmDatabase with respect to
 // interactions and Web Authn Assertions (WAA).
 //
 // Parameterized over whether the db is in memory.
-class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
-                                    public testing::WithParamInterface<bool> {
+class BtmDatabaseInteractionTest : public BtmDatabaseTest,
+                                   public testing::WithParamInterface<bool> {
  public:
-  DIPSDatabaseInteractionTest() : DIPSDatabaseTest(GetParam()) {
-    features_.InitWithFeatures({features::kDIPSTtl, features::kDIPS}, {});
+  BtmDatabaseInteractionTest() : BtmDatabaseTest(GetParam()) {
+    features_.InitWithFeatures({features::kBtmTtl, features::kBtm}, {});
   }
 
   // This test only focuses on user interaction and WAA times, that's the
@@ -652,36 +651,36 @@ class DIPSDatabaseInteractionTest : public DIPSDatabaseTest,
   base::Time dummy_time = Time::FromSecondsSinceUnixEpoch(100);
 };
 
-TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
+TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
   LoadDatabase();
 
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get());
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get());
   EXPECT_EQ(db_->ClearExpiredRows(), 0u);
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->ClearExpiredRows(), 4u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
               testing::UnorderedElementsAre("case2.test", "case6.test"));
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() +
                 tiny_delta * 2);
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
               testing::ElementsAre("case6.test"));
 }
 
-TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
+TEST_P(BtmDatabaseInteractionTest, ReadWithExpiredRows) {
   LoadDatabase();
 
   EXPECT_TRUE(db_->Read("case1.test").has_value());
@@ -691,7 +690,7 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case5.test").has_value());
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get());
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get());
   EXPECT_TRUE(db_->Read("case1.test").has_value());
   EXPECT_TRUE(db_->Read("case2.test").has_value());
   EXPECT_TRUE(db_->Read("case3.test").has_value());
@@ -699,7 +698,7 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case5.test").has_value());
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() + tiny_delta);
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case2.test").has_value());
   EXPECT_EQ(db_->Read("case3.test"), std::nullopt);
@@ -709,7 +708,7 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
 
   // Time travel to a point by which all interactions and WAAs should've
   // expired.
-  AdvanceTimeTo(dummy_time + features::kDIPSInteractionTtl.Get() +
+  AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() +
                 tiny_delta * 2);
   EXPECT_EQ(db_->Read("case1.test"), std::nullopt);
   EXPECT_EQ(db_->Read("case2.test"), std::nullopt);
@@ -719,14 +718,14 @@ TEST_P(DIPSDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_TRUE(db_->Read("case6.test").has_value());
 }
 
-TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
+TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
   // Add popups to db.
   const std::string opener_site_1 =
-      GetSiteForDIPS(GURL("http://www.youtube.com/"));
+      GetSiteForBtm(GURL("http://www.youtube.com/"));
   const std::string opener_site_2 =
-      GetSiteForDIPS(GURL("http://www.picasa.com/"));
+      GetSiteForBtm(GURL("http://www.picasa.com/"));
   const std::string popup_site =
-      GetSiteForDIPS(GURL("http://www.doubleclick.net/"));
+      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
   const base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
   const base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
 
@@ -740,70 +739,70 @@ TEST_P(DIPSDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
                               /*is_authentication_interaction=*/false));
 
   // Advance to just before the first popup expires.
-  AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl - tiny_delta);
+  AdvanceTimeTo(first_popup_time + BtmDatabase::kPopupTtl - tiny_delta);
 
   // Verify that both sites are present.
   EXPECT_EQ(db_->ClearExpiredRows(), 0u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
               testing::UnorderedElementsAre("youtube.com", "doubleclick.net",
                                             "picasa.com", "doubleclick.net"));
 
   // Advance to after the first popup expires.
-  AdvanceTimeTo(first_popup_time + DIPSDatabase::kPopupTtl + tiny_delta);
+  AdvanceTimeTo(first_popup_time + BtmDatabase::kPopupTtl + tiny_delta);
 
   // Verify that only the first popup was removed from the db.
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
               testing::UnorderedElementsAre("picasa.com", "doubleclick.net"));
 
   // Advance to after the second popup expires.
-  AdvanceTimeTo(second_popup_time + DIPSDatabase::kPopupTtl + tiny_delta);
+  AdvanceTimeTo(second_popup_time + BtmDatabase::kPopupTtl + tiny_delta);
 
   // Verify that both popups were removed from the db.
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
               testing::IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseInteractionTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, BtmDatabaseInteractionTest, ::testing::Bool());
 
 // A test class that verifies the behavior of the methods used to query the
-// DIPSDatabase to find all sites which should have their state cleared by DIPS.
-class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
-                              public testing::WithParamInterface<
-                                  std::tuple<bool, DIPSTriggeringAction>> {
+// BtmDatabase to find all sites which should have their state cleared by DIPS.
+class BtmDatabaseQueryTest : public BtmDatabaseTest,
+                             public testing::WithParamInterface<
+                                 std::tuple<bool, BtmTriggeringAction>> {
  public:
   using QueryMethod = base::RepeatingCallback<std::vector<std::string>(void)>;
-  DIPSDatabaseQueryTest() : DIPSDatabaseTest(std::get<0>(GetParam())) {
+  BtmDatabaseQueryTest() : BtmDatabaseTest(std::get<0>(GetParam())) {
     // Test with the prod feature's parameter to ensure the tested scenarios are
     // also valid/respected within prod env.
-    features_.InitWithFeatures({features::kDIPSTtl, features::kDIPS}, {});
+    features_.InitWithFeatures({features::kBtmTtl, features::kBtm}, {});
   }
 
   void SetUp() override {
-    DIPSDatabaseTest::SetUp();
-    grace_period = features::kDIPSGracePeriod.Get();
-    interaction_ttl = features::kDIPSInteractionTtl.Get();
+    BtmDatabaseTest::SetUp();
+    grace_period = features::kBtmGracePeriod.Get();
+    interaction_ttl = features::kBtmInteractionTtl.Get();
   }
 
   // Returns the DIPS-triggering action we're testing.
-  DIPSTriggeringAction CurrentAction() { return std::get<1>(GetParam()); }
+  BtmTriggeringAction CurrentAction() { return std::get<1>(GetParam()); }
 
   // Returns a callback for the respective querying method we want to test,
-  // based on `features::kDIPSTriggeringAction`. This is equivalent to that
-  // used by `DIPSStorage::GetSitesToClear` when the DIPS Timer fires.
+  // based on `features::kBtmTriggeringAction`. This is equivalent to that
+  // used by `BtmStorage::GetSitesToClear` when the DIPS Timer fires.
   QueryMethod GetQueryMethodUnderTest() {
     switch (CurrentAction()) {
-      case DIPSTriggeringAction::kNone:
+      case BtmTriggeringAction::kNone:
         return base::BindLambdaForTesting(
             [&]() { return std::vector<std::string>{}; });
-      case DIPSTriggeringAction::kBounce:
+      case BtmTriggeringAction::kBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBounced(grace_period); });
-      case DIPSTriggeringAction::kStorage:
+      case BtmTriggeringAction::kStorage:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatUsedStorage(grace_period); });
-      case DIPSTriggeringAction::kStatefulBounce:
+      case BtmTriggeringAction::kStatefulBounce:
         return base::BindLambdaForTesting(
             [&]() { return db_->GetSitesThatBouncedWithState(grace_period); });
     }
@@ -814,19 +813,19 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
                              TimestampRange interaction_times,
                              TimestampRange waa_times) {
     switch (CurrentAction()) {
-      case DIPSTriggeringAction::kNone:
+      case BtmTriggeringAction::kNone:
         break;
-      case DIPSTriggeringAction::kBounce:
+      case BtmTriggeringAction::kBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/{},
                    /*bounce_times=*/event_times, waa_times);
         break;
-      case DIPSTriggeringAction::kStorage:
+      case BtmTriggeringAction::kStorage:
         db_->Write(site, /*storage_times=*/event_times, interaction_times,
                    /*stateful_bounce_times=*/{}, /*bounce_times=*/{},
                    waa_times);
         break;
-      case DIPSTriggeringAction::kStatefulBounce:
+      case BtmTriggeringAction::kStatefulBounce:
         db_->Write(site, /*storage_times=*/{}, interaction_times,
                    /*stateful_bounce_times=*/event_times,
                    /*bounce_times=*/event_times, waa_times);
@@ -839,7 +838,7 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
   base::TimeDelta interaction_ttl;
 };
 
-TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedDuringGracePeriod) {
   // The result of running `query` shouldn't include sites which are currently
   // in their grace period after first performing a DIPS-triggering event.
   QueryMethod query = GetQueryMethodUnderTest();
@@ -866,7 +865,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
   EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
-TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
   // The result of running `query` shouldn't include sites who've received
   // interactions from the user before performing a DIPS-triggering event.
   QueryMethod query = GetQueryMethodUnderTest();
@@ -908,7 +907,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
 // The results of running `query` shouldn't include `site` with existing
 // (expired or unexpired) WAAs (performed by the user before a DIPS-triggering
 // event occurred).
-TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
   const QueryMethod query = GetQueryMethodUnderTest();
   const std::string site = "site.test";
 
@@ -935,7 +934,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
     EXPECT_TRUE(db_->Read(site).has_value());
 
     // The `site`'s entry should be cleared by
-    // `DIPSDatabase::ClearExpiredRows()` from the DB (hence implicitly
+    // `BtmDatabase::ClearExpiredRows()` from the DB (hence implicitly
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
@@ -956,7 +955,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaBeforeGracePeriod) {
   }
 }
 
-TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
   // The result of running `query` shouldn't include sites who've received
   // interactions during the grace period following a DIPS-triggering event.
   QueryMethod query = GetQueryMethodUnderTest();
@@ -1000,7 +999,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
 // The results of running `query` shouldn't include `site` with existing
 // (expired or unexpired) WAAs (performed by the user after a DIPS-triggering
 // event occurred).
-TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
   const QueryMethod query = GetQueryMethodUnderTest();
   const std::string site = "site.test";
 
@@ -1028,7 +1027,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
     EXPECT_TRUE(db_->Read(site).has_value());
 
     // The `site`'s entry should be cleared by
-    // `DIPSDatabase::ClearExpiredRows()` from the DB (hence implicitly
+    // `BtmDatabase::ClearExpiredRows()` from the DB (hence implicitly
     // protected) after WAA expiry:
     AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
     EXPECT_THAT(query.Run(), testing::IsEmpty());
@@ -1049,7 +1048,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaDuringGracePeriod) {
   }
 }
 
-TEST_P(DIPSDatabaseQueryTest, SiteWithoutInteractionsAreUnprotected) {
+TEST_P(BtmDatabaseQueryTest, SiteWithoutInteractionsAreUnprotected) {
   // The result of running `query` should include sites who've never received
   // interaction from the user before, or during the grace period after,
   // performing a DIPS-triggering event.
@@ -1069,7 +1068,7 @@ TEST_P(DIPSDatabaseQueryTest, SiteWithoutInteractionsAreUnprotected) {
 
 // This is an edge-case and the current accepted behavior is as expressed by
 // this test coverage.
-TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
   const QueryMethod query = GetQueryMethodUnderTest();
   const std::string site = "site.test";
 
@@ -1090,14 +1089,14 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaAfterGracePeriod) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // The `site`'s entry should be cleared by
-  // `DIPSDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
+  // `BtmDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
   EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
-TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByInteractionThenWaa) {
   const QueryMethod query = GetQueryMethodUnderTest();
   const std::string site = "site.test";
 
@@ -1120,14 +1119,14 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionThenWaa) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // The `site`'s entry should be cleared by
-  // `DIPSDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
+  // `BtmDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
   // after WAA expiry:
   AdvanceTimeTo(waa_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
   EXPECT_EQ(db_->Read(site), std::nullopt);
 }
 
-TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
+TEST_P(BtmDatabaseQueryTest, ProtectedByWaaThenInteraction) {
   const QueryMethod query = GetQueryMethodUnderTest();
   const std::string site = "site.test";
 
@@ -1150,7 +1149,7 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // The `site`'s entry should be cleared by
-  // `DIPSDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
+  // `BtmDatabase::ClearExpiredRows()` from the DB (hence implicitly protected)
   // after interaction expiry:
   AdvanceTimeTo(interaction_time + interaction_ttl + tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
@@ -1159,32 +1158,32 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByWaaThenInteraction) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DIPSDatabaseQueryTest,
+    BtmDatabaseQueryTest,
     ::testing::Combine(
         ::testing::Bool(),
-        ::testing::Values(DIPSTriggeringAction::kBounce,
-                          DIPSTriggeringAction::kStorage,
-                          DIPSTriggeringAction::kStatefulBounce)));
+        ::testing::Values(BtmTriggeringAction::kBounce,
+                          BtmTriggeringAction::kStorage,
+                          BtmTriggeringAction::kStatefulBounce)));
 
-// A test class that verifies DIPSDatabase garbage collection behavior for both
+// A test class that verifies BtmDatabase garbage collection behavior for both
 // tables.
-class DIPSDatabaseGarbageCollectionTest
-    : public DIPSDatabaseTest,
-      public testing::WithParamInterface<DIPSDatabaseTable> {
+class BtmDatabaseGarbageCollectionTest
+    : public BtmDatabaseTest,
+      public testing::WithParamInterface<BtmDatabaseTable> {
  public:
-  DIPSDatabaseGarbageCollectionTest() : DIPSDatabaseTest(true) {
+  BtmDatabaseGarbageCollectionTest() : BtmDatabaseTest(true) {
     table_ = GetParam();
   }
 
-  explicit DIPSDatabaseGarbageCollectionTest(DIPSDatabaseTable table)
-      : DIPSDatabaseTest(true) {
+  explicit BtmDatabaseGarbageCollectionTest(BtmDatabaseTable table)
+      : BtmDatabaseTest(true) {
     table_ = table;
   }
 
   void SetUp() override {
-    DIPSDatabaseTest::SetUp();
+    BtmDatabaseTest::SetUp();
     features_.InitAndEnableFeatureWithParameters(
-        features::kDIPSTtl,
+        features::kBtmTtl,
         {{"interaction_ttl",
           base::StringPrintf("%dh", base::Days(90).InHours())}});
 
@@ -1200,7 +1199,7 @@ class DIPSDatabaseGarbageCollectionTest
                 TimestampRange storage_times,
                 TimestampRange interaction_times,
                 TimestampRange waa_times) {
-    if (table_ == DIPSDatabaseTable::kBounces) {
+    if (table_ == BtmDatabaseTable::kBounces) {
       ASSERT_TRUE(db_->Write(site, storage_times, interaction_times, {}, {},
                              waa_times));
     } else {
@@ -1232,7 +1231,7 @@ class DIPSDatabaseGarbageCollectionTest
                                   Now() + tiny_delta * 2};
 
     for (int i = 1; i <= 3; i++) {
-      if (table_ == DIPSDatabaseTable::kBounces) {
+      if (table_ == BtmDatabaseTable::kBounces) {
         ASSERT_TRUE(db_->Write(
             base::StringPrintf("entry%d.test", 7 - i), ToRange(times[i % 3]),
             ToRange(times[(i + 1) % 3]), {}, {}, ToRange(times[(i + 2) % 3])));
@@ -1248,7 +1247,7 @@ class DIPSDatabaseGarbageCollectionTest
       }
     }
     for (int i = 3; i <= 6; i++) {
-      if (table_ == DIPSDatabaseTable::kBounces) {
+      if (table_ == BtmDatabaseTable::kBounces) {
         ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
                                ToRange(times[(i + 2) % 3]),
                                ToRange(times[(i + 1) % 3]), {}, {},
@@ -1264,21 +1263,21 @@ class DIPSDatabaseGarbageCollectionTest
         time += tiny_delta * 3;
       }
     }
-    if (table_ == DIPSDatabaseTable::kBounces) {
+    if (table_ == BtmDatabaseTable::kBounces) {
       EXPECT_THAT(
-          db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+          db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
           testing::ElementsAre("entry1.test", "entry2.test", "entry3.test",
                                "entry4.test", "entry5.test", "entry6.test"));
     } else {
       EXPECT_THAT(
-          db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+          db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
           testing::IsSupersetOf({"entry1.test", "entry2.test", "entry3.test",
                                  "entry4.test", "entry5.test", "entry6.test"}));
     }
   }
 
  protected:
-  DIPSDatabaseTable table_;
+  BtmDatabaseTable table_;
 
   base::Time recent_interaction;
   base::Time old_interaction;
@@ -1287,7 +1286,7 @@ class DIPSDatabaseGarbageCollectionTest
 
 // More than |max_entries_| entries with recent user interaction; garbage
 // collection should purge down to |max_entries_| - |purge_entries_| entries.
-TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
+TEST_P(BtmDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
                     /*num_old_entries=*/0);
 
@@ -1298,7 +1297,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
+TEST_P(BtmDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
                     /*num_old_entries=*/db_->GetMaxEntries());
 
@@ -1310,7 +1309,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
 
 // Less than |max_entries_| entries, none of which are expired;
 // no entries should be garbage collected.
-TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
+TEST_P(BtmDatabaseGarbageCollectionTest, PreservesUnderMax) {
   BloatBouncesForGC(
       /*num_recent_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) /
           2,
@@ -1324,7 +1323,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesUnderMax) {
 
 // Exactly |max_entries_| entries, none of which are expired;
 // no entries should be garbage collected.
-TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
+TEST_P(BtmDatabaseGarbageCollectionTest, PreservesMax) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
                     /*num_old_entries=*/0);
 
@@ -1332,8 +1331,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, PreservesMax) {
   EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest,
-       RemovesExpired_PreserveRecent_LE_Max) {
+TEST_P(BtmDatabaseGarbageCollectionTest, RemovesExpired_PreserveRecent_LE_Max) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
                     /*num_old_entries=*/db_->GetMaxEntries());
 
@@ -1341,7 +1339,7 @@ TEST_P(DIPSDatabaseGarbageCollectionTest,
   EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
 }
 
-TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest) {
+TEST_P(BtmDatabaseGarbageCollectionTest, GarbageCollectOldest) {
   LoadDatabase();
 
   EXPECT_THAT(
@@ -1350,12 +1348,12 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest) {
                            "entry3.test", "entry2.test", "entry1.test"));
 
   EXPECT_EQ(db_->GarbageCollectOldest(GetParam(), 3), static_cast<size_t>(3));
-  if (GetParam() == DIPSDatabaseTable::kBounces) {
+  if (GetParam() == BtmDatabaseTable::kBounces) {
     EXPECT_THAT(
-        db_->GetAllSitesForTesting(DIPSDatabaseTable::kBounces),
+        db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
         testing::ElementsAre("entry1.test", "entry2.test", "entry3.test"));
   } else {
-    EXPECT_THAT(db_->GetAllSitesForTesting(DIPSDatabaseTable::kPopups),
+    EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
                 testing::ElementsAre("entry1.test", "doubleclick.net",
                                      "entry2.test", "doubleclick.net",
                                      "entry3.test", "doubleclick.net"));
@@ -1363,19 +1361,19 @@ TEST_P(DIPSDatabaseGarbageCollectionTest, GarbageCollectOldest) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         DIPSDatabaseGarbageCollectionTest,
-                         ::testing::Values(DIPSDatabaseTable::kBounces,
-                                           DIPSDatabaseTable::kPopups));
+                         BtmDatabaseGarbageCollectionTest,
+                         ::testing::Values(BtmDatabaseTable::kBounces,
+                                           BtmDatabaseTable::kPopups));
 
 // These tests only apply to the `bounces` table.
-class DIPSDatabaseBounceTableGarbageCollectionTest
-    : public DIPSDatabaseGarbageCollectionTest {
+class BtmDatabaseBounceTableGarbageCollectionTest
+    : public BtmDatabaseGarbageCollectionTest {
  public:
-  DIPSDatabaseBounceTableGarbageCollectionTest()
-      : DIPSDatabaseGarbageCollectionTest(DIPSDatabaseTable::kBounces) {}
+  BtmDatabaseBounceTableGarbageCollectionTest()
+      : BtmDatabaseGarbageCollectionTest(BtmDatabaseTable::kBounces) {}
 };
 
-TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_NullStorageTimes) {
   LoadDatabase();
 
@@ -1385,12 +1383,12 @@ TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
              state->user_interaction_times, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_NullInteractionTimes) {
   LoadDatabase();
 
@@ -1400,12 +1398,12 @@ TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
              {}, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_NullWaaTimes) {
   LoadDatabase();
 
@@ -1415,7 +1413,7 @@ TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
              state->user_interaction_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
@@ -1424,7 +1422,7 @@ TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
 // shouldn't alter the oldest site ordering of the garbage collection. In this
 // explicit case we only have user interaction times; we should expect the same
 // behavior for the other times.
-TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
        GarbageCollectOldest_SingleNonNull) {
   LoadDatabase();
 
@@ -1434,20 +1432,20 @@ TEST_F(DIPSDatabaseBounceTableGarbageCollectionTest,
              state->user_interaction_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(DIPSDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-// A test class that verifies DIPSDatabase database health metrics collection
+// A test class that verifies BtmDatabase database health metrics collection
 // behavior. Created on-disk so opening a corrupt database file can be tested.
-class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
+class BtmDatabaseHistogramTest : public BtmDatabaseTest {
  public:
-  DIPSDatabaseHistogramTest() : DIPSDatabaseTest(false) {}
+  BtmDatabaseHistogramTest() : BtmDatabaseTest(false) {}
 
   void SetUp() override {
-    DIPSDatabaseTest::SetUp();
-    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
+    BtmDatabaseTest::SetUp();
+    features_.InitAndEnableFeatureWithParameters(features::kBtmTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -1457,7 +1455,7 @@ class DIPSDatabaseHistogramTest : public DIPSDatabaseTest {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
+TEST_F(BtmDatabaseHistogramTest, HealthMetrics) {
   // The database was initialized successfully.
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
@@ -1493,7 +1491,7 @@ TEST_F(DIPSDatabaseHistogramTest, HealthMetrics) {
   histograms().ExpectBucketCount("Privacy.DIPS.DatabaseEntryCount", 1, 1);
 }
 
-TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
+TEST_F(BtmDatabaseHistogramTest, ErrorMetrics) {
   // The database was initialized successfully.
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseErrors", 0);
   histograms().ExpectTotalCount("Privacy.DIPS.DatabaseInit", 1);
@@ -1505,7 +1503,7 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
              {{Time::FromSecondsSinceUnixEpoch(1),
                Time::FromSecondsSinceUnixEpoch(1)}},
              {}, {}, {});
-  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces),
+  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces),
             static_cast<size_t>(1));
 
   // Corrupt the database.
@@ -1521,7 +1519,7 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 2);
 
   // No data should be present as the database should have been razed.
-  EXPECT_EQ(db_->GetEntryCount(DIPSDatabaseTable::kBounces),
+  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces),
             static_cast<size_t>(0));
 
   // Verify that the corruption error was reported.
@@ -1531,7 +1529,7 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
                                   sql::SqliteLoggedResultCode::kCorrupt, 1);
 }
 
-TEST_F(DIPSDatabaseHistogramTest, PerformanceMetrics) {
+TEST_F(BtmDatabaseHistogramTest, PerformanceMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 0);
   histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 0);
 
@@ -1550,10 +1548,10 @@ TEST_F(DIPSDatabaseHistogramTest, PerformanceMetrics) {
   histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 1);
 }
 
-class DIPSDatabaseInitializationTest : public testing::Test {
+class BtmDatabaseInitializationTest : public testing::Test {
  public:
-  DIPSDatabaseInitializationTest() {
-    features_.InitAndEnableFeatureWithParameters(features::kDIPSTtl,
+  BtmDatabaseInitializationTest() {
+    features_.InitAndEnableFeatureWithParameters(features::kBtmTtl,
                                                  {{"interaction_ttl", "inf"}});
   }
 
@@ -1647,9 +1645,9 @@ class DIPSDatabaseInitializationTest : public testing::Test {
   }
 
   void ValidateMetadataMatchesLatestVersion(sql::Database* db) {
-    EXPECT_EQ(GetDatabaseVersion(db), DIPSDatabase::kLatestSchemaVersion);
+    EXPECT_EQ(GetDatabaseVersion(db), BtmDatabase::kLatestSchemaVersion);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(db),
-              DIPSDatabase::kMinCompatibleSchemaVersion);
+              BtmDatabase::kMinCompatibleSchemaVersion);
     // We no longer mark prepopulation in the meta table.
     EXPECT_EQ(GetPrepopulatedFromMetaTable(db), std::nullopt);
   }
@@ -1692,7 +1690,7 @@ class DIPSDatabaseInitializationTest : public testing::Test {
   }
 };
 
-TEST_F(DIPSDatabaseInitializationTest, InitializeEmptyDBWithLatestSchema) {
+TEST_F(BtmDatabaseInitializationTest, InitializeEmptyDBWithLatestSchema) {
   // Initialize with an empty DB.
   InitializeDatabase();
 
@@ -1704,7 +1702,7 @@ TEST_F(DIPSDatabaseInitializationTest, InitializeEmptyDBWithLatestSchema) {
   }
 }
 
-TEST_F(DIPSDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
+TEST_F(BtmDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase("v2.sql"));
 
   // Manipulations on the database version number are not necessary, but
@@ -1732,15 +1730,15 @@ TEST_F(DIPSDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
     // Prepare simulation of raze if incompatible. by making this DB
     // incompatible.
     const int tiny_increment = 1;
-    ASSERT_TRUE(meta_table.SetVersionNumber(DIPSDatabase::kLatestSchemaVersion +
+    ASSERT_TRUE(meta_table.SetVersionNumber(BtmDatabase::kLatestSchemaVersion +
                                             tiny_increment));
     ASSERT_TRUE(meta_table.SetCompatibleVersionNumber(
-        DIPSDatabase::kLatestSchemaVersion + tiny_increment));
+        BtmDatabase::kLatestSchemaVersion + tiny_increment));
 
     EXPECT_EQ(GetDatabaseVersion(&db),
-              DIPSDatabase::kLatestSchemaVersion + tiny_increment);
+              BtmDatabase::kLatestSchemaVersion + tiny_increment);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db),
-              DIPSDatabase::kLatestSchemaVersion + tiny_increment);
+              BtmDatabase::kLatestSchemaVersion + tiny_increment);
 
     ASSERT_EQ(RowCount(&db, "bounces"), "4");
   }
@@ -1764,7 +1762,7 @@ TEST_F(DIPSDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
   }
 }
 
-TEST_F(DIPSDatabaseInitializationTest, MigrateOldSchemaToLatestVersion) {
+TEST_F(BtmDatabaseInitializationTest, MigrateOldSchemaToLatestVersion) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase("v2.sql"));
 
   {
@@ -1786,28 +1784,28 @@ TEST_F(DIPSDatabaseInitializationTest, MigrateOldSchemaToLatestVersion) {
 }
 
 // Verifies actions on the `config` table of the DIPS database.
-class DIPSDatabaseConfigTest : public DIPSDatabaseTest {
+class BtmDatabaseConfigTest : public BtmDatabaseTest {
  public:
-  DIPSDatabaseConfigTest() : DIPSDatabaseTest(/*in_memory=*/true) {}
+  BtmDatabaseConfigTest() : BtmDatabaseTest(/*in_memory=*/true) {}
 };
 
-TEST_F(DIPSDatabaseConfigTest, GetUnknownKeyReturnsNullopt) {
+TEST_F(BtmDatabaseConfigTest, GetUnknownKeyReturnsNullopt) {
   EXPECT_EQ(db_->GetConfigValueForTesting("test"), std::nullopt);
 }
 
-TEST_F(DIPSDatabaseConfigTest, WriteAndRead) {
+TEST_F(BtmDatabaseConfigTest, WriteAndRead) {
   ASSERT_TRUE(db_->SetConfigValueForTesting("test", 42));
   EXPECT_THAT(db_->GetConfigValueForTesting("test"), Optional(42));
 }
 
-TEST_F(DIPSDatabaseConfigTest, Overwrite) {
+TEST_F(BtmDatabaseConfigTest, Overwrite) {
   ASSERT_TRUE(db_->SetConfigValueForTesting("test", 42));
   ASSERT_TRUE(db_->SetConfigValueForTesting("test", 99));
 
   EXPECT_THAT(db_->GetConfigValueForTesting("test"), Optional(99));
 }
 
-TEST_F(DIPSDatabaseConfigTest, MultipleKeys) {
+TEST_F(BtmDatabaseConfigTest, MultipleKeys) {
   ASSERT_TRUE(db_->SetConfigValueForTesting("foo", 42));
   ASSERT_TRUE(db_->SetConfigValueForTesting("bar", 99));
 
@@ -1815,7 +1813,7 @@ TEST_F(DIPSDatabaseConfigTest, MultipleKeys) {
   EXPECT_THAT(db_->GetConfigValueForTesting("bar"), Optional(99));
 }
 
-TEST_F(DIPSDatabaseConfigTest, TimerLastFired) {
+TEST_F(BtmDatabaseConfigTest, TimerLastFired) {
   const base::Time time = Time::FromSecondsSinceUnixEpoch(1);
 
   ASSERT_EQ(db_->GetTimerLastFired(), std::nullopt);

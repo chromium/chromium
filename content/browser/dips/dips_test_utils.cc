@@ -150,15 +150,15 @@ void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
   observer.Wait();
 }
 
-std::optional<StateValue> GetDIPSState(DIPSServiceImpl* dips_service,
-                                       const GURL& url) {
+std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
+                                      const GURL& url) {
   std::optional<StateValue> state;
 
   auto* storage = dips_service->storage();
   DCHECK(storage);
-  storage->AsyncCall(&DIPSStorage::Read)
+  storage->AsyncCall(&BtmStorage::Read)
       .WithArgs(url)
-      .Then(base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
+      .Then(base::BindLambdaForTesting([&](const BtmState& loaded_state) {
         if (loaded_state.was_loaded()) {
           state = loaded_state.ToStateValue();
         }
@@ -241,7 +241,7 @@ void UserActivationObserver::FrameReceivedUserActivation(
 EntryUrlsAre::EntryUrlsAre(std::string entry_name,
                            std::vector<std::string> urls)
     : entry_name_(std::move(entry_name)), expected_urls_(std::move(urls)) {
-  // Sort the URLs before comparing, so order doesn't matter. (DIPSDatabase
+  // Sort the URLs before comparing, so order doesn't matter. (BtmDatabase
   // currently sorts its results, but that could change and these tests
   // shouldn't care.)
   std::sort(expected_urls_.begin(), expected_urls_.end());
@@ -294,10 +294,9 @@ ScopedInitFeature::ScopedInitFeature(const base::Feature& feature,
   }
 }
 
-ScopedInitDIPSFeature::ScopedInitDIPSFeature(
-    bool enable,
-    const base::FieldTrialParams& params)
-    : init_feature_(features::kDIPS, enable, params) {}
+ScopedInitBtmFeature::ScopedInitBtmFeature(bool enable,
+                                           const base::FieldTrialParams& params)
+    : init_feature_(features::kBtm, enable, params) {}
 
 OpenedWindowObserver::OpenedWindowObserver(
     WebContents* web_contents,

@@ -19,10 +19,10 @@ protocol::Response SystemInfoHandler::GetFeatureState(
     const std::string& in_featureState,
     bool* featureEnabled) {
   if (in_featureState == "DIPS") {
-    *featureEnabled = base::FeatureList::IsEnabled(features::kDIPS) &&
-                      features::kDIPSDeletionEnabled.Get() &&
-                      (features::kDIPSTriggeringAction.Get() !=
-                       content::DIPSTriggeringAction::kNone);
+    *featureEnabled = base::FeatureList::IsEnabled(features::kBtm) &&
+                      features::kBtmDeletionEnabled.Get() &&
+                      (features::kBtmTriggeringAction.Get() !=
+                       content::BtmTriggeringAction::kNone);
     return protocol::Response::Success();
   }
 

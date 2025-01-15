@@ -54,7 +54,7 @@ class FrameCookieAccessObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-class DIPSBounceTrackingDevToolsIssueTest
+class BtmBounceTrackingDevToolsIssueTest
     : public content::TestDevToolsProtocolClient,
       public PlatformBrowserTest {
  protected:
@@ -105,7 +105,7 @@ class DIPSBounceTrackingDevToolsIssueTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
+IN_PROC_BROWSER_TEST_F(BtmBounceTrackingDevToolsIssueTest,
                        BounceTrackingDevToolsIssue) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);

@@ -19,41 +19,41 @@
 
 namespace content {
 
-base::cstring_view DIPSCookieModeToString(DIPSCookieMode mode) {
+base::cstring_view BtmCookieModeToString(BtmCookieMode mode) {
   switch (mode) {
-    case DIPSCookieMode::kBlock3PC:
+    case BtmCookieMode::kBlock3PC:
       return "Block3PC";
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
+    case BtmCookieMode::kOffTheRecord_Block3PC:
       return "OffTheRecord_Block3PC";
   }
 }
 
-base::cstring_view DIPSRedirectTypeToString(DIPSRedirectType type) {
+base::cstring_view BtmRedirectTypeToString(BtmRedirectType type) {
   switch (type) {
-    case DIPSRedirectType::kClient:
+    case BtmRedirectType::kClient:
       return "Client";
-    case DIPSRedirectType::kServer:
+    case BtmRedirectType::kServer:
       return "Server";
   }
 }
 
-base::cstring_view DIPSDataAccessTypeToString(DIPSDataAccessType type) {
+base::cstring_view BtmDataAccessTypeToString(BtmDataAccessType type) {
   switch (type) {
-    case DIPSDataAccessType::kUnknown:
+    case BtmDataAccessType::kUnknown:
       return "Unknown";
-    case DIPSDataAccessType::kNone:
+    case BtmDataAccessType::kNone:
       return "None";
-    case DIPSDataAccessType::kRead:
+    case BtmDataAccessType::kRead:
       return "Read";
-    case DIPSDataAccessType::kWrite:
+    case BtmDataAccessType::kWrite:
       return "Write";
-    case DIPSDataAccessType::kReadWrite:
+    case BtmDataAccessType::kReadWrite:
       return "ReadWrite";
   }
 }
 
-base::FilePath GetDIPSFilePath(BrowserContext* context) {
-  return context->GetPath().Append(kDIPSFilename);
+base::FilePath GetBtmFilePath(BrowserContext* context) {
+  return context->GetPath().Append(kBtmFilename);
 }
 
 bool UpdateTimestampRange(TimestampRange& range, base::Time time) {
@@ -94,63 +94,63 @@ std::ostream& operator<<(std::ostream& os, TimestampRange range) {
   return os << "[" << range->first << ", " << range->second << "]";
 }
 
-// DIPSDataAccessType:
-std::ostream& operator<<(std::ostream& os, DIPSDataAccessType access_type) {
-  return os << DIPSDataAccessTypeToString(access_type);
+// BtmDataAccessType:
+std::ostream& operator<<(std::ostream& os, BtmDataAccessType access_type) {
+  return os << BtmDataAccessTypeToString(access_type);
 }
 
-// DIPSCookieMode:
-DIPSCookieMode GetDIPSCookieMode(bool is_otr) {
-  return is_otr ? DIPSCookieMode::kOffTheRecord_Block3PC
-                : DIPSCookieMode::kBlock3PC;
+// BtmCookieMode:
+BtmCookieMode GetBtmCookieMode(bool is_otr) {
+  return is_otr ? BtmCookieMode::kOffTheRecord_Block3PC
+                : BtmCookieMode::kBlock3PC;
 }
 
-std::string_view GetHistogramSuffix(DIPSCookieMode mode) {
-  // Any changes here need to be reflected in DIPSCookieMode in
+std::string_view GetHistogramSuffix(BtmCookieMode mode) {
+  // Any changes here need to be reflected in BtmCookieMode in
   // tools/metrics/histograms/metadata/others/histograms.xml
   switch (mode) {
-    case DIPSCookieMode::kBlock3PC:
+    case BtmCookieMode::kBlock3PC:
       return ".Block3PC";
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
+    case BtmCookieMode::kOffTheRecord_Block3PC:
       return ".OffTheRecord_Block3PC";
   }
-  DCHECK(false) << "Invalid DIPSCookieMode";
+  DCHECK(false) << "Invalid BtmCookieMode";
   return std::string_view();
 }
 
-std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode) {
-  return os << DIPSCookieModeToString(mode);
+std::ostream& operator<<(std::ostream& os, BtmCookieMode mode) {
+  return os << BtmCookieModeToString(mode);
 }
 
-// DIPSRedirectType:
-std::string_view GetHistogramPiece(DIPSRedirectType type) {
+// BtmRedirectType:
+std::string_view GetHistogramPiece(BtmRedirectType type) {
   // Any changes here need to be reflected in
   // tools/metrics/histograms/metadata/privacy/histograms.xml
   switch (type) {
-    case DIPSRedirectType::kClient:
+    case BtmRedirectType::kClient:
       return "Client";
-    case DIPSRedirectType::kServer:
+    case BtmRedirectType::kServer:
       return "Server";
   }
-  DCHECK(false) << "Invalid DIPSRedirectType";
+  DCHECK(false) << "Invalid BtmRedirectType";
   return std::string_view();
 }
 
-std::ostream& operator<<(std::ostream& os, DIPSRedirectType type) {
-  return os << DIPSRedirectTypeToString(type);
+std::ostream& operator<<(std::ostream& os, BtmRedirectType type) {
+  return os << BtmRedirectTypeToString(type);
 }
 
-int64_t BucketizeDIPSBounceDelay(base::TimeDelta delta) {
+int64_t BucketizeBtmBounceDelay(base::TimeDelta delta) {
   return std::clamp(delta.InSeconds(), INT64_C(0), INT64_C(10));
 }
 
-std::string GetSiteForDIPS(const GURL& url) {
+std::string GetSiteForBtm(const GURL& url) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? url.host() : domain;
 }
 
-std::string GetSiteForDIPS(const url::Origin& origin) {
+std::string GetSiteForBtm(const url::Origin& origin) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? origin.host() : domain;
@@ -186,7 +186,7 @@ bool HasSameSiteIframe(WebContents* web_contents, const GURL& url) {
 
 bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {
   if (!last_time.has_value() ||
-      (now - last_time.value()) >= kDIPSTimestampUpdateInterval) {
+      (now - last_time.value()) >= kBtmTimestampUpdateInterval) {
     last_time = now;
     return true;
   }

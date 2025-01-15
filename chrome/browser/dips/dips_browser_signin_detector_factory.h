@@ -19,23 +19,23 @@ namespace content {
 class BrowserContext;
 }
 
-class DIPSBrowserSigninDetectorFactory
+class BtmBrowserSigninDetectorFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  using PassKey = base::PassKey<DIPSBrowserSigninDetectorFactory>;
+  using PassKey = base::PassKey<BtmBrowserSigninDetectorFactory>;
 
-  explicit DIPSBrowserSigninDetectorFactory(PassKey);
-  static DIPSBrowserSigninDetectorFactory* GetInstance();
-  static DIPSBrowserSigninDetector* GetForBrowserContext(
+  explicit BtmBrowserSigninDetectorFactory(PassKey);
+  static BtmBrowserSigninDetectorFactory* GetInstance();
+  static BtmBrowserSigninDetector* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
   void EnableWaitForServiceForTesting();
-  // Blocks until a DIPSBrowserSigninDetector has been created for
+  // Blocks until a BtmBrowserSigninDetector has been created for
   // `browser_context`.
   void WaitForServiceForTesting(content::BrowserContext* browser_context);
 
  private:
-  ~DIPSBrowserSigninDetectorFactory() override;
+  ~BtmBrowserSigninDetectorFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(

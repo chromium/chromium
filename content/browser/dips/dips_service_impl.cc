@@ -59,32 +59,32 @@ BASE_FEATURE(kDipsOnForegroundSequence,
              "DipsOnForegroundSequence",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-DIPSRedirectCategory ClassifyRedirect(DIPSDataAccessType access,
-                                      bool has_interaction) {
-  using enum DIPSRedirectCategory;
+BtmRedirectCategory ClassifyRedirect(BtmDataAccessType access,
+                                     bool has_interaction) {
+  using enum BtmRedirectCategory;
 
   switch (access) {
-    case DIPSDataAccessType::kUnknown:
+    case BtmDataAccessType::kUnknown:
       return has_interaction ? kUnknownCookies_HasEngagement
                              : kUnknownCookies_NoEngagement;
-    case DIPSDataAccessType::kNone:
+    case BtmDataAccessType::kNone:
       return has_interaction ? kNoCookies_HasEngagement
                              : kNoCookies_NoEngagement;
-    case DIPSDataAccessType::kRead:
+    case BtmDataAccessType::kRead:
       return has_interaction ? kReadCookies_HasEngagement
                              : kReadCookies_NoEngagement;
-    case DIPSDataAccessType::kWrite:
+    case BtmDataAccessType::kWrite:
       return has_interaction ? kWriteCookies_HasEngagement
                              : kWriteCookies_NoEngagement;
-    case DIPSDataAccessType::kReadWrite:
+    case BtmDataAccessType::kReadWrite:
       return has_interaction ? kReadWriteCookies_HasEngagement
                              : kReadWriteCookies_NoEngagement;
   }
 }
 
-inline void UmaHistogramBounceCategory(DIPSRedirectCategory category,
-                                       DIPSCookieMode mode,
-                                       DIPSRedirectType type) {
+inline void UmaHistogramBounceCategory(BtmRedirectCategory category,
+                                       BtmCookieMode mode,
+                                       BtmRedirectType type) {
   const std::string histogram_name =
       base::StrCat({"Privacy.DIPS.BounceCategory", GetHistogramPiece(type),
                     GetHistogramSuffix(mode)});
@@ -96,7 +96,7 @@ inline void UmaHistogramDeletionLatency(base::Time deletion_start) {
                                  base::Time::Now() - deletion_start);
 }
 
-inline void UmaHistogramClearedSitesCount(DIPSCookieMode mode, int size) {
+inline void UmaHistogramClearedSitesCount(BtmCookieMode mode, int size) {
   base::UmaHistogramCounts1000(base::StrCat({"Privacy.DIPS.ClearedSitesCount",
                                              GetHistogramSuffix(mode)}),
                                size);
@@ -116,8 +116,7 @@ inline void UmaHistogramBounceStatusCode(int response_code, bool cached) {
                            response_code);
 }
 
-inline void UmaHistogramDeletion(DIPSCookieMode mode,
-                                 DIPSDeletionAction action) {
+inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Privacy.DIPS.Deletion", GetHistogramSuffix(mode)}),
       action);
@@ -163,7 +162,7 @@ class StateClearer : public BrowsingDataRemover::Observer {
   // clearing is complete.
   //
   // NOTE: This deletion task removing rows for `sites_to_clear` from the
-  // DIPSStorage backend relies on the assumption that rows flagged as DIPS
+  // BtmStorage backend relies on the assumption that rows flagged as DIPS
   // eligible don't have user interaction time values. So even though 'remover'
   // will only clear the storage timestamps, that's sufficient to delete the
   // entire row.
@@ -247,27 +246,26 @@ class StateClearer : public BrowsingDataRemover::Observer {
 
 class DipsTimerStorage : public PersistentRepeatingTimer::Storage {
  public:
-  explicit DipsTimerStorage(base::SequenceBound<DIPSStorage>* dips_storage);
+  explicit DipsTimerStorage(base::SequenceBound<BtmStorage>* dips_storage);
   ~DipsTimerStorage() override;
 
   // Reads the timestamp from the DIPS DB.
   void GetLastFired(TimeCallback callback) const override {
-    dips_storage_->AsyncCall(&DIPSStorage::GetTimerLastFired)
+    dips_storage_->AsyncCall(&BtmStorage::GetTimerLastFired)
         .Then(std::move(callback));
   }
   // Write the timestamp to the DIPS DB.
   void SetLastFired(base::Time time) override {
-    dips_storage_
-        ->AsyncCall(base::IgnoreResult(&DIPSStorage::SetTimerLastFired))
+    dips_storage_->AsyncCall(base::IgnoreResult(&BtmStorage::SetTimerLastFired))
         .WithArgs(time);
   }
 
  private:
-  raw_ref<base::SequenceBound<DIPSStorage>> dips_storage_;
+  raw_ref<base::SequenceBound<BtmStorage>> dips_storage_;
 };
 
 DipsTimerStorage::DipsTimerStorage(
-    base::SequenceBound<DIPSStorage>* dips_storage)
+    base::SequenceBound<BtmStorage>* dips_storage)
     : dips_storage_(CHECK_DEREF(dips_storage)) {}
 
 DipsTimerStorage::~DipsTimerStorage() = default;
@@ -275,16 +273,16 @@ DipsTimerStorage::~DipsTimerStorage() = default;
 }  // namespace
 
 /* static */
-DIPSService* DIPSService::Get(BrowserContext* context) {
-  return DIPSServiceImpl::Get(context);
+BtmService* BtmService::Get(BrowserContext* context) {
+  return BtmServiceImpl::Get(context);
 }
 
-DIPSServiceImpl::DIPSServiceImpl(base::PassKey<BrowserContextImpl>,
-                                 BrowserContext* context)
+BtmServiceImpl::BtmServiceImpl(base::PassKey<BrowserContextImpl>,
+                               BrowserContext* context)
     : browser_context_(context) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
+  DCHECK(base::FeatureList::IsEnabled(features::kBtm));
   std::optional<base::FilePath> path_to_use;
-  base::FilePath dips_path = GetDIPSFilePath(browser_context_);
+  base::FilePath dips_path = GetBtmFilePath(browser_context_);
 
   if (browser_context_->IsOffTheRecord()) {
     // OTR profiles should have no existing DIPS database file to be cleaned up.
@@ -293,53 +291,53 @@ DIPSServiceImpl::DIPSServiceImpl(base::PassKey<BrowserContextImpl>,
     // profile.
     wait_for_file_deletion_.Quit();
   } else {
-    if (features::kDIPSPersistedDatabaseEnabled.Get()) {
+    if (features::kBtmPersistedDatabaseEnabled.Get()) {
       path_to_use = dips_path;
       // Existing database files won't be deleted, so quit the
       // `wait_for_file_deletion_` RunLoop.
       wait_for_file_deletion_.Quit();
     } else {
       // If opening in-memory, delete any database files that may exist.
-      DIPSStorage::DeleteDatabaseFiles(dips_path,
-                                       wait_for_file_deletion_.QuitClosure());
+      BtmStorage::DeleteDatabaseFiles(dips_path,
+                                      wait_for_file_deletion_.QuitClosure());
     }
   }
 
-  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
+  storage_ = base::SequenceBound<BtmStorage>(CreateTaskRunner(), path_to_use);
 
   repeating_timer_ = CreateTimer();
   repeating_timer_->Start();
 }
 
-std::unique_ptr<PersistentRepeatingTimer> DIPSServiceImpl::CreateTimer() {
+std::unique_ptr<PersistentRepeatingTimer> BtmServiceImpl::CreateTimer() {
   CHECK(!storage_.is_null());
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
   return std::make_unique<PersistentRepeatingTimer>(
       std::make_unique<DipsTimerStorage>(&storage_),
-      features::kDIPSTimerDelay.Get(),
-      base::BindRepeating(&DIPSServiceImpl::OnTimerFired,
+      features::kBtmTimerDelay.Get(),
+      base::BindRepeating(&BtmServiceImpl::OnTimerFired,
                           base::Unretained(this)));
 }
 
-DIPSServiceImpl::~DIPSServiceImpl() {
+BtmServiceImpl::~BtmServiceImpl() {
   // Some UserData may interact with `this` during their destruction. Delete
   // them now, before it's too late. If we don't delete them manually,
   // ~SupportsUserData() will, but `this` will be invalid at that time.
   //
-  // Note that we can't put this call in ~DIPSService() either, even though
-  // DIPSService is the class that directly inherits from SupportsUserData.
-  // Because when ~DIPSService() is called, it's undefined behavior to call
-  // pure virtual functions like DIPSService::RemoveObserver().
+  // Note that we can't put this call in ~BtmService() either, even though
+  // BtmService is the class that directly inherits from SupportsUserData.
+  // Because when ~BtmService() is called, it's undefined behavior to call
+  // pure virtual functions like BtmService::RemoveObserver().
   ClearAllUserData();
 }
 
 /* static */
-DIPSServiceImpl* DIPSServiceImpl::Get(BrowserContext* context) {
+BtmServiceImpl* BtmServiceImpl::Get(BrowserContext* context) {
   return BrowserContextImpl::From(context)->GetDipsService();
 }
 
-scoped_refptr<base::SequencedTaskRunner> DIPSServiceImpl::CreateTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner> BtmServiceImpl::CreateTaskRunner() {
   if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
     return base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   }
@@ -348,22 +346,22 @@ scoped_refptr<base::SequencedTaskRunner> DIPSServiceImpl::CreateTaskRunner() {
        base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
-DIPSCookieMode DIPSServiceImpl::GetCookieMode() const {
-  return GetDIPSCookieMode(browser_context_->IsOffTheRecord());
+BtmCookieMode BtmServiceImpl::GetCookieMode() const {
+  return GetBtmCookieMode(browser_context_->IsOffTheRecord());
 }
 
-void DIPSServiceImpl::RemoveEvents(const base::Time& delete_begin,
-                                   const base::Time& delete_end,
-                                   network::mojom::ClearDataFilterPtr filter,
-                                   DIPSEventRemovalType type) {
+void BtmServiceImpl::RemoveEvents(const base::Time& delete_begin,
+                                  const base::Time& delete_end,
+                                  network::mojom::ClearDataFilterPtr filter,
+                                  BtmEventRemovalType type) {
   // Storage init should be finished by now, so no need to delay until then.
-  storage_.AsyncCall(&DIPSStorage::RemoveEvents)
+  storage_.AsyncCall(&BtmStorage::RemoveEvents)
       .WithArgs(delete_begin, delete_end, std::move(filter), type);
 }
 
-void DIPSServiceImpl::HandleRedirectChain(
-    std::vector<DIPSRedirectInfoPtr> redirects,
-    DIPSRedirectChainInfoPtr chain,
+void BtmServiceImpl::HandleRedirectChain(
+    std::vector<BtmRedirectInfoPtr> redirects,
+    BtmRedirectChainInfoPtr chain,
     base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   DCHECK_LE(redirects.size(), chain->length);
 
@@ -391,7 +389,7 @@ void DIPSServiceImpl::HandleRedirectChain(
 
   base::TimeDelta total_server_bounce_delay;
   for (const auto& redirect : redirects) {
-    if (redirect->redirect_type == DIPSRedirectType::kServer) {
+    if (redirect->redirect_type == BtmRedirectType::kServer) {
       total_server_bounce_delay += redirect->server_bounce_delay;
     }
   }
@@ -400,36 +398,36 @@ void DIPSServiceImpl::HandleRedirectChain(
   chain->cookie_mode = GetCookieMode();
   // Copy the URL out before |redirects| is moved, to avoid use-after-move.
   GURL url = redirects[0]->url.url;
-  storage_.AsyncCall(&DIPSStorage::Read)
+  storage_.AsyncCall(&BtmStorage::Read)
       .WithArgs(url)
-      .Then(base::BindOnce(&DIPSServiceImpl::GotState,
+      .Then(base::BindOnce(&BtmServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
                            std::move(chain), 0, stateful_bounce_callback));
 }
 
-void DIPSServiceImpl::RecordInteractionForTesting(const GURL& url) {
-  storage_.AsyncCall(&DIPSStorage::RecordInteraction)
+void BtmServiceImpl::RecordInteractionForTesting(const GURL& url) {
+  storage_.AsyncCall(&BtmStorage::RecordInteraction)
       .WithArgs(url, base::Time::Now(), GetCookieMode());
 }
 
-void DIPSServiceImpl::DidSiteHaveInteractionSince(
+void BtmServiceImpl::DidSiteHaveInteractionSince(
     const GURL& url,
     base::Time bound,
     CheckInteractionCallback callback) const {
-  storage_.AsyncCall(&DIPSStorage::DidSiteHaveInteractionSince)
+  storage_.AsyncCall(&BtmStorage::DidSiteHaveInteractionSince)
       .WithArgs(url, bound)
       .Then(std::move(callback));
 }
 
-void DIPSServiceImpl::GotState(
-    std::vector<DIPSRedirectInfoPtr> redirects,
-    DIPSRedirectChainInfoPtr chain,
+void BtmServiceImpl::GotState(
+    std::vector<BtmRedirectInfoPtr> redirects,
+    BtmRedirectChainInfoPtr chain,
     size_t index,
     base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
-    const DIPSState url_state) {
+    const BtmState url_state) {
   DCHECK_LT(index, redirects.size());
 
-  DIPSRedirectInfo* redirect = redirects[index].get();
+  BtmRedirectInfo* redirect = redirects[index].get();
   // If there's any user interaction recorded in the DIPS DB, that's engagement.
   DCHECK(!redirect->has_interaction.has_value());
   redirect->has_interaction = url_state.user_interaction_times().has_value();
@@ -443,7 +441,7 @@ void DIPSServiceImpl::GotState(
   // `index` to get the "true" index to report in our metrics.
   redirect->chain_index = chain->length - redirects.size() + index;
   HandleRedirect(*redirect, *chain,
-                 base::BindRepeating(&DIPSServiceImpl::RecordBounce,
+                 base::BindRepeating(&BtmServiceImpl::RecordBounce,
                                      base::Unretained(this)),
                  stateful_bounce_callback);
 
@@ -459,15 +457,15 @@ void DIPSServiceImpl::GotState(
 
   // Copy the URL out before `redirects` is moved, to avoid use-after-move.
   GURL url = redirects[index + 1]->url.url;
-  storage_.AsyncCall(&DIPSStorage::Read)
+  storage_.AsyncCall(&BtmStorage::Read)
       .WithArgs(url)
-      .Then(base::BindOnce(&DIPSServiceImpl::GotState,
+      .Then(base::BindOnce(&BtmServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
                            std::move(chain), index + 1,
                            stateful_bounce_callback));
 }
 
-void DIPSServiceImpl::RecordBounce(
+void BtmServiceImpl::RecordBounce(
     const GURL& url,
     bool has_3pc_exception,
     const GURL& final_url,
@@ -483,20 +481,20 @@ void DIPSServiceImpl::RecordBounce(
     // provided their grace period expired. But are at the moment excepted
     // following `Are3PCAllowed()` of either `initial_url` or `final_url`.
     bool would_be_cleared = false;
-    switch (features::kDIPSTriggeringAction.Get()) {
-      case DIPSTriggeringAction::kNone: {
+    switch (features::kBtmTriggeringAction.Get()) {
+      case BtmTriggeringAction::kNone: {
         would_be_cleared = false;
         break;
       }
-      case DIPSTriggeringAction::kStorage: {
+      case BtmTriggeringAction::kStorage: {
         would_be_cleared = false;
         break;
       }
-      case DIPSTriggeringAction::kBounce: {
+      case BtmTriggeringAction::kBounce: {
         would_be_cleared = true;
         break;
       }
-      case DIPSTriggeringAction::kStatefulBounce: {
+      case BtmTriggeringAction::kStatefulBounce: {
         would_be_cleared = stateful;
         break;
       }
@@ -506,16 +504,16 @@ void DIPSServiceImpl::RecordBounce(
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // escape.
       if (url.is_empty()) {
-        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
+        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
       } else {
-        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kExcepted);
+        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kExcepted);
       }
     }
 
-    const std::set<std::string> site_to_clear{GetSiteForDIPS(url)};
+    const std::set<std::string> site_to_clear{GetSiteForBtm(url)};
     // Don't clear the row if the tracker has history indicating that we
     // should preserve that context for future bounces.
-    storage_.AsyncCall(&DIPSStorage::RemoveRowsWithoutProtectiveEvent)
+    storage_.AsyncCall(&BtmStorage::RemoveRowsWithoutProtectiveEvent)
         .WithArgs(site_to_clear);
 
     return;
@@ -527,13 +525,13 @@ void DIPSServiceImpl::RecordBounce(
     stateful_bounce_callback.Run(final_url);
   }
 
-  storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
+  storage_.AsyncCall(&BtmStorage::RecordBounce).WithArgs(url, time, stateful);
 }
 
 /*static*/
-void DIPSServiceImpl::HandleRedirect(
-    const DIPSRedirectInfo& redirect,
-    const DIPSRedirectChainInfo& chain,
+void BtmServiceImpl::HandleRedirect(
+    const BtmRedirectInfo& redirect,
+    const BtmRedirectChainInfo& chain,
     RecordBounceCallback record_bounce,
     base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   bool initial_site_same = (redirect.site == chain.initial_site);
@@ -551,7 +549,7 @@ void DIPSServiceImpl::HandleRedirect(
       .SetRedirectChainLength(chain.length)
       .SetIsPartialRedirectChain(chain.is_partial_chain)
       .SetClientBounceDelay(
-          BucketizeDIPSBounceDelay(redirect.client_bounce_delay))
+          BucketizeBtmBounceDelay(redirect.client_bounce_delay))
       .SetHasStickyActivation(redirect.has_sticky_activation)
       .SetWebAuthnAssertionRequestSucceeded(
           redirect.web_authn_assertion_request_succeeded)
@@ -564,44 +562,44 @@ void DIPSServiceImpl::HandleRedirect(
   }
 
   // Record this bounce in the DIPS database.
-  if (redirect.access_type != DIPSDataAccessType::kUnknown) {
+  if (redirect.access_type != BtmDataAccessType::kUnknown) {
     record_bounce.Run(
         redirect.url.url, redirect.has_3pc_exception.value(),
         chain.final_url.url, redirect.time,
-        /*stateful=*/redirect.access_type > DIPSDataAccessType::kRead,
+        /*stateful=*/redirect.access_type > BtmDataAccessType::kRead,
         stateful_bounce_callback);
   }
 
-  DIPSRedirectCategory category =
+  BtmRedirectCategory category =
       ClassifyRedirect(redirect.access_type, redirect.has_interaction.value());
   UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
                              redirect.redirect_type);
 
-  if (redirect.redirect_type == DIPSRedirectType::kServer) {
+  if (redirect.redirect_type == BtmRedirectType::kServer) {
     UmaHistogramBounceDelay(redirect.server_bounce_delay);
     UmaHistogramBounceStatusCode(redirect.response_code,
                                  redirect.was_response_cached);
   }
 }
 
-void DIPSServiceImpl::OnTimerFired() {
+void BtmServiceImpl::OnTimerFired() {
   // Storage init should be finished by now, so no need to delay until then.
-  storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
+  storage_.AsyncCall(&BtmStorage::GetSitesToClear)
       .WithArgs(std::nullopt)
-      .Then(base::BindOnce(&DIPSServiceImpl::DeleteDIPSEligibleState,
+      .Then(base::BindOnce(&BtmServiceImpl::DeleteBtmEligibleState,
                            weak_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
-void DIPSServiceImpl::DeleteEligibleSitesImmediately(
+void BtmServiceImpl::DeleteEligibleSitesImmediately(
     DeletedSitesCallback callback) {
   // Storage init should be finished by now, so no need to delay until then.
-  storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
+  storage_.AsyncCall(&BtmStorage::GetSitesToClear)
       .WithArgs(base::Seconds(0))
-      .Then(base::BindOnce(&DIPSServiceImpl::DeleteDIPSEligibleState,
+      .Then(base::BindOnce(&BtmServiceImpl::DeleteBtmEligibleState,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DIPSServiceImpl::DeleteDIPSEligibleState(
+void BtmServiceImpl::DeleteBtmEligibleState(
     DeletedSitesCallback callback,
     std::vector<std::string> sites_to_clear) {
   // Do not clear sites from currently open tabs.
@@ -626,7 +624,7 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
       continue;
     }
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
-        base::PassKey<DIPSServiceImpl>(), site);
+        base::PassKey<BtmServiceImpl>(), site);
     ukm::builders::DIPS_Deletion(source_id)
         // These settings are checked at bounce time, before logging the bounce.
         // At this time, we guarantee that 3PC are blocked and this site is not
@@ -634,11 +632,11 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
         // meantime).
         .SetShouldBlockThirdPartyCookies(true)
         .SetHasCookieException(false)
-        .SetIsDeletionEnabled(features::kDIPSDeletionEnabled.Get())
+        .SetIsDeletionEnabled(features::kBtmDeletionEnabled.Get())
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (features::kDIPSDeletionEnabled.Get()) {
+  if (features::kBtmDeletionEnabled.Get()) {
     std::vector<std::string> filtered_sites_to_clear;
 
     for (const auto& site : sites_to_clear) {
@@ -646,10 +644,10 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (site.empty()) {
-        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
+        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
         continue;
       }
-      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kEnforced);
+      UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kEnforced);
       filtered_sites_to_clear.push_back(site);
     }
 
@@ -669,15 +667,15 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (site.empty()) {
-        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
+        UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kIgnored);
         continue;
       }
-      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);
+      UmaHistogramDeletion(GetCookieMode(), BtmDeletionAction::kDisallowed);
     }
 
     base::Time deletion_start = base::Time::Now();
     // Storage init should be finished by now, so no need to delay until then.
-    storage_.AsyncCall(&DIPSStorage::RemoveRows)
+    storage_.AsyncCall(&BtmStorage::RemoveRows)
         .WithArgs(std::move(sites_to_clear))
         .Then(base::BindOnce(
             &OnDeletionFinished,
@@ -686,8 +684,8 @@ void DIPSServiceImpl::DeleteDIPSEligibleState(
   }
 }
 
-void DIPSServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
-                                                base::OnceClosure callback) {
+void BtmServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
+                                               base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   uint64_t remove_mask = GetContentClient()->browser()->GetDipsRemoveMask();
@@ -696,22 +694,22 @@ void DIPSServiceImpl::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
                             std::move(sites), remove_mask, std::move(callback));
 }
 
-void DIPSServiceImpl::AddObserver(Observer* observer) {
+void BtmServiceImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void DIPSServiceImpl::RemoveObserver(const Observer* observer) {
+void BtmServiceImpl::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DIPSServiceImpl::RecordBrowserSignIn(std::string_view domain) {
+void BtmServiceImpl::RecordBrowserSignIn(std::string_view domain) {
   storage()
-      ->AsyncCall(&DIPSStorage::RecordInteraction)
+      ->AsyncCall(&BtmStorage::RecordInteraction)
       .WithArgs(url::SchemeHostPort("http", domain, 80).GetURL(),
                 base::Time::Now(), GetCookieMode());
 }
 
-void DIPSServiceImpl::NotifyStatefulBounce(WebContents* web_contents) {
+void BtmServiceImpl::NotifyStatefulBounce(WebContents* web_contents) {
   for (auto& observer : observers_) {
     observer.OnStatefulBounce(web_contents);
   }
