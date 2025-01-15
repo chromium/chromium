@@ -44,7 +44,7 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
 
     @Override
     public boolean shouldDisplayIpProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
     }
 
     @Override
