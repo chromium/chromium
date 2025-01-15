@@ -495,6 +495,7 @@ SellerWorklet::SellerWorklet(
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
                  std::move(public_key),
+                 /*send_creative_scanning_metadata=*/false,
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
@@ -2152,14 +2153,22 @@ void SellerWorklet::StartFetchingSignalsForTask(
             SignalsOriginRelation::kPermittedCrossOriginSignals);
 
   score_ad_task->waiting_for_signals_fetch = true;
+  TrustedSignals::CreativeInfo main_ad;
+  main_ad.ad_descriptor.url = score_ad_task->browser_signal_render_url;
+  std::set<TrustedSignals::CreativeInfo> component_ads;
+  for (const auto& component_url :
+       score_ad_task->browser_signal_ad_components) {
+    TrustedSignals::CreativeInfo component_info;
+    component_info.ad_descriptor.url = GURL(component_url);
+    component_ads.insert(std::move(component_info));
+  }
   if (trusted_signals_request_manager_->HasPublicKey()) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kFledgeTrustedSignalsKVv2Support));
 
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestKVv2ScoringSignals(
-            score_ad_task->browser_signal_render_url,
-            score_ad_task->browser_signal_ad_components,
+            std::move(main_ad), std::move(component_ads),
             score_ad_task->browser_signal_interest_group_owner,
             score_ad_task->bidder_joining_origin,
             base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
@@ -2167,8 +2176,7 @@ void SellerWorklet::StartFetchingSignalsForTask(
   } else {
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestScoringSignals(
-            score_ad_task->browser_signal_render_url,
-            score_ad_task->browser_signal_ad_components,
+            std::move(main_ad), std::move(component_ads),
             score_ad_task->auction_ad_config_non_shared_params
                 .max_trusted_scoring_signals_url_length,
             base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,

@@ -6,12 +6,14 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_TEST_UTIL_H_
 
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/types/optional_ref.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
+#include "content/services/auction_worklet/trusted_signals.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -183,6 +185,11 @@ class TestAuctionNetworkEventsHandler
   mojo::ReceiverSet<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handlers_;
 };
+
+// A helper to make testing common cases in trusted seller signals easier, by
+// construsting the larger type it needs from simpler string input.
+std::set<TrustedSignals::CreativeInfo> CreateCreativeInfoSet(
+    const std::vector<std::string>& urls);
 
 }  // namespace auction_worklet
 

@@ -165,7 +165,9 @@ class CONTENT_EXPORT TrustedSignals {
     ~CreativeInfo();
 
     CreativeInfo(CreativeInfo&&);
+    CreativeInfo(const CreativeInfo&);
     CreativeInfo& operator=(CreativeInfo&&);
+    CreativeInfo& operator=(const CreativeInfo&);
 
     bool operator<(const CreativeInfo& other) const;
 
@@ -208,11 +210,6 @@ class CONTENT_EXPORT TrustedSignals {
       const std::set<CreativeInfo>& component_ads,
       std::optional<uint16_t> experiment_group_id);
 
-  // This is a transitional method while we're migrating to a new signature
-  // for loading scoring signals.
-  static std::set<CreativeInfo> ConvertToCreativeInfoSet(
-      const std::set<std::string>& urls);
-
   // Constructs a TrustedSignals for fetching bidding signals, and starts
   // the fetch. `trusted_bidding_signals_url` must be the base URL (no query
   // params added).  Callback will be invoked asynchronously once the data
@@ -245,11 +242,12 @@ class CONTENT_EXPORT TrustedSignals {
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
-      std::set<std::string> render_urls,
-      std::set<std::string> ad_component_render_urls,
+      std::set<CreativeInfo> ads,
+      std::set<CreativeInfo> ad_components,
       const std::string& hostname,
       const GURL& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
+      bool send_creative_scanning_metadata,
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 
