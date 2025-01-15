@@ -1740,9 +1740,6 @@ extern const char kPermissionPredictionsV3Description[];
 extern const char kPermissionsAIv1Name[];
 extern const char kPermissionsAIv1Description[];
 
-extern const char kPermissionQuietChipName[];
-extern const char kPermissionQuietChipDescription[];
-
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];
 

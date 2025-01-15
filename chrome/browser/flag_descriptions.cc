@@ -3020,12 +3020,6 @@ const char kPermissionsAIv1Description[] =
     "granting the permission is predicted to be low. Requires and `Safe "
     "Browsing` to be enabled.";
 
-const char kPermissionQuietChipName[] = "Quiet Permission Chip Experiment";
-const char kPermissionQuietChipDescription[] =
-    "Enables a permission prompt that uses the quiet chip instead of the "
-    "right-hand side address bar icon for quiet permission prompts. Requires "
-    "chrome://flags/#quiet-notification-prompts to be enabled.";
-
 const char kPermissionSiteSettingsRadioButtonName[] =
     "Permission radio buttons in Site Settings";
 const char kPermissionSiteSettingsRadioButtonDescription[] =
