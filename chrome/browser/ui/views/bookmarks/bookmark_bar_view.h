@@ -38,13 +38,13 @@
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
+class BookmarkMergedSurfaceService;
 struct BookmarkParentFolder;
 class Browser;
 class BrowserView;
 class Profile;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
@@ -67,9 +67,10 @@ class MenuItemView;
 class LabelButton;
 }  // namespace views
 
-// BookmarkBarView renders the BookmarkModel.  Each starred entry on the
-// BookmarkBar is rendered as a MenuButton. An additional MenuButton aligned to
-// the right allows the user to quickly see recently starred entries.
+// BookmarkBarView renders the `BookmarkMergedSurfaceService`.  Each starred
+// entry on the BookmarkBar is rendered as a MenuButton. An additional
+// MenuButton aligned to the right allows the user to quickly see recently
+// starred entries.
 //
 // BookmarkBarView shows the bookmarks from a specific Profile. BookmarkBarView
 // waits until the HistoryService for the profile has been loaded before
@@ -413,9 +414,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
 
-  // BookmarkModel that owns the entries and folders that are shown in this
-  // view. This is owned by the Profile.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+  // `BookmarkMergedSurfaceService` that manages the entries and folders that
+  // are shown in this view. This is owned by the Profile.
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_service_ = nullptr;
 
   // ManagedBookmarkService. This is owned by the Profile.
   raw_ptr<bookmarks::ManagedBookmarkService> managed_ = nullptr;
