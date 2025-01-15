@@ -579,7 +579,6 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
       outcome = RequestOutcome::kReusedImplicitGrant;
     } else {
       switch (info.metadata.session_model()) {
-        case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
         case content_settings::mojom::SessionModel::USER_SESSION:
           outcome = RequestOutcome::kReusedImplicitGrant;
           break;

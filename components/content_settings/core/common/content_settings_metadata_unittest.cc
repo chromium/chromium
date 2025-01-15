@@ -72,16 +72,14 @@ TEST(RuleMetaDataTest, SetFromConstraints) {
   {
     ContentSettingConstraints constraints(
         base::Time::FromSecondsSinceUnixEpoch(12345));
-    constraints.set_session_model(
-        mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+    constraints.set_session_model(mojom::SessionModel::USER_SESSION);
     constraints.set_lifetime(base::Days(10));
     constraints.set_decided_by_related_website_sets(true);
 
     RuleMetaData metadata;
     metadata.SetFromConstraints(constraints);
 
-    EXPECT_EQ(metadata.session_model(),
-              mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+    EXPECT_EQ(metadata.session_model(), mojom::SessionModel::USER_SESSION);
     EXPECT_EQ(metadata.expiration(),
               base::Time::FromSecondsSinceUnixEpoch(12345) + base::Days(10));
     EXPECT_EQ(metadata.lifetime(), base::Days(10));

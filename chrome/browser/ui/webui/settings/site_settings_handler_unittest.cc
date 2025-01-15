@@ -548,7 +548,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     constraints.set_lifetime(lifetime);
     if (is_auto_granted) {
       constraints.set_session_model(
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+          content_settings::mojom::SessionModel::DURABLE);
+      constraints.set_decided_by_related_website_sets(true);
     }
 
     map->SetContentSettingCustomScope(

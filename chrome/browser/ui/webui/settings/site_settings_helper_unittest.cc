@@ -1039,8 +1039,8 @@ TEST_F(SiteSettingsHelperTest, ShowAutograntedRWSPermissions) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraint.set_decided_by_related_website_sets(true);
   constexpr char kToplevelURL[] = "https://firstparty.com";
   constexpr char kEmbeddedURL[] = "https://embedded.com";
   map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
@@ -1068,8 +1068,8 @@ TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraint.set_decided_by_related_website_sets(true);
   constexpr char kToplevelURL[] = "https://firstparty.com";
   constexpr char kEmbeddedURL[] = "https://embedded.com";
   map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),

@@ -2180,8 +2180,8 @@ IN_PROC_BROWSER_TEST_F(
   // be created via other APIs (namely `document.requestStorageAccessFor`).
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Days(30));
-  constraints.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraints.set_decided_by_related_website_sets(true);
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetContentSettingDefaultScope(GetURL(kHostD), GetURL(kHostA),
                                       ContentSettingsType::STORAGE_ACCESS,
