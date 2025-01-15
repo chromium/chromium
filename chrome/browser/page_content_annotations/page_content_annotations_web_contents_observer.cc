@@ -6,8 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,18 +59,19 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
     request->include_geometry = page_content_annotations::features::
         ShouldAnnotatedPageContentIncludeGeometry();
 
-    return std::make_unique<AnnotatedPageContentRequest>(
-        web_contents, std::move(request),
-        page_content_annotations::features::
-            GetAnnotatedPageContentCaptureDelay());
+    return std::make_unique<AnnotatedPageContentRequest>(web_contents,
+                                                         std::move(request));
   }
 
   AnnotatedPageContentRequest(content::WebContents* web_contents,
-                              blink::mojom::AIPageContentOptionsPtr request,
-                              base::TimeDelta delay)
+                              blink::mojom::AIPageContentOptionsPtr request)
       : web_contents_(web_contents),
         request_(std::move(request)),
-        delay_(delay) {}
+        delay_(page_content_annotations::features::
+                   GetAnnotatedPageContentCaptureDelay()),
+        include_inner_text_(
+            page_content_annotations::features::
+                ShouldAnnotatedPageContentStudyIncludeInnerText()) {}
 
   ~AnnotatedPageContentRequest() = default;
 
@@ -128,6 +131,13 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
         web_contents_, request_.Clone(),
         base::BindOnce(&AnnotatedPageContentRequest::OnPageContentReceived,
                        weak_factory_.GetWeakPtr()));
+
+    if (include_inner_text_) {
+      content_extraction::GetInnerText(
+          *web_contents_->GetPrimaryMainFrame(), std::nullopt,
+          base::BindOnce(&AnnotatedPageContentRequest::OnInnerTextReceived,
+                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+    }
   }
 
   bool Ready() const {
@@ -141,9 +151,22 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
   void OnPageContentReceived(
       std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {}
 
+  void OnInnerTextReceived(
+      base::TimeTicks start_time,
+      std::unique_ptr<content_extraction::InnerTextResult> result) {
+    if (!result) {
+      return;
+    }
+    UMA_HISTOGRAM_TIMES("OptimizationGuide.InnerText.TotalLatency",
+                        base::TimeTicks::Now() - start_time);
+    UMA_HISTOGRAM_MEMORY_KB("OptimizationGuide.InnerText.TotalSize",
+                            result->inner_text.length() / 1024);
+  }
+
   const raw_ptr<content::WebContents> web_contents_;
   const blink::mojom::AIPageContentOptionsPtr request_;
   const base::TimeDelta delay_;
+  const bool include_inner_text_;
 
   // Set if a new page was committed and querying it's content is pending.
   bool page_content_pending_ = false;

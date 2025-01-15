@@ -1139,7 +1139,8 @@ class PageContentAnnotationsServiceContentExtractionTest
  public:
   PageContentAnnotationsServiceContentExtractionTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAnnotatedPageContentExtraction, {{"capture_delay", "0s"}});
+        features::kAnnotatedPageContentExtraction,
+        {{"capture_delay", "0s"}, {"include_inner_text", "true"}});
   }
 
   void SetUpOnMainThread() override {
@@ -1168,6 +1169,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
       &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.TotalSize", 1);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.InnerText.TotalLatency", 1);
+  histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize", 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

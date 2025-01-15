@@ -132,6 +132,11 @@ base::TimeDelta GetAnnotatedPageContentCaptureDelay();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldAnnotatedPageContentIncludeGeometry();
 
+// Whether the AnnotatedPageContent study should also capture inner text for a
+// comparison.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldAnnotatedPageContentStudyIncludeInnerText();
+
 }  // namespace page_content_annotations::features
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_

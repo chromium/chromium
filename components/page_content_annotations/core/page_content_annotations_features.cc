@@ -109,6 +109,9 @@ const base::FeatureParam<base::TimeDelta> kAnnotatedPageContentCaptureDelay{
 const base::FeatureParam<bool> kAnnotatedPageContentIncludeGeometry{
     &kAnnotatedPageContentExtraction, "include_geometry", false};
 
+const base::FeatureParam<bool> kAnnotatedPageContentStudyIncludeInnerText{
+    &kAnnotatedPageContentExtraction, "include_inner_text", false};
+
 const base::FeatureParam<bool> kAnnotatedPageContentOnCriticalPath{
     &kAnnotatedPageContentExtraction, "on_critical_path", false};
 
@@ -278,6 +281,10 @@ base::TimeDelta GetAnnotatedPageContentCaptureDelay() {
 
 bool ShouldAnnotatedPageContentIncludeGeometry() {
   return kAnnotatedPageContentIncludeGeometry.Get();
+}
+
+bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
+  return kAnnotatedPageContentStudyIncludeInnerText.Get();
 }
 
 }  // namespace page_content_annotations::features
