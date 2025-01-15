@@ -9,6 +9,7 @@ assert(is_chromeos_ash)
 
 mojom("crostini_installer_types_mojom") {
   sources = [ "crostini_types.mojom" ]
+  webui_module_path = "/"
 }
 
 static_library("crostini") {
