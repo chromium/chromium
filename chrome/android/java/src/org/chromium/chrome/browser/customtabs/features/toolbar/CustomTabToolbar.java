@@ -1725,10 +1725,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 ? Profile.fromWebContents(webContents).getOriginalProfile()
                                 : null;
                 if (mCookieControlsBridge != null) {
-                    mCookieControlsBridge.updateWebContents(webContents, originalBrowserContext);
+                    mCookieControlsBridge.updateWebContents(
+                            webContents,
+                            originalBrowserContext,
+                            Profile.fromWebContents(webContents).isIncognitoBranded());
                 } else {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(this, webContents, originalBrowserContext);
+                            new CookieControlsBridge(
+                                    this,
+                                    webContents,
+                                    originalBrowserContext,
+                                    Profile.fromWebContents(webContents).isIncognitoBranded());
                 }
             }
         }

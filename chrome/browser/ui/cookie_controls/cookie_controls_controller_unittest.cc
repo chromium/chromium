@@ -131,7 +131,8 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<content_settings::CookieControlsController>(
             cookie_settings_, nullptr,
             HostContentSettingsMapFactory::GetForProfile(profile()),
-            tracking_protection_settings_);
+            tracking_protection_settings_,
+            /*is_incognito_profile=*/false);
     cookie_controls_->AddObserver(mock());
     testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -556,7 +557,8 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
       CookieSettingsFactory::GetForProfile(profile()),
       HostContentSettingsMapFactory::GetForProfile(profile()),
-      TrackingProtectionSettingsFactory::GetForProfile(profile()));
+      TrackingProtectionSettingsFactory::GetForProfile(profile()),
+      /*is_incognito_profile=*/true);
   incognito_cookie_controls.AddObserver(&incognito_mock_);
 
   // Navigate incognito web_contents to the same URL.
