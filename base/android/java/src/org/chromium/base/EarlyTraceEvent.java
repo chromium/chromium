@@ -16,6 +16,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import javax.annotation.concurrent.GuardedBy;
  * final String| class member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  */
 @JNINamespace("base::android")
+@NullMarked
 public class EarlyTraceEvent {
     /** Single trace event. */
     @VisibleForTesting
@@ -357,6 +359,7 @@ public class EarlyTraceEvent {
     static List<Event> getMatchingCompletedEventsForTesting(String eventName) {
         synchronized (sLock) {
             List<Event> matchingEvents = new ArrayList<Event>();
+            if (!enabled()) return matchingEvents;
             for (Event evt : EarlyTraceEvent.sEvents) {
                 if (evt.mName.equals(eventName)) {
                     matchingEvents.add(evt);

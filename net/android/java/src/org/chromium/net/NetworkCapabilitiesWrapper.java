@@ -4,14 +4,18 @@
 
 package org.chromium.net;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Simplified internal representation of Android's android.net.NetworkCapabilities (as it's hidden).
  * This class contains only the information from that class that we need and is safer than moving
  * raw longs or int[]s around.
  */
+@NullMarked
 /* package */ class NetworkCapabilitiesWrapper {
     // Either this wrapped object should be set or the fields below it should be set. Never both.
-    private final android.net.NetworkCapabilities mWrapped;
+    private final android.net.@Nullable NetworkCapabilities mWrapped;
     private final long mNetworkCapabilities;
     private final long mTransportTypes;
 
@@ -27,7 +31,7 @@ package org.chromium.net;
         mWrapped = null;
     }
 
-    NetworkCapabilitiesWrapper(android.net.NetworkCapabilities other) {
+    NetworkCapabilitiesWrapper(android.net.@Nullable NetworkCapabilities other) {
         mWrapped = other;
         mNetworkCapabilities = -1;
         mTransportTypes = -1;
