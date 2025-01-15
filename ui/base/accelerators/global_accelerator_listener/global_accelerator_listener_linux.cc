@@ -192,8 +192,8 @@ void GlobalAcceleratorListenerLinux::OnCreateSession(
     const SessionKey& session_key,
     base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
-    LOG(ERROR) << "Failed to call CreateSession (error code "
-               << static_cast<int>(results.error()) << ").";
+    VLOG(1) << "Failed to call CreateSession (error code "
+            << static_cast<int>(results.error()) << ").";
     session_map_.erase(session_key);
     return;
   }

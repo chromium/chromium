@@ -177,25 +177,26 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
 
   EXPECT_CALL(*mock_bus_, GetConnectionName()).WillOnce(Return(kBusName));
 
-  EXPECT_CALL(
-      *mock_secret_proxy_,
-      DoCallMethod(MatchMethod(SecretPortalKeyProvider::kInterfaceSecret,
-                               SecretPortalKeyProvider::kMethodRetrieveSecret),
-                   _, _))
-      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
-        dbus::MessageReader reader(method_call);
-        base::ScopedFD write_fd;
-        EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
-        EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
-                  static_cast<ssize_t>(sizeof(kSecret)));
-        write_fd.reset();
+  EXPECT_CALL(*mock_secret_proxy_,
+              DoCallMethodWithErrorResponse(
+                  MatchMethod(SecretPortalKeyProvider::kInterfaceSecret,
+                              SecretPortalKeyProvider::kMethodRetrieveSecret),
+                  _, _))
+      .WillOnce(
+          Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
+                     dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+            dbus::MessageReader reader(method_call);
+            base::ScopedFD write_fd;
+            EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
+            EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
+                      static_cast<ssize_t>(sizeof(kSecret)));
+            write_fd.reset();
 
-        auto response = dbus::Response::CreateEmpty();
-        dbus::MessageWriter writer(response.get());
-        writer.AppendObjectPath(dbus::ObjectPath(response_path_));
-        std::move(*callback).Run(response.get());
-      }));
+            auto response = dbus::Response::CreateEmpty();
+            dbus::MessageWriter writer(response.get());
+            writer.AppendObjectPath(dbus::ObjectPath(response_path_));
+            std::move(*callback).Run(response.get(), nullptr);
+          }));
 
   bool callback_called = false;
   std::string key_tag;

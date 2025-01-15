@@ -73,9 +73,10 @@ Request::Request(scoped_refptr<dbus::Bus> bus,
 
   options.PutAs("handle_token", DbusString(handle_token));
   options.Write(&writer);
-  object_proxy->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                           base::BindOnce(&Request::OnMethodResponse,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  object_proxy->CallMethodWithErrorResponse(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&Request::OnMethodResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 Request::~Request() {
@@ -98,9 +99,10 @@ Request::~Request() {
           std::move(portal_service_name_)));
 }
 
-void Request::OnMethodResponse(dbus::Response* response) {
+void Request::OnMethodResponse(dbus::Response* response,
+                               dbus::ErrorResponse* error_response) {
   if (!response) {
-    LOG(ERROR) << "Method call failed.";
+    VLOG(1) << "Method call failed.";
     Finish(base::unexpected(ResponseError::kMethodCallFailed));
     return;
   }
