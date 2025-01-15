@@ -141,6 +141,12 @@ class FetchManifestAndInstallCommand
   // Start downloading screenshots if the manifest has them, so that the
   // detailed install dialog can show them.
   void StartPreloadingScreenshots();
+
+  // Store screenshots locally if the dialog has not been triggered yet, or run
+  // any pending callbacks if the dialog has already started listening to
+  // screenshots being downloaded.
+  // The only time a screenshot is not stored is if the bitmap is empty (which
+  // could be due to malformed urls).
   void OnScreenshotFetched(int index,
                            std::optional<std::u16string> label,
                            const SkBitmap& bitmap);

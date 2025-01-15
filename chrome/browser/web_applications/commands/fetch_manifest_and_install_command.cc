@@ -691,7 +691,7 @@ void FetchManifestAndInstallCommand::OnIconsRetrievedShowDialog(
     OnDialogCompleted(/*user_accepted=*/true, std::move(web_app_info_));
   } else {
     std::optional<base::WeakPtr<WebAppScreenshotFetcher>> fetcher =
-        (opt_manifest_ && !opt_manifest_->screenshots.empty())
+        (!screenshot_sizes_.empty())
             ? std::optional<base::WeakPtr<WebAppScreenshotFetcher>>(
                   weak_ptr_factory_.GetWeakPtr())
             : std::nullopt;
@@ -879,40 +879,14 @@ void FetchManifestAndInstallCommand::OnScreenshotFetched(
     int index,
     std::optional<std::u16string> label,
     const SkBitmap& bitmap) {
-  if (!web_contents()) {
-    return;
-  }
-
   if (bitmap.drawsNothing()) {
     return;
   }
 
-  // Screenshots must have the same aspect ratio. Cross-multiplying
-  // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
-  SkBitmap any_bitmap_not_current_index;
-  for (const auto& [ind, map_image] : screenshots_downloaded_) {
-    SkBitmap current_image = std::get<SkBitmap>(map_image);
-    if (!current_image.drawsNothing() && ind != index) {
-      any_bitmap_not_current_index = current_image;
-      break;
-    }
-  }
-  if (bitmap.width() * any_bitmap_not_current_index.height() !=
-      bitmap.height() * any_bitmap_not_current_index.width()) {
-    return;
-  }
-
-  std::pair<int, int> dimensions = std::minmax(bitmap.width(), bitmap.height());
-  if (dimensions.second > dimensions.first * webapps::kMaximumScreenshotRatio) {
-    return;
-  }
-
   screenshots_downloaded_[index] = std::tie(bitmap, label);
-
-  // Run any pending callbacks if the dialog has already started listening to
-  // screenshots being downloaded.
-  if (base::Contains(pending_screenshot_callbacks_, index)) {
-    std::move(pending_screenshot_callbacks_.at(index)).Run(bitmap, label);
+  auto pending_callback_it = pending_screenshot_callbacks_.find(index);
+  if (pending_callback_it != pending_screenshot_callbacks_.end()) {
+    std::move(pending_callback_it->second).Run(bitmap, label);
   }
 }
 
