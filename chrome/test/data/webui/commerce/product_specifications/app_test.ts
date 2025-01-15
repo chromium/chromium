@@ -92,6 +92,7 @@ interface AppPromiseValues {
   productInfos: ProductInfo[];
   specsSet: ProductSpecificationsSet|null;
   urlToPageTitleFromHistoryMap: Map<string, string>;
+  minLoadingAnimationMs: number;
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -104,6 +105,7 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         productInfos: [createProductInfo()],
         specsSet: null,
         urlToPageTitleFromHistoryMap: new Map<string, string>(),
+        minLoadingAnimationMs: 0,
       },
       overrides);
 }
@@ -132,9 +134,6 @@ suite('AppTest', () => {
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
 
-    // Disable the loading animation minimum time so tests that don't rely on
-    // loading state behavior can complete more quickly.
-    appElement.disableMinLoadingAnimationMsForTesting();
     loadingStartPromise = createLoadingStartPromise();
     loadingEndPromise = createLoadingEndPromise();
 
@@ -178,6 +177,11 @@ suite('AppTest', () => {
         });
 
     const appElement = await createAppElement();
+
+    // Disable the loading animation minimum time so tests that don't rely on
+    // loading state behavior can complete more quickly.
+    appElement.resetLoadingAnimationMsForTesting(
+        promiseValues.minLoadingAnimationMs);
     await flushTasks();
 
     return appElement;
@@ -1102,6 +1106,14 @@ suite('AppTest', () => {
         'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+    shoppingServiceApi.setResultFor(
+        'addProductSpecificationsSet', Promise.resolve({
+          createdSet: {
+            name: 'title',
+            uuid: testId,
+            urls: [{url: 'https://example.com'}],
+          },
+        }));
     createAppElement();
 
     // Click on the "add column" button and select the first (only) item.
@@ -1625,6 +1637,7 @@ suite('AppTest', () => {
   test('shows full table loading state', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: 10,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
@@ -1652,6 +1665,7 @@ suite('AppTest', () => {
   test('show feedback loading state while loading', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: 10,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
@@ -1871,6 +1885,7 @@ suite('AppTest', () => {
       urlsParam: ['https://0', 'https://1'],
     });
     await createAppElementWithPromiseValues(promiseValues);
+    await loadingEndPromise;
 
     const table = appElement.$.summaryTable;
     table.dispatchEvent(new Event('url-order-update'));

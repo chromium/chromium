@@ -22,7 +22,8 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
  protected:
   ProductSpecificationsTest()
       : prefs_(std::make_unique<TestingPrefServiceSimple>()),
-        account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+        account_checker_(std::make_unique<
+                         testing::NiceMock<commerce::MockAccountChecker>>()) {
     account_checker_->SetCountry("US");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
