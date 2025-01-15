@@ -17,11 +17,13 @@ DawnAHardwareBufferImageRepresentation::DawnAHardwareBufferImageRepresentation(
     AndroidImageBacking* backing,
     MemoryTypeTracker* tracker,
     wgpu::Device device,
+    wgpu::BackendType backend_type,
     wgpu::TextureFormat format,
     std::vector<wgpu::TextureFormat> view_formats,
     AHardwareBuffer* buffer)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(std::move(device)),
+      backend_type_(backend_type),
       format_(format),
       view_formats_(std::move(view_formats)) {
   DCHECK(device_);
@@ -81,7 +83,9 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
   // TODO(crbug.com/327111284): Track layouts correctly.
   begin_layout.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   begin_layout.newLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  begin_access_desc.nextInChain = &begin_layout;
+  if (backend_type_ == wgpu::BackendType::Vulkan) {
+    begin_access_desc.nextInChain = &begin_layout;
+  }
 
   wgpu::SharedFence shared_fence;
   // Pass 1 as the signaled value for the binary semaphore
@@ -158,7 +162,9 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
 
   wgpu::SharedTextureMemoryEndAccessState end_access_desc = {};
   wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
-  end_access_desc.nextInChain = &end_layout;
+  if (backend_type_ == wgpu::BackendType::Vulkan) {
+    end_access_desc.nextInChain = &end_layout;
+  }
 
   if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
       wgpu::Status::Success) {
