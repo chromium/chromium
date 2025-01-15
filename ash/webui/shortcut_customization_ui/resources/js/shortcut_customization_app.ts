@@ -10,7 +10,6 @@ import './search/search_box.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
