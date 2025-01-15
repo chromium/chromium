@@ -59,7 +59,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
@@ -271,7 +270,7 @@ public class AccessibilityNodeInfoUtils {
             List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList,
             boolean includeScreenSizeDependentAttributes) {
         // Sort actions list to ensure consistent output of tests.
-        Collections.sort(actionList, (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
+        actionList.sort((a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
         List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
@@ -386,8 +385,7 @@ public class AccessibilityNodeInfoUtils {
     private static String toString(Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
-        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
-
+        sortedKeySet.sort(CASE_INSENSITIVE_ORDER);
         List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");

@@ -29,7 +29,6 @@ import android.view.autofill.AutofillValue;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -91,8 +90,7 @@ public class TestViewStructure extends ViewStructure {
             Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
-        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
-
+        sortedKeySet.sort(CASE_INSENSITIVE_ORDER);
         List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
