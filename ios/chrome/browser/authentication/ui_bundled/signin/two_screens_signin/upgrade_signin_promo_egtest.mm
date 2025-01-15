@@ -237,7 +237,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       userDefaultsObjectForKey:kLastShownAccountGaiaIdVersionKey];
   // It is not possible to do `GREYAssertEqualObjects(expectedGaiaIds, gaiaIds),
   // since gaiaIds is EDOObject type (the object is in Chrome app).
-  GREYAssertEqual(1, gaiaIds.count, @"Expect to have only one gaia id %@",
+  GREYAssertEqual(1UL, gaiaIds.count, @"Expect to have only one gaia id %@",
                   gaiaIds);
   GREYAssertEqualObjects([FakeSystemIdentity fakeIdentity1].gaiaID, gaiaIds[0],
                          @"Wrong gaia id in %@",

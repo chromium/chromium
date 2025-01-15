@@ -93,7 +93,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
       GetPlatformPolicy(policy::key::kDefaultSearchProviderName);
   GREYAssertTrue(searchValue && searchValue->is_string(),
                  @"searchValue was not of type string");
-  GREYAssertEqual(searchValue->GetString(), "Test",
+  GREYAssertEqual(searchValue->GetString(), std::string{"Test"},
                   @"searchValue had an unexpected value");
 
   std::unique_ptr<base::Value> suggestValue =
@@ -120,7 +120,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
       GetPlatformPolicy("NotARegisteredPolicy");
   GREYAssertTrue(unknownValue && unknownValue->is_string(),
                  @"unknownValue was not of type string");
-  GREYAssertEqual(unknownValue->GetString(), "Unknown",
+  GREYAssertEqual(unknownValue->GetString(), std::string{"Unknown"},
                   @"unknownValue had an unexpected value");
 }
 

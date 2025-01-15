@@ -434,7 +434,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
 
   // Ensure the incognito tab isn't closed.
-  GREYAssertEqual(1, [ChromeEarlGrey incognitoTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey incognitoTabCount],
                   @"Expected that the \"Close All Tabs\" button should not "
                   @"close tabs in other pages.");
 
@@ -468,10 +468,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [self relaunchAppWithInactiveTabsEnabled];
 
   [ChromeEarlGreyUI openTabGrid];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Verify that the Inactive Tabs button is showing.
@@ -493,9 +493,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected all regular tab to be closed.");
-  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected all inactive tab to be closed.");
 
   // Verify that the Inactive Tabs button is not showing.
@@ -506,10 +506,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -526,9 +526,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected no tab in regular tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Ensure there is no selection mode available when there is no tab in regular
@@ -545,18 +545,18 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected all regular tab to be closed.");
-  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected all inactive tab to be closed.");
 
   // Tap on Undo button.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       performAction:grey_tap()];
-  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(0UL, [ChromeEarlGrey mainTabCount],
                   @"Expected no tab in regular tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 }
 
@@ -3226,10 +3226,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [self relaunchAppWithInactiveTabsEnabled];
 
   [ChromeEarlGreyUI openTabGrid];
-  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
                   @"Expected only one tab (NTP), all other tabs should have "
                   @"been in inactive tab grid.");
-  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+  GREYAssertEqual(4UL, [ChromeEarlGrey inactiveTabCount],
                   @"Expected 4 inactive tabs.");
 
   // Verify that the Inactive Tabs button is showing.
