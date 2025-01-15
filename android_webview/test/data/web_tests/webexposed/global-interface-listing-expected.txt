@@ -689,6 +689,17 @@ interface CSSFontFaceRule : CSSRule
     attribute @@toStringTag
     getter style
     method constructor
+interface CSSFontFeatureValuesRule : CSSRule
+    attribute @@toStringTag
+    getter annotation
+    getter characterVariant
+    getter fontFamily
+    getter ornaments
+    getter styleset
+    getter stylistic
+    getter swash
+    method constructor
+    setter fontFamily
 interface CSSFontPaletteValuesRule : CSSRule
     attribute @@toStringTag
     getter basePalette
