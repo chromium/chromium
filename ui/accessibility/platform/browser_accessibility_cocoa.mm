@@ -721,14 +721,6 @@ bool ui::IsNSRange(id value) {
   return @(GetState(_owner, ax::mojom::State::kExpanded));
 }
 
-- (BOOL)isAccessibilityFocused {
-  if (![self instanceActive])
-    return NO;
-
-  BrowserAccessibilityManager* manager = _owner->manager();
-  return manager->GetFocus() == _owner;
-}
-
 - (void)setAccessibilityFocused:(BOOL)flag {
   BrowserAccessibilityManager* manager = _owner->manager();
   if (flag) {
