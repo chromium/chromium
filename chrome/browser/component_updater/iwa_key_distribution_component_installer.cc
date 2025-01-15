@@ -54,7 +54,12 @@ namespace component_updater {
 
 BASE_FEATURE(kIwaKeyDistributionComponent,
              "IwaKeyDistributionComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
 
 IwaKeyDistributionComponentInstallerPolicy::
     IwaKeyDistributionComponentInstallerPolicy() = default;
