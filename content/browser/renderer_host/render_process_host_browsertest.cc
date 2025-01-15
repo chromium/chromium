@@ -1103,13 +1103,15 @@ struct BoostRenderProcessForLoadingBrowserTestParam {
   std::string target_urls;
   bool renderer_initiated_navigation;
   bool expect_render_process_backgrounded;
+  bool prioritize_restore;
+  bool expect_render_process_backgrounded_on_restore;
 };
 
 // This test verifies `kBoostRenderProcessForLoading` feature can keep the
 // RenderProcessHost foregrounded until `DOMContentLoaded` comes.
 class BoostRenderProcessForLoadingBrowserTest
     : public RenderProcessHostTestBase,
-      public content::WebContentsObserver,
+      public WebContentsObserver,
       public ::testing::WithParamInterface<
           BoostRenderProcessForLoadingBrowserTestParam> {
  public:
@@ -1119,7 +1121,10 @@ class BoostRenderProcessForLoadingBrowserTest
           {{blink::features::kBoostRenderProcessForLoading,
             {{blink::features::kBoostRenderProcessForLoadingTargetUrls.name,
               GetParam().target_urls},
-             {"prioritize_renderer_initiated", "false"}}}},
+             {"prioritize_renderer_initiated", "false"},
+             {blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
+                  .name,
+              GetParam().prioritize_restore ? "true" : "false"}}}},
           {});
     } else {
       feature_list_.InitAndDisableFeature(
@@ -1127,29 +1132,25 @@ class BoostRenderProcessForLoadingBrowserTest
     }
   }
 
-  void SetUpOnMainThread() override {
-    content::WebContentsObserver::Observe(&web_contents());
-    RenderProcessHostTestBase::SetUpOnMainThread();
+  WebContents& web_contents() { return *shell()->web_contents(); }
+
+  void StartObservingDOMContentLoaded(WebContents& web_contents) {
+    WebContentsObserver::Observe(&web_contents);
   }
 
-  content::WebContents& web_contents() { return *shell()->web_contents(); }
-
  private:
-  // content::WebContentsObserver:
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
-    if (!check_if_render_process_backgrounded_on_dom_content_loaded_) {
-      return;
-    }
+  // Override WebContentsObserver.
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
     RenderProcessHost* render_process_host = render_frame_host->GetProcess();
     // Emulate render_process_host is not visible to users.
     SetVisibleClients(render_process_host, 0);
-    EXPECT_EQ(render_process_host->GetPriority() ==
-                  base::Process::Priority::kBestEffort,
-              GetParam().expect_render_process_backgrounded);
+    last_process_priority_on_domcontentloaded_ =
+        render_process_host->GetPriority();
   }
 
  protected:
-  bool check_if_render_process_backgrounded_on_dom_content_loaded_ = false;
+  std::optional<base::Process::Priority>
+      last_process_priority_on_domcontentloaded_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1160,18 +1161,32 @@ const BoostRenderProcessForLoadingBrowserTestParam
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[]",
+            .renderer_initiated_navigation = false,
+            .expect_render_process_backgrounded = false,
+            .prioritize_restore = true,
+            .expect_render_process_backgrounded_on_restore = false,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[]",
             .renderer_initiated_navigation = true,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1179,6 +1194,8 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://b.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
@@ -1186,12 +1203,16 @@ const BoostRenderProcessForLoadingBrowserTestParam
                            "\"http://c.com/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = true,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
         {
             .enable_boost_render_process_for_loading = true,
             .target_urls = "[\"http://a.co.jp/simple_page.html\"]",
             .renderer_initiated_navigation = false,
             .expect_render_process_backgrounded = false,
+            .prioritize_restore = false,
+            .expect_render_process_backgrounded_on_restore = true,
         },
 };
 
@@ -1208,22 +1229,43 @@ IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), empty_url));
 
-  // `BoostRenderProcessForLoadingBrowserTest::DOMContentLoaded()` will be
-  // called during `NavigateToURL()` to check the renderer process priority.
-  check_if_render_process_backgrounded_on_dom_content_loaded_ = true;
-  if (GetParam().renderer_initiated_navigation) {
-    EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
-    EXPECT_TRUE(WaitForLoadStop(&web_contents()));
-  } else {
-    EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  {
+    StartObservingDOMContentLoaded(web_contents());
+    if (GetParam().renderer_initiated_navigation) {
+      EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", test_url)));
+      EXPECT_TRUE(WaitForLoadStop(&web_contents()));
+    } else {
+      EXPECT_TRUE(NavigateToURL(shell(), test_url));
+    }
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(web_contents().GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
   }
 
-  // Emulate render_process_host is not visible to users.
-  RenderProcessHost* render_process_host =
-      web_contents().GetPrimaryMainFrame()->GetProcess();
-  SetVisibleClients(render_process_host, 0);
-  EXPECT_EQ(render_process_host->GetPriority(),
-            base::Process::Priority::kBestEffort);
+  {
+    // Clone the tab and restore the page.
+    std::unique_ptr<WebContents> new_tab = web_contents().Clone();
+    StartObservingDOMContentLoaded(*new_tab);
+    TestNavigationObserver clone_observer(new_tab.get());
+    NavigationHandleCommitObserver observer(new_tab.get(), test_url);
+    new_tab->GetController().LoadIfNecessary();
+    clone_observer.Wait();
+    EXPECT_EQ(observer.navigation_type(),
+              blink::mojom::NavigationType::RESTORE);
+    EXPECT_EQ(*last_process_priority_on_domcontentloaded_,
+              GetParam().expect_render_process_backgrounded_on_restore
+                  ? base::Process::Priority::kBestEffort
+                  : base::Process::Priority::kUserBlocking);
+
+    // After DOMContentLoaded, the process priority becomes kBestEffort.
+    EXPECT_EQ(new_tab->GetPrimaryMainFrame()->GetProcess()->GetPriority(),
+              base::Process::Priority::kBestEffort);
+  }
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method
