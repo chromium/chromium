@@ -1193,9 +1193,9 @@ void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,
   // mouse/touch-device, the location will update accordingly.
   InvalidateDrop();
 
-  bool needs_layout_and_paint =
-      BookmarkNodeRemovedImpl(new_parent->children()[new_index].get());
-  if (BookmarkNodeAddedImpl(new_parent, new_index)) {
+  const BookmarkNode* moved_node = new_parent->children()[new_index].get();
+  bool needs_layout_and_paint = BookmarkNodeRemovedImpl(moved_node);
+  if (BookmarkNodeAddedImpl(moved_node)) {
     needs_layout_and_paint = true;
   }
   if (needs_layout_and_paint) {
@@ -1210,7 +1210,7 @@ void BookmarkBarView::BookmarkNodeAdded(const BookmarkNode* parent,
                                         bool added_by_user) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
-  if (BookmarkNodeAddedImpl(parent, index)) {
+  if (BookmarkNodeAddedImpl(parent->children()[index].get())) {
     LayoutAndPaint();
   }
 
@@ -1752,14 +1752,15 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   button->SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
 }
 
-bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* parent,
-                                            size_t index) {
+bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* node) {
   const bool needs_layout_and_paint = UpdateOtherAndManagedButtonsVisibility();
-  if (parent != bookmark_model_->bookmark_bar_node()) {
+  if (node->parent()->type() != BookmarkNode::BOOKMARK_BAR) {
     return needs_layout_and_paint;
   }
+
+  BookmarkMergedSurfaceService* bookmark_service = GetBookmarkService(browser_);
+  size_t index = bookmark_service->GetIndexOf(node);
   if (index < bookmark_buttons_.size()) {
-    const BookmarkNode* node = parent->children()[index].get();
     InsertBookmarkButtonAtIndex(CreateBookmarkButton(node), index);
     return true;
   }
@@ -1793,7 +1794,7 @@ void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {
     return;
   }
 
-  if (node->parent() != bookmark_model_->bookmark_bar_node()) {
+  if (node->parent()->type() != BookmarkNode::BOOKMARK_BAR) {
     // We only care about nodes on the bookmark bar.
     return;
   }

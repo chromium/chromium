@@ -318,8 +318,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
-  bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* parent,
-                             size_t index);
+  bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* node);
 
   // Implementation for BookmarkNodeRemoved. Returns true if LayoutAndPaint() is
   // required.
