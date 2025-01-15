@@ -2691,9 +2691,6 @@ extern const char kSegmentationPlatformEphemeralCardRankerDescription[];
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
-extern const char kMigrateSyncingUserToSignedInName[];
-extern const char kMigrateSyncingUserToSignedInDescription[];
-
 extern const char kNavBarColorAnimationName[];
 extern const char kNavBarColorAnimationDescription[];
 
@@ -2843,9 +2840,6 @@ extern const char kTabSwitcherFullNewTabButtonDescription[];
 
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
-
-extern const char kUndoMigrationOfSyncingUserToSignedInName[];
-extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
 extern const char
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[];

@@ -4594,12 +4594,6 @@ const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "
     "ignored as of Android U)";
 
-const char kMigrateSyncingUserToSignedInName[] =
-    "Migrate syncing user to signed-in";
-const char kMigrateSyncingUserToSignedInDescription[] =
-    "Enables the migration of syncing users to the signed-in, non-syncing "
-    "state.";
-
 const char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 const char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";
@@ -4851,12 +4845,6 @@ const char kUseHardwareBufferUsageFlagsFromVulkanName[] =
     "Use recommended AHardwareBuffer usage flags from Vulkan";
 const char kUseHardwareBufferUsageFlagsFromVulkanDescription[] =
     "Allows querying recommended AHardwareBuffer usage flags from Vulkan API";
-
-const char kUndoMigrationOfSyncingUserToSignedInName[] =
-    "Undo the migration of syncing users to signed-in";
-const char kUndoMigrationOfSyncingUserToSignedInDescription[] =
-    "Enables the reverse-migration of syncing users who were previously "
-    "migrated to the signed-in, non-syncing state.";
 
 const char kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[] =
     "Access loss warning for unmigrated password manager users";
