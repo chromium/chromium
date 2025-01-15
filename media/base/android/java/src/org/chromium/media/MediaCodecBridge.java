@@ -771,6 +771,77 @@ class MediaCodecBridge {
         return MediaCodecStatus.OK;
     }
 
+    private static final String QUEUE_SECURE_INPUT_BLOCK_ERR_MSG =
+            "Failed to queue secure input block: ";
+
+    @CalledByNative
+    @SuppressLint("NewApi")
+    private int queueSecureInputBlock(
+            int index,
+            MediaCodec.LinearBlock block,
+            int offset,
+            int size,
+            byte[] iv,
+            byte[] keyId,
+            int[] numBytesOfClearData,
+            int[] numBytesOfEncryptedData,
+            int numSubSamples,
+            int cipherMode,
+            int patternEncrypt,
+            int patternSkip,
+            long presentationTimeUs,
+            int flags) {
+        try {
+            cipherMode = translateEncryptionSchemeValue(cipherMode);
+
+            var status = validateCryptoInfo(cipherMode, patternEncrypt, patternSkip);
+            if (status != MediaCodecStatus.OK) {
+                return status;
+            }
+
+            var cryptoInfo =
+                    generateCryptoInfo(
+                            iv,
+                            keyId,
+                            numBytesOfClearData,
+                            numBytesOfEncryptedData,
+                            numSubSamples,
+                            cipherMode,
+                            patternEncrypt,
+                            patternSkip);
+            assert cryptoInfo != null;
+
+            MediaCodec.QueueRequest request = mMediaCodec.getQueueRequest(index);
+            request.setEncryptedLinearBlock(block, offset, size, cryptoInfo);
+            request.setPresentationTimeUs(presentationTimeUs);
+            request.setFlags(flags);
+            request.queue();
+        } catch (MediaCodec.CryptoException e) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
+                Log.d(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG + "CryptoException.ERROR_NO_KEY");
+                return MediaCodecStatus.NO_KEY;
+            }
+            // Anything other than ERROR_NO_KEY is unexpected.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return convertCryptoException(e);
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e.getDiagnosticInfo());
+            return convertCodecException(e);
+        } catch (IllegalArgumentException e) {
+            // IllegalArgumentException can occur when release() is called on the MediaCrypto
+            // object, but the MediaCodecBridge is unaware of the change.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ERROR;
+        } catch (IllegalStateException e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ILLEGAL_STATE;
+        } catch (Exception e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
+        }
+        return MediaCodecStatus.OK;
+    }
+
     @CalledByNative
     private void setVideoBitrate(int bps, int frameRate) {
         int targetBps = BitrateAdjuster.getTargetBitrate(mBitrateAdjuster, bps, frameRate);
@@ -880,7 +951,7 @@ class MediaCodecBridge {
             assert cryptoInfo != null;
             mMediaCodec.queueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
         } catch (MediaCodec.CryptoException e) {
-            if (e.getErrorCode() == MediaCodec.CryptoException.ERROR_NO_KEY) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
                 Log.d(TAG, "Failed to queue secure input buffer: CryptoException.ERROR_NO_KEY");
                 return MediaCodecStatus.NO_KEY;
             }
