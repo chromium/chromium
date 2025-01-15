@@ -26,6 +26,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -134,7 +135,12 @@ bool GroupPolicyManager::HasActiveDevicePolicies() const {
 }
 
 std::string GroupPolicyManager::source() const {
-  return kSourceGroupPolicyManager;
+  return kSourcePlatformPolicyManager;
+}
+
+scoped_refptr<PolicyManagerInterface> CreatePlatformPolicyManager(
+    std::optional<bool> override_is_managed_device) {
+  return base::MakeRefCounted<GroupPolicyManager>(override_is_managed_device);
 }
 
 }  // namespace updater

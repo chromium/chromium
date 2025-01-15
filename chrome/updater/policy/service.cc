@@ -35,15 +35,11 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
-#if BUILDFLAG(IS_WIN)
-#include "chrome/updater/policy/win/group_policy_manager.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
-#endif
 #include "components/crash/core/common/crash_key.h"
 
 namespace updater {
@@ -71,33 +67,45 @@ PolicyService::PolicyManagers SortManagers(
   return {managers, manager_names};
 }
 
-#if BUILDFLAG(IS_WIN)
 bool CloudPolicyOverridesPlatformPolicy(
-    std::vector<scoped_refptr<PolicyManagerInterface>> providers) {
+    const std::vector<scoped_refptr<PolicyManagerInterface>>& providers) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, by default, Group Policy has a higher priority than the
+  // clould policy.
+  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = false;
+#elif BUILDFLAG(IS_MAC)
+  // On macOS, cloud policy has a higher priority than the Managed Preferences.
+  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
+#else
+  // On other platforms, there's no platform policy at the moment, the value
+  // doesn't actually matter.
+  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
+#endif
+
   auto it = base::ranges::find_if(
       providers, [](scoped_refptr<PolicyManagerInterface> p) {
-        return p && p->CloudPolicyOverridesPlatformPolicy();
+        return p && (p->CloudPolicyOverridesPlatformPolicy()).has_value();
       });
 
-  return it == providers.end() ? false
-                               : *(*it)->CloudPolicyOverridesPlatformPolicy();
+  return it == providers.end()
+             ? kCloudPolicyOverridesPlatformPolicyDefaultValue
+             : ((*it)->CloudPolicyOverridesPlatformPolicy()).value();
 }
-#endif
 
 }  // namespace
 
 std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-    scoped_refptr<PolicyManagerInterface> group_policy_manager) {
+    scoped_refptr<PolicyManagerInterface> platform_policy_manager) {
   // The order of the policy managers:
   //   1) External constants policy manager (if present).
-  //   2) Group policy manager (Windows only). **
-  //   3) DM policy manager (if present). **
-  //   4) Managed preferences policy manager(macOS only).
-  //   5) The default value policy manager.
-  // ** If `CloudPolicyOverridesPlatformPolicy`, then the DM policy manager
-  //    has a higher priority than the group policy manger.
+  //   2) Platform policy manager (Group policy on Windows, and Managed
+  //      Preferences on macOS). See NOTE below.
+  //   3) DM policy manager (if present). See NOTE below.
+  //   4) The default value policy manager.
+  // NOTE: If `CloudPolicyOverridesPlatformPolicy`, then the DM policy manager
+  //    has a higher priority than the platform policy manger.
   std::vector<scoped_refptr<PolicyManagerInterface>> managers;
   if (dm_policy_manager) {
     managers.push_back(dm_policy_manager);
@@ -106,23 +114,21 @@ std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
       external_constants ? base::MakeRefCounted<PolicyManager>(
                                external_constants->GroupPolicies())
                          : nullptr;
-#if BUILDFLAG(IS_WIN)
-  if (CloudPolicyOverridesPlatformPolicy({dm_policy_manager,
-                                          group_policy_manager,
-                                          external_constants_policy_manager})) {
-    VLOG(1) << __func__ << ": CloudPolicyOverridesPlatformPolicy=1";
-    managers.push_back(std::move(group_policy_manager));
-  } else {
-    managers.insert(managers.begin(), std::move(group_policy_manager));
+
+  if (platform_policy_manager) {
+    if (CloudPolicyOverridesPlatformPolicy(
+            {dm_policy_manager, platform_policy_manager,
+             external_constants_policy_manager})) {
+      VLOG(1) << __func__ << ": CloudPolicyOverridesPlatformPolicy=1";
+      managers.push_back(std::move(platform_policy_manager));
+    } else {
+      managers.insert(managers.begin(), std::move(platform_policy_manager));
+    }
   }
-#endif
+
   if (external_constants_policy_manager) {
     managers.insert(managers.begin(), external_constants_policy_manager);
   }
-#if BUILDFLAG(IS_MAC)
-  managers.push_back(CreateManagedPreferencePolicyManager(
-      external_constants->IsMachineManaged()));
-#endif
   managers.push_back(GetDefaultValuesPolicyManager());
   return managers;
 }
@@ -148,13 +154,8 @@ PolicyService::PolicyService(
     : policy_managers_(SortManagers(CreateManagers(
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged()),
-#if BUILDFLAG(IS_WIN)
-          base::MakeRefCounted<GroupPolicyManager>(
-              external_constants->IsMachineManaged())
-#else
-          {}
-#endif
-              ))),
+          CreatePlatformPolicyManager(
+              external_constants->IsMachineManaged())))),
       external_constants_(external_constants),
       persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
@@ -224,17 +225,17 @@ void PolicyService::FetchPoliciesDone(
       base::BindOnce(
           [](scoped_refptr<ExternalConstants> external_constants,
              scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-             scoped_refptr<PolicyManagerInterface> group_policy_manager) {
+             scoped_refptr<PolicyManagerInterface> platform_policy_manager) {
             return CreateManagers(external_constants, dm_policy_manager,
-                                  group_policy_manager);
+                                  platform_policy_manager);
           },
           external_constants_,
           dm_policy_manager ? dm_policy_manager
           : policy_managers_.manager_names.contains(kSourceDMPolicyManager)
               ? policy_managers_.manager_names[kSourceDMPolicyManager]
               : nullptr,
-          policy_managers_.manager_names.contains(kSourceGroupPolicyManager)
-              ? policy_managers_.manager_names[kSourceGroupPolicyManager]
+          policy_managers_.manager_names.contains(kSourcePlatformPolicyManager)
+              ? policy_managers_.manager_names[kSourcePlatformPolicyManager]
               : nullptr),
       base::BindOnce(&PolicyService::PolicyManagerLoaded,
                      base::WrapRefCounted(this), result));

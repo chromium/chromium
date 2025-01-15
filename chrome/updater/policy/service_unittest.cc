@@ -22,17 +22,15 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
-#include "chrome/updater/policy/win/group_policy_manager.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
 
 namespace updater {
@@ -783,7 +781,7 @@ TEST(PolicyService, CreateManagers) {
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
       CreateManagers(CreateExternalConstants(), dm_policy,
-                     base::MakeRefCounted<GroupPolicyManager>(
+                     CreatePlatformPolicyManager(
                          CreateExternalConstants()->IsMachineManaged()));
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
@@ -796,7 +794,7 @@ TEST(PolicyService, CreateManagers) {
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
   managers = CreateManagers(CreateExternalConstants(), dm_policy,
-                            base::MakeRefCounted<GroupPolicyManager>(
+                            CreatePlatformPolicyManager(
                                 CreateExternalConstants()->IsMachineManaged()));
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
@@ -811,7 +809,9 @@ TEST(PolicyService, CreateManagers) {
                            OmahaSettingsClientProto>();
   auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
   PolicyManagers managers =
-      CreateManagers(CreateExternalConstants(), dm_policy, {});
+      CreateManagers(CreateExternalConstants(), dm_policy,
+                     CreatePlatformPolicyManager(
+                         CreateExternalConstants()->IsMachineManaged()));
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
   EXPECT_EQ(managers[1]->source(), "Device Management");
