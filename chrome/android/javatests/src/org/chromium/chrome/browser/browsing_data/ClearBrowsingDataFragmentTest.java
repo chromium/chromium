@@ -208,7 +208,6 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSigningOut() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final ClearBrowsingDataFragment preferences =
@@ -235,7 +234,6 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSigningOut_UnsavedDataDialog() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

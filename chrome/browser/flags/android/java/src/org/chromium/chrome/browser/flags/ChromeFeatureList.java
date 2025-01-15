@@ -466,8 +466,6 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RENAME_JOURNEYS = "RenameJourneys";
-    public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
-            "ReplaceSyncPromosWithSignInPromos";
     public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
             "RightEdgeGoesForwardGestureNav";
 

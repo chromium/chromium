@@ -103,7 +103,6 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
@@ -213,9 +212,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testRenderSignedOutAccountManagementRows_replaceSyncBySigninEnabled()
-            throws IOException {
+    public void testRenderSignedOutAccountManagementRows() throws IOException {
         startSettings();
         waitForOptionsMenu();
 
@@ -223,24 +220,19 @@ public class MainSettingsFragmentTest {
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_account_row);
-        mRenderTestRule.render(
-                accountRow, "main_settings_signed_out_account_replace_sync_by_signin_enabled");
+        mRenderTestRule.render(accountRow, "main_settings_signed_out_account");
         View googleServicesRow =
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_google_services_row);
-        mRenderTestRule.render(
-                googleServicesRow,
-                "main_settings_signed_out_google_services_replace_sync_by_signin_enabled");
+        mRenderTestRule.render(googleServicesRow, "main_settings_signed_out_google_services");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "0")})
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testRenderSigninDisabledByPolicyAccountRow_replaceSyncBySigninEnabled()
-            throws IOException {
+    public void testRenderSigninDisabledByPolicyAccountRow() throws IOException {
         startSettings();
         waitForOptionsMenu();
 
@@ -248,9 +240,7 @@ public class MainSettingsFragmentTest {
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(R.id.account_management_account_row);
-        mRenderTestRule.render(
-                accountRow,
-                "main_settings_signin_disabled_by_policy_account_replace_sync_by_signin_enabled");
+        mRenderTestRule.render(accountRow, "main_settings_signin_disabled_by_policy_account");
     }
 
     /**
@@ -388,7 +378,6 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testPressingSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -419,7 +408,6 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testPressingSignOutSyncDisabled() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -450,8 +438,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testPressingTurnOffSyncWhileTheUnoFlagIsEnabled() {
+    public void testPressingTurnOffSync() {
         mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
 
         startSettings();
@@ -477,7 +464,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
         mSyncTestRule.addTestAccount();
         startSettings();
@@ -511,12 +497,7 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startSettings();
 
-        assertSettingsExists(
-                MainSettings.PREF_SIGN_IN,
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? ManageSyncSettings.class
-                        : AccountManagementFragment.class);
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, ManageSyncSettings.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
     }
 
@@ -538,19 +519,13 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startSettings();
 
-        assertSettingsExists(
-                MainSettings.PREF_SIGN_IN,
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? ManageSyncSettings.class
-                        : AccountManagementFragment.class);
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, ManageSyncSettings.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -631,10 +606,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void
-            testManageSyncRowIsNotShownWhenReplaceSyncPromosWithSignInPromosEnabledWithoutSyncConsent()
-                    throws InterruptedException {
+    public void testManageSyncRowIsNotShownWithoutSyncConsent() throws InterruptedException {
         startSettings();
 
         Assert.assertFalse(

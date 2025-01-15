@@ -239,7 +239,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisableFeatures({ChromeFeatureList.LINKED_SERVICES_SETTING})
     public void testAccountSettingsView() {
         // The types that should be default-enabled in transport mode depend on various flags.

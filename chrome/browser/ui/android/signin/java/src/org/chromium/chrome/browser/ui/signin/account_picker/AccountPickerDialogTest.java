@@ -136,11 +136,9 @@ public class AccountPickerDialogTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testAccountPickerDialogView_replaceSyncWithSigninPromosEnabled()
-            throws IOException {
+    public void testAccountPickerDialogView() throws IOException {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(
-                mCoordinator.getAccountPickerViewForTests(),
-                "account_picker_dialog_replace_sync_with_signin_promos_enabled");
+                mCoordinator.getAccountPickerViewForTests(), "account_picker_dialog");
     }
 }

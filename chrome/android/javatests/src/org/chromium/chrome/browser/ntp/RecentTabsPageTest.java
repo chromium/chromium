@@ -81,10 +81,7 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
-})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;

@@ -47,7 +47,6 @@ import java.util.function.DoubleConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.BOOKMARK_PANE_ANDROID,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 @DisableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class BookmarkPaneUnitTest {

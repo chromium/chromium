@@ -51,9 +51,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -149,7 +147,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardShownForSignedInUsers() {
         // Fake an identity error.
         final FakeSyncServiceImpl fakeSyncService =
@@ -173,7 +170,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardNotShownIfNoError() {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -185,7 +181,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardDynamicallyShownOnError() {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
@@ -220,7 +215,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardDynamicallyHidden() {
         // Fake an identity error.
         final FakeSyncServiceImpl fakeSyncService =
@@ -263,7 +257,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardActionForAuthError() throws Exception {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
@@ -300,7 +293,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityErrorCardActionForClientOutdatedError() throws Exception {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
@@ -330,7 +322,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testTrustedVaultKeyRetrievalForSignedInUsers() {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
         // bug is resolved.
@@ -363,7 +354,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutUnsavedDataDialogShown() {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
