@@ -322,9 +322,6 @@ void OnDeviceExecution::OnComplete(
   logged_response->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
 
-  input_token_count_ = summary->input_token_count;
-  output_token_count_ = summary->output_token_count;
-
   opts_.model_client->OnResponseCompleted();
 
   RunRawOutputSafetyCheck(ResponseCompleteness::kComplete);
@@ -599,9 +596,7 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(StreamingResponse{.response = success_response_metadata,
-                                 .is_complete = true,
-                                 .input_token_count = input_token_count_,
-                                 .output_token_count = output_token_count_}),
+                                 .is_complete = true}),
       /*provided_by_on_device=*/true, std::move(log_entry),
       std::move(model_execution_info)));
   if (self) {

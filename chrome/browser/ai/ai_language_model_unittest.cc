@@ -447,8 +447,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
         optimization_guide::StreamingResponse{
             .response = optimization_guide::AnyWrapProto(response),
             .is_complete = is_complete,
-            .input_token_count = 1u,
-            .output_token_count = output.size()},
+        },
         /*provided_by_on_device=*/true);
   }
 
