@@ -977,8 +977,12 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   // that are based on MPArch are allowed to be stored. To determine if this
   // is an inner WebContents we check the inner frame tree's type to see if
   // it is `kPrimary`.
-  if (rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() &&
-      rfh->frame_tree()->is_primary()) {
+  // We also make MPArch based GuestViews ineligible. While supporting them
+  // is probably feasible, other than the case of https://crbug.com/330282443 ,
+  // there is little benefit to doing so.
+  if ((rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() &&
+       rfh->frame_tree()->is_primary()) ||
+      rfh->frame_tree()->is_guest()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 
