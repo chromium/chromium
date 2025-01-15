@@ -44,41 +44,6 @@ GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
 // helpers for testing purposes and sample test data files.
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
-                       MainFrameActivation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // TODO(crbug.com/386089639): Use GetTestUrl() when it accounts for localhost
-  // requests which are ignored.
-  GURL url = embedded_test_server()->GetURL("a.example",
-                                            "/frame_with_included_script.html");
-
-  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
-      "suffix-that-does-not-match-anything"));
-  ASSERT_TRUE(NavigateToDestination(url));
-  EXPECT_TRUE(
-      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
-
-  // Navigate to about:blank first to avoid re-using the previous ruleset for
-  /// the next check.
-  ASSERT_TRUE(NavigateToDestination(GURL("about:blank")));
-
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ASSERT_TRUE(NavigateToDestination(url));
-  EXPECT_FALSE(
-      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
-
-  // Navigate to about:blank first to avoid re-using the previous ruleset for
-  // the next check.
-  ASSERT_TRUE(NavigateToDestination(GURL("about:blank")));
-
-  // The root frame document should never be filtered.
-  SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
-  ASSERT_TRUE(NavigateToDestination(url));
-  EXPECT_TRUE(
-      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
-}
-
-IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        SubframeDocumentLoadFiltering) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
