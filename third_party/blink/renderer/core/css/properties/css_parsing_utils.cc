@@ -6862,8 +6862,15 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         switch (end_point_origin) {
           case CSSValueID::kTo:
             end_point =
-                ConsumePositionComponent(args, context, UnitlessQuirk::kForbid,
-                                         horizontal_edge, vertical_edge);
+                command_type == CSSValueID::kHline
+                    ? ConsumeIdent<CSSValueID::kXStart, CSSValueID::kXEnd>(args)
+                    : ConsumeIdent<CSSValueID::kYStart, CSSValueID::kYEnd>(
+                          args);
+            if (!end_point) {
+              end_point = ConsumePositionComponent(
+                  args, context, UnitlessQuirk::kForbid, horizontal_edge,
+                  vertical_edge);
+            }
             break;
           case CSSValueID::kBy:
             end_point = ConsumeLengthOrPercent(
