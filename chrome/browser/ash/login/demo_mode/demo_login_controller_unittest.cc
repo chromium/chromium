@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/test_login_screen.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -23,6 +24,8 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/session_manager/core/session_manager.h"
@@ -89,6 +92,11 @@ class DemoLoginControllerTest : public testing::Test {
     fake_user_manager_->AddPublicAccountUser(auto_login_account_id_);
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::FakePowerManagerClient::Get());
+    policy_controller_ = chromeos::PowerPolicyController::Get();
+
     base::Value::Dict account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kPublicAccountUserId);
     account.Set(
@@ -113,6 +121,10 @@ class DemoLoginControllerTest : public testing::Test {
   void TearDown() override {
     demo_login_controller_.reset();
     login_screen_client_.reset();
+    if (chromeos::PowerPolicyController::IsInitialized()) {
+      chromeos::PowerPolicyController::Shutdown();
+    }
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   GURL GetSetupUrl() {
@@ -175,13 +187,16 @@ class DemoLoginControllerTest : public testing::Test {
     EXPECT_TRUE(user_list[0]->IsDeviceLocalAccount());
   }
 
-  // FakeChromeUserManager* user_manager() { return fake_user_manager_.Get(); }
-
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   base::test::ScopedFeatureList features_;
   content::BrowserTaskEnvironment task_environment_;
+
+  // We don't own the destruction of `PowerPolicyController` which causes it
+  // dangling.
+  raw_ptr<chromeos::PowerPolicyController, DisableDanglingPtrDetection>
+      policy_controller_;
 
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
