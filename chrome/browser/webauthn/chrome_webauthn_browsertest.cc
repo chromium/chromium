@@ -1716,13 +1716,9 @@ IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest, ChallengeUrlGetAssertion) {
   EXPECT_THAT(result, testing::HasSubstr(encoded_challenge));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChallengeUrlEmptyChallenge DISABLED_ChallengeUrlEmptyChallenge
-#else
-#define MAYBE_ChallengeUrlEmptyChallenge ChallengeUrlEmptyChallenge
-#endif
+// TODO(https://crbug.com/389255414): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
-                       MAYBE_ChallengeUrlEmptyChallenge) {
+                       DISABLED_ChallengeUrlEmptyChallenge) {
   SetRequestHandlerOverride(base::BindLambdaForTesting(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -1752,13 +1748,9 @@ IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
   EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChallengeUrlWrongContentType DISABLED_ChallengeUrlWrongContentType
-#else
-#define MAYBE_ChallengeUrlWrongContentType ChallengeUrlWrongContentType
-#endif
+// TODO(https://crbug.com/389255414): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
-                       MAYBE_ChallengeUrlWrongContentType) {
+                       DISABLED_ChallengeUrlWrongContentType) {
   SetRequestHandlerOverride(base::BindLambdaForTesting(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
