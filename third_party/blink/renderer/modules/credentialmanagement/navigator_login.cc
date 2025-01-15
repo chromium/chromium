@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_account.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_status_options.h"
