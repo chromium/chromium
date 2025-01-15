@@ -738,13 +738,6 @@ crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002p.html [ Fa
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-001c.html [ Failure ]
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-002c.html [ Failure ]
 
-# The following fails because we don't use the natural aspect ratio when applying
-# object-fit, and the images referenced don't have a natural size.
-crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-003i.html [ Failure ]
-crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-003p.html [ Failure ]
-crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004i.html [ Failure ]
-crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004p.html [ Failure ]
-
 # [css-backgrounds]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]

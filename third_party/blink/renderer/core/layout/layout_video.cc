@@ -89,8 +89,8 @@ IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
     case kPoster:
       // If the video playback area is currently represented by the poster
       // image, the natural dimensions are that of the poster image.
-      if (!cached_image_size_.IsEmpty() && !ImageResource()->ErrorOccurred()) {
-        return IntrinsicSizingInfo::MakeFixed(gfx::SizeF(cached_image_size_));
+      if (!ImageResource()->ErrorOccurred()) {
+        return cached_image_natural_dimensions_;
       }
       break;
 
@@ -122,7 +122,7 @@ void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
   // without keeping aspect ratio). We do not need to check
   // |ShouldDisplayPosterImage| because the image can be ready before we find
   // out we actually need it.
-  cached_image_size_ = IntrinsicSize();
+  cached_image_natural_dimensions_ = LayoutImage::GetNaturalDimensions();
 
   // The intrinsic size is now that of the image, but in case we already had the
   // intrinsic size of the video we call this here to restore the video size.
@@ -197,15 +197,18 @@ void LayoutVideo::InvalidateCompositing() {
 PhysicalRect LayoutVideo::ReplacedContentRectFrom(
     const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
+  PhysicalRect replaced_content_rect =
+      LayoutMedia::ReplacedContentRectFrom(base_content_rect);
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
-    return PreSnappedRectForPersistentSizing(
-        ComputeReplacedContentRect(base_content_rect));
+    replaced_content_rect =
+        PreSnappedRectForPersistentSizing(replaced_content_rect);
+  } else {
+    // If we are displaying the poster image no pre-rounding is needed, but the
+    // size of the image should be used for fitting instead.
   }
-  // If we are displaying the poster image no pre-rounding is needed, but the
-  // size of the image should be used for fitting instead.
-  return ComputeReplacedContentRect(base_content_rect, &cached_image_size_);
+  return replaced_content_rect;
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {
