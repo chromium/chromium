@@ -2332,7 +2332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Android.IsolatedSplits.ContextCreateTime2"
-    units="ms" expires_after="2025-08-27">
+    units="ms" expires_after="2026-01-14">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
@@ -2342,6 +2342,33 @@ chromium-metrics-reviews@google.com.
     Amount of time it takes to create a new Context for a split. This will only
     be recorded if isolated splits are enabled. Different from ContextCreateTime
     as only the first load of a split will be counted.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime3"
+    units="ms" expires_after="2026-01-14">
+<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
+
+  <owner>cduvall@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Amount of time it takes to create a new Context and load a class for a
+    split. This is simply ContextCreateTime2 + LoadFirstClassTime.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Android.IsolatedSplits.LoadFirstClassTime"
+    units="ms" expires_after="2026-01-14">
+<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
+
+  <owner>cduvall@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Amount of time it takes to load the first class in a split. This will only
+    be recorded if there is a hardcoded class to load in SplitChromeApplication.
+    Happens right after the Context is created.
   </summary>
 </histogram>
 
