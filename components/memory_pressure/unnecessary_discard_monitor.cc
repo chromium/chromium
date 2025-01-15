@@ -43,6 +43,31 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetBegin(
   current_reclaim_event_ = reclaim_target;
 }
 
+ReclaimTarget UnnecessaryDiscardMonitor::CorrectReclaimTarget(
+    ReclaimTarget target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Iterate through all previous kills to identify ones that were finished
+  // after this reclaim target was created.
+  for (const auto& kill_event : previous_kill_events_) {
+    if (target.target_kb == 0) {
+      break;
+    }
+
+    // If this kill happened after the current reclaim event was calculated,
+    // the reclaim target should be adjusted.
+    if (kill_event.kill_time >= target.origin_time) {
+      if (kill_event.kill_size_kb >= target.target_kb) {
+        target.target_kb = 0;
+      } else {
+        target.target_kb -= kill_event.kill_size_kb;
+      }
+    }
+  }
+
+  return target;
+}
+
 void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
   // The end of a reclaim target means that any unnecessary discards from this
   // reclaim event can be calculated.
@@ -52,17 +77,8 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
     return;
   }
 
-  int64_t adjusted_target_kb = current_reclaim_event_->target_kb;
-
-  // Iterate through all previous kills to identify ones that were finished
-  // after this reclaim target was created.
-  for (const auto& kill_event : previous_kill_events_) {
-    // If this kill happened after the current reclaim event was calculated,
-    // the reclaim target should be adjusted.
-    if (kill_event.kill_time >= current_reclaim_event_->origin_time) {
-      adjusted_target_kb -= kill_event.kill_size_kb;
-    }
-  }
+  int64_t adjusted_target_kb =
+      CorrectReclaimTarget(*current_reclaim_event_).target_kb;
 
   // Now that the reclaim target has been adjusted by any kills that occurred
   // after it was calculated, we can check if any of its resultant kills were
@@ -87,7 +103,7 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
 }
 
 void UnnecessaryDiscardMonitor::OnDiscard(
-    int64_t memory_freed_kb,
+    uint64_t memory_freed_kb,
     base::TimeTicks discard_complete_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_reclaim_event_) {
