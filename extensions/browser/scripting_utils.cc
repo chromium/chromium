@@ -515,6 +515,7 @@ bool GetFileResources(const std::vector<std::string>& files,
 void ExecuteScript(const ExtensionId& extension_id,
                    std::vector<mojom::JSSourcePtr> sources,
                    mojom::ExecutionWorld execution_world,
+                   const std::optional<std::string>& world_id,
                    ScriptExecutor* script_executor,
                    ScriptExecutor::FrameScope frame_scope,
                    std::set<int> frame_ids,
@@ -533,7 +534,7 @@ void ExecuteScript(const ExtensionId& extension_id,
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
       mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-          std::move(sources), execution_world, /*world_id=*/std::nullopt,
+          std::move(sources), execution_world, world_id,
           blink::mojom::WantResultOption::kWantResult,
           user_gesture ? blink::mojom::UserActivationOption::kActivate
                        : blink::mojom::UserActivationOption::kDoNotActivate,

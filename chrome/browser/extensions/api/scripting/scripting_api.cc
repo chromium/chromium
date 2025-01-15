@@ -372,11 +372,14 @@ bool ScriptingExecuteScriptFunction::Execute(
 
   mojom::ExecutionWorld execution_world =
       ConvertExecutionWorld(injection_.world);
+  // scripting.executeScript() doesn't support selecting execution world id.
+  std::optional<std::string> execution_world_id = std::nullopt;
+  bool inject_immediately = injection_.inject_immediately.value_or(false);
 
   scripting::ExecuteScript(
-      extension()->id(), std::move(sources), execution_world, script_executor,
-      frame_scope, frame_ids, injection_.inject_immediately.value_or(false),
-      user_gesture(),
+      extension()->id(), std::move(sources), execution_world,
+      execution_world_id, script_executor, frame_scope, frame_ids,
+      inject_immediately, user_gesture(),
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;

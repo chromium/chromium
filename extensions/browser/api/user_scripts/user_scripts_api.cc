@@ -688,13 +688,18 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
     }
   }
 
+  // Validate injection world id.
+  std::string error;
+  if (!IsValidWorldId(injection_.world, injection_.world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
   // Validate injection target.
   scripting::InjectionTarget internal_injection_target =
       ConvertToInternalInjectionTarget(std::move(injection_.target));
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
   std::set<int> frame_ids;
-  std::string error;
   if (!scripting::CanAccessTarget(
           *extension()->permissions_data(), internal_injection_target,
           browser_context(), include_incognito_information(), &script_executor,
@@ -775,9 +780,9 @@ void UserScriptsExecuteFunction::Execute(
     ScriptExecutor::FrameScope frame_scope,
     std::set<int> frame_ids,
     std::string* error) {
-  // TODO(crbug.com/326657581): Add world id to UserScriptInjection.
   mojom::ExecutionWorld execution_world =
       ConvertExecutionWorld(injection_.world);
+  std::optional<std::string> execution_world_id = injection_.world_id;
   bool inject_immediately = injection_.inject_immediately.value_or(false);
 
   std::vector<mojom::JSSourcePtr> js_sources;
@@ -789,8 +794,8 @@ void UserScriptsExecuteFunction::Execute(
 
   scripting::ExecuteScript(
       extension()->id(), std::move(js_sources), execution_world,
-      script_executor, frame_scope, frame_ids, inject_immediately,
-      user_gesture(),
+      execution_world_id, script_executor, frame_scope, frame_ids,
+      inject_immediately, user_gesture(),
       base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
 }
 

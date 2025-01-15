@@ -37,7 +37,16 @@ const executionWorldFlagsScript = `
           mainWorld: window.mainWorldFlag || '<none>',
         };
       })();
-    `
+    `;
+
+// A script that returns "flags" set by scripts run in specific user script
+// worlds.
+const worldIdScript = `
+      (() => {
+        return { worldA: window.worldAFlag || false };
+      })();
+  `;
+
 
 chrome.test.runTests([
   // Tests that an error is returned if the user script source list is empty.
@@ -207,6 +216,39 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function invalidWorldId_UnderscoreError() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToNotRequestedUrl();
+    const script = {
+      js: [{file: 'script.js'}],
+      target: {tabId: tab.id},
+      worldId: '_foo'
+    };
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.execute(script),
+        `Error: World IDs beginning with '_' are reserved.`);
+
+    chrome.test.succeed();
+  },
+
+  async function invalidWorldId_MainWorldError() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToNotRequestedUrl();
+    const script = {
+      js: [{file: 'script.js'}],
+      target: {tabId: tab.id},
+      world: 'MAIN',
+      worldId: '123'
+    };
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.execute(script),
+        `Error: World ID can only be specified for USER_SCRIPT worlds.`);
+
+    chrome.test.succeed();
+  },
+
   // Tests that a script with a code source and a valid target is injected.
   async function executeCode() {
     await chrome.userScripts.unregister();
@@ -305,6 +347,47 @@ chrome.test.runTests([
     chrome.test.assertEq(
         {userScriptWorld: '<none>', mainWorld: 'from main world'},
         results[0].result);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that the script is injected in the corresponding execution world
+  // given a world id.
+  async function executionWorldId() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+
+    // Set a flag in the user script world A.
+    const scriptA_SetVariable = {
+      js: [{code: `window.worldAFlag = true`}],
+      target: {tabId: tab.id},
+      worldId: 'A'
+    };
+    await chrome.userScripts.execute(scriptA_SetVariable);
+
+    // Executing a script in the user script world A retrieves the world A flag.
+    const scriptA_GetVariable = {
+      js: [{code: worldIdScript}],
+      target: {tabId: tab.id},
+      worldId: 'A'
+    };
+    let results = await chrome.userScripts.execute(scriptA_GetVariable);
+
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq({worldA: true}, results[0].result);
+
+    // Executing a script in a different world should not retrieve the world A
+    // flag.
+    const scriptB = {
+      js: [{code: worldIdScript}],
+      target: {tabId: tab.id},
+      worldId: 'B'
+    };
+    results = await chrome.userScripts.execute(scriptB);
+
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq({worldA: false}, results[0].result);
 
     chrome.test.succeed();
   },
