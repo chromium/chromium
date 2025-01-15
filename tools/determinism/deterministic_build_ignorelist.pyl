@@ -25,8 +25,6 @@
   ],
 
   'linux': [
-    # https://crbug.com/1135151
-    'args.gn',
   ],
 
   'linux_component': [
