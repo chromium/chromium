@@ -28,7 +28,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static java.util.Map.entry;
 
 import android.app.Dialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +60,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -819,14 +817,12 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -864,14 +860,12 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -909,14 +903,12 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -959,6 +951,7 @@ public class ManageSyncSettingsTest {
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -1011,6 +1004,7 @@ public class ManageSyncSettingsTest {
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -1062,6 +1056,7 @@ public class ManageSyncSettingsTest {
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -1115,6 +1110,7 @@ public class ManageSyncSettingsTest {
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.UNAVAILABLE);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.getTransportState()).thenReturn(TransportState.ACTIVE);
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
