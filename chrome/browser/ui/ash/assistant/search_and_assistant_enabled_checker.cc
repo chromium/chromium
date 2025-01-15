@@ -81,6 +81,8 @@ void SearchAndAssistantEnabledChecker::SyncSearchAndAssistantState() {
       GURL(chromeos::assistant::kServiceIdEndpoint),
       chromeos::assistant::kPayloadParamName,
       chromeos::assistant::kServiceIdRequestPayload);
+  resource_request->site_for_cookies =
+      net::SiteForCookies::FromUrl(resource_request->url);
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kSearchAndAssistantEnabledCheckerNetworkTag);
   url_loader_->DownloadToString(
