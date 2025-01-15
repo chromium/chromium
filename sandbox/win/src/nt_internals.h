@@ -369,10 +369,6 @@ typedef void*(__cdecl* memcpyFunction)(IN void* dest,
                                        IN const void* src,
                                        IN size_t count);
 
-typedef void*(__cdecl* memsetFunction)(IN void* dest,
-                                       IN int c,
-                                       IN size_t count);
-
 typedef NTSTATUS(WINAPI* RtlAnsiStringToUnicodeStringFunction)(
     IN OUT PUNICODE_STRING DestinationString,
     IN PANSI_STRING SourceString,

@@ -44,7 +44,6 @@ struct NtExports {
   UNSAFE_BUFFER_USAGE strlenFunction     strlen;
   UNSAFE_BUFFER_USAGE wcslenFunction     wcslen;
   UNSAFE_BUFFER_USAGE memcpyFunction     memcpy;
-  UNSAFE_BUFFER_USAGE memsetFunction     memset;
 };
 // clang-format on
 
