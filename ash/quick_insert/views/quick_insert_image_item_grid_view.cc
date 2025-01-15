@@ -53,11 +53,10 @@ views::View* ItemInColumnWithIndexClosestTo(views::View* column,
   }
 }
 
-std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
+std::unique_ptr<views::View> CreateListItemView() {
   auto view = std::make_unique<views::View>();
   view->SetUseDefaultFillLayout(true);
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
-  view->GetViewAccessibility().SetPosInSet(pos_in_set);
   // Setting the hierarchical level explicitly allows the SetSize to be
   // overridden later.
   view->GetViewAccessibility().SetHierarchicalLevel(1);
@@ -183,18 +182,23 @@ QuickInsertImageItemView* QuickInsertImageItemGridView::AddImageItem(
                           return v->GetPreferredSize().height();
                         });
   QuickInsertImageItemView* new_item =
-      shortest_column->AddChildView(CreateListItemView(items_.size() + 1))
+      shortest_column->AddChildView(CreateListItemView())
           ->AddChildView(std::move(image_item));
   new_item->FitToWidth(column_width_);
   // Only the first item in the grid should be focusable.
-  if (!items_.empty()) {
+  if (num_items_ > 0) {
     new_item->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
-  items_.push_back(new_item);
+  ++num_items_;
 
-  // Update the SetSize for all items.
-  for (views::View* view : items_) {
-    view->parent()->GetViewAccessibility().SetSetSize(items_.size());
+  // Update the PosInSet and SetSize for all items, column by column.
+  size_t pos_in_set = 1;
+  for (views::View* column : children()) {
+    for (views::View* item : column->children()) {
+      item->GetViewAccessibility().SetPosInSet(pos_in_set);
+      item->GetViewAccessibility().SetSetSize(num_items_);
+      ++pos_in_set;
+    }
   }
 
   return new_item;
