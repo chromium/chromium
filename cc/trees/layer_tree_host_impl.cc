@@ -5147,14 +5147,12 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     upload_size = gfx::ScaleToCeiledSize(source_size, scale, scale);
   }
 
-  // For gpu compositing, a SharedImage mailbox will be allocated and the
-  // UIResource will be uploaded into it.
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   // For software compositing, shared memory will be allocated and the
   // UIResource will be copied into it.
-  base::WritableSharedMemoryMapping shared_mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> shared_mapping;
   bool overlay_candidate = false;
 
   if (layer_tree_frame_sink_->context_provider()) {
@@ -5178,12 +5176,11 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    auto shared_image_mapping =
-        sii->CreateSharedImage({format, upload_size, color_space,
-                                shared_image_usage, "LayerTreeHostUIResource"});
-    client_shared_image = std::move(shared_image_mapping.shared_image);
-    shared_mapping = std::move(shared_image_mapping.mapping);
+    client_shared_image = sii->CreateSharedImageForSoftwareCompositor(
+        {format, upload_size, color_space, shared_image_usage,
+         "LayerTreeHostUIResource"});
     CHECK(client_shared_image);
+    shared_mapping = client_shared_image->Map();
   }
 
   if (!scaled) {
@@ -5205,7 +5202,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
       sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
-          dst_info, shared_mapping.memory(), dst_info.minRowBytes());
+          dst_info, shared_mapping->GetMemoryForPlane(0).data(),
+          dst_info.minRowBytes());
       surface->getCanvas()->writePixels(src_info, bitmap.GetPixels().data(),
                                         bitmap.row_bytes(), 0, 0);
     }
@@ -5240,8 +5238,9 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
-      scaled_surface = SkSurfaces::WrapPixels(dst_info, shared_mapping.memory(),
-                                              dst_info.minRowBytes());
+      scaled_surface = SkSurfaces::WrapPixels(
+          dst_info, shared_mapping->GetMemoryForPlane(0).data(),
+          dst_info.minRowBytes());
       CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
