@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
@@ -86,6 +87,7 @@
 #import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
+using password_manager::features::IOSPasskeysM2Enabled;
 using password_manager::metrics_util::PasswordCheckInteraction;
 
 namespace {
@@ -537,8 +539,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [model addSectionWithIdentifier:SectionIdentifierSavedPasswords];
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
-    headerItem.text =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING);
+    headerItem.text = l10n_util::GetNSString(
+        IOSPasskeysM2Enabled()
+            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING
+            : IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING);
     [model setHeader:headerItem
         forSectionWithIdentifier:SectionIdentifierSavedPasswords];
   }
@@ -667,8 +671,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
   if (_savingPasswordsToAccount) {
-    _manageAccountLinkItem.text =
-        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+    _manageAccountLinkItem.text = l10n_util::GetNSString(
+        IOSPasskeysM2Enabled()
+            ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
+            : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
 
     _manageAccountLinkItem.urls = @[ [[CrURL alloc]
         initWithGURL:

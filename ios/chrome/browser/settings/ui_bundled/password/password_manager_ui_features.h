@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kIOSPasskeysM2);
 // Helper function returning the status of `kIOSEnablePasscodeShortcut`.
 bool IsPasscodeSettingsEnabled();
 
+// Helper function returning the status of `kIOSPasskeysM2` and the M1
+// prerequisite.
+bool IOSPasskeysM2Enabled();
+
 }  // namespace password_manager::features
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_MANAGER_UI_FEATURES_H_

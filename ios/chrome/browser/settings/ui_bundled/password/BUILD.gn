@@ -171,6 +171,7 @@ source_set("features") {
     "password_manager_ui_features.h",
     "password_manager_ui_features.mm",
   ]
+  deps = [ "//components/sync/base:features" ]
   public_deps = [ "//base" ]
 }
 

@@ -4967,6 +4967,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER" desc="Header text with link for the view in Settings for managing saved passwords. [Length: unlimited] [iOS only]">
         Create, save, and manage your passwords so you can easily sign in to sites and apps. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER" desc="Header text with link for the view in Settings for managing saved passwords and passkeys. Refer to Glossary for the meaning of 'passkey'. [Length: unlimited] [iOS only]">
+        Create, save, and manage your passwords &amp; passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE" desc="Action button to save password in google account. [iOS only]" meaning="User wants to move password from local device to google account storage.">
         Save in account
       </message>
@@ -5237,6 +5240,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT" desc="A description presented to the user of how many accounts have sign-in information available by tapping on this menu item. [iOS only]">
         <ph name="NUMBER_OF_ACCOUNTS">$1<ex>2</ex></ph> accounts
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING" desc="The title for a list of items, with each entry consisting of a password or a passkey, and a corresponding username and website. These items are already saved by the browser and can be deleted/edited. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [Length: one line] [iOS only]">
+      Saved passwords &amp; passkeys
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited. [Length: one line] [iOS only]">
       Saved passwords
