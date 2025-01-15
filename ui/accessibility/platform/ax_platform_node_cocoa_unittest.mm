@@ -808,6 +808,19 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityLineForIndex) {
   EXPECT_EQ([text_field accessibilityLineForIndex:0], 0);
 }
 
+// accessibilityRangeForLine
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRangeForLine) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSRange range = [text_field accessibilityRangeForLine:0];
+  EXPECT_EQ(range.location, 0U);
+  EXPECT_EQ(range.length, 11U);
+}
+
 // accessibilityStringForRange
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   Init(std::string(R"HTML(
