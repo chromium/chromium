@@ -274,7 +274,16 @@ ExternalSource GetExternalSourceFromExternalImage(
       }
     }
   } else {
-    // HTMLImageElement input
+    // HTMLImageElement input.
+    // Below logic refs to ImageBitmap creation with ImageElementBase.
+    // ImageExtractor recruit ImageDecoder to do decoder when:
+    // - image is a BitmapImage, it usually happens when image contains coded
+    // data.
+    //   e.g. loaded image files *.png, *.jpg, *.bmp, *.ico, *.webp, *.avif,
+    //   *.gif.
+    // - alphaType, colorSpace are not equal to dst. Issuing a redecode to
+    // generate
+    //   required results.
     ImageExtractor image_extractor(image_for_canvas.get(),
                                    external_image_dst_info.premultiplied_alpha,
                                    PredefinedColorSpaceToSkColorSpace(
@@ -284,7 +293,9 @@ ExternalSource GetExternalSourceFromExternalImage(
     if (!sk_image) {
       return external_source;
     }
-    // Handle LazyGenerated images.
+    // It is possible that some HTMLImageElement contains content which cannot
+    // be decoded. e.g svg files. Using this path to handle them by converting
+    // it to SkBitmap first and raster it.
     if (sk_image->isLazyGenerated()) {
       SkBitmap bitmap;
       auto image_info = sk_image->imageInfo();
