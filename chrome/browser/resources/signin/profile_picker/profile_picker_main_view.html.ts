@@ -11,10 +11,13 @@ export function getHtml(this: ProfilePickerMainViewElement) {
   return html`<!--_html_template_start_-->
 <div class="flex-container">
   <div class="title-container">
-    <img id="product-logo" @click="${this.onProductLogoClick_}"
-        srcset="chrome://theme/current-channel-logo@1x 1x,
-                chrome://theme/current-channel-logo@2x 2x"
-        role="presentation">
+    <div id="images-container">
+      <img id="product-logo" @click="${this.onProductLogoClick_}"
+          srcset="chrome://theme/current-channel-logo@1x 1x,
+                  chrome://theme/current-channel-logo@2x 2x"
+          role="presentation">
+      <img id="glic-logo" ?hidden="${!isGlicVersion()}" role="presentation">
+    </div>
     <h1 class="title">$i18nRaw{mainViewTitle}</h1>
     <div class="subtitle">$i18n{mainViewSubtitle}</div>
   </div>

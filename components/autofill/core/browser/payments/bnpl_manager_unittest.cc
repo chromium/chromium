@@ -36,7 +36,7 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
 
 class BnplManagerTest : public Test {
  public:
-  const std::string kBillingCustomerNumber = "BILLING_CUSTOMER_NUMBER";
+  const int64_t kBillingCustomerNumber = 1234;
   const std::string kRiskData = "RISK_DATA";
   const std::string kInstrumentId = "INSTRUMENT_ID";
   const std::string kContextToken = "CONTEXT_TOKEN";

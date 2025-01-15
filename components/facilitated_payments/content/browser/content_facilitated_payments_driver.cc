@@ -52,7 +52,8 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
 
   TriggerEwalletPushPayment(
       /*payment_link_url=*/url,
-      /*page_url=*/render_frame_host->GetLastCommittedURL());
+      /*page_url=*/render_frame_host->GetLastCommittedURL(),
+      /*ukm_source_id=*/render_frame_host->GetPageUkmSourceId());
 }
 
 void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(

@@ -217,7 +217,6 @@ export const LOADING_START_EVENT_TYPE: string = 'loading-animation-start';
 export const LOADING_END_EVENT_TYPE: string = 'loading-animation-end';
 
 const LOADING_ANIMATION_SLIDE_PX = 16;
-const LOADING_ANIMATION_SLIDE_DURATION_MS = 200;
 
 export class ProductSpecificationsElement extends PolymerElement {
   static get is() {
@@ -265,6 +264,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private id_: Uuid|null = null;
   private isWindowFocused_: boolean = true;
   private listenerIds_: number[] = [];
+  private loadingAnimationSlideDurationMs_: number = 200;
   private minLoadingAnimationMs_: number = 500;
   private pendingSetUpdate_: (() => void)|null = null;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
@@ -355,8 +355,9 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.eventTracker_.removeAll();
   }
 
-  disableMinLoadingAnimationMsForTesting() {
-    this.minLoadingAnimationMs_ = 0;
+  resetLoadingAnimationMsForTesting(loadingAnimationMs: number = 0) {
+    this.minLoadingAnimationMs_ = loadingAnimationMs;
+    this.loadingAnimationSlideDurationMs_ = 0;
   }
 
   focusWindowForTesting() {
@@ -949,7 +950,7 @@ export class ProductSpecificationsElement extends PolymerElement {
               },
             ],
             {
-              duration: LOADING_ANIMATION_SLIDE_DURATION_MS,
+              duration: this.loadingAnimationSlideDurationMs_,
               easing: 'ease-out',
               fill: 'forwards',
             })
@@ -967,7 +968,7 @@ export class ProductSpecificationsElement extends PolymerElement {
               {opacity: 1, transform: 'translateY(0px)'},
             ],
             {
-              duration: LOADING_ANIMATION_SLIDE_DURATION_MS,
+              duration: this.loadingAnimationSlideDurationMs_,
               easing: 'ease-out',
               fill: 'forwards',
             })
@@ -1018,7 +1019,8 @@ export class ProductSpecificationsElement extends PolymerElement {
 
     // If we show the empty state and there are no comparison tables, try to
     // fetch them.
-    if (this.showEmptyState_ && this.comparisonTableDetails_.length === 0) {
+    if (loadTimeData.getBoolean('comparisonTableListEnabled') &&
+        this.showEmptyState_ && this.comparisonTableDetails_.length === 0) {
       this.fetchComparisonTableDetails_();
     }
   }

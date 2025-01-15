@@ -111,7 +111,6 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.FEED_CONTAINMENT
 })
 @EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
     ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT
 })

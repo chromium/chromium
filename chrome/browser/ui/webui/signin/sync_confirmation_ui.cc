@@ -320,7 +320,6 @@ void SyncConfirmationUI::InitializeForSyncDisabled(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_DISABLED_CONFIRMATION_APP_HTML_JS);
 
   bool managed_account_signout_disallowed =
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
       enterprise_util::UserAcceptedAccountManagement(profile_);
 
   source->AddBoolean("signoutDisallowed", managed_account_signout_disallowed);

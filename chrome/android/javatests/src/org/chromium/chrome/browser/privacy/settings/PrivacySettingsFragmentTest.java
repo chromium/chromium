@@ -570,7 +570,6 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignedOutFooterLink() {
         mSettingsActivityTestRule.startSettingsActivity();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);

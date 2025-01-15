@@ -165,16 +165,16 @@ class OmniboxClient {
   virtual std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const;
 
-  // Checks whether |template_url| is an extension keyword; if so, asks the
-  // ExtensionOmniboxEventRouter to process |match| for it and returns true.
-  // Otherwise returns false. |observer| is the OmniboxNavigationObserver
-  // that was created by CreateOmniboxNavigationObserver() for |match|; in some
+  // Asks the `ExtensionOmniboxEventRouter` to process `match` for it.
+  // Some more processing is done to separate the keyword from the
+  // text if in keyword mode. `observer` is the OmniboxNavigationObserver that
+  // was created by `CreateOmniboxNavigationObserver()` for `match`; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual bool ProcessExtensionKeyword(const std::u16string& text,
-                                       const TemplateURL* template_url,
-                                       const AutocompleteMatch& match,
-                                       WindowOpenDisposition disposition);
+  virtual void ProcessExtensionMatch(const std::u16string& text,
+                                     const TemplateURL* template_url,
+                                     const AutocompleteMatch& match,
+                                     WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}

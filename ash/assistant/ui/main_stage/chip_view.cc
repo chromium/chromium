@@ -173,7 +173,7 @@ void ChipView::OnThemeChanged() {
 }
 
 void ChipView::SetIcon(const gfx::ImageSkia& icon) {
-  icon_view_->SetImage(icon);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
   MakeIconVisible();
 }
 

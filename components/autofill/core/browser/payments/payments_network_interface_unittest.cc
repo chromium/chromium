@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -239,6 +240,13 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     instrument_id_ = base::UTF16ToUTF8(instrument_id);
   }
 
+  void OnDidGetBnplPaymentInstrumentForFetchingVcn(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      const BnplFetchVcnResponseDetails& response_details) {
+    result_ = result;
+    bnpl_vcn_response_details_ = std::move(response_details);
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -430,6 +438,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   }
   void ResetUnmaskResponseDetails() { unmask_response_details_.reset(); }
 
+  const std::optional<BnplFetchVcnResponseDetails>& bnpl_vcn_response_details()
+      const {
+    return bnpl_vcn_response_details_;
+  }
+
   base::WeakPtr<PaymentsNetworkInterfaceTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -468,6 +481,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   std::optional<UnmaskDetails> unmask_details_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
   std::optional<UnmaskResponseDetails> unmask_response_details_;
+  std::optional<BnplFetchVcnResponseDetails> bnpl_vcn_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
 
@@ -1961,5 +1975,85 @@ TEST_P(CreateBnplPaymentInstrumentTest,
     EXPECT_EQ(instrument_id, instrument_id_);
   }
 }
+
+class GetBnplPaymentInstrumentForFetchingVcnTest
+    : public PaymentsNetworkInterfaceTest,
+      public ::testing::WithParamInterface<PaymentsRpcResult> {
+ public:
+  GetBnplPaymentInstrumentForFetchingVcnTest() = default;
+  ~GetBnplPaymentInstrumentForFetchingVcnTest() override = default;
+};
+
+// Initializes the parameterized test suite with all possible combinations of
+// PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetBnplPaymentInstrumentForFetchingVcnTest,
+    testing::Values(PaymentsRpcResult::kSuccess,
+                    PaymentsRpcResult::kTryAgainFailure,
+                    PaymentsRpcResult::kPermanentFailure,
+                    PaymentsRpcResult::kNetworkError,
+                    PaymentsRpcResult::kClientSideTimeout));
+
+// Parameterized test that tests all combinations of server PaymentsRpcResult.
+TEST_P(GetBnplPaymentInstrumentForFetchingVcnTest,
+       GetBnplPaymentInstrumentForFetchingVcnTest_TestAllFlows) {
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
+  request_details.billing_customer_number = 555666777888;
+  request_details.risk_data = "RISK_DATA";
+  request_details.instrument_id = "INSTRUMENT_ID";
+  request_details.context_token = "CONTEXT_TOKEN";
+  request_details.redirect_url = GURL("http://redirect.url/");
+
+  payments_network_interface_->GetBnplPaymentInstrumentForFetchingVcn(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetBnplPaymentInstrumentForFetchingVcn,
+                     GetWeakPtr()));
+
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(
+          payments_network_interface_.get(), net::HTTP_OK,
+          "{ \"buy_now_pay_later_info\": { \"get_vcn_response_info\": { "
+          "\"virtual_card_info\" : { \"pan\": \"1234\", \"cvv\": \"123\", "
+          "\"cardholder_name\": \"Akagi Shigeru\", \"expiration\": { "
+          "\"month\": 1, \"year\": 2025 } } } } }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(bnpl_vcn_response_details()->pan, "1234");
+    EXPECT_EQ(bnpl_vcn_response_details()->cvv, "123");
+    EXPECT_EQ(bnpl_vcn_response_details()->expiration_month, "1");
+    EXPECT_EQ(bnpl_vcn_response_details()->expiration_year, "2025");
+    EXPECT_EQ(bnpl_vcn_response_details()->cardholder_name, "Akagi Shigeru");
+  }
+}
+
 }  // namespace
 }  // namespace autofill::payments

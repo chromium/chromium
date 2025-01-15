@@ -80,14 +80,15 @@ class PaymentsRequest {
   // If a subclass overrides this, it must also override GetHistogramName.
   virtual std::optional<base::TimeDelta> GetTimeout() const;
 
- protected:
   // Shared helper function to build the risk data sent in the request.
-  base::Value::Dict BuildRiskDictionary(const std::string& encoded_risk_data);
+  static base::Value::Dict BuildRiskDictionary(
+      std::string_view encoded_risk_data);
 
   // Shared helper function to build the customer context sent in the request.
-  base::Value::Dict BuildCustomerContextDictionary(
+  static base::Value::Dict BuildCustomerContextDictionary(
       int64_t external_customer_id);
 
+ protected:
   // Shared helper function that builds the Chrome user context which is then
   // set in the payment requests.
   base::Value::Dict BuildChromeUserContext(

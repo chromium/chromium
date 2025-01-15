@@ -134,13 +134,6 @@ BASE_FEATURE(kGeminiAppPreinstall,
              "GeminiAppPreinstall",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Jelly features. go/jelly-flags
-BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
-// controls all system UI updates and new system components. go/jelly-flags
-BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
 BASE_FEATURE(kKioskHeartbeatsViaERP,
@@ -393,7 +386,7 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 }
 
 bool IsCrosComponentsEnabled() {
-  return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+  return base::FeatureList::IsEnabled(kCrosComponents);
 }
 
 bool IsCrosMallSwaEnabled() {
@@ -449,10 +442,6 @@ bool IsGeminiAppPreinstallFeatureManagementEnabled() {
 
 bool IsGeminiAppPreinstallEnabled() {
   return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
-}
-
-bool IsJellyEnabled() {
-  return base::FeatureList::IsEnabled(kJelly);
 }
 
 bool IsMahiEnabled() {

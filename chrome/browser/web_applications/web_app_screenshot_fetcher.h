@@ -24,6 +24,8 @@ namespace web_app {
 // shown immediately.
 class WebAppScreenshotFetcher {
  public:
+  virtual ~WebAppScreenshotFetcher() = default;
+
   // Fetch a specific screenshot. This will CHECK-fail if the index is out of
   // bounds of [0, `GetScreenshotCount()`).
   virtual void GetScreenshot(

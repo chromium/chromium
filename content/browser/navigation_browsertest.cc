@@ -569,9 +569,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
               observer.last_initiator_process_id());
   }
 
-  // The RenderFrameHost should have changed unless default SiteInstances
-  // are enabled and proactive BrowsingInstance swaps are disabled.
-  if (AreDefaultSiteInstancesEnabled() &&
+  // The RenderFrameHost should have changed unless full site isolation and
+  // proactive BrowsingInstance swaps are both disabled.
+  if (!AreAllSitesIsolatedForTesting() &&
       !CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     EXPECT_EQ(initial_rfh, current_frame_host());
   } else {
@@ -5304,10 +5304,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
       main_frame->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild_frame =
       child_frame->child_at(0)->current_frame_host();
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
   EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
@@ -5354,10 +5354,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
       main_frame->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild_frame =
       child_frame->child_at(0)->current_frame_host();
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   EXPECT_EQ(child_frame->GetSiteInstance(),
             grandchild_frame->GetSiteInstance());
@@ -5398,10 +5398,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest, TopToAboutBlank_CrossSite) {
       shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->child_at(0)->current_frame_host();
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
   }
   url::Origin a_origin =
       url::Origin::Create(embedded_test_server()->GetURL("a.com", "/"));
@@ -7803,15 +7803,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // Now, the site should be set before we send the CommitNavigation IPC.
   EXPECT_TRUE(site_instance->HasSite());
 
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
-    EXPECT_EQ(SiteInstanceImpl::GetDefaultSiteURL(),
-              site_instance->GetSiteInfo().site_url());
-  } else {
+  if (AreAllSitesIsolatedForTesting()) {
     // When we get into this situation with strict site isolation, the site URL
     // currently used is "about:". This may be changed in the future (e.g., to
     // an opaque ID).
     EXPECT_EQ("about:", site_instance->GetSiteInfo().site_url());
+  } else {
+    EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
+    EXPECT_EQ(SiteInstanceImpl::GetDefaultSiteURL(),
+              site_instance->GetSiteInfo().site_url());
   }
 
   // Ensure that the process was marked as used as part of setting the site.

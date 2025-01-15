@@ -188,6 +188,8 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH =
             "AndroidTabDeclutterRescueKillswitch";
+    public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
+            "AndroidTabSkipSaveTabsTaskKillswitch";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
@@ -211,8 +213,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableRankingFormulaCreditCards";
     public static final String AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS =
             "AutofillEnableSyncingOfPixBankAccounts";
-    public static final String AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION =
-            "AutofillEnableVcnEnrollLoadingAndConfirmation";
     public static final String AUTOFILL_ENABLE_VERVE_CARD_SUPPORT =
             "AutofillEnableVerveCardSupport";
     public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
@@ -466,8 +466,6 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RENAME_JOURNEYS = "RenameJourneys";
-    public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
-            "ReplaceSyncPromosWithSignInPromos";
     public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
             "RightEdgeGoesForwardGestureNav";
 
@@ -592,6 +590,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false);
     public static final CachedFlag sAndroidAppIntegrationV2 =
             newCachedFlag(ANDROID_APP_INTEGRATION_V2, false);
+    public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
+            newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sNewTabPageCustomization =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
@@ -817,8 +817,8 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationV2,
-                    sNewTabPageCustomization,
                     sAndroidAppIntegrationWithFavicon,
+                    sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
@@ -875,6 +875,7 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimation,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
+                    sNewTabPageCustomization,
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
                     sPriceInsights,

@@ -10,6 +10,7 @@
 
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
@@ -149,6 +150,36 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
     web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
+  void OnLineSpaceChange(read_anything::mojom::LineSpacing line_spacing) {
+    handler_->OnLineSpaceChange(line_spacing);
+  }
+
+  void OnLetterSpaceChange(read_anything::mojom::LetterSpacing letter_spacing) {
+    handler_->OnLetterSpaceChange(letter_spacing);
+  }
+
+  void OnFontChange(const std::string& font) { handler_->OnFontChange(font); }
+
+  void OnFontSizeChange(double font_size) {
+    handler_->OnFontSizeChange(font_size);
+  }
+
+  void OnLinksEnabledChanged(bool enabled) {
+    handler_->OnLinksEnabledChanged(enabled);
+  }
+
+  void OnImagesEnabledChanged(bool enabled) {
+    handler_->OnImagesEnabledChanged(enabled);
+  }
+
+  void OnColorChange(read_anything::mojom::Colors color) {
+    handler_->OnColorChange(color);
+  }
+
+  void OnHighlightGranularityChanged(
+      read_anything::mojom::HighlightGranularity granularity) {
+    handler_->OnHighlightGranularityChanged(granularity);
+  }
 
   void OnVoiceChange(const std::string& voice, const std::string& lang) {
     handler_->OnVoiceChange(voice, lang);
@@ -158,9 +189,17 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
     handler_->OnLanguagePrefChange(lang, enabled);
   }
 
+  void OnSpeechRateChange(double rate) { handler_->OnSpeechRateChange(rate); }
+
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) {
     handler_->OnImageDataRequested(target_tree_id, target_node_id);
+  }
+
+  void OnLanguageDetermined(const std::string& code) {
+    translate::LanguageDetectionDetails details;
+    details.adopted_language = code;
+    handler_->OnLanguageDetermined(details);
   }
 
  protected:
@@ -210,6 +249,163 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
       page_.BindAndGetRemote(), test_web_ui_.get());
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnLineSpaceChange) {
+  const read_anything::mojom::LineSpacing kSpacing1 =
+      read_anything::mojom::LineSpacing::kLoose;
+  const read_anything::mojom::LineSpacing kSpacing2 =
+      read_anything::mojom::LineSpacing::kStandard;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnLineSpaceChange(kSpacing1);
+  int spacing1 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLineSpacing);
+  ASSERT_EQ(spacing1, static_cast<int>(kSpacing1));
+
+  OnLineSpaceChange(kSpacing2);
+  int spacing2 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLineSpacing);
+  ASSERT_EQ(spacing2, static_cast<int>(kSpacing2));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnLetterSpaceChange) {
+  const read_anything::mojom::LetterSpacing kSpacing1 =
+      read_anything::mojom::LetterSpacing::kVeryWide;
+  const read_anything::mojom::LetterSpacing kSpacing2 =
+      read_anything::mojom::LetterSpacing::kStandard;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnLetterSpaceChange(kSpacing1);
+  const int spacing1 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLetterSpacing);
+  ASSERT_EQ(spacing1, static_cast<int>(kSpacing1));
+
+  OnLetterSpaceChange(kSpacing2);
+  const int spacing2 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingLetterSpacing);
+  ASSERT_EQ(spacing2, static_cast<int>(kSpacing2));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnColorChange) {
+  const read_anything::mojom::Colors kColor1 =
+      read_anything::mojom::Colors::kBlue;
+  const read_anything::mojom::Colors kColor2 =
+      read_anything::mojom::Colors::kDark;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnColorChange(kColor1);
+  const int spacing1 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingColorInfo);
+  ASSERT_EQ(spacing1, static_cast<int>(kColor1));
+
+  OnColorChange(kColor2);
+  const int spacing2 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingColorInfo);
+  ASSERT_EQ(spacing2, static_cast<int>(kColor2));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnHighlightGranularityChanged) {
+  const read_anything::mojom::HighlightGranularity kGranularity1 =
+      read_anything::mojom::HighlightGranularity::kPhrase;
+  const read_anything::mojom::HighlightGranularity kGranularity2 =
+      read_anything::mojom::HighlightGranularity::kOff;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnHighlightGranularityChanged(kGranularity1);
+  const int granularity1 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingHighlightGranularity);
+  ASSERT_EQ(granularity1, static_cast<int>(kGranularity1));
+
+  OnHighlightGranularityChanged(kGranularity2);
+  const int granularity2 = profile()->GetPrefs()->GetInteger(
+      prefs::kAccessibilityReadAnythingHighlightGranularity);
+  ASSERT_EQ(granularity2, static_cast<int>(kGranularity2));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
+  const char kFont1[] = "Atkinson Hyperlegible";
+  const char kFont2[] = "Arial";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnFontChange(kFont1);
+  const std::string font1 = profile()->GetPrefs()->GetString(
+      prefs::kAccessibilityReadAnythingFontName);
+  ASSERT_EQ(font1, kFont1);
+
+  OnFontChange(kFont2);
+  const std::string font2 = profile()->GetPrefs()->GetString(
+      prefs::kAccessibilityReadAnythingFontName);
+  ASSERT_EQ(font2, kFont2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontSizeChange) {
+  const double kFontSize1 = 2;
+  const double kFontSize2 = .5;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnFontSizeChange(kFontSize1);
+  const double fontSize1 = profile()->GetPrefs()->GetDouble(
+      prefs::kAccessibilityReadAnythingFontScale);
+  ASSERT_EQ(fontSize1, kFontSize1);
+
+  OnFontSizeChange(kFontSize2);
+  const double fontSize2 = profile()->GetPrefs()->GetDouble(
+      prefs::kAccessibilityReadAnythingFontScale);
+  ASSERT_EQ(fontSize2, kFontSize2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnLinksEnabledChanged) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnLinksEnabledChanged(true);
+  const double fontSize1 = profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingLinksEnabled);
+  ASSERT_TRUE(fontSize1);
+
+  OnLinksEnabledChanged(false);
+  const double fontSize2 = profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingLinksEnabled);
+  ASSERT_FALSE(fontSize2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnImagesEnabledChanged) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnImagesEnabledChanged(true);
+  const double fontSize1 = profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingImagesEnabled);
+  ASSERT_TRUE(fontSize1);
+
+  OnImagesEnabledChanged(false);
+  const double fontSize2 = profile()->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityReadAnythingImagesEnabled);
+  ASSERT_FALSE(fontSize2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnSpeechRateChange) {
+  const double kRate1 = 1.5;
+  const double kRate2 = .8;
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnSpeechRateChange(kRate1);
+  const double rate1 = profile()->GetPrefs()->GetDouble(
+      prefs::kAccessibilityReadAnythingSpeechRate);
+  ASSERT_EQ(rate1, kRate1);
+
+  OnSpeechRateChange(kRate2);
+  const double rate2 = profile()->GetPrefs()->GetDouble(
+      prefs::kAccessibilityReadAnythingSpeechRate);
+  ASSERT_EQ(rate2, kRate2);
 }
 
 TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -394,6 +590,35 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest, BadImageData) {
   test_handler->SetTestBitmap(bitmap);
   OnImageDataRequested(tree_id, node_id);
   EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguageDetermined_SendsCodeToPage) {
+  const char kLang1[] = "id-id";
+  const char kLang2[] = "es-us";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  EXPECT_CALL(page_, SetLanguageCode("en")).Times(1);
+
+  OnLanguageDetermined(kLang1);
+  OnLanguageDetermined(kLang2);
+
+  EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
+  EXPECT_CALL(page_, SetLanguageCode(kLang2)).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguageDetermined_SameCodeOnlySentOnce) {
+  const char kLang1[] = "id-id";
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  EXPECT_CALL(page_, SetLanguageCode("en")).Times(1);
+
+  OnLanguageDetermined(kLang1);
+  OnLanguageDetermined(kLang1);
+  OnLanguageDetermined(kLang1);
+
+  EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
 }
 
 }  // namespace

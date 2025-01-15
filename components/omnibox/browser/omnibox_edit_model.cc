@@ -2580,13 +2580,16 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
     if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_KEYWORD)) {
+            match.transition, ui::PAGE_TRANSITION_KEYWORD) ||
+        match.provider->type() ==
+            AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
       // The user is using a non-substituting keyword or is explicitly in
       // keyword mode.
 
       // Don't increment usage count for extension keywords.
-      if (controller_->client()->ProcessExtensionKeyword(
-              input_text, template_url, match, disposition)) {
+      if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
+        controller_->client()->ProcessExtensionMatch(input_text, template_url,
+                                                     match, disposition);
         if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
           base::AutoReset<bool> tmp(&in_revert_, true);
           view_->RevertAll();

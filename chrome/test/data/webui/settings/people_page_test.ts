@@ -143,7 +143,6 @@ suite('SyncStatusTests', function() {
   setup(async function() {
     loadTimeData.overrideValues({
       signinAllowed: true,
-      turnOffSyncAllowedForManagedProfiles: false,
     });
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -295,57 +294,9 @@ suite('SyncStatusTests', function() {
     assertFalse(deleteProfile);
   });
 
-  test('SignOutDialogManagedProfileTurnOffSyncDisallowed', async function() {
+  test('SignOutDialogManagedProfileTurnOffSync', async function() {
     let accountControl = null;
     await syncBrowserProxy.whenCalled('getSyncStatus');
-    loadTimeData.overrideValues({
-      turnOffSyncAllowedForManagedProfiles: false,
-    });
-    simulateSyncStatus({
-      signedInState: SignedInState.SYNCING,
-      domain: 'example.com',
-      syncSystemEnabled: true,
-      statusAction: StatusAction.NO_ACTION,
-    });
-
-    assertFalse(!!peoplePage.shadowRoot!.querySelector('#dialog'));
-    accountControl =
-        peoplePage.shadowRoot!.querySelector('settings-sync-account-control')!;
-    await waitBeforeNextRender(accountControl);
-    const turnOffButton =
-        accountControl.shadowRoot!.querySelector<HTMLElement>('#turn-off')!;
-    turnOffButton.click();
-    flush();
-
-    await flushTasks();
-    const signoutDialog =
-        peoplePage.shadowRoot!.querySelector('settings-signout-dialog')!;
-    assertTrue(signoutDialog.$.dialog.open);
-    assertFalse(!!signoutDialog.shadowRoot!.querySelector('#deleteProfile'));
-
-    const disconnectManagedProfileConfirm =
-        signoutDialog.shadowRoot!.querySelector<HTMLElement>(
-            '#disconnectManagedProfileConfirm');
-    assertTrue(!!disconnectManagedProfileConfirm);
-    assertFalse(disconnectManagedProfileConfirm!.hidden);
-
-    syncBrowserProxy.resetResolver('signOut');
-
-    disconnectManagedProfileConfirm!.click();
-
-    await new Promise(function(resolve) {
-      listenOnce(window, 'popstate', resolve);
-    });
-    const deleteProfile = await syncBrowserProxy.whenCalled('signOut');
-    assertTrue(deleteProfile);
-  });
-
-  test('SignOutDialogManagedProfileTurnOffSyncAllowed', async function() {
-    let accountControl = null;
-    await syncBrowserProxy.whenCalled('getSyncStatus');
-    loadTimeData.overrideValues({
-      turnOffSyncAllowedForManagedProfiles: true,
-    });
     simulateSyncStatus({
       signedInState: SignedInState.SYNCING,
       domain: 'example.com',

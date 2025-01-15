@@ -2270,7 +2270,7 @@ void HTMLInputElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLInputElement::DidNotifySubtreeInsertionsToDocument() {
-  ListAttributeTargetChanged();
+  input_type_view_->ListAttributeTargetChanged();
 }
 
 AXObject* HTMLInputElement::PopupRootAXObject() {

@@ -377,7 +377,7 @@ MojoStableVideoDecoder::CreateOrUpdateSharedImageForFrame(
     // it's about to be destroyed so that we can release the reference to
     // whatever SharedImage is associated with it.
     FrameResource* original_frame_resource =
-        oop_video_decoder()->GetOriginalFrame(frame_id);
+        oop_video_decoder()->GetOriginalFrame(frame_resource->tracking_token());
     CHECK(original_frame_resource);
     shared_images_.AddWithID(new_shared_image, frame_id);
     original_frame_resource->AddDestructionObserver(

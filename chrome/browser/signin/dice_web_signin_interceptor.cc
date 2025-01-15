@@ -1302,10 +1302,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
           *new_profile, profile_presets->search_engine_choice_data);
     }
 
-    // TODO(crbug.com/40269992): Move this to DiceSignedInProfileCreator when
-    // DisallowManagedProfileSignout is fully released.
-    if (state_->intercepted_account_management_accepted_ &&
-        base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
+    // TODO(crbug.com/40269992): Remove this when UNO is fully launched.
+    if (state_->intercepted_account_management_accepted_) {
       auto* primary_account_mutator =
           IdentityManagerFactory::GetForProfile(new_profile)
               ->GetPrimaryAccountMutator();

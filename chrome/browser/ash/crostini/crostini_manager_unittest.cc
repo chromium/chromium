@@ -2462,7 +2462,7 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
             profile_.get());
     ansible_management_test_helper_ =
         std::make_unique<AnsibleManagementTestHelper>(profile_.get());
-    ansible_management_test_helper_->SetUpAnsibleInfra();
+    ansible_management_test_helper_->SetUpAnsiblePlaybookPreference();
     SetUpViewsEnvironmentForTesting();
   }
 

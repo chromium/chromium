@@ -54,6 +54,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -112,6 +113,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/component_updater/lacros_component_remover.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace component_updater {
 
@@ -257,6 +262,12 @@ void RegisterComponentsForUpdate() {
   RegisterAmountExtractionHeuristicRegexesComponent(cus);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (features::IsReadAnythingReadAloudEnabled()) {
+    RegisterWasmTtsEngineComponent(cus);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace component_updater

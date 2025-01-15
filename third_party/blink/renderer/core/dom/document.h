@@ -59,7 +59,6 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"

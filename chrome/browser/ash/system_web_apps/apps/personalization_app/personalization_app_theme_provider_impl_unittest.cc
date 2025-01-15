@@ -24,7 +24,6 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -357,9 +356,7 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
 class PersonalizationAppThemeProviderImplJellyTest
     : public PersonalizationAppThemeProviderImplTest {
  public:
-  PersonalizationAppThemeProviderImplJellyTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  PersonalizationAppThemeProviderImplJellyTest() = default;
 
   PersonalizationAppThemeProviderImplJellyTest(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
@@ -377,9 +374,6 @@ class PersonalizationAppThemeProviderImplJellyTest
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         kAccountId);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {

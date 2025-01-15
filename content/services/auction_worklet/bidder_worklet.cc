@@ -393,6 +393,7 @@ BidderWorklet::BidderWorklet(
                  /*automatically_send_requests=*/false, top_window_origin,
                  *trusted_bidding_signals_url, experiment_group_id,
                  trusted_bidding_signals_slot_size_param, std::move(public_key),
+                 /*send_creative_scanning_metadata=*/false,
                  v8_helpers_[GetNextThreadIndex()].get())
            : nullptr);
 

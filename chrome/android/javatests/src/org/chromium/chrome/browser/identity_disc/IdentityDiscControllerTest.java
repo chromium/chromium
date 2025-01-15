@@ -49,9 +49,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -165,7 +163,6 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityDiscSignedOut() throws Exception {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
         @StringRes int descriptionId = R.string.accessibility_toolbar_btn_signed_out_identity_disc;

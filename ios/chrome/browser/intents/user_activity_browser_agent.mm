@@ -642,10 +642,10 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
     return YES;
   }
 
-  // Use 16 as the maximum length of the reported value for this key (15
+  // Use 32 as the maximum length of the reported value for this key (31
   // characters + '\0'). Expected values are UIApplicationShortcutItemType
   // entries in Info.plist.
-  static crash_reporter::CrashKeyString<16> key("shortcut-item");
+  static crash_reporter::CrashKeyString<32> key("shortcut-item");
   crash_reporter::ScopedCrashKeyString crash_key(
       &key, base::SysNSStringToUTF8(shortcut_item.type));
   base::debug::DumpWithoutCrashing();

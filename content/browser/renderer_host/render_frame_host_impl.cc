@@ -270,6 +270,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -7427,7 +7428,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
               CreateURLLoaderFactoriesForIsolatedWorlds(
                   subresource_loader_factories_config,
                   isolated_worlds_requiring_separate_url_loader_factory_),
-              bypass_redirect_checks);
+              /*local_resource_loader_config=*/nullptr, bypass_redirect_checks);
 
   GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
@@ -7448,6 +7449,11 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
         ->UpdateFactory(network::SharedURLLoaderFactory::Create(
             std::move(keep_alive_url_loader_factory_bundle)));
   }
+}
+
+void RenderFrameHostImpl::UpdateLocalResourceLoader(
+    blink::mojom::LocalResourceLoaderConfigPtr loader_config) {
+  local_resource_loader_config_ = loader_config.Clone();
 }
 
 blink::FrameOwnerElementType RenderFrameHostImpl::GetFrameOwnerElementType() {
@@ -9187,7 +9193,7 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
       CreateURLLoaderFactoriesForIsolatedWorlds(
           subresource_loader_factories_config,
           isolated_worlds_requiring_separate_url_loader_factory_),
-      bypass_redirect_checks);
+      /*local_resource_loader_config=*/nullptr, bypass_redirect_checks);
 }
 
 base::WeakPtr<RenderFrameHostImpl> RenderFrameHostImpl::GetWeakPtr() {
@@ -11756,6 +11762,10 @@ void RenderFrameHostImpl::CommitNavigation(
         // scheme so about:blank doesn't kill the renderer.
         non_network_factories[url::kAboutScheme] =
             AboutURLLoaderFactory::Create();
+        // Send resource metadata necessary to construct an in-process resource
+        // loader in the WebUI renderer process.
+        subresource_loader_factories->set_local_resource_loader_config(
+            local_resource_loader_config_.Clone());
       } else {
         // This is a webui scheme that doesn't have webui bindings. Give it
         // access to the network loader as it might require it.
@@ -12127,7 +12137,7 @@ void RenderFrameHostImpl::FailedNavigation(
           std::move(default_factory_remote),
           blink::PendingURLLoaderFactoryBundle::SchemeMap(),
           blink::PendingURLLoaderFactoryBundle::OriginMap(),
-          bypass_redirect_checks);
+          /*local_resource_loader_config=*/nullptr, bypass_redirect_checks);
   recreate_default_url_loader_factory_after_network_service_crash_ = true;
 
   mojom::NavigationClient* navigation_client =

@@ -37,10 +37,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   CrostiniAnsibleSoftwareConfigViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/),
         network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCrostiniAnsibleInfrastructure);
-  }
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
 
   // CrostiniDialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -262,7 +259,6 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
       network_connection_tracker_;
   std::unique_ptr<crostini::AnsibleManagementTestHelper> test_helper_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.NativePageBitmapCapturer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -447,8 +449,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         if (window == null) {
             return true;
         }
-        // Android doesn't currently offer semantics for forward navigation for an edge gesture.
-        return !UiUtils.isGestureNavigationMode(window);
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                        && ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled())
+                || !UiUtils.isGestureNavigationMode(window);
     }
 
     @Override

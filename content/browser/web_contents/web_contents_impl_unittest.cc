@@ -888,13 +888,13 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   main_test_rfh()->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_TRUE(
+        contents()->GetSiteInstance()->GetSiteURL().DomainIs("google.com"));
+  } else {
     // Verify that the empty SiteInstance gets converted into a default
     // SiteInstance because |url| does not require a dedicated process.
     EXPECT_TRUE(contents()->GetSiteInstance()->IsDefaultSiteInstance());
-  } else {
-    EXPECT_TRUE(
-        contents()->GetSiteInstance()->GetSiteURL().DomainIs("google.com"));
   }
   EXPECT_EQ(url, contents()->GetLastCommittedURL());
 
@@ -991,13 +991,15 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   EXPECT_TRUE(orig_instance->HasSite());
-  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+  EXPECT_EQ(!AreAllSitesIsolatedForTesting(),
             orig_instance->IsDefaultSiteInstance());
 
   // Navigate to another site and verify that a new SiteInstance was created.
   const GURL url("http://www.google.com");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url);
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(orig_instance, contents()->GetSiteInstance());
+  } else {
     // Verify this remains the default SiteInstance since |url| does
     // not require a dedicated process.
     EXPECT_TRUE(contents()->GetSiteInstance()->IsDefaultSiteInstance());
@@ -1006,8 +1008,6 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredRegularUrl) {
     // the SiteInstance changes.
     NavigationSimulator::NavigateAndCommitFromBrowser(
         contents(), isolated_cross_site_url());
-    EXPECT_NE(orig_instance, contents()->GetSiteInstance());
-  } else {
     EXPECT_NE(orig_instance, contents()->GetSiteInstance());
   }
 
@@ -1068,10 +1068,9 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
 TEST_F(WebContentsImplTest, CrossSiteComparesAgainstCurrentPage) {
   // The assumptions this test makes aren't valid with --site-per-process.  For
   // example, a cross-site URL won't ever commit in the old RFH.  The test also
-  // assumes that default SiteInstances are enabled, and that aggressive
-  // BrowsingInstance swapping (even on renderer-initiated navigations) is
-  // disabled.
-  if (AreAllSitesIsolatedForTesting() || !AreDefaultSiteInstancesEnabled() ||
+  // assumes that aggressive BrowsingInstance swapping (even on
+  // renderer-initiated navigations) is disabled.
+  if (AreAllSitesIsolatedForTesting() ||
       CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     return;
   }

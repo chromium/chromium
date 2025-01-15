@@ -6258,11 +6258,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_InnerHtml",
                     "params": {
                         "file-upload-limit-bytes": "200000000",
                         "send-page-url-for-contextualization": "true",
-                        "use-inner-text-as-context": "true",
+                        "show-contextual-searchbox-ghost-loader-loading-state": "true",
+                        "use-inner-html-as-context": "true",
+                        "use-inner-text-as-context": "false",
                         "use-pdf-interaction-type": "true",
                         "use-pdf-vit-param": "true",
                         "use-pdfs-as-context": "true",
@@ -7477,29 +7479,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DeferConciergeStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DeferRendererTasksAfterInput": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AllTypes_20241204",
-                    "params": {
-                        "policy": "all-types"
-                    },
-                    "enable_features": [
-                        "DeferRendererTasksAfterInput"
                     ]
                 }
             ]
@@ -25937,6 +25916,24 @@
                     "name": "Disabled_webrtc-hw-decoding",
                     "disable_features": [
                         "webrtc-hw-decoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebUIInProcessResourceLoading": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebUIInProcessResourceLoading"
                     ]
                 }
             ]

@@ -1266,6 +1266,49 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromeos_jacuzzi_rel_skylab_tests",
+    targets = [
+        targets.bundle(
+            targets = "chromeos_chrome_all_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+                # jacuzzi is slow. So that we use more number of shards.
+                "skylab-shards-30",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "chromeos_chrome_criticalstaging_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "chromeos_chrome_disabled_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
+        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
+        targets.bundle(
+            targets = "chromeos_device_only_gtests",
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "chromeos_js_code_coverage_browser_tests_suite",
     targets = [
         "chromeos_js_code_coverage_browser_tests",
@@ -1277,6 +1320,47 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "chromeos_octopus_rel_skylab_tests",
+    targets = [
+        targets.bundle(
+            targets = "chromeos_chrome_all_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "chromeos_chrome_criticalstaging_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "chromeos_chrome_disabled_tast_tests",
+            mixins = [
+                "chromeos-tast-public-builder",
+            ],
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+        # After the builder gets stabilized, 'chromeos_device_only_gtests' will
+        # be tried to be replaced with 'chromeos_system_friendly_gtests'.
+        targets.bundle(
+            targets = "chromeos_device_only_gtests",
+            variants = [
+                "CROS_PUBLIC_LKGM",
+            ],
+        ),
+    ],
 )
 
 targets.bundle(
@@ -2350,17 +2434,19 @@ targets.bundle(
         ),
         "telemetry_gpu_unittests": targets.mixin(
             swarming = targets.swarming(
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
         ),
         "telemetry_unittests": targets.mixin(
             args = [
                 "--jobs=1",
+                # Disable GPU compositing, telemetry_unittests runs on VMs.
+                # https://crbug.com/871955
                 "--extra-browser-args=--disable-gpu",
             ],
             swarming = targets.swarming(
                 shards = 8,
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
             resultdb = targets.resultdb(
                 enable = True,
@@ -4023,22 +4109,91 @@ targets.bundle(
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
+)
+
+# Copy of gpu_passthrough_telemetry_tests that forces running with Skia/Ganesh.
+targets.bundle(
+    name = "gpu_passthrough_ganesh_telemetry_tests",
+    targets = [
+        "context_lost_passthrough_ganesh_tests",
+        "expected_color_pixel_passthrough_ganesh_test",
+        "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "pixel_skia_gold_passthrough_ganesh_test",
+        "screenshot_sync_passthrough_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "context_lost_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "expected_color_pixel_passthrough_ganesh_test": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--test-machine-name",
+                    "${buildername}",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "gpu_process_launch_tests": [
+            "gpu_integration_test_common_args",
+        ],
+        "hardware_accelerated_feature_tests": [
+            "gpu_integration_test_common_args",
+        ],
+        "pixel_skia_gold_passthrough_ganesh_test": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--test-machine-name",
+                    "${buildername}",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+        "screenshot_sync_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--dont-restore-color-profile-after-test",
+                    "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --disable-features=SkiaGraphite",
+                ],
+                android_args = [
+                    "--extra-browser-args=--force-online-connection-state-for-indicator",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
 )
 
 targets.bundle(
     name = "gpu_pixel_4_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
+        "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
 )
@@ -4047,15 +4202,15 @@ targets.bundle(
     name = "gpu_pixel_6_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_passthrough_graphite_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
         "gpu_validating_telemetry_tests",
+        "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webcodecs_validating_graphite_telemetry_test",
-        "gpu_webcodecs_validating_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
     ],
 )
@@ -4085,6 +4240,23 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_webcodecs_validating_ganesh_telemetry_test",
+    targets = [
+        "webcodecs_tests",
+    ],
+    per_test_modifications = {
+        "webcodecs_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=validating --disable-features=SkiaGraphite",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_webcodecs_validating_graphite_telemetry_test",
     targets = [
         "webcodecs_graphite_tests",
@@ -4094,23 +4266,6 @@ targets.bundle(
             targets.mixin(
                 args = [
                     "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
-                ],
-            ),
-            "gpu_integration_test_common_args",
-        ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_webcodecs_validating_telemetry_test",
-    targets = [
-        "webcodecs_tests",
-    ],
-    per_test_modifications = {
-        "webcodecs_tests": [
-            targets.mixin(
-                args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating",
                 ],
             ),
             "gpu_integration_test_common_args",
@@ -4136,6 +4291,27 @@ targets.bundle(
                     # These tests currently take about an hour and fifteen minutes
                     # to run. Split them into roughly 5-minute shards.
                     shards = 20,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
+    targets = [
+        "webgl_conformance_gles_passthrough_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_gles_passthrough_ganesh_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                swarming = targets.swarming(
+                    shards = 6,
                 ),
             ),
             "gpu_integration_test_common_args",
@@ -6026,11 +6202,12 @@ targets.bundle(
     per_test_modifications = {
         "telemetry_perf_unittests": targets.mixin(
             args = [
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
             ],
             swarming = targets.swarming(
                 shards = 12,
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
             resultdb = targets.resultdb(
                 enable = True,

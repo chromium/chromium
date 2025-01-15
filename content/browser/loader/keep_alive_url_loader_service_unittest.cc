@@ -576,6 +576,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadRequestAfterUpdateFactory) {
   auto pending_factory = std::make_unique<blink::PendingURLLoaderFactoryBundle>(
       factory.Unbind(), blink::PendingURLLoaderFactoryBundle::SchemeMap(),
       blink::PendingURLLoaderFactoryBundle::OriginMap(),
+      /*local_resource_loader_config=*/nullptr,
       /*bypass_redirect_checks=*/false);
   context->UpdateFactory(
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)));

@@ -4,10 +4,15 @@
 
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 
+#include <ranges>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace passage_embeddings {
 
@@ -115,8 +120,11 @@ void PassageEmbeddingsServiceController::LoadModelsToService(
     mojom::PassageEmbeddingsLoadModelsParamsPtr params) {
   if (!service_remote_) {
     // Close the model files in a background thread.
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::DoNothingWithBoundArgs(std::move(params)));
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock()},
+        base::DoNothingWithBoundArgs(std::move(params)),
+        base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
+                       weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
     return;
   }
 
@@ -174,25 +182,48 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
   }
 
+  pending_requests_.push_back(next_request_id_);
   embedder_remote_->GenerateEmbeddings(
       std::move(passages), priority,
-      base::BindOnce(
-          [](GetEmbeddingsCallback callback,
-             std::vector<mojom::PassageEmbeddingsResultPtr> results) {
-            auto status = results.empty()
-                              ? ComputeEmbeddingsStatus::kExecutionFailure
-                              : ComputeEmbeddingsStatus::kSuccess;
-            std::move(callback).Run(std::move(results), status);
-          },
-          std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&PassageEmbeddingsServiceController::OnGotEmbeddings,
+                         weak_ptr_factory_.GetWeakPtr(), next_request_id_,
+                         std::move(callback)),
+          std::vector<mojom::PassageEmbeddingsResultPtr>()));
+  next_request_id_++;
 }
 
 bool PassageEmbeddingsServiceController::EmbedderReady() {
   return !sp_model_path_.empty() && !embeddings_model_path_.empty();
 }
 
+bool PassageEmbeddingsServiceController::EmbedderRunning() {
+  return !pending_requests_.empty();
+}
+
 void PassageEmbeddingsServiceController::ResetEmbedderRemote() {
   embedder_remote_.reset();
+}
+
+void PassageEmbeddingsServiceController::OnGotEmbeddings(
+    RequestId request_id,
+    GetEmbeddingsCallback callback,
+    std::vector<mojom::PassageEmbeddingsResultPtr> results) {
+  // Mojo invokes the callbacks in the order in which `GenerateEmbeddings()` was
+  // called. Therefore, `request_id` should be expected at the front of
+  // `pending_requests_`. However, when `embedder_remote_` disconnects and the
+  // callbacks are dropped, `mojo::WrapCallbackWithDefaultInvokeIfNotRun()`
+  // invokes the callbacks in the reverse order in which they were bound.
+  auto it = std::ranges::find(pending_requests_, request_id);
+  if (it != pending_requests_.end()) {
+    pending_requests_.erase(it);
+  } else {
+    NOTREACHED(base::NotFatalUntil::M140);
+  }
+
+  auto status = results.empty() ? ComputeEmbeddingsStatus::kExecutionFailure
+                                : ComputeEmbeddingsStatus::kSuccess;
+  std::move(callback).Run(std::move(results), status);
 }
 
 }  // namespace passage_embeddings

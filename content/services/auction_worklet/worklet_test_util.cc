@@ -273,4 +273,15 @@ TestAuctionNetworkEventsHandler::GetObservedRequests() {
   return observed_requests_;
 }
 
+std::set<TrustedSignals::CreativeInfo> CreateCreativeInfoSet(
+    const std::vector<std::string>& urls) {
+  std::set<TrustedSignals::CreativeInfo> result;
+  for (const auto& url : urls) {
+    TrustedSignals::CreativeInfo entry;
+    entry.ad_descriptor.url = GURL(url);
+    result.insert(std::move(entry));
+  }
+  return result;
+}
+
 }  // namespace auction_worklet

@@ -23,7 +23,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -50,7 +49,6 @@ import java.util.Set;
 /** Tests for {@link SyncPromoController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)
-@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
 public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS =
             SyncPromoController.NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS;

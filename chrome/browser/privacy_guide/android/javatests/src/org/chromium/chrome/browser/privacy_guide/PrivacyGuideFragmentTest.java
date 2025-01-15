@@ -90,10 +90,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS
-})
+@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS})
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";

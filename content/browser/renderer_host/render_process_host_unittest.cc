@@ -928,14 +928,14 @@ TEST_F(RenderProcessHostUnitTest,
   site_instance = SiteInstanceImpl::CreateReusableInstanceForTesting(
       browser_context(), kRedirectUrl2);
   EXPECT_NE(main_test_rfh()->GetProcess(), site_instance->GetProcess());
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(speculative_process_host_id,
+              site_instance->GetProcess()->GetDeprecatedID());
+  } else {
     EXPECT_TRUE(speculative_is_default_site_instance);
     // The process ID should be the same as the default SiteInstance because
     // kRedirectUrl1 and kRedirectUrl2 do not require a dedicated process.
     EXPECT_EQ(speculative_process_host_id,
-              site_instance->GetProcess()->GetDeprecatedID());
-  } else {
-    EXPECT_NE(speculative_process_host_id,
               site_instance->GetProcess()->GetDeprecatedID());
   }
 

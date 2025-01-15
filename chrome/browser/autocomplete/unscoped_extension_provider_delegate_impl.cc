@@ -55,7 +55,8 @@ void UnscopedExtensionProviderDelegateImpl::IncrementRequestId() {
 }
 
 void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
-    extensions::api::omnibox::SendSuggestions::Params* suggestions) {
+    extensions::api::omnibox::SendSuggestions::Params* suggestions,
+    const std::string& extension_id) {
   CHECK(suggestions);
 
   if (suggestions->request_id != current_request_id_) {
@@ -69,7 +70,7 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   for (const auto& suggestion : suggestions->suggest_results) {
     // TODO(379141010): calculate relevance.
     extension_suggest_matches_.push_back(CreateAutocompleteMatch(
-        suggestion, first_relevance - relevance_increment));
+        suggestion, first_relevance - relevance_increment, extension_id));
     relevance_increment++;
   }
 
@@ -92,7 +93,8 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxInputEntered() {
 AutocompleteMatch
 UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
     const omnibox_api::SuggestResult& suggestion,
-    int relevance) {
+    int relevance,
+    const std::string& extension_id) {
   AutocompleteMatch match(provider_.get(), relevance, false,
                           AutocompleteMatchType::SEARCH_OTHER_ENGINE);
   match.fill_into_edit = base::UTF8ToUTF16(suggestion.content);
@@ -100,9 +102,23 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
   match.contents_class.emplace_back(0, ACMatchClassification::DIM);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
 
-  // This should not be used. It is set as a placeholder since it cannot be null
-  // in `UpdateKeywordDescriptions()`.
-  match.keyword = u"Extension";
+  TemplateURLService* model = provider_->GetTemplateURLService();
+  const TemplateURL* template_url = model->FindTemplateURLForExtension(
+      extension_id, TemplateURL::OMNIBOX_API_EXTENSION);
+
+  match.keyword = template_url->keyword();
+
+  // The destination_url will not be used for navigation, but it needs to be set
+  // for de-duplication, shortcuts provider, and other logic in
+  // `OmniboxEditModel::OpenMatch()`.
+  const TemplateURLRef& element_ref = template_url->url_ref();
+  CHECK(element_ref.SupportsReplacement(
+      provider_->GetTemplateURLService()->search_terms_data()));
+  TemplateURLRef::SearchTermsArgs search_terms_args(
+      base::UTF8ToUTF16(suggestion.content));
+  match.destination_url = GURL(element_ref.ReplaceSearchTerms(
+      search_terms_args,
+      provider_->GetTemplateURLService()->search_terms_data()));
 
   match.contents_class =
       extensions::StyleTypesToACMatchClassifications(suggestion);

@@ -19,11 +19,11 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/unguessable_token.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/generic_shared_memory_id.h"
 
 namespace media {
 
@@ -58,10 +58,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   void ReleaseAllFrames() override;
   std::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
-  // Returns the original frame from a frame's shared memory ID. We need this
+  // Returns the original frame from a frame's tracking_token. We need this
   // method to determine whether the frame returned by GetFrame() is the same
   // one after recycling, and bind destruction callback at original frames.
-  FrameResource* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
+  FrameResource* GetOriginalFrame(const base::UnguessableToken& tracking_token);
 
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();
@@ -125,8 +125,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // should be the same as |format_| and |coded_size_|.
   base::circular_deque<scoped_refptr<FrameResource>> free_frames_
       GUARDED_BY(lock_);
-  // Mapping from the frame's shared memory ID to the original frame.
-  std::map<gfx::GenericSharedMemoryId, raw_ptr<FrameResource, CtnExperimental>>
+  // Mapping from the frame's tracking token to the original frame.
+  std::map<base::UnguessableToken, raw_ptr<FrameResource, CtnExperimental>>
       frames_in_use_ GUARDED_BY(lock_);
 
   // The maximum number of frames created by the pool.

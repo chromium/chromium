@@ -131,7 +131,6 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testShowSigninInterstitial() {
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO)))

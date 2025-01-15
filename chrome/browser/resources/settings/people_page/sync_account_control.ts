@@ -546,8 +546,7 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    if (loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') &&
-        this.syncStatus.domain) {
+    if (this.syncStatus.domain) {
       return false;
     }
 

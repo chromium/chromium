@@ -123,8 +123,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mRestoreTabsCalled;
     private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
-    private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier =
-            new ObservableSupplierImpl<>(false);
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Integer> mUnderlyingTabCountSupplier;
     // Always refers to the tab creator of the first activity to create the
@@ -321,16 +319,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     protected void recordLegacyTabCountMetrics() {
                         // Intentional no-op.
                     }
-
-                    @Override
-                    public void saveTabListAsynchronously() {
-                        // Manually skip saving the tab list until after the declutter pass has
-                        // completed.
-                        if (mSkipSaveTabListSupplier.get()) {
-                            return;
-                        }
-                        super.saveTabListAsynchronously();
-                    }
                 };
 
         wireSelectorAndStore();
@@ -365,14 +353,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
-    public void maybeBeginDeclutter() {
+    public void maybeBeginDeclutter(Runnable callback) {
         ThreadUtils.assertOnUiThread();
         if (mDeclutterInitializationCalled) return;
         mDeclutterInitializationCalled = true;
-        waitUntilSelectorInitializedAndPostTask(this::maybeBeginDeclutterImpl);
+        waitUntilSelectorInitializedAndPostTask(() -> maybeBeginDeclutterImpl(callback));
     }
 
-    private void maybeBeginDeclutterImpl() {
+    private void maybeBeginDeclutterImpl(Runnable callback) {
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
         disableSaveTabList();
@@ -394,6 +382,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         }
                         mTabArchiver.removeObserver(this);
                         enableSaveTabList();
+                        callback.run();
                     }
                 });
         runDeclutterAndScheduleNext();
@@ -502,11 +491,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     private void disableSaveTabList() {
-        mSkipSaveTabListSupplier.set(true);
+        mTabPersistentStore.setSkipSaveTabList(true);
     }
 
     private void enableSaveTabList() {
-        mSkipSaveTabListSupplier.set(false);
+        mTabPersistentStore.setSkipSaveTabList(false);
         mTabPersistentStore.saveTabListAsynchronously();
     }
 
@@ -523,10 +512,5 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public void setTaskRunnerForTesting(TaskRunner taskRunner) {
         mTaskRunner = taskRunner;
-    }
-
-    protected void setSkipSaveTabListSupplierForTesting( // IN-TEST
-            ObservableSupplierImpl<Boolean> skipSaveTabListSupplier) {
-        mSkipSaveTabListSupplier = skipSaveTabListSupplier;
     }
 }

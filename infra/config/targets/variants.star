@@ -47,6 +47,7 @@ targets.variant(
 targets.variant(
     name = "CROS_PUBLIC_LKGM",
     identifier = "PUBLIC_LKGM",
+    generate_pyl_entry = False,
     skylab = targets.skylab(
         bucket = "chromiumos-image-archive",
         public_builder = "cros_test_platform_public",

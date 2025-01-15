@@ -217,11 +217,14 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  process_logs_.AppendCompletedStep(
+  auto debug_log =
       base::Value::Dict()
           .Set("start_time",
                base::TimeFormatFriendlyDateAndTime(base::Time::Now()))
-          .Set("info", "IsolatedWebAppPolicyManager::Start()"));
+          .Set("info", "IsolatedWebAppPolicyManager::Start()");
+  IwaKeyDistributionInfoProvider::GetInstance()->WriteComponentMetadata(
+      debug_log);
+  process_logs_.AppendCompletedStep(std::move(debug_log));
 
   if (base::FeatureList::IsEnabled(kIwaPolicyManagerOnDemandComponentUpdate) &&
       !profile_->GetPrefs()

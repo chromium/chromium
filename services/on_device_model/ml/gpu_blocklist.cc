@@ -7,6 +7,8 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
@@ -43,11 +45,22 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
     bool is_blocklisted_cpu_adapter;
   };
 
+  static crash_reporter::CrashKeyString<256> blocklist_key(
+      "ChromeML-blocklist");
+  blocklist_key.Set(kGpuBlockList.Get());
+
   QueryData query_data;
   if (!api.QueryGPUAdapter(
           [](WGPUAdapter cAdapter, void* data) {
             wgpu::Adapter adapter(cAdapter);
             auto* query_data = static_cast<QueryData*>(data);
+
+            wgpu::AdapterInfo info;
+            adapter.GetInfo(&info);
+            static crash_reporter::CrashKeyString<32> device_key(
+                "ChromeML-device");
+            device_key.Set(base::NumberToString(info.vendorID) + ":" +
+                           base::NumberToString(info.deviceID));
 
             query_data->blocklisted =
                 gpu::IsWebGPUAdapterBlocklisted(
@@ -61,8 +74,6 @@ GpuBlockedReason IsGpuBlockedInternal(const ChromeMLAPI& api) {
                     })
                     .blocked;
             if (query_data->blocklisted) {
-              wgpu::AdapterInfo info;
-              adapter.GetInfo(&info);
               query_data->is_blocklisted_cpu_adapter =
                   info.adapterType == wgpu::AdapterType::CPU;
             }

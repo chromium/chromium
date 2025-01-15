@@ -5,15 +5,17 @@
   include: [
     "syslog/client.shard.cml",
   ],
-  // Add capability providers.
+  // The following components must be subpackaged by all Chromium tests that
+  // aren't system tests, to provide implementations of always-required
+  // capabilities (see the `use`s and `offer`s).
   children: [
     {
       name: "build-info-service",
-      url: "fuchsia-pkg://fuchsia.com/fake-build-info#meta/fake_build_info.cm",
+      url: "fake-build-info#meta/fake_build_info.cm",
     },
     {
       name: "intl_property_manager",
-      url: "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cm",
+      url: "intl_property_manager#meta/intl_property_manager.cm",
     },
   ],
   offer: [

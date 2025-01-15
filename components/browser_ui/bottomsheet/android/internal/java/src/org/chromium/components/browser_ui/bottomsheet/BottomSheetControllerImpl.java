@@ -228,19 +228,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
         PropertyModel scrimProperties =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                         .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                        .with(
-                                ScrimProperties.CLICK_DELEGATE,
-                                () -> {
-                                    if (!mBottomSheet.isSheetOpen()) return;
-                                    mBottomSheet.setSheetState(
-                                            mBottomSheet.getMinSwipableSheetState(),
-                                            true,
-                                            StateChangeReason.TAP_SCRIM);
-                                })
+                        .with(ScrimProperties.CLICK_DELEGATE, this::onScrimClicked)
                         .build();
 
         mBottomSheet.addObserver(
@@ -360,19 +350,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     @Override
     public PropertyModel createScrimParams() {
         return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                .with(ScrimProperties.TOP_MARGIN, 0)
                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
                 .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
-                .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
-                .with(
-                        ScrimProperties.CLICK_DELEGATE,
-                        () -> {
-                            if (!mBottomSheet.isSheetOpen()) return;
-                            mBottomSheet.setSheetState(
-                                    mBottomSheet.getMinSwipableSheetState(),
-                                    true,
-                                    StateChangeReason.TAP_SCRIM);
-                        })
+                .with(ScrimProperties.CLICK_DELEGATE, this::onScrimClicked)
                 .build();
     }
 
@@ -763,6 +743,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                                                 .getBackPressStateChangedSupplier()
                                                 .get())
                                 || mBottomSheet.isSheetOpen()));
+    }
+
+    private void onScrimClicked() {
+        if (!mBottomSheet.isSheetOpen()) return;
+        mBottomSheet.setSheetState(
+                mBottomSheet.getMinSwipableSheetState(), true, StateChangeReason.TAP_SCRIM);
     }
 
     void runSheetInitializerForTesting() {

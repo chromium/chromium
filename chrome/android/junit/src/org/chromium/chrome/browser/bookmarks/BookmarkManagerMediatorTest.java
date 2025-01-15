@@ -143,7 +143,6 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
 // TODO(crbug.com/327387704): Add tests with this flag enabled.
 @DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerMediatorTest {

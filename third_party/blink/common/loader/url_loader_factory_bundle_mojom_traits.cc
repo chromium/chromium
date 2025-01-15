@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 
 namespace mojo {
@@ -39,6 +40,12 @@ bool Traits::bypass_redirect_checks(BundleInfoType& bundle) {
 }
 
 // static
+blink::mojom::LocalResourceLoaderConfigPtr Traits::local_resource_loader_config(
+    BundleInfoType& bundle) {
+  return std::move(bundle->local_resource_loader_config());
+}
+
+// static
 bool Traits::Read(blink::mojom::URLLoaderFactoryBundleDataView data,
                   BundleInfoType* out_bundle) {
   *out_bundle = std::make_unique<blink::PendingURLLoaderFactoryBundle>();
@@ -55,6 +62,11 @@ bool Traits::Read(blink::mojom::URLLoaderFactoryBundleDataView data,
   }
 
   (*out_bundle)->set_bypass_redirect_checks(data.bypass_redirect_checks());
+
+  if (!data.ReadLocalResourceLoaderConfig(
+          &(*out_bundle)->local_resource_loader_config())) {
+    return false;
+  }
 
   return true;
 }

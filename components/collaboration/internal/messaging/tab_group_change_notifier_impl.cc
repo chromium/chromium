@@ -146,12 +146,9 @@ void TabGroupChangeNotifierImpl::OnTabGroupAdded(
   // Always update the local copy, even if the trigger was local.
   last_known_tab_groups_.insert_or_assign(group.saved_guid(), group);
 
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    return;
-  }
-
   for (auto& observer : observers_) {
-    observer.OnTabGroupAdded(last_known_tab_groups_.at(group.saved_guid()));
+    observer.OnTabGroupAdded(last_known_tab_groups_.at(group.saved_guid()),
+                             source);
   }
 }
 
@@ -170,11 +167,9 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
     // something unknown, so store the new value and tell our observers it was
     // added if this was not local.
     last_known_tab_groups_.emplace(group.saved_guid(), group);
-    if (source == tab_groups::TriggerSource::LOCAL) {
-      return;
-    }
     for (auto& observer : observers_) {
-      observer.OnTabGroupAdded(last_known_tab_groups_.at(group.saved_guid()));
+      observer.OnTabGroupAdded(last_known_tab_groups_.at(group.saved_guid()),
+                               source);
     }
     return;
   }
@@ -183,11 +178,7 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
   tab_groups::SavedTabGroup last_known_group = group_it->second;
   last_known_tab_groups_.insert_or_assign(group.saved_guid(), group);
 
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    return;
-  }
-
-  ProcessTabGroupUpdates(last_known_group, group);
+  ProcessTabGroupUpdates(last_known_group, group, source);
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
@@ -206,12 +197,8 @@ void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
   tab_groups::SavedTabGroup removed_group = group_it->second;
   last_known_tab_groups_.erase(group_it);
 
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    return;
-  }
-
   for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(removed_group);
+    observer.OnTabGroupRemoved(removed_group, source);
   }
 }
 
@@ -259,35 +246,38 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
   // Publish added tab groups.
   for (const auto& guid : added_tab_groups) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupAdded(current_tab_groups.at(guid));
+      observer.OnTabGroupAdded(current_tab_groups.at(guid),
+                               tab_groups::TriggerSource::REMOTE);
     }
   }
 
   // Publish removed tab groups.
   for (const auto& group : removed_tab_groups) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupRemoved(group);
+      observer.OnTabGroupRemoved(group, tab_groups::TriggerSource::REMOTE);
     }
   }
 
   // Process all metadata and tab updates within updated groups.
   for (const tab_groups::SavedTabGroup& old_group : updated_groups) {
     ProcessTabGroupUpdates(old_group,
-                           current_tab_groups.at(old_group.saved_guid()));
+                           current_tab_groups.at(old_group.saved_guid()),
+                           tab_groups::TriggerSource::REMOTE);
   }
 }
 
 void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
     const tab_groups::SavedTabGroup& before,
-    const tab_groups::SavedTabGroup& after) {
+    const tab_groups::SavedTabGroup& after,
+    tab_groups::TriggerSource source) {
   if (!HasEqualTitle(before, after)) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupNameUpdated(after);
+      observer.OnTabGroupNameUpdated(after, source);
     }
   }
   if (!HasEqualColor(before, after)) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupColorUpdated(after);
+      observer.OnTabGroupColorUpdated(after, source);
     }
   }
 
@@ -296,7 +286,7 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (added_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : added_tabs) {
-        observer.OnTabAdded(tab);
+        observer.OnTabAdded(tab, source);
       }
     }
   }
@@ -306,7 +296,7 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (removed_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : removed_tabs) {
-        observer.OnTabRemoved(tab);
+        observer.OnTabRemoved(tab, source);
       }
     }
   }
@@ -316,7 +306,7 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (updated_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : updated_tabs) {
-        observer.OnTabUpdated(tab);
+        observer.OnTabUpdated(tab, source);
       }
     }
   }

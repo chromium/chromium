@@ -45,7 +45,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -94,6 +96,7 @@
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
+#include "content/renderer/local_resource_url_loader_factory.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
@@ -136,6 +139,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -6018,6 +6022,10 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
   // loads are expected - e.g. in test frames created via RenderViewTest).  See
   // also the DCHECK in URLLoaderFactoryBundle::GetFactory.
 
+  // If resource metadata is present, construct an in-process resource loader
+  // and have it intercept requests it may be able to service.
+  info = MaybeSetUpLocalResourceLoader(std::move(info));
+
   auto loader_factories =
       base::MakeRefCounted<blink::HostChildURLLoaderFactoryBundle>(
           GetTaskRunner(blink::TaskType::kInternalLoading));
@@ -6434,6 +6442,45 @@ void RenderFrameImpl::SendUpdateState() {
     return;
 
   GetFrameHost()->UpdateState(GetWebFrame()->CurrentHistoryItemToPageState());
+}
+
+std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+RenderFrameImpl::MaybeSetUpLocalResourceLoader(
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> factory_bundle) {
+  if (!factory_bundle->local_resource_loader_config()) {
+    return factory_bundle;
+  }
+
+  // The pipe to the browser-side WebUIURLLoaderFactory could be in one of two
+  // places:
+  //
+  // 1. factory_bundle->pending_default_factory()
+  // 2. factory_bundle->scheme_specific_factories
+  //
+  // (This may change in the future, see https://crbug.com/40091019)
+  //
+  // The browser process only sends the config in the first case (see call to
+  // PendingURLLoaderFactoryBundle::set_local_resource_loader_config in
+  // RenderFrameHostImpl::CommitNavigation), so if we're constructing a new
+  // in-process resource loader we always take that as the fallback.
+
+  // Take the existing PendingRemote and make it the fallback for a new
+  // in-process resource loader.
+  local_resource_loader_.emplace(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      factory_bundle->local_resource_loader_config().Clone(),
+      std::move(factory_bundle->pending_default_factory()));
+  // Create a pipe and pass the receiving end to the new in-process loader.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+  local_resource_loader_
+      .AsyncCall(&content::LocalResourceURLLoaderFactory::Clone)
+      .WithArgs(pending_remote.InitWithNewPipeAndPassReceiver());
+  // Swap in the new PendingRemote.
+  factory_bundle->pending_default_factory() = std::move(pending_remote);
+
+  return factory_bundle;
 }
 
 blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {

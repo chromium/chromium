@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+
+out_dir = "$target_gen_dir/glic"
+
+group("generate_test_files") {
+  data_deps = [
+    ":build_ts",
+    ":move_html",
+  ]
+}
+
+ts_library("build_ts") {
+  out_dir = out_dir
+  in_files = [ "api_test.ts" ]
+  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+
+  path_mappings = [ "chrome://glic/*|" + rebase_path(
+                        "$root_gen_dir/chrome/browser/resources/glic/tsc/*",
+                        target_gen_dir) ]
+}
+
+preprocess_if_expr("move_html") {
+  in_files = [ "test.html" ]
+  out_folder = out_dir
+}

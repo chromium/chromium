@@ -263,6 +263,20 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.PaymentLinkDetected"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An eWallet specific histogram. Logs true when a payment link is detected on
+    a merchant webpage. [Trigger] A payment link on a merchant page has
+    triggered the eWallet push payment flow. [Frequency] Logged once per page
+    load.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.Ewallet.UiScreenShown.{Scheme}"
     enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>

@@ -75,15 +75,20 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // TabGroupChangeNotifier::Observer.
   void OnTabGroupChangeNotifierInitialized() override;
-  void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group) override;
-  void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group) override;
-  void OnTabGroupNameUpdated(
-      const tab_groups::SavedTabGroup& updated_group) override;
-  void OnTabGroupColorUpdated(
-      const tab_groups::SavedTabGroup& updated_group) override;
-  void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab) override;
-  void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab) override;
-  void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab) override;
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group,
+                       tab_groups::TriggerSource source) override;
+  void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group,
+                         tab_groups::TriggerSource source) override;
+  void OnTabGroupNameUpdated(const tab_groups::SavedTabGroup& updated_group,
+                             tab_groups::TriggerSource source) override;
+  void OnTabGroupColorUpdated(const tab_groups::SavedTabGroup& updated_group,
+                              tab_groups::TriggerSource source) override;
+  void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab,
+                  tab_groups::TriggerSource source) override;
+  void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab,
+                    tab_groups::TriggerSource source) override;
+  void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab,
+                    tab_groups::TriggerSource source) override;
   void OnTabSelected(
       std::optional<tab_groups::SavedTabGroupTab> selected_tab) override;
 

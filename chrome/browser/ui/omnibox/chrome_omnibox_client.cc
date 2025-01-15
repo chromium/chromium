@@ -283,28 +283,25 @@ const gfx::VectorIcon& ChromeOmniboxClient::GetVectorIcon() const {
   return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
-bool ChromeOmniboxClient::ProcessExtensionKeyword(
+void ChromeOmniboxClient::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
-  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
-    return false;
-  }
+  // Strip the keyword + leading space (if present) off the input.
+  std::u16string remaining_input;
+  AutocompleteInput::SplitKeywordFromInput(match.fill_into_edit, true,
+                                           &remaining_input);
 
-  // Strip the keyword + leading space off the input, but don't exceed
-  // fill_into_edit.  An obvious case is that the user may not have entered
-  // a leading space and is asking to launch this extension without any
-  // additional input.
-  size_t prefix_length =
-      std::min(match.keyword.length() + 1, match.fill_into_edit.length());
+  // In unscoped mode, the input is sent verbatim. In scoped (keyword) mode, the
+  // keyword and input are split, and only the input after the keyword is sent.
+  std::string input =
+      match.provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION
+          ? base::UTF16ToUTF8(match.fill_into_edit)
+          : base::UTF16ToUTF8(remaining_input);
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      location_bar_->GetWebContents(), template_url->GetExtensionId(),
-      base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
+      location_bar_->GetWebContents(), template_url->GetExtensionId(), input,
       disposition);
-
-  OnSuccessfulNavigation(profile_, text, match);
-  return true;
 }
 
 void ChromeOmniboxClient::OnInputStateChanged() {

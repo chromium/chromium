@@ -256,4 +256,35 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       ->ProcessSecuritySubpageButtonPress(content_id,
                                           DownloadCommands::Command::DISCARD);
 }
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ProgressRingVisibleDuringDownload) {
+  controller()->Show();
+  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  EXPECT_NE(toolbar_button(browser()), nullptr);
+  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  EXPECT_FALSE(controller()->IsProgressRingInDownloadingStateForTesting());
+  download::DownloadItem* download_item = CreateSlowTestDownload();
+  EXPECT_TRUE(controller()->IsProgressRingInDownloadingStateForTesting());
+  download_item->Cancel(true);
+  EXPECT_FALSE(controller()->IsProgressRingInDownloadingStateForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       ProgressRingDormantState) {
+  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+  download::DownloadItem* download_item = CreateSlowTestDownload();
+  views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
+  EXPECT_NE(toolbar_button(browser()), nullptr);
+  EXPECT_TRUE(toolbar_button(browser())->GetVisible());
+  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+  // Create another browser and set it as active so the button becomes dormant.
+  Browser* extra_browser = CreateBrowser(browser()->profile());
+  BrowserList::SetLastActive(extra_browser);
+  views::test::WaitForAnimatingLayoutManager(toolbar_container(extra_browser));
+
+  EXPECT_TRUE(controller()->IsProgressRingInDormantStateForTesting());
+  download_item->Cancel(true);
+  EXPECT_FALSE(controller()->IsProgressRingInDormantStateForTesting());
+}
 #endif

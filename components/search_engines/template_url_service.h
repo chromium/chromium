@@ -230,6 +230,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // TODO(crbug.com/40224222): Delete after bug is fixed.
   size_t GetTemplateURLCountForHostForLogging(const std::string& host) const;
 
+  // Returns the TemplateURL associated with |extension_id|, if any.
+  TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
+                                           TemplateURL::Type type);
+
   // Adds a new TemplateURL to this model.
   //
   // This function guarantees that on return the model will not have two non-
@@ -854,10 +858,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
-
-  // Returns the TemplateURL associated with |extension_id|, if any.
-  TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
-                                           TemplateURL::Type type);
 
   // Finds any NORMAL_CONTROLLED_BY_EXTENSION engine that matches |data| and
   // wants to be default. Returns nullptr if not found.

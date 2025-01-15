@@ -101,6 +101,10 @@ def _apply_mixin(spec, settings, mixin_values):
         if os_specific_swarming and getattr(settings, settings_attr):
             spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], os_specific_swarming)
 
+    skylab_mixin = mixin_values.pop("skylab", None)
+    if skylab_mixin:
+        spec_value["skylab"] = _targets_common.merge_skylab(spec_value["skylab"], skylab_mixin)
+
     description_mixin = mixin_values.pop("description", None)
     if description_mixin:
         spec_value["description"] = "\n".join(args_lib.listify(spec_value["description"], description_mixin)) or None

@@ -1094,13 +1094,6 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-const char kDisallowManagedProfileSignoutName[] =
-    "Disallow managed profile signout";
-const char kDisallowManagedProfileSignoutDescription[] =
-    "Disallows signing out from managed profiles.";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-
 const char kViewTransitionLayeredCaptureName[] =
     "CSS view transition layered capture";
 const char kViewTransitionLayeredCaptureDescription[] =

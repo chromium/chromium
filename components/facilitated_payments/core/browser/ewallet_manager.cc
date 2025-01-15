@@ -50,8 +50,11 @@ EwalletManager::~EwalletManager() {
 }
 
 void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
-                                               const GURL& page_url) {
+                                               const GURL& page_url,
+                                               ukm::SourceId ukm_source_id) {
   payment_flow_triggered_timestamp_ = base::TimeTicks::Now();
+  ukm_source_id_ = ukm_source_id;
+  LogPaymentLinkDetected(ukm_source_id_);
 
   if (optimization_guide_decider_->CanApplyOptimization(
           page_url, optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST,
@@ -124,6 +127,7 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
 
 void EwalletManager::Reset() {
   supported_ewallets_.clear();
+  ukm_source_id_ = ukm::kInvalidSourceId;
   initiate_payment_request_details_.reset();
   ui_state_ = UiState::kHidden;
   weak_ptr_factory_.InvalidateWeakPtrs();

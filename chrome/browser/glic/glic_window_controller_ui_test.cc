@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -41,15 +42,21 @@ class GlicWindowControllerTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
+
     ASSERT_TRUE(embedded_test_server()->Start());
-    GURL empty_url = embedded_test_server()->GetURL("/glic/blank.html");
 
     // Need to set this here rather than in SetUpCommandLine because we need to
     // use the embedded test server to get the right URL and it's not started
     // at that time.
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
-                                    empty_url.spec());
+    command_line->AppendSwitchASCII(
+        ::switches::kGlicGuestURL,
+        embedded_test_server()->GetURL("/glic/test.html").spec());
+    command_line->AppendSwitchASCII(::switches::kCSPOverride, "");
   }
 
  protected:

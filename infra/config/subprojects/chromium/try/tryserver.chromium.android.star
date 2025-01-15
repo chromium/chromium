@@ -1589,7 +1589,7 @@ try_.gpu.optional_tests_builder(
             "gpu_pixel_4_stable",
         ],
         per_test_modifications = {
-            "expected_color_pixel_passthrough_test": targets.mixin(
+            "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",
@@ -1601,7 +1601,7 @@ try_.gpu.optional_tests_builder(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "pixel_skia_gold_passthrough_test": targets.mixin(
+            "pixel_skia_gold_passthrough_ganesh_test": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",
@@ -1613,7 +1613,7 @@ try_.gpu.optional_tests_builder(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "screenshot_sync_passthrough_tests": targets.mixin(
+            "screenshot_sync_passthrough_ganesh_tests": targets.mixin(
                 args = [
                     # See Android FYI Release (Pixel 4).
                     "--extra-browser-args=--disable-wcg-for-test",

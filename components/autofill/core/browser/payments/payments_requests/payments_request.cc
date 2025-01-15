@@ -49,7 +49,7 @@ std::optional<base::TimeDelta> PaymentsRequest::GetTimeout() const {
 }
 
 base::Value::Dict PaymentsRequest::BuildRiskDictionary(
-    const std::string& encoded_risk_data) {
+    std::string_view encoded_risk_data) {
   base::Value::Dict risk_data;
 #if BUILDFLAG(IS_IOS)
   // Browser fingerprinting is not available on iOS. Instead, we generate

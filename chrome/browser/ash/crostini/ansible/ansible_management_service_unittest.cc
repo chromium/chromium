@@ -41,7 +41,7 @@ class AnsibleManagementServiceTest : public testing::Test,
         AnsibleManagementServiceFactory::GetForProfile(profile_.get());
     test_helper_ =
         std::make_unique<AnsibleManagementTestHelper>(profile_.get());
-    test_helper_->SetUpAnsibleInfra();
+    test_helper_->SetUpAnsiblePlaybookPreference();
 
     SetUpViewsEnvironmentForTesting();
   }

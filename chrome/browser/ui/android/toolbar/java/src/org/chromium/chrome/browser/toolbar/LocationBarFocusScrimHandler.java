@@ -65,11 +65,9 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
                         .with(ScrimProperties.TOP_MARGIN, topMargin)
                         .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
                         .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
-                        .with(ScrimProperties.BACKGROUND_COLOR, ScrimProperties.INVALID_COLOR)
                         .build();
 
         mTabStripHeightSupplier = tabStripHeightSupplier;

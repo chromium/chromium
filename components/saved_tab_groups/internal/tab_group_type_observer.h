@@ -27,6 +27,7 @@ class TabGroupTypeObserver : public base::SupportsUserData::Data,
 
   // TabGroupSyncService::Observer impl.
   void OnInitialized() override;
+  void OnWillBeDestroyed() override;
   void OnTabGroupAdded(const SavedTabGroup& group,
                        TriggerSource source) override;
   void OnTabGroupMigrated(const SavedTabGroup& new_group,

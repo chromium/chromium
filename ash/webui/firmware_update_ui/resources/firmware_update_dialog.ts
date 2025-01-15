@@ -409,7 +409,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     return this.isWaitingForUserAction();
   }
 
-  protected updateRequiresRestart(): boolean {
+  protected isUpdateSuccessfulAndRequiresReboot(): boolean {
     assert(this.update);
     return this.installationProgress.state === UpdateState.kSuccess &&
         this.update.needsReboot;

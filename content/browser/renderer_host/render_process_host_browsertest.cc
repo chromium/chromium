@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
       base::BindRepeating(HandleBeacon));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (!AreAllSitesIsolatedForTesting()) {
     // Isolate "foo.com" so we are guaranteed that navigations to this site
     // will be in a different process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),

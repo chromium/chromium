@@ -730,6 +730,8 @@ template("test") {
       _test_runner_shard,
     ]
 
+    _subpackages = []
+
     # Select the Fuchsia test realm in which to run the test.
     if (defined(invoker.run_as_chromium_system_test) &&
         invoker.run_as_chromium_system_test) {
@@ -738,6 +740,10 @@ template("test") {
         "//build/config/fuchsia/test/system_test_minimum.shard.test-cml",
       ]
     } else {
+      _subpackages += [
+        "//third_party/fuchsia-sdk/sdk/packages/fake-build-info:fake-build-info",
+        "//third_party/fuchsia-sdk/sdk/packages/intl_property_manager:intl_property_manager",
+      ]
       _manifest_fragments += [
         "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
         "//build/config/fuchsia/test/minimum.shard.test-cml",
@@ -827,6 +833,8 @@ template("test") {
       if (devtools_root_location != "") {
         excluded_paths += [ "${devtools_root_location}/*" ]
       }
+
+      subpackages = _subpackages
     }
 
     # |target_name| refers to the package-runner rule, so that building

@@ -699,6 +699,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks current_policy_expiration_time;
     base::TimeTicks estimated_next_frame_begin;
     base::TimeTicks current_task_start_time;
+    base::TimeTicks discrete_input_response_start_time;
     base::TimeDelta compositor_frame_interval;
     TraceableCounter<int, TracingCategory::kInfo>
         renderer_pause_count;  // Renderer is paused if non-zero.

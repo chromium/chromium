@@ -88,6 +88,14 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void LogPaymentLinkDetected(ukm::SourceId ukm_source_id) {
+  base::UmaHistogramBoolean("FacilitatedPayments.Ewallet.PaymentLinkDetected",
+                            /*sample=*/true);
+  ukm::builders::FacilitatedPayments_PaymentLinkDetected(ukm_source_id)
+      .SetPaymentLinkDetected(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id) {
   ukm::builders::FacilitatedPayments_Pix_FopSelectorShown(ukm_source_id)
       .SetShown(true)

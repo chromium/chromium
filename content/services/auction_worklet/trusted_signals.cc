@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/trusted_signals.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -20,7 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -375,8 +375,11 @@ TrustedSignals::CreativeInfo::CreativeInfo(
 TrustedSignals::CreativeInfo::~CreativeInfo() = default;
 
 TrustedSignals::CreativeInfo::CreativeInfo(CreativeInfo&&) = default;
+TrustedSignals::CreativeInfo::CreativeInfo(const CreativeInfo&) = default;
 TrustedSignals::CreativeInfo& TrustedSignals::CreativeInfo::operator=(
     CreativeInfo&&) = default;
+TrustedSignals::CreativeInfo& TrustedSignals::CreativeInfo::operator=(
+    const CreativeInfo&) = default;
 
 bool TrustedSignals::CreativeInfo::operator<(
     const TrustedSignals::CreativeInfo& other) const {
@@ -478,18 +481,6 @@ GURL TrustedSignals::BuildTrustedScoringSignalsURL(
   return full_signals_url;
 }
 
-// static
-std::set<TrustedSignals::CreativeInfo> TrustedSignals::ConvertToCreativeInfoSet(
-    const std::set<std::string>& urls) {
-  std::set<TrustedSignals::CreativeInfo> result;
-  for (const auto& url : urls) {
-    TrustedSignals::CreativeInfo entry;
-    entry.ad_descriptor.url = GURL(url);
-    result.insert(std::move(entry));
-  }
-  return result;
-}
-
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -529,19 +520,32 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
-    std::set<std::string> render_urls,
-    std::set<std::string> ad_component_render_urls,
+    std::set<CreativeInfo> ads,
+    std::set<CreativeInfo> ad_components,
     const std::string& hostname,
     const GURL& trusted_scoring_signals_url,
     std::optional<uint16_t> experiment_group_id,
+    bool send_creative_scanning_metadata,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
-  DCHECK(!render_urls.empty());
+  DCHECK(!ads.empty());
+
+  auto extract_render_url = [](const CreativeInfo& c) {
+    return c.ad_descriptor.url.spec();
+  };
+
+  std::set<std::string> render_urls;
+  std::ranges::transform(ads, std::inserter(render_urls, render_urls.end()),
+                         extract_render_url);
+  std::set<std::string> ad_component_render_urls;
+  std::ranges::transform(
+      ad_components,
+      std::inserter(ad_component_render_urls, ad_component_render_urls.end()),
+      extract_render_url);
 
   GURL full_signals_url = BuildTrustedScoringSignalsURL(
-      /*send_creative_scanning_metadata=*/false, hostname,
-      trusted_scoring_signals_url, ConvertToCreativeInfoSet(render_urls),
-      ConvertToCreativeInfoSet(ad_component_render_urls), experiment_group_id);
+      send_creative_scanning_metadata, hostname, trusted_scoring_signals_url,
+      ads, ad_components, experiment_group_id);
 
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(

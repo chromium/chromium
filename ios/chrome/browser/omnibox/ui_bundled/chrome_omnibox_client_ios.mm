@@ -170,13 +170,12 @@ const gfx::VectorIcon& ChromeOmniboxClientIOS::GetVectorIcon() const {
   return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
-bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
+void ChromeOmniboxClientIOS::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
-  return false;
 }
 
 void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,

@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
+#import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"

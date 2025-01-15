@@ -62,7 +62,7 @@ class BnplManager {
     ~OngoingFlowState();
 
     // Billing customer number for the user's Google Payments account.
-    std::string billing_customer_number;
+    int64_t billing_customer_number;
 
     // Risk data contains the fingerprint data for the user and the device.
     std::string risk_data;

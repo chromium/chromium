@@ -17,6 +17,7 @@
   #   chromium.android.fyi
   #   chromium.angle
   #   chromium.cft
+  #   chromium.chromiumos
   #   chromium.coverage
   #   chromium.enterprise_companion
   #   chromium.fuchsia
@@ -455,49 +456,6 @@
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
         },
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.chromiumos.star
-    #   chromeos-amd64-generic-asan-rel
-    #   chromeos-amd64-generic-cfi-thin-lto-rel
-    #   chromeos-amd64-generic-dbg
-    #   chromeos-amd64-generic-rel
-    #   chromeos-amd64-generic-rel-gtest
-    #   chromeos-amd64-generic-rel-tast
-    #   chromeos-arm-generic-dbg
-    #   chromeos-arm-generic-rel
-    #   chromeos-arm64-generic-rel
-    #   linux-cfm-rel
-    #   linux-chromeos-dbg
-    #   linux-chromeos-rel
-    'name': 'chromium.chromiumos',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'chromeos-jacuzzi-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'jacuzzi',
-      },
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'chromeos-octopus-rel': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-        'cros_board': 'octopus',
       },
     },
   },

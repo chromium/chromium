@@ -4,6 +4,8 @@
 #ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 #define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
@@ -39,6 +41,9 @@ class PassageEmbeddingsServiceController {
   // Returns true if this service controller is ready for embeddings generation.
   bool EmbedderReady();
 
+  // Returns true if the embedder is currently running.
+  bool EmbedderRunning();
+
   // Returns the metadata about the embeddings model. This is only valid when
   // EmbedderReady() returns true.
   EmbedderMetadata GetEmbedderMetadata();
@@ -59,6 +64,10 @@ class PassageEmbeddingsServiceController {
   mojo::Remote<mojom::PassageEmbeddingsService> service_remote_;
 
  private:
+  // uint64_t is large enough to never overflow.
+  using RequestId = uint64_t;
+  RequestId next_request_id_ = 0;
+
   // Called when the model files on disks are opened and ready to be sent to
   // the service.
   void LoadModelsToService(
@@ -67,6 +76,11 @@ class PassageEmbeddingsServiceController {
 
   // Called when an attempt to load models to service finishes.
   void OnLoadModelsResult(bool success);
+
+  // Called when an attempt to generate embeddings finishes.
+  void OnGotEmbeddings(RequestId request_id,
+                       GetEmbeddingsCallback callback,
+                       std::vector<mojom::PassageEmbeddingsResultPtr> results);
 
   // Version of the embeddings model.
   int64_t model_version_;
@@ -79,6 +93,9 @@ class PassageEmbeddingsServiceController {
   base::FilePath sp_model_path_;
 
   mojo::Remote<mojom::PassageEmbedder> embedder_remote_;
+
+  // Pending requests to generate embeddings.
+  std::vector<RequestId> pending_requests_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<PassageEmbeddingsServiceController> weak_ptr_factory_{

@@ -1091,6 +1091,39 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityChildrenInNavigationOrder) {
   TestUIElements([table accessibilityChildrenInNavigationOrder], { 2 });
 }
 
+// accessibilityDisclosureLevel.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityDisclosureLevel) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea intAttribute=kHierarchicalLevel,3
+    ++++2 kTree
+    ++++++3 kTreeItem intAttribute=kHierarchicalLevel,1
+    ++++++++4 kGroup
+    ++++++++++5 kTreeItem intAttribute=kHierarchicalLevel,2
+    ++++6 kHeading intAttribute=kHierarchicalLevel,3
+    ++++7 kTable
+    ++++++8 kRow intAttribute=kHierarchicalLevel,3
+  )HTML"));
+
+  EXPECT_EQ([GetCocoaNode(1) accessibilityDisclosureLevel], 0);
+  EXPECT_EQ([GetCocoaNode(3) accessibilityDisclosureLevel], 0);
+  EXPECT_EQ([GetCocoaNode(5) accessibilityDisclosureLevel], 1);
+  EXPECT_EQ([GetCocoaNode(6) accessibilityDisclosureLevel], 2);
+  EXPECT_EQ([GetCocoaNode(8) accessibilityDisclosureLevel], 2);
+}
+
+// isAccessibilityDisclosed.
+TEST_P(AXPlatformNodeCocoaTest, IsAccessibilityDisclosed) {
+  Init(std::string(R"HTML(
+    ++1 kTree
+    ++++2 kTreeItem state=kExpanded
+    ++++++3 kGroup
+    ++++++++4 kTreeItem
+  )HTML"));
+
+  EXPECT_EQ([GetCocoaNode(2) isAccessibilityDisclosed], YES);
+  EXPECT_EQ([GetCocoaNode(4) isAccessibilityDisclosed], NO);
+}
+
 // `accessibilityRowCount` and `accessibilityColumnCount` on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

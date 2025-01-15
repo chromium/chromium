@@ -217,6 +217,11 @@ void AddResourcePaths(content::WebUIDataSource* html_source) {
       {"left_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG},
       {"right_banner.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG},
       {"right_banner_dark.svg", IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG},
+      {"glic_banner_top_right.svg",
+       IDR_SIGNIN_IMAGES_GLIC_BANNER_TOP_RIGHT_SVG},
+      {"glic_banner_bottom_left.svg",
+       IDR_SIGNIN_IMAGES_GLIC_BANNER_BOTTOM_LEFT_SVG},
+      {"glic_logo.svg", IDR_SIGNIN_IMAGES_GLIC_LOGO_SVG},
   };
   html_source->AddResourcePaths(kResourcePaths);
 }

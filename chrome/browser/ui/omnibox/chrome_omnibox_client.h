@@ -67,10 +67,10 @@ class ChromeOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  bool ProcessExtensionKeyword(const std::u16string& text,
-                               const TemplateURL* template_url,
-                               const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(const std::u16string& text,
+                             const TemplateURL* template_url,
+                             const AutocompleteMatch& match,
+                             WindowOpenDisposition disposition) override;
   void OnInputStateChanged() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;

@@ -217,6 +217,12 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
              "AutofillOptimizeFormExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch to remove the condition in `::form_util::ShouldSkipFillField`
+// related to skipping fields that are already autofilled.
+BASE_FEATURE(kAutofillRemoveAlreadyAutofilledRendererFillSkipReason,
+             "AutofillRemoveAlreadyAutofilledRendererFillSkipReason",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Killswitch that guards replacing some form and field semantic comparison with
 // just [Form|Field]GlobalId comparisons.
 BASE_FEATURE(kAutofillUseFewerFormAndFieldComparison,

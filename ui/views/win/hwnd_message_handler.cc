@@ -3342,6 +3342,25 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
     return -1;
   }
 
+  TRACE_EVENT1(
+      "ui", "HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient",
+      "POINTER_TOUCH_INFO",
+      base::StringPrintf(
+          "pointerId: %" PRIu32 "\npointerFlags: %" PRIu32
+          "\nptPixelLocationRaw: (%" PRIi64 ", %" PRIi64 ")\npressure: %" PRIu32
+          "\norientation: %" PRIu32 "\nradiusX: %" PRIi64 "\nradiusY: %" PRIi64,
+          pointer_touch_info.pointerInfo.pointerId,
+          pointer_touch_info.pointerInfo.pointerFlags,
+          pointer_touch_info.pointerInfo.ptPixelLocationRaw.x,
+          pointer_touch_info.pointerInfo.ptPixelLocationRaw.y,
+          pointer_touch_info.pressure, pointer_touch_info.orientation,
+          abs(pointer_touch_info.rcContactRaw.right -
+              pointer_touch_info.rcContactRaw.left) /
+              2,
+          abs(pointer_touch_info.rcContactRaw.bottom -
+              pointer_touch_info.rcContactRaw.top) /
+              2));
+
   last_touch_or_pen_message_time_ = ::GetMessageTime();
   // Ignore enter/leave events, otherwise they will be converted in
   // |GetTouchEventType| to EventType::kTouchPressed/EventType::kTouchReleased
@@ -3491,6 +3510,20 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
     SetMsgHandled(FALSE);
     return -1;
   }
+
+  TRACE_EVENT1(
+      "ui", "HWNDMessageHandler::HandlePointerEventTypePenClient",
+      "POINTER_PEN_INFO",
+      base::StringPrintf("pointerId: %" PRIu32 "\npointerFlags: %" PRIu32
+                         "\nptPixelLocationRaw: (%" PRIi64 ", %" PRIi64
+                         ")\npressure: %" PRIu32 "\nrotation: %" PRIu32
+                         "\ntiltX: %" PRIi64 "\ntiltY: %" PRIi64,
+                         pointer_pen_info.pointerInfo.pointerId,
+                         pointer_pen_info.pointerInfo.pointerFlags,
+                         pointer_pen_info.pointerInfo.ptPixelLocationRaw.x,
+                         pointer_pen_info.pointerInfo.ptPixelLocationRaw.y,
+                         pointer_pen_info.pressure, pointer_pen_info.rotation,
+                         pointer_pen_info.tiltX, pointer_pen_info.tiltY));
 
   return HandlePointerEventTypePen(message, pointer_id, pointer_pen_info);
 }

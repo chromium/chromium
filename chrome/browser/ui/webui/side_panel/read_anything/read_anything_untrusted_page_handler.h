@@ -119,8 +119,24 @@ class ReadAnythingUntrustedPageHandler :
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
+  void OnSpeechRateChange(double rate) override;
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) override;
+  void OnLineSpaceChange(
+      read_anything::mojom::LineSpacing line_spacing) override;
+  void OnLetterSpaceChange(
+      read_anything::mojom::LetterSpacing letter_spacing) override;
+  void OnFontChange(const std::string& font) override;
+  void OnFontSizeChange(double font_size) override;
+  void OnLinksEnabledChanged(bool enabled) override;
+  void OnImagesEnabledChanged(bool enabled) override;
+  void OnColorChange(read_anything::mojom::Colors color) override;
+  void OnHighlightGranularityChanged(
+      read_anything::mojom::HighlightGranularity granularity) override;
+
+  // TranslateDriver::LanguageDetectionObserver:
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
 
   // ash::SessionObserver
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -149,8 +165,6 @@ class ReadAnythingUntrustedPageHandler :
 #endif
 
   // TranslateDriver::LanguageDetectionObserver:
-  void OnLanguageDetermined(
-      const translate::LanguageDetectionDetails& details) override;
   void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
   // ui::AXActionHandlerObserver:
@@ -163,18 +177,7 @@ class ReadAnythingUntrustedPageHandler :
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;
   void OnCopy() override;
-  void OnLineSpaceChange(
-      read_anything::mojom::LineSpacing line_spacing) override;
-  void OnLetterSpaceChange(
-      read_anything::mojom::LetterSpacing letter_spacing) override;
-  void OnFontChange(const std::string& font) override;
-  void OnFontSizeChange(double font_size) override;
-  void OnLinksEnabledChanged(bool enabled) override;
-  void OnImagesEnabledChanged(bool enabled) override;
-  void OnColorChange(read_anything::mojom::Colors color) override;
-  void OnSpeechRateChange(double rate) override;
-  void OnHighlightGranularityChanged(
-      read_anything::mojom::HighlightGranularity granularity) override;
+
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,

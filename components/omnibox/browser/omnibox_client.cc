@@ -84,12 +84,10 @@ OmniboxClient::GetLensOverlaySuggestInputs() const {
   return std::nullopt;
 }
 
-bool OmniboxClient::ProcessExtensionKeyword(const std::u16string& text,
-                                            const TemplateURL* template_url,
-                                            const AutocompleteMatch& match,
-                                            WindowOpenDisposition disposition) {
-  return false;
-}
+void OmniboxClient::ProcessExtensionMatch(const std::u16string& text,
+                                          const TemplateURL* template_url,
+                                          const AutocompleteMatch& match,
+                                          WindowOpenDisposition disposition) {}
 
 void OmniboxClient::OnUserPastedInOmniboxResultingInValidURL() {}
 

@@ -725,8 +725,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
       {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
       {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},
-      {"glicOsWidgetToggleSublabel",
-       IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL},
       {"glicKeyboardShortcut", IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT},
       {"glicKeyboardShortcutSublabel",
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
@@ -1524,10 +1522,8 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "syncDisconnectManagedProfileExplanation",
       l10n_util::GetStringFUTF8(
-          base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)
-              ? IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION
-              : IDS_SETTINGS_SYNC_DISCONNECT_MANAGED_PROFILE_EXPLANATION,
-          u"$1", base::ASCIIToUTF16(sync_dashboard_url)));
+          IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION, u"$1",
+          base::ASCIIToUTF16(sync_dashboard_url)));
 #endif
 }
 

@@ -197,6 +197,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterArchiveTabGroups,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
     &kAndroidTabDeclutterRescueKillswitch,
+    &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidToolbarScrollAblation,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
@@ -407,7 +408,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceDisableExtendedSyncPromos,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kEnableBatchUploadFromSettings,
-    &syncer::kReplaceSyncPromosWithSignInPromos,
     &syncer::kWebApkBackupAndRestoreBackend,
     &syncer::kUnoPhase2FollowUp,
     &tab_groups::kTabGroupSyncAndroid,
@@ -526,6 +526,10 @@ BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch,
 
 BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
              "AndroidTabDeclutterRescueKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,
+             "AndroidTabSkipSaveTabsTaskKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,

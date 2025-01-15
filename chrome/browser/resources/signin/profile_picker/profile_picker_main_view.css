@@ -37,8 +37,19 @@
   text-align: center;
 }
 
+#images-container {
+  display: flex;
+  justify-content: center;
+  column-gap: 12px;
+}
+
+#glic-logo,
 #product-logo {
   height: 32px;
+}
+
+#glic-logo {
+  content: url(glic_logo.svg);
 }
 
 .title {

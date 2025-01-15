@@ -11,6 +11,7 @@
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -42,12 +43,14 @@ PendingURLLoaderFactoryBundle::PendingURLLoaderFactoryBundle(
         pending_default_factory,
     SchemeMap pending_scheme_specific_factories,
     OriginMap pending_isolated_world_factories,
+    mojom::LocalResourceLoaderConfigPtr local_resource_loader_config,
     bool bypass_redirect_checks)
     : pending_default_factory_(std::move(pending_default_factory)),
       pending_scheme_specific_factories_(
           std::move(pending_scheme_specific_factories)),
       pending_isolated_world_factories_(
           std::move(pending_isolated_world_factories)),
+      local_resource_loader_config_(std::move(local_resource_loader_config)),
       bypass_redirect_checks_(bypass_redirect_checks) {}
 
 PendingURLLoaderFactoryBundle::~PendingURLLoaderFactoryBundle() = default;
@@ -144,7 +147,7 @@ URLLoaderFactoryBundle::Clone() {
           std::move(pending_default_factory),
           CloneRemoteMapToPendingRemoteMap(scheme_specific_factories_),
           CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
-          bypass_redirect_checks_);
+          local_resource_loader_config_.Clone(), bypass_redirect_checks_);
 
   return pending_factories;
 }
@@ -167,6 +170,8 @@ void URLLoaderFactoryBundle::Update(
       &isolated_world_factories_,
       std::move(pending_factories->pending_isolated_world_factories()));
   bypass_redirect_checks_ = pending_factories->bypass_redirect_checks();
+  local_resource_loader_config_ =
+      std::move(pending_factories->local_resource_loader_config());
 }
 
 }  // namespace blink

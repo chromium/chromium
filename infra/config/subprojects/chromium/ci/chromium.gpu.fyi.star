@@ -272,7 +272,7 @@ ci.thin_tester(
             "gpu_pixel_4_stable",
         ],
         per_test_modifications = {
-            "expected_color_pixel_passthrough_test": targets.mixin(
+            "expected_color_pixel_passthrough_ganesh_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to
@@ -292,7 +292,7 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "pixel_skia_gold_passthrough_test": targets.mixin(
+            "pixel_skia_gold_passthrough_ganesh_test": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to
@@ -312,7 +312,7 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-wcg-for-test",
                 ],
             ),
-            "screenshot_sync_passthrough_tests": targets.mixin(
+            "screenshot_sync_passthrough_ganesh_tests": targets.mixin(
                 # Pixel 4s are weird in that they can output in different color spaces
                 # simultaneously. The readback code for capturing a screenshot assumes
                 # only one color space, so disable wide color gamut for the test to

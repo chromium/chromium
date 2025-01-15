@@ -153,6 +153,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -2330,6 +2331,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Used in case we need to add or remove intercepting proxies to the
   // running renderer, or in case of Network Service connection errors.
   void UpdateSubresourceLoaderFactories();
+
+  void UpdateLocalResourceLoader(
+      blink::mojom::LocalResourceLoaderConfigPtr loader_config);
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateCrossOriginPrefetchLoaderFactoryBundle();
@@ -4725,6 +4729,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // WebUI::kNoWebUI, respectively.
   std::unique_ptr<WebUIImpl> web_ui_;
   WebUI::TypeID web_ui_type_ = WebUI::kNoWebUI;
+
+  // Resource metadata to be sent to WebUI renderer processes.
+  blink::mojom::LocalResourceLoaderConfigPtr local_resource_loader_config_;
 
   // If true, then the RenderFrame has selected text.
   bool has_selection_ = false;

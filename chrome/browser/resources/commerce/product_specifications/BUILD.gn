@@ -17,7 +17,6 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
-    "new_column_selector.ts",
     "table.ts",
   ]
 
@@ -32,6 +31,7 @@ build_webui("build") {
     "header_menu.css",
     "horizontal_carousel.css",
     "loading_state.css",
+    "new_column_selector.css",
     "product_selection_menu.css",
     "product_selector.css",
     "shared_vars.css",
@@ -67,6 +67,8 @@ build_webui("build") {
     "horizontal_carousel.ts",
     "loading_state.html.ts",
     "loading_state.ts",
+    "new_column_selector.html.ts",
+    "new_column_selector.ts",
     "product_selection_menu.html.ts",
     "product_selection_menu.ts",
     "product_selector.html.ts",

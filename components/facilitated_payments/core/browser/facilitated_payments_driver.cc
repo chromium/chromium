@@ -41,9 +41,11 @@ void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
 
 void FacilitatedPaymentsDriver::TriggerEwalletPushPayment(
     const GURL& payment_link_url,
-    const GURL& page_url) {
+    const GURL& page_url,
+    ukm::SourceId ukm_source_id) {
   CHECK(ewallet_manager_);
-  ewallet_manager_->TriggerEwalletPushPayment(payment_link_url, page_url);
+  ewallet_manager_->TriggerEwalletPushPayment(payment_link_url, page_url,
+                                              ukm_source_id);
 }
 
 void FacilitatedPaymentsDriver::SetPixManagerForTesting(

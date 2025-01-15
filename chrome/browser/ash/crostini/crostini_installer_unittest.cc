@@ -240,7 +240,7 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
       AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
           profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsibleInfra();
+  test_helper.SetUpAnsiblePlaybookPreference();
 
   EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
   ON_CALL(*mock_ansible_management_service, ConfigureContainer)
@@ -374,7 +374,7 @@ TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
       AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
           profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsibleInfra();
+  test_helper.SetUpAnsiblePlaybookPreference();
 
   EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
   ON_CALL(*mock_ansible_management_service, ConfigureContainer)

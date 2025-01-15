@@ -121,6 +121,10 @@ enum class PixFlowExitedReason {
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
 
+// Log when a given payment link in a certain page for an eWallet push payment
+// flow is detected.
+void LogPaymentLinkDetected(ukm::SourceId ukm_source_id);
+
 // Log when the FOP selector UI is shown.
 void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id);
 

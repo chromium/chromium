@@ -182,11 +182,6 @@ BASE_FEATURE(kStableDeviceId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Disables signout for enteprise managed profiles
-BASE_FEATURE(kDisallowManagedProfileSignout,
-             "DisallowManagedProfileSignout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
              "VerifyRequestInitiatorForMirrorHeaders",

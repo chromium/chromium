@@ -201,7 +201,7 @@ ui::ButtonStyle DialogDelegate::GetDialogButtonStyle(
   }
 
   return GetIsDefault(button) ? ui::ButtonStyle::kProminent
-                              : ui::ButtonStyle::kDefault;
+                              : ui::ButtonStyle::kTonal;
 }
 
 bool DialogDelegate::GetIsDefault(ui::mojom::DialogButton button) const {

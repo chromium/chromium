@@ -63,7 +63,8 @@ StreamContainer::StreamContainer(
       stream_url_(transferrable_loader_->url),
       response_headers_(transferrable_loader_->head->headers) {}
 
-StreamContainer::~StreamContainer() = default;
+StreamContainer::~StreamContainer() {
+}
 
 base::WeakPtr<StreamContainer> StreamContainer::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -124,8 +125,7 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
 
 void MimeHandlerViewGuest::GuestOverrideRendererPreferences(
     blink::RendererPreferences& preferences) {
-  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-  preferences.can_accept_load_drops = true;
+  // TODO(crbug.com/40202416): Set `can_accept_load_drops`.
 }
 
 void MimeHandlerViewGuest::SetBeforeUnloadController(
@@ -238,10 +238,8 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
   DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   GetController().LoadURL(stream_->handler_url(), content::Referrer(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
-    web_contents()->SyncRendererPrefs();
-  }
+  web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
+  web_contents()->SyncRendererPrefs();
 }
 
 void MimeHandlerViewGuest::DidInitialize(
@@ -554,13 +552,8 @@ void MimeHandlerViewGuest::DidFinishNavigation(
 
 #if BUILDFLAG(ENABLE_PDF)
     if (stream_->extension_id() == extension_misc::kPdfExtensionId) {
-      // Host zoom level should match the override set in `CreateInnerPage()`.
-      if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-        // TODO(crbug.com/376084060): Add an equivalent CHECK under MPArch.
-        NOTIMPLEMENTED();
-      } else {
-        DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
-      }
+      // Host zoom level should match the override set in `CreateWebContents()`.
+      DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
     }
 #endif  // BUILDFLAG(ENABLE_PDF)
   }

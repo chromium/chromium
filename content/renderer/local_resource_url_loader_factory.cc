@@ -116,6 +116,7 @@ void LocalResourceURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  CHECK(fallback_);
   if (!CanServe(request)) {
     fallback_->CreateLoaderAndStart(std::move(loader), request_id, options,
                                     request, std::move(client),

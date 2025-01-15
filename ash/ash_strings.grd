@@ -8914,49 +8914,55 @@ To shut down the device, press and hold the power button on the device again.
         Send feedback
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_USER_FEEDBACK_DESCRIPTION" desc="The description for the user feedback UI">
-        This is experimental AI feature and won't always get it right.
+        Generative AI can make mistakes, including about people, so double-check it.
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_UP_ACCESSIBLE_NAME" desc="The accessible name for the thumb up button which is in the user feedback UI">
-        Thumbs up would submit the feedback that you like this suggestion
+        Thumbs up would submit the feedback that you like this suggested group
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_THUMB_DOWN_ACCESSIBLE_NAME" desc="The accessible name for the thumb down button which is in the user feedback UI">
-        Thumbs down would submit the feedback that you dislike this suggestion
+        Thumbs down would submit the feedback that you dislike this suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the tab section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_TAB_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the tab section.">
         Tabs
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" translateable="false" desc="In the birch coral button selector UI, the subtitle for the app section.">
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_APP_SUBTITLE" desc="In the birch coral button selector UI, the subtitle for the app section.">
         Apps
       </message>
       <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the birch coral button selector UI.">
         Coral selector
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Hide
+      <message name="IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP" desc="The tooltip of the close button on smart grouping expanded menu item">
+        Remove item from suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" translateable="false" desc="The accessible name for the birch coral button selector UI.">
-        Show
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN" desc="The accessible name for the birch coral button selector UI.">
+        Hide items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" translateable="false" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
+      <message name="IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN" desc="The accessible name for the birch coral button selector UI.">
+        Show items in <ph name="GROUP_NAME">$1<ex>Trip To Tokyo</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_SAVED_GROUPS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to save a new coral group when the maximum number of coral saved groups has been reached.">
         Maximum number of saved groups reached.
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME" translateable="false" desc="The general name of the suggestions provided by coral service">
+      <message name="IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME" desc="The general name of the suggestions provided by coral service">
         Suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE" translateable="false" desc="The subtitle of coral restore chip">
+      <message name="IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM" desc="The name of smart grouping service in Glanceables bar context menu item">
+        App &amp; tab groups
+      </message>
+      <message name="IDS_ASH_BIRCH_CORAL_RESTORE_CHIP_SUBTITLE" desc="The subtitle of coral restore chip">
         Resume suggested group
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE" translateable="false" desc="The subtitle of coral in-session chip">
+      <message name="IDS_ASH_BIRCH_CORAL_IN_SESSION_CHIP_SUBTITLE" desc="The subtitle of coral in-session chip">
         Organize in a new desk
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP" translateable="false" desc="The chip menu item label of opening a group">
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP" desc="The chip menu item label of opening a group">
         Open
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP" translateable="false" desc="The chip menu item label of saving a group as a desk template">
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP" desc="The chip menu item label of saving a group as a desk template">
         Save group for later
       </message>
-      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP" translateable="false" desc="The chip menu item label of hiding a group">
-        Don't suggest group to resume
+      <message name="IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP" desc="The chip menu item label of hiding a group">
+        Hide all group suggestions
       </message>
 
       <!-- Graduation app strings -->

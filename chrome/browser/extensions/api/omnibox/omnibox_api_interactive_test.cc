@@ -906,7 +906,16 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
   }
 }
 
+// TODO(389999425): Unparameterize this test class.
 class UnscopedOmniboxApiTest : public OmniboxApiTest {
+  void SetUpOnMainThread() override {
+    OmniboxApiTest::SetUpOnMainThread();
+    // Prevent the stop timer from killing the hints fetch early, which might
+    // cause test flakiness due to timeout.
+    GetAutocompleteController()->SetStartStopTimerDurationForTesting(
+        base::Seconds(20));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_{
       extensions_features::kExperimentalOmniboxLabs};
 };
@@ -1028,11 +1037,6 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   chrome::FocusLocationBar(browser());
 
-  // Prevent the stop timer from killing the hints fetch early, which might
-  // cause test flakiness due to timeout.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(20));
-
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
                           ChromeAutocompleteSchemeClassifier(profile()));
@@ -1086,6 +1090,67 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
     VerifyMatchComponents(expected_components, result.match_at(3));
   }
 }
+
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnInputEntered) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+  // This extension will collect input entered into the omnibox and pass it
+  // to the browser when instructed.
+  constexpr char kBackground[] =
+      R"(
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: text, description: 'description'}
+           ]);
+         });
+
+         chrome.omnibox.onInputEntered.addListener((text, disposition) => {
+           chrome.test.sendMessage(text);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener listener("sending input");
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Send an input to the extension and wait for the sggestion to arrive before
+  // we can select it.
+  AutocompleteInput input(u"sending input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  ASSERT_TRUE(autocomplete_controller->done());
+
+  LocationBar* location_bar = GetLocationBar(browser());
+  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
+
+  // This is equivalent of the user arrowing down in the omnibox.
+  // We need to select the second match because the first one is for the default
+  // provider.
+  omnibox_view->model()->SetPopupSelection(OmniboxPopupSelection(1));
+
+  // Select the suggestion created by the extension, which will trigger the
+  // `onInputEntered` event.
+  omnibox_view->model()->OpenSelection(base::TimeTicks(),
+                                       WindowOpenDisposition::CURRENT_TAB);
+
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ("sending input", listener.message());
+  EXPECT_TRUE(listener.had_user_gesture());
+}
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          UnscopedOmniboxApiTest,
                          testing::Values(ContextType::kServiceWorker));

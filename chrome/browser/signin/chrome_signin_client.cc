@@ -477,16 +477,9 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
 #if !BUILDFLAG(IS_ANDROID)
   // Check if managed user.
   if (enterprise_util::UserAcceptedAccountManagement(profile_)) {
-    if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
-      // Allow revoke sync but disallow signout regardless of consent level of
-      // the primary account.
-      return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
-    }
-    // Syncing users are not allowed to revoke sync or signout. Signed in non-
-    // syncing users don't have any signout restrictions related to management.
-    if (has_sync_account) {
-      return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
-    }
+    // Allow revoke sync but disallow signout regardless of consent level of
+    // the primary account.
+    return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
   }
 #endif
   return SigninClient::SignoutDecision::ALLOW;

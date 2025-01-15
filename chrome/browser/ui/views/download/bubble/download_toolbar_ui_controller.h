@@ -110,6 +110,9 @@ class DownloadToolbarUIController
     return &auto_close_bubble_timer_;
   }
 
+  bool IsProgressRingInDownloadingStateForTesting();
+  bool IsProgressRingInDormantStateForTesting();
+
  private:
   // Closes the bubble when it detects an event such as a mouse click, escape
   // key press, etc., which indicates the user's intent to close the bubble.
@@ -160,6 +163,10 @@ class DownloadToolbarUIController
 
   void CloseAutofillPopup();
 
+  // Whether to show the progress ring as a continuously spinning ring, during
+  // deep scanning or if the progress is indeterminate.
+  bool ShouldShowScanningAnimation() const;
+
   // Makes the required visual changes to set/unset the button into a dormant
   // or normal state.
   void UpdateIconDormant();
@@ -196,6 +203,12 @@ class DownloadToolbarUIController
   // UpdateIcon() afterwards.
   IconState state_ = IconState::kComplete;
   IconActive active_ = IconActive::kInactive;
+
+  // Parameters determining how the progress ring should be drawn.
+  ProgressInfo progress_info_;
+
+  // Whether we have a new progress_info_ and need to redraw the button.
+  bool redraw_progress_soon_ = false;
 
   // Tracks the task to automatically close the partial view after some amount
   // of time open, to minimize disruption to the user.

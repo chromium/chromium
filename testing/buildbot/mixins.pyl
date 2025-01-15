@@ -132,13 +132,6 @@
       ],
     },
   },
-  'chromeos-tast-public-builder': {
-    'args': [
-      'tast.setup.FieldTrialConfig=enable',
-      'maybemissingvars=ui\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\.(key|key_type|server)',
-      'shard_method=hash',
-    ],
-  },
   'chromium-tester-service-account': {
     'fail_if_unused': False,
     'swarming': {

@@ -175,6 +175,9 @@ _CONFIG = [
             'base::ok',
             'base::unexpected',
 
+            # //base/types/zip.h
+            'base::zip',
+
             # //base/functional/bind.h
             'base::IgnoreResult',
 
@@ -1847,6 +1850,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/loader/url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/child_url_loader_factory_bundle.cc',
+            'third_party/blink/renderer/platform/loader/tracked_child_url_loader_factory_bundle.cc',
+        ],
+        'allowed': ['mojom::LocalResourceLoaderConfigPtr'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h',
         ],
         # base::RefCounted is prohibited in platform/ as defined above, but
@@ -2581,6 +2592,13 @@ def main():
                     print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
+                    print('')
+                    print(
+                        'This check originates in third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py.'
+                    )
+                    print(
+                        'If you think this should be allowed, send a CL with an edit to that file.'
+                    )
         except (IOError, UnicodeDecodeError) as e:
             print('could not open %s: %s' % (path, e))
 

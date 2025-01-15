@@ -6,17 +6,21 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/power_monitor_test.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -813,6 +817,40 @@ TEST_F(SessionLengthLimiterTest, SuspendAndRun) {
 
   runner_->FastForwardBy(base::Seconds(20));
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
+}
+
+class DemoModeSessionLengthLimiterTest : public SessionLengthLimiterTest {
+ protected:
+  void SetUp() override {
+    SessionLengthLimiterTest::SetUp();
+    features_.InitAndEnableFeature(features::kDemoModeSignIn);
+
+    settings_helper_.InstallAttributes()->SetDemoMode();
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  ScopedCrosSettingsTestHelper settings_helper_;
+};
+
+// Verifies that local state is correctly updated when waiting for initial user
+// activity is toggled and no user activity has occurred yet.
+TEST_F(DemoModeSessionLengthLimiterTest, DemoModeForceNotWaitUserActivity) {
+  CreateSessionLengthLimiter(false);
+
+  // Verify that the pref indicating user activity was not set and the session
+  // start time was set.
+  EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
+  EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
+
+  // Set pref to enable for initial user activity.
+  SetWaitForInitialUserActivityPref(true);
+
+  // Verify that the pref indicating user activity was not set and the session
+  // start time was.
+  EXPECT_FALSE(IsSessionUserActivitySeenPrefSet());
+  EXPECT_EQ(session_start_time_, GetSessionStartTimePref());
 }
 
 }  // namespace ash
