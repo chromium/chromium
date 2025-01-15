@@ -172,7 +172,6 @@ namespace media {
 // alongside the definition of their values in the .cc file.
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusDuckFlash);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusLossSuspendMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioInputConfirmReadsViaShmem);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPictureForVideoPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
