@@ -115,6 +115,92 @@ TEST_F(UrlMatcherWithBypassTest,
             UrlMatcherWithBypassResult::kMatchAndNoBypass);
 }
 
+TEST_F(UrlMatcherWithBypassTest,
+       AddRulesWithoutBypass_RulesAreEvaluatedInCorrectOrder) {
+  UrlMatcherWithBypass matcher;
+  MaskedDomainList mdl;
+
+  auto* resource_owner = mdl.add_resource_owners();
+
+  resource_owner->set_owner_name("a.com");
+  resource_owner->add_owned_properties("a.com");
+  resource_owner->add_owned_resources()->set_domain("test.com");
+
+  resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("b.com");
+  resource_owner->add_owned_properties("b.com");
+  resource_owner->add_owned_resources()->set_domain("sub.test.com");
+
+  for (auto owner : mdl.resource_owners()) {
+    matcher.AddRules(owner, /*excluded_domains=*/{},
+                     /*create_bypass_matcher=*/true);
+  }
+
+  // test.com should match with a.com when a.com is the top frame site.
+  // test.com does not match with the sub.test.com rule, but it does match the
+  // test.com rule.
+  EXPECT_EQ(matcher.Matches(GURL("https://test.com"),
+                            net::SchemefulSite(GURL("https://a.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndBypass);
+
+  // sub.test.com should match with b.com when b.com is the top frame site.
+  // Even though sub.test.com is a subdomain of test.com, it should match with
+  // b.com since it's a more specific domain that that should have a rule.
+  EXPECT_EQ(matcher.Matches(GURL("https://sub.test.com"),
+                            net::SchemefulSite(GURL("https://b.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndBypass);
+
+  // ssub.test.com should match with a.com. Since ssub.test.com does not have
+  // its own matcher, it matches to the a.com *.test.com rule.
+  EXPECT_EQ(matcher.Matches(GURL("https://ssub.test.com"),
+                            net::SchemefulSite(GURL("https://a.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndBypass);
+}
+
+TEST_F(
+    UrlMatcherWithBypassTest,
+    AddRulesWithoutBypass_LongDomainDoesntDisruptMatcherOrderingAndMatching) {
+  UrlMatcherWithBypass matcher;
+  MaskedDomainList mdl;
+
+  auto* resource_owner = mdl.add_resource_owners();
+
+  resource_owner->set_owner_name("a.com");
+  resource_owner->add_owned_properties("a.com");
+  resource_owner->add_owned_resources()->set_domain("test.com");
+  resource_owner->add_owned_resources()->set_domain("abtesting.com");
+
+  resource_owner = mdl.add_resource_owners();
+  resource_owner->set_owner_name("b.com");
+  resource_owner->add_owned_properties("b.com");
+  resource_owner->add_owned_resources()->set_domain("sub.test.com");
+
+  for (auto owner : mdl.resource_owners()) {
+    matcher.AddRules(owner, /*excluded_domains=*/{},
+                     /*create_bypass_matcher=*/true);
+  }
+
+  // "abtesting.com" should match with a.com when "a.com" is the top frame site.
+  // "abtesting.com" does not match with the "sub.test.com" rule, but it does
+  // match the test.com rule.
+  EXPECT_EQ(matcher.Matches(GURL("https://abtesting.com"),
+                            net::SchemefulSite(GURL("https://a.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndBypass);
+
+  // "sub.test.com" should match with "b.com" when "b.com" is the top frame
+  // site.
+  // This test ensures that the matchers aren't sorted with the matcher
+  // containing "test.com" being first (due to "abtesting.com").
+  EXPECT_EQ(matcher.Matches(GURL("https://sub.test.com"),
+                            net::SchemefulSite(GURL("https://b.com")),
+                            /*skip_bypass_check=*/false),
+            UrlMatcherWithBypassResult::kMatchAndBypass);
+}
+
 class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {
 };
 

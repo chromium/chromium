@@ -196,6 +196,16 @@ void UrlMatcherWithBypass::AddRules(
     matcher_ptrs.shrink_to_fit();
     match_list_with_bypass_map_[partition_key].emplace_back(
         std::move(matcher_ptrs), bypass_matcher_key_to_use);
+
+    // Sort the matchers in a specific key by the matcher's longest domain
+    // length.
+    // TODO(crbug.com/389912816): Improve efficiency of this sorting using sets.
+    std::sort(match_list_with_bypass_map_[partition_key].begin(),
+              match_list_with_bypass_map_[partition_key].end(),
+              [](const PartitionMatcher& a, const PartitionMatcher& b) {
+                return a.matchers.back()->rules().back()->ToString().length() >
+                       b.matchers.back()->rules().back()->ToString().length();
+              });
   }
 
   for (auto& [_, matcher] : matchers_map) {
