@@ -53,8 +53,11 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/tabs/color_picker_view.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -341,6 +344,7 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     if (CanShareGroups()) {
       menu_items_.push_back(AddChildView(BuildManageSharedGroupButton()));
       menu_items_.push_back(AddChildView(BuildShareGroupButton()));
+      menu_items_.push_back(AddChildView(BuildRecentActivityButton()));
     }
 
     menu_items_.push_back(AddChildView(BuildHideGroupButton()));
@@ -391,6 +395,10 @@ void TabGroupEditorBubbleView::UpdateMenuContentsVisibility() {
       }
       case TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW: {
         button->SetVisible(CanMoveGroupToNewWindow());
+        break;
+      }
+      case TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY: {
+        button->SetVisible(IsGroupShared() && HasRecentActivity());
         break;
       }
     }
@@ -561,6 +569,20 @@ TabGroupEditorBubbleView::BuildShareGroupButton() {
   return menu_item;
 }
 
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildRecentActivityButton() {
+  auto menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY),
+      base::BindRepeating(&TabGroupEditorBubbleView::RecentActivityPressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kHistoryIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleRecentActivityButtonId);
+  return menu_item;
+}
+
 TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
 
 tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
@@ -699,6 +721,11 @@ bool TabGroupEditorBubbleView::IsGroupShared() const {
   return maybe_saved_group.value().is_shared_tab_group();
 }
 
+bool TabGroupEditorBubbleView::HasRecentActivity() const {
+  return tab_groups::SavedTabGroupUtils::HasRecentActivity(browser_->profile(),
+                                                           group_);
+}
+
 bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {
   PrefService* pref_service = browser_->profile()->GetPrefs();
   return (CanSaveGroups() && tab_groups::IsTabGroupsSaveV2Enabled() &&
@@ -790,6 +817,19 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
         shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::
             kManageGroup);
   }
+}
+
+void TabGroupEditorBubbleView::RecentActivityPressed() {
+  auto* tab_group_header =
+      BrowserView::GetBrowserViewForBrowser(browser_)->tabstrip()->group_header(
+          group_);
+
+  RecentActivityBubbleCoordinator bubble_coordinator;
+  bubble_coordinator.Show(tab_group_header,
+                          browser_->tab_strip_model()->GetActiveWebContents(),
+                          tab_groups::SavedTabGroupUtils::GetRecentActivity(
+                              browser_->profile(), group_),
+                          browser_->profile());
 }
 
 // static

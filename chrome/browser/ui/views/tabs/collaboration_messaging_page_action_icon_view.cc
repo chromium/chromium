@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -13,8 +12,8 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
@@ -104,39 +103,20 @@ void CollaborationMessagingPageActionIconView::UpdateContent(
   UpdateIconImage();
 }
 
-std::vector<ActivityLogItem>
-CollaborationMessagingPageActionIconView::GetActivityLog() {
-  auto* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_sync_service);
-  auto* messaging_service =
-      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
-          profile_);
-  CHECK(messaging_service);
-
+tab_groups::LocalTabGroupID
+CollaborationMessagingPageActionIconView::GetGroupId() {
   auto* tab = tabs::TabInterface::GetFromContents(GetWebContents());
   auto group = tab->GetGroup();
   CHECK(group.has_value());
-
-  auto saved_tab_group = tab_group_sync_service->GetGroup(group.value());
-  CHECK(saved_tab_group);
-  auto collaboration_id = saved_tab_group->collaboration_id();
-
-  // A message should never be delivered to a tab that is not shared.
-  CHECK(collaboration_id.has_value());
-
-  ActivityLogQueryParams activity_log_params;
-  activity_log_params.result_length =
-      RecentActivityBubbleDialogView::kMaxNumberRows;
-  activity_log_params.collaboration_id =
-      data_sharing::GroupId(collaboration_id.value().value());
-
-  return messaging_service->GetActivityLog(activity_log_params);
+  return group.value();
 }
 
 void CollaborationMessagingPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  bubble_coordinator_.Show(this, GetWebContents(), GetActivityLog(), profile_);
+  bubble_coordinator_.Show(
+      this, GetWebContents(),
+      tab_groups::SavedTabGroupUtils::GetRecentActivity(profile_, GetGroupId()),
+      profile_);
 }
 
 views::BubbleDialogDelegate*

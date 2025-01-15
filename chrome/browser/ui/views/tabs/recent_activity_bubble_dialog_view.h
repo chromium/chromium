@@ -22,6 +22,7 @@ class Profile;
 
 class RecentActivityRowView;
 class RecentActivityRowImageView;
+class CollaborationMessagingPageActionIconView;
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRecentActivityBubbleDialogId);
 
@@ -117,8 +118,19 @@ class RecentActivityBubbleCoordinator : public views::WidgetObserver {
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Show a bubble containing the given activity log.
+  // The RecentActivity dialog is used in multiple places, anchoring to
+  // different items. Two public method overloads are supplied here so
+  // the correct arrow will be used.
+  //
+  // Calls ShowCommon with the default arrow.
   void Show(views::View* anchor_view,
+            content::WebContents* web_contents,
+            std::vector<collaboration::messaging::ActivityLogItem> activity_log,
+            Profile* profile);
+  // Same as above, but provides a default arrow for anchoring to the
+  // page action. The default for location bar bubbles is to have a
+  // TOP_RIGHT arrow.
+  void Show(CollaborationMessagingPageActionIconView* anchor_view,
             content::WebContents* web_contents,
             std::vector<collaboration::messaging::ActivityLogItem> activity_log,
             Profile* profile);
@@ -128,6 +140,14 @@ class RecentActivityBubbleCoordinator : public views::WidgetObserver {
   bool IsShowing();
 
  private:
+  // Show a bubble containing the given activity log.
+  void ShowCommon(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      std::vector<collaboration::messaging::ActivityLogItem> activity_log,
+      Profile* profile,
+      views::BubbleBorder::Arrow arrow);
+
   views::ViewTracker tracker_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

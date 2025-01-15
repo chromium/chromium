@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
@@ -393,19 +394,41 @@ void RecentActivityBubbleCoordinator::OnWidgetDestroying(
   bubble_widget_observation_.Reset();
 }
 
-void RecentActivityBubbleCoordinator::Show(
+void RecentActivityBubbleCoordinator::ShowCommon(
     views::View* anchor_view,
     content::WebContents* web_contents,
     std::vector<ActivityLogItem> activity_log,
-    Profile* profile) {
+    Profile* profile,
+    views::BubbleBorder::Arrow arrow) {
   DCHECK(!tracker_.view());
   auto bubble = std::make_unique<RecentActivityBubbleDialogView>(
       anchor_view, web_contents, activity_log, profile);
+  bubble->SetArrow(arrow);
   tracker_.SetView(bubble.get());
   auto* widget =
       RecentActivityBubbleDialogView::CreateBubble(std::move(bubble));
   bubble_widget_observation_.Observe(widget);
   widget->Show();
+}
+
+void RecentActivityBubbleCoordinator::Show(
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    std::vector<ActivityLogItem> activity_log,
+    Profile* profile) {
+  RecentActivityBubbleCoordinator::ShowCommon(
+      anchor_view, web_contents, activity_log, profile,
+      views::BubbleBorder::Arrow::TOP_LEFT);
+}
+
+void RecentActivityBubbleCoordinator::Show(
+    CollaborationMessagingPageActionIconView* anchor_view,
+    content::WebContents* web_contents,
+    std::vector<ActivityLogItem> activity_log,
+    Profile* profile) {
+  RecentActivityBubbleCoordinator::ShowCommon(
+      anchor_view, web_contents, activity_log, profile,
+      views::BubbleBorder::Arrow::TOP_RIGHT);
 }
 
 void RecentActivityBubbleCoordinator::Hide() {

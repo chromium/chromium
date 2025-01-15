@@ -46,7 +46,7 @@ class CollaborationMessagingPageActionIconView : public PageActionIconView {
       CollaborationMessagingPageActionIconViewInteractiveTest,
       ReactsToChangesInTabData);
 
-  std::vector<collaboration::messaging::ActivityLogItem> GetActivityLog();
+  tab_groups::LocalTabGroupID GetGroupId();
 
   // Helper method to get the collaboration data for the current tab.
   CollaborationMessagingTabData* GetCollaborationTabData() const;
