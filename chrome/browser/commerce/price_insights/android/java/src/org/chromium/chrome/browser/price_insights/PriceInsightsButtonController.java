@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Responsible for providing UI resources for showing price insights action on optional toolbar
@@ -109,11 +111,18 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             if (mBottomSheetCoordinatorForTesting != null) {
                 mBottomSheetCoordinator = mBottomSheetCoordinatorForTesting;
             } else {
+                Tab tab = mTabSupplier.get();
+                if (tab == null) {
+                    @StringRes
+                    int textResId = R.string.price_insights_content_price_tracking_error_message;
+                    Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mBottomSheetCoordinator =
                         new PriceInsightsBottomSheetCoordinator(
                                 mContext,
                                 mBottomSheetController,
-                                mTabSupplier.get(),
+                                tab,
                                 mTabModelSelectorSupplier.get(),
                                 mShoppingServiceSupplier.get(),
                                 mPriceInsightsDelegate);
