@@ -18,23 +18,8 @@ const EntityInstance& passport() {
        AttributeInstance(AttributeType(kPassportCountry), "USA", {}),
        AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
        AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
-      base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now(),
-      /*synced=*/false);
+      base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now());
   return kMyPassport;
-}
-
-const EntityInstance& loyalty_card() {
-  using enum AttributeTypeName;
-  static const EntityInstance kMyLoyaltyCard(
-      EntityType(EntityTypeName::kLoyaltyCard),
-      {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                         "Asterisk Alliance", {}),
-       AttributeInstance(AttributeType(kLoyaltyCardProvider), "Duck Airways",
-                         {}),
-       AttributeInstance(AttributeType(kLoyaltyCardMemberId), "1", {})},
-      base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now(),
-      /*synced=*/true);
-  return kMyLoyaltyCard;
 }
 
 TEST(AutofillEntityInstanceTest, Attributes) {
@@ -49,11 +34,6 @@ TEST(AutofillEntityInstanceTest, Attributes) {
     EXPECT_THAT(a->type(), AttributeType(kPassportName));
     EXPECT_THAT(a->value(), "Donald Duck");
   }
-}
-
-TEST(AutofillEntityInstanceTest, Synced) {
-  EXPECT_FALSE(passport().synced());
-  EXPECT_TRUE(loyalty_card().synced());
 }
 
 }  // namespace

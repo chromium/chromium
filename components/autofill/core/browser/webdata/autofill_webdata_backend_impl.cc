@@ -490,8 +490,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
            AttributeInstance(AttributeType(kPassportCountry), "USA", {}),
            AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
            AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
-          base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now(),
-          /*synced=*/false),
+          base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now()),
       EntityInstance(
           EntityType(EntityTypeName::kLoyaltyCard),
           {AttributeInstance(AttributeType(kLoyaltyCardProgram),
@@ -499,8 +498,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
            AttributeInstance(AttributeType(kLoyaltyCardProvider),
                              "Duck Airways", {}),
            AttributeInstance(AttributeType(kLoyaltyCardMemberId), "1", {})},
-          base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now(),
-          /*synced=*/true)};
+          base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now())};
   return std::make_unique<WDResult<std::vector<EntityInstance>>>(
       AUTOFILL_ENTITY_INSTANCE_RESULT, std::move(entities));
 }
