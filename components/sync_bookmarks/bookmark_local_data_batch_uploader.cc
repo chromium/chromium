@@ -4,8 +4,12 @@
 
 #include "components/sync_bookmarks/bookmark_local_data_batch_uploader.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <set>
 #include <cmath>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -96,7 +100,9 @@ void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
       bookmarked_urls.insert(bookmarked_urls.end(), urls.begin(), urls.end());
 
       if (base::FeatureList::IsEnabled(
-              switches::kSyncBookmarksBatchUploadSelectedItems)) {
+              switches::kSyncBookmarksBatchUploadSelectedItems) &&
+          base::FeatureList::IsEnabled(
+              switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
         // Populate the individual items for Batch Upload (used on
         // Windows/Mac/Linux) only.
         local_data_items.push_back(
@@ -129,7 +135,7 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
 
     if (base::FeatureList::IsEnabled(
             switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
-      LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMerge();
+      LocalBookmarkToAccountMerger(bookmark_model_).MoveAndMergeAllNodes();
     } else {
       BookmarkModelViewUsingLocalOrSyncableNodes
           local_or_syncable_bookmark_model_view(bookmark_model_);
@@ -172,6 +178,26 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigration() {
     base::UmaHistogramPercentage("Bookmarks.BatchUploadOutcomeRatio",
                                  static_cast<int>(std::round(100.0 * ratio)));
   }
+}
+
+void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
+    std::vector<syncer::LocalDataItemModel::DataId> items) {
+  // The per-item batch upload UI requires this new code path. The entry point
+  // is hidden if this feature flag is disabled so it's safe to CHECK here.
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload));
+
+  if (!CanUpload()) {
+    return;
+  }
+
+  std::set<int64_t> ids;
+  std::transform(items.begin(), items.end(), std::inserter(ids, ids.begin()),
+                 [](const syncer::LocalDataItemModel::DataId& id) {
+                   return std::get<int64_t>(id);
+                 });
+  LocalBookmarkToAccountMerger(bookmark_model_)
+      .MoveAndMergeSpecificSubtrees(std::move(ids));
 }
 
 bool BookmarkLocalDataBatchUploader::CanUpload() const {
