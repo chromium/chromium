@@ -42,10 +42,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
-#include "content/public/test/test_renderer_host.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -199,14 +197,12 @@ class TestPrefetchService : public PrefetchService {
 
 }  //  namespace
 
-class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
+class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
  public:
-  PrefetchURLLoaderInterceptorTestBase()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  PrefetchURLLoaderInterceptorTestBase() = default;
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    PrefetchingMetricsTestBase::SetUp();
 
     test_content_browser_client_ = std::make_unique<
         ::testing::StrictMock<ScopedMockContentBrowserClient>>();
@@ -229,17 +225,12 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     auto navigation_simulator = NavigationSimulator::CreateBrowserInitiated(
         GURL("https://test.com"), web_contents());
     navigation_simulator->Start();
-
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    attempt_entry_builder_ =
-        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            content_preloading_predictor::kSpeculationRules);
   }
 
   void TearDown() override {
     interceptor_.release();
 
-    RenderViewHostTestHarness::TearDown();
+    PrefetchingMetricsTestBase::TearDown();
   }
 
   TestPrefetchService* GetPrefetchService() {
@@ -362,53 +353,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return test_content_browser_client_.get();
   }
 
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return test_ukm_recorder_.get();
-  }
-
-  const test::PreloadingAttemptUkmEntryBuilder* attempt_entry_builder() {
-    return attempt_entry_builder_.get();
-  }
-
-  void ExpectCorrectUkmLogs(const GURL& expected_url,
-                            bool is_accurate_trigger,
-                            PreloadingTriggeringOutcome expected_outcome,
-                            PreloadingFailureReason expected_failure_reason =
-                                PreloadingFailureReason::kUnspecified) {
-    MockNavigationHandle mock_handle;
-    mock_handle.set_is_in_primary_main_frame(true);
-    mock_handle.set_is_same_document(false);
-    mock_handle.set_has_committed(true);
-    mock_handle.set_url(expected_url);
-    auto* preloading_data =
-        PreloadingData::GetOrCreateForWebContents(web_contents());
-
-    auto* preloading_data_impl =
-        static_cast<PreloadingDataImpl*>(preloading_data);
-    preloading_data_impl->DidStartNavigation(&mock_handle);
-    preloading_data_impl->DidFinishNavigation(&mock_handle);
-
-    auto actual_attempts = test_ukm_recorder()->GetEntries(
-        ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(actual_attempts.size(), 1u);
-
-    const auto expected_attempts = {attempt_entry_builder()->BuildEntry(
-        mock_handle.GetNextPageUkmSourceId(), PreloadingType::kPrefetch,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        expected_outcome, expected_failure_reason,
-        /*accurate=*/is_accurate_trigger,
-        /*ready_time=*/base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-        blink::mojom::SpeculationEagerness::kEager)};
-
-    EXPECT_THAT(actual_attempts,
-                testing::UnorderedElementsAreArray(expected_attempts))
-        << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
-                                                    expected_attempts);
-    // We do not test the `PreloadingPrediction` as it is added in
-    // `PreloadingDecider`.
-  }
-
   blink::DocumentToken MainDocumentToken() {
     return static_cast<RenderFrameHostImpl*>(main_rfh())->GetDocumentToken();
   }
@@ -498,10 +442,6 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   std::unique_ptr<ScopedMockContentBrowserClient> test_content_browser_client_;
-
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
-      attempt_entry_builder_;
 
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
@@ -600,8 +540,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
   EXPECT_EQ(weak_prefetch_container->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchResponseUsed);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -664,8 +605,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       base::Milliseconds(20), 1);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -715,8 +657,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       1);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -917,9 +860,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
-                       /*is_accurate_trigger=*/false,
-                       PreloadingTriggeringOutcome::kReady);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -960,9 +901,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
-  ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
-                       /*is_accurate_trigger=*/false,
-                       PreloadingTriggeringOutcome::kReady);
+  ExpectCorrectUkmLogs({});
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -1025,11 +964,11 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   //   - In this test, URLs are different.
   //
   // TODO(crbug.com/359802755): Investigate more and use correct URLs.
-  ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
-                       /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchNotUsedCookiesChanged));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .is_accurate = true,
+                        .expect_ready_time = true});
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
@@ -1076,8 +1015,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
   EXPECT_TRUE(was_intercepted(kTestUrl).value());
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 1);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
@@ -1119,10 +1059,11 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
   // `DoNotInterceptNavigationCookiesChanged`.
   //
   // TODO(crbug.com/359802755): Investigate more and use correct URLs.
-  ExpectCorrectUkmLogs(
-      GURL("http://Not.Accurate.Trigger/"),
-      /*is_accurate_trigger=*/true, PreloadingTriggeringOutcome::kFailure,
-      ToPreloadingFailureReason(PrefetchStatus::kPrefetchNotUsedProbeFailed));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchNotUsedProbeFailed),
+                        .is_accurate = true,
+                        .expect_ready_time = true});
 }
 
 enum class NotServableReason {
@@ -1277,14 +1218,14 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
   switch (std::get<2>(GetParam())) {
     case NotServableReason::kOnCompleteFailure:
       EXPECT_FALSE(was_intercepted(kTestUrl).value());
-      ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                           PreloadingTriggeringOutcome::kReady);
+      ExpectCorrectUkmLogs({.is_accurate = true}, kTestUrl);
       break;
 
     case NotServableReason::kAnotherRequest:
       EXPECT_FALSE(was_intercepted(kTestUrl).value());
-      ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                           PreloadingTriggeringOutcome::kSuccess);
+      ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kSuccess,
+                            .is_accurate = true},
+                           kTestUrl);
       producer_handle.reset();
       pending_request.client->OnComplete(
           network::URLLoaderCompletionStatus(net::OK));
@@ -1303,8 +1244,9 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
           EXPECT_TRUE(was_intercepted(kTestUrl).value());
           break;
       }
-      ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                           PreloadingTriggeringOutcome::kSuccess);
+      ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kSuccess,
+                            .is_accurate = true},
+                           kTestUrl);
       break;
   }
 
@@ -1397,8 +1339,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
   EXPECT_EQ(weak_prefetch_container->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchResponseUsed);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -1475,8 +1418,9 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
   EXPECT_EQ(weak_prefetch_container->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchResponseUsed);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kSuccess);
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kSuccess, .is_accurate = true},
+      kTestUrl);
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
@@ -1523,10 +1467,12 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   EXPECT_EQ(weak_prefetch_container->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-  ExpectCorrectUkmLogs(kTestUrl, /*is_accurate_trigger=*/true,
-                       PreloadingTriggeringOutcome::kFailure,
-                       ToPreloadingFailureReason(
-                           PrefetchStatus::kPrefetchNotUsedCookiesChanged));
+  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                        .failure = ToPreloadingFailureReason(
+                            PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .is_accurate = true,
+                        .expect_ready_time = true},
+                       kTestUrl);
 }
 
 // Regression test for crbug.com/327289525.

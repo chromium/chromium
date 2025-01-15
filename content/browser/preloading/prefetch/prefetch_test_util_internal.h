@@ -234,8 +234,11 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
                                  blink::mojom::SpeculationEagerness::kEager,
                              bool is_accurate = false);
 
-  ukm::SourceId ForceLogsUploadAndGetUkmId();
-
+  // `navigate_url` is used as `MockNavigationHandle`'s URL to simulate a
+  // navigation possibly using the prefetch. It is passed outside
+  // `ExpectCorrectUkmLogsArgs` to keep `ExpectCorrectUkmLogsArgs` non-complex.
+  ukm::SourceId ForceLogsUploadAndGetUkmId(
+      GURL navigate_url = GURL("http://Not.Accurate.Trigger.Url/"));
   struct ExpectCorrectUkmLogsArgs {
     PreloadingEligibility eligibility = PreloadingEligibility::kEligible;
     PreloadingHoldbackStatus holdback = PreloadingHoldbackStatus::kAllowed;
@@ -246,7 +249,9 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
     blink::mojom::SpeculationEagerness eagerness =
         blink::mojom::SpeculationEagerness::kEager;
   };
-  void ExpectCorrectUkmLogs(ExpectCorrectUkmLogsArgs args);
+  void ExpectCorrectUkmLogs(
+      ExpectCorrectUkmLogsArgs args,
+      GURL navigate_url = GURL("http://Not.Accurate.Trigger.Url/"));
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;

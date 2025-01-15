@@ -642,13 +642,13 @@ void PrefetchingMetricsTestBase::ExpectPrefetchSuccess(
   ExpectCorrectUkmLogs({.is_accurate = is_accurate, .eagerness = eagerness});
 }
 
-ukm::SourceId PrefetchingMetricsTestBase::ForceLogsUploadAndGetUkmId() {
+ukm::SourceId PrefetchingMetricsTestBase::ForceLogsUploadAndGetUkmId(
+    GURL navigate_url) {
   MockNavigationHandle mock_handle;
   mock_handle.set_is_in_primary_main_frame(true);
   mock_handle.set_is_same_document(false);
   mock_handle.set_has_committed(true);
-  // Makes sure the accurate bit is always false.
-  mock_handle.set_url(GURL("http://Not.Accurate.Trigger.Url/"));
+  mock_handle.set_url(std::move(navigate_url));
   auto* preloading_data =
       PreloadingData::GetOrCreateForWebContents(web_contents());
   // Sets the accurate bit, and records `TimeToNextNavigation`.
@@ -661,8 +661,9 @@ ukm::SourceId PrefetchingMetricsTestBase::ForceLogsUploadAndGetUkmId() {
 }
 
 void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
-    ExpectCorrectUkmLogsArgs args) {
-  const auto source_id = ForceLogsUploadAndGetUkmId();
+    ExpectCorrectUkmLogsArgs args,
+    GURL navigate_url) {
+  const auto source_id = ForceLogsUploadAndGetUkmId(std::move(navigate_url));
   auto actual_attempts = test_ukm_recorder()->GetEntries(
       ukm::builders::Preloading_Attempt::kEntryName,
       test::kPreloadingAttemptUkmMetrics);
