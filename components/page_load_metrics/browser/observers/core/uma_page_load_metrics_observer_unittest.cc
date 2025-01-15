@@ -114,9 +114,13 @@ class UmaPageLoadMetricsObserverTest
         internal::kHistogramLargestContentfulPaintMainFrame, 0);
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramLargestContentfulPaintMainFrameContentType, 0);
+    tester()->histogram_tester().ExpectTotalCount(
+        internal::kHistogramLargestContentfulPaintIncognito, 0);
   }
 
-  void TestAllFramesLCP(int value, LargestContentTextOrImage text_or_image) {
+  void TestAllFramesLCP(int value,
+                        LargestContentTextOrImage text_or_image,
+                        bool is_incognito = false) {
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                     internal::kHistogramLargestContentfulPaint),
                 testing::ElementsAre(base::Bucket(value, 1)));
@@ -125,6 +129,15 @@ class UmaPageLoadMetricsObserverTest
             internal::kHistogramLargestContentfulPaintContentType),
         testing::ElementsAre(base::Bucket(
             static_cast<base::HistogramBase::Sample>(text_or_image), 1)));
+
+    if (is_incognito) {
+      EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                      internal::kHistogramLargestContentfulPaintIncognito),
+                  testing::ElementsAre(base::Bucket(value, 1)));
+    } else {
+      tester()->histogram_tester().ExpectTotalCount(
+          internal::kHistogramLargestContentfulPaintIncognito, 0);
+    }
   }
 
   void TestCrossSiteSubFrameLCP(int value) {
@@ -350,6 +363,8 @@ TEST_P(UmaPageLoadMetricsObserverTest,
       internal::kHistogramLargestContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstContentfulPaintIncognito, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaintIncognito, 0);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest,
@@ -376,6 +391,8 @@ TEST_P(UmaPageLoadMetricsObserverTest,
       internal::kHistogramLargestContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstContentfulPaintIncognito, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaintIncognito, 0);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
@@ -1791,4 +1808,23 @@ TEST_P(UmaPageLoadMetricsObserverIncognitoTest, FirstContentfulPaintIncognito) {
     tester()->histogram_tester().ExpectBucketCount(
         histogram, first_contentful_paint.InMilliseconds(), 1);
   }
+}
+
+TEST_P(UmaPageLoadMetricsObserverIncognitoTest,
+       LargestContentfulPaintIncognito) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  // Pick a value that lines up with a histogram bucket.
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(4780);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 100;
+  PopulateRequiredTimingFields(&timing);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateTimingUpdate(timing);
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  TestAllFramesLCP(4780, LargestContentTextOrImage::kText, true);
 }

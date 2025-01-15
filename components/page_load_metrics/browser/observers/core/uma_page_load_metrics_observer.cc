@@ -137,6 +137,8 @@ const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
 const char kHistogramLargestContentfulPaintSetSpeculationRulesPrerender[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
     "SetSpeculationRulesPrerender";
+const char kHistogramLargestContentfulPaintIncognito[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Incognito";
 const char kHistogramNumInteractions[] =
     "PageLoad.InteractiveTiming.NumInteractions";
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
@@ -924,6 +926,11 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
             all_frames_largest_contentful_paint.Time(), GetDelegate())) {
       EmitLCPTraceEvent(lcp_time);
       PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint, lcp_time);
+
+      if (is_incognito_) {
+        PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaintIncognito,
+                            lcp_time);
+      }
 
       if (content::WebContents* web_contents = GetDelegate().GetWebContents()) {
         if (content::PreloadingData* preloading_data =

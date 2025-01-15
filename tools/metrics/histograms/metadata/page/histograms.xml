@@ -4078,6 +4078,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames.
+    Excludes any content painted after user input. Includes content that has
+    been removed from the page. See web.dev/lcp for more details.
+
+    This metric is a version of
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, that is recorded
+    only in incognito mode.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
     units="ms" expires_after="2025-07-13">
   <owner>iclelland@chromium.org</owner>
