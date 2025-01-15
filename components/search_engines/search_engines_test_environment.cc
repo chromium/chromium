@@ -32,9 +32,11 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
         metrics::prefs::kMetricsReportingEnabled, true);
   }
 
+  regional_capabilities_service_ =
+      regional_capabilities::CreateServiceWithFakeClient(*pref_service_);
+
   search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-      *pref_service_, local_state_,
-      regional_capabilities::CreateServiceWithFakeClient(*pref_service_),
+      *pref_service_, local_state_, *regional_capabilities_service_,
       /*is_profile_eligible_for_dse_guest_propagation=*/false);
 
   template_url_service_ = std::make_unique<TemplateURLService>(

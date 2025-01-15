@@ -46,14 +46,15 @@ class SearchEngineChoiceService : public KeyedService {
   SearchEngineChoiceService(
       PrefService& profile_prefs,
       PrefService* local_state,
-      std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
-          regional_capabilities,
+      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
       bool is_profile_eligible_for_dse_guest_propagation,
       int variations_country_id = country_codes::kCountryIDUnknown);
-  SearchEngineChoiceService(PrefService& profile_prefs,
-                            PrefService* local_state,
-                            bool is_profile_eligible_for_dse_guest_propagation,
-                            variations::VariationsService* variations_service);
+  SearchEngineChoiceService(
+      PrefService& profile_prefs,
+      PrefService* local_state,
+      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
+      bool is_profile_eligible_for_dse_guest_propagation,
+      variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -145,7 +146,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   const raw_ref<PrefService> profile_prefs_;
   const raw_ptr<PrefService> local_state_;
-  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+  const raw_ref<regional_capabilities::RegionalCapabilitiesService>
       regional_capabilities_service_;
   bool is_profile_eligible_for_dse_guest_propagation_ = false;
   base::ObserverList<Observer> observers_;

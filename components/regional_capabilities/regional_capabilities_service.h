@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -22,8 +23,7 @@ namespace regional_capabilities {
 
 // Service for managing the state related to Search Engine Choice (mostly
 // for the country information).
-// TODO(crbug.com/388792357): Make it a profile-keyed service.
-class RegionalCapabilitiesService {
+class RegionalCapabilitiesService : public KeyedService {
  public:
   // Helper that is responsible for providing the service with country data,
   // that could be coming from platform-specific or //chrome layer sources.
@@ -43,7 +43,7 @@ class RegionalCapabilitiesService {
   RegionalCapabilitiesService(
       PrefService& profile_prefs,
       std::unique_ptr<Client> regional_capabilities_client);
-  virtual ~RegionalCapabilitiesService();
+  ~RegionalCapabilitiesService() override;
 
   // Clears the country id cache to be able to change countries multiple times
   // in tests.

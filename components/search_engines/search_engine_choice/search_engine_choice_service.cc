@@ -173,45 +173,17 @@ int GetVariationsCountryId(variations::VariationsService* variations_service) {
 #endif
 }
 
-class RegionalCapabilitiesServiceClient
-    : public regional_capabilities::RegionalCapabilitiesService::Client {
- public:
-  explicit RegionalCapabilitiesServiceClient(
-      variations::VariationsService* variations_service)
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-      : country_id_(
-            variations_service
-                ? country_codes::CountryStringToCountryID(base::ToUpperASCII(
-                      variations_service->GetLatestCountry()))
-                : country_codes::kCountryIDUnknown) {
-  }
-
-  void FetchCountryId(CountryIdCallback on_country_id_fetched) override {
-    std::move(on_country_id_fetched).Run(country_id_);
-  }
-
- private:
-  // On ChromeOS and Linux, get it from `VariationsService`, by polling at
-  // every startup until it is found.
-  const int country_id_;
-#else
-  {
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-};
-
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
-    std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
-        regional_capabilities,
+    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     bool is_profile_eligbile_for_dse_guest_propagation,
     int variations_country_id)
     : profile_prefs_(profile_prefs),
       local_state_(local_state),
-      regional_capabilities_service_(std::move(regional_capabilities)),
+      regional_capabilities_service_(regional_capabilities),
       variations_country_id_(variations_country_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // No guest mode on IOS or Android.
@@ -230,18 +202,14 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
+    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     bool is_profile_eligible_for_dse_guest_propagation,
     variations::VariationsService* variations_service)
-    : SearchEngineChoiceService(
-          profile_prefs,
-          local_state,
-          std::make_unique<regional_capabilities::RegionalCapabilitiesService>(
-
-              profile_prefs,
-              std::make_unique<RegionalCapabilitiesServiceClient>(
-                  variations_service)),
-          is_profile_eligible_for_dse_guest_propagation,
-          GetVariationsCountryId(variations_service)) {}
+    : SearchEngineChoiceService(profile_prefs,
+                                local_state,
+                                regional_capabilities,
+                                is_profile_eligible_for_dse_guest_propagation,
+                                GetVariationsCountryId(variations_service)) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 

@@ -85,14 +85,24 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
   void InitService(int variation_country_id = country_codes::kCountryIDUnknown,
                    bool force_reset = false,
                    bool is_profile_eligible_for_dse_guest_propagation = false) {
-    if (!force_reset) {
+    if (force_reset) {
+      // Explicitly reset the services in reverse initialization order, to avoid
+      // dangling pointers issues due to interdependencies.
+      search_engine_choice_service_.reset();
+      regional_capabilities_service_.reset();
+    } else {
       // If something refers to the existing instance, expect to run into
       // issues!
       CHECK(!search_engine_choice_service_);
+      CHECK(!regional_capabilities_service_);
     }
+
+    regional_capabilities_service_ =
+        regional_capabilities::CreateServiceWithFakeClient(
+            pref_service_, variation_country_id);
+
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_,
-        regional_capabilities::CreateServiceWithFakeClient(pref_service_),
+        pref_service_, &local_state_, *regional_capabilities_service_,
         is_profile_eligible_for_dse_guest_propagation, variation_country_id);
   }
 
@@ -145,6 +155,8 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
   NiceMock<policy::MockPolicyService> policy_service_;
@@ -1394,9 +1406,11 @@ class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
     local_state_.registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, true);
 
+    regional_capabilities_service_ =
+        regional_capabilities::CreateServiceWithFakeClient(pref_service_);
+
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_,
-        regional_capabilities::CreateServiceWithFakeClient(pref_service_),
+        pref_service_, &local_state_, *regional_capabilities_service_,
         /*is_profile_eligible_for_dse_guest_propagation=*/false);
   }
 
@@ -1410,6 +1424,8 @@ class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
 };
@@ -1448,13 +1464,36 @@ class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
         metrics::prefs::kMetricsReportingEnabled, true);
   }
 
+  void InitRegionalCapabilitiesService(
+      int variation_country_id = country_codes::kCountryIDUnknown,
+      bool force_reset = false) {
+    if (!force_reset) {
+      // If something refers to the existing instance, expect to run into
+      // issues!
+      CHECK(!regional_capabilities_);
+    }
+
+    regional_capabilities_ = regional_capabilities::CreateServiceWithFakeClient(
+        pref_service_, variation_country_id);
+  }
+
   PrefService& pref_service() { return pref_service_; }
 
   PrefService& local_state() { return local_state_; }
 
+  regional_capabilities::RegionalCapabilitiesService& regional_capabilities() {
+    if (!regional_capabilities_) {
+      InitRegionalCapabilitiesService();
+    }
+
+    return *regional_capabilities_;
+  }
+
  private:
   TestingPrefServiceSimple local_state_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_;
 };
 
 // Tests that the country falls back to `country_codes::GetCurrentCountryID()`
@@ -1462,9 +1501,11 @@ class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
 TEST_F(SearchEngineChoiceServiceWithVariationsTest, NoVariationsCountry) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSearchEngineChoiceCountry));
+
+  InitRegionalCapabilitiesService(country_codes::kCountryIDUnknown);
+
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(),
-      regional_capabilities::CreateServiceWithFakeClient(pref_service()),
+      pref_service(), &local_state(), regional_capabilities(),
       /*is_profile_eligible_for_dse_guest_propagation=*/false,
       country_codes::kCountryIDUnknown);
 
@@ -1483,10 +1524,10 @@ TEST_F(SearchEngineChoiceServiceWithVariationsTest, WithVariationsCountry) {
     variation_country_id = country_codes::CountryStringToCountryID("DE");
   }
 
+  InitRegionalCapabilitiesService(variation_country_id);
+
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(),
-      regional_capabilities::CreateServiceWithFakeClient(pref_service(),
-                                                         variation_country_id),
+      pref_service(), &local_state(), regional_capabilities(),
       /*is_profile_eligible_for_dse_guest_propagation=*/false,
       variation_country_id);
 

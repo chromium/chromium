@@ -15,6 +15,7 @@ static_library("regional_capabilities") {
   deps = [
     "//base",
     "//components/country_codes",
+    "//components/keyed_service/core",
     "//components/prefs",
     "//components/search_engines:search_engine_utils",
 

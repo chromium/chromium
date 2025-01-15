@@ -86,6 +86,7 @@ include_rules = [
   "+components/proxy_config",
   "+components/query_parser",
   "+components/reading_list",
+  "+components/regional_capabilities",
   "+components/rlz",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/browser",

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/country_codes",
+  "+components/keyed_service/core",
   "+components/prefs",
 
   # TODO(crbug.com/388792357): Remove //component/search_engines dependencies.

@@ -78,10 +78,12 @@ void TemplateURLServiceUnitTestBase::SetUp() {
       switches::kSearchEngineChoiceCountry,
       switches::kDefaultListCountryOverride);
 
+  regional_capabilities_service_ =
+      regional_capabilities::CreateServiceWithFakeClient(pref_service_);
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, &local_state_,
-          regional_capabilities::CreateServiceWithFakeClient(pref_service_),
+          pref_service_, &local_state_, *regional_capabilities_service_,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
           /*is_profile_eligible_for_dse_guest_propagation=*/false,
 #endif
