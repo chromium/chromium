@@ -5582,13 +5582,6 @@ const FeatureEntry kFeatureEntries[] = {
          "disallowFetchForDocWrittenScriptsInMainFrame=true",
          blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=false")},
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    {"disallow-managed-profile-signout",
-     flag_descriptions::kDisallowManagedProfileSignoutName,
-     flag_descriptions::kDisallowManagedProfileSignoutDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(kDisallowManagedProfileSignout)},
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     {"view-transition-layered-capture",
      flag_descriptions::kViewTransitionLayeredCaptureName,
      flag_descriptions::kViewTransitionLayeredCaptureDescription, kOsAll,

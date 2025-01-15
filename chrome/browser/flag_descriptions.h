@@ -637,11 +637,6 @@ extern const char kDebugShortcutsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-extern const char kDisallowManagedProfileSignoutName[];
-extern const char kDisallowManagedProfileSignoutDescription[];
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-
 extern const char kViewTransitionLayeredCaptureName[];
 extern const char kViewTransitionLayeredCaptureDescription[];
 

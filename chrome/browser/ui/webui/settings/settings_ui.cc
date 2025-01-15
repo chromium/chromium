@@ -322,10 +322,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isDasherlessProfile",
                           entry && entry->IsDasherlessManagement());
 
-  html_source->AddBoolean(
-      "turnOffSyncAllowedForManagedProfiles",
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
-
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   html_source->AddBoolean("changePriceEmailNotificationsEnabled",

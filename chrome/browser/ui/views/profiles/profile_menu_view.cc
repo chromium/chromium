@@ -1171,8 +1171,7 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
   }
 
   const bool hide_signout_button_for_managed_profiles =
-      enterprise_util::UserAcceptedAccountManagement(profile) &&
-      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout);
+      enterprise_util::UserAcceptedAccountManagement(profile);
 
   const bool add_sign_out_button =
       HasUnconstentedProfile(profile) &&
