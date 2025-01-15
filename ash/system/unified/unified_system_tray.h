@@ -231,6 +231,7 @@ class ASH_EXPORT UnifiedSystemTray
   friend class PowerTrayViewTest;
   friend class StatusAreaBatteryPixelTest;
   friend class UnifiedSystemTrayAccessibilityTest;
+  friend class PrivacyScreenToastControllerTest;
 
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
