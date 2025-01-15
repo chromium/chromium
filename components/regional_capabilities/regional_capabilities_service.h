@@ -1,0 +1,80 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_H_
+#define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_H_
+
+#include <optional>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+
+namespace search_engines {
+class SearchEngineChoiceService;
+}
+
+class PrefService;
+
+namespace regional_capabilities {
+
+// Service for managing the state related to Search Engine Choice (mostly
+// for the country information).
+// TODO(crbug.com/388792357): Make it a profile-keyed service.
+class RegionalCapabilitiesService {
+ public:
+  // Helper that is responsible for providing the service with country data,
+  // that could be coming from platform-specific or //chrome layer sources.
+  class Client {
+   public:
+    using CountryIdCallback = base::OnceCallback<void(int)>;
+
+    virtual ~Client();
+
+    virtual void FetchCountryId(CountryIdCallback country_id_fetched_callback)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+        = 0
+#endif
+        ;
+  };
+
+  RegionalCapabilitiesService(
+      PrefService& profile_prefs,
+      std::unique_ptr<Client> regional_capabilities_client);
+  virtual ~RegionalCapabilitiesService();
+
+  // Clears the country id cache to be able to change countries multiple times
+  // in tests.
+  void ClearCountryIdCacheForTesting();
+
+ private:
+  // TODO(b:328040066): Investigate friend-ing methods instead whole classes
+  // to tighten private access further.
+  friend class search_engines::SearchEngineChoiceService;
+  friend class RegionalCapabilitiesServiceTest;
+
+  // Returns the country ID to use in the context of regional checks.
+  // Can be overridden using `switches::kSearchEngineChoiceCountry`.
+  // See `//components/country_codes` for the Country ID format.
+  int GetCountryId();
+
+  // Checks whether the persisted
+  void InitializeCountryIdCache();
+
+  const raw_ref<PrefService> profile_prefs_;
+  const std::unique_ptr<Client> client_;
+
+  // Used to ensure that the value returned from `GetCountryId` never changes
+  // in runtime (different runs can still return different values, though).
+  std::optional<int> country_id_cache_;
+
+  base::WeakPtrFactory<RegionalCapabilitiesService> weak_ptr_factory_{this};
+};
+
+bool IsEeaCountry(int country_id);
+
+}  // namespace regional_capabilities
+
+#endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_H_

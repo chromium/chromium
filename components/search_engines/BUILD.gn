@@ -186,6 +186,8 @@ static_library("test_support") {
     "//components/metrics:metrics_pref_names",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
@@ -258,10 +260,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/template_url_service_android_unittest.cc" ]
-    deps += [
-      "//components/search_engines/android:jni_headers",
-      "//components/search_engines/android:test_utils_jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
 }
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/metrics/metrics_pref_names.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
@@ -29,19 +30,12 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
     local_state_ = owned_local_state_.get();
     local_state_->registry()->RegisterBooleanPref(
         metrics::prefs::kMetricsReportingEnabled, true);
-
-    // This is needed to prevent the code in
-    // `SearchEngineChoiceService::GetCountryIdInternal` from calling the
-    // Android specific code that requires JNI initialization.
-    pref_service_->SetInteger(country_codes::kCountryIDAtInstall,
-                              country_codes::CountryCharsToCountryID('U', 'S'));
   }
 
   search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-      *pref_service_, local_state_
-      ,
-      /*is_profile_eligible_for_dse_guest_propagation=*/false
-  );
+      *pref_service_, local_state_,
+      regional_capabilities::CreateServiceWithFakeClient(*pref_service_),
+      /*is_profile_eligible_for_dse_guest_propagation=*/false);
 
   template_url_service_ = std::make_unique<TemplateURLService>(
       *pref_service_, *search_engine_choice_service_,
