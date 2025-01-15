@@ -82,8 +82,6 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.SPenSupport;
-import org.chromium.ui.base.UiAndroidFeatureList;
-import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
@@ -746,14 +744,12 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchDragEvent(DragEvent e) {
         mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
-        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES)) {
-            if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-                releaseDragAndDropPermissions();
-            } else if (e.getAction() == DragEvent.ACTION_DROP) {
-                mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
-                if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
-                    mDropUri = e.getClipData().getItemAt(0).getUri();
-                }
+        if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+            releaseDragAndDropPermissions();
+        } else if (e.getAction() == DragEvent.ACTION_DROP) {
+            mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
+            if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
+                mDropUri = e.getClipData().getItemAt(0).getUri();
             }
         }
         boolean ret = super.dispatchDragEvent(e);
