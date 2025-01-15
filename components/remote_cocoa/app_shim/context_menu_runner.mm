@@ -47,7 +47,7 @@ ContextMenuRunner::ContextMenuRunner(
 
 ContextMenuRunner::~ContextMenuRunner() {
   if (menu_controller_) {
-    CHECK(!menu_controller_.menuOpen);
+    CHECK(!menu_controller_.isMenuOpen);
   }
 }
 
@@ -60,7 +60,8 @@ void ContextMenuRunner::ShowMenu(mojom::ContextMenuPtr menu,
       initWithParams:std::move(menu->params)];
   menu_controller_ =
       [[MenuControllerCocoa alloc] initWithModel:menu_model_.get()
-                                        delegate:menu_delegate_];
+                                        delegate:menu_delegate_
+                          useWithPopUpButtonCell:NO];
 
   if (!target_view) {
     target_view = window.contentView;
