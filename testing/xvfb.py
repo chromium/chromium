@@ -433,6 +433,18 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
 
     dbus_pid = launch_dbus(env)
 
+    # It's easiest to run Weston from the build directory, as then we don't need
+    # to specify the paths of the backend's and modules' .so files.
+    weston_executable = './weston'
+    if not os.path.isfile(weston_executable):
+      # If this script isn't run from the build directory, try deducing it from
+      # the test executable's path and change to it.
+      build_dir = os.path.dirname(cmd[0])
+      if os.path.isdir(build_dir):
+        os.chdir(build_dir)
+        # Strip build directory from the test executable's path.
+        cmd[0] = os.path.join('.', os.path.basename(cmd[0]))
+
     # The bundled weston (//third_party/weston) is used by Linux Ozone Wayland
     # CI and CQ testers and compiled by //ui/ozone/platform/wayland whenever
     # there is a dependency on the Ozone/Wayland and use_bundled_weston is set
@@ -444,7 +456,7 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # a better solution is found, add a check for the "weston" binary here and
     # run tests without Wayland compositor if the weston binary is not found.
     # TODO(https://1178788): find a better solution.
-    if not os.path.isfile('./weston'):
+    if not os.path.isfile(weston_executable):
       print('Weston is not available. Starting without Wayland compositor')
       return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
@@ -474,7 +486,7 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # of windows.
     # 5) --config=... - tells Weston to use our custom config.
     weston_cmd = [
-        './weston', '--backend=headless-backend.so', '--idle-time=0',
+        weston_executable, '--backend=headless-backend.so', '--idle-time=0',
         '--modules=ui-controls.so,systemd-notify.so', '--width=1280',
         '--height=800', '--config=' + _weston_config_file_path()
     ]
