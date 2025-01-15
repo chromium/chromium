@@ -286,7 +286,8 @@ using signin_metrics::PromoAction;
   [self.googleServicesSettingsViewController preventUserInteraction];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   signin::MultiProfileSignOut(
-      self.browser, signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      self.browser,
+      signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn,
       /*force_clear_data=*/false, /*force_snackbar_over_toolbar=*/false, nil, ^{
         [weakSelf.googleServicesSettingsViewController allowUserInteraction];
         completion(YES);

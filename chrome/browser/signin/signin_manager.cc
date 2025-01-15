@@ -107,7 +107,8 @@ SigninManager::CreateAccountSelectionInProgressHandle() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SigninManager::UpdateUnconsentedPrimaryAccount() {
+void SigninManager::UpdateUnconsentedPrimaryAccount(
+    signin_metrics::ProfileSignout source) {
   if (!signin::IsImplicitBrowserSigninOrExplicitDisabled(
           &identity_manager_.get(), &prefs_.get())) {
     // Only update the primary account implicitly if the user hasn't explicitly
@@ -152,12 +153,9 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // On Lacros, the `SigninManager` only clears the primary account if it is
     // no longer on the device.
-    signin_metrics::ProfileSignout source =
-        signin_metrics::ProfileSignout::kAccountRemovedFromDevice;
+    source = signin_metrics::ProfileSignout::kAccountRemovedFromDevice;
 #else
     DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    signin_metrics::ProfileSignout source =
-        signin_metrics::ProfileSignout::kSigninManagerUpdateUPA;
 #endif
     identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(source);
   }
@@ -317,8 +315,10 @@ void SigninManager::OnPrimaryAccountChanged(
   // value for the unconsented primary account. Schedule the potential update
   // on the next run loop.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     signin_metrics::ProfileSignout::kSigninManagerUpdateUPA));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -357,9 +357,8 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void SigninManager::OnSigninAllowedPrefChanged() {
-  // TODO(crbug.com/350699437): Use kUserDisabledAllowChromeSignIn instead of
-  // kSigninManagerUpdateUPA in UpdateUnconsentedPrimaryAccount().
-  UpdateUnconsentedPrimaryAccount();
+  UpdateUnconsentedPrimaryAccount(
+      signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn);
 }
 
 void SigninManager::OnAccountSelectionInProgressHandleDestroyed() {
