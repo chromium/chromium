@@ -80,6 +80,7 @@ class MockDelegate : public ProductSpecificationsHandler::Delegate {
               (const base::Uuid& uuid, bool in_new_tab),
               (override));
   MOCK_METHOD(void, ShowSyncSetupFlow, (), (override));
+  MOCK_METHOD(void, ShowComparePage, (bool in_new_tab), (override));
 };
 
 class MockHistoryService : public history::HistoryService {
@@ -282,6 +283,11 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetComparisonTableUrlForUuid) {
                 .Then(run_loop.QuitClosure()));
 
   run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsHandlerTest, TestShowComparePage) {
+  EXPECT_CALL(*delegate_, ShowComparePage(true)).Times(1);
+  handler_->ShowComparePage(true);
 }
 
 }  // namespace commerce

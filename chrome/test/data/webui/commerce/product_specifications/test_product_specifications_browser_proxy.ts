@@ -17,6 +17,7 @@ export class TestProductSpecificationsBrowserProxy extends TestBrowserProxy
   constructor() {
     super([
       'showProductSpecificationsSetForUuid',
+      'showComparePage',
       'setAcceptedDisclosureVersion',
       'maybeShowDisclosure',
       'declineDisclosure',
@@ -41,6 +42,10 @@ export class TestProductSpecificationsBrowserProxy extends TestBrowserProxy
 
   showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void {
     this.methodCalled('showProductSpecificationsSetForUuid', uuid, inNewTab);
+  }
+
+  showComparePage(inNewTab: boolean): void {
+    this.methodCalled('showComparePage', inNewTab);
   }
 
   setAcceptedDisclosureVersion(version: DisclosureVersion): void {

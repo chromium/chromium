@@ -43,6 +43,9 @@ interface ProductSpecificationsHandler {
   ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid,
       bool in_new_tab);
 
+  // Show the chrome://compare page either in the current tab or a new tab.
+  ShowComparePage(bool in_new_tab);
+
   // Get the URL for the comparison table with the given UUID.
   GetComparisonTableUrlForUuid(mojo_base.mojom.Uuid uuid)
       => (url.mojom.Url url);

@@ -12,6 +12,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -105,4 +106,45 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsUIHandlerDelegateBrowserTest,
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsUIHandlerDelegateBrowserTest,
+                       TestShowComparePage_InCurrentTab) {
+  auto delegate =
+      std::make_unique<commerce::ProductSpecificationsUIHandlerDelegate>(
+          web_ui_.get());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  const auto compare_url = GURL(commerce::kChromeUICompareUrl);
+  content::TestNavigationObserver observer(compare_url);
+  observer.WatchExistingWebContents();
+
+  delegate->ShowComparePage(false);
+
+  observer.Wait();
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(compare_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsUIHandlerDelegateBrowserTest,
+                       TestShowComparePage_InNewTab) {
+  auto delegate =
+      std::make_unique<commerce::ProductSpecificationsUIHandlerDelegate>(
+          web_ui_.get());
+
+  const auto compare_url = GURL(commerce::kChromeUICompareUrl);
+  content::TestNavigationObserver observer(compare_url);
+  observer.StartWatchingNewWebContents();
+
+  delegate->ShowComparePage(true);
+
+  observer.WaitForNavigationFinished();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(compare_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 }
