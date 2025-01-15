@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
@@ -13,8 +14,6 @@
 #include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
@@ -30,13 +29,9 @@ namespace net {
 
 namespace {
 
-net::NSSCertDatabase* NssGetterForIOThread(
-    net::NSSCertDatabase* result,
-    base::OnceCallback<void(net::NSSCertDatabase*)>) {
-  // The check is here because the real NSS getter must also be run on the IO
-  // thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  return result;
+void NssSlotGetter(crypto::ScopedPK11Slot slot,
+                   base::OnceCallback<void(crypto::ScopedPK11Slot)> callback) {
+  std::move(callback).Run(std::move(slot));
 }
 
 }  // namespace
@@ -56,8 +51,13 @@ class ServerCertificateDatabaseNSSMigratorTest : public testing::Test {
 
   std::unique_ptr<net::ServerCertificateDatabaseService> CreateService() {
     return std::make_unique<ServerCertificateDatabaseService>(
-        temp_profile_dir_.GetPath(), &pref_service_,
-        base::BindOnce(NssGetterForIOThread, nss_cert_database_.get()));
+        temp_profile_dir_.GetPath(), &pref_service_, CreateSlotGetter());
+  }
+
+  ServerCertificateDatabaseNSSMigrator::NssSlotGetter CreateSlotGetter() {
+    return base::BindOnce(
+        &NssSlotGetter,
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nss_slot_->slot())));
   }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -66,7 +66,7 @@ class ServerCertificateDatabaseNSSMigratorTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kEnableCertManagementUIV2Write};
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_profile_dir_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<crypto::ScopedTestNSSDB> test_nss_slot_;
@@ -76,9 +76,8 @@ class ServerCertificateDatabaseNSSMigratorTest : public testing::Test {
 TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateEmptyNssDb) {
   std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
       CreateService();
-  ServerCertificateDatabaseNSSMigrator migrator(
-      cert_db_service.get(),
-      base::BindOnce(NssGetterForIOThread, nss_cert_database()));
+  ServerCertificateDatabaseNSSMigrator migrator(cert_db_service.get(),
+                                                CreateSlotGetter());
 
   base::test::TestFuture<ServerCertificateDatabaseNSSMigrator::MigrationResult>
       migrate_certs_waiter;
@@ -130,9 +129,8 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
       CreateService();
   // Do the migration from NSS to ServerCertificateDatabase.
   {
-    ServerCertificateDatabaseNSSMigrator migrator(
-        cert_db_service.get(),
-        base::BindOnce(NssGetterForIOThread, nss_cert_database()));
+    ServerCertificateDatabaseNSSMigrator migrator(cert_db_service.get(),
+                                                  CreateSlotGetter());
     base::test::TestFuture<
         ServerCertificateDatabaseNSSMigrator::MigrationResult>
         migrate_certs_waiter;
@@ -174,9 +172,8 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
   // replacing the entries in the ServerCertificateDatabase with exactly the
   // same value, so the end result should not change.
   {
-    ServerCertificateDatabaseNSSMigrator migrator(
-        cert_db_service.get(),
-        base::BindOnce(NssGetterForIOThread, nss_cert_database()));
+    ServerCertificateDatabaseNSSMigrator migrator(cert_db_service.get(),
+                                                  CreateSlotGetter());
     base::test::TestFuture<
         ServerCertificateDatabaseNSSMigrator::MigrationResult>
         migrate_certs_waiter;

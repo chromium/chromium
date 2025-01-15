@@ -8,12 +8,11 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,13 +32,9 @@ namespace net {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-net::NSSCertDatabase* NssGetterForIOThread(
-    net::NSSCertDatabase* result,
-    base::OnceCallback<void(net::NSSCertDatabase*)>) {
-  // The check is here because the real NSS getter must also be run on the IO
-  // thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  return result;
+void NssSlotGetter(crypto::ScopedPK11Slot slot,
+                   base::OnceCallback<void(crypto::ScopedPK11Slot)> callback) {
+  std::move(callback).Run(std::move(slot));
 }
 #endif
 
@@ -64,7 +59,9 @@ class ServerCertificateDatabaseServiceTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<ServerCertificateDatabaseService>(
         temp_profile_dir_.GetPath(), &pref_service_,
-        base::BindOnce(NssGetterForIOThread, nss_cert_database_.get()));
+        base::BindOnce(&NssSlotGetter,
+                       crypto::ScopedPK11Slot(
+                           PK11_ReferenceSlot(test_nss_slot_->slot()))));
 #else
     return std::make_unique<ServerCertificateDatabaseService>(
         temp_profile_dir_.GetPath());
@@ -79,7 +76,7 @@ class ServerCertificateDatabaseServiceTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kEnableCertManagementUIV2Write};
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_profile_dir_;
 #if BUILDFLAG(IS_CHROMEOS)
   TestingPrefServiceSimple pref_service_;

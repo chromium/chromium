@@ -29,11 +29,10 @@ namespace net {
 ServerCertificateDatabaseService::ServerCertificateDatabaseService(
     base::FilePath profile_path,
     PrefService* prefs,
-    ServerCertificateDatabaseNSSMigrator::NssCertDatabaseGetter
-        nss_cert_db_getter)
+    ServerCertificateDatabaseNSSMigrator::NssSlotGetter nss_slot_getter)
     : profile_path_(std::move(profile_path)),
       prefs_(prefs),
-      nss_cert_db_getter_(std::move(nss_cert_db_getter))
+      nss_slot_getter_(std::move(nss_slot_getter))
 #else
 ServerCertificateDatabaseService::ServerCertificateDatabaseService(
     base::FilePath profile_path)
@@ -78,7 +77,7 @@ void ServerCertificateDatabaseService::GetAllCertificates(
       DVLOG(1) << "starting migration for profile "
                << profile_path_.AsUTF8Unsafe();
       nss_migrator_ = std::make_unique<ServerCertificateDatabaseNSSMigrator>(
-          this, std::move(nss_cert_db_getter_));
+          this, std::move(nss_slot_getter_));
       // Unretained is safe as ServerCertificateDatabaseNSSMigrator will not
       // run the callback after it is deleted.
       nss_migrator_->MigrateCerts(base::BindOnce(
