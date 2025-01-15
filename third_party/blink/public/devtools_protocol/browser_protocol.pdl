@@ -11174,6 +11174,14 @@ domain Target
       string host
       integer port
 
+  # The state of the target window.
+  experimental type WindowState extends string
+    enum
+      normal
+      minimized
+      maximized
+      fullscreen
+
   # Activates (focuses) the target.
   command activateTarget
     parameters
@@ -11255,6 +11263,9 @@ domain Target
       optional integer width
       # Frame height in DIP (requires newWindow to be true or headless shell).
       optional integer height
+      # Frame window state (requires newWindow to be true or headless shell).
+      # Default is normal.
+      optional WindowState windowState
       # The browser context to create the page in.
       experimental optional Browser.BrowserContextID browserContextId
       # Whether BeginFrames for this target will be controlled via DevTools (headless shell only,
