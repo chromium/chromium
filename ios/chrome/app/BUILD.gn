@@ -556,7 +556,10 @@ source_set("task_names") {
 
 source_set("change_profile_commands") {
   sources = [ "change_profile_commands.h" ]
-  deps = [ ":change_profile_continuation" ]
+  deps = [
+    ":change_profile_continuation",
+    "//base",
+  ]
 }
 
 source_set("change_profile_continuation") {
