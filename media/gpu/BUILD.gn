@@ -236,6 +236,8 @@ component("gpu") {
       "windows/d3d11_vp9_accelerator.h",
       "windows/d3d11_vp9_picture.cc",
       "windows/d3d11_vp9_picture.h",
+      "windows/d3d12_copy_command_list_wrapper.cc",
+      "windows/d3d12_copy_command_list_wrapper.h",
       "windows/d3d12_fence.cc",
       "windows/d3d12_fence.h",
       "windows/d3d12_helpers.cc",
