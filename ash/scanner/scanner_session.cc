@@ -102,18 +102,18 @@ void OnActionPopulated(
     manta::MantaStatus status) {
   if (output == nullptr) {
     // TODO(b/363100868): Handle error case
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
 
   if (output->objects_size() != 1) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
   manta::proto::ScannerObject& object = *output->mutable_objects(0);
 
   if (object.actions_size() != 1) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
   manta::proto::ScannerAction& action = *object.mutable_actions(0);

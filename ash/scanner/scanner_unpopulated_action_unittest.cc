@@ -213,25 +213,6 @@ TEST_P(
 }
 
 TEST_P(ScannerUnpopulatedActionTestWithParam,
-       PopulateToVariantReturnsNulloptWhenPopulateToProtoReturnsNullopt) {
-  manta::proto::ScannerAction unpopulated_proto = GetParam().unpopulated_proto;
-  testing::StrictMock<
-      base::MockCallback<ScannerUnpopulatedAction::PopulateToProtoCallback>>
-      populate_to_proto_callback;
-  EXPECT_CALL(populate_to_proto_callback, Run)
-      .WillOnce(RunOnceCallback<1>(std::nullopt));
-  std::optional<ScannerUnpopulatedAction> unpopulated_action =
-      ScannerUnpopulatedAction::FromProto(unpopulated_proto,
-                                          populate_to_proto_callback.Get());
-  ASSERT_TRUE(unpopulated_action.has_value());
-
-  base::test::TestFuture<std::optional<ScannerAction>> future;
-  unpopulated_action->PopulateToVariant(future.GetCallback());
-
-  EXPECT_THAT(future.Take(), Eq(std::nullopt));
-}
-
-TEST_P(ScannerUnpopulatedActionTestWithParam,
        PopulateToVariantReturnsNulloptWhenPopulateToProtoReturnsEmpty) {
   manta::proto::ScannerAction unpopulated_proto = GetParam().unpopulated_proto;
   testing::StrictMock<

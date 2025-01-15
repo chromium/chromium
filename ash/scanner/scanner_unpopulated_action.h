@@ -18,12 +18,12 @@ namespace ash {
 // Scanner service, which is expected to be "unpopulated".
 //
 // Takes in a `PopulateToProtoCallback` which should return a "populated"
-// `manta::proto::ScannerAction`. Provides methods to populate this to a
-// `ScannerAction`.
+// `manta::proto::ScannerAction`, or one with no action case if there is an
+// error. Provides methods to populate this to a `ScannerAction`.
 class ASH_EXPORT ScannerUnpopulatedAction {
  public:
-  using PopulatedProtoCallback = base::OnceCallback<void(
-      std::optional<manta::proto::ScannerAction> populated_action)>;
+  using PopulatedProtoCallback =
+      base::OnceCallback<void(manta::proto::ScannerAction populated_action)>;
   using PopulateToProtoCallback = base::RepeatingCallback<void(
       manta::proto::ScannerAction unpopulated_action,
       PopulatedProtoCallback callback)>;

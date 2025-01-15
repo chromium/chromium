@@ -54,17 +54,13 @@ ScannerAction ProtoActionToVariant(manta::proto::ScannerAction proto_action) {
 void OnPopulatedToProto(
     manta::proto::ScannerAction::ActionCase unpopulated_action_case,
     ScannerUnpopulatedAction::PopulateToVariantCallback callback,
-    std::optional<manta::proto::ScannerAction> populated_action) {
-  if (!populated_action.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  if (populated_action->action_case() != unpopulated_action_case) {
+    manta::proto::ScannerAction populated_action) {
+  if (populated_action.action_case() != unpopulated_action_case) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::move(callback).Run(ProtoActionToVariant(std::move(*populated_action)));
+  std::move(callback).Run(ProtoActionToVariant(std::move(populated_action)));
 }
 
 }  // namespace
