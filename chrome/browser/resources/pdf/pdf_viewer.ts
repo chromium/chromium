@@ -741,6 +741,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+
+    // Text fragment directives should be handled after the document is set to
+    // finished loading.
+    if (progress === 100) {
+      this.maybeRenderTextDirectiveHighlights_();
+    }
   }
 
   protected onErrorDialog_() {
@@ -1267,6 +1273,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     });
   }
   // </if>
+
+  /**
+   * Sends a message to the PDF plugin to highlight the provided text
+   * directives if any.
+   */
+  private maybeRenderTextDirectiveHighlights_() {
+    assert(this.paramsParser);
+    const textDirectives = this.paramsParser.getTextFragments(this.originalUrl);
+    if (textDirectives.length > 0) {
+      this.pluginController_.highlightTextFragments(textDirectives);
+    }
+  }
 
   /**
    * Saves the current PDF document to disk.

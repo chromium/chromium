@@ -492,6 +492,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Sets whether form highlight should be enabled or cleared.
   virtual void SetFormHighlight(bool enable_form);
 
+  // Attempts to render highlights for all of the fragments provided in
+  // `text_fragments`. If a fragment is not found, it is skipped and the
+  // engine will attempt to find and highlight the next fragment in the list.
+  virtual void HighlightTextFragments(
+      base::span<const std::string> text_fragments);
+
  private:
   // This helper class is used to detect the difference in selection between
   // construction and destruction.  At destruction, it invalidates all the

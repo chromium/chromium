@@ -128,6 +128,11 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, SetFormHighlight, (bool), (override));
 
+  MOCK_METHOD(void,
+              HighlightTextFragments,
+              (const base::span<const std::string>),
+              (override));
+
   MOCK_METHOD(void, ClearTextSelection, (), (override));
 
  protected:

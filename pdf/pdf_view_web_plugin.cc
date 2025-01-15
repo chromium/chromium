@@ -19,6 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1595,6 +1596,8 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
            &PdfViewWebPlugin::HandleGetPasswordCompleteMessage},
           {"getSelectedText", &PdfViewWebPlugin::HandleGetSelectedTextMessage},
           {"getThumbnail", &PdfViewWebPlugin::HandleGetThumbnailMessage},
+          {"highlightTextFragments",
+           &PdfViewWebPlugin::HandleHighlightTextFragmentsMessage},
           {"print", &PdfViewWebPlugin::HandlePrintMessage},
           {"loadPreviewPage", &PdfViewWebPlugin::HandleLoadPreviewPageMessage},
           {"resetPrintPreviewMode",
@@ -1701,6 +1704,17 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
       page_index, device_scale_,
       base::BindOnce(&PdfViewWebPlugin::SendThumbnail,
                      weak_factory_.GetWeakPtr(), std::move(reply), page_index));
+}
+
+void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
+    const base::Value::Dict& message) {
+  const auto* text_fragment_value_list = message.FindList("textFragments");
+  std::vector<std::string> text_fragments;
+  text_fragments.reserve(text_fragment_value_list->size());
+  for (const base::Value& fragment : *text_fragment_value_list) {
+    text_fragments.push_back(fragment.GetString());
+  }
+  engine_->HighlightTextFragments(text_fragments);
 }
 
 void PdfViewWebPlugin::HandlePrintMessage(

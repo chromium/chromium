@@ -547,6 +547,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);
+  void HandleHighlightTextFragmentsMessage(const base::Value::Dict& message);
   void HandlePrintMessage(const base::Value::Dict& /*message*/);
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(

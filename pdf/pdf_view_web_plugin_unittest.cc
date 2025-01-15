@@ -1866,6 +1866,20 @@ TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {
   plugin_->OnHasSearchifyText();
 }
 
+TEST_F(PdfViewWebPluginTest, HighlightTextFragments) {
+  base::Value::List fragments;
+  fragments.Append("hello-,world");
+  fragments.Append("world,-hello");
+
+  base::Value::Dict message;
+  message.Set("type", "highlightTextFragments");
+  message.Set("textFragments", std::move(fragments));
+
+  EXPECT_CALL(*engine_ptr_, HighlightTextFragments(
+                                ElementsAre("hello-,world", "world,-hello")));
+  plugin_->OnMessage(message);
+}
+
 class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
  public:
   void SetUp() override {
