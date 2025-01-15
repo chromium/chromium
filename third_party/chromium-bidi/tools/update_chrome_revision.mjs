@@ -23,7 +23,7 @@ import {writeFile, readFile} from 'fs/promises';
 import actions from '@actions/core';
 import {SemVer} from 'semver';
 
-import packageJson from '../package.json' assert {type: 'json'};
+import packageJson from '../package.json' with {type: 'json'};
 
 async function getVersionAndRevisionForCanary() {
   const result = await fetch(
