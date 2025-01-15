@@ -36,6 +36,7 @@
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
+#include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
@@ -434,18 +435,7 @@ class BidderWorkletTest : public testing::Test {
                                           expression.c_str()));
 
     RunGenerateBidWithJavascriptExpectingResult(
-        script,
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-            /*ad=*/"null",
-            /*bid=*/1, /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
-        expected_data_version);
+        script, TestBidBuilder().Build(), expected_data_version);
   }
 
   // Configures `url_loader_factory_` to return a generateBid() script with the
@@ -1257,15 +1247,7 @@ TEST_F(BidderWorkletTest, CompileError) {
 TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
   // Missing `ad` field should be treated as null.
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      R"({bid:1, render:"https://response.test/"})", TestBidBuilder().Build());
 
   // Wait until idle to ensure all requests have been observed within the
   // `auction_network_events_handler_`.
@@ -1279,103 +1261,35 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
   // value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
 
   // Make sure "ad" can be of a variety of JS object types.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"(["ad"])").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: {a:1,b:null}, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"({"a":1,"b":null})", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"({"a":1,"b":null})").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [2.5,[]], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[2.5,[]]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[2.5,[]]").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: -5, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "-5", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("-5").Build());
   // Some values that can't be represented in JSON become null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0/0, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [globalThis.not_defined], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[null]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[null]").Build());
+
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: [function() {return 1;}], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[null]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[null]").Build());
 
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1428,51 +1342,17 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // Valid positive bid values.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
   EXPECT_FALSE(generate_bid_metrics_->script_timed_out);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1.5, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1.5,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").SetBid(1.5).Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:2, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-
-          "\"ad\"", 2, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").SetBid(2).Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:0.001, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-
-          "\"ad\"", 0.001, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").SetBid(0.001).Build());
 
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1509,37 +1389,13 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // into NaN...
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"1", render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:true, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1], render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1,2], render:"https://response.test/"})",
       /*expected_bids=*/mojom::BidderWorkletBidPtr(),
@@ -1585,30 +1441,17 @@ TEST_F(BidderWorkletTest, GenerateBidReturnBidCurrencyExpectUnspecified) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, bidCurrency: "USD",
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          blink::AdCurrency::From("USD"),
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBidCurrency(blink::AdCurrency::From("USD"))
+          .Build());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Not specifying currency explicitly results in nullopt tag.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1,
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Trying to explicitly specify kUnspecifiedAdCurrency fails.
@@ -1653,15 +1496,10 @@ TEST_F(BidderWorkletTest, GenerateBidReturnBidCurrencyExpectCAD) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1, bidCurrency: "CAD",
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          blink::AdCurrency::From("CAD"),
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBidCurrency(blink::AdCurrency::From("CAD"))
+          .Build());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Explicitly specified incorrect one.
@@ -1679,15 +1517,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnBidCurrencyExpectCAD) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:1,
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 }
 
@@ -1710,15 +1540,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
 
   // Missing value with bid <= 0 is considered a valid no-bid case.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1919,15 +1741,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       R"({ad: "ad",
         bid:1,
         render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad",
         bid:1,
@@ -1949,15 +1763,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       R"({ad: "ad",
         bid:1,
         render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
 
   // Auction should fail if adComponents in return value is an unexpected type.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2033,15 +1839,10 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
           "https://ad_component.test/" /* 39 */,
           "https://ad_component.test/" /* 40 */,
         ]})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::move(expected_descriptors),
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdComponentDescriptors(std::move(expected_descriptors))
+          .Build());
 
   // Results with 41 or more values are rejected.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2132,14 +1933,9 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
           "https://ad_component.test/" /* 24 */,
           "https://ad_component.test/" /* 25 */
         ]})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/
-          std::vector<blink::AdDescriptor>{
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 1 */,
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 2 */,
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 3 */,
@@ -2165,9 +1961,8 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 23 */,
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 24 */,
               blink::AdDescriptor(GURL("https://ad_component.test/")) /* 25 */,
-          },
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+          })
+          .Build());
 
   // Results with 26 or more values are rejected.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2316,79 +2111,39 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignals) {
       R"({bid:1, render:"https://response.test/", modelingSignals: 123})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/123u, /*aggregate_win_signals=*/std::nullopt,
-          base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetModelingSignals(123u).Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNaN) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: NaN})";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsInfinity) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: Infinity})";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegative) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: -1})";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegativeInfinity) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: -Infinity})";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 // IEEE 754 states that -0 is equal to 0, therefore -0 should be accepted.
@@ -2397,15 +2152,7 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNegativeZero) {
       R"({bid:1, render:"https://response.test/", modelingSignals: -0})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/-0,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetModelingSignals(-0).Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsPositiveZero) {
@@ -2413,15 +2160,7 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsPositiveZero) {
       R"({bid:1, render:"https://response.test/", modelingSignals: 0})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/0u, /*aggregate_win_signals=*/std::nullopt,
-          base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetModelingSignals(0u).Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNonInteger) {
@@ -2429,31 +2168,15 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsNonInteger) {
       R"({bid:1, render:"https://response.test/", modelingSignals: 123.5})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/123u, /*aggregate_win_signals=*/std::nullopt,
-          base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetModelingSignals(123u).Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsTooLarge) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/", modelingSignals: 4096})";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignalsAlmostTooLarge) {
@@ -2461,15 +2184,7 @@ TEST_F(BidderWorkletTest, GenerateBidModelingSignalsAlmostTooLarge) {
       R"({bid:1, render:"https://response.test/", modelingSignals: 4095.9})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/4095, /*aggregate_win_signals=*/std::nullopt,
-          base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetModelingSignals(4095).Build());
 }
 
 class PrivateModelTrainingEnabledTest : public BidderWorkletTest {
@@ -2491,20 +2206,12 @@ TEST_F(PrivateModelTrainingEnabledTest, GenerateBidAggregateWinSignals) {
            "test_number":1.0,
            "test_string":"hello"}
          })";
+  const std::string aggregateWinSignals =
+      R"({"test_array":[1,2,3],"test_number":1,"test_string":"hello"})";
 
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/
-          std::nullopt,
-          /*aggregate_win_signals=*/
-          R"({"test_array":[1,2,3],"test_number":1,"test_string":"hello"})",
-          base::TimeDelta()));
+      TestBidBuilder().SetAggregateWinSignals(aggregateWinSignals).Build());
 }
 
 TEST_F(PrivateModelTrainingEnabledTest, GenerateBidInvalidAggregateWinSignals) {
@@ -2730,16 +2437,8 @@ TEST_F(PrivateModelTrainingDisabledTest,
            "test_string":"hello"}
          })";
 
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 }
 
 TEST_F(PrivateModelTrainingDisabledTest,
@@ -3154,14 +2853,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:10 Uncaught something."});
 }
@@ -3223,15 +2915,7 @@ TEST_F(BidderWorkletMultiBidDisabledTest, GenerateBidMultiBid) {
 // Make sure that fields that are only available with multibid on aren't
 // read when its off.
 TEST_F(BidderWorkletMultiBidDisabledTest, ComponentTargetFieldsOnlyMultiBid) {
-  auto expected_bid = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto expected_bid = TestBidBuilder().SetAd("\"ad\"").SetBid(5).Build();
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 5,
@@ -3395,19 +3079,14 @@ TEST_F(BidderWorkletTest, TargetNumAdComponents) {
           targetNumAdComponents: 3,
           numMandatoryAdComponents: 2
       })",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/
-          std::vector<blink::AdDescriptor>{
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBid(5)
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad_component.test/")),
               blink::AdDescriptor(GURL("https://ad_component2.test/")),
-              blink::AdDescriptor(GURL("https://ad_component3.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+              blink::AdDescriptor(GURL("https://ad_component3.test/"))})
+          .Build());
 
   // Can't say that more is mandatory than target.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -3475,18 +3154,13 @@ TEST_F(BidderWorkletTest, TargetNumAdComponents) {
 
   RunGenerateBidWithJavascriptExpectingResult(
       kLotsProvided,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/
-          std::vector<blink::AdDescriptor>{
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBid(5)
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad_component.test/")),
-              blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+          .Build());
 }
 
 TEST_F(BidderWorkletTest, TargetNumAdComponentsKAnon) {
@@ -3503,18 +3177,14 @@ TEST_F(BidderWorkletTest, TargetNumAdComponentsKAnon) {
     ]
   })";
 
-  auto non_k_anon_bid = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/
-      std::vector<blink::AdDescriptor>{
-          blink::AdDescriptor(GURL("https://ad_component.test/")),
-          blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto non_k_anon_bid =
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBid(5)
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+          .Build();
 
   interest_group_ad_components_->emplace_back(
       GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
@@ -3562,18 +3232,15 @@ TEST_F(BidderWorkletTest, TargetNumAdComponentsKAnon) {
 
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
-    expected.push_back(mojom::BidderWorkletBid::New(
-        auction_worklet::mojom::BidRole::kEnforcedKAnon, "\"ad\"", 5,
-        /*bid_currency=*/std::nullopt,
-        /*ad_cost=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://response.test/")),
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-        /*ad_component_descriptors=*/
-        std::vector<blink::AdDescriptor>{
-            blink::AdDescriptor(GURL("https://ad_component2.test/")),
-            blink::AdDescriptor(GURL("https://ad_component4.test/"))},
-        /*modeling_signals=*/std::nullopt,
-        /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+    expected.push_back(
+        TestBidBuilder()
+            .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+            .SetAd("\"ad\"")
+            .SetBid(5)
+            .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+                blink::AdDescriptor(GURL("https://ad_component2.test/")),
+                blink::AdDescriptor(GURL("https://ad_component4.test/"))})
+            .Build());
     expected.push_back(non_k_anon_bid->Clone());
     RunGenerateBidWithReturnValueExpectingResult(kBid, std::move(expected));
   }
@@ -3583,18 +3250,14 @@ TEST_F(BidderWorkletTest, TargetNumAdComponentsKAnon) {
       blink::HashedKAnonKeyForAdComponentBid(
           GURL("https://ad_component.test/"))));
   RunGenerateBidWithReturnValueExpectingResult(
-      kBid, mojom::BidderWorkletBid::New(
-                auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
-                /*bid_currency=*/std::nullopt,
-                /*ad_cost=*/std::nullopt,
-                blink::AdDescriptor(GURL("https://response.test/")),
-                /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-                /*ad_component_descriptors=*/
-                std::vector<blink::AdDescriptor>{
+      kBid, TestBidBuilder()
+                .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+                .SetAd("\"ad\"")
+                .SetBid(5)
+                .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
                     blink::AdDescriptor(GURL("https://ad_component.test/")),
-                    blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-                /*modeling_signals=*/std::nullopt,
-                /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                    blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+                .Build());
 }
 
 TEST_F(BidderWorkletTest, TargetAndMandatoryAdComponentsKAnon) {
@@ -3612,18 +3275,14 @@ TEST_F(BidderWorkletTest, TargetAndMandatoryAdComponentsKAnon) {
     ]
   })";
 
-  auto non_k_anon_bid = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/
-      std::vector<blink::AdDescriptor>{
-          blink::AdDescriptor(GURL("https://ad_component.test/")),
-          blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto non_k_anon_bid =
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBid(5)
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/")),
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+          .Build();
 
   interest_group_ad_components_->emplace_back(
       GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
@@ -3682,18 +3341,15 @@ TEST_F(BidderWorkletTest, TargetAndMandatoryAdComponentsKAnon) {
           GURL("https://ad_component.test/"))));
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
-    expected.push_back(mojom::BidderWorkletBid::New(
-        auction_worklet::mojom::BidRole::kEnforcedKAnon, "\"ad\"", 5,
-        /*bid_currency=*/std::nullopt,
-        /*ad_cost=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://response.test/")),
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-        /*ad_component_descriptors=*/
-        std::vector<blink::AdDescriptor>{
-            blink::AdDescriptor(GURL("https://ad_component.test/")),
-            blink::AdDescriptor(GURL("https://ad_component3.test/"))},
-        /*modeling_signals=*/std::nullopt,
-        /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+    expected.push_back(
+        TestBidBuilder()
+            .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+            .SetAd("\"ad\"")
+            .SetBid(5)
+            .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+                blink::AdDescriptor(GURL("https://ad_component.test/")),
+                blink::AdDescriptor(GURL("https://ad_component3.test/"))})
+            .Build());
     expected.push_back(non_k_anon_bid->Clone());
     RunGenerateBidWithReturnValueExpectingResult(kBid, std::move(expected));
   }
@@ -3703,32 +3359,20 @@ TEST_F(BidderWorkletTest, TargetAndMandatoryAdComponentsKAnon) {
       blink::HashedKAnonKeyForAdComponentBid(
           GURL("https://ad_component2.test/"))));
   RunGenerateBidWithReturnValueExpectingResult(
-      kBid, mojom::BidderWorkletBid::New(
-                auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
-                /*bid_currency=*/std::nullopt,
-                /*ad_cost=*/std::nullopt,
-                blink::AdDescriptor(GURL("https://response.test/")),
-                /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-                /*ad_component_descriptors=*/
-                std::vector<blink::AdDescriptor>{
+      kBid, TestBidBuilder()
+                .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+                .SetAd("\"ad\"")
+                .SetBid(5)
+                .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
                     blink::AdDescriptor(GURL("https://ad_component.test/")),
-                    blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-                /*modeling_signals=*/std::nullopt,
-                /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                    blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+                .Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
   multi_bid_limit_ = 2;
 
-  auto expected_bid = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 2,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto expected_bid = TestBidBuilder().SetAd("\"ad\"").SetBid(2).Build();
 
   // Empty array means no-bid.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -3902,25 +3546,19 @@ TEST_F(BidderWorkletTest, SetBidMultiBid) {
   interest_group_ads_.emplace_back(GURL("https://response3.test/"),
                                    /*metadata=*/std::nullopt);
 
-  auto expected_bid = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 2,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto expected_bid =
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kUnenforcedKAnon)
+          .SetAd("\"ad\"")
+          .SetBid(2)
+          .Build();
 
-  auto expected_bid3 = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"lad\"", 8,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response3.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto expected_bid3 =
+      TestBidBuilder()
+          .SetAd("\"lad\"")
+          .SetBid(8)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response3.test/")))
+          .Build();
 
   // Can set an array with one entry.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -4030,28 +3668,12 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupOwner) {
   interest_group_bidding_url_ = GURL("https://foo.test/bar");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://foo.test")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://foo.test")").Build());
 
   interest_group_bidding_url_ = GURL("https://[::1]:40000/");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://[::1]:40000")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://[::1]:40000")").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
@@ -4060,42 +3682,15 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
 
   interest_group_name_ = "foo";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   interest_group_name_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("\"foo\"")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("\"foo\"")").Build());
 
   interest_group_name_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("[1]")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("[1]")").Build());
 }
 
 TEST_F(BidderWorkletTest,
@@ -4230,28 +3825,12 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
 
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://url.test/")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://url.test/")").Build());
 
   interest_group_bidding_url_ = GURL("https://url.test/foo");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://url.test/foo")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://url.test/foo")").Build());
 }
 
 // Check that accessing `biddingLogicUrl` displays a warning.
@@ -4333,32 +3912,14 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
         render:"https://response.test/"})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("missing")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("missing")").Build());
 
   interest_group_wasm_url_ = GURL(kWasmUrl);
   AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
               /*charset=*/std::nullopt, ToyWasm());
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://foo.test/helper.wasm")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://foo.test/helper.wasm")").Build());
 }
 
 // Check that accessing `biddingWasmHelperUrl` displays a warning.
@@ -4458,53 +4019,18 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
         render:"https://response.test/"})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("missing")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("missing")").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBodyUsingDeprecatedDailyUpdateUrl,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("missing")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("missing")").Build());
 
   update_url_ = GURL("https://url.test/daily_update");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://url.test/daily_update")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://url.test/daily_update")").Build());
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBodyUsingDeprecatedDailyUpdateUrl,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://url.test/daily_update")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://url.test/daily_update")").Build());
 }
 
 // Check that accessing `updateUrl` displays a warning.
@@ -4632,16 +4158,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
         render:"https://response.test/"})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("missing")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("missing")").Build());
 
   interest_group_trusted_bidding_signals_url_ =
       GURL("https://signals.test/foo.json");
@@ -4654,16 +4171,7 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
       "{}");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://signals.test/foo.json")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://signals.test/foo.json")").Build());
 }
 
 // Check that accessing `trustedBiddingSignalsUrl` displays a warning.
@@ -4763,44 +4271,18 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
         render:"https://response.test/"})";
 
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("missing")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("missing")").Build());
 
   // 0-length but non-null key list.
   interest_group_trusted_bidding_signals_keys_.emplace();
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"([])", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"([])").Build());
 
   interest_group_trusted_bidding_signals_keys_->push_back("2");
   interest_group_trusted_bidding_signals_keys_->push_back("1");
   interest_group_trusted_bidding_signals_keys_->push_back("3");
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["2","1","3"])",
-          1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"(["2","1","3"])").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
@@ -4812,53 +4294,21 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
   // gracefully, since it's ultimately data from the renderer. In this case it
   // just turns into null.
   interest_group_user_bidding_signals_ = "foo";
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               TestBidBuilder().Build());
 
   interest_group_user_bidding_signals_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   interest_group_user_bidding_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[1]", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd("[1]").Build());
 
   interest_group_user_bidding_signals_ = std::nullopt;
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.userBiddingSignals === undefined, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "true", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("true").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
@@ -5707,28 +5157,11 @@ TEST_F(BidderWorkletTest, GenerateBidAuctionSignals) {
 
   auction_signals_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   auction_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[1]", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd("[1]").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
@@ -5743,40 +5176,16 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
 
   per_buyer_signals_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   per_buyer_signals_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[1]", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd("[1]").Build());
 
   per_buyer_signals_ = std::nullopt;
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: perBuyerSignals === null, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "true", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("true").Build());
 }
 
 TEST_F(BidderWorkletTest,
@@ -5787,28 +5196,11 @@ TEST_F(BidderWorkletTest,
 
   direct_from_seller_auction_signals_header_ad_slot_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   direct_from_seller_auction_signals_header_ad_slot_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[1]", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd("[1]").Build());
 }
 
 TEST_F(BidderWorkletTest,
@@ -5819,28 +5211,11 @@ TEST_F(BidderWorkletTest,
 
   direct_from_seller_per_buyer_signals_header_ad_slot_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("foo")", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd(R"("foo")").Build());
 
   direct_from_seller_per_buyer_signals_header_ad_slot_ = "[1]";
   RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[1]", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      kGenerateBidBody, TestBidBuilder().SetAd("[1]").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
@@ -5848,29 +5223,13 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
       url::Origin::Create(GURL("https://foo.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://foo.test")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://foo.test")").Build());
 
   browser_signal_seller_origin_ =
       url::Origin::Create(GURL("https://[::1]:40000/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://[::1]:40000")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://[::1]:40000")").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalsAdComponentsLimit) {
@@ -5907,14 +5266,7 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
       R"({ad: "topLevelSeller" in browserSignals,
           bid:1,
           render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "false", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("false").Build());
 
   // Need to set `allowComponentAuction` to true for a bid to be created when
   // topLevelSeller is non-null.
@@ -5923,30 +5275,14 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.topLevelSeller, bid:1, render:"https://response.test/",
           allowComponentAuction: true})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("https://foo.test")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("https://foo.test")").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopWindowOrigin) {
   top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.topWindowHostname, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"("top.window.test")", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("top.window.test")").Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
@@ -5967,28 +5303,14 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-            /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+        TestBidBuilder().SetAd("0").Build());
 
     *test_case.value_ptr = 10;
     RunGenerateBidWithReturnValueExpectingResult(
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "10", 1,
-            /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+        TestBidBuilder().SetAd("10").Build());
     SetDefaultParameters();
   }
 }
@@ -6020,32 +5342,19 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
                                    /*metadata=*/R"(["metadata"])");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response.test/\","
-          "\"renderUrl\":\"https://response.test/\"},"
-          "{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\","
-          "\"metadata\":[\"metadata\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://response.test/\","
+                 "\"renderUrl\":\"https://response.test/\"},"
+                 "{\"renderURL\":\"https://response2.test/\","
+                 "\"renderUrl\":\"https://response2.test/\","
+                 "\"metadata\":[\"metadata\"]}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
 
   // Make sure `metadata` is treated as an object, instead of a raw string.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads[1].metadata[0], bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"metadata\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"metadata\"").Build());
 }
 
 // Verify generateBid can see the reporting Ids when
@@ -6062,20 +5371,16 @@ TEST_F(BidderWorkletTest, GenerateBidAdsWithAllReportingIds) {
       std::vector<std::string>{"selectable_id1", "selectable_id2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\","
-          "\"buyerReportingId\":\"buyer_reporting_id\","
-          "\"buyerAndSellerReportingId\":\"buyer_and_seller_reporting_id\","
-          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
-          "\"selectable_id2\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd(
+              "[{\"renderURL\":\"https://response2.test/\","
+              "\"renderUrl\":\"https://response2.test/\","
+              "\"buyerReportingId\":\"buyer_reporting_id\","
+              "\"buyerAndSellerReportingId\":\"buyer_and_seller_reporting_id\","
+              "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+              "\"selectable_id2\"]}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
 
   // Ad with only selectable reporting ids.
   interest_group_ads_.clear();
@@ -6088,18 +5393,13 @@ TEST_F(BidderWorkletTest, GenerateBidAdsWithAllReportingIds) {
       std::vector<std::string>{"selectable_id1", "selectable_id2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\","
-          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
-          "\"selectable_id2\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://response2.test/\","
+                 "\"renderUrl\":\"https://response2.test/\","
+                 "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+                 "\"selectable_id2\"]}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
 }
 
 TEST_F(BidderWorkletTest,
@@ -6120,18 +5420,13 @@ TEST_F(BidderWorkletTest,
       R"({ad: interestGroup.ads, bid:1,
       render:"https://response2.test/",
       selectedBuyerAndSellerReportingId: "selectable_id1"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\","
-          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
-          "\"selectable_id2\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://response2.test/\","
+                 "\"renderUrl\":\"https://response2.test/\","
+                 "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+                 "\"selectable_id2\"]}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidReturnsSelectedReportingId) {
@@ -6148,18 +5443,14 @@ TEST_F(BidderWorkletTest, GenerateBidReturnsSelectedReportingId) {
       std::vector<std::string>{"selectable_id1", "selectable_id2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/", selectedBuyerAndSellerReportingId: "selectable_id1"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\","
-          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
-          "\"selectable_id2\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/"selectable_id1",
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://response2.test/\","
+                 "\"renderUrl\":\"https://response2.test/\","
+                 "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+                 "\"selectable_id2\"]}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .SetSelectedBuyerAndSellerReportingId("selectable_id1")
+          .Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidWithInvalidSelectedReportingId) {
@@ -6196,42 +5487,29 @@ TEST_F(BidderWorkletTest, GenerateBidAdsWithoutReportingIds) {
       /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://response2.test/\","
-          "\"renderUrl\":\"https://response2.test/\"}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://response2.test/\","
+                 "\"renderUrl\":\"https://response2.test/\"}]")
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
   // Basic test with an adComponent URL.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:["https://ad_component.test/"]})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{
-              blink::AdDescriptor(GURL("https://ad_component.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/"))})
+          .Build());
   // Empty, but non-null, adComponents field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:[]})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>(),
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>())
+          .Build());
 
   // An adComponent URL that's not in the InterestGroup's adComponents list
   // should fail.
@@ -6252,35 +5530,24 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:["https://ad_component.test/", "https://ad_component2.test/"]})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          "[{\"renderURL\":\"https://ad_component.test/\","
-          "\"renderUrl\":\"https://ad_component.test/\"},"
-          "{\"renderURL\":\"https://ad_component2.test/\","
-          "\"renderUrl\":\"https://ad_component2.test/\","
-          "\"metadata\":[\"metadata\"]}]",
-          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{
+      TestBidBuilder()
+          .SetAd("[{\"renderURL\":\"https://ad_component.test/\","
+                 "\"renderUrl\":\"https://ad_component.test/\"},"
+                 "{\"renderURL\":\"https://ad_component2.test/\","
+                 "\"renderUrl\":\"https://ad_component2.test/\","
+                 "\"metadata\":[\"metadata\"]}]")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad_component.test/")),
-              blink::AdDescriptor(GURL("https://ad_component2.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+              blink::AdDescriptor(GURL("https://ad_component2.test/"))})
+          .Build());
 }
 
 // Test behavior of the `allowComponentAuction` output field, which can block
 // bids when not set to true and `topLevelSellerOrigin` is non-null.
 TEST_F(BidderWorkletTest, GenerateBidAllowComponentAuction) {
   // In all success cases, this is the returned bid.
-  const auto kBidOnSuccess = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-      /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+
+  const auto kBidOnSuccess = TestBidBuilder().Build();
 
   // Use a null `topLevelSellerOrigin`. `allowComponentAuction` value should be
   // ignored.
@@ -6391,17 +5658,9 @@ TEST_F(BidderWorkletTest, GenerateBidWasm) {
               /*charset=*/std::nullopt, ToyWasm());
 
   RunGenerateBidWithJavascriptExpectingResult(
-      bid_script,
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"([{"name":"test_const","kind":"global"}])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      bid_script, TestBidBuilder()
+                      .SetAd(R"([{"name":"test_const","kind":"global"}])")
+                      .Build());
 }
 
 TEST_F(BidderWorkletTest, WasmReportWin) {
@@ -6703,15 +5962,7 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
         base::StringPrintf(
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.ad),
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-            test_case.expected_ad, 1, /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+        TestBidBuilder().SetAd(test_case.expected_ad).Build());
   }
 }
 
@@ -6740,14 +5991,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   // made.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
   EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals keys and null URL. No request should be
@@ -6756,14 +6000,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       std::vector<std::string>({"key1", "key2"});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
   EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals URL and null keys. Request should be
@@ -6774,14 +6011,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   AddBidderJsonResponse(&url_loader_factory_, kNoKeysSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals URL and empty keys. Request should be
@@ -6790,14 +6020,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   interest_group_trusted_bidding_signals_keys_ = std::vector<std::string>();
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().Build());
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
   url_loader_factory_.ClearResponses();
 
@@ -6817,14 +6040,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       expected_trusted_signal_histogram.Clone());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       {"Failed to load "
        "https://signals.test/"
@@ -6843,15 +6059,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"({"key1":1,"key2":[2]})", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"({"key1":1,"key2":[2]})").Build());
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 }
 
@@ -6879,15 +6087,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsV1) {
                         /*format_version_string=*/std::nullopt);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"({"key1":1,"key2":[2]})", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"({"key1":1,"key2":[2]})").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"Bidding signals URL https://signals.test/ is using outdated bidding "
@@ -7338,15 +6538,7 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
       R"({"keys":{"key1":1}})", /*data_version=*/7u);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("ad")", 7,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"("ad")").SetBid(7).Build(),
       /*expected_data_version=*/7u);
 }
 
@@ -7361,15 +6553,7 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersionNoKeys) {
       R"({})", /*data_version=*/7u);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("ad")", 7,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"("ad")").SetBid(7).Build(),
       /*expected_data_version=*/7u);
 }
 
@@ -7387,15 +6571,12 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
             setBid({ad: "ad", bid:1, render:"https://response.test/"})
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"returned\"", 2,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/replacement")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder()
+          .SetAd("\"returned\"")
+          .SetBid(2)
+          .SetAdDescriptor(
+              blink::AdDescriptor(GURL("https://response.test/replacement")))
+          .Build());
 
   // Test the no-bid version as well.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -7431,15 +6612,7 @@ TEST_F(BidderWorkletTest, GenerateBidExperimentGroupId) {
       R"({"keys":{"key1":1}})");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid:123, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"("ad")", 123,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"("ad")").SetBid(123).Build());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
@@ -7504,16 +6677,10 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
             while (1)
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt,
-          AuctionV8Helper::kScriptTimeout),
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetBidDuration(AuctionV8Helper::kScriptTimeout)
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
   EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
@@ -7565,16 +6732,13 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
             while (1)
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad2\"", 2,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/replacement")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt,
-          AuctionV8Helper::kScriptTimeout),
+      TestBidBuilder()
+          .SetAd("\"ad2\"")
+          .SetBid(2)
+          .SetAdDescriptor(
+              blink::AdDescriptor(GURL("https://response.test/replacement")))
+          .SetBidDuration(AuctionV8Helper::kScriptTimeout)
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
   EXPECT_TRUE(generate_bid_metrics_->script_timed_out);
@@ -7634,15 +6798,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
             while (1)
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("\"ad\"").Build(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -7701,15 +6857,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
             setPriority(9.0);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("\"ad\"").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7777,14 +6925,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride(15, 15);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7848,14 +6989,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key");
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7870,14 +7004,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", undefined);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7892,14 +7019,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", null);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7914,14 +7034,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", 0);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7939,14 +7052,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", 6);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7963,14 +7069,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key3", -6);
           )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -8264,28 +7363,12 @@ TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("[\"ad\"]").Build());
 }
 
 TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
@@ -10780,15 +9863,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("[\"ad\"]").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, GURL("https://loss.url"),
       GURL("https://win.url"));
@@ -10797,30 +9872,14 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("[\"ad\"]").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, GURL("https://loss.url"),
       /*expected_debug_win_report_url=*/std::nullopt);
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("[\"ad\"]").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/std::nullopt,
       GURL("https://win.url"));
@@ -11391,15 +10450,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest, ModifierMethodTypeHierarchy) {
             }
       )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
 
   v8_helpers_[0]->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(
@@ -11549,15 +10600,14 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/method),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+        TestBidBuilder().SetAd("\"ad\"").Build(),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 
   v8_helpers_[0]->v8_runner()->PostTask(
@@ -11821,15 +10871,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             ], {withLock: 'lock3'});
         )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd("\"ad\"").Build());
 
   // Make sure the shared storage mojom methods are invoked as they use a
   // dedicated pipe.
@@ -11893,15 +10935,14 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           sharedStorage.clear({withLock: 'lock1'});
         )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+        TestBidBuilder().SetAd("\"ad\"").Build(),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
 
     // Make sure the shared storage mojom methods are invoked as they use a
     // dedicated pipe.
@@ -12083,15 +11124,7 @@ TEST_F(BidderWorkletTwoThreadsSharedStorageAPIEnabledTest,
           sharedStorage.set('a', 'b');
         )"),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("\"ad\"").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12183,15 +11216,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12214,15 +11239,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12247,15 +11264,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12303,15 +11312,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12342,15 +11343,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12381,15 +11374,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12452,15 +11437,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12496,15 +11473,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 {bucket: 18446744073709551616n, value: 1});
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12569,15 +11538,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56, filteringId: 255n});
           )"),
         /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12634,15 +11595,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             }
           )"),
         /*expected_bids=*/
-        mojom::BidderWorkletBid::New(
-            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-            /*bid_currency=*/std::nullopt,
-            /*ad_cost=*/std::nullopt,
-            blink::AdDescriptor(GURL("https://response.test/")),
-            /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-            /*ad_component_descriptors=*/std::nullopt,
-            /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        TestBidBuilder().SetAd("\"ad\"").Build(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12968,15 +11921,7 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"(["ad"])").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -12992,15 +11937,10 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kBothKAnonModes, R"(["ad"])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+          .SetAd(R"(["ad"])")
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -13015,15 +11955,12 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   // from the same run, so expected_set_priority is 12.
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
-    expected.push_back(mojom::BidderWorkletBid::New(
-        auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
-        /*bid_currency=*/std::nullopt,
-        /*ad_cost=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://response2.test/")),
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-        /*ad_component_descriptors=*/std::nullopt,
-        /*modeling_signals=*/std::nullopt,
-        /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+    expected.push_back(TestBidBuilder()
+                           .SetAd(R"(["ad"])")
+                           .SetBid(2)
+                           .SetAdDescriptor(blink::AdDescriptor(
+                               GURL("https://response2.test/")))
+                           .Build());
     expected.push_back(expected[0]->Clone());
     // k-anon-enforced bid will be 1.
     expected[1]->bid_role = auction_worklet::mojom::BidRole::kEnforcedKAnon;
@@ -13054,15 +11991,12 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
           R"({ad: ["ad"], bid:interestGroup.ads.length,
           render:interestGroup.ads[interestGroup.ads.length - 1].renderURL})",
           kSideEffectScript),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kBothKAnonModes, R"(["ad"])", 2,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+          .SetAd(R"(["ad"])")
+          .SetBid(2)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -13089,15 +12023,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
       /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"(["ad"])").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -13113,15 +12039,10 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kBothKAnonModes, R"(["ad"])", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+          .SetAd(R"(["ad"])")
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -13136,24 +12057,17 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   // enforced mode, other things are  from the restricted run, so
   // expected_set_priority is 11.
   std::vector<mojom::BidderWorkletBidPtr> expected;
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response2.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kEnforcedKAnon, R"(["ad"])", 1,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
+  expected.push_back(
+      TestBidBuilder()
+          .SetAd(R"(["ad"])")
+          .SetBid(2)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
+  expected.push_back(
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+          .SetAd(R"(["ad"])")
+          .Build());
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
@@ -13177,15 +12091,12 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           R"({ad: ["ad"], bid:interestGroup.ads.length,
           render:interestGroup.ads[interestGroup.ads.length - 1].renderURL})",
           kSideEffectScript),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kBothKAnonModes, R"(["ad"])", 2,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response2.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
+          .SetAd(R"(["ad"])")
+          .SetBid(2)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -13211,15 +12122,7 @@ TEST_F(BidderWorkletTest, KAnonClassify) {
           {bid: 3, render: "https://response3.test/"}]
   )";
 
-  auto bid1 = mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta());
+  auto bid1 = TestBidBuilder().Build();
 
   // 3 bids none of which are k-anon. This triggers a re-run, which is skipped
   // since there are no k-anon ads.
@@ -13304,42 +12207,26 @@ TEST_F(BidderWorkletTest, KAnonRerunMultiBid) {
   )";
 
   std::vector<mojom::BidderWorkletBidPtr> expected;
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 10,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 9,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response2.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 8,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response3.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kEnforcedKAnon, "null", 7,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response4.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
+
+  expected.push_back(TestBidBuilder().SetBid(10).Build());
+  expected.push_back(
+      TestBidBuilder()
+          .SetBid(9)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response2.test/")))
+          .Build());
+
+  expected.push_back(
+      TestBidBuilder()
+          .SetBid(8)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response3.test/")))
+          .Build());
+
+  expected.push_back(
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+          .SetBid(7)
+          .SetAdDescriptor(blink::AdDescriptor(GURL("https://response4.test/")))
+          .Build());
 
   RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
 }
@@ -13371,24 +12258,17 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
     execution_mode_ = execution_mode;
     SCOPED_TRACE(execution_mode_);
     std::vector<mojom::BidderWorkletBidPtr> expected;
-    expected.push_back(mojom::BidderWorkletBid::New(
-        auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 1,
-        /*bid_currency=*/std::nullopt,
-        /*ad_cost=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://response2.test/")),
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-        /*ad_component_descriptors=*/std::nullopt,
-        /*modeling_signals=*/std::nullopt,
-        /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
-    expected.push_back(mojom::BidderWorkletBid::New(
-        auction_worklet::mojom::BidRole::kEnforcedKAnon, R"(["ad"])", 2,
-        /*bid_currency=*/std::nullopt,
-        /*ad_cost=*/std::nullopt,
-        blink::AdDescriptor(GURL("https://response.test/")),
-        /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-        /*ad_component_descriptors=*/std::nullopt,
-        /*modeling_signals=*/std::nullopt,
-        /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+    expected.push_back(TestBidBuilder()
+                           .SetAd(R"(["ad"])")
+                           .SetAdDescriptor(blink::AdDescriptor(
+                               GURL("https://response2.test/")))
+                           .Build());
+    expected.push_back(
+        TestBidBuilder()
+            .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+            .SetAd(R"(["ad"])")
+            .SetBid(2)
+            .Build());
     RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
   }
 }
@@ -13438,24 +12318,18 @@ TEST_F(BidderWorkletTest,
           std::string("common1"), std::string("k-anon-selected-id"))));
 
   std::vector<mojom::BidderWorkletBidPtr> expected;
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/"non-k-anon-selected-id",
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kEnforcedKAnon, R"(["ad"])", 1,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/"k-anon-selected-id",
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
+  expected.push_back(
+      TestBidBuilder()
+          .SetAd(R"(["ad"])")
+          .SetBid(2)
+          .SetSelectedBuyerAndSellerReportingId("non-k-anon-selected-id")
+          .Build());
+  expected.push_back(
+      TestBidBuilder()
+          .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
+          .SetAd(R"(["ad"])")
+          .SetSelectedBuyerAndSellerReportingId("k-anon-selected-id")
+          .Build());
   RunGenerateBidWithJavascriptExpectingResult(kScript, std::move(expected));
 }
 
@@ -13507,15 +12381,13 @@ TEST_F(BidderWorkletTest,
           std::string("common1"), std::string("k-anon-selected-id"))));
 
   std::vector<mojom::BidderWorkletBidPtr> expected;
-  expected.push_back(mojom::BidderWorkletBid::New(
-      auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 2,
-      /*bid_currency=*/std::nullopt,
-      /*ad_cost=*/std::nullopt,
-      blink::AdDescriptor(GURL("https://response.test/")),
-      /*selected_buyer_and_seller_reporting_id=*/"non-k-anon-selected-id",
-      /*ad_component_descriptors=*/std::nullopt,
-      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
-      base::TimeDelta()));
+
+  expected.push_back(
+      TestBidBuilder()
+          .SetAd(R"(["ad"])")
+          .SetBid(2)
+          .SetSelectedBuyerAndSellerReportingId("non-k-anon-selected-id")
+          .Build());
   RunGenerateBidWithJavascriptExpectingResult(
       kScript, std::move(expected),
       /*expected_data_version=*/std::nullopt,
@@ -14135,15 +13007,8 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
   // The 'render' field corresponds to an object that contains the url string.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {url: "https://response.test/"}})",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      /*expected_bids=*/
+      TestBidBuilder().SetAd("\"ad\"").Build());
 
   // The 'render' field corresponds to an object that contains the url string
   // and size with units.
@@ -14157,18 +13022,14 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "50px"
           }
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdDescriptor(blink::AdDescriptor(
               GURL("https://response.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
-                            blink::AdSize::LengthUnit::kPixels)),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                            blink::AdSize::LengthUnit::kPixels)))
+          .Build());
 
   // The 'render' field corresponds to an object that contains the url string
   // and size without units.
@@ -14182,18 +13043,14 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "50"
           }
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdDescriptor(blink::AdDescriptor(
               GURL("https://response.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
-                            blink::AdSize::LengthUnit::kPixels)),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                            blink::AdSize::LengthUnit::kPixels)))
+          .Build());
 
   // The 'render' field corresponds to an object with an invalid field.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -14216,18 +13073,14 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             foo: 42
           }
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdDescriptor(blink::AdDescriptor(
               GURL("https://response.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
-                            blink::AdSize::LengthUnit::kPixels)),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                            blink::AdSize::LengthUnit::kPixels)))
+          .Build());
 
   // The 'render' field corresponds to an empty object.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -14257,18 +13110,14 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: 50
           }
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("\"ad\"")
+          .SetAdDescriptor(blink::AdDescriptor(
               GURL("https://response.test/"),
               blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
-                            blink::AdSize::LengthUnit::kPixels)),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+                            blink::AdSize::LengthUnit::kPixels)))
+          .Build());
 
   // Size is not convertible to string.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -14404,15 +13253,12 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             {url: "https://ad_component.test/"}
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{
-              blink::AdDescriptor(GURL("https://ad_component.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
+              blink::AdDescriptor(GURL("https://ad_component.test/"))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of object that has the url
   // string and size with units.
@@ -14429,17 +13275,15 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad_component.test/"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
-                            blink::AdSize::LengthUnit::kPixels))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(
+              std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+                  GURL("https://ad_component.test/"),
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                50, blink::AdSize::LengthUnit::kPixels))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of object that has the url
   // string and size without units.
@@ -14456,17 +13300,15 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad_component.test/"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
-                            blink::AdSize::LengthUnit::kPixels))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(
+              std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+                  GURL("https://ad_component.test/"),
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 50,
+                                blink::AdSize::LengthUnit::kPixels))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of objects.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -14485,19 +13327,16 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(
                   GURL("https://ad_component.test/"),
                   blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
                                 50, blink::AdSize::LengthUnit::kPixels)),
-              blink::AdDescriptor(GURL("https://ad_component.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+              blink::AdDescriptor(GURL("https://ad_component.test/"))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of url string and objects.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -14517,20 +13356,17 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             "https://ad_component.test/"
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(
                   GURL("https://ad_component.test/"),
                   blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
                                 50, blink::AdSize::LengthUnit::kPixels)),
               blink::AdDescriptor(GURL("https://ad_component.test/")),
-              blink::AdDescriptor(GURL("https://ad_component.test/"))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+              blink::AdDescriptor(GURL("https://ad_component.test/"))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of an object that has an
   // invalid field.
@@ -14566,17 +13402,15 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bids=*/mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
-              GURL("https://ad_component.test/"),
-              blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
-                            blink::AdSize::LengthUnit::kPixels))},
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      /*expected_bids=*/
+      TestBidBuilder()
+          .SetAd("0")
+          .SetAdComponentDescriptors(
+              std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+                  GURL("https://ad_component.test/"),
+                  blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                50, blink::AdSize::LengthUnit::kPixels))})
+          .Build());
 
   // The 'adComponents' field corresponds to an array of an empty object.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -15048,15 +13882,7 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(kExtraCode),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("[\"ad\"]").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, std::nullopt, std::nullopt,
       /*expected_set_priority=*/std::nullopt,
@@ -15151,15 +13977,7 @@ realTimeReporting.contributeToHistogram(
 
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithExtraCode(kExtraCode),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd("[\"ad\"]").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, std::nullopt, std::nullopt,
       /*expected_set_priority=*/std::nullopt,
@@ -15219,14 +14037,7 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
           /*raw_return_value=*/
           R"({ad: trustedBiddingSignals, bid: 1, render:"https://response.test/"})",
           kExtraCode),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().Build(),
       /*expected_data_version=*/std::nullopt,
       {"Failed to load https://signals.test/"
        "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
@@ -15325,14 +14136,7 @@ realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
           /*raw_return_value=*/
           R"({ad: trustedBiddingSignals, bid: 1, render:"https://response.test/"})",
           kExtraCode),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"({"key1":1})", 1,
-          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      TestBidBuilder().SetAd(R"({"key1":1})").Build(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, std::nullopt, std::nullopt,
       /*expected_set_priority=*/std::nullopt,
@@ -15653,15 +14457,8 @@ TEST_F(BidderWorkletKVv2Test, GenerateBidTrustedBiddingSignals) {
       ASSERT_EQ(0UL, bid_errors_.size());
       ASSERT_EQ(1UL, bids_.size());
 
-      mojom::BidderWorkletBidPtr expected_bid = mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"({"key1":1,"key2":[2]})", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta());
+      mojom::BidderWorkletBidPtr expected_bid =
+          TestBidBuilder().SetAd(R"({"key1":1,"key2":[2]})").Build();
 
       auto actual_bid = std::move(bids_[0]);
       EXPECT_EQ(expected_bid->bid_role, actual_bid->bid_role);
@@ -15960,15 +14757,7 @@ TEST_F(BidderWorkletKVv2Test, TrustedBiddingSignalsV1WithKVv2Cache) {
   AddBidderJsonResponse(&url_loader_factory_, kSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-          R"({"key":"bagel"})", 1, /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+      TestBidBuilder().SetAd(R"({"key":"bagel"})").Build());
 }
 
 }  // namespace
