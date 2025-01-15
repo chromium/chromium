@@ -658,9 +658,9 @@ struct IsView<std::span<T>> : std::true_type {};
 // Until then, we consider an assignment from an "owner" (such as std::string)
 // to a "view" (such as std::string_view) to be a lifetime-bound assignment.
 template <typename T, typename U>
-using IsLifetimeBoundAssignment =
-    std::integral_constant<bool, IsView<absl::remove_cvref_t<T>>::value &&
-                                     IsOwner<absl::remove_cvref_t<U>>::value>;
+using IsLifetimeBoundAssignment = absl::conjunction<
+    std::integral_constant<bool, !std::is_lvalue_reference<U>::value>,
+    IsOwner<absl::remove_cvref_t<U>>, IsView<absl::remove_cvref_t<T>>>;
 
 }  // namespace type_traits_internal
 

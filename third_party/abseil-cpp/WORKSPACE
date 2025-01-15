@@ -57,6 +57,14 @@ http_archive(
     urls = ["https://github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz"],
 )
 
+# C++ rules for Bazel
+http_archive(
+    name = "rules_cc",
+    urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.1.0/rules_cc-0.1.0.tar.gz"],
+    sha256 = "4b12149a041ddfb8306a8fd0e904e39d673552ce82e4296e96fac9cbf0780e59",
+    strip_prefix = "rules_cc-0.1.0",
+)
+
 # Bazel platform rules.
 http_archive(
     name = "platforms",

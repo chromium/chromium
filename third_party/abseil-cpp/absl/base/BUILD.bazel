@@ -204,9 +204,9 @@ cc_library(
         "//conditions:default": [],
     }),
     linkopts = select({
-        "//absl:msvc_compiler": [],
-        "//absl:clang-cl_compiler": [],
-        "//absl:wasm": [],
+        "@rules_cc//cc/compiler:msvc-cl": [],
+        "@rules_cc//cc/compiler:clang-cl": [],
+        "@rules_cc//cc/compiler:emscripten": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
     visibility = [
@@ -265,17 +265,17 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
-        "//absl:msvc_compiler": [
+        "@rules_cc//cc/compiler:msvc-cl": [
             "-DEFAULTLIB:advapi32.lib",
         ],
-        "//absl:clang-cl_compiler": [
+        "@rules_cc//cc/compiler:clang-cl": [
             "-DEFAULTLIB:advapi32.lib",
         ],
         "//absl:mingw_compiler": [
             "-DEFAULTLIB:advapi32.lib",
             "-ladvapi32",
         ],
-        "//absl:wasm": [],
+        "@rules_cc//cc/compiler:emscripten": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
     deps = [

@@ -63,6 +63,8 @@ EXPORTS
     ??$CopyToEncodedBuffer@$00@LogMessage@log_internal@absl@@AEAAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AEAAXD_K@Z
     ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AEAAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
+    ??$CopyToEncodedBufferWithStructuredProtoField@$00@LogMessage@log_internal@absl@@AEAAXUStructuredProtoField@12@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
+    ??$CopyToEncodedBufferWithStructuredProtoField@$0A@@LogMessage@log_internal@absl@@AEAAXUStructuredProtoField@12@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??$DeallocateStandard@$07@container_internal@absl@@YAXAEAVCommonFields@01@AEBUPolicyFunctions@01@@Z
     ??$DecomposePair@UEmplaceDecomposable@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@container_internal@absl@@YA?AU?$pair@Viterator@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@_N@__Cr@std@@$$QEAUEmplaceDecomposable@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@01@$$QEAU?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@34@@Z
     ??$DecomposePair@UEmplaceDecomposable@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@U?$pair@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@container_internal@absl@@YA?AU?$pair@Viterator@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@_N@__Cr@std@@$$QEAUEmplaceDecomposable@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@01@$$QEAU?$pair@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@34@@Z
@@ -134,6 +136,7 @@ EXPORTS
     ??$PopDead@_J_K_K_KG@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AEAAPEAUHashtablezInfo@container_internal@2@_J_K11G@Z
     ??$Prepend@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@$0A@@Cord@absl@@QEAAX$$QEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ??$Register@AEB_JAEA_KAEA_KAEA_KAEAG@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QEAAPEAUHashtablezInfo@container_internal@2@AEB_JAEA_K11AEAG@Z
+    ??$Run@U?$PerformVisitation@UBufferSizeVisitor@?1??BufferSizeForStructuredProtoField@log_internal@absl@@YA_KUStructuredProtoField@34@@Z@AEAV?$variant@V?$variant@_K_JIH_N@absl@@V?$variant@_K_JN@2@V?$Span@$$CBD@2@V?$variant@IHM@2@@4@@variant_internal@absl@@@?$VisitIndicesSwitch@$03@variant_internal@absl@@SA_K$$QEAU?$PerformVisitation@UBufferSizeVisitor@?1??BufferSizeForStructuredProtoField@log_internal@absl@@YA_KUStructuredProtoField@34@@Z@AEAV?$variant@V?$variant@_K_JIH_N@absl@@V?$variant@_K_JN@2@V?$Span@$$CBD@2@V?$variant@IHM@2@@4@@12@_K@Z
     ??$SNPrintF@DHHH@absl@@YAHPEAD_KAEBV?$FormatSpecTemplate@$0BPPPL@$0JPPPL@$0JPPPL@$0JPPPL@@str_format_internal@0@AEBDAEBH44@Z
     ??$STLStringResizeUninitializedAmortized@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@strings_internal@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@_K@Z
     ??$SharedCompareImpl@VCord@absl@@@absl@@YAHAEBVCord@0@0@Z
@@ -518,9 +521,9 @@ EXPORTS
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?CopyCordToString@absl@@YAXAEBVCord@1@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?CopyInlineToString@InlineData@cord_internal@absl@@QEBAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyPrefix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K_N@Z
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K@Z
-    ?CopyTo@InlineRep@Cord@absl@@QEBAXPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyToArrayImpl@Cord@absl@@AEBAXPEAD@Z
     ?CopyToArraySlowPath@Cord@absl@@AEBAXPEAD@Z
     ?Crash@Helper@internal_statusor@absl@@SAXAEBVStatus@3@@Z
@@ -590,6 +593,7 @@ EXPORTS
     ?EncodeBytesTruncate@log_internal@absl@@YA_N_KV?$Span@$$CBD@2@PEAV?$Span@D@2@@Z
     ?EncodeMessageLength@log_internal@absl@@YAXV?$Span@D@2@PEBV32@@Z
     ?EncodeMessageStart@log_internal@absl@@YA?AV?$Span@D@2@_K0PEAV32@@Z
+    ?EncodeStructuredProtoField@log_internal@absl@@YA_NUStructuredProtoField@12@AEAV?$Span@D@2@@Z
     ?EncodeUTF8Char@strings_internal@absl@@YA_KPEAD_U@Z
     ?EncodeVarint@log_internal@absl@@YA_N_K0PEAV?$Span@D@2@@Z
     ?EncodeWaitCycles@SpinLock@base_internal@absl@@KAI_J0@Z

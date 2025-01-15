@@ -48,6 +48,7 @@
 #include "absl/log/internal/log_format.h"
 #include "absl/log/internal/log_sink_set.h"
 #include "absl/log/internal/proto.h"
+#include "absl/log/internal/structured_proto.h"
 #include "absl/log/log_entry.h"
 #include "absl/log/log_sink.h"
 #include "absl/log/log_sink_registry.h"
@@ -631,6 +632,47 @@ template void LogMessage::CopyToEncodedBuffer<LogMessage::StringType::kLiteral>(
     char ch, size_t num);
 template void LogMessage::CopyToEncodedBuffer<
     LogMessage::StringType::kNotLiteral>(char ch, size_t num);
+
+template void LogMessage::CopyToEncodedBufferWithStructuredProtoField<
+    LogMessage::StringType::kLiteral>(StructuredProtoField field,
+                                      absl::string_view str);
+template void LogMessage::CopyToEncodedBufferWithStructuredProtoField<
+    LogMessage::StringType::kNotLiteral>(StructuredProtoField field,
+                                         absl::string_view str);
+
+template <LogMessage::StringType str_type>
+void LogMessage::CopyToEncodedBufferWithStructuredProtoField(
+    StructuredProtoField field, absl::string_view str) {
+  auto encoded_remaining_copy = data_->encoded_remaining();
+  size_t encoded_field_size = BufferSizeForStructuredProtoField(field);
+  constexpr uint8_t tag_value = str_type == StringType::kLiteral
+                                    ? ValueTag::kStringLiteral
+                                    : ValueTag::kString;
+  auto start = EncodeMessageStart(
+      EventTag::kValue,
+      encoded_field_size +
+          BufferSizeFor(tag_value, WireType::kLengthDelimited) + str.size(),
+      &encoded_remaining_copy);
+
+  // Write the encoded proto field.
+  if (!EncodeStructuredProtoField(field, encoded_remaining_copy)) {
+    // The header / field will not fit; zero `encoded_remaining()` so we
+    // don't write anything else later.
+    data_->encoded_remaining().remove_suffix(data_->encoded_remaining().size());
+    return;
+  }
+
+  // Write the string, truncating if necessary.
+  if (!EncodeStringTruncate(ValueTag::kString, str, &encoded_remaining_copy)) {
+    // The length of the string itself did not fit; zero `encoded_remaining()`
+    // so the value is not encoded at all.
+    data_->encoded_remaining().remove_suffix(data_->encoded_remaining().size());
+    return;
+  }
+
+  EncodeMessageLength(start, &encoded_remaining_copy);
+  data_->encoded_remaining() = encoded_remaining_copy;
+}
 
 // We intentionally don't return from these destructors. Disable MSVC's warning
 // about the destructor never returning as we do so intentionally here.

@@ -41,6 +41,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/base/nullability.h"
 #include "absl/log/internal/nullguard.h"
+#include "absl/log/internal/structured_proto.h"
 #include "absl/log/log_entry.h"
 #include "absl/log/log_sink.h"
 #include "absl/strings/has_absl_stringify.h"
@@ -51,6 +52,8 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace log_internal {
 constexpr int kLogMessageBufferSize = 15000;
+
+enum class StructuredStringType;
 
 class LogMessage {
  public:
@@ -217,6 +220,10 @@ class LogMessage {
   struct LogMessageData;  // Opaque type containing message state
   friend class AsLiteralImpl;
   friend class StringifySink;
+  template <StructuredStringType str_type>
+  friend class AsStructuredStringTypeImpl;
+  template <typename T>
+  friend class AsStructuredValueImpl;
 
   // This streambuf writes directly into the structured logging buffer so that
   // arbitrary types can be encoded as string data (using
@@ -246,6 +253,13 @@ class LogMessage {
   void CopyToEncodedBuffer(absl::string_view str) ABSL_ATTRIBUTE_NOINLINE;
   template <StringType str_type>
   void CopyToEncodedBuffer(char ch, size_t num) ABSL_ATTRIBUTE_NOINLINE;
+
+  // Copies `field` to the encoded buffer, then appends `str` after it
+  // (truncating `str` if necessary to fit).
+  template <StringType str_type>
+  void CopyToEncodedBufferWithStructuredProtoField(StructuredProtoField field,
+                                                   absl::string_view str)
+      ABSL_ATTRIBUTE_NOINLINE;
 
   // Returns `true` if the message is fatal or enabled debug-fatal.
   bool IsFatal() const;

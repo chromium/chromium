@@ -82,6 +82,10 @@
 #include <string_view>
 #endif
 
+#ifdef __ARM_ACLE
+#include <arm_acle.h>
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -352,11 +356,39 @@ template <>
 struct is_uniquely_represented<unsigned __int128> : std::true_type {};
 #endif  // ABSL_HAVE_INTRINSIC_INT128
 
+template <typename T>
+struct FitsIn64Bits : std::integral_constant<bool, sizeof(T) <= 8> {};
+
+struct CombineRaw {
+  template <typename H>
+  H operator()(H state, uint64_t value) const {
+    return H::combine_raw(std::move(state), value);
+  }
+};
+
 // hash_bytes()
 //
 // Convenience function that combines `hash_state` with the byte representation
 // of `value`.
-template <typename H, typename T>
+template <typename H, typename T,
+          absl::enable_if_t<FitsIn64Bits<T>::value, int> = 0>
+H hash_bytes(H hash_state, const T& value) {
+  const unsigned char* start = reinterpret_cast<const unsigned char*>(&value);
+  uint64_t v;
+  if (sizeof(T) == 1) {
+    v = *start;
+  } else if (sizeof(T) == 2) {
+    v = absl::base_internal::UnalignedLoad16(start);
+  } else if (sizeof(T) == 4) {
+    v = absl::base_internal::UnalignedLoad32(start);
+  } else {
+    assert(sizeof(T) == 8);
+    v = absl::base_internal::UnalignedLoad64(start);
+  }
+  return CombineRaw()(std::move(hash_state), v);
+}
+template <typename H, typename T,
+          absl::enable_if_t<!FitsIn64Bits<T>::value, int> = 0>
 H hash_bytes(H hash_state, const T& value) {
   const unsigned char* start = reinterpret_cast<const unsigned char*>(&value);
   return H::combine_contiguous(std::move(hash_state), start, sizeof(value));
@@ -460,12 +492,8 @@ std::enable_if_t<std::is_pointer<T>::value, H> AbslHashValue(H hash_state,
   // Due to alignment, pointers tend to have low bits as zero, and the next few
   // bits follow a pattern since they are also multiples of some base value. The
   // byte swap in WeakMix helps ensure we still have good entropy in low bits.
-#if defined(__APPLE__) || defined(__ANDROID__) || defined(_MSC_VER) || \
-    defined(ABSL_HAVE_ADDRESS_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
-  // In these build modes, pointers may have less entropy so mix pointers twice.
+  // Mix pointers twice to ensure we have good entropy in low bits.
   return H::combine(std::move(hash_state), v, v);
-#endif
-  return H::combine(std::move(hash_state), v);
 }
 
 // AbslHashValue() for hashing nullptr_t
@@ -944,6 +972,7 @@ struct HashSelect {
     static State combine_contiguous(State hash_state, const unsigned char*,
                                     size_t);
     using State::HashStateBase::combine_contiguous;
+    static State combine_raw(State state, uint64_t value);
   };
 
   struct UniquelyRepresentedProbe {
@@ -1038,9 +1067,6 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
                       : uint64_t{0xdcb22ca68cb134ed};
 
   template <typename T>
-  struct FitsIn64Bits : std::integral_constant<bool, sizeof(T) <= 8> {};
-
-  template <typename T>
   using IntegralFastPath =
       conjunction<std::is_integral<T>, is_uniquely_represented<T>,
                   FitsIn64Bits<T>>;
@@ -1111,6 +1137,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   // Allow the HashState type-erasure implementation to invoke
   // RunCombinedUnordered() directly.
   friend class absl::HashState;
+  friend struct CombineRaw;
 
   // Workaround for MSVC bug.
   // We make the type copyable to fix the calling convention, even though we
@@ -1119,6 +1146,14 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   MixingHashState(const MixingHashState&) = default;
 
   explicit MixingHashState(uint64_t state) : state_(state) {}
+
+  // Combines a raw value from e.g. integrals/floats/pointers/etc. This allows
+  // us to be consistent with IntegralFastPath when combining raw types, but
+  // optimize Read1To3 and Read4To8 differently for the string case.
+  static MixingHashState combine_raw(MixingHashState hash_state,
+                                     uint64_t value) {
+    return MixingHashState(WeakMix(hash_state.state_ ^ value));
+  }
 
   // Implementation of the base case for combine_contiguous where we actually
   // mix the bytes into the state.
@@ -1222,37 +1257,36 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   // behavior for the HashConsistentAcrossIntTypes test case. Ditto for
   // Read1To3.
   static uint64_t Read4To8(const unsigned char* p, size_t len) {
-    uint32_t low_mem = absl::base_internal::UnalignedLoad32(p);
-    uint32_t high_mem = absl::base_internal::UnalignedLoad32(p + len - 4);
-#ifdef ABSL_IS_LITTLE_ENDIAN
-    uint32_t most_significant = high_mem;
-    uint32_t least_significant = low_mem;
-#else
-    uint32_t most_significant = low_mem;
-    uint32_t least_significant = high_mem;
-#endif
-    return (static_cast<uint64_t>(most_significant) << (len - 4) * 8) |
-           least_significant;
+    // If `len < 8`, we duplicate bytes in the middle.
+    // E.g.:
+    // `ABCD` will be read as `ABCDABCD`.
+    // `ABCDE` will be read as `ABCDBCDE`.
+    // `ABCDEF` will be read as `ABCDCDEF`.
+    // `ABCDEFG` will be read as `ABCDDEFG`.
+    // We also do not care about endianness. On big-endian platforms, bytes will
+    // be shuffled (it's fine). We always shift low memory by 32, because that
+    // can be pipelined earlier. Reading high memory requires computing
+    // `p + len - 4`.
+    uint64_t most_significant =
+        static_cast<uint64_t>(absl::base_internal::UnalignedLoad32(p)) << 32;
+    uint64_t least_significant =
+        absl::base_internal::UnalignedLoad32(p + len - 4);
+    return most_significant | least_significant;
   }
 
   // Reads 1 to 3 bytes from p. Zero pads to fill uint32_t.
   static uint32_t Read1To3(const unsigned char* p, size_t len) {
-    // The trick used by this implementation is to avoid branches if possible.
-    unsigned char mem0 = p[0];
-    unsigned char mem1 = p[len / 2];
-    unsigned char mem2 = p[len - 1];
-#ifdef ABSL_IS_LITTLE_ENDIAN
-    unsigned char significant2 = mem2;
-    unsigned char significant1 = mem1;
-    unsigned char significant0 = mem0;
-#else
-    unsigned char significant2 = mem0;
-    unsigned char significant1 = len == 2 ? mem0 : mem1;
-    unsigned char significant0 = mem2;
-#endif
-    return static_cast<uint32_t>(significant0 |                     //
-                                 (significant1 << (len / 2 * 8)) |  //
-                                 (significant2 << ((len - 1) * 8)));
+    // The trick used by this implementation is to avoid branches.
+    // We always read three bytes by duplicating.
+    // E.g.,
+    // `A` is read as `AAA`.
+    // `AB` is read as `ABB`.
+    // `ABC` is read as `ABC`.
+    // We always shift `p[0]` so that it can be pipelined better.
+    // Other bytes require extra computation to find indices.
+    uint32_t mem0 = (static_cast<uint32_t>(p[0]) << 16) | p[len - 1];
+    uint32_t mem1 = static_cast<uint32_t>(p[len / 2]) << 8;
+    return mem0 | mem1;
   }
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Mix(uint64_t lhs, uint64_t rhs) {
@@ -1270,7 +1304,13 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t WeakMix(uint64_t n) {
     // WeakMix doesn't work well on 32-bit platforms so just use Mix.
     if (sizeof(size_t) < 8) return Mix(n, kMul);
+#ifdef __ARM_ACLE
+    // gbswap_64 compiles to `rev` on ARM, but `rbit` is better because it
+    // reverses bits rather than reversing bytes.
+    return __rbitll(n * kMul);
+#else
     return absl::gbswap_64(n * kMul);
+#endif
   }
 
   // An extern to avoid bloat on a direct call to LowLevelHash() with fixed

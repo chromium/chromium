@@ -682,6 +682,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":common",
+        ":common_policy_traits",
         ":compressed_tuple",
         ":container_memory",
         ":hash_function_defaults",
