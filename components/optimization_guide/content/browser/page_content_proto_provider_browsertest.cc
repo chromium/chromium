@@ -312,6 +312,42 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   tester.ExpectTotalCount(kRemoteSubframe, EnableCrossSiteFrames() ? 1 : 0);
 }
 
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       LatencyMetricsNotOnCriticalPath) {
+  base::HistogramTester tester;
+
+  LoadPage(https_server()->GetURL(
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           /* with_page_content = */ false);
+
+  auto request = optimization_guide::DefaultAIPageContentOptions();
+  request->on_critical_path = false;
+  LoadData(std::move(request));
+  content::FetchHistogramsFromChildProcesses();
+
+  ASSERT_EQ(page_content().root_node().children_nodes().size(), 1);
+
+  constexpr char kMainFrame[] =
+      "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration.MainFrame";
+  constexpr char kRemoteSubframe[] =
+      "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration."
+      "RemoteSubFrame";
+
+  tester.ExpectTotalCount(kMainFrame, 1);
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/384585933): Enable this assert on Android.
+  if (EnableCrossSiteFrames()) {
+    return;
+  }
+#endif
+  // TODO(crbug.com/389737599): We should have a metric for subframes once they
+  // can use off critical path scheduling.
+  tester.ExpectTotalCount(kRemoteSubframe, 0);
+}
+
 // Ensure that clip from an ancestor frame is included in visible rect
 // computation.
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,

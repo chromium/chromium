@@ -21,7 +21,7 @@ blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions();
 using OnAIPageContentDone = base::OnceCallback<void(
     std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
 void GetAIPageContent(content::WebContents* web_contents,
-                      blink::mojom::AIPageContentOptionsPtr request,
+                      blink::mojom::AIPageContentOptionsPtr options,
                       OnAIPageContentDone done_callback);
 
 }  // namespace optimization_guide

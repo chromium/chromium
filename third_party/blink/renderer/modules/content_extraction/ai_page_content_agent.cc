@@ -441,7 +441,46 @@ void AIPageContentAgent::GetAIPageContentSync(
     mojom::blink::AIPageContentOptionsPtr options,
     GetAIPageContentCallback callback,
     base::TimeTicks deadline) const {
-  std::move(callback).Run(GetAIPageContentInternal(*options));
+  const auto start_time = base::TimeTicks::Now();
+
+  auto content = GetAIPageContentInternal(*options);
+  if (!content) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const auto end_time = base::TimeTicks::Now();
+  const auto latency = end_time - start_time;
+  const bool is_main_frame =
+      GetSupplementable()->GetFrame()->IsOutermostMainFrame();
+  if (is_main_frame) {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
+  } else {
+    UMA_HISTOGRAM_TIMES(
+        "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
+        latency);
+  }
+
+  if (deadline != base::TimeTicks()) {
+    base::TimeDelta exceed_duration = base::Milliseconds(0);
+    if (end_time > deadline) {
+      exceed_duration = end_time - deadline;
+    }
+    if (is_main_frame) {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration."
+          "MainFrame",
+          exceed_duration);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration."
+          "RemoteSubFrame",
+          exceed_duration);
+    }
+  }
+
+  std::move(callback).Run(std::move(content));
 }
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
@@ -467,7 +506,6 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   mojom::blink::AIPageContentPtr page_content =
       mojom::blink::AIPageContent::New();
-  const auto start_time = base::TimeTicks::Now();
 
   // Force activatable locks so content which is accessible via find-in-page is
   // styled/laid out and included when walking the tree below.
@@ -504,17 +542,6 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
-
-  const auto latency = base::TimeTicks::Now() - start_time;
-  if (frame.IsOutermostMainFrame()) {
-    UMA_HISTOGRAM_TIMES(
-        "OptimizationGuide.AIPageContent.RendererLatency.MainFrame", latency);
-  } else {
-    UMA_HISTOGRAM_TIMES(
-        "OptimizationGuide.AIPageContent.RendererLatency.RemoteSubFrame",
-        latency);
-  }
-
   return page_content;
 }
 

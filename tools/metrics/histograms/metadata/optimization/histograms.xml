@@ -383,6 +383,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.AIPageContent.IdleDeadlineExceedDuration.{FrameType}"
+    units="ms" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    If AIPageContent extraction is not on the critical path, we use an idle task
+    to schedule it at an optimal time. The idle task is provided a deadline by
+    which it should ideally be done.
+
+    This metric records the duration by which the idle task's deadline was
+    exceeded. A 0 value indicates the extraction finished before or at the
+    deadline.
+
+    The metric is only recorded for extractions scheduled using an idle task.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
     units="ms" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
