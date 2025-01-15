@@ -33,6 +33,7 @@ MediaCapturePickerDialogBridge::~MediaCapturePickerDialogBridge() {
 void MediaCapturePickerDialogBridge::Show(
     content::WebContents* web_contents,
     const std::u16string& app_name,
+    bool request_audio,
     MediaCapturePickerDialogCallback callback) {
   CHECK(web_contents);
   CHECK(callback_.is_null());
@@ -47,12 +48,14 @@ void MediaCapturePickerDialogBridge::Show(
   }
 
   Java_MediaCapturePickerDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(), app_name);
+      env, java_object_, window_android->GetJavaObject(), app_name,
+      request_audio);
 }
 
 void MediaCapturePickerDialogBridge::OnResult(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_web_contents) {
+    const base::android::JavaParamRef<jobject>& java_web_contents,
+    bool audio_share) {
   content::DesktopMediaID desktop_media_id;
 
   // If no web contents was selected to capture, return a null DesktopMediaID.
@@ -68,6 +71,7 @@ void MediaCapturePickerDialogBridge::OnResult(
                 ->GetProcess()
                 ->GetDeprecatedID(),
             web_contents->GetPrimaryMainFrame()->GetRoutingID()));
+    desktop_media_id.audio_share = audio_share;
   }
   std::move(callback_).Run(desktop_media_id);
 }

@@ -17,4 +17,17 @@ declare_args() {
   # Whether to inline source maps during build. Cannot be enabled when
   # `optimize_webui=true`.
   enable_webui_inline_sourcemaps = use_javascript_coverage
+
+  # Flag used for loading WebUI files directly from disk instead of .pak files.
+  # It causes additional file path info for each file to be added into Grit
+  # generated '*_resource_map.cc' files during the build, which is then used at
+  # runtime to read such files.
+  # Meant to be used during local development only (requires a local checkout
+  # and build) with the runtime --load-webui-from-disk command line switch.
+  load_webui_from_disk = false
+}
+
+if (load_webui_from_disk) {
+  assert(is_linux || is_mac || is_win || is_chromeos,
+         "load_webui_from_disk not available")
 }

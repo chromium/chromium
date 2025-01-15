@@ -112,8 +112,7 @@ class EntityInstance final {
                                 AttributeInstance::CompareByType> attributes,
                  base::Uuid guid,
                  std::string nickname,
-                 base::Time date_modified,
-                 bool synced);
+                 base::Time date_modified);
 
   EntityInstance(const EntityInstance&);
   EntityInstance& operator=(const EntityInstance&);
@@ -146,9 +145,6 @@ class EntityInstance final {
   // The latest time the instance, including any of its attributes, was edited.
   base::Time date_modified() const { return date_modified_; }
 
-  // Indicates if the instance is synced.
-  bool synced() const { return synced_; }
-
  private:
   EntityType type_;
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
@@ -156,7 +152,6 @@ class EntityInstance final {
   base::Uuid guid_;
   std::string nickname_;
   base::Time date_modified_;
-  bool synced_ = false;
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);

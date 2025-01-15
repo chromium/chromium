@@ -5,6 +5,7 @@
 import("//crypto/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
 if (use_blink) {
   import("//chrome/common/features.gni")
@@ -154,5 +155,10 @@ grit("resources") {
     "grit/webui_resources_map.cc",
     "grit/webui_resources_map.h",
     "webui_resources.pak",
+  ]
+
+  grit_flags = [
+    "-E",
+    "add_filepath_to_resource_map=${load_webui_from_disk}",
   ]
 }

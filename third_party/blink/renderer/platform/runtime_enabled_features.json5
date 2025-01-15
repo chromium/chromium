@@ -374,6 +374,11 @@
       // enabled to make the whole feature work.
     },
     {
+      // https://crbug.com/40681200
+      name: "AllowSkippingEditingBoundaryToMergeEnd",
+      status: "stable",
+    },
+    {
       name: "AllowSyntheticTimingForCanvasCapture",
       base_feature: "none",
       status: {

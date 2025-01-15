@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "base/functional/callback.h"
 #include "components/manta/proto/scanner.pb.h"
 
@@ -17,24 +16,21 @@ namespace ash {
 // Represents a `manta::proto::ScannerAction` from an initial response from the
 // Scanner service, which is expected to be "unpopulated".
 //
-// Takes in a `PopulateToProtoCallback` which should return a "populated"
-// `manta::proto::ScannerAction`. Provides methods to populate this to a
-// `ScannerAction`.
+// Takes in a `PopulateCallback` which should return a "populated"
+// `manta::proto::ScannerAction`, or one with no action case if there is an
+// error. Provides methods to populate this to a `ScannerAction`.
 class ASH_EXPORT ScannerUnpopulatedAction {
  public:
-  using PopulatedProtoCallback = base::OnceCallback<void(
-      std::optional<manta::proto::ScannerAction> populated_action)>;
-  using PopulateToProtoCallback = base::RepeatingCallback<void(
+  using PopulatedActionCallback =
+      base::OnceCallback<void(manta::proto::ScannerAction populated_action)>;
+  using PopulateCallback = base::RepeatingCallback<void(
       manta::proto::ScannerAction unpopulated_action,
-      PopulatedProtoCallback callback)>;
-
-  using PopulateToVariantCallback =
-      base::OnceCallback<void(std::optional<ScannerAction> action)>;
+      PopulatedActionCallback callback)>;
 
   // Returns nullopt iff `unpopulated_action.action_case() == ACTION_NOT_SET`.
   static std::optional<ScannerUnpopulatedAction> FromProto(
       manta::proto::ScannerAction unpopulated_action,
-      PopulateToProtoCallback populate_to_proto_callback);
+      PopulateCallback populate_to_proto_callback);
 
   ScannerUnpopulatedAction(const ScannerUnpopulatedAction&);
   ScannerUnpopulatedAction& operator=(const ScannerUnpopulatedAction&);
@@ -49,19 +45,19 @@ class ASH_EXPORT ScannerUnpopulatedAction {
     return unpopulated_action_.action_case();
   }
 
-  // Calls the provided `PopulateToProtoCallback` and asynchronously returns a
-  // `ScannerAction`. If any errors occur, such as `PopulateToProtoCallback`
-  // returning a different type of action to this action, nullopt is returned.
+  // Calls the provided `PopulatedActionCallback` and asynchronously returns a
+  // `ScannerAction`. If any errors occur, such as `callback` returning a
+  // different type of action to this action, an empty action is returned.
   // This method will crash if this has been previously moved.
-  void PopulateToVariant(PopulateToVariantCallback callback) const&;
+  void Populate(PopulatedActionCallback callback) const&;
 
  private:
   ScannerUnpopulatedAction(manta::proto::ScannerAction unpopulated_action,
-                           PopulateToProtoCallback populate_to_proto_callback);
+                           PopulateCallback populate_to_proto_callback);
 
   // Guaranteed to have `action_case()` to be set to a known value.
   manta::proto::ScannerAction unpopulated_action_;
-  PopulateToProtoCallback populate_to_proto_callback_;
+  PopulateCallback populate_callback_;
 };
 
 }  // namespace ash

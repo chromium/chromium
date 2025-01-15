@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_command_delegate.h"
@@ -97,23 +96,23 @@ scoped_refptr<base::RefCountedMemory> DownscaleImageIfNeeded(
 // Runs the callback with the populated proto from the response of a call to
 // `FetchActionDetailsForImage`.
 void OnActionPopulated(
-    ScannerUnpopulatedAction::PopulatedProtoCallback callback,
+    ScannerUnpopulatedAction::PopulatedActionCallback callback,
     std::unique_ptr<manta::proto::ScannerOutput> output,
     manta::MantaStatus status) {
   if (output == nullptr) {
     // TODO(b/363100868): Handle error case
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
 
   if (output->objects_size() != 1) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
   manta::proto::ScannerObject& object = *output->mutable_objects(0);
 
   if (object.actions_size() != 1) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(manta::proto::ScannerAction());
     return;
   }
   manta::proto::ScannerAction& action = *object.mutable_actions(0);
@@ -213,7 +212,7 @@ void ScannerSession::OnActionsReturned(
 
   std::vector<ScannerActionViewModel> action_view_models;
 
-  ScannerUnpopulatedAction::PopulateToProtoCallback populate_to_proto_callback =
+  ScannerUnpopulatedAction::PopulateCallback populate_to_proto_callback =
       base::BindRepeating(&ScannerSession::PopulateAction,
                           weak_ptr_factory_.GetWeakPtr(),
                           downscaled_jpeg_bytes);
@@ -235,7 +234,7 @@ void ScannerSession::OnActionsReturned(
 void ScannerSession::PopulateAction(
     scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
     manta::proto::ScannerAction unpopulated_action,
-    ScannerUnpopulatedAction::PopulatedProtoCallback callback) {
+    ScannerUnpopulatedAction::PopulatedActionCallback callback) {
   delegate_->FetchActionDetailsForImage(
       std::move(downscaled_jpeg_bytes), std::move(unpopulated_action),
       base::BindOnce(&OnActionPopulated, std::move(callback)));

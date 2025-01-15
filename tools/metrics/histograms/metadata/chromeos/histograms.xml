@@ -1313,7 +1313,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-10-20">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1330,7 +1330,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2025-02-23">
+    enum="CrosDiagnosticsDataError" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1346,7 +1346,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
-    units="CrosDiagnosticsNavigationView" expires_after="2025-05-31">
+    units="CrosDiagnosticsNavigationView" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1355,7 +1355,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
-    units="ms" expires_after="2025-06-29">
+    units="ms" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1365,7 +1365,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
-    expires_after="2025-06-22">
+    expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1375,7 +1375,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2025-05-18">
+    expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1385,7 +1385,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
-    expires_after="2025-06-08">
+    expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1396,7 +1396,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
-    units="ms" expires_after="2025-06-08">
+    units="ms" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1415,7 +1415,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2025-07-06">
+    enum="CrosDiagnosticsRoutineResult" expires_after="2025-12-31">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>

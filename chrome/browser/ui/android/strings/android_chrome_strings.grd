@@ -2273,6 +2273,10 @@ Your Google account may have other forms of browsing history like searches and a
         <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_SHARE_TEXT" desc="Share button text for the dialog showing a list of tabs for capture and sharing.">
           Share
         </message>
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_AUDIO_SHARE_TEXT"
+          desc="Text for the dialog showing a list of tabs for capture to ask user if tab audio should be shared.">
+          Also share tab audio
+        </message>
       </if>
 
       <!-- Download open dialog -->
@@ -3583,7 +3587,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Open in Incognito Chrome tab
       </message>
 
-     <!-- Incognito reauthentication page -->
+      <!-- Incognito reauthentication page -->
      <message name="IDS_INCOGNITO_REAUTH_PAGE_UNLOCK_INCOGNITO_BUTTON_LABEL" desc="The label of button which upon click allows user to start the re-authentication process to view their existing Incognito tabs.">
        Unlock Incognito
      </message>
@@ -3591,7 +3595,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
        See other tabs
      </message>
 
-     <!-- Incognito reauthentication promo card -->
+      <!-- Incognito reauthentication promo card -->
      <message name ="IDS_INCOGNITO_REAUTH_PROMO_TITLE" desc="The title of the incognito re-auth promo card.">
        Lock Incognito tabs when you leave Chrome
      </message>
@@ -6381,7 +6385,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Full-size sheet
       </message>
 
-       <!-- Quick Delete strings -->
+      <!-- Quick Delete strings -->
       <message name="IDS_QUICK_DELETE_DIALOG_TITLE" desc="Title of the dialog when asking users to confirm deleting browsing data.">
         Delete browsing data
       </message>
@@ -6965,7 +6969,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           Open Settings
       </message>
 
-       <!-- Mandatory biometric auth errors -->
+      <!-- Mandatory biometric auth errors -->
       <message name="IDS_IDENTITY_CHECK_LOCKOUT_ERROR_TITLE" desc="Title for the error dialog shown to the user when Identity Check cannot authenticate them because the maximum number of attempts to authenticate with biometrics has been exceeded and biometrics have been locked out.">
         Identity Check is on and can’t verify it’s you
       </message>

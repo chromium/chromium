@@ -34,14 +34,12 @@ EntityInstance::EntityInstance(
         attributes,
     base::Uuid guid,
     std::string nickname,
-    base::Time date_modified,
-    bool synced)
+    base::Time date_modified)
     : type_(type),
       attributes_(std::move(attributes)),
       guid_(std::move(guid)),
       nickname_(std::move(nickname)),
-      date_modified_(date_modified),
-      synced_(synced) {}
+      date_modified_(date_modified) {}
 
 EntityInstance::EntityInstance(const EntityInstance&) = default;
 EntityInstance& EntityInstance::operator=(const EntityInstance&) = default;
@@ -59,7 +57,6 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
   os << "- guid: " << '"' << e.guid().AsLowercaseString() << '"' << std::endl;
   os << "- date modified: " << '"' << e.date_modified() << '"' << std::endl;
-  os << "- synced: " << '"' << e.synced() << '"' << std::endl;
   for (const AttributeInstance& a : e.attributes()) {
     os << "- attribute " << a << std::endl;
   }

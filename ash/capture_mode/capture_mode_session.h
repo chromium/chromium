@@ -255,8 +255,7 @@ class ASH_EXPORT CaptureModeSession
   void HideAllUis();
   void ShowAllUis();
 
-  // Shows or hides all session UI widgets.
-  void HideAllWidgets();
+  // Shows all session UI widgets.
   void ShowAllWidgets();
 
   // Called by `ShowAllWidgets()` for each widget. Returns true if the given

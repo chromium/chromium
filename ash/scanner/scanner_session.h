@@ -62,7 +62,7 @@ class ASH_EXPORT ScannerSession {
   void PopulateAction(
       scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
       manta::proto::ScannerAction unpopulated_action,
-      ScannerUnpopulatedAction::PopulatedProtoCallback callback);
+      ScannerUnpopulatedAction::PopulatedActionCallback callback);
 
   const raw_ptr<ScannerProfileScopedDelegate> delegate_;
 

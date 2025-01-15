@@ -78,7 +78,12 @@ def _UniqueResourcesGenerator(get_key, root):
     assert key not in seen, 'duplicate resource key encountered while' \
       ' generating resource map: %s' % key
     seen.add(key)
-    yield (key, tid)
+
+    filepath = ''
+    if 'type' in item.attrs and item.attrs['type'] != 'chrome_scaled_image':
+      filepath = item.ToRealPath(item.GetInputPath())
+
+    yield (key, tid, filepath)
 
 
 def _FormatSourceHeader(get_key, root, output_dir):
@@ -128,10 +133,19 @@ const size_t %(map_name)sSize = std::size(%(map_name)s);
       'map_name': GetMapName(root)
   }
 
+
+# Environment variable specifying whether additional filepath info should be
+# included in the generated C++ file, used for WebUI development purposes.
+ADD_FILEPATH_TO_RESOURCE_MAP_VAR = 'add_filepath_to_resource_map'
+
+
 def _FormatSource(get_key, root, lang, output_dir):
   yield _FormatSourceHeader(get_key, root, output_dir)
-  for (key, tid) in _UniqueResourcesGenerator(get_key, root):
-    yield '  {"%s", %s},\n' % (key, tid)
+  for (key, tid, filepath) in _UniqueResourcesGenerator(get_key, root):
+    if os.environ.get(ADD_FILEPATH_TO_RESOURCE_MAP_VAR, 'false') == 'true':
+      yield '  {"%s", %s, "%s"},\n' % (key, tid, filepath.replace('\\', '/'))
+    else:
+      yield '  {"%s", %s},\n' % (key, tid)
   yield _FormatSourceFooter(root)
 
 
