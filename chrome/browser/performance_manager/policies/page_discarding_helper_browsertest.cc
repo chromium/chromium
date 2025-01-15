@@ -19,6 +19,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,8 +58,16 @@ class FaviconWatcher final : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
+class PageDiscardingHelperBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
+  PageDiscardingHelperBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(::features::kWebContentsDiscard,
+                                              GetParam());
+  }
+  ~PageDiscardingHelperBrowserTest() override = default;
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -105,6 +114,11 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         contents,
         "document.getElementsByTagName('link')[0].href = 'icon.svg'"));
     favicon_watcher.Wait();
+  }
+
+  base::WeakPtr<PageNode> GetPageNodeAtIndex(int index) {
+    return PerformanceManager::GetPrimaryPageNodeForWebContents(
+        browser()->tab_strip_model()->GetWebContentsAt(index));
   }
 
   void ExpectImmediateDiscard(
@@ -158,9 +172,12 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetWebContentsAt(index)->WasDiscarded(),
         expected_result);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
@@ -239,6 +256,75 @@ IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
     }
   }
 }
+
+// Regression test for crbug.com/386801193. Ensure discarded tabs remain
+// eligible for successive discard operations following a reactivation / reload.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardedTabEligibleForSuccessiveDiscards) {
+  // Add a new background tab.
+  OpenNewBackgroundPage();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+
+  // Attempt to discard the background tab.
+  const auto attempt_discard = [this]() {
+    base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          ASSERT_TRUE(discard_target_page_node);
+          auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+          ASSERT_TRUE(helper);
+          EXPECT_EQ(
+              CanDiscardResult::kEligible,
+              helper->CanDiscard(discard_target_page_node.get(),
+                                 DiscardReason::URGENT, base::TimeDelta()));
+          helper->DiscardAPage(
+              base::BindLambdaForTesting(
+                  [&](std::optional<base::TimeTicks> first_discarded_at) {
+                    EXPECT_TRUE(first_discarded_at.has_value());
+                    run_loop.Quit();
+                  }),
+              DiscardReason::URGENT, base::TimeDelta());
+        }));
+    run_loop.Run();
+  };
+  attempt_discard();
+
+  // Ensure the background tab has been discarded.
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+
+  // Activate and reload the discarded background page.
+  content::TestNavigationObserver reload_waiter(tab2->GetContents(), 1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab2);
+  reload_waiter.Wait();
+
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_FALSE(tab2->GetContents()->WasDiscarded());
+
+  // Background the discarded tab again and attempt another discard.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+  attempt_discard();
+
+  // Ensure the background tab has been discarded again.
+  EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
+  EXPECT_TRUE(tab2->GetContents()->WasDiscarded());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PageDiscardingHelperBrowserTest,
+    ::testing::Values(false, true),
+    [](const ::testing::TestParamInfo<
+        PageDiscardingHelperBrowserTest::ParamType>& info) {
+      return info.param ? "RetainedWebContents" : "UnretainedWebContents";
+    });
 
 }  // namespace
 

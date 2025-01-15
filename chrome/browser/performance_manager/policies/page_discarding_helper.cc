@@ -310,6 +310,7 @@ void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
 
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph->AddPageNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
@@ -317,6 +318,7 @@ void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
 void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
+  graph->RemovePageNodeObserver(this);
 }
 
 const PageLiveStateDecorator::Data*
@@ -502,6 +504,14 @@ bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
     return true;
   }
   return !it->second->MatchURL(url).empty();
+}
+
+void PageDiscardingHelper::OnMainFrameDocumentChanged(
+    const PageNode* page_node) {
+  // When activated a discarded tab will re-navigate, instantiating a new
+  // document. Ensure the DiscardAttemptMarker is cleared in these cases to
+  // ensure a given tab remains eligible for discarding.
+  DiscardAttemptMarker::Destroy(PageNodeImpl::FromNode(page_node));
 }
 
 base::Value::Dict PageDiscardingHelper::DescribePageNodeData(

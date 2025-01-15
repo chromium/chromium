@@ -113,7 +113,8 @@ class PageNodeSortProxy {
 // PageDiscardingHelper::GetFromGraph(graph()).
 class PageDiscardingHelper
     : public GraphOwnedAndRegistered<PageDiscardingHelper>,
-      public NodeDataDescriberDefaultImpl {
+      public NodeDataDescriberDefaultImpl,
+      public PageNode::ObserverDefaultImpl {
  public:
   // Export discard reason in the public interface.
   using DiscardReason = ::mojom::LifecycleUnitDiscardReason;
@@ -176,6 +177,9 @@ class PageDiscardingHelper
 
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
+
+  // PageNodeObserver:
+  void OnMainFrameDocumentChanged(const PageNode* page_node) override;
 
  protected:
   void OnPassedToGraph(Graph* graph) override;
