@@ -506,6 +506,16 @@ gfx::Rect CalculateRegionEdgeBounds(const gfx::Size& preferred_size,
   return widget_bounds;
 }
 
+// Hides `widget` immediately, without animation.
+void HideWidgetImmediately(views::Widget* widget) {
+  // Disable animations before hiding the widget, to avoid a fade out animation.
+  // Animations remain disabled until the widget is shown again, see
+  // `ShowAllWidgets()`.
+  widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                         true);
+  widget->Hide();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -1343,10 +1353,23 @@ std::set<aura::Window*> CaptureModeSession::GetWindowsToIgnoreFromWidgets() {
 
 void CaptureModeSession::OnPerformCaptureForSearchStarting(
     PerformCaptureType capture_type) {
-  // We only need to hide widgets since other parts of the session UI don't
-  // cover the selected region. Note in particular that we avoid hiding and
-  // reshowing the dimming shield background (to avoid a flash effect).
-  HideAllWidgets();
+  // When performing capture after pressing the smart actions button, only hide
+  // widgets that intersect the selected region. Other widgets are kept visible
+  // so that we can preserve animations if possible.
+  //
+  // Ideally, we would also do this for other capture types. However for other
+  // capture types (particularly text detection), capture UI widget bounds may
+  // not have been set by the time capture is performed. So, we hide all widgets
+  // to avoid widgets appearing in cases where bounds are set mid-capture.
+  gfx::Rect capture_region_in_screen = controller_->user_capture_region();
+  wm::ConvertRectToScreen(current_root_, &capture_region_in_screen);
+  for (views::Widget* widget : GetAvailableWidgets()) {
+    if (capture_type != PerformCaptureType::kScanner ||
+        widget->GetWindowBoundsInScreen().Intersects(
+            capture_region_in_screen)) {
+      HideWidgetImmediately(widget);
+    }
+  }
 }
 
 void CaptureModeSession::OnPerformCaptureForSearchEnded(
@@ -1867,7 +1890,9 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
 void CaptureModeSession::HideAllUis() {
   is_all_uis_visible_ = false;
   cursor_setter_.reset();
-  HideAllWidgets();
+  for (views::Widget* widget : GetAvailableWidgets()) {
+    HideWidgetImmediately(widget);
+  }
   // Refresh painting the layer, since we don't paint anything while a DLP
   // dialog might be shown.
   layer()->SchedulePaint(layer()->bounds());
@@ -1880,31 +1905,18 @@ void CaptureModeSession::ShowAllUis() {
   layer()->SchedulePaint(layer()->bounds());
 }
 
-void CaptureModeSession::HideAllWidgets() {
-  for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. We need to disable the animation before we hide
-    // to avoid any hide animation here, or until the widgets are shown (also
-    // without animation) when ShowAllUis() is called.
-    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
-                                           true);
-
-    // The layer's opacity could be less than 1.f if the widget was hidden
-    // before we disabled the animations above. We need to reset the opacity
-    // back to 1.f as we will hide the widget without animation.
-    widget->GetLayer()->SetOpacity(1.f);
-    widget->Hide();
-  }
-}
 
 void CaptureModeSession::ShowAllWidgets() {
   for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. See HideAllUis() above.
-    // At this point the animation is still disabled, so we show the window now
-    // before we re-enable the animations. This is to avoid having those widgets
-    // show up in the captured images or videos in case this is used right
-    // before ending the session to perform the capture.
-    if (CanShowWidget(widget))
+    // At this point the animation is still disabled, see
+    // `HideWidgetImmediately()`. Show the window now before we re-enable
+    // animations. This is to avoid having those widgets show up in the captured
+    // images or videos in case this is used right before ending the session to
+    // perform the capture.
+    if (CanShowWidget(widget) && !widget->IsVisible()) {
+      widget->GetLayer()->SetOpacity(1.0f);
       widget->Show();
+    }
     widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                            false);
   }

@@ -71,6 +71,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -3114,12 +3115,14 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
   EXPECT_CALL(*test_delegate, DetectTextInImage)
       .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
 
-  // Select a region to trigger text detection. The capture label should be
-  // hidden so that it does not interfere with text detection.
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+  // Select a region to trigger text detection. The region is large enough that
+  // the capture label should appear inside the capture region.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 250, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
+  // The capture label should be hidden so that it does not interfere with text
+  // detection.
   EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
 
   // The capture label should be reshown once capture completes.
@@ -3135,14 +3138,98 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
 
   // Click the smart actions button. The capture label should be hidden so that
   // it does not interfere with detecting Scanner actions.
-  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
-      fetch_actions_future;
   LeftClickOn(smart_actions_button);
   EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
 
   // The capture label should be reshown once capture completes.
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
   EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+}
+
+// If the action container does not overlap the capture region, it should remain
+// visible while performing capture for Scanner.
+TEST_F(ScannerTest,
+       ActionContainerWidgetVisibleWhilePerformingCaptureIfNoOverlap) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Select a small region and simulate detected text so that the smart actions
+  // button appears.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+  detect_text_future.Take().Run("detected text");
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
+
+  // Click the smart actions button to trigger performing capture for Scanner.
+  LeftClickOn(smart_actions_button);
+
+  // Since the action container widget doesn't overlap the small capture region,
+  // it should remain visible and animations should remain enabled.
+  const views::Widget* action_container_widget =
+      session_test_api.GetActionContainerWidget();
+  EXPECT_FALSE(action_container_widget->GetWindowBoundsInScreen().Intersects(
+      controller->user_capture_region()));
+  EXPECT_TRUE(action_container_widget->IsVisible());
+  EXPECT_FALSE(action_container_widget->GetNativeWindow()->GetProperty(
+      aura::client::kAnimationsDisabledKey));
+}
+
+// If the action container overlaps the capture region, it should be hidden
+// while performing capture for Scanner.
+TEST_F(ScannerTest,
+       ActionContainerWidgetVisibleWhilePerformingCaptureIfOverlap) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Select a large region and simulate detected text so that the smart actions
+  // button appears. The region covers the whole root window, so it will
+  // intersect the action container.
+  SelectCaptureModeRegion(GetEventGenerator(),
+                          Shell::GetPrimaryRootWindow()->bounds(),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+  detect_text_future.Take().Run("detected text");
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
+
+  // Click the smart actions button to trigger performing capture for Scanner.
+  LeftClickOn(smart_actions_button);
+
+  // The action container widget should be hidden with animations disabled while
+  // performing capture.
+  const views::Widget* action_container_widget =
+      session_test_api.GetActionContainerWidget();
+  EXPECT_FALSE(action_container_widget->IsVisible());
+  EXPECT_TRUE(action_container_widget->GetNativeWindow()->GetProperty(
+      aura::client::kAnimationsDisabledKey));
+
+  // The action container widget should be reshown and animations re-enabled
+  // after capture completes.
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  EXPECT_TRUE(action_container_widget->IsVisible());
+  EXPECT_FALSE(action_container_widget->GetNativeWindow()->GetProperty(
+      aura::client::kAnimationsDisabledKey));
 }
 
 // Tests that a glow animation is shown when Scanner actions are being fetched
@@ -3276,20 +3363,14 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
               FetchActionsForImage)
       .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
 
-  // Select a region to trigger text detection. The capture label should be
-  // hidden so that it does not interfere with text detection.
+  // Select a region and simulate detected text so that the smart actions button
+  // appears.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
-  // The capture label should be reshown once capture completes.
-  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
-  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
   detect_text_future.Take().Run("detected text");
   // Smart actions button should have been created.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
   const ActionButtonView* smart_actions_button =
       session_test_api.GetButtonWithViewID(
           ActionButtonViewID::kSmartActionsButton);
