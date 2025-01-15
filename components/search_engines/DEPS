@@ -6,6 +6,7 @@ include_rules = [
   "+components/infobars/core",
   "+components/keyed_service/core",
   "+components/lens",
+  "+components/regional_capabilities",
   "+components/metrics",
   "+components/omnibox/common",
   "+components/os_crypt/async",

@@ -300,6 +300,7 @@ include_rules = [
   "+components/reading_list/core",
   "+components/reading_list/features",
   "+components/remote_cocoa/app_shim",
+  "+components/regional_capabilities",
   "+components/remote_cocoa/browser",
   "+components/remote_cocoa/common",
   "+components/renderer_context_menu",

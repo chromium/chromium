@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
@@ -30,6 +31,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -345,11 +348,12 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 }
 
 int SearchEngineChoiceService::GetCountryId() {
-  std::optional<SearchEngineCountryOverride> country_override =
-      GetSearchEngineCountryOverride();
+  std::optional<regional_capabilities::SearchEngineCountryOverride>
+      country_override =
+          regional_capabilities::GetSearchEngineCountryOverride();
   if (country_override.has_value()) {
-    if (absl::holds_alternative<int>(country_override.value())) {
-      return absl::get<int>(country_override.value());
+    if (std::holds_alternative<int>(country_override.value())) {
+      return std::get<int>(country_override.value());
     }
     return country_codes::kCountryIDUnknown;
   }

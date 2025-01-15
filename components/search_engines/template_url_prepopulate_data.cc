@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <random>
+#include <variant>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -20,10 +21,10 @@
 #include "components/country_codes/country_codes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -92,15 +93,16 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
     // TODO(crbug.com/40287734): Update tests and remove associated branches.
     CHECK_IS_TEST();
   } else if (search_engines::IsEeaChoiceCountry(country_id)) {
-    if (search_engines::HasSearchEngineCountryListOverride()) {
+    if (regional_capabilities::HasSearchEngineCountryListOverride()) {
       auto country_override =
-          absl::get<search_engines::SearchEngineCountryListOverride>(
-              search_engines::GetSearchEngineCountryOverride().value());
+          std::get<regional_capabilities::SearchEngineCountryListOverride>(
+              regional_capabilities::GetSearchEngineCountryOverride().value());
 
       switch (country_override) {
-        case search_engines::SearchEngineCountryListOverride::kEeaAll:
+        case regional_capabilities::SearchEngineCountryListOverride::kEeaAll:
           return GetAllEeaRegionPrepopulatedEngines();
-        case search_engines::SearchEngineCountryListOverride::kEeaDefault:
+        case regional_capabilities::SearchEngineCountryListOverride::
+            kEeaDefault:
           return GetDefaultPrepopulatedEngines();
       }
     }

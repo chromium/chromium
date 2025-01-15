@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("regional_capabilities") {
+  sources = [
+    "regional_capabilities_switches.cc",
+    "regional_capabilities_switches.h",
+    "regional_capabilities_utils.cc",
+    "regional_capabilities_utils.h",
+  ]
+
+  deps = [
+    "//components/country_codes",
+
+    # TODO(crbug.com/388792357): Refactor out search_engines dependency.
+    "//components/search_engines:search_engines_switches",
+  ]
+}

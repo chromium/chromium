@@ -146,6 +146,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/test:test_support",
       "//components/country_codes",
+      "//components/regional_capabilities",
       "//components/search_engines",
       "//components/signin/public/base",
       "//components/web_modal:test_support",
