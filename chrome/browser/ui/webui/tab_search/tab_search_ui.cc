@@ -134,7 +134,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"rejectAriaLabel", IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL},
       {"successMissingActiveTabTitle",
        IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE},
-      {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"successTitleSingle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE},
       {"successTitleMulti", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_MULTI},
       {"tabOrganizationCloseTabAriaLabel",
@@ -190,12 +189,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     }
   }
   source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
-  source->AddBoolean(
-      "multiTabOrganizationEnabled",
-      base::FeatureList::IsEnabled(features::kMultiTabOrganization));
-  source->AddBoolean(
-      "tabReorganizationDividerEnabled",
-      base::FeatureList::IsEnabled(features::kTabReorganizationDivider));
   source->AddBoolean(
       "tabOrganizationModelStrategyEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));

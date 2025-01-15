@@ -5275,19 +5275,6 @@ const char kTabOrganizationSettingsVisibilityName[] =
 const char kTabOrganizationSettingsVisibilityDescription[] =
     "Shows Tab Organization in the settings UI";
 
-const char kMultiTabOrganizationName[] = "Multi Tab Organization";
-const char kMultiTabOrganizationDescription[] =
-    "Enables Auto Tab Groups suggestions for multiple tab groups at once.";
-
-const char kTabReorganizationName[] = "Tab Reorganization";
-const char kTabReorganizationDescription[] =
-    "Enables Auto Tab Groups suggestions for adding tabs to existing groups";
-
-const char kTabReorganizationDividerName[] = "Tab Reorganization Divider";
-const char kTabReorganizationDividerDescription[] =
-    "Shows a divider in Auto Tab Groups suggestions for existing groups, "
-    "indicating which tabs in the group are new.";
-
 const char kTabstripDeclutterName[] = "Tab Declutter";
 const char kTabstripDeclutterDescription[] =
     "Enables the Tab Declutter feature, which can be found within the Tab "

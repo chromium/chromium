@@ -38,19 +38,12 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     return {
       session: {type: Object},
       availableHeight: {type: Number},
-
-      multiTabOrganization: {
-        type: Boolean,
-        reflect: true,
-      },
-
       feedbackSelectedOption_: {type: Number},
     };
   }
 
   session?: TabOrganizationSession;
   availableHeight: number = 0;
-  multiTabOrganization: boolean = false;
 
   protected feedbackSelectedOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
@@ -83,8 +76,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
       this.onAvailableHeightChange_();
     }
 
-    if (changedProperties.has('session') ||
-        changedProperties.has('multiTabOrganization')) {
+    if (changedProperties.has('session')) {
       this.updateScroll_();
     }
   }
@@ -116,11 +108,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     if (!this.session) {
       return [];
     }
-    if (this.multiTabOrganization) {
-      return this.session.organizations;
-    } else {
-      return this.session.organizations.slice(0, 1);
-    }
+    return this.session.organizations;
   }
 
   protected hasMultipleOrganizations_(): boolean {

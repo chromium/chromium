@@ -134,7 +134,6 @@ class TabSearchPageHandler
   void SetTabOrganizationUserInstruction(
       const std::string& user_instruction) override;
   void SetUserFeedback(int32_t session_id,
-                       int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
   void NotifyOrganizationUIReadyToShow() override;
   void NotifySearchUIReadyToShow() override;

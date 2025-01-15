@@ -149,8 +149,7 @@ void PerformTabOrganizationExecution(
   // groups, complete without running the model to show the "No groups found"
   // error state.
   bool should_request_organization = valid_tabs > 1;
-  if (valid_tabs == 1 &&
-      base::FeatureList::IsEnabled(features::kTabReorganization)) {
+  if (valid_tabs == 1) {
     const auto* tab_group_model =
         request->tab_datas()[0]->original_tab_strip_model()->group_model();
     should_request_organization =
@@ -218,8 +217,7 @@ void PerformTabOrganizationExecution(
     }
   }
 
-  tab_organization_request.set_allow_reorganizing_existing_groups(
-      base::FeatureList::IsEnabled(features::kTabReorganization));
+  tab_organization_request.set_allow_reorganizing_existing_groups(true);
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
