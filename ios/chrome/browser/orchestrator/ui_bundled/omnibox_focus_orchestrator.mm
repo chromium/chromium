@@ -366,17 +366,27 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [UIView addKeyframeWithRelativeStartTime:0
-                                  relativeDuration:relativeDurationAnimation1
-                                        animations:^{
-                                          [self contraction];
-                                        }];
-          [UIView
-              addKeyframeWithRelativeStartTime:relativeDurationAnimation1
-                              relativeDuration:1 - relativeDurationAnimation1
-                                    animations:^{
-                                      [self.toolbarAnimatee showControlButtons];
-                                    }];
+          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
+          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
+          if (isLowerThan17 || isHigherThan17_2) {
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:relativeDurationAnimation1
+                                          animations:^{
+                                            [self contraction];
+                                          }];
+            [UIView
+                addKeyframeWithRelativeStartTime:relativeDurationAnimation1
+                                relativeDuration:1 - relativeDurationAnimation1
+                                      animations:^{
+                                        [self.toolbarAnimatee
+                                                showControlButtons];
+                                      }];
+          } else {
+            // This is a workaround for a crash that is mostly happening on
+            // iOS 17.0-17.1. See crbug.com/369988988.
+            [self contraction];
+            [self.toolbarAnimatee showControlButtons];
+          }
         }
         completion:^(BOOL finished) {
           [self.toolbarAnimatee hideCancelButton];
