@@ -11,6 +11,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::AtLeast;
+
 namespace gpu {
 
 class SharedImagePoolTest : public testing::Test {
@@ -495,8 +497,10 @@ TEST_F(SharedImagePoolTest, FlushCalledAfterReclaiming) {
   auto image = pool->GetImage();
   pool->ReleaseImage(std::move(image));
 
-  // Expect that Flush() will be called on the SharedImageInterface.
-  EXPECT_CALL(*test_sii_, DoFlush()).Times(1);
+  // Expect that Flush() will be called on the SharedImageInterface. Flush() can
+  // be called more than once,i.e., once during reclaiming resource after
+  // expiration and another during SharedImagePool destruction.
+  EXPECT_CALL(*test_sii_, DoFlush()).Times(AtLeast(1));
 
   // Advance time past the expiration time.
   task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
