@@ -2350,17 +2350,19 @@ targets.bundle(
         ),
         "telemetry_gpu_unittests": targets.mixin(
             swarming = targets.swarming(
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
         ),
         "telemetry_unittests": targets.mixin(
             args = [
                 "--jobs=1",
+                # Disable GPU compositing, telemetry_unittests runs on VMs.
+                # https://crbug.com/871955
                 "--extra-browser-args=--disable-gpu",
             ],
             swarming = targets.swarming(
                 shards = 8,
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
             resultdb = targets.resultdb(
                 enable = True,
@@ -6116,11 +6118,12 @@ targets.bundle(
     per_test_modifications = {
         "telemetry_perf_unittests": targets.mixin(
             args = [
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
                 "--extra-browser-args=--enable-crashpad",
             ],
             swarming = targets.swarming(
                 shards = 12,
-                idempotent = False,
+                idempotent = False,  # https://crbug.com/549140
             ),
             resultdb = targets.resultdb(
                 enable = True,
