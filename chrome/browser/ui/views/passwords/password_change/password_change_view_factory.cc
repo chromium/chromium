@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/failed_password_change_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/no_password_change_form_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/privacy_notice_view.h"
 #include "chrome/browser/ui/views/passwords/password_change/successful_password_change_view.h"
@@ -29,8 +30,7 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       return new FailedPasswordChangeView(web_contents, anchor_view);
     case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
-      NOTIMPLEMENTED();
-      break;
+      return new NoPasswordChangeFormView(web_contents, anchor_view);
   }
   NOTREACHED();
 }
