@@ -2275,8 +2275,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestNetworkPushTime) {
   CloseDevToolsWindow();
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Flaky on Windows: https://crbug.com/1087320
+// Flaky on Linux: http://crbug.com/331650494
 #define MAYBE_TestDOMWarnings DISABLED_TestDOMWarnings
 #else
 #define MAYBE_TestDOMWarnings TestDOMWarnings
