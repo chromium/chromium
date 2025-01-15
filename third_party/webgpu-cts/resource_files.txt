@@ -18,6 +18,12 @@ four-colors-vp9-bt601-vflip.mp4
 four-colors-vp9-bt601.mp4
 four-colors-vp9-bt601.webm
 four-colors-vp9-bt709.webm
+four-colors.avif
+four-colors.bmp
+four-colors.gif
+four-colors.ico
 four-colors.jpg
 four-colors.png
+four-colors.svg
+four-colors.webp
 webgpu.png
