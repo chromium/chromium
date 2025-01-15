@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -245,6 +246,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public static void setObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
         EditorDialogView.setEditorObserverForTest(sObserverForTest);
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     @Override
