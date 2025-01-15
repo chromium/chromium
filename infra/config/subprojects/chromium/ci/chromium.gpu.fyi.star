@@ -753,6 +753,37 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "gpu_fyi_chromeos_release_gtests_volteer_skylab",
+                    "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
+                ],
+            ),
+        ],
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+        per_test_modifications = {
+            "expected_color_pixel_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM": targets.mixin(
+                args = [
+                    "--service-account=/creds/service_accounts/skylab-drone.json",
+                ],
+            ),
+            "pixel_skia_gold_passthrough_test VOLTEER_PUBLIC_RELEASE_LKGM": targets.mixin(
+                args = [
+                    "--service-account=/creds/service_accounts/skylab-drone.json",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.CROS_CHROME,
+        os_type = targets.os_type.CROS,
+        use_android_merge_script_by_default = False,
+        use_swarming = False,
+    ),
     # TODO(crbug.com/40942991): This config is experimental and currently
     # is too difficult for gardeners to keep green.
     gardener_rotations = args.ignore_default(None),

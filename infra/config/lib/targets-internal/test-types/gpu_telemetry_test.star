@@ -89,9 +89,25 @@ def _gpu_telemetry_test_spec_finalize(builder_name, test_name, settings, spec_va
 
     spec_value["swarming"] = structs.evolve(spec_value["swarming"], idempotent = False)
 
-    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(builder_name, test_name, settings, spec_value)
+    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(builder_name, test_name, settings, spec_value, default_shard_level_retries_on_ctp = None)
 
     spec_value.pop("telemetry_test_name")
+
+    if test_type == "skylab_tests":
+        # chromium_GPU is the Autotest wrapper created for browser GPU tests
+        # run in Skylab.
+        spec_value["autotest_name"] = "chromium_Graphics"
+
+        # As of 22Q4, Skylab tests are running on a CrOS flavored Autotest
+        # framework and it does not support the sub-args like
+        # extra-browser-args. So we have to pop it out and create a new
+        # key for it. See crrev.com/c/3965359 for details.
+        args = spec_value.get("args", [])
+        for i, arg in enumerate(args):
+            if "--extra-browser-args" in arg:
+                args.pop(i)
+                spec_value["extra_browser_args"] = arg.replace("--extra-browser-args=", "")
+                break
 
     return test_type, sort_key, spec_value
 

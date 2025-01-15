@@ -151,7 +151,7 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     so multiple found vendors is an error.
     """
     if _is_skylab(settings):
-        return _gpu_expected_vendor_id_skylab(settings)
+        return _gpu_expected_vendor_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
 
     # We don't specify GPU on things like Android and certain CrOS devices, so

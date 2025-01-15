@@ -682,8 +682,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           and not dimensions.get('device_os_type')):
         dimensions['device_os_type'] = 'userdebug'
 
-    if 'skylab' in test:
-      skylab = test.pop('skylab')
+    skylab = test.pop('skylab', {})
+    if skylab.get('cros_board'):
       for k, v in skylab.items():
         test[k] = v
       # For skylab, we need to pop the correct `autotest_name`. This field

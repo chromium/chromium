@@ -23,6 +23,7 @@
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
   #   chromium.gpu
+  #   chromium.gpu.fyi
   #   chromium.linux
   #   chromium.mac
   #   chromium.memory
@@ -774,95 +775,6 @@
           'xcode_16_main',
           'xctest',
         ],
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.gpu.fyi.star
-    #   Android FYI Experimental Release (Pixel 6)
-    #   Android FYI Release (Motorola Moto G Power 5G)
-    #   Android FYI Release (NVIDIA Shield TV)
-    #   Android FYI Release (Nexus 5X)
-    #   Android FYI Release (Pixel 2)
-    #   Android FYI Release (Pixel 4)
-    #   Android FYI Release (Pixel 6)
-    #   Android FYI Release (Samsung A13)
-    #   Android FYI Release (Samsung A23)
-    #   Android FYI Release (Samsung S23)
-    #   ChromeOS FYI Release (amd64-generic)
-    #   GPU FYI Android arm Builder
-    #   GPU FYI Android arm64 Builder
-    #   GPU FYI Linux Builder
-    #   GPU FYI Linux Builder (dbg)
-    #   GPU FYI Mac Builder
-    #   GPU FYI Mac Builder (asan)
-    #   GPU FYI Mac Builder (dbg)
-    #   GPU FYI Win Builder
-    #   GPU FYI Win x64 Builder
-    #   GPU FYI Win x64 Builder (dbg)
-    #   GPU FYI Win x64 DX12 Vulkan Builder
-    #   GPU FYI Win x64 DX12 Vulkan Builder (dbg)
-    #   Linux FYI Debug (NVIDIA)
-    #   Linux FYI Experimental Release (Intel UHD 630)
-    #   Linux FYI Experimental Release (NVIDIA)
-    #   Linux FYI GPU TSAN Release
-    #   Linux FYI Release (AMD RX 5500 XT)
-    #   Linux FYI Release (Intel UHD 630)
-    #   Linux FYI Release (Intel UHD 770)
-    #   Linux FYI Release (NVIDIA)
-    #   Linux Wayland FYI Release (AMD)
-    #   Linux Wayland FYI Release (Intel)
-    #   Mac FYI ASAN (Intel)
-    #   Mac FYI Debug (Intel)
-    #   Mac FYI Experimental Release (Apple M1)
-    #   Mac FYI Experimental Release (Intel)
-    #   Mac FYI Experimental Retina Release (AMD)
-    #   Mac FYI Experimental Retina Release (Apple M2)
-    #   Mac FYI Experimental Retina Release (NVIDIA)
-    #   Mac FYI Release (Apple M1)
-    #   Mac FYI Release (Intel)
-    #   Mac FYI Retina ASAN (AMD)
-    #   Mac FYI Retina Debug (AMD)
-    #   Mac FYI Retina Release (AMD)
-    #   Mac FYI Retina Release (Apple M2)
-    #   Mac FYI Retina Release (NVIDIA)
-    #   Mac Pro FYI Release (AMD)
-    #   Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)
-    #   Win10 FYI x64 DX12 Vulkan Release (NVIDIA)
-    #   Win10 FYI x64 Debug (NVIDIA)
-    #   Win10 FYI x64 Exp Release (NVIDIA)
-    #   Win10 FYI x64 Experimental Release (Intel)
-    #   Win10 FYI x64 Release (AMD RX 5500 XT)
-    #   Win10 FYI x64 Release (Intel)
-    #   Win10 FYI x64 Release (Intel UHD 770)
-    #   Win10 FYI x64 Release (NVIDIA)
-    #   Win10 FYI x64 Release (NVIDIA RTX 4070 Super)
-    #   Win10 FYI x64 Release XR Perf (NVIDIA)
-    #   Win10 FYI x86 Release (NVIDIA)
-    #   Win11 FYI arm64 Release (Qualcomm Adreno 690)
-    'name': 'chromium.gpu.fyi',
-    'forbid_script_tests': True,
-    'mixins': [
-      'chromium-tester-service-account',
-      'swarming_containment_auto',
-      'timeout_30m',
-    ],
-    'machines': {
-      # Builders running skylab tests cannot be migrated to starlark currently
-      'ChromeOS FYI Release Skylab (volteer)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'os_type': 'chromeos',
-        'skip_merge_script': True,
-        'use_swarming': False,
-        'test_suites': {
-          'skylab_tests': 'gpu_fyi_chromeos_release_gtests_volteer_skylab',
-          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab',
-        },
       },
     },
   },
