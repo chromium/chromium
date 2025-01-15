@@ -222,6 +222,36 @@
   [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
 }
 
+- (void)verifyDefaultBrowserIsDisplayedWithScreenIntent:
+    (FREDefaultBrowserIntent)screenIntent {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  NSArray* disclaimerStrings = nil;
+  switch (screenIntent) {
+    case FREDefaultBrowserIntent::kRegular:
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FREDefaultBrowserIntent::kEnterpriseWithoutUMADisclaimer:
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+      ];
+      break;
+  }
+  // Validate the disclaimer text.
+  [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
+}
+
 - (void)acceptSyncOrHistory {
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]

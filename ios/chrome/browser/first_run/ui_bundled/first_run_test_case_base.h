@@ -28,6 +28,14 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
   FRESigninIntentSigninWithUMAReportingDisabledPolicy,
 };
 
+// Type of FRE default browser screen intent.
+enum class FREDefaultBrowserIntent {
+  // FRE without enterprise policy.
+  kRegular,
+  // FRE with enterprise policy and UMA disabled.
+  kEnterpriseWithoutUMADisclaimer,
+};
+
 // Base test class for egtests for first run.
 @interface FirstRunTestCaseBase : ChromeTestCase
 
@@ -43,6 +51,11 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
 // Checks that the sign-in screen for enterprise is displayed.
 - (void)verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
     (FRESigninIntent)FRESigninIntent;
+
+// Checks that the default browser screen is displayed with the correct
+// disclaimer.
+- (void)verifyDefaultBrowserIsDisplayedWithScreenIntent:
+    (FREDefaultBrowserIntent)screenIntent;
 
 // Accept the history opt-in screen.
 - (void)acceptSyncOrHistory;

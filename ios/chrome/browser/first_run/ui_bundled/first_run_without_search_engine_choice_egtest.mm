@@ -1342,3 +1342,103 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 }
 
 @end
+
+// Test first run stages with the updated FRE sequence.
+@interface FirstRunWithUpdatedFRESequenceTestCase : FirstRunTestCaseBase
+
+@end
+
+@implementation FirstRunWithUpdatedFRESequenceTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
+  return config;
+}
+
+#pragma mark - Tests
+
+// Tests FRE with UMA default value when the default browser promo is first in
+// the sequence.
+- (void)testWithUMAChecked_DBPromoFirst {
+  // Verify DB promo and disclaimer string.
+  [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
+            FREDefaultBrowserIntent::kRegular];
+  // Skip default browser promo.
+  [[self class] dismissDefaultBrowser];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Verify that sign-in screen is displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests FRE with UMA off when the default browser promo is first in the
+// sequence.
+- (void)testWithUMAUnchecked_DBPromoFirst {
+  // Verify DB promo and disclaimer string.
+  [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
+            FREDefaultBrowserIntent::kRegular];
+  // Scroll down and open the UMA dialog.
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               ManageUMALinkMatcher(),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Turn off UMA.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kImproveChromeItemAccessibilityIdentifier,
+                                   /*is_toggled_on=*/YES,
+                                   /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  // Close UMA dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  // Skip default browser promo.
+  [[self class] dismissDefaultBrowser];
+  // Check that UMA is off.
+  GREYAssertFalse(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+  // Verify that sign-in screen is displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  ;
+}
+
+#pragma mark - Enterprise tests
+
+// Tests that the UMA link does not appear in FRE when UMA is disabled by
+// enterprise policy and the default browser promo is the first screen in the
+// sequence.
+- (void)testUMADisabledByPolicy_DBPromoFirst {
+  // Configure the policy to disable UMA.
+  [self relaunchAppWithPolicyKey:policy::key::kMetricsReportingEnabled
+                  xmlPolicyValue:"<false/>"];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
+  // Verify DB promo with no UMA footer.
+  [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
+            FREDefaultBrowserIntent::kEnterpriseWithoutUMADisclaimer];
+  // Skip default browser promo.
+  [[self class] dismissDefaultBrowser];
+  // Check that UMA is off.
+  GREYAssertFalse(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+}
+
+@end
