@@ -1473,8 +1473,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS}) {
       host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
           type_to_clear, [&](const ContentSettingPatternSource& setting) {
-            return content_settings::IsGrantedByRelatedWebsiteSets(
-                       type_to_clear, setting.metadata) &&
+            return setting.metadata.decided_by_related_website_sets() &&
                    base::ranges::any_of(
                        filter_builder->GetOrigins(),
                        [&](const url::Origin& origin) -> bool {

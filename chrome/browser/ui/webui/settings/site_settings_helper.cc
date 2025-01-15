@@ -1020,7 +1020,7 @@ void GetRawExceptionsForContentSettingsType(
     }
 
     // Don't add auto-granted permissions for storage access exceptions.
-    if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+    if (setting.metadata.decided_by_related_website_sets() &&
         !base::FeatureList::IsEnabled(
             permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
       continue;

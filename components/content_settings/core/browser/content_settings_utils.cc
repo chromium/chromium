@@ -233,17 +233,6 @@ bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
   return type == ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 }
 
-bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
-                                   const RuleMetaData& metadata) {
-  switch (type) {
-    case ContentSettingsType::STORAGE_ACCESS:
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return metadata.decided_by_related_website_sets();
-    default:
-      return false;
-  }
-}
-
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
   static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
 #if !BUILDFLAG(IS_ANDROID)
