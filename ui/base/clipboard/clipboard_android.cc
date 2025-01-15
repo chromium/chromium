@@ -16,7 +16,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -38,7 +37,6 @@
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard_jni_headers/Clipboard_jni.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -268,9 +266,6 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
              format == ClipboardFormatType::BitmapType()) {
     return Java_Clipboard_hasImage(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::FilenamesType()) {
-    if (!base::FeatureList::IsEnabled(features::kClipboardFiles)) {
-      return false;
-    }
     return Java_Clipboard_hasFilenames(env, clipboard_manager_);
   }
 
@@ -441,16 +436,14 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
       Java_Clipboard_getUrl(env, clipboard_manager_);
   ScopedJavaLocalRef<jstring> jimageuri =
       Java_Clipboard_getImageUriString(env, clipboard_manager_);
-  if (base::FeatureList::IsEnabled(features::kClipboardFiles)) {
-    filenames_.clear();
-    std::vector<std::vector<std::string>> filenames;
-    base::android::Java2dStringArrayTo2dStringVector(
-        env, Java_Clipboard_getFilenames(env, clipboard_manager_), &filenames);
-    for (const auto& info : filenames) {
-      // The first elemennt is the file path, the second is the display name.
-      CHECK_EQ(info.size(), 2u);
-      filenames_.emplace_back(base::FilePath(info[0]), base::FilePath(info[1]));
-    }
+  filenames_.clear();
+  std::vector<std::vector<std::string>> filenames;
+  base::android::Java2dStringArrayTo2dStringVector(
+      env, Java_Clipboard_getFilenames(env, clipboard_manager_), &filenames);
+  for (const auto& info : filenames) {
+    // The first elemennt is the file path, the second is the display name.
+    CHECK_EQ(info.size(), 2u);
+    filenames_.emplace_back(base::FilePath(info[0]), base::FilePath(info[1]));
   }
 
   JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::PlainTextType(),
@@ -768,9 +761,6 @@ void ClipboardAndroid::WriteRTF(std::string_view rtf) {
 }
 
 void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
-  if (!base::FeatureList::IsEnabled(features::kClipboardFiles)) {
-    return;
-  }
   g_map.Get().SetFilenames(std::move(filenames));
 }
 
