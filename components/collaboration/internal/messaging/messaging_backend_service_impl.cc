@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_set>
 #include <vector>
 
 #include "base/check.h"

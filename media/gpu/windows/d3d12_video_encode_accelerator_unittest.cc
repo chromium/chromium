@@ -46,6 +46,7 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
 
   MOCK_METHOD1(Initialize, EncoderStatus(VideoEncodeAccelerator::Config));
   MOCK_METHOD(size_t, GetMaxNumOfRefFrames, (), (const override));
+  MOCK_METHOD(bool, SupportsRateControlReconfiguration, (), (const override));
   MOCK_METHOD5(
       Encode,
       EncoderStatus::Or<EncodeResult>(Microsoft::WRL::ComPtr<ID3D12Resource>,
@@ -144,8 +145,8 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
         new D3D12VideoEncodeAccelerator(mock_device_));
     client_ = std::make_unique<NiceMock<MockVideoEncodeAcceleratorClient>>();
     static_cast<D3D12VideoEncodeAccelerator*>(video_encode_accelerator_.get())
-        ->encoder_factory_ =
-        std::make_unique<MockVideoEncoderDelegateFactory>();
+        ->SetEncoderFactoryForTesting(
+            std::make_unique<MockVideoEncoderDelegateFactory>());
   }
 
   VideoEncodeAccelerator::Config SupportedProfileToConfig(
@@ -172,32 +173,31 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
         std::move(mock_gpu_memory_buffer), base::TimeDelta{});
   }
 
-  void WaitForEncoderTasksToComplete() {
+  void WaitForEncoderTasksToComplete() const {
     base::RunLoop run_loop;
     auto* d3d12_video_encode_accelerator =
         static_cast<D3D12VideoEncodeAccelerator*>(
             video_encode_accelerator_.get());
-    d3d12_video_encode_accelerator->encoder_task_runner_->PostTask(
+    d3d12_video_encode_accelerator->GetEncoderTaskRunnerForTesting()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  void CheckInputFramesQueueAndBitstreamBuffersAreEitherEmpty() {
+  void CheckInputFramesQueueAndBitstreamBuffersAreEitherEmpty() const {
     auto* d3d12_video_encode_accelerator =
         static_cast<D3D12VideoEncodeAccelerator*>(
             video_encode_accelerator_.get());
     base::RunLoop run_loop;
-    d3d12_video_encode_accelerator->encoder_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](const D3D12VideoEncodeAccelerator* encoder,
-                          base::OnceClosure quit_closure) {
-                         DCHECK_CALLED_ON_VALID_SEQUENCE(
-                             encoder->encoder_sequence_checker_);
-                         EXPECT_TRUE(encoder->input_frames_queue_.empty() ||
-                                     encoder->bitstream_buffers_.empty());
-                         std::move(quit_closure).Run();
-                       },
-                       d3d12_video_encode_accelerator, run_loop.QuitClosure()));
+    d3d12_video_encode_accelerator->GetEncoderTaskRunnerForTesting()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const D3D12VideoEncodeAccelerator* encoder,
+               base::OnceClosure quit_closure) {
+              EXPECT_TRUE(encoder->GetInputFramesQueueSizeForTesting() == 0 ||
+                          encoder->GetBitstreamBuffersSizeForTesting() == 0);
+              std::move(quit_closure).Run();
+            },
+            d3d12_video_encode_accelerator, run_loop.QuitClosure()));
     run_loop.Run();
   }
 

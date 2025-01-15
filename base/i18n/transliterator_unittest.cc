@@ -13,7 +13,7 @@ namespace base::i18n {
 TEST(TransliteratorTest, LowerCorrect) {
   std::unique_ptr<base::i18n::Transliterator> transliterator(
       base::i18n::CreateTransliterator("Lower"));
-  ASSERT_TRUE(transliterator != nullptr);
+  ASSERT_TRUE(transliterator);
   std::u16string text(u"ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ");
   std::u16string result = transliterator->Transliterate(text);
   EXPECT_EQ(result, u"îñţérñåţîöñåļîžåţîöñ");
@@ -22,7 +22,7 @@ TEST(TransliteratorTest, LowerCorrect) {
 TEST(TransliteratorTest, LatinASCIICorrect) {
   std::unique_ptr<base::i18n::Transliterator> transliterator(
       base::i18n::CreateTransliterator("Latin-ASCII"));
-  ASSERT_TRUE(transliterator != nullptr);
+  ASSERT_TRUE(transliterator);
   std::u16string text(u"ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ");
   std::u16string result = transliterator->Transliterate(text);
   EXPECT_EQ(result, u"INTERNATIONALIZATION");
@@ -31,7 +31,7 @@ TEST(TransliteratorTest, LatinASCIICorrect) {
 TEST(TransliteratorTest, LowerLatinASCIICorrect) {
   std::unique_ptr<base::i18n::Transliterator> transliterator(
       base::i18n::CreateTransliterator("Lower;Latin-ASCII"));
-  ASSERT_TRUE(transliterator != nullptr);
+  ASSERT_TRUE(transliterator);
   std::u16string text(u"ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ");
   std::u16string result = transliterator->Transliterate(text);
   EXPECT_EQ(result, u"internationalization");

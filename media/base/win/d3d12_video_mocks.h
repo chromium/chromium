@@ -20,6 +20,8 @@ class D3D12VideoDevice3Mock
   D3D12VideoDevice3Mock();
   ~D3D12VideoDevice3Mock() override;
 
+  MOCK_STDCALL_METHOD2(QueryInterface, HRESULT(REFIID riid, void** ppvObject));
+
   // Interfaces of ID3D12VideoDevice
 
   MOCK_STDCALL_METHOD3(

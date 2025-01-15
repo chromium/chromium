@@ -170,7 +170,6 @@ class WebAppBrowserController : public AppBrowserController,
   // Save the display mode at time of launch. The web app display mode may
   // change with manifest updates but the app window should continue using
   // whatever it was launched with.
-  DisplayMode manifest_display_mode_ = DisplayMode::kUndefined;
   DisplayMode effective_display_mode_ = DisplayMode::kUndefined;
   bool is_isolated_web_app_for_testing_ = false;
 

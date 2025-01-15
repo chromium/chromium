@@ -32,6 +32,7 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
 
   // PermissionPrompt:
   PermissionPromptDisposition GetPromptDisposition() const override;
+  bool ShouldFinalizeRequestAfterDecided() const override;
 
   // PermissionPromptAndroid:
   EmbeddedPermissionPromptFlowModel::Variant GetEmbeddedPromptVariant()

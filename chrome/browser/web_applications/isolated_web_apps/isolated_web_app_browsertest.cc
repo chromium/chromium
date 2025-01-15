@@ -381,13 +381,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CrossOriginWindowOpen) {
   }
 }
 
-// TODO(b/366524200): Find out why the navigation isn't opening in an IWA window
 IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserTest,
-    DISABLED_OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
+    OmniboxNavigationOpensStandaloneWindowEvenIfDisplayModeIsBrowser) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder())
-          .AddFileFromDisk("/", "web_apps/simple_isolated_app/index.html")
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetDisplayMode(blink::mojom::DisplayMode::kBrowser))
           .BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
                        app->TrustBundleAndInstall(profile()));
@@ -397,14 +396,41 @@ IN_PROC_BROWSER_TEST_F(
       .SetAppUserDisplayModeForTesting(url_info.app_id(),
                                        mojom::UserDisplayMode::kBrowser);
 
-  GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
+  GURL app_url = url_info.origin().GetURL();
   auto* app_frame =
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
   // The browser shouldn't have opened the app's page.
   EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
 
-  // The app's frame should belong to an isolated PWA browser window.
+  // The app's frame should belong to an IWA window.
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
+  EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
+  EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppBrowserTest,
+    OmniboxNavigationOpensStandaloneWindowEvenIfDisplayModeIsMinimalUi) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder().SetDisplayMode(
+                                blink::mojom::DisplayMode::kMinimalUi))
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info,
+                       app->TrustBundleAndInstall(profile()));
+
+  GURL app_url = url_info.origin().GetURL();
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetPrimaryMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  // The app's frame should belong to an IWA window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(

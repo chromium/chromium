@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_H_
 
+#include <set>
 #include <string>
 
 #include "components/omnibox/browser/autocomplete_input.h"

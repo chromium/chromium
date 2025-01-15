@@ -451,7 +451,7 @@ bool DrawingBuffer::PrepareTransferableResource(
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
     RegisteredBitmap registered = CreateOrRecycleBitmap();
-    if (!registered.bitmap) {
+    if (!registered.shared_image) {
       return false;
     }
 

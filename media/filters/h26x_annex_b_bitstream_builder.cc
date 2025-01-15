@@ -208,11 +208,11 @@ size_t H26xAnnexBBitstreamBuilder::BytesInBuffer() const {
   return pos_;
 }
 
-const uint8_t* H26xAnnexBBitstreamBuilder::data() const {
+base::span<const uint8_t> H26xAnnexBBitstreamBuilder::data() const {
   DCHECK(!data_.empty());
   DCHECK_FINISHED();
 
-  return data_.data();
+  return data_.first(pos_);
 }
 
 }  // namespace media

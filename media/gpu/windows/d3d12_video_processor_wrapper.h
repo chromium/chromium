@@ -21,22 +21,22 @@ class MEDIA_GPU_EXPORT D3D12VideoProcessorWrapper {
  public:
   explicit D3D12VideoProcessorWrapper(ComD3D12VideoDevice video_device);
   D3D12VideoProcessorWrapper(const D3D12VideoProcessorWrapper&) = delete;
-  ~D3D12VideoProcessorWrapper();
+  virtual ~D3D12VideoProcessorWrapper();
 
   // Initializes command queue, allocator and list. Returns whether the
   // initialization was successful.
-  bool Init();
+  virtual bool Init();
 
   // Processes the |input_texture| and writes the result to |output_texture|.
   // Returns whether the processing was successful.
-  bool ProcessFrames(ID3D12Resource* input_texture,
-                     UINT input_subresource,
-                     const gfx::ColorSpace& input_color_space,
-                     const gfx::Rect& input_rectangle,
-                     ID3D12Resource* output_texture,
-                     UINT output_subresource,
-                     const gfx::ColorSpace& output_color_space,
-                     const gfx::Rect& output_rectangle);
+  virtual bool ProcessFrames(ID3D12Resource* input_texture,
+                             UINT input_subresource,
+                             const gfx::ColorSpace& input_color_space,
+                             const gfx::Rect& input_rectangle,
+                             ID3D12Resource* output_texture,
+                             UINT output_subresource,
+                             const gfx::ColorSpace& output_color_space,
+                             const gfx::Rect& output_rectangle);
 
  private:
   ComD3D12Device device_;

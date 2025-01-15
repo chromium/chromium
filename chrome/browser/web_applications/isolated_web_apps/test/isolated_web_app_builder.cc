@@ -47,6 +47,7 @@
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -337,6 +338,12 @@ ManifestBuilder& ManifestBuilder::SetStartUrl(std::string_view start_url) {
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetDisplayMode(
+    blink::mojom::DisplayMode display_mode) {
+  display_mode_ = display_mode;
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
                                           gfx::Size size,
                                           std::string_view content_type) {
@@ -399,7 +406,7 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("id", "/")
                   .Set("scope", "/")
                   .Set("start_url", start_url_)
-                  .Set("display", "standalone");
+                  .Set("display", blink::DisplayModeToString(display_mode_));
 
   base::Value::Dict policies;
   for (const auto& policy : permissions_policy_) {
@@ -468,7 +475,7 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->id = base_url;
   manifest->scope = base_url;
   manifest->start_url = base_url.Resolve(start_url_);
-  manifest->display = blink::mojom::DisplayMode::kStandalone;
+  manifest->display = display_mode_;
 
   for (const auto& icon : icons_) {
     blink::Manifest::ImageResource blink_icon;
