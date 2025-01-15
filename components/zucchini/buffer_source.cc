@@ -35,7 +35,7 @@ bool BufferSource::CheckNextBytes(std::initializer_list<uint8_t> bytes) const {
   if (Remaining() < bytes.size()) {
     return false;
   }
-  return base::ranges::mismatch(bytes, *this).first == bytes.end();
+  return std::ranges::mismatch(bytes, *this).in1 == bytes.end();
 }
 
 bool BufferSource::ConsumeBytes(std::initializer_list<uint8_t> bytes) {

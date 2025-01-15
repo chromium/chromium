@@ -941,11 +941,11 @@ TEST_F(ProductSpecificationsServiceTest, TestTitle) {
   EXPECT_TRUE(set_with_titles.has_value());
   for (const auto& expected_title :
        {u"product one title", u"product two title"}) {
-    const auto iter =
-        base::ranges::find_if(set_with_titles->url_infos(),
-                              [&expected_title](const UrlInfo& query_url_info) {
-                                return query_url_info.title == expected_title;
-                              });
+    const auto& url_infos = set_with_titles->url_infos();
+    const auto iter = base::ranges::find_if(
+        url_infos, [&expected_title](const UrlInfo& query_url_info) {
+          return query_url_info.title == expected_title;
+        });
     EXPECT_TRUE(iter != set_with_titles->url_infos().end());
   }
 }

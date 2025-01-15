@@ -104,8 +104,8 @@ void ExpectSameElements(const std::vector<T*>& expectations,
   std::sort(results_copy.begin(), results_copy.end(), CompareElements<T>);
 
   EXPECT_EQ(
-      base::ranges::mismatch(results_copy, expectations_copy, ElementsEqual<T>)
-          .first,
+      std::ranges::mismatch(results_copy, expectations_copy, ElementsEqual<T>)
+          .in1,
       results_copy.end());
 }
 

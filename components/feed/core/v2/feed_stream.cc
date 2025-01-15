@@ -494,14 +494,13 @@ void FeedStream::DestroySurface(SurfaceId surface) {
 }
 
 void FeedStream::CleanupDestroyedSurfaces() {
-  all_surfaces_.erase(base::ranges::remove_if(
-                          all_surfaces_,
-                          [&](const FeedStreamSurface& surface) {
-                            return base::ranges::find(destroyed_surfaces_,
-                                                      surface.GetSurfaceId()) !=
-                                   destroyed_surfaces_.end();
-                          }),
-                      all_surfaces_.end());
+  auto to_remove = std::ranges::remove_if(
+      all_surfaces_, [&](const FeedStreamSurface& surface) {
+        return base::ranges::find(destroyed_surfaces_,
+                                  surface.GetSurfaceId()) !=
+               destroyed_surfaces_.end();
+      });
+  all_surfaces_.erase(to_remove.begin(), to_remove.end());
   destroyed_surfaces_.clear();
 }
 

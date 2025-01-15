@@ -64,22 +64,22 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                          std::vector<AutofillProfile> profiles,
                          AddressDataManager& adm) {
   // Partition the profiles into local and account profiles:
-  // - Local: [profiles.begin(), bgn_account_profiles[
-  // - Account: [bgn_account_profiles, profiles.end()[
-  auto bgn_account_profiles = base::ranges::stable_partition(
+  // - Local: [profiles.begin(), account_profiles.begin()[
+  // - Account: account_profiles
+  auto account_profiles = std::ranges::stable_partition(
       profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
 
   size_t num_profiles_deleted = 0;
   for (auto local_profile_it = profiles.begin();
-       local_profile_it != bgn_account_profiles; ++local_profile_it) {
+       local_profile_it != account_profiles.begin(); ++local_profile_it) {
     // If possible, merge `*local_profile_it` with another local profile and
     // remove it.
     if (auto merge_candidate = base::ranges::find_if(
-            local_profile_it + 1, bgn_account_profiles,
+            local_profile_it + 1, account_profiles.begin(),
             [&](const AutofillProfile& local_profile2) {
               return comparator.AreMergeable(*local_profile_it, local_profile2);
             });
-        merge_candidate != bgn_account_profiles) {
+        merge_candidate != account_profiles.begin()) {
       merge_candidate->MergeDataFrom(*local_profile_it,
                                      comparator.app_locale());
       adm.UpdateProfile(*merge_candidate);
@@ -90,7 +90,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
     // `*local_profile_it` is not mergeable with another local profile. But it
     // might be a subset of an account profile and can thus be removed.
     if (auto superset_account_profile = base::ranges::find_if(
-            bgn_account_profiles, profiles.end(),
+            account_profiles,
             [&](const AutofillProfile& account_profile) {
               return comparator.AreMergeable(*local_profile_it,
                                              account_profile) &&

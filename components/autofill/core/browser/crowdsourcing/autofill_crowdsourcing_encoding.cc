@@ -518,12 +518,11 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
   // This precedence rule is less important than the source precedence rule,
   // which means that it is only applicable for suggestions with equal source
   // priority.
+  std::vector<base::optional_ref<FieldSuggestion>> suggestions = {
+      main_frame_field_suggestion, iframe_field_suggestion,
+      alternative_field_suggestion};
   base::optional_ref<FieldSuggestion> preferred_field_suggestion =
-      base::ranges::max(
-          std::vector<base::optional_ref<FieldSuggestion>>{
-              main_frame_field_suggestion, iframe_field_suggestion,
-              alternative_field_suggestion},
-          {}, get_suggestion_priority);
+      *std::ranges::max_element(suggestions, {}, get_suggestion_priority);
 
   // Add predictions for PasswordManager from `iframe_field_suggestions` if
   // `field_suggestion` is missing them. This is only relevant for
