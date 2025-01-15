@@ -2783,7 +2783,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContextMenuView.ActivatedFailed"
-    enum="MahiContextMenuButtonType" expires_after="2025-02-01">
+    enum="MahiContextMenuButtonType" expires_after="2026-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2859,7 +2859,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
-    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2025-02-01">
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2026-02-01">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
