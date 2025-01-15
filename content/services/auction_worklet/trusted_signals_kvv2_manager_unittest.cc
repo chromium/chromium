@@ -240,11 +240,11 @@ class TrustedSignalsKVv2ManagerTest
             "dataVersion": 1,
             "keyGroupOutputs": [
               {
-                "tags": ["renderUrls"],
+                "tags": ["renderURLs"],
                 "keyValues": {"https://a.test/":{"value":"4"}}
               },
               {
-                "tags": ["adComponentRenderUrls"],
+                "tags": ["adComponentRenderURLs"],
                 "keyValues": {
                   "https://a.test/":{"value":"[5]"},
                   "https://b.test/":{"value":"\"6\""}

@@ -161,7 +161,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
   //       "id": 0,
   //       "arguments": [
   //         {
-  //           "tags": [ "renderUrls" ],
+  //           "tags": [ "renderURLs" ],
   //           "data": [ "https://render_url.test/foo" ]
   //         }
   //       ]
@@ -172,7 +172,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
       "00000000A0A3686D65746164617461A168686F73746E616D6569686F73742E746573746A"
       "706172746974696F6E7381A36269640069617267756D656E747381A2646461746181781B"
       "68747470733A2F2F72656E6465725F75726C2E746573742F666F6F6474616773816A7265"
-      "6E64657255726C7372636F6D7072657373696F6E47726F75704964007161636365707443"
+      "6E64657255524C7372636F6D7072657373696F6E47726F75704964007161636365707443"
       "6F6D7072657373696F6E82646E6F6E6564677A6970000000000000000000000000000000"
       "000000000000000000000000000000000000000000";
 
@@ -967,11 +967,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdComponentRenderUrl) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component.test/bar" ]
               }
             ]
@@ -1007,11 +1007,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdComponentRenderUrls) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component1.test/",
                   "https://component1.test/bar",
@@ -1049,7 +1049,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdditionalParam) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1087,7 +1087,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdditionalParams) {
             },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1275,7 +1275,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsRequestPadding) {
                                           "id": 0,
                                           "arguments": [
                                             {
-                                              "tags": [ "renderUrls" ],
+                                              "tags": [ "renderURLs" ],
                                               "data": [ $1 ]
                                             }
                                           ]
@@ -1902,7 +1902,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -1913,11 +1913,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url2.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component2.test/" ]
               }
             ]
@@ -1928,11 +1928,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
             "metadata": { "foo2": "bar2"  },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url3.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component3.test/bar",
                   "https://component3.test/foo"
@@ -2127,7 +2127,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "id": 0,
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url.test/foo" ]
               }
             ]
@@ -2138,11 +2138,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "metadata": { "foo": "bar" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url2.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [ "https://component2.test/" ]
               }
             ]
@@ -2153,11 +2153,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
             "metadata": { "foo2": "bar2" },
             "arguments": [
               {
-                "tags": [ "renderUrls" ],
+                "tags": [ "renderURLs" ],
                 "data": [ "https://render_url3.test/" ]
               },
               {
-                "tags": [ "adComponentRenderUrls" ],
+                "tags": [ "adComponentRenderURLs" ],
                 "data": [
                   "https://component3.test/bar",
                   "https://component3.test/foo"

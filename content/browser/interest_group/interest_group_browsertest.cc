@@ -27276,7 +27276,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
             "keyGroupOutputs": [
               {
                 "tags": [
-                  "renderUrls"
+                  "renderURLs"
                 ],
                 "keyValues": {
                   "https://bar.test/": {
@@ -27286,7 +27286,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
               },
               {
                 "tags": [
-                  "adComponentRenderUrls"
+                  "adComponentRenderURLs"
                 ],
                 "keyValues": {
                   "https://barsub.test/": {

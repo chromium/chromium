@@ -6492,7 +6492,7 @@ TEST_F(SellerWorkletKVv2Test, ScoreAdTrustedScoringSignals) {
           "keyGroupOutputs": [
             {
               "tags": [
-                "renderUrls"
+                "renderURLs"
               ],
               "keyValues": {
                 "https://bar.test/": {
@@ -6502,7 +6502,7 @@ TEST_F(SellerWorkletKVv2Test, ScoreAdTrustedScoringSignals) {
             },
             {
               "tags": [
-                "adComponentRenderUrls"
+                "adComponentRenderURLs"
               ],
               "keyValues": {
                 "https://barsub.test/": {
@@ -6873,7 +6873,7 @@ TEST_F(SellerWorkletKVv2Test,
         "keyGroupOutputs": [
           {
             "tags": [
-              "renderUrls"
+              "renderURLs"
             ],
             "keyValues": {
               "https://render.url.test/": {

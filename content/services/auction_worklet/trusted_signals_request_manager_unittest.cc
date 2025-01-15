@@ -167,7 +167,7 @@ const char kKVv2ScoringBase1[] =
             "keyGroupOutputs": [
               {
                 "tags": [
-                  "renderUrls"
+                  "renderURLs"
                 ],
                 "keyValues": {
                   "https://bar.test/": {
@@ -177,7 +177,7 @@ const char kKVv2ScoringBase1[] =
               },
               {
                 "tags": [
-                  "adComponentRenderUrls"
+                  "adComponentRenderURLs"
                 ],
                 "keyValues": {
                   "https://barsub.test/": {
@@ -199,7 +199,7 @@ const char kKVv2ScoringBase2[] =
             "keyGroupOutputs": [
               {
                 "tags": [
-                  "renderUrls"
+                  "renderURLs"
                 ],
                 "keyValues": {
                   "https://baz.test/": {
@@ -209,7 +209,7 @@ const char kKVv2ScoringBase2[] =
               },
               {
                 "tags": [
-                  "adComponentRenderUrls"
+                  "adComponentRenderURLs"
                 ],
                 "keyValues": {
                   "https://bazsub.test/": {
@@ -2942,7 +2942,7 @@ class TrustedSignalsRequestManagerKVv2EmbeddedTest : public testing::Test {
           if (argument_map.at(cbor::Value("tags"))
                   .GetArray()
                   .at(0)
-                  .GetString() == "renderUrls") {
+                  .GetString() == "renderURLs") {
             for (const auto& data :
                  argument_map.at(cbor::Value("data")).GetArray()) {
               render_urls.emplace_back(std::move(data.GetString()));
