@@ -1,6 +1,6 @@
 [package]
 name = "skrifa"
-version = "0.26.3"
+version = "0.26.4"
 description = "Metadata reader and glyph scaler for OpenType fonts."
 readme = "README.md"
 categories = ["text-processing", "parsing", "graphics"]

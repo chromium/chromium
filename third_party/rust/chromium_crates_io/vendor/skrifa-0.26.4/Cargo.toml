@@ -12,8 +12,9 @@
 [package]
 edition = "2021"
 name = "skrifa"
-version = "0.26.3"
+version = "0.26.4"
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -67,7 +68,7 @@ version = "1.0"
 version = "1.0"
 
 [dev-dependencies.write-fonts]
-version = "0.33.0"
+version = "0.33.1"
 
 [features]
 autohint_shaping = []

@@ -580,6 +580,8 @@ third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils 2 2
 third_party/mediapipe/src/mediapipe/tasks/cc/text/custom_ops/sentencepiece 2 1
 third_party/mediapipe/src/mediapipe/util/tflite/operations 8 2
 third_party/mediapipe/src/third_party 1 1
+third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/portable 1 1
+third_party/mediapipe/src/third_party/com_google_audio_tools/external 1 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
 third_party/ocmock/OCMock 2 1
