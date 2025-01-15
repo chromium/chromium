@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-<root root=true> = <lines count=100>
+<root root=true> = <lines count=10>
 
 <Boolean> = true
 <Boolean> = false
