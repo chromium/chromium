@@ -9,7 +9,7 @@
       ".*isolate",
       ".vpython",
       "build/check_gn_headers.py",
-      "build/check_gn_headers_whitelist.txt",
+      "build/check_gn_headers_allowlist.txt",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",

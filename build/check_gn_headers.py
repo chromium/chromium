@@ -175,9 +175,10 @@ def IsBuildClean(out_dir):
     print(e)
     return False
 
-def ParseWhiteList(whitelist):
+
+def ParseAllowlist(allowlist):
   out = set()
-  for line in whitelist.split('\n'):
+  for line in allowlist.split('\n'):
     line = re.sub(r'#.*', '', line).strip()
     if line:
       out.add(line)
@@ -214,8 +215,9 @@ def main():
                       help='output directory of the build')
   parser.add_argument('--json',
                       help='JSON output filename for missing headers')
-  parser.add_argument('--whitelist', help='file containing whitelist')
-  parser.add_argument('--skip-dirty-check', action='store_true',
+  parser.add_argument('--allowlist', help='file containing allowlist')
+  parser.add_argument('--skip-dirty-check',
+                      action='store_true',
                       help='skip checking whether the build is dirty')
   parser.add_argument('--verbose', action='store_true',
                       help='print more diagnostic info')
@@ -278,10 +280,10 @@ def main():
   if any((('/gen/' in i) for i in nonexisting)):
     PrintError('OUT_DIR looks wrong. You should build all there.')
 
-  if args.whitelist:
-    whitelist = ParseWhiteList(open(args.whitelist).read())
-    missing -= whitelist
-    nonexisting -= whitelist
+  if args.allowlist:
+    allowlist = ParseAllowlist(open(args.allowlist).read())
+    missing -= allowlist
+    nonexisting -= allowlist
 
   missing = sorted(missing)
   nonexisting = sorted(nonexisting)
