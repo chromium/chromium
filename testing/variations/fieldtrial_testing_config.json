@@ -11816,6 +11816,21 @@
             ]
         }
     ],
+    "IOSInactiveTabsIPad": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InactiveTabsIPadFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSIncognitoSoftLock": [
         {
             "platforms": [
@@ -12470,21 +12485,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableiPadFeedGhostCards"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSiPadInactiveTabs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InactiveTabsIPadFeature"
                     ]
                 }
             ]
