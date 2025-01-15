@@ -148,7 +148,6 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return PreloadingTriggeringOutcome::kFailure;
     case PrefetchStatus::kPrefetchHeldback:
-    case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
       return std::nullopt;
   }
@@ -191,7 +190,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
     case PrefetchStatus::kPrefetchHeldback:
-    case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       return false;
@@ -773,17 +771,16 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
       case PrefetchStatus::kPrefetchHeldback:
-      // `kPrefetchAllowed` will soon transition into `kPrefetchNotStarted`.
-      case PrefetchStatus::kPrefetchAllowed:
       case PrefetchStatus::kPrefetchNotStarted:
         // `kPrefetchNotStarted` is set in
-        // `PrefetchService::OnGotEligibilityResult` when the container is
-        // pushed onto the prefetch queue, which occurs before the holdback
-        // status is determined in `PrefetchService::StartSinglePrefetch`.
-        // After the container is queued and before it is sent for prefetch, the
-        // only status change is when the container is popped from the queue but
-        // heldback. This is covered by attempt's holdback status. For these two
-        // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
+        // `PrefetchService::OnGotEligibilityForNonRedirect()` when the
+        // container is pushed onto the prefetch queue, which occurs before the
+        // holdback status is determined in
+        // `PrefetchService::StartSinglePrefetch`. After the container is queued
+        // and before it is sent for prefetch, the only status change is when
+        // the container is popped from the queue but heldback. This is covered
+        // by attempt's holdback status. For these two reasons this
+        // PrefetchStatus does not fire a `SetTriggeringOutcome`.
         break;
       case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
       case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
@@ -1393,7 +1390,7 @@ void PrefetchContainer::OnPrefetchComplete(
 
   // Updates the prefetch's status if it hasn't been updated since the request
   // first started. For the prefetch to reach the network stack, it must have
-  // `PrefetchStatus::kPrefetchAllowed` or beyond.
+  // `PrefetchStatus::kPrefetchNotStarted` or beyond.
   DCHECK(HasPrefetchStatus());
   if (GetPrefetchStatus() == PrefetchStatus::kPrefetchNotFinishedInTime) {
     SetPrefetchStatus(net_error == net::OK
@@ -1581,7 +1578,7 @@ void PrefetchContainer::SimulateAttemptAtRequestStartForTest() {
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
   SetLoadState(LoadState::kEligible);
-  SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+  SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
   SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
@@ -1592,7 +1589,6 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
   SetLoadState(LoadState::kEligible);
-  SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
   SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
