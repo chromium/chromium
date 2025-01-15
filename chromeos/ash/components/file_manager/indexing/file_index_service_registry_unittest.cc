@@ -16,6 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +31,7 @@ namespace ash::file_manager {
 class FileIndexServiceRegistryTest : public testing::Test {
  public:
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
+    user_manager::UserManager::RegisterPrefs(local_state_.registry());
     browser_context_helper_ = std::make_unique<ash::BrowserContextHelper>(
         std::make_unique<ash::FakeBrowserContextHelperDelegate>());
     fake_user_manager_.Reset(
@@ -39,13 +40,15 @@ class FileIndexServiceRegistryTest : public testing::Test {
         std::make_unique<FileIndexServiceRegistry>(fake_user_manager_->Get());
     primary_account_id_ =
         AccountId::FromUserEmailGaiaId(kTestAccount, GaiaId(kFakeGaia));
-    fake_user_manager()->AddUser(primary_account_id_);
+    fake_user_manager()->AddGaiaUser(primary_account_id_,
+                                     user_manager::UserType::kRegular);
   }
 
   void TearDown() override {
     registry_->Shutdown();
     registry_.reset();
 
+    fake_user_manager_.Reset();
     browser_context_helper_.reset();
   }
 

@@ -58,11 +58,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "components/user_manager/fake_user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using ::testing::_;
 
 namespace {
@@ -112,19 +107,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
   AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
 
   ~AppMenuModelTest() override = default;
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* user_manager = static_cast<user_manager::FakeUserManager*>(
-        user_manager::UserManager::Get());
-    const auto account_id = AccountId::FromUserEmail("test@test");
-    auto* user = user_manager->AddUser(account_id);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
-#endif
-  }
 
   // Don't handle accelerators.
   bool GetAcceleratorForCommandId(int command_id,

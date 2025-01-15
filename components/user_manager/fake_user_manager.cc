@@ -37,23 +37,8 @@ std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
   return account_id.GetUserEmail() + "-hash";
 }
 
-User* FakeUserManager::AddUser(const AccountId& account_id) {
-  return AddUserWithAffiliation(account_id, false);
-}
-
 User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
-  user->set_username_hash(GetFakeUsernameHash(account_id));
-  user_storage_.emplace_back(user);
-  users_.push_back(user);
-  return user;
-}
-
-User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
-                                              bool is_affiliated) {
-  User* user = User::CreateRegularUser(account_id, UserType::kRegular);
-  user->SetAffiliated(is_affiliated);
-  user->set_username_hash(GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;

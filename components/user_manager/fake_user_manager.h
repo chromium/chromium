@@ -31,15 +31,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   // Valid AccountId must be used, otherwise DCHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
 
-  // DEPRECATED. Please use UserManagerImpl's Add*User family.
-  // Create and add a new user. Created user is not affiliated with the domain,
-  // that owns the device.
-  User* AddUser(const AccountId& account_id);
+  // Creates and adds a new Kiosk user.
   User* AddKioskAppUser(const AccountId& account_id);
-
-  // The same as AddUser() but allows to specify user affiliation with the
-  // domain, that owns the device.
-  User* AddUserWithAffiliation(const AccountId& account_id, bool is_affiliated);
 
   void LogoutAllUsers();
 
