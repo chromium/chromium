@@ -99,8 +99,6 @@ constexpr char kPaymentInstrumentCreationOptionClientTag[] =
 // kPaymentInstrumentCreationOptionClientTag.
 constexpr char kPaymentInstrumentCreationOptionId[] = "1234";
 
-constexpr auto kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
-
 constexpr char kDefaultCacheGuid[] = "CacheGuid";
 
 void ExtractAutofillWalletSpecificsFromDataBatch(
@@ -323,7 +321,7 @@ class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase()
       : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -31,12 +32,6 @@ using AutocompleteEntrySet =
              bool (*)(const AutocompleteEntry&, const AutocompleteEntry&)>;
 using base::Time;
 using testing::ElementsAre;
-
-// When we compare last used dates, we fast forward the current time to a fixed
-// date that has no sub-second component. This is because creation and last_used
-// dates are serialized to seconds and sub-second components are lost.
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 bool CompareAutocompleteEntries(const AutocompleteEntry& a,
                                 const AutocompleteEntry& b) {
@@ -91,6 +86,17 @@ class AutocompleteTableTest : public testing::Test {
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+  }
+
+  void SetClock(base::Time target) {
+    // When we compare last used dates, we fast forward the current time to a
+    // fixed date that has no sub-second component. This is because creation and
+    // last_used dates are serialized to seconds and sub-second components are
+    // lost.
+    base::Time rounded_target = base::Time::FromSecondsSinceUnixEpoch(
+        target.InMillisecondsSinceUnixEpoch() / 1000);
+    AdvanceClock(rounded_target - base::Time::Now());
+    ASSERT_EQ(base::Time::Now().InMillisecondsSinceUnixEpoch() % 1000, 0);
   }
 
   void AdvanceClock(base::TimeDelta delta) {
@@ -227,7 +233,7 @@ TEST_F(AutocompleteTableTest, Autocomplete) {
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_GetEntry_Populated) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
 
   AutocompleteChangeList changes;
   FormFieldData field;
@@ -603,7 +609,7 @@ TEST_F(AutocompleteTableTest,
 
 TEST_F(AutocompleteTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
   // Add an entry used both before and during the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
@@ -634,7 +640,7 @@ TEST_F(AutocompleteTableTest,
 
 TEST_F(AutocompleteTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
   // Add an entry used both during and after the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
@@ -739,7 +745,7 @@ TEST_F(AutocompleteTableTest,
 
 TEST_F(AutocompleteTableTest,
        Autocomplete_GetAllAutocompleteEntries_OneResult) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
@@ -769,7 +775,7 @@ TEST_F(AutocompleteTableTest,
 
 TEST_F(AutocompleteTableTest,
        Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
@@ -811,7 +817,7 @@ TEST_F(AutocompleteTableTest,
 }
 
 TEST_F(AutocompleteTableTest, Autocomplete_GetAllAutocompleteEntries_TwoSame) {
-  AdvanceClock(kJune2017 - base::Time::Now());
+  SetClock(test::kJune2017);
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 

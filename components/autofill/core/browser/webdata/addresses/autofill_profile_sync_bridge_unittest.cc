@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -76,8 +77,6 @@ constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
 constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
 constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
 constexpr char kLocaleString[] = "en-US";
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 AutofillProfile CreateAutofillProfile(
     const AutofillProfileSpecifics& specifics) {
@@ -102,7 +101,7 @@ AutofillProfileSpecifics CreateAutofillProfileSpecifics(
   // Make it consistent with the constructor of AutofillProfile constructor (the
   // clock value is overrided by TestAutofillClock in the test fixture).
   specifics.set_use_count(1);
-  specifics.set_use_date(kJune2017.ToTimeT());
+  specifics.set_use_date(test::kJune2017.ToTimeT());
   return specifics;
 }
 
@@ -253,7 +252,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);

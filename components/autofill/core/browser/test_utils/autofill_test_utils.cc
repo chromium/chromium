@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
@@ -831,6 +832,61 @@ void SetServerCreditCards(PaymentsAutofillTable* table,
                          /*last_updated_timestamp=*/AutofillClock::Now()});
   }
   table->SetServerCreditCards(cards);
+}
+
+EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kPassportNumber), options.number,
+                            AttributeInstance::Context{});
+  }
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kPassportName), options.name,
+                            AttributeInstance::Context{});
+  }
+  if (options.country) {
+    attributes.emplace_back(AttributeType(kPassportCountry), options.country,
+                            AttributeInstance::Context{});
+  }
+  if (options.expiry_date) {
+    attributes.emplace_back(AttributeType(kPassportExpiryDate),
+                            options.expiry_date, AttributeInstance::Context{});
+  }
+  if (options.issue_date) {
+    attributes.emplace_back(AttributeType(kPassportIssueDate),
+                            options.issue_date, AttributeInstance::Context{});
+  }
+  if (options.place_of_birth) {
+    attributes.emplace_back(AttributeType(kPassportPlaceOfBirth),
+                            options.place_of_birth,
+                            AttributeInstance::Context{});
+  }
+  return EntityInstance(
+      EntityType(EntityTypeName::kPassport), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(options.date_modified.ToTimeT()));
+}
+
+EntityInstance GetLoyaltyCardEntityInstance(LoyaltyCardEntityOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.program) {
+    attributes.emplace_back(AttributeType(kLoyaltyCardProgram), options.program,
+                            AttributeInstance::Context{});
+  }
+  if (options.provider) {
+    attributes.emplace_back(AttributeType(kLoyaltyCardProvider),
+                            options.provider, AttributeInstance::Context{});
+  }
+  if (options.member_id) {
+    attributes.emplace_back(AttributeType(kLoyaltyCardMemberId),
+                            options.member_id, AttributeInstance::Context{});
+  }
+  return EntityInstance(
+      EntityType(EntityTypeName::kLoyaltyCard), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(options.date_modified.ToTimeT()));
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
