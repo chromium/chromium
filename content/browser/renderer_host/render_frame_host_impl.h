@@ -4460,7 +4460,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This property normally depends on the last committed origin and the state
   // of |ContentBrowserClient| at the time the navigation committed. Due to the
   // fact that this is based on the origin computed by the browser process in
-  // |NavigationRequest|, whereas |last_commited_origin_| is computed by the
+  // |NavigationRequest|, whereas |last_committed_origin_| is computed by the
   // renderer process (see crbug.com/888079), there can be rare discrepancies.
   //
   // TODO(crbug.com/40092527): Simplify the above comment when the

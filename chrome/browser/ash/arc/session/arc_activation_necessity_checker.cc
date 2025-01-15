@@ -51,6 +51,12 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
     return;
   }
 
+  // Activate ARC if Always ON VPN is enabled.
+  if (!profile_->GetPrefs()->GetString(prefs::kAlwaysOnVpnPackage).empty()) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
   // If ADB sideloading is enabled, activate ARC. Otherwise, no need to
   // activate.
   adb_sideloading_availability_delegate_->CanChangeAdbSideloading(
