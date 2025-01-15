@@ -79,7 +79,7 @@ public class SplitChromeApplication extends SplitCompatApplication
 
     private Context createContextForSplitNoWait(String name) {
         synchronized (sSplitLock) {
-            boolean shouldRecordHistogram = sCachedSplits.contains(name);
+            boolean shouldRecordHistogram = !sCachedSplits.contains(name);
             try {
                 long startTime = SystemClock.uptimeMillis();
                 Context context = super.createContextForSplit(name);
