@@ -10,6 +10,8 @@ source_set("change_profile") {
     "change_profile_bookmarks_continuation.mm",
     "change_profile_recent_tabs_continuation.h",
     "change_profile_recent_tabs_continuation.mm",
+    "change_profile_settings_continuation.h",
+    "change_profile_settings_continuation.mm",
     "change_profile_signout_continuation.h",
     "change_profile_signout_continuation.mm",
   ]
