@@ -75,7 +75,15 @@
   margin-right: auto;
   margin-top: 10px;
   max-width: 370px;
+  position: relative;
   text-align: center;
+  /* TODO(crbug.com/385726690): "z-index" and "position: relative" are needed
+   * here because the footer section might overlap with this text, and since we
+   * need this text to be clickable, it should have the priority. This should
+   * be fixed when moving this div in the upper container, which won't need
+   * this workaround.
+   */
+  z-index: 1;
 }
 
 .subtitle {

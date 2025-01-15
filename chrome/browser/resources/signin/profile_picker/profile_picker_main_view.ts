@@ -104,6 +104,19 @@ export class ProfilePickerMainViewElement extends
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
 
     this.addEventListener('toggle-drag', this.toggleDrag_);
+
+    // This class is set in the string as a placeholder - check
+    // `IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC`. The given link cannot be
+    // directly opened from this page since it is controlled by the System
+    // Profile that is not allowed to open a browser. Therefore we redirect the
+    // call to the handler which will load the last used profile and open a
+    // browser with it.
+    const link = this.shadowRoot!.querySelector('#learn-more-link');
+    if (link) {
+      // Add the event listener dynamically since we do not have access to the
+      // string content before the page is loaded.
+      link.addEventListener('click', this.onLearnMoreClicked_.bind(this));
+    }
   }
 
   override connectedCallback() {
@@ -273,6 +286,13 @@ export class ProfilePickerMainViewElement extends
 
     const customEvent = e as CustomEvent;
     this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
+  }
+
+  // Redirects the call to the handler, to create/use a browser to show the
+  // Help page.
+  private onLearnMoreClicked_(): void {
+    assert(isGlicVersion());
+    this.manageProfilesBrowserProxy_.onLearnMoreClicked();
   }
 
   // @override

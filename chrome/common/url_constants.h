@@ -529,6 +529,12 @@ inline constexpr char kSyncGoogleDashboardURL[] =
 inline constexpr char16_t kSyncLearnMoreURL[] =
     u"https://support.google.com/chrome?p=settings_sign_in";
 
+// The URL for the "Learn more" page for signing in to chrome with expanded
+// section on "Sign in and turn on sync" in the Computer/Desktop tab.
+inline constexpr char kSigninOnDesktopLearnMoreURL[] =
+    "https://support.google.com/"
+    "chrome?p=settings_sign_in#zippy=sign-in-turn-on-sync";
+
 // The URL for the "Learn more" page for AI settings for managed users.
 inline constexpr char16_t kAiSettingsLearnMorePageManagedUrl[] =
     u"https://support.google.com/chrome/a?p=generative_ai_settings";

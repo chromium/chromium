@@ -301,6 +301,25 @@ suite('ProfilePickerMainViewTest', function() {
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
+
+  test('LearnMoreClicked', async function() {
+    loadTimeData.overrideValues({isGlicVersion: true});
+    resetTest();
+
+    await browserProxy.whenCalled('initializeMainView');
+
+    const footerText =
+        mainViewElement.shadowRoot!.querySelector('#footer-text')!;
+    assertTrue(isVisible(footerText));
+
+    const learnMoreLink =
+        mainViewElement.shadowRoot!.querySelector<HTMLElement>(
+            '#learn-more-link')!;
+    assertTrue(isVisible(learnMoreLink));
+
+    learnMoreLink.click();
+    await browserProxy.whenCalled('onLearnMoreClicked');
+  });
 });
 
 suite('ProfilePickerProfilesReorderingTest', function() {
