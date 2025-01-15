@@ -1247,16 +1247,16 @@ TEST_F(AutofillProfileTest, MergeDataFrom_SameProfile) {
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
-  EXPECT_EQ(1u, a.use_count());
+  EXPECT_EQ(1u, a.usage_history().use_count());
 
   // Now the profile is fully populated. Merging it again has no effect (except
   // for usage statistics).
   AutofillProfile c = a;
   c.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  c.set_use_count(3);
+  c.usage_history().set_use_count(3);
   EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
   // Merge has not modified anything.
-  EXPECT_EQ(3u, a.use_count());
+  EXPECT_EQ(3u, a.usage_history().use_count());
 }
 
 // Tests that when merging two profiles, the token quality is merged.
@@ -1625,19 +1625,19 @@ TEST_F(AutofillProfileTest, RecordUseAndLog_Delay) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   // AutofillProfile is initialized with a `use_count()` of 1 and a last used
   // date set to the current time.
-  ASSERT_EQ(profile.use_count(), 1u);
+  ASSERT_EQ(profile.usage_history().use_count(), 1u);
   // 60 seconds pass. `RecordAndLogUse()` increments the use count.
   task_environment().FastForwardBy(base::Seconds(60));
   profile.RecordAndLogUse();
-  EXPECT_EQ(profile.use_count(), 2u);
+  EXPECT_EQ(profile.usage_history().use_count(), 2u);
   // Not enough time passes.
   task_environment().FastForwardBy(base::Seconds(5));
   profile.RecordAndLogUse();
-  EXPECT_EQ(profile.use_count(), 2u);
+  EXPECT_EQ(profile.usage_history().use_count(), 2u);
   // Test that waiting times are not added up. 5 + 55 seconds don't suffice.
   task_environment().FastForwardBy(base::Seconds(55));
   profile.RecordAndLogUse();
-  EXPECT_EQ(profile.use_count(), 2u);
+  EXPECT_EQ(profile.usage_history().use_count(), 2u);
 }
 
 // Tests that the |HasStructuredData| returns whether the profile has structured
@@ -1819,12 +1819,12 @@ TEST_P(ProfileRankingTest, HasGreaterRankingThan) {
 
   const base::Time now = base::Time::Now();
   AutofillProfile profile1 = test::GetFullProfile();
-  profile1.set_use_count(test_case.use_count_a);
-  profile1.set_use_date(now - test_case.days_since_last_use_a);
+  profile1.usage_history().set_use_count(test_case.use_count_a);
+  profile1.usage_history().set_use_date(now - test_case.days_since_last_use_a);
 
   AutofillProfile profile2 = test::GetFullProfile();
-  profile2.set_use_count(test_case.use_count_b);
-  profile2.set_use_date(now - test_case.days_since_last_use_b);
+  profile2.usage_history().set_use_count(test_case.use_count_b);
+  profile2.usage_history().set_use_date(now - test_case.days_since_last_use_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
             profile1.HasGreaterRankingThan(&profile2, now));

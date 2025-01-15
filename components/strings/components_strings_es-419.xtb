@@ -1204,6 +1204,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
+<translation id="3162070126914310576">No se puede inscribir este dispositivo en este momento porque tu unidad organizativa alcanzó su límite de inscripción inicial. Comunícate con tu administrador para obtener asistencia.</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
 <translation id="316638481603975524">Puede solicitar permiso para instalar apps web</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
@@ -1938,6 +1939,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Se pausó la carga de archivos a Microsoft OneDrive</translation>
 <translation id="4390472908992056574">Borde</translation>
+<translation id="4395550503472021297">Esta política controla el comportamiento predeterminado de las siguientes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Se abre una ventana emergente para realizar la verificación en el sitio web de tu banco</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
@@ -2380,6 +2382,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5244521145258281926">Botón Administrar la Cuenta de Google: actívalo para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5244732203286792411">Cargando…
     Este proceso puede demorar un minuto.</translation>
+<translation id="5248543496748975054">¿No se completó el número de la tarjeta?</translation>
 <translation id="5250209940322997802">"Conectarse a una red"</translation>
 <translation id="52517543715119994">Más información sobre las funciones de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>
@@ -3996,6 +3999,7 @@ Detalles adicionales:
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8118489163946903409">Forma de pago</translation>
 <translation id="8118506371121007279">Enviar comentarios</translation>
+<translation id="8120720167840853945">Esta política no controla el comportamiento predeterminado de ninguna otra política.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Elige qué categorías de temas generales se pueden utilizar para personalizar los anuncios. Si desactivas una categoría más general, también se bloquearán los temas relacionados. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

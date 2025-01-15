@@ -1204,6 +1204,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3156511682997763015">10 saniye ileri git</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Kuruluş biriminiz ilk kayıt sınırına ulaştığı için bu cihaz şu anda kaydedilemiyor. Yardım için yöneticinizle iletişime geçin.</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="316638481603975524">Web uygulamalarını yüklemek için izin isteyebilir</translation>
 <translation id="3168744840365648658">Radyo Donanımı</translation>
@@ -1937,6 +1938,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive'a dosya yükleme işlemi duraklatıldı</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Bu politika, şu politikaların varsayılan davranışını kontrol ediyor: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Bankanızın web sitesinde doğrulama yapmanız için bir pop-up penceresi açar</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4406896451731180161">arama sonuçları</translation>
@@ -2379,6 +2381,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5244521145258281926">Google Hesabı'nı yönet düğmesi, Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetmek için etkinleştirin</translation>
 <translation id="5244732203286792411">Yükleniyor...
     Bu işlem biraz zaman alabilir.</translation>
+<translation id="5248543496748975054">Kart numarası doldurulmadı mı?</translation>
 <translation id="5250209940322997802">"Ağa bağlanın"</translation>
 <translation id="52517543715119994">Chrome özellikleri hakkında bilgi edinin</translation>
 <translation id="5251803541071282808">Bulut</translation>
@@ -3995,6 +3998,7 @@ Ek ayrıntılar:
 <translation id="8116925261070264013">Ses kapatıldı</translation>
 <translation id="8118489163946903409">Ödeme yöntemi</translation>
 <translation id="8118506371121007279">Geri bildirim gönder</translation>
+<translation id="8120720167840853945">Bu politika, başka hiçbir politikanın varsayılan davranışını kontrol etmiyor.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8133495915926741232">Reklamların kişiselleştirilmesine yardımcı olmak için kullanılacak geniş kapsamlı konu kategorilerini seçin. Daha geniş kapsamlı bir kategori devre dışı bırakıldığında bu kategoriyle ilgili konular da engellenir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

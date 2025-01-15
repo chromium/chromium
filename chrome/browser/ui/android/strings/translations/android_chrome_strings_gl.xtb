@@ -340,7 +340,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2571834852878229351">Crear un propio</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá inmediatamente o acceso a "<ph name="GROUP_NAME" />" e xa non poderá interactuar contigo nos servizos de Google.</translation>
-<translation id="2578337197553672982">Contido de Google para mentes novas</translation>
 <translation id="2579297619530305344">A folla Contrasinais en todos os teus dispositivos está aberta a altura completa</translation>
 <translation id="2581165646603367611">Borraranse as cookies, a memoria caché e outros datos dos sitios que Chrome non considera importantes.</translation>
 <translation id="2587052924345400782">Versión nova dispoñible</translation>
@@ -734,6 +733,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
 <translation id="4425173294238317796">Folla de confirmación da clave de acceso</translation>
 <translation id="442518031075347249">Deixarás de poder utilizar a tarxeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Todos os marcadores</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Escolle unha conta.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
-<translation id="4750356170202299988">Contido para mentes novas</translation>
 <translation id="4758061975920522644">Compartir só imaxe</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4763480195061959176">vídeo</translation>
@@ -1378,7 +1377,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Recomendámosche que o cambies agora}other{Recomendámosche que os cambies agora}}</translation>
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
-<translation id="7205672015775254816">Contido de Google para mentes novas (desactivado)</translation>
 <translation id="7207760545532569765">Restablecer <ph name="TAB_COUNT" /> pestanas como novas pestanas en segundo plano.</translation>
 <translation id="7217781228893594884">As pestanas do modo de incógnito bloquearanse cando saias de Chrome</translation>
 <translation id="7221869452894271364">Volver cargar esta páxina</translation>
@@ -1533,7 +1531,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7886917304091689118">A páxina estase executando en Chrome</translation>
 <translation id="7887174313503389866">Realiza un percorrido guiado polos controis clave de privacidade e seguranza. Para obter máis opcións, vai á configuración individual.</translation>
-<translation id="7896724475402191389">Contido para mentes novas (desactivado)</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 bloqueada pola túa organización}other{# bloqueadas pola túa organización}}</translation>
 <translation id="7914399737746719723">Instalouse a aplicación</translation>
@@ -1647,6 +1644,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8378850197701296741">Tes os marcadores, o historial e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
+<translation id="8396098434728053815">Compartir tamén audio da pestana</translation>
 <translation id="8398389123831319859">Toca dúas veces o botón e manteno premido para cambiar ao modo de incógnito</translation>
 <translation id="8402673309244746971">Ir a Seguindo</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>

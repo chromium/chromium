@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1066101356081285416">Chrome otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta se šalju Google-u radi pružanja ove funkcije i poboljšanja funkcija Google kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome automatski otvara YouTube linkove bez arhiviranja u režimu bez arhiviranja.</translation>
 <translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1143896152279775643">Lozika se čuva u Google menadžeru lozinki za <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvaranje nove kartice u Chrome-u</translation>
@@ -126,6 +127,7 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="4636900170638246267">Prijavite se na ovaj sajt i u Chrome.</translation>
 <translation id="4646014602299206846">Chrome otkriva brojeve za praćenje paketa na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Podaci će se deliti sa Google-om radi pružanja ove funkcije i poboljšanja Kupovine za sve.</translation>
 <translation id="4647910807533196601">Otvara moju najnoviju karticu u Chrome-u.</translation>
+<translation id="4693084815234024320">Koristite Chrome režim bez arhiviranja</translation>
 <translation id="4724297637870447613">Koristite Chrome svuda</translation>
 <translation id="4738647308035481133">Google Chrome stranica</translation>
 <translation id="4742795653798179840">Izbrisani Chrome podaci</translation>

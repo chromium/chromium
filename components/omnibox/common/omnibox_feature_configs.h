@@ -217,23 +217,6 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
   bool enabled;
 };
 
-// If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->
-// match 'Ispiryan - Search YouTube').
-// 1) These autocompleted keywords will be scored `score` instead of the default
-//    450.
-// 2) Autocompletes keyword even when the full keyword is typed ('youtube.com').
-//    Otherwise, only incomplete keywords ('youtube.co') are autocompleted.
-struct VitalizeAutocompletedKeywords : Config<VitalizeAutocompletedKeywords> {
-  DECLARE_FEATURE(kVitalizeAutocompletedKeywords);
-  VitalizeAutocompletedKeywords();
-  bool enabled;
-  // Should probably be less than 1100; i.e. the score for complete keywords
-  // in `SearchProvider::CalculateRelevanceForKeywordVerbatim()`. Otherwise, it
-  // would be weird if the input 'youtube.co Ispiryan' produces a higher scored
-  // keyword match than 'youtube.com Ispiryan'.
-  int score;
-};
-
 // Do not add new configs here at the bottom by default. They should be ordered
 // alphabetically.
 

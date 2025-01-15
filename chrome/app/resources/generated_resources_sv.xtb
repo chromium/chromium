@@ -320,7 +320,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1210678701920254279">Visa eller lägg till skrivare och se aktiva utskriftsjobb</translation>
 <translation id="1211769675100312947">Du väljer ut genvägarna</translation>
 <translation id="1213254615020057352">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Ägaren har gjort denna inställning obligatorisk. Ägaren kan ange att diagnostik- och användningsdata om den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot.</translation>
-<translation id="1214004433265298541">Certifikat från administratören som kan visa användaruppgifterna för <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">En ny bakgrundsapp har lagts till</translation>
 <translation id="1216542092748365687">Ta bort fingeravtryck</translation>
 <translation id="1216891999012841486">Läs mer om hur du åtgärdar uppdateringsfel</translation>
@@ -3097,6 +3096,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3159978855457658359">Redigera enhetsnamn</translation>
 <translation id="3160928651883997588">VPN-inställningar</translation>
 <translation id="3161522574479303604">Alla språk</translation>
+<translation id="3162070126914310576">Det går inte att registrera enheten just nu eftersom organisationsenheten har nått sin ursprungliga registreringsgräns. Kontakta administratören och be om hjälp.</translation>
 <translation id="3162766632262775911">Tillåts alltid att använda V8-optimeraren</translation>
 <translation id="3162853326462195145">Skolkonto</translation>
 <translation id="3162899666601560689">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen</translation>
@@ -9070,6 +9070,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="746861123368584540">Tillägget har lästs in</translation>
 <translation id="7469612367552312334">På • Använd vardagligt språk för att söka i webbhistoriken och hitta webbplatser du har besökt</translation>
 <translation id="7470131554696493512">Blockera Thunderbolt- eller USB4-tillbehör från att komma åt och dela minne (RAM)</translation>
+<translation id="7470284766345262333">Det här kontot är inte kopplat till Google, så funktioner som Chrome Sync är inte tillgängliga</translation>
 <translation id="7470424110735398630">Får se urklippet</translation>
 <translation id="747114903913869239">Fel: det går inte att avkoda tillägget</translation>
 <translation id="7471520329163184433">Långsammare</translation>

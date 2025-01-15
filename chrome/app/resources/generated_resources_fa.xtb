@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{‫۱ گذرواژه}one{‫{COUNT} گذرواژه}other{‫{COUNT} گذرواژه}}</translation>
 <translation id="1102759278139578486">فایل‌های گزارمان گره اصلی بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
+<translation id="1104098698795583187">دسترسی به این گروه برگه را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="1106350001632362876">افزایش آستانه</translation>
 <translation id="1107482171728500359">هم‌رسانی میکروفون</translation>
 <translation id="110850812463801904">‏اتصال دستی به OneDrive</translation>
@@ -321,7 +322,6 @@
 <translation id="1210678701920254279">مشاهده یا افزودن چاپگرها و دیدن کارهای فعال چاپ</translation>
 <translation id="1211769675100312947">میان‌برها توسط شما گزینش می‌شوند</translation>
 <translation id="1213254615020057352">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android خود کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. این تنظیم را مالک اعمال می‌کند. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت‌ها در وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود.</translation>
-<translation id="1214004433265298541">گواهی ارائه‌شده ازطرف سرپرست شما که می‌تواند اطلاعات اعتباری <ph name="DOMAIN" /> را مشاهده کند</translation>
 <translation id="1215411991991485844">برنامه جدید پس‌زمینه اضافه شد</translation>
 <translation id="1216542092748365687">حذف کردن اثر انگشت</translation>
 <translation id="1216891999012841486">درباره برطرف کردن خطاهای به‌روزرسانی بیشتر بدانید</translation>
@@ -1700,6 +1700,7 @@
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2173801458090845390">افزودن شناسه درخواست به این دستگاه</translation>
 <translation id="2175384018164129879">مدیریت موتورهای جستجو و جستجوی سایت</translation>
+<translation id="2175526076681939329">استفاده از کلیدهای اصلی</translation>
 <translation id="217576141146192373">چاپگر اضافه نشد. لطفاً پیکربندی چاپگرتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="217631816678106981">جای‌گذاری نشود</translation>
@@ -3424,6 +3425,7 @@
 <translation id="3407392651057365886">‏صفحات بیشتری پیش‌بارگیری می‌شوند. اگر درخواست ازطرف سایت‌های دیگر انجام شود، ممکن است صفحات ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
 <translation id="3407967630066378878">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در سمت چپ این <ph name="DEVICE_TYPE" /> لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="3408555740610481810">دوربین و میکروفون درحال استفاده هستند</translation>
+<translation id="3409157109901479672">سمت چپ</translation>
 <translation id="3409513286451883969">ترجمه ناحیه انتخاب‌شده به <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">پرش به انتخاب</translation>
 <translation id="3413122095806433232">‏صادرکنندگان CA: <ph name="LOCATION" /></translation>
@@ -4709,6 +4711,7 @@
 <translation id="4290826901752066702">‫<ph name="NUM" /> عضو</translation>
 <translation id="4290898381118933198">تند کشیدن برای پیمایش میان صفحه‌ها</translation>
 <translation id="4291265871880246274">کادر گفتگوی ورود به سیستم</translation>
+<translation id="4292613336957320546">شتاب</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> از سابقه بارگیری حذف شد، اما هنوز در دستگاهتان است</translation>
 <translation id="4295072614469448764">برنامه در «ترمینال» دردسترس است. ممکن است در «راه‌انداز» هم نمادی وجود داشته باشد.</translation>
@@ -5877,6 +5880,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">پین کلید ایمنی را وارد کنید. اگر پین را نمی‌دانید، باید کلید ایمنی را بازنشانی کنید.</translation>
 <translation id="5139955368427980650">&amp;بازکردن</translation>
+<translation id="5140742218917419811">کلید مورداستفاده</translation>
 <translation id="5141421572306659464">حساب اصلی</translation>
 <translation id="5141957579434225843">‏برای مثال، از oà،‏ oè،‏ uỳ به‌جای òa،‏ òe،‏ ùy استفاده کنید</translation>
 <translation id="5143374789336132547">افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را با کلیک روی دکمه صفحه اصلی نمایش داده می‌شود، تغییر داده است.</translation>
@@ -5895,6 +5899,7 @@
 <translation id="5149602533174716626">کپی کردن فریم ویدیو</translation>
 <translation id="5150254825601720210">‏نام سرور SSL گواهی Netscape</translation>
 <translation id="5151354047782775295">فضای دیسک را آزاد کنید، در غیر این صورت ممکن است داده‌های انتخابی به‌صورت خودکار حذف شوند</translation>
+<translation id="5153074793829217329">از صفحه‌کلید یا صفحه‌کلید عددی برای کنترل کردن مکان‌نما موشواره استفاده کنید</translation>
 <translation id="5153234146675181447">فراموش کردن تلفن</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">تنظیمات پیشرفته برای <ph name="PRINTING_DESTINATION" /></translation>
@@ -7989,6 +7994,7 @@
 <translation id="6689714331348768690">از <ph name="SUPERVISED_USER_NAME" /> بخواهید پای رایانه بیاید. فرزندتان چند عبارت را از روی صفحه می‌خواند تا مدل صوتی‌اش ایجاد شود.
     <ph name="BR" />
     اگر <ph name="SUPERVISED_USER_NAME" /> هنگام خواندن به کمک نیاز داشت، از او بخواهید عبارات را بعداز شما تکرار کند. از میکروفون فاصله بگیرید تا «دستیار» به‌جای صدای شما، صدای فرزندتان را یاد بگیرد.</translation>
+<translation id="6689948774466767379">کلیدهای موشواره</translation>
 <translation id="6690659332373509948">این فایل تجزیه نمی‌شود: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ارسال کردن</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{۱ صفحه}one{{COUNT} صفحه}other{{COUNT} صفحه}}</translation>
@@ -10075,6 +10081,7 @@
 <translation id="8168435359814927499">محتوا</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{افزودن برگه به فهرست خواندن}one{افزودن برگه به فهرست خواندن}other{افزودن برگه‌ها به فهرست خواندن}}</translation>
 <translation id="8169177848833352618">‏متأسفانه این دستگاه الزامات نصب Bruschetta را برآورده نمی‌کند. کد خطا <ph name="ERROR" /> است.</translation>
+<translation id="8172303073969862496">سمت راست</translation>
 <translation id="8174047975335711832">اطلاعات دستگاه</translation>
 <translation id="8176332201990304395">صورتی و سفید</translation>
 <translation id="8176529144855282213">برای روشن کردن دسترسی میکروفون، کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>

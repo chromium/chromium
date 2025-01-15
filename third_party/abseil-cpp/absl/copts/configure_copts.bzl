@@ -18,22 +18,22 @@ load(
 )
 
 ABSL_DEFAULT_COPTS = select({
-    "//absl:msvc_compiler": ABSL_MSVC_FLAGS,
-    "//absl:clang-cl_compiler": ABSL_CLANG_CL_FLAGS,
-    "//absl:clang_compiler": ABSL_LLVM_FLAGS,
-    "//absl:gcc_compiler": ABSL_GCC_FLAGS,
-    "//conditions:default": ABSL_GCC_FLAGS,
+    "@rules_cc//cc/compiler:msvc-cl": ABSL_MSVC_FLAGS,
+    "@rules_cc//cc/compiler:clang-cl": ABSL_CLANG_CL_FLAGS,
+    "@rules_cc//cc/compiler:clang": ABSL_LLVM_FLAGS,
+    "@rules_cc//cc/compiler:gcc": ABSL_GCC_FLAGS,
+    "//conditions:default": [],
 })
 
 ABSL_TEST_COPTS = select({
-    "//absl:msvc_compiler": ABSL_MSVC_TEST_FLAGS,
-    "//absl:clang-cl_compiler": ABSL_CLANG_CL_TEST_FLAGS,
-    "//absl:clang_compiler": ABSL_LLVM_TEST_FLAGS,
-    "//absl:gcc_compiler": ABSL_GCC_TEST_FLAGS,
-    "//conditions:default": ABSL_GCC_TEST_FLAGS,
+    "@rules_cc//cc/compiler:msvc-cl": ABSL_MSVC_TEST_FLAGS,
+    "@rules_cc//cc/compiler:clang-cl": ABSL_CLANG_CL_TEST_FLAGS,
+    "@rules_cc//cc/compiler:clang": ABSL_LLVM_TEST_FLAGS,
+    "@rules_cc//cc/compiler:gcc": ABSL_GCC_TEST_FLAGS,
+    "//conditions:default": [],
 })
 
 ABSL_DEFAULT_LINKOPTS = select({
-    "//absl:msvc_compiler": ABSL_MSVC_LINKOPTS,
+    "@rules_cc//cc/compiler:msvc-cl": ABSL_MSVC_LINKOPTS,
     "//conditions:default": [],
 })

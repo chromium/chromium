@@ -386,7 +386,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2640733327287333451">Niciun nume de utilizator ••••••</translation>
 <translation id="264215785133931186">S-a verificat adineauri</translation>
 <translation id="2647434099613338025">Adaugă o limbă</translation>
-<translation id="2649592894792404568">Ești pe cale să-ți ștergi datele din Managerul de parole Google</translation>
+<translation id="2649592894792404568">Urmează să-ți ștergi datele din Managerul de parole Google</translation>
 <translation id="2652129567809778422">Selectează o parolă</translation>
 <translation id="2658056020748144467">Fișierul nu se deschide</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, numai pe acest dispozitiv, <ph name="URL" /></translation>
@@ -991,6 +991,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5506763544823940561">Salvează imaginea în…</translation>
 <translation id="5511959326926949696">Protecție opțională extremă pentru browserul tău. Ar trebui folosită numai dacă crezi că poți fi vizat(ă) de un atac cibernetic foarte sofisticat.</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Ieși din grup</translation>
 <translation id="5524590039848017563">Butonul barei de instrumente principale restrânse</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} parolă slabă}few{{COUNT} parole slabe}other{{COUNT} de parole slabe}}</translation>
 <translation id="5532545557415295622">Casetă de dialog cu limita de inactivitate</translation>
@@ -1030,6 +1031,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5646284034397250191">Eticheta a fost creată. Data este în așteptare</translation>
 <translation id="5647096944343801045">Punct de intrare mare</translation>
 <translation id="5647193778876139879">Atinge lung o adresă.</translation>
+<translation id="5647702255748985085">Ieși din grup?</translation>
 <translation id="5648166631817621825">Ultimele 7 zile</translation>
 <translation id="5652623411397330904">Produsele pe care le urmărești vor apărea aici.</translation>
 <translation id="5657156137487675418">Permiteți toate cookie-urile</translation>
@@ -1151,6 +1153,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6160780110287872296">Descarci fișierul?</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6168647875670665004">Sugestii de articole</translation>
+<translation id="6169031022444660352">Pentru a șterge toate datele de conectare salvate, mai întâi trebuie să setezi un cod de acces pe dispozitiv.</translation>
 <translation id="6173499589275053515">Parola s-a salvat în Contul Google, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
@@ -1202,6 +1205,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6355820205320395730">Parolele slabe sunt ușor de ghicit. Trebuie să creezi parole puternice. <ph name="BEGIN_LINK" />Vezi mai multe sfaturi de securitate.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Urmărește <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Alege din listă un motor de căutare.</translation>
+<translation id="6368102751067608420">Pentru a șterge toate datele din managerul de parole</translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
 <translation id="6387994324662817823">Parolele sunt salvate în Managerul de parole Google numai pe acest dispozitiv.</translation>
 <translation id="6404422529625928907">Deschide în Google Drive</translation>

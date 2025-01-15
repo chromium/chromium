@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">جابه‌جایی به کاربر بعدی</translation>
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1954252331066828794">ضبط صفحه‌نمایش تکمیل شد</translation>
+<translation id="1956087014741188812">موقتاً متوقف کردن کلیدهای موشواره</translation>
 <translation id="1957958912175573503">تنظیم زبان</translation>
 <translation id="1961239773406905488">پیش‌نمای دوربین پنهان است</translation>
 <translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">درحال جستجو برای دستگاه‌ها...</translation>
 <translation id="2257486738914982088">هنگام بارگیری <ph name="FILENAME" /> مشکلی پیش آمد</translation>
 <translation id="2258734398699965611">فایل‌های پیشنهادی</translation>
+<translation id="2266607665880926261">کلیدهای موشواره موقتاً متوقف شدند</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
 <translation id="2268731132310444948">مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. پس‌از فعال شدن «راه‌انداز»، نوار جستجوی پیشرفته‌ای خواهید داشت. می‌توانید شروع به تایپ کنید و فایل‌ها، برنامه‌ها، و موارد دیگر را جستجو کنید. همچنین می‌توانید پاسخ سؤالات مربوط به <ph name="PRODUCT_NAME" /> را دریافت کنید.</translation>
 <translation id="2268813581635650749">خارج کردن همه از سیستم</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">زوم‌پیش کردن صفحه‌نمایش</translation>
 <translation id="2878884018241093801">چیز جدیدی اینجا نیست</translation>
 <translation id="2880541185262491188">تلاش‌های ناموفق خیلی زیادی برای وارد کردن پین داشته‌اید. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره امتحان کنید</translation>
+<translation id="2883271196820422439">ازسرگیری کلیدهای موشواره</translation>
 <translation id="2885950158625301909">بیشتر بدانید</translation>
 <translation id="2891209721153296020">«لغو انتخاب»</translation>
 <translation id="2894949423239620203">کابل می‌تواند بر عملکرد تأثیر بگذارد</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">نقطه اتصال <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">بستن راه‌اندازی مشاهده عکس‌ها و رسانه‌های جدید تلفن</translation>
 <translation id="3542066395059568317">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید کلیک راست کنید.</translation>
+<translation id="3545224667633138205">کلیدهای موشواره ازسر گرفته شدند</translation>
 <translation id="3552189655002856821">‏Wi-Fi خاموش است</translation>
 <translation id="3554215588514239132">نشان دادن یا پنهان کردن پانل «ابزار توسعه‌دهندگان»</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> پین شد</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">موارد بار نشد. وقتی آنلاین شدید دوباره امتحان کنید.</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3738664582935948253">ازاین‌پس می‌توانید کلیک‌ها و میان‌برهای صفحه‌کلید را در ویدیوهای ضبط‌شده از صفحه‌نمایش نشان دهید</translation>
+<translation id="3741482431277446954">دکمه راست موشواره</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3743775386021959186">«تمرکز» روشن است، <ph name="REMAINING_TIME" /> باقی مانده است</translation>
 <translation id="3750403286520637847">پنهان کردن پیشنهاد آب‌وهوا</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">کل روز</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963124517343721543">با باز کردن پنجره‌ها و برگه‌های قبلی‌تان، به‌راحتی از جایی که کار را رها کردید ادامه دهید. همچنین پیشنهادهای شخصی‌سازی‌شده برای فعالیت‌های بعدی را خواهید دید.</translation>
-<translation id="396506362088290977">آزمایش کردن صدای میکروفون</translation>
 <translation id="3969043077941541451">خاموش</translation>
 <translation id="3970324493235864154">مشاهده اعلان‌های تلفن</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
@@ -1300,7 +1304,6 @@
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5361524080961918551">فایل‌های گفتار <ph name="LANGUAGE" /> کامل بارگیری نشده‌اند</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این برگه</translation>
-<translation id="5363835273551457276">می‌توانید صدای میکروفونتان را آزمایش کنید. برای متوقف کردن بررسی، پانل را ببندید.</translation>
 <translation id="5364693579536176785">فضای ذخیره‌سازی</translation>
 <translation id="5369573834963677938">کنترل چهره برای دیگر کاربران دستگاه دردسترس خواهد بود</translation>
 <translation id="5369717264580061086">‏پیش‌دید کردن فایل در برنامه Files</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7118268675952955085">نماگرفت</translation>
 <translation id="7118597077555700347">باز کردن <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">انتخاب واژه یا حرف بعدی</translation>
+<translation id="7124556000457919678">وقتی روشن باشد، کلیدهای موشواره موقتاً متوقف و ازسرگیری می‌شوند</translation>
 <translation id="7126996685418858413">هفته گذشته باز شده است</translation>
 <translation id="7130207228079676353">به احتمال خیلی زیاد</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="7219573373513695352">دستگاهی متصل نیست</translation>
 <translation id="7229029500464092426">حافظه <ph name="AVAILABLE_MEMORY" /> | مجموع <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">هر دو دکمه موشواره</translation>
 <translation id="7244725679040769470">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است. دستگاه را به برق وصل کنید.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2152,6 +2157,7 @@
 <translation id="8203224998425013577">نمایش اموجی و گیف بیشتر</translation>
 <translation id="8203795194971602413">کلیک راست</translation>
 <translation id="8205469348819768313">‏می‌خواهید از کلید Page Down استفاده کنید؟ از این استفاده کنید:</translation>
+<translation id="8213376797713070611">دکمه چپ موشواره</translation>
 <translation id="8214996719228530800">‏کانال Canary</translation>
 <translation id="8219451629189078428">‏Chromebook باید در این مدت روشن بماند و به برق متصل باشد. مطمئن شوید سیم شارژر یا آداپتور کاملاً متصل باشد، هم به Chromebook و هم به پریز برق. Chromebook را خاموش نکنید.</translation>
 <translation id="8220076512072059941">افزودن <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2376,6 +2382,7 @@
 <translation id="9034924485347205037">‏فایل‌های Linux</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">بلوتوث دردسترس نیست</translation>
+<translation id="9050999376345823055">برای رهاسازی، «.» را فشار دهید</translation>
 <translation id="906458777597946297">بازکردن پنجره در حداکثر اندازه</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9070640332319875144">تنظیمات «دستیار»</translation>

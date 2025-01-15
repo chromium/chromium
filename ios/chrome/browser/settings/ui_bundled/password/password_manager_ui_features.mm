@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 
+#import "components/sync/base/features.h"
+
 namespace password_manager::features {
 
 // Kill switch for the logic that allows the user to open the native Password
@@ -27,6 +29,12 @@ BASE_FEATURE(kIOSPasskeysM2,
 // Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
+}
+
+bool IOSPasskeysM2Enabled() {
+  return syncer::IsWebauthnCredentialSyncEnabled() &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kIOSPasskeysM2);
 }
 
 }  // namespace password_manager::features

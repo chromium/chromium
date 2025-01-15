@@ -160,6 +160,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1101254380285078812">{COUNT,plural, =1{1 Cyfrinair}zero{{COUNT} Cyfrinair}two{{COUNT} Gyfrinair}few{{COUNT} Chyfrinair}many{{COUNT} Chyfrinair}other{{COUNT} Cyfrinair}}</translation>
 <translation id="1102759278139578486">Nid oes modd lawrlwytho ffeiliau anodiadau prif nod. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
+<translation id="1104098698795583187">Byddwch yn colli mynediad at y grŵp tabiau hwn ar unwaith, a bydd yn cael ei ddileu o'ch holl ddyfeisiau</translation>
 <translation id="1106350001632362876">Cynyddu'r trothwy</translation>
 <translation id="1107482171728500359">Rhannu meicroffon</translation>
 <translation id="110850812463801904">Cysylltu ag OneDrive yn bwrpasol</translation>
@@ -324,7 +325,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1210678701920254279">Gweld neu ychwanegu argraffyddion a gweld tasgau argraffu gweithredol</translation>
 <translation id="1211769675100312947">Mae llwybrau byr yn cael eu curadu gennych</translation>
 <translation id="1213254615020057352">Anfon data defnydd a diagnostig. Helpwch i wella profiad Android eich plentyn drwy anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hyn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y gosodiad hwn gan y perchennog. Mae'n bosib y bydd y perchennog yn dewis anfon data diagnostig a defnydd ar gyfer y ddyfais hon at Google. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w Gyfrif Google.</translation>
-<translation id="1214004433265298541">Tystysgrif sydd wedi'i darparu gan eich gweinyddwr a all weld manylion adnabod ar gyfer <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Ychwanegwyd ap cefndir newydd</translation>
 <translation id="1216542092748365687">Tynnu'r ôl bys</translation>
 <translation id="1216891999012841486">Dysgu rhagor am ddatrys gwallau diweddaru</translation>
@@ -1706,6 +1706,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2173302385160625112">Gwiriwch eich cysylltiad rhyngrwyd</translation>
 <translation id="2173801458090845390">Ychwanegu rhif adnabod yr ymholiad at y ddyfais hon</translation>
 <translation id="2175384018164129879">&amp;Rheoli Peiriannau Chwilio a Chwilio Gwefan</translation>
+<translation id="2175526076681939329">Defnyddio bysellau cynradd</translation>
 <translation id="217576141146192373">Methu ag ychwanegu argraffydd. Gwiriwch ffurfweddiad eich argraffydd a rhowch gynnig arall arni.</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="217631816678106981">Peidio â gludo</translation>
@@ -3430,6 +3431,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3407392651057365886">Mae rhagor o dudalennau'n cael eu rhaglwytho. Gellir rhaglwytho tudalennau drwy weinyddion Google pan ofynnir amdanynt gan wefannau eraill.</translation>
 <translation id="3407967630066378878">I osod olion bysedd, gofynnwch i'ch plentyn gyffwrdd â'r synhwyrydd olion bysedd ar ochr chwith y <ph name="DEVICE_TYPE" /> hwn. Mae data olion bysedd eich plentyn yn cael eu storio'n ddiogel a byth yn gadael y <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="3408555740610481810">Camera a meicroffon yn cael eu defnyddio</translation>
+<translation id="3409157109901479672">Ochr chwith</translation>
 <translation id="3409513286451883969">&amp;Cyfieithu Dewisiad i <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Neidio i Ddewis</translation>
 <translation id="3413122095806433232">Cyhoeddwyr CA: <ph name="LOCATION" /></translation>
@@ -4715,6 +4717,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4290826901752066702"><ph name="NUM" /> aelod</translation>
 <translation id="4290898381118933198">Sweipiwch i lywio rhwng tudalennau</translation>
 <translation id="4291265871880246274">Deialog Mewngofnodi</translation>
+<translation id="4292613336957320546">Cyflymiad</translation>
 <translation id="429312253194641664">Mae gwefan yn chwarae cyfryngau</translation>
 <translation id="4294392694389031609">Wedi dileu <ph name="FILE_NAME" /> o hanes lawrlwytho, ond mae'n dal i fod ar eich dyfais</translation>
 <translation id="4295072614469448764">Mae'r ap ar gael yn eich terfynell. Mae'n bosib y bydd eicon yn eich Lansiwr hefyd.</translation>
@@ -5883,6 +5886,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Chwilio</translation>
 <translation id="5139823398361067371">Rhowch y PIN ar gyfer eich allwedd ddiogelwch. Os nad ydych yn gwybod y PIN, bydd angen i chi ailosod yr allwedd ddiogelwch.</translation>
 <translation id="5139955368427980650">&amp;Agor</translation>
+<translation id="5140742218917419811">Bysellau i'w defnyddio</translation>
 <translation id="5141421572306659464">Prif Gyfrif</translation>
 <translation id="5141957579434225843">Er enghraifft, defnyddiwch oà, oè, uỳ yn lle òa, òe, ùy</translation>
 <translation id="5143374789336132547">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn clicio'r botwm Hafan.</translation>
@@ -5901,6 +5905,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5149602533174716626">Copïo Ffrâm Fideo</translation>
 <translation id="5150254825601720210">Enw Gweinydd SSL Tystysgrif Netscape</translation>
 <translation id="5151354047782775295">Crëwch ragor o le ar y disg neu mae'n bosib y bydd rhai data yn cael eu dileu yn awtomatig</translation>
+<translation id="5153074793829217329">Defnyddiwch eich bysellfwrdd neu fysellbad rhifol i reoli cyrchwr eich llygoden</translation>
 <translation id="5153234146675181447">Anghofio'r ffôn</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Gosodiadau uwch ar gyfer <ph name="PRINTING_DESTINATION" /></translation>
@@ -8001,6 +8006,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6689714331348768690">Gofynnwch i <ph name="SUPERVISED_USER_NAME" /> ddod i'r cyfrifiadur. Bydd eich plentyn yn darllen ychydig o frawddegau ar y sgrîn i greu ei fodel llais.
     <ph name="BR" />
     Os mae angen help ar <ph name="SUPERVISED_USER_NAME" /> i ddarllen, gofynnwch i'ch plentyn ailadrodd ar eich ôl. Sibrydwch i ffwrdd o'r meic fel bod Assistant yn dysgu llais eich plentyn yn lle'ch llais chi.</translation>
+<translation id="6689948774466767379">Bysellau'r Llygoden</translation>
 <translation id="6690659332373509948">Methu â dosrannu'r ffeil: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Anfon ymlaen</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 dudalen}zero{{COUNT} tudalen}two{{COUNT} dudalen}few{{COUNT} tudalen}many{{COUNT} thudalen}other{{COUNT} tudalen}}</translation>
@@ -10087,6 +10093,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ychwanegu Tab at y Rhestr Ddarllen}zero{Ychwanegu Tabiau at y Rhestr Ddarllen}two{Ychwanegu Tabiau at y Rhestr Ddarllen}few{Ychwanegu Tabiau at y Rhestr Ddarllen}many{Ychwanegu Tabiau at y Rhestr Ddarllen}other{Ychwanegu Tabiau at y Rhestr Ddarllen}}</translation>
 <translation id="8169177848833352618">Yn anffodus nid yw'r peiriant hwn yn bodloni'r gofynion ar gyfer gosod Bruschetta. Y cod gwall yw <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Ochr dde</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
 <translation id="8176332201990304395">Pinc a gwyn</translation>
 <translation id="8176529144855282213">I droi mynediad meicroffon ymlaen, trowch switsh y meicroffon corfforol ymlaen ar eich dyfais</translation>

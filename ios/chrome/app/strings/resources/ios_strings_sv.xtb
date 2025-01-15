@@ -991,6 +991,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5506763544823940561">Spara bild i …</translation>
 <translation id="5511959326926949696">Valfritt extremt högt skydd för webbläsaren. Det bör endast användas om du tror att du kan vara utsatt för en mycket avancerad cyberattack.</translation>
 <translation id="5513681519188741830">För <ph name="TIME" /> timmar sedan</translation>
+<translation id="5520668942302483373">Lämna grupp</translation>
 <translation id="5524590039848017563">Knapp för komprimerat primärt verktygsfält</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="5532545557415295622">Dialogruta för inaktivitetstidsgräns</translation>
@@ -1030,6 +1031,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5646284034397250191">Etikett har skapats. Datum väntar</translation>
 <translation id="5647096944343801045">Stor ingångspunkt</translation>
 <translation id="5647193778876139879">Tryck länge på en adress.</translation>
+<translation id="5647702255748985085">Vill du lämna gruppen?</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
 <translation id="5657156137487675418">Tillåt alla cookies</translation>

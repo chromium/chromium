@@ -3635,6 +3635,21 @@
             ]
         }
     ],
+    "BusyLoopOnMainThread": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BusyLoopOnMainThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTEarlyNav": [
         {
             "platforms": [
@@ -7791,27 +7806,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OmniboxCalcProvider"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DesktopOmniboxKeywordProvider": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled",
-                    "params": {
-                        "VitalizeAutocompletedKeywordsScore": "900"
-                    },
-                    "enable_features": [
-                        "OmniboxVitalizeAutocompletedKeywords"
                     ]
                 }
             ]

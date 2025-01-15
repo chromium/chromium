@@ -36,10 +36,10 @@ AutofillProfile ConstructBaseProfile(
   AutofillProfile profile(kGuid, AutofillProfile::RecordType::kAccount,
                           country_code);
 
-  profile.set_use_count(123);
-  profile.set_use_date(kUseDate, 1);
-  profile.set_use_date(kUseDate2, 2);
-  profile.set_modification_date(kModificationDate);
+  profile.usage_history().set_use_count(123);
+  profile.usage_history().set_use_date(kUseDate, 1);
+  profile.usage_history().set_use_date(kUseDate2, 2);
+  profile.usage_history().set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
   profile.set_initial_creator_id(

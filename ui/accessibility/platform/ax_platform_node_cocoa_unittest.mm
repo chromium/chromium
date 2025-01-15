@@ -1080,6 +1080,17 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
   EXPECT_EQ([child accessibilityIndex], NSNotFound);
 }
 
+// accessibilityChildrenInNavigationOrder.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityChildrenInNavigationOrder) {
+  Init(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+  )HTML"));
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  TestUIElements([table accessibilityChildrenInNavigationOrder], { 2 });
+}
+
 // `accessibilityRowCount` and `accessibilityColumnCount` on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

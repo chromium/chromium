@@ -310,6 +310,49 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToPermanentFolder) {
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "4 2 5 6 ");
 }
 
+TEST_F(BookmarkMergedSurfaceServiceTest,
+       MoveToPermanentFolderWithAccountNodes) {
+  LoadBookmarkModel();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().other_node(), "4 5 6 ");
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "A1 A2 A3 ");
+  AddNodesFromModelString(&model(), model().account_other_node(), "A4 A5 A6 ");
+
+  // Move from local bookmark bar to local other node.
+  // Move node "2" in bookmark bar to be after "4" in other node.
+  const BookmarkNode* node = model().bookmark_bar_node()->children()[1].get();
+  service().Move(node, BookmarkParentFolder::OtherFolder(), 1);
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 3 ");
+  EXPECT_EQ(ModelStringFromNode(model().other_node()), "2 4 5 6 ");
+  EXPECT_EQ(service().GetIndexOf(node), 1u);
+
+  // Move within bookmark bar.
+  node = model().bookmark_bar_node()->children()[1].get();
+  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 1);
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "3 1 ");
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "A1 A2 A3 ");
+  // Expected order: "A1 3 A2 A3 1 "
+  EXPECT_EQ(service().GetIndexOf(node), 1u);
+
+  // Move from account other node to account bookmark bar.
+  node = model().account_other_node()->children()[0].get();
+  service().Move(node, BookmarkParentFolder::BookmarkBarFolder(), 2);
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "3 1 ");
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "A1 A4 A2 A3 ");
+  EXPECT_EQ(ModelStringFromNode(model().account_other_node()), "A5 A6 ");
+  // Expected order: "A1 3 A4 A2 A3 1 "
+  EXPECT_EQ(service().GetIndexOf(node), 2u);
+  EXPECT_EQ(
+      service().GetNodeAtIndex(BookmarkParentFolder::BookmarkBarFolder(), 1u),
+      model().bookmark_bar_node()->children()[0].get());
+}
+
 TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
   LoadBookmarkModel();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),

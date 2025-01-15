@@ -1204,6 +1204,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3156511682997763015">Spola framåt 10 sekunder</translation>
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3158539265159265653">Skiva</translation>
+<translation id="3162070126914310576">Det går inte att registrera enheten just nu eftersom organisationsenheten har nått sin ursprungliga registreringsgräns. Kontakta administratören och be om hjälp.</translation>
 <translation id="3162559335345991374">wifi-nätverket du använder kanske kräver att du besöker dess inloggningssida.</translation>
 <translation id="316638481603975524">Får begära tillstånd att installera webbappar</translation>
 <translation id="3168744840365648658">Radioutrustning</translation>
@@ -2380,6 +2381,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5244521145258281926">Hantera Google-kontot: aktivera om du vill hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
 <translation id="5244732203286792411">Läser in …
     Det kan ta en kort stund.</translation>
+<translation id="5248543496748975054">Har kortnumret inte fyllts i?</translation>
 <translation id="5250209940322997802">Anslut till ett nätverk</translation>
 <translation id="52517543715119994">Läs mer om funktioner i Chrome</translation>
 <translation id="5251803541071282808">Moln</translation>

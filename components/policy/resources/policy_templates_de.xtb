@@ -7262,6 +7262,7 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
+<translation id="6389858262577493180">Verwendung von <ph name="GLIC" /> aktivieren</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
 <translation id="6397588391180665797">Mit dieser Richtlinie wird festgelegt, ob die Netzwerkkonfiguration von Nutzern auf angemeldeten Geräten ausgegeben wird.
 
@@ -7839,6 +7840,7 @@ Bis Chrome 114 musste die Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> au
 <translation id="6766216162565713893">Websites dürfen den Nutzer um Zugriff auf ein Bluetooth-Gerät in der Nähe bitten</translation>
 <translation id="6770454900105963262">Informationen zu aktiven Kiosksitzungen senden</translation>
 <translation id="6774132787348495175">Nicht zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
+<translation id="6776202826080834193">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die Funktion „<ph name="GLIC" />“ verwenden. Wenn diese Richtlinie deaktiviert ist, können Nutzer nicht mit <ph name="GLIC" /> interagieren. Die Schaltfläche in der Tableiste ist ausgeblendet und <ph name="GLIC" /> ist nicht über eine Tastenkombination verfügbar, es sei denn, sie ist in einem anderen Profil aktiviert.</translation>
 <translation id="678121785914414680">Liste von Dateitypen, die nach dem Download automatisch geöffnet werden sollen. Das vorangestellte Trennzeichen sollte beim Aufführen der Dateitypen nicht mit angegeben werden. Gib also beispielsweise „txt“ und nicht „.txt“ an.
 
 Dateitypen, die automatisch geöffnet werden sollen, unterliegen dennoch den aktivierten Safe Browsing-Prüfungen und werden nicht geöffnet, falls sie diese nicht bestehen.
@@ -10288,6 +10290,7 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
       Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.</translation>
 <translation id="8685748277907759932">Verhindern, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="8686700500128191717">Melden der Nutzer auf Geräten aktivieren</translation>
+<translation id="8687570136798972353"><ph name="GLIC" /> aktivieren</translation>
 <translation id="8687958770985542440">Damit wird die Web Components v0 API bis M84 wieder aktiviert.</translation>
 <translation id="8693243869659262736">Integrierten DNS-Client verwenden</translation>
 <translation id="8695006038397632296">Installationsanfragen für Erweiterungen erstellen und in der Admin-Konsole hochladen</translation>
@@ -10900,6 +10903,7 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
       Ist sie auf "true" gesetzt, werden Systeminformationen zum Gerät ausgegeben.</translation>
 <translation id="9131419675479917141">Nutzer dürfen schwache PIN festlegen, aber Warnung anzeigen</translation>
 <translation id="913195841488580904">Zugriff auf aufgelistete URLs blockieren</translation>
+<translation id="9132345265506256744">Verwendung von <ph name="GLIC" /> deaktivieren.</translation>
 <translation id="9133526448421932754">Tastaturbeleuchtungsfarbe „Gelb“</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" />-Proxy aktivieren</translation>
 <translation id="9135095804754272364">Benachrichtigen, wenn ein USB-Gerät erkannt wird</translation>

@@ -11,13 +11,13 @@
 
 namespace autofill {
 
-class AutofillDataModel;
+class UsageHistoryInformation;
 
 // This struct contains the metadata of a payments model. It is used to abstract
 // the data from the metadata.
 struct PaymentsMetadata {
   PaymentsMetadata() = default;
-  explicit PaymentsMetadata(const AutofillDataModel& model);
+  explicit PaymentsMetadata(const UsageHistoryInformation& model);
   ~PaymentsMetadata() = default;
 
   bool operator==(const PaymentsMetadata&) const = default;

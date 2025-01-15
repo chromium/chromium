@@ -698,7 +698,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         kDefaultAddressValues.city, kDefaultAddressValues.state,
         kDefaultAddressValues.zip, kDefaultAddressValues.country,
         kDefaultAddressValues.phone);
-    profile.set_use_count(9999999);  // We want this to be the first profile.
+    profile.usage_history().set_use_count(
+        9999999);  // We want this to be the first profile.
     AddTestProfile(browser()->profile(), profile);
   }
 

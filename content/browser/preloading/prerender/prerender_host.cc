@@ -1482,7 +1482,6 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
       case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       case PrefetchStatus::kPrefetchHeldback:
-      case PrefetchStatus::kPrefetchAllowed:
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::

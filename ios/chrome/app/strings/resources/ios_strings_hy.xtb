@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">Պահել պատկերը…</translation>
 <translation id="5511959326926949696">Դիտարկիչի ուժեղացված պաշտպանություն (պարտադիր չէ)։ Օգտագործեք այս գործառույթը, միայն եթե կարծում եք, որ կարող եք ենթարկվել լուրջ կիբեռհարձակման։</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ժ առաջ</translation>
+<translation id="5520668942302483373">Լքել խումբը</translation>
 <translation id="5524590039848017563">Ծալված հիմնական գործիքագոտու կոճակ</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} թույլ գաղտնաբառ}one{{COUNT} թույլ գաղտնաբառ}other{{COUNT} թույլ գաղտնաբառ}}</translation>
 <translation id="5532545557415295622">Անգործուն ռեժիմ անցնելու մասին երկխոսության պատուհան</translation>
@@ -1030,6 +1031,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5646284034397250191">Պիտակը ստեղծվել է։ Ամսաթիվն առկախ է</translation>
 <translation id="5647096944343801045">Մուտքի հիմնական կետ</translation>
 <translation id="5647193778876139879">Հպեք հասցեի և պահեք։</translation>
+<translation id="5647702255748985085">Լքե՞լ խումբը</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5652623411397330904">Ապրանքները, որոնց գներին հետևում եք, կցուցադրվեն այստեղ։</translation>
 <translation id="5657156137487675418">Թույլատրել բոլոր քուքիները</translation>
@@ -1115,6 +1117,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6027619584715411062">Մուտք գործեք՝ ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար։</translation>
 <translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
 <translation id="6032845897905314562">նոր գործառույթ</translation>
+<translation id="6038823991892265570">Կառավարել Google պահեստային տարածքը</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6042308850641462728">Ավելին</translation>

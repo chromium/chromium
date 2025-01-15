@@ -703,6 +703,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2215539479425228550">Penjanje i planinarenje</translation>
 <translation id="2215727959747642672">Uređivanje fajla</translation>
 <translation id="2215963164070968490">Psi</translation>
+<translation id="2219376942605837404">Dodaj karticu u tablicu za usporedbu</translation>
 <translation id="2219658597883514593">Ponovo pokreni vodič</translation>
 <translation id="2219735899272417925">Potrebno je vratiti uređaj na zadane postavke</translation>
 <translation id="2221227930294879156">Događaji povezani s hranom i pićem</translation>
@@ -1153,6 +1154,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="306573536155379004">Igra je počela.</translation>
 <translation id="3067505415088964188">Cijena je niska</translation>
 <translation id="3068118691172921711">Otpremanje fajlova na uslugu <ph name="CLOUD_PROVIDER" /> će započeti za 1 minutu</translation>
+<translation id="3068976060094139647">Možete automatski popuniti podatke o toj kartici jer je vaš račun povezan s Google Payom.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} artikal}one{{ITEMS} artikal}few{{ITEMS} artikla}other{{ITEMS} artikala}}</translation>
 <translation id="3076865167425975822">Operativni sistemi</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -1206,7 +1208,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3156511682997763015">Premotaj 10 s unaprijed</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158539265159265653">Disk</translation>
-<translation id="3162070126914310576">Ovaj uređaj ne može se prijaviti odmah jer je vaša organizacijska jedinica dosegla početno ograničenje prijave. Za pomoć kontaktirajte svojeg administratora.</translation>
+<translation id="3162070126914310576">Uređaj se trenutno ne može registrirati jer je vaša organizaciona jedinica dosegnula početno ograničenje broja registracija. Kontaktirajte administratora za pomoć.</translation>
 <translation id="3162559335345991374">WiFi koji koristite može tražiti da posjetite njegovu stranicu za prijavu.</translation>
 <translation id="316638481603975524">Mogu zatražiti da instaliraju web aplikacije</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
@@ -1789,6 +1791,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4151403195736952345">Koristi globalnu zadanu postavku (otkrij)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stranica}one{{COUNT}. stranica}few{{COUNT}. stranica}other{{COUNT}. stranica}}</translation>
 <translation id="4154277373259957087">Chrome će sada potvrditi vaš identitet prije popunjavanja načina plaćanja. Možete ažurirati ovo bilo kada u odjeljku <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Dodaj karticu u tablicu za usporedbu</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4165422751765527461">Otvara članak Centra za pomoć na novoj kartici</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>
@@ -1941,7 +1944,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Otpremanje fajl(ov)a na Microsoft OneDrive je pauzirano</translation>
 <translation id="4390472908992056574">Rub</translation>
-<translation id="4395550503472021297">Ovo pravilo upravlja zadanim ponašanjem sljedećih pravila: <ph name="POLICIES" /></translation>
+<translation id="4395550503472021297">Ova pravila upravljaju zadanim ponašanjem sljedećih pravila: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Otvara skočni prozor radi potvrđivanja na web lokaciji banke</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4406896451731180161">rezultati pretraživanja</translation>
@@ -2153,6 +2156,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novu Google tabelu</translation>
 <translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="4827283332383516812">Izbrišite karticu</translation>
+<translation id="4830443836091007686">Odabrano: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Papir za postavljač slika</translation>
 <translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4832961164064927107">Roštilj i grilovanje</translation>
@@ -2384,7 +2388,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5244521145258281926">Upravljaj Google računom, aktivirajte da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
 <translation id="5244732203286792411">Učitavanje…
     Ovo može malo potrajati.</translation>
-<translation id="5248543496748975054">Broj kartice nije unesen?</translation>
+<translation id="5248543496748975054">Broj kartice nije popunjen?</translation>
 <translation id="5250209940322997802">"Povežite se s mrežom"</translation>
 <translation id="52517543715119994">Saznajte više o funkcijama Chromea</translation>
 <translation id="5251803541071282808">Oblak</translation>
@@ -3395,6 +3399,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="706960991003274248">Tabele poređenja se pohranjuju na vaš račun <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">postavkama sistema</translation>
 <translation id="70705239631109039">Vaša veza nije u potpunosti sigurna</translation>
+<translation id="7071122206197538392">Nova tablica za usporedbu</translation>
 <translation id="7075452647191940183">Zahtjev je prevelik</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4001,7 +4006,7 @@ Dodatni detalji:
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
-<translation id="8120720167840853945">Ovo pravilo ne upravlja zadanim ponašanjem drugih pravila.</translation>
+<translation id="8120720167840853945">Ova pravila ne upravljaju zadanim ponašanjem drugih pravila.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nije pravilno instaliran na vaš računar ili mrežu. Zamolite IT administratora da riješi taj problem.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa. Isključivanjem šire kategorije blokiraju se i povezane teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -4106,6 +4111,7 @@ Dodatni detalji:
 <translation id="8298115750975731693">WiFi koji koristite (<ph name="WIFI_NAME" />) može tražiti da posjetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Unesite kôd</translation>
 <translation id="8303854710873047864">Prikazan je odjeljak "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">Nova tablica za usporedbu</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8308653357438598313">Prenos videozapisa uživo</translation>
 <translation id="8311895354659782580">Oglasi za nekretnine</translation>

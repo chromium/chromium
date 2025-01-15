@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">ສ້າງຂອງຂ້ອຍເອງ</translation>
 <translation id="2574249610672786438">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເຂົ້າສູ່ລະບົບໃນອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ "<ph name="GROUP_NAME" />" ທັນທີ ແລະ ຈະບໍ່ສາມາດໂຕ້ຕອບກັບທ່ານໃນທົ່ວບໍລິການ Google ໄດ້ອີກຕໍ່ໄປ.</translation>
-<translation id="2578337197553672982">ເນື້ອຫາໂດຍ Google ສຳລັບເດັກນ້ອຍ</translation>
 <translation id="2579297619530305344">ລະຫັດຜ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານເປີດແບບເຕັມໜ້າ</translation>
 <translation id="2581165646603367611">ນີ້ຈະລຶບລ້າງຄຸກກີ້, ແຄສ ແລະ ຂໍ້ມູນອື່ນຂອງເວັບໄຊທີ່ Chrome ຄິດວ່າບໍ່ສຳຄັນ.</translation>
 <translation id="2587052924345400782">ມີເວີຊັນທີ່ໃໝ່ກວ່າ</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">ກຳລັງຕິດຕາມລາຄາ. ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="4425173294238317796">ຊີດການຢືນຢັນກະແຈຜ່ານ</translation>
 <translation id="442518031075347249">ທ່ານຈະບໍ່ສາມາດໃຊ້ບັດສະເໝືອນຂອງທ່ານກັບ Google Pay ໄດ້ອີກຕໍ່ໄປ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບບັດສະເໝືອນ<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">ບຸກມາກທັງໝົດ</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ເລືອກຢູ່ຕອນນີ້. ເລືອກບັນຊີ.</translation>
 <translation id="4452411734226507615">ປິດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">ລຶບຂໍ້ມູນ Chrome ແລ້ວ</translation>
 <translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="4749960740855309258">ເປີດແຖບໃໝ່</translation>
-<translation id="4750356170202299988">ເນື້ອຫາສຳລັບເດັກນ້ອຍ</translation>
 <translation id="4758061975920522644">ແບ່ງປັນຮູບເທົ່ານັ້ນ</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
 <translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">ແຖບທີ່ເປີດຢູ່ໃນພື້ນຫຼັງ.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ທ່ານຄວນປ່ຽນລະຫັດນີ້ດຽວນີ້}other{ທ່ານຄວນປ່ຽນລະຫັດເຫຼົ່ານີ້ດຽວນີ້}}</translation>
 <translation id="7196215469483532480">ເປີດຄຳອະທິບາຍຄູ່ມືຄວາມເປັນສ່ວນຕົວແບບເຕັມຄວາມສູງແລ້ວ</translation>
-<translation id="7205672015775254816">ເນື້ອຫາໂດຍ Google ສຳລັບເດັກນ້ອຍ - ປິດຢູ່</translation>
 <translation id="7207760545532569765">ກູ້ຄືນ <ph name="TAB_COUNT" /> ແຖບເປັນກຸ່ມແຖບໃນພື້ນຫຼັງໃໝ່.</translation>
 <translation id="7217781228893594884">ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນຈະຖືກລັອກເມື່ອທ່ານອອກ Chrome</translation>
 <translation id="7221869452894271364">​ໂຫຼດ​ຫນ້າ​ນີ້ຄືນອີກ</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7886917304091689118">ກຳລັງເປີດຢູ່ໃນ Chrome</translation>
 <translation id="7887174313503389866">ເປີດການແນະນຳການໃຊ້ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຫຼັກ. ສຳລັບຕົວເລືອກເພີ່ມເຕີມ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າແຕ່ລະອັນ.</translation>
-<translation id="7896724475402191389">ເນື້ອຫາສຳລັບເດັກນ້ອຍ - ປິດຢູ່</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{ອົງການຂອງທ່ານບລັອກໄວ້ 1 ລາຍການ}other{ອົງການຂອງທ່ານບລັອກໄວ້ # ລາຍການ}}</translation>
 <translation id="7914399737746719723">ຕິດຕັ້ງແອັບແລ້ວ</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">ທ່ານມີບຸກມາກ, ປະຫວັດ ແລະ ການຕັ້ງຄ່າອື່ນໆຈາກ <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="8393700583063109961">ສົ່ງຂໍ້ຄວາມ</translation>
+<translation id="8396098434728053815">ແບ່ງປັນສຽງຂອງແຖບນຳ</translation>
 <translation id="8398389123831319859">ແຕະສອງເທື່ອຄ້າງໄວ້ເພື່ອປ່ຽນໄປໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8402673309244746971">ເຂົ້າໄປທີ່ ກຳລັງຕິດຕາມ</translation>
 <translation id="8413126021676339697">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>

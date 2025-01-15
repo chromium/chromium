@@ -80,8 +80,10 @@ bool ListsMatch(int profile_a,
     }
     const Item* expected_item = list_a_map[item->server_id()];
     if (expected_item->Compare(*item) != 0 ||
-        expected_item->use_count() != item->use_count() ||
-        expected_item->use_date() != item->use_date()) {
+        expected_item->usage_history().use_count() !=
+            item->usage_history().use_count() ||
+        expected_item->usage_history().use_date() !=
+            item->usage_history().use_date()) {
       DVLOG(1) << "Mismatch in profile with server_id " << item->server_id()
                << ".";
       return false;

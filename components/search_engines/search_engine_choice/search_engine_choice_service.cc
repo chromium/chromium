@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
@@ -30,6 +31,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -43,12 +45,6 @@
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/variations_service.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "components/search_engines/android/jni_headers/SearchEngineChoiceService_jni.h"
 #endif
 
 namespace search_engines {
@@ -164,29 +160,30 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
   }
 }
 
-using NativeCallbackType = base::OnceCallback<void(int)>;
-
-constexpr char kUnknownCountryIdStored[] =
-    "Search.ChoiceDebug.UnknownCountryIdStored";
-
-// LINT.IfChange(UnknownCountryIdStored)
-enum class UnknownCountryIdStored {
-  kValidCountryId = 0,
-  kDontClearInvalidCountry = 1,
-  kClearedPref = 2,
-  kMaxValue = kClearedPref,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:UnknownCountryIdStored)
+int GetVariationsCountryId(variations::VariationsService* variations_service) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // We can't add a dependency from Fuchsia to
+  // `//components/variations/service`.
+  return country_codes::kCountryIDUnknown;
+#else
+  return variations_service
+             ? country_codes::CountryStringToCountryID(
+                   base::ToUpperASCII(variations_service->GetLatestCountry()))
+             : country_codes::kCountryIDUnknown;
+#endif
+}
 
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
+    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     bool is_profile_eligbile_for_dse_guest_propagation,
     int variations_country_id)
     : profile_prefs_(profile_prefs),
       local_state_(local_state),
+      regional_capabilities_service_(regional_capabilities),
       variations_country_id_(variations_country_id) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // No guest mode on IOS or Android.
@@ -205,25 +202,14 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
     PrefService* local_state,
+    regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     bool is_profile_eligible_for_dse_guest_propagation,
     variations::VariationsService* variations_service)
     : SearchEngineChoiceService(profile_prefs,
                                 local_state,
+                                regional_capabilities,
                                 is_profile_eligible_for_dse_guest_propagation,
-#if BUILDFLAG(IS_FUCHSIA)
-                                // We can't add a dependency from Fuchsia to
-                                // `//components/variations/service`.
-                                country_codes::kCountryIDUnknown)
-#else
-                                variations_service
-                                    ? country_codes::CountryStringToCountryID(
-                                          base::ToUpperASCII(
-                                              variations_service
-                                                  ->GetLatestCountry()))
-                                    : country_codes::kCountryIDUnknown)
-#endif
-{
-}
+                                GetVariationsCountryId(variations_service)) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
@@ -256,10 +242,7 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
-  int country_id = GetCountryId();
-  DVLOG(1) << "Checking country for choice screen, found: "
-           << country_codes::CountryIDToCountryString(country_id);
-  if (!IsEeaChoiceCountry(country_id)) {
+  if (!IsEeaChoiceCountry(GetCountryId())) {
     return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
@@ -345,19 +328,7 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 }
 
 int SearchEngineChoiceService::GetCountryId() {
-  std::optional<SearchEngineCountryOverride> country_override =
-      GetSearchEngineCountryOverride();
-  if (country_override.has_value()) {
-    if (absl::holds_alternative<int>(country_override.value())) {
-      return absl::get<int>(country_override.value());
-    }
-    return country_codes::kCountryIDUnknown;
-  }
-
-  if (!country_id_cache_.has_value()) {
-    country_id_cache_ = GetCountryIdInternal();
-  }
-  return *country_id_cache_;
+  return regional_capabilities_service_->GetCountryId();
 }
 
 void SearchEngineChoiceService::RecordChoiceMade(
@@ -623,81 +594,9 @@ void SearchEngineChoiceService::RegisterLocalStatePrefs(
 #endif
 }
 
-int SearchEngineChoiceService::GetCountryIdInternal() {
-  // `country_codes::kCountryIDAtInstall` may not be set yet.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  // On Android, ChromeOS and Linux, `country_codes::kCountryIDAtInstall` is
-  // computed asynchronously using platform-specific signals, and may not be
-  // available yet.
-  if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    const int stored_country =
-        profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
-    if (stored_country != country_codes::kCountryIDUnknown) {
-      base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                    UnknownCountryIdStored::kValidCountryId);
-      return stored_country;
-    }
-    if (!base::FeatureList::IsEnabled(switches::kClearPrefForUnknownCountry)) {
-      base::UmaHistogramEnumeration(
-          kUnknownCountryIdStored,
-          UnknownCountryIdStored::kDontClearInvalidCountry);
-      return stored_country;
-    }
-    profile_prefs_->ClearPref(country_codes::kCountryIDAtInstall);
-    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                  UnknownCountryIdStored::kClearedPref);
-  }
-  // If `country_codes::kCountryIDAtInstall` is not available, attempt to
-  // compute it at startup. On success, it is saved to prefs and never changes
-  // later. Until then, fall back to `country_codes::GetCurrentCountryID()`.
-#if BUILDFLAG(IS_ANDROID)
-  // On Android get it from Play API in Java.
-  // Usage of `WeakPtr` is crucial here, as `SearchEngineChoiceService` is
-  // not guaranteed to be alive when the response from Java arrives.
-  auto heap_callback = std::make_unique<NativeCallbackType>(base::BindOnce(
-      &SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi,
-      weak_ptr_factory_.GetWeakPtr()));
-  // The ownership of the callback on the heap is passed to Java. It will be
-  // deleted by JNI_SearchEngineChoiceService_ProcessCountryFromPlayApi.
-  Java_SearchEngineChoiceService_requestCountryFromPlayApi(
-      base::android::AttachCurrentThread(),
-      reinterpret_cast<intptr_t>(heap_callback.release()));
-#else  // BUILDFLAG(IS_ANDROID)
-  // On ChromeOS and Linux, get it from `VariationsService`, by polling at every
-  // startup until it is found.
-  if (variations_country_id_ != country_codes::kCountryIDUnknown) {
-    profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall,
-                               variations_country_id_);
-  }
-#endif
-
-  // The preference may have been updated, so we need to re-check.
-  if (!profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    // Couldn't get the value from the asynchronous API, fallback to locale.
-    return country_codes::GetCurrentCountryID();
-  }
-  return profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
-
-#else
-  // On other platforms, `country_codes::kCountryIDAtInstall` is computed
-  // synchronously inside `country_codes::GetCountryIDFromPrefs()`.
-  const int pref_country =
-      country_codes::GetCountryIDFromPrefs(&profile_prefs_.get());
-  if (pref_country == country_codes::kCountryIDUnknown) {
-    base::UmaHistogramEnumeration(
-        kUnknownCountryIdStored,
-        UnknownCountryIdStored::kDontClearInvalidCountry);
-  } else {
-    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                  UnknownCountryIdStored::kValidCountryId);
-  }
-  return pref_country;
-#endif
-}
-
 void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
   CHECK_IS_TEST();
-  country_id_cache_.reset();
+  regional_capabilities_service_->ClearCountryIdCacheForTesting();  // IN-TEST
 }
 
 bool SearchEngineChoiceService::IsProfileEligibleForDseGuestPropagation()
@@ -741,13 +640,6 @@ void SearchEngineChoiceService::SetSavedSearchEngineBetweenGuestSessions(
   observers_.Notify(&Observer::OnSavedGuestSearchChanged);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(
-    int country_id) {
-  profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall, country_id);
-}
-#endif
-
 // static
 void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs) {
   CHECK_IS_TEST();
@@ -755,28 +647,3 @@ void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs) {
 }
 
 }  // namespace search_engines
-
-#if BUILDFLAG(IS_ANDROID)
-void JNI_SearchEngineChoiceService_ProcessCountryFromPlayApi(
-    JNIEnv* env,
-    jlong ptr_to_native_callback,
-    const base::android::JavaParamRef<jstring>& j_device_country) {
-  // Using base::WrapUnique ensures that the callback is deleted when this goes
-  // out of scope.
-  std::unique_ptr<search_engines::NativeCallbackType> heap_callback =
-      base::WrapUnique(reinterpret_cast<search_engines::NativeCallbackType*>(
-          ptr_to_native_callback));
-  CHECK(heap_callback);
-  if (!j_device_country) {
-    return;
-  }
-  std::string device_country =
-      base::android::ConvertJavaStringToUTF8(env, j_device_country);
-  int device_country_id =
-      country_codes::CountryStringToCountryID(device_country);
-  if (device_country_id == country_codes::kCountryIDUnknown) {
-    return;
-  }
-  std::move(*heap_callback).Run(device_country_id);
-}
-#endif

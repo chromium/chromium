@@ -19,6 +19,7 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
@@ -387,6 +388,18 @@ void MultiProfileSignOut(Browser* browser,
   if (!should_switch_profile_at_signout) {
     std::move(continuation).Run(scene_state, base::DoNothing());
     return;
+  }
+
+  if (signout_source ==
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings) {
+    // TODO(crbug.com/375605174): Verify that This signout source is only used
+    // when signing out from Accounts settings page. For now, it is also used
+    // in the signout button in ManageAccounts view, which will no longer be
+    // shown once kSeparateProfilesForManagedAccounts is enabled.
+    ChangeProfileContinuation postSignoutContinuation =
+        CreateChangeProfileSettingsContinuation();
+    continuation = ChainChangeProfileContinuations(
+        std::move(continuation), std::move(postSignoutContinuation));
   }
 
   ProfileManagerIOS* profile_manager =

@@ -340,7 +340,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2571834852878229351">Creane una personalizzata</translation>
 <translation id="2574249610672786438">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome per visualizzare le tue schede</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e non potrà più interagire con te nei servizi Google.</translation>
-<translation id="2578337197553672982">Contenuti di Google per giovani menti</translation>
 <translation id="2579297619530305344">Pagina Password su tutti i tuoi dispositivi aperta a schermo intero</translation>
 <translation id="2581165646603367611">Verrà svuotata la cache e verranno cancellati i cookie e altri dati relativi a siti che Chrome non ritiene importanti.</translation>
 <translation id="2587052924345400782">Nuova versione disponibile</translation>
@@ -734,6 +733,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4425140285732600465">Monitoraggio del prezzo attivato. Ricevi avvisi se il prezzo cala su qualsiasi sito.</translation>
 <translation id="4425173294238317796">Foglio di conferma della passkey</translation>
 <translation id="442518031075347249">Non potrai più utilizzare la tua carta virtuale con Google Pay. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Tutti i preferiti</translation>
 <translation id="4430277756566635951">Selezione attuale: <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4742795653798179840">Dati di Chrome eliminati</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4749960740855309258">Apri una nuova scheda</translation>
-<translation id="4750356170202299988">Contenuti per giovani menti</translation>
 <translation id="4758061975920522644">Condividi solo immagini</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7191430249889272776">Scheda aperta in background.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Dovresti cambiarla subito}other{Dovresti cambiarle subito}}</translation>
 <translation id="7196215469483532480">Spiegazione della Guida alla privacy aperta a schermo intero</translation>
-<translation id="7205672015775254816">Contenuti di Google per giovani menti - off</translation>
 <translation id="7207760545532569765">Ripristina <ph name="TAB_COUNT" /> schede come nuove schede in background.</translation>
 <translation id="7217781228893594884">Le schede di navigazione in incognito verranno bloccate quando uscirai da Chrome</translation>
 <translation id="7221869452894271364">Ricarica questa pagina</translation>
@@ -1533,7 +1531,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7876243839304621966">Rimuovi tutto</translation>
 <translation id="7886917304091689118">In esecuzione in Chrome</translation>
 <translation id="7887174313503389866">Fai un tour guidato dei controlli per la privacy e la sicurezza più importanti. Per altre opzioni, vai alle impostazioni individuali.</translation>
-<translation id="7896724475402191389">Contenuti per giovani menti - off</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 download è stato bloccato dalla tua organizzazione}other{# download sono stati bloccati dalla tua organizzazione}}</translation>
 <translation id="7914399737746719723">App installata</translation>
@@ -1647,6 +1644,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8378850197701296741">Sono presenti preferiti, cronologia e altre impostazioni di <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica la tua identità</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
+<translation id="8396098434728053815">Condividi anche l'audio della scheda</translation>
 <translation id="8398389123831319859">Tocca due volte e tieni premuto per passare alla modalità di navigazione in incognito</translation>
 <translation id="8402673309244746971">Vai a Stai seguendo</translation>
 <translation id="8413126021676339697">Mostra cronologia completa</translation>

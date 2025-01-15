@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS কীচেইনৰ জৰিয়তে Password Manager ব্যৱহাৰ কৰিবলৈ, Chromium পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="1652887625750064647">AIৰ উত্তম মিল</translation>
+<translation id="1653465303147789530">এপ্‌ সলনি নকৰাকৈ <ph name="PAYMENT_METHOD" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="1656024727720460136">Chromeএ এই পৃষ্ঠাখন সৰলীকৃত কৰিছে যাতে এইখন সহজে পঢ়িব পাৰি। এটা সুৰক্ষিত সংযোগৰ জৰিয়তে Chromeএ মূল পৃষ্ঠাখন পুনৰুদ্ধাৰ কৰিছে।</translation>
 <translation id="1656489000284462475">পিকআপ কৰাৰ ঠাই</translation>
 <translation id="1658111267661135323">টিভি আৰু ভিডিঅ’</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">Googleলৈ <ph name="BEGIN_WHITEPAPER_LINK" />আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, ছিষ্টেমৰ সীমিত তথ্য আৰু পৃষ্ঠাৰ কিছু সমল<ph name="END_WHITEPAPER_LINK" /> পঠিয়াই ৱেবত সকলোৰে বাবে সুৰক্ষা উন্নত কৰাত সহায় কৰক। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তাৰ নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">আপোনাৰ পাঠ আৰু পৃষ্ঠা সলমসমূহ Googleলৈ পঠিওৱা হৈছে আৰু এই সুবিধাটো উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।
   <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">দ্ৰুততাৰে পৰিশোধ কৰিবলৈ এবাৰ কৰিবলগীয়া সুৰক্ষা পৰীক্ষা সম্পূৰ্ণ কৰক</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />ৰ বুকমার্কসমূহ</translation>
 <translation id="1973335181906896915">ক্ৰমবদ্ধ কৰাত আসোঁৱাহ</translation>
 <translation id="1973785048533660168">কেৰাণী আৰু প্ৰশাসনিক চাকৰি</translation>
@@ -701,6 +703,7 @@
 <translation id="2215539479425228550">বগোৱা আৰু পৰ্বতাৰোহন</translation>
 <translation id="2215727959747642672">ফাইল সম্পাদনা</translation>
 <translation id="2215963164070968490">কুকুৰ</translation>
+<translation id="2219376942605837404">তুলনাৰ তালিকাত টেব যোগ দিয়ক</translation>
 <translation id="2219658597883514593">টিউট’ৰিয়েল ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2219735899272417925">ডিভাইচ ৰিছেট কৰাৰ আৱশ্যক</translation>
 <translation id="2221227930294879156">খাদ্য আৰু পানীয়ৰ অনুষ্ঠান</translation>
@@ -1151,6 +1154,7 @@
 <translation id="306573536155379004">গে’ম আৰম্ভ হৈছে।</translation>
 <translation id="3067505415088964188">কম মূল্যৰ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড ১ মিনিটত আৰম্ভ হ’ব</translation>
+<translation id="3068976060094139647">আপুনি এই কাৰ্ডখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে কাৰণ আপোনাৰ একাউণ্টটো Google Payৰ সৈতে লিংক কৰা আছে।</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} টা বস্তু}one{{ITEMS} টা বস্তু}other{{ITEMS} টা বস্তু}}</translation>
 <translation id="3076865167425975822">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
@@ -1583,6 +1587,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"ৰ বাবে শ্ৰেষ্ঠ মিল</translation>
 <translation id="3789155188480882154">আকাৰ ১৬</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
+<translation id="3791118028061680614">এপ্‌ সলনি নকৰাকৈ পৰিশোধ কৰক</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
 <translation id="3792826587784915501">কাল্ট আৰু ইণ্ডী চলচ্চিত্ৰ</translation>
 <translation id="3793574014653384240">শেহতীয়াকৈ হোৱা ক্রেশ্বসমূহৰ সংখ্যা আৰু কাৰণসমূহ</translation>
@@ -1783,6 +1788,7 @@
 <translation id="4151403195736952345">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (ধৰা পেলাওক)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{পৃষ্ঠা ১}one{পৃষ্ঠা {COUNT}}other{পৃষ্ঠা {COUNT}}}</translation>
 <translation id="4154277373259957087">Chromeএ এতিয়া পৰিশোধ পদ্ধতি পূৰ কৰাৰ আগতে এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব। আপুনি <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
+<translation id="415440494507469262">তুলনাৰ তালিকাত টেব যোগ দিয়ক</translation>
 <translation id="4159784952369912983">বেঙুনীয়া</translation>
 <translation id="4165422751765527461">এটা নতুন টেবত এটা সহায় কেন্দ্ৰৰ প্ৰবন্ধ খোলে</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
@@ -3387,6 +3393,7 @@
 <translation id="706960991003274248">তুলনাৰ তালিকাসমূহ আপোনাৰ একাউণ্টত <ph name="EMAIL" /> ছেভ কৰা হয়</translation>
 <translation id="7070144569727915108">ছিষ্টেমৰ ছেটিং</translation>
 <translation id="70705239631109039">আপোনাৰ সংযোগটো সম্পূর্ণভাৱে সুৰক্ষিত নহয়</translation>
+<translation id="7071122206197538392">নতুন তুলনাৰ তালিকা</translation>
 <translation id="7075452647191940183">অনুৰোধটো অতি ডাঙৰ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4097,6 +4104,7 @@
 <translation id="8298115750975731693">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="WIFI_NAME" />)ৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাবলগীয়া হ'ব পাৰে।</translation>
 <translation id="8301894345671534559">ক’ড দিয়ক</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" শাখাটো দেখুওৱা হৈছে</translation>
+<translation id="8304912090860925649">নতুন তুলনাৰ তালিকা</translation>
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>
 <translation id="8308653357438598313">লাইভ ভিডিঅ’ ষ্ট্ৰীমিং</translation>
 <translation id="8311895354659782580">ৰিয়েল ইষ্টেটৰ সূচী</translation>

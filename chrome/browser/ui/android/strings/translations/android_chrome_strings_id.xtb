@@ -340,7 +340,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2571834852878229351">Buat sandi saya sendiri</translation>
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan tidak akan dapat lagi berinteraksi dengan Anda di berbagai layanan Google.</translation>
-<translation id="2578337197553672982">Konten oleh Google untuk anak-anak</translation>
 <translation id="2579297619530305344">Sandi di semua perangkat Anda terbuka sepenuhnya</translation>
 <translation id="2581165646603367611">Tindakan ini akan mengosongkan cache dan menghapus cookie, serta data lain dari situs yang dianggap tidak penting oleh Chrome.</translation>
 <translation id="2587052924345400782">Versi baru telah tersedia</translation>
@@ -734,6 +733,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4425140285732600465">Memantau harga. Dapatkan notifikasi jika ada diskon di situs mana pun.</translation>
 <translation id="4425173294238317796">Sheet konfirmasi kunci sandi</translation>
 <translation id="442518031075347249">Anda tidak akan dapat menggunakan kartu virtual dengan Google Pay lagi. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Semua Bookmark</translation>
 <translation id="4430277756566635951">Saat ini <ph name="EMAIL" /> dipilih. Pilih akun.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4742795653798179840">Data Chrome berhasil dihapus</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
-<translation id="4750356170202299988">Konten untuk anak-anak</translation>
 <translation id="4758061975920522644">Hanya bagikan gambar</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Anda harus mengubahnya sekarang}other{Anda harus mengubahnya sekarang}}</translation>
 <translation id="7196215469483532480">Penjelasan panduan privasi terbuka sepenuhnya</translation>
-<translation id="7205672015775254816">Konten oleh Google untuk anak-anak - nonaktif</translation>
 <translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai grup tab latar belakang baru.</translation>
 <translation id="7217781228893594884">Tab Samaran akan dikunci saat Anda menutup Chrome</translation>
 <translation id="7221869452894271364">Muat ulang halaman ini</translation>
@@ -1533,7 +1531,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7876243839304621966">Hapus semua</translation>
 <translation id="7886917304091689118">Berjalan di Chrome</translation>
 <translation id="7887174313503389866">Lihat tur terpandu tentang kontrol privasi dan keamanan utama. Untuk opsi lainnya, buka masing-masing setelan.</translation>
-<translation id="7896724475402191389">Konten untuk anak-anak - nonaktif</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 diblokir oleh organisasi Anda}other{# diblokir oleh organisasi Anda}}</translation>
 <translation id="7914399737746719723">Aplikasi diinstal</translation>
@@ -1647,6 +1644,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8378850197701296741">Anda memiliki bookmark, histori, dan setelan lain dari <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
+<translation id="8396098434728053815">Juga bagikan audio tab</translation>
 <translation id="8398389123831319859">Ketuk dua kali dan tahan untuk beralih ke mode Samaran</translation>
 <translation id="8402673309244746971">Buka feed Mengikuti</translation>
 <translation id="8413126021676339697">Tampilkan histori lengkap</translation>

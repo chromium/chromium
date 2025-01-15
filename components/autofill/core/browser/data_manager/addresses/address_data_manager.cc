@@ -63,14 +63,15 @@ void OrderProfiles(std::vector<const AutofillProfile*>& profiles,
     case AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
       base::ranges::sort(
           profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
-            return a->modification_date() > b->modification_date();
+            return a->usage_history().modification_date() >
+                   b->usage_history().modification_date();
           });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
-      base::ranges::sort(
-          profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
-            return a->use_date() > b->use_date();
-          });
+      base::ranges::sort(profiles, [](const AutofillProfile* a,
+                                      const AutofillProfile* b) {
+        return a->usage_history().use_date() > b->usage_history().use_date();
+      });
       break;
   }
 }
@@ -265,7 +266,8 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   // profile.
   if (duplicate_profile_iter != profiles.end()) {
     // Keep the more recently used version of the profile.
-    if (profile.use_date() > (*duplicate_profile_iter)->use_date()) {
+    if (profile.usage_history().use_date() >
+        (*duplicate_profile_iter)->usage_history().use_date()) {
       UpdateProfileInDB(profile);
       RemoveProfile((*duplicate_profile_iter)->guid());
     } else {
@@ -304,8 +306,8 @@ void AddressDataManager::RemoveLocalProfilesModifiedBetween(base::Time begin,
                                                             base::Time end) {
   for (const AutofillProfile* profile :
        GetProfilesByRecordType(AutofillProfile::RecordType::kLocalOrSyncable)) {
-    if (profile->modification_date() >= begin &&
-        (end.is_null() || profile->modification_date() < end)) {
+    if (profile->usage_history().modification_date() >= begin &&
+        (end.is_null() || profile->usage_history().modification_date() < end)) {
       RemoveProfile(profile->guid());
     }
   }
@@ -765,7 +767,8 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
       // Unless only metadata has changed, which operator== ignores, update the
       // modification date. This happens e.g. when increasing the use count.
       if (*existing_profile != updated_profile) {
-        updated_profile.set_modification_date(AutofillClock::Now());
+        updated_profile.usage_history().set_modification_date(
+            AutofillClock::Now());
       }
       webdata_service_->UpdateAutofillProfile(updated_profile);
       break;

@@ -701,6 +701,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2215539479425228550">Dringo a Mynydda</translation>
 <translation id="2215727959747642672">Golygu ffeiliau</translation>
 <translation id="2215963164070968490">Cŵn</translation>
+<translation id="2219376942605837404">Ychwanegu tab at dabl cymharu</translation>
 <translation id="2219658597883514593">Ailddechrau'r tiwtorial</translation>
 <translation id="2219735899272417925">Mae angen oilosod y ddyfais</translation>
 <translation id="2221227930294879156">Digwyddiadau Bwyd a Diod</translation>
@@ -1151,6 +1152,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="306573536155379004">Mae'r gêm wedi cychwyn.</translation>
 <translation id="3067505415088964188">Pris yn isel</translation>
 <translation id="3068118691172921711">Bydd eich uwchlwythiad ffeil i <ph name="CLOUD_PROVIDER" /> yn dechrau mewn 1 funud</translation>
+<translation id="3068976060094139647">Gallwch awtolenwi'r cerdyn hwn oherwydd bod eich cyfrif yn gysylltiedig â Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} eitem}zero{{ITEMS} eitem}two{{ITEMS} eitem}few{{ITEMS} eitem}many{{ITEMS} eitem}other{{ITEMS} eitem}}</translation>
 <translation id="3076865167425975822">Systemau Gweithredu</translation>
 <translation id="3080254622891793721">Graffig</translation>
@@ -1786,6 +1788,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4151403195736952345">Defnyddio'r gosodiad diofyn cyffredinol (Canfod)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Tudalen 1}zero{Tudalen {COUNT}}two{Tudalen {COUNT}}few{Tudalen {COUNT}}many{Tudalen {COUNT}}other{Tudalen {COUNT}}}</translation>
 <translation id="4154277373259957087">Bydd Chrome nawr yn gwirio mai chi sydd yno cyn llenwi dulliau talu. Gallwch chi ddiweddaru hwn unrhyw bryd yn <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Ychwanegu Tab at Dabl Cymharu</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4165422751765527461">Yn agor erthygl Canolfan Gymorth mewn tab newydd</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
@@ -3392,6 +3395,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="706960991003274248">Mae tablau cymharu yn cael eu cadw i'ch cyfrif <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">gosodiadau system</translation>
 <translation id="70705239631109039">Nid yw'ch cysylltiad yn gwbl ddiogel</translation>
+<translation id="7071122206197538392">Tabl cymharu newydd</translation>
 <translation id="7075452647191940183">Mae'r cais yn rhy fawr</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4102,6 +4106,7 @@ Manylion ychwanegol:
 <translation id="8298115750975731693">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio (<ph name="WIFI_NAME" />) yn ei gwneud yn ofynnol i chi fynd i <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Rhowch y cod</translation>
 <translation id="8303854710873047864">Dangosir yr adran "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">Tabl Cymharu Newydd</translation>
 <translation id="830498451218851433">Hanner Plyg</translation>
 <translation id="8308653357438598313">Ffrydio Fideo Byw</translation>
 <translation id="8311895354659782580">Rhestrau Eiddo Tirol</translation>

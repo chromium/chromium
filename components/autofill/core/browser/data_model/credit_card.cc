@@ -383,7 +383,7 @@ void CreditCard::SetNetworkForMaskedCard(std::string_view network) {
 }
 
 PaymentsMetadata CreditCard::GetMetadata() const {
-  PaymentsMetadata metadata(*this);
+  PaymentsMetadata metadata(usage_history_information_);
   metadata.id = (record_type_ == RecordType::kLocalCard ? guid() : server_id_);
   metadata.billing_address_id = billing_address_id_;
   return metadata;
@@ -394,7 +394,7 @@ double CreditCard::GetRankingScore(base::Time current_time,
   if (use_frecency || !base::FeatureList::IsEnabled(
                           features::kAutofillEnableRankingFormulaCreditCards)) {
     // Default to legacy frecency scoring.
-    return AutofillDataModel::GetRankingScore(current_time);
+    return usage_history_information_.GetRankingScore(current_time);
   }
 
   // Calculate score with new ranking algorithm. The new algorithm is only used
@@ -403,14 +403,15 @@ double CreditCard::GetRankingScore(base::Time current_time,
       virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
           ? 0
           : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
-                exp(-GetDaysSinceLastUse(current_time) /
+                exp(-usage_history_information_.GetDaysSinceLastUse(
+                        current_time) /
                     features::kAutofillRankingFormulaVirtualCardBoostHalfLife
                         .Get());
 
   // Exponentially decay the use count by the days since the data model was
   // last used. Add a virtual card boost if the model is a virtual card.
-  return (log10(use_count() + 1) *
-          exp(-GetDaysSinceLastUse(current_time) /
+  return (log10(usage_history_information_.use_count() + 1) *
+          exp(-usage_history_information_.GetDaysSinceLastUse(current_time) /
               features::kAutofillRankingFormulaCreditCardsUsageHalfLife
                   .Get())) +
          virtual_card_boost;
@@ -422,8 +423,8 @@ bool CreditCard::HasGreaterRankingThan(const CreditCard& other,
   const double score = GetRankingScore(comparison_time, use_frecency);
   const double other_score =
       other.GetRankingScore(comparison_time, use_frecency);
-  return AutofillDataModel::CompareRankingScores(score, other_score,
-                                                 other.use_date());
+  return usage_history_information_.CompareRankingScores(
+      score, other_score, other.usage_history_information_.use_date());
 }
 
 bool CreditCard::SetMetadata(const PaymentsMetadata& metadata) {
@@ -432,14 +433,15 @@ bool CreditCard::SetMetadata(const PaymentsMetadata& metadata) {
       (record_type_ == RecordType::kLocalCard ? guid() : server_id_)) {
     return false;
   }
-  set_use_count(metadata.use_count);
-  set_use_date(metadata.use_date);
+  usage_history_information_.set_use_count(metadata.use_count);
+  usage_history_information_.set_use_date(metadata.use_date);
   billing_address_id_ = metadata.billing_address_id;
   return true;
 }
 
 bool CreditCard::IsDeletable() const {
-  return IsAutofillEntryWithUseDateDeletable(use_date()) &&
+  return IsAutofillEntryWithUseDateDeletable(
+             usage_history_information_.use_date()) &&
          IsExpired(AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta);
 }
 
@@ -1184,10 +1186,12 @@ void CreditCard::SetNumber(const std::u16string& number) {
 }
 
 void CreditCard::RecordAndLogUse() {
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.CreditCard",
-                            (AutofillClock::Now() - use_date()).InDays());
-  RecordUseDate(AutofillClock::Now());
-  set_use_count(use_count() + 1);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Autofill.DaysSinceLastUse.CreditCard",
+      (AutofillClock::Now() - usage_history_information_.use_date()).InDays());
+  usage_history_information_.RecordUseDate(AutofillClock::Now());
+  usage_history_information_.set_use_count(
+      usage_history_information_.use_count() + 1);
 }
 
 bool CreditCard::IsExpired(base::Time current_time) const {
@@ -1228,7 +1232,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
                    credit_card.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR))
             << " " << credit_card.bank_name() << " "
             << base::to_underlying(credit_card.record_type()) << " "
-            << credit_card.use_count() << " " << credit_card.use_date() << " "
+            << credit_card.usage_history().use_count() << " "
+            << credit_card.usage_history().use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
             << " "
             << static_cast<
@@ -1250,6 +1255,13 @@ void CreditCard::SetNameOnCardFromSeparateParts() {
   name_on_card_ = temp_card_first_name_ + u" " + temp_card_last_name_;
   temp_card_first_name_ = u"";
   temp_card_last_name_ = u"";
+}
+
+UsageHistoryInformation& CreditCard::usage_history() {
+  return usage_history_information_;
+}
+const UsageHistoryInformation& CreditCard::usage_history() const {
+  return usage_history_information_;
 }
 
 }  // namespace autofill

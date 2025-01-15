@@ -63,13 +63,14 @@ TEST(IbanTest, ConstructServerIban) {
 
 TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetLocalIban();
-  local_iban.set_use_count(2);
-  local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
+  local_iban.usage_history().set_use_count(2);
+  local_iban.usage_history().set_use_date(
+      base::Time::FromSecondsSinceUnixEpoch(25));
   PaymentsMetadata local_metadata = local_iban.GetMetadata();
 
   EXPECT_EQ(local_iban.guid(), local_metadata.id);
-  EXPECT_EQ(local_iban.use_count(), local_metadata.use_count);
-  EXPECT_EQ(local_iban.use_date(), local_metadata.use_date);
+  EXPECT_EQ(local_iban.usage_history().use_count(), local_metadata.use_count);
+  EXPECT_EQ(local_iban.usage_history().use_date(), local_metadata.use_date);
 }
 
 // Verify that we set nickname with the processed string. We replace all tabs

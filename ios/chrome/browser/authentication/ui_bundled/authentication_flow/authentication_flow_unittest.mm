@@ -264,24 +264,6 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
       signin_metrics::SigninAccountType::kRegular, 1);
 }
 
-// Tests a Sign In of a normal account on the same profile using a navigatiion
-// controller.
-TEST_F(AuthenticationFlowTest, TestSignInNewScreen) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Enable user policy to make sure that the authentication flow doesn't try
-  // a registration when the account isn't managed.
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{policy::kUserPolicyForSigninOrSyncConsentLevel,
-                            kManagedProfileCreationUpdatedScreen},
-      /*disabled_features=*/{});
-
-  SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.AccountType.SigninConsent",
-      signin_metrics::SigninAccountType::kRegular, 1);
-}
-
 // Tests the fetch managed status failure case.
 TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   CreateAuthenticationFlow(

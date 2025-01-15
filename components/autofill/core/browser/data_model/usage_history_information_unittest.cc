@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 
 #include <stddef.h>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -21,12 +20,12 @@ namespace {
 
 // Tests that when recording a use, the last, second to last, etc. use dates are
 // updated correctly.
-TEST(AutofillDataModelTest, RecordUseDate) {
+TEST(UsageHistoryInformationTest, RecordUseDate) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Data model creation counts as a use.
-  TestAutofillDataModel model(/*usage_history_size=*/3);
+  UsageHistoryInformation model(/*usage_history_size=*/3);
   EXPECT_EQ(model.use_date(1), base::Time::Now());
   EXPECT_FALSE(model.use_date(2).has_value());
   EXPECT_FALSE(model.use_date(3).has_value());
@@ -50,7 +49,7 @@ TEST(AutofillDataModelTest, RecordUseDate) {
 }
 
 enum Expectation { GREATER, LESS };
-struct AutofillDataModelRankingTestCase {
+struct UsageHistoryInformationRankingTestCase {
   const int use_count_a;
   const base::Time use_date_a;
   const int use_count_b;
@@ -61,43 +60,48 @@ struct AutofillDataModelRankingTestCase {
 base::Time now = AutofillClock::Now();
 
 class HasGreaterFrecencyThanTest
-    : public testing::TestWithParam<AutofillDataModelRankingTestCase> {};
+    : public testing::TestWithParam<UsageHistoryInformationRankingTestCase> {};
 
 TEST_P(HasGreaterFrecencyThanTest, HasGreaterFrecencyThan) {
   auto test_case = GetParam();
-  TestAutofillDataModel model_a(test_case.use_count_a, test_case.use_date_a);
-  TestAutofillDataModel model_b(test_case.use_count_b, test_case.use_date_b);
+  UsageHistoryInformation model_a;
+  model_a.set_use_count(test_case.use_count_a);
+  model_a.set_use_date(test_case.use_date_a);
+  UsageHistoryInformation model_b;
+  model_b.set_use_count(test_case.use_count_b);
+  model_b.set_use_date(test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
-            model_a.HasGreaterRankingThan(&model_b, now));
+            model_a.HasGreaterRankingThan(model_b, now));
   EXPECT_NE(test_case.expectation == GREATER,
-            model_b.HasGreaterRankingThan(&model_a, now));
+            model_b.HasGreaterRankingThan(model_a, now));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillDataModelTest,
+    UsageHistoryInformationTest,
     HasGreaterFrecencyThanTest,
     testing::Values(
         // Same days since last use, model_a has a bigger use count.
-        AutofillDataModelRankingTestCase{10, now, 8, now, GREATER},
+        UsageHistoryInformationRankingTestCase{10, now, 8, now, GREATER},
         // Same days since last use, model_a has a smaller use count.
-        AutofillDataModelRankingTestCase{8, now, 10, now, LESS},
+        UsageHistoryInformationRankingTestCase{8, now, 10, now, LESS},
         // Same days since last use, model_a has larger use count.
-        AutofillDataModelRankingTestCase{8, now, 8, now - base::Days(1),
-                                         GREATER},
+        UsageHistoryInformationRankingTestCase{8, now, 8, now - base::Days(1),
+                                               GREATER},
         // Same use count, model_a has smaller days since last use.
-        AutofillDataModelRankingTestCase{8, now - base::Days(1), 8, now, LESS},
+        UsageHistoryInformationRankingTestCase{8, now - base::Days(1), 8, now,
+                                               LESS},
         // Special case: occasional profiles. A profile with relatively low
         // usage and used recently (model_b) should not rank higher than a more
         // used profile that has been unused for a short amount of time
         // (model_a).
-        AutofillDataModelRankingTestCase{300, now - base::Days(5), 10,
-                                         now - base::Days(1), GREATER},
+        UsageHistoryInformationRankingTestCase{300, now - base::Days(5), 10,
+                                               now - base::Days(1), GREATER},
         // Special case: moving. A new profile used frequently (model_b) should
         // rank higher than a profile with more usage that has not been used for
         // a while (model_a).
-        AutofillDataModelRankingTestCase{300, now - base::Days(15), 10,
-                                         now - base::Days(1), LESS}));
+        UsageHistoryInformationRankingTestCase{300, now - base::Days(15), 10,
+                                               now - base::Days(1), LESS}));
 
 // Tests that when merging two models, the use dates are merged correctly.
 struct UseDateMergeTestCase {
@@ -110,9 +114,9 @@ struct UseDateMergeTestCase {
 };
 class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
  public:
-  TestAutofillDataModel ModelFromUsageHistory(
+  UsageHistoryInformation ModelFromUsageHistory(
       const UseDateMergeTestCase::UsageHistory& usage_history) {
-    TestAutofillDataModel model(/*usage_history_size=*/3);
+    UsageHistoryInformation model(/*usage_history_size=*/3);
     for (int i = 0; i < 3; i++) {
       if (usage_history[i]) {
         model.set_use_date(base::Time::Now() - *usage_history[i], i + 1);
@@ -128,9 +132,9 @@ class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
 
 TEST_P(UseDateMergeTest, MergeUseDates) {
   const UseDateMergeTestCase& test = GetParam();
-  TestAutofillDataModel a = ModelFromUsageHistory(test.usage_history_a);
-  const TestAutofillDataModel b = ModelFromUsageHistory(test.usage_history_b);
-  const TestAutofillDataModel expected_merged_profile =
+  UsageHistoryInformation a = ModelFromUsageHistory(test.usage_history_a);
+  const UsageHistoryInformation b = ModelFromUsageHistory(test.usage_history_b);
+  const UsageHistoryInformation expected_merged_profile =
       ModelFromUsageHistory(test.expected_merged_use_history);
 
   ASSERT_EQ(a.usage_history_size(), 3u);
@@ -141,7 +145,7 @@ TEST_P(UseDateMergeTest, MergeUseDates) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AutofillDataModelTest,
+    UsageHistoryInformationTest,
     UseDateMergeTest,
     testing::Values(
         // No second/third use date set: Expect that the more recent use date

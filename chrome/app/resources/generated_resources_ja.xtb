@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 個のパスワード}other{{COUNT} 個のパスワード}}</translation>
 <translation id="1102759278139578486">メインノードのアノテーション ファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
+<translation id="1104098698795583187">このタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="1106350001632362876">しきい値を引き上げ</translation>
 <translation id="1107482171728500359">マイクの共有</translation>
 <translation id="110850812463801904">OneDrive に手動で接続</translation>
@@ -320,7 +321,6 @@
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
 <translation id="1213254615020057352">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" /> の認証情報を参照できる管理者が提供した証明書</translation>
 <translation id="1215411991991485844">新しいバックグラウンド アプリが追加されました</translation>
 <translation id="1216542092748365687">指紋の削除</translation>
 <translation id="1216891999012841486">更新エラー修正の詳細</translation>
@@ -1690,6 +1690,7 @@
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
 <translation id="2175384018164129879">検索エンジンとサイト内検索を管理する(&amp;M)</translation>
+<translation id="2175526076681939329">メインキーを使用する</translation>
 <translation id="217576141146192373">プリンタを追加できません。プリンタの設定を確認して、もう一度お試しください。</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="217631816678106981">貼り付けない</translation>
@@ -3406,6 +3407,7 @@
 <translation id="3407392651057365886">プリロードされるページ数が増加します。ページが他のサイトからリクエストされた場合、Google サーバーを介してプリロードされる可能性があります。</translation>
 <translation id="3407967630066378878">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3408555740610481810">カメラとマイクを使用中</translation>
+<translation id="3409157109901479672">左側</translation>
 <translation id="3409513286451883969">選択範囲を<ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="3412265149091626468">選択部分へジャンプ</translation>
 <translation id="3413122095806433232">認証局発行元: <ph name="LOCATION" /></translation>
@@ -4689,6 +4691,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> 人のメンバー</translation>
 <translation id="4290898381118933198">スワイプしてページ間を移動する</translation>
 <translation id="4291265871880246274">ログイン ダイアログ</translation>
+<translation id="4292613336957320546">移動速度</translation>
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="4294392694389031609">ダウンロード履歴から <ph name="FILE_NAME" /> を削除しましたが、デバイスには引き続き保存されています</translation>
 <translation id="4295072614469448764">アプリはお使いのデバイスでご利用いただけます。ランチャーにアイコンが追加されている可能性もあります。</translation>
@@ -5855,6 +5858,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />、<ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 検索</translation>
 <translation id="5139823398361067371">セキュリティ キーの PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットする必要があります。</translation>
 <translation id="5139955368427980650">開く(&amp;O)</translation>
+<translation id="5140742218917419811">使用するキー</translation>
 <translation id="5141421572306659464">メイン アカウント</translation>
 <translation id="5141957579434225843">たとえば、òa、òe、ùy の代わりに oà、oè、uỳ を使用します</translation>
 <translation id="5143374789336132547">拡張機能「<ph name="EXTENSION_NAME" />」により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
@@ -5873,6 +5877,7 @@
 <translation id="5149602533174716626">動画フレームをコピー(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 証明書 SSL サーバー名</translation>
 <translation id="5151354047782775295">ディスクの空き領域を確保してください。十分な空き領域がない場合、一部のデータが自動的に削除される可能性があります</translation>
+<translation id="5153074793829217329">キーボードまたはテンキーを使用してマウスカーソルを操作します</translation>
 <translation id="5153234146675181447">スマートフォンを削除</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> の詳細設定</translation>
@@ -7960,6 +7965,7 @@
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> さんが声を出して読む際にサポートが必要な場合は、あなたが読んだ後に繰り返してもらうようにします。その際、マイクから離れて小声で読むようにすると、アシスタントがあなたではなくお子様の声を認識できるようになります。</translation>
+<translation id="6689948774466767379">マウスキー</translation>
 <translation id="6690659332373509948">ファイル <ph name="FILE_NAME" /> を解析できません</translation>
 <translation id="6691936601825168937">進む(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>
@@ -10045,6 +10051,7 @@
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8169177848833352618">残念ながら、このマシンは Bruschetta のインストール要件を満たしていません。エラーコード: <ph name="ERROR" />。</translation>
+<translation id="8172303073969862496">右側</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8176332201990304395">ピンクと白</translation>
 <translation id="8176529144855282213">マイクへのアクセスを有効にするには、デバイスの物理的なマイクスイッチをオンにしてください</translation>

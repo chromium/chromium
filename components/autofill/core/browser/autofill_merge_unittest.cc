@@ -266,7 +266,8 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   // were imported (or updated).
   base::ranges::sort(imported_profiles,
                      [](const AutofillProfile* a, const AutofillProfile* b) {
-                       return a->modification_date() < b->modification_date();
+                       return a->usage_history().modification_date() <
+                              b->usage_history().modification_date();
                      });
   *merged_profiles = SerializeProfiles(imported_profiles);
 }

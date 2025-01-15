@@ -7603,6 +7603,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios elegir este permiso para cada sitio.</translation>
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
+<translation id="6389858262577493180">Habilitar el uso de <ph name="GLIC" /></translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6397588391180665797">Informa a los usuarios sobre la configuración de red en dispositivos inscritos.
 
@@ -8206,6 +8207,12 @@ Hasta la versión 114 de Chrome, esta política requería que se estableciera la
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
+<translation id="6776202826080834193">Si habilitas esta política o no la estableces, los usuarios podrán usar la función de
+<ph name="GLIC" />. Si inhabilitas esta política,
+los usuarios no podrán interactuar con <ph name="GLIC" />. El botón de la
+barra de
+pestañas se oculta y <ph name="GLIC" /> no está disponible mediante la
+combinación de teclas, a menos que se habilite en otro perfil.</translation>
 <translation id="678121785914414680">Lista de los tipos de archivos que se deben abrir automáticamente cuando se descargan. Cuando se enumera el tipo de archivo, no debe incluirse el separador principal. Por lo tanto, usa "txt" en lugar de ".txt".
 
 Si habilitas la Navegación segura, esta función revisará los archivos que se pueden abrir automáticamente. Si los archivos no son seguros, no se abrirán.
@@ -10763,6 +10770,7 @@ VM. Se pueden instalar varias VMs desde la misma configuración en el mismo disp
       Si esta política cambia mientras se ejecuta <ph name="PRODUCT_NAME" />, el cambio solo se aplicará a las pestañas que se abran a partir de ese momento.</translation>
 <translation id="8685748277907759932">Impide que los usuarios usen Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes de usuarios del dispositivo</translation>
+<translation id="8687570136798972353">Habilitar <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Vuelve a habilitar la API Web Components v0 hasta la versión M84</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la Consola del administrador</translation>
@@ -11395,6 +11403,7 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
       Si la estableces como verdadera, se enviará información sobre el sistema del dispositivo.</translation>
 <translation id="9131419675479917141">Permitir que los usuarios establezcan un PIN poco seguro, pero mostrar una advertencia</translation>
 <translation id="913195841488580904">Bloquear el acceso a una lista de las URL</translation>
+<translation id="9132345265506256744">Inhabilitar el uso de <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Color amarillo para la retroiluminación del teclado</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar una notificación cuando se detecte un dispositivo USB</translation>

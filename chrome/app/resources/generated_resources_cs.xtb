@@ -322,7 +322,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1210678701920254279">Zobrazení nebo přidání tiskáren a zobrazení aktivních tiskových úloh</translation>
 <translation id="1211769675100312947">Zkratky vybíráte vy sami</translation>
 <translation id="1213254615020057352">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
-<translation id="1214004433265298541">Certifikát je poskytován administrátorem, který vidí přihlašovací údaje pro doménu <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Byla přidána nová aplikace na pozadí</translation>
 <translation id="1216542092748365687">Odstranit otisk prstu</translation>
 <translation id="1216891999012841486">Další informace o opravě chyb aktualizace</translation>
@@ -795,6 +794,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1549788673239553762">Aplikace <ph name="APP_NAME" /> chce získat přístup ke svazku <ph name="VOLUME_NAME" />. Bude moci upravit nebo smazat vaše soubory.</translation>
 <translation id="1549966883323105187">Získejte uložená hesla rychleji</translation>
 <translation id="1550656959113606473">Výchozí motiv Chrome</translation>
+<translation id="1552065819535218588">Chrome přestane označovat oznámení z adresy <ph name="URL" /> jako spam</translation>
 <translation id="1552301827267621511">Rozšíření <ph name="EXTENSION_NAME" /> změnilo poskytovatele vyhledávání na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Správa rozšíření</translation>
 <translation id="1553538517812678578">neomezené</translation>
@@ -3085,6 +3085,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3159978855457658359">Úprava názvu zařízení</translation>
 <translation id="3160928651883997588">Předvolby VPN</translation>
 <translation id="3161522574479303604">Všechny jazyky</translation>
+<translation id="3162070126914310576">Toto zařízení teď nelze zaregistrovat, protože vaše organizační jednotka dosáhla počátečního limitu pro registraci. Požádejte o pomoc svého administrátora.</translation>
 <translation id="3162766632262775911">Vždy povoleno používat optimalizátor V8</translation>
 <translation id="3162853326462195145">Školní účet</translation>
 <translation id="3162899666601560689">Weby mohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich mohou pamatovat vaše přihlášení a položky v nákupním košíku</translation>
@@ -9053,6 +9054,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="746861123368584540">Rozšíření načteno</translation>
 <translation id="7469612367552312334">Zapnuto • Vyhledávat běžným jazykem v historii prohlížení a najít tak navštívené weby</translation>
 <translation id="7470131554696493512">Blokovat příslušenství připojenému přes rozhraní Thunderbolt nebo USB4 přístup k paměti RAM a její sdílení</translation>
+<translation id="7470284766345262333">Tento účet není přidružen ke Googlu, takže funkce, jako je synchronizace Chromu, nejsou k dispozici</translation>
 <translation id="7470424110735398630">Povolení přístupu ke schránce</translation>
 <translation id="747114903913869239">Chyba: Nelze dekódovat rozšíření</translation>
 <translation id="7471520329163184433">Pomalejší</translation>

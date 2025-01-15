@@ -112,7 +112,8 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(observed_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the import process for the scenario, that the import of a new profile
@@ -374,7 +375,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
@@ -409,7 +410,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
       ApplyImportAndGetProfiles(import_data);
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles, testing::UnorderedElementsAre(final_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -421,7 +423,7 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(mergeable_profile);
@@ -453,7 +455,8 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(edited_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the accepted import of a profile that is mergeable with an already
@@ -506,7 +509,7 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   // Set a modification date and subsequently advance the test clock.
   // Since the merge is not accepted, the `modification_date` should not be
   // changed.
-  mergeable_profile.set_modification_date(base::Time::Now());
+  mergeable_profile.usage_history().set_modification_date(base::Time::Now());
   const base::Time earlier_time = base::Time::Now();
   AdvanceClock(base::Days(1));
 
@@ -538,7 +541,8 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(mergeable_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), earlier_time);
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            earlier_time);
 }
 
 // Tests the scenario in which the observed profile results in a silent update
@@ -549,7 +553,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(base::Time::Now());
+  updateable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
@@ -582,7 +586,8 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the scenario in which an observed profile can be merged with an
@@ -752,7 +757,7 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
   // Set a modification date and subsequently advance the test clock.
-  updateable_profile.set_modification_date(base::Time::Now());
+  updateable_profile.usage_history().set_modification_date(base::Time::Now());
   AdvanceClock(base::Days(1));
 
   address_data_manager().AddProfile(updateable_profile);
@@ -785,7 +790,8 @@ TEST_F(AutofillProfileImportProcessTest,
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).modification_date(), base::Time::Now());
+  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests the scenario in which the observed profile is not imported since the

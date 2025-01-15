@@ -57,7 +57,8 @@ void LogStoredProfileMetrics(
       if (category != GetCategoryOfProfile(*profile)) {
         continue;
       }
-      const base::TimeDelta time_since_last_use = now - profile->use_date();
+      const base::TimeDelta time_since_last_use =
+          now - profile->usage_history().use_date();
       LogStoredProfileDaysSinceLastUse(category, time_since_last_use.InDays());
       counts.total++;
       counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;

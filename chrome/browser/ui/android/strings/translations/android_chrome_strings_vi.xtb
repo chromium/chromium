@@ -340,7 +340,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2571834852878229351">Tự tạo mật khẩu</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và sẽ không thể tương tác với bạn trên các dịch vụ của Google được nữa.</translation>
-<translation id="2578337197553672982">Nội dung của Google dành cho người trẻ</translation>
 <translation id="2579297619530305344">Bảng "Mật khẩu trên tất cả thiết bị của bạn" đã mở trên toàn màn hình</translation>
 <translation id="2581165646603367611">Thao tác này sẽ xóa cookie, bộ nhớ đệm và các dữ liệu khác của các trang web mà Chrome cho rằng không quan trọng.</translation>
 <translation id="2587052924345400782">Đã có phiên bản mới hơn</translation>
@@ -734,6 +733,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="4425173294238317796">Trang xác nhận khoá truy cập</translation>
 <translation id="442518031075347249">Bạn sẽ không thể sử dụng thẻ ảo qua Google Pay được nữa. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Tất cả dấu trang</translation>
 <translation id="4430277756566635951">Bạn hiện đang chọn <ph name="EMAIL" />. Chọn một tài khoản.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4742795653798179840">Đã xoá dữ liệu Chrome</translation>
 <translation id="4742970037960872810">Bỏ đánh dấu</translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
-<translation id="4750356170202299988">Nội dung dành cho người trẻ</translation>
 <translation id="4758061975920522644">Chỉ chia sẻ hình ảnh</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi mật khẩu này ngay bây giờ}other{Bạn nên thay đổi các mật khẩu này ngay bây giờ}}</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
-<translation id="7205672015775254816">Nội dung của Google dành cho người trẻ – tắt</translation>
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
 <translation id="7221869452894271364">Tải lại trang này</translation>
@@ -1533,7 +1531,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
 <translation id="7887174313503389866">Xem hướng dẫn về các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật. Để có thêm lựa chọn, hãy chuyển đến từng phần cài đặt cụ thể.</translation>
-<translation id="7896724475402191389">Nội dung dành cho người trẻ – tắt</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Tổ chức của bạn đã chặn 1 tệp tải xuống}other{Tổ chức của bạn đã chặn # tệp tải xuống}}</translation>
 <translation id="7914399737746719723">Đã cài đặt ứng dụng</translation>
@@ -1647,6 +1644,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8378850197701296741">Tài khoản <ph name="FROM_ACCOUNT" /> của bạn có dấu trang, nhật ký và các chế độ cài đặt khác.</translation>
 <translation id="8387617938027387193">Xác minh danh tính của bạn</translation>
 <translation id="8393700583063109961">Gửi tin nhắn</translation>
+<translation id="8396098434728053815">Chia sẻ cả âm thanh trên thẻ</translation>
 <translation id="8398389123831319859">Nhấn đúp và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="8402673309244746971">Chuyển đến phần Đang theo dõi</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>

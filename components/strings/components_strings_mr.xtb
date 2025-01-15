@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">आरोहण आणि पर्वतारोहण</translation>
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
 <translation id="2215963164070968490">कुत्रे</translation>
+<translation id="2219376942605837404">तुलना सारणीमध्ये टॅब जोडा</translation>
 <translation id="2219658597883514593">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="2219735899272417925">डिव्हाइस रीसेट करण्याची आवश्यकता आहे</translation>
 <translation id="2221227930294879156">खाद्यपदार्थ आणि पेय इव्हेंट</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3068118691172921711">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ मिनिटाने सुरू होईल</translation>
+<translation id="3068976060094139647">तुम्ही हे कार्ड ऑटोफिल करू शकता, कारण तुमचे खाते Google Pay शी लिंक केलेले आहे.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} आयटम}other{{ITEMS} आयटम}}</translation>
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
@@ -1788,6 +1790,7 @@
 <translation id="4151403195736952345">जागतिक डीफॉल्‍ट (शोधणे) वापरा</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज एक}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
+<translation id="415440494507469262">तुलना सारणीमध्ये टॅप जोडा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4165422751765527461">नवीन टॅबमध्ये मदत केंद्र लेख उघडते</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
@@ -3395,6 +3398,7 @@
 <translation id="706960991003274248">तुलनेसंबंधित सारण्या या तुमच्या <ph name="EMAIL" /> खात्यामध्ये सेव्ह केले जातात</translation>
 <translation id="7070144569727915108">सिस्टीम सेटिंग्‍ज</translation>
 <translation id="70705239631109039">तुमचे कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
+<translation id="7071122206197538392">नवीन तुलना चाचणी</translation>
 <translation id="7075452647191940183">विनंती खूपच मोठी आहे</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4106,6 +4110,7 @@
 <translation id="8298115750975731693">तुम्ही वापरत असलेल्या (<ph name="WIFI_NAME" />) वाय-फाय ला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता असू शकते.</translation>
 <translation id="8301894345671534559">कोड एंटर करा</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" विभाग दाखवला आहे</translation>
+<translation id="8304912090860925649">नवीन तुलना सारणी</translation>
 <translation id="830498451218851433">फोल्ड हाफ</translation>
 <translation id="8308653357438598313">लाइव्ह व्हिडिओ स्ट्रीम करणे</translation>
 <translation id="8311895354659782580">रीअल इस्टेट सूची</translation>

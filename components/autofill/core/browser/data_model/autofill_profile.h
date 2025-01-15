@@ -20,10 +20,11 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -39,7 +40,7 @@ class AutofillProfileTestApi;
 // implements the FormGroup interface so that owners of this object can request
 // form information from the profile, and the profile will delegate the request
 // to the requested form group type.
-class AutofillProfile : public AutofillDataModel {
+class AutofillProfile : public FormGroup {
  public:
   // Describes where the profile is stored and how it is synced.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
@@ -339,6 +340,9 @@ class AutofillProfile : public AutofillDataModel {
   // `AutofillType`.
   AutofillType GetFillingType(AutofillType field_type) const;
 
+  UsageHistoryInformation& usage_history();
+  const UsageHistoryInformation& usage_history() const;
+
  private:
   friend class AutofillProfileTestApi;
 
@@ -429,6 +433,8 @@ class AutofillProfile : public AutofillDataModel {
   // Only used when `kAutofillTrackProfileTokenQuality` is enabled.
   // TODO(crbug.com/40271999): Clean-up comment.
   ProfileTokenQuality token_quality_;
+
+  UsageHistoryInformation usage_history_information_;
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1066101356081285416">‏Chrome יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Google כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות ב-Google לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">‏‫Chrome פותח באופן אוטומטי קישורים פרטיים של YouTube במצב פרטי.</translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1143896152279775643">‏הסיסמה תישמר במנהל הסיסמאות של Google עבור <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">‏פתיחת כרטיסייה חדשה ב-Chrome</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">‏יש להיכנס לאתר הזה ול-Chrome.</translation>
 <translation id="4646014602299206846">‏‫Chrome יזהה מספרי מעקב אחר חבילות באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. כדי שניתן יהיה לספק את התכונה הזו, וגם לשפר את שופינג לכולם, הנתונים שלך ישותפו עם Google.</translation>
 <translation id="4647910807533196601">‏פתיחת הכרטיסייה האחרונה שלי ב-Chrome.</translation>
+<translation id="4693084815234024320">‏במצב פרטי ב-Chrome</translation>
 <translation id="4724297637870447613">‏אפשר להשתמש ב-Chrome בכל מקום</translation>
 <translation id="4738647308035481133">‏דף Google Chrome</translation>
 <translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>

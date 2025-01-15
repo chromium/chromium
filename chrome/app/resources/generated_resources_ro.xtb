@@ -160,6 +160,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1101254380285078812">{COUNT,plural, =1{O parolă}few{{COUNT} parole}other{{COUNT} de parole}}</translation>
 <translation id="1102759278139578486">Nu se pot descărca fișierele cu adnotări pentru nodurile principale. Încearcă din nou mai târziu.</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Vei pierde imediat accesul la acest grup de file și el va fi șters de pe toate dispozitivele tale</translation>
 <translation id="1106350001632362876">Mărește pragul</translation>
 <translation id="1107482171728500359">Permite accesul la microfon</translation>
 <translation id="110850812463801904">Conectează-te manual la OneDrive</translation>
@@ -321,7 +322,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1210678701920254279">Afișează sau adaugă imprimante și vezi sarcinile de printare active</translation>
 <translation id="1211769675100312947">Comenzile rapide sunt organizate de tine</translation>
 <translation id="1213254615020057352">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
-<translation id="1214004433265298541">Certificat oferit de administratorul tău care poate vedea datele de conectare pentru <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nouă aplicație de fundal adăugată</translation>
 <translation id="1216542092748365687">Elimină amprenta</translation>
 <translation id="1216891999012841486">Află mai multe despre remedierea erorilor de actualizare</translation>
@@ -1694,6 +1694,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
 <translation id="2173801458090845390">Adaugă ID-ul de solicitare la acest dispozitiv</translation>
 <translation id="2175384018164129879">&amp;Gestionează motoarele de căutare și Căutarea pe site</translation>
+<translation id="2175526076681939329">Folosește tastele principale</translation>
 <translation id="217576141146192373">Nu se poate adăuga imprimanta. Verifică ce configurație are imprimanta și încearcă din nou.</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="217631816678106981">Nu insera</translation>
@@ -3414,6 +3415,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3407392651057365886">Mai multe pagini sunt preîncărcate. Este posibil ca paginile să fie preîncărcate prin serverele Google atunci când alte site-uri solicită acest lucru.</translation>
 <translation id="3407967630066378878">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în partea stângă a acestui <ph name="DEVICE_TYPE" />. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Camera foto și microfonul sunt în uz</translation>
+<translation id="3409157109901479672">Partea stângă</translation>
 <translation id="3409513286451883969">&amp;Tradu selecția în <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Accesează selecția</translation>
 <translation id="3413122095806433232">Emitenți CA: <ph name="LOCATION" /></translation>
@@ -4699,6 +4701,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4290826901752066702"><ph name="NUM" /> membru</translation>
 <translation id="4290898381118933198">Glisează ca să navighezi între pagini</translation>
 <translation id="4291265871880246274">Caseta de dialog pentru conectare</translation>
+<translation id="4292613336957320546">Accelerație</translation>
 <translation id="429312253194641664">Un site redă fișiere media</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> s-a șters din istoricul descărcărilor, dar este încă pe dispozitivul tău</translation>
 <translation id="4295072614469448764">Aplicația este disponibilă pe terminal. Este posibil ca Lansatorul să conțină și o pictogramă.</translation>
@@ -5866,6 +5869,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, căutare în <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Introdu codul PIN pentru cheia de securitate. Dacă nu știi codul PIN, va trebui să resetezi cheia de securitate.</translation>
 <translation id="5139955368427980650">&amp;Deschide</translation>
+<translation id="5140742218917419811">Taste de folosit</translation>
 <translation id="5141421572306659464">Cont principal</translation>
 <translation id="5141957579434225843">De exemplu, folosește oà, oè, uỳ în loc de òa, òe, ùy</translation>
 <translation id="5143374789336132547">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când dai clic pe butonul Pagina principală.</translation>
@@ -5884,6 +5888,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5149602533174716626">Copiaz&amp;ă cadrul video</translation>
 <translation id="5150254825601720210">Nume de server SSL pentru certificat Netscape</translation>
 <translation id="5151354047782775295">Eliberează spațiu pe hard disk sau este posibil ca anumite date să fie șterse automat</translation>
+<translation id="5153074793829217329">Folosește tastatura sau o tastatură numerică pentru a controla cursorul mouse-ului</translation>
 <translation id="5153234146675181447">Elimină telefonul</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Setări avansate pentru <ph name="PRINTING_DESTINATION" /></translation>
@@ -7977,6 +7982,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6689714331348768690">Solicită-i lui <ph name="SUPERVISED_USER_NAME" /> să vină la computer. Copilul tău va citi câteva expresii de pe acest ecran pentru crearea propriului model vocal.
     <ph name="BR" />
     Dacă <ph name="SUPERVISED_USER_NAME" /> are nevoie de ajutor la citire, spune-i să repete după tine. Șoptește la distanță de microfon, astfel încât Asistentul să învețe vocea copilului, nu pe a ta.</translation>
+<translation id="6689948774466767379">Taste pentru mouse</translation>
 <translation id="6690659332373509948">Fișierul <ph name="FILE_NAME" /> nu poate fi analizat</translation>
 <translation id="6691936601825168937">&amp;Înainte</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{O pagină}few{{COUNT} pagini}other{{COUNT} de pagini}}</translation>
@@ -10064,6 +10070,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Adaugă fila în lista de lectură}few{Adaugă filele în lista de lectură}other{Adaugă filele în lista de lectură}}</translation>
 <translation id="8169177848833352618">Acest computer nu îndeplinește cerințele pentru a instala Bruschetta. Codul de eroare este <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Partea dreaptă</translation>
 <translation id="8174047975335711832">Informații despre dispozitiv</translation>
 <translation id="8176332201990304395">Roz și alb</translation>
 <translation id="8176529144855282213">Pentru a activa accesul la microfon, activează comutatorul fizic pentru microfon de pe dispozitiv</translation>

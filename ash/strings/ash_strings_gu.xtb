@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">આગલા વપરાશકર્તા પર સ્વિચ કરો</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">સ્ક્રીન રેકોર્ડિંગ પૂર્ણ થયું</translation>
+<translation id="1956087014741188812">માઉસ કીની સુવિધા થોભાવો</translation>
 <translation id="1957958912175573503">તમારી ભાષા સેટ કરો</translation>
 <translation id="1961239773406905488">કૅમેરા પ્રીવ્યૂ છુપાવેલો છે</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">ઉપકરણો માટે સ્કેન કરી રહ્યું છે...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ડાઉનલોડ કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="2258734398699965611">સૂચવેલી ફાઇલો</translation>
+<translation id="2266607665880926261">માઉસ કીની સુવિધા થોભાવી</translation>
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
 <translation id="2268731132310444948">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. એકવાર લૉન્ચર સક્રિય કરવામાં આવે, તમે એક વધારેલો શોધ બાર મેળવશો. તમે તમારી ફાઇલો, ઍપ અને બીજું ઘણું શોધવા માટે ટાઇપ કરવાનું શરૂ કરી શકો છો. તમે તમારી <ph name="PRODUCT_NAME" /> વિશેના પ્રશ્નોના જવાબ પણ મેળવી શકો છો.</translation>
 <translation id="2268813581635650749">બધાને સાઇન આઉટ કરો</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">સ્ક્રીન પર મોટું કરો</translation>
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
 <translation id="2880541185262491188">પિન વડે ઘણા બધા પ્રયાસો. <ph name="TIME_LEFT" /> રાહ જુઓ અને ફરી પ્રયાસ કરો</translation>
+<translation id="2883271196820422439">માઉસ કીની સુવિધા ફરી શરૂ કરો</translation>
 <translation id="2885950158625301909">વધુ જાણો</translation>
 <translation id="2891209721153296020">"પસંદગી રદ કરો"</translation>
 <translation id="2894949423239620203">કાર્યપ્રદર્શન પર કેબલની અસર થઈ શકે છે</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> હૉટસ્પૉટ</translation>
 <translation id="3540893133818942399">તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="3542066395059568317">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું, ત્યાંથી તમે ચાલુ કરી શકો. તમે સુઝાવોને કાઢી નાખવા માટે, રાઇટ ક્લિક કરી શકો છો.</translation>
+<translation id="3545224667633138205">માઉસ કીની સુવિધા ફરી શરૂ કરી</translation>
 <translation id="3552189655002856821">વાઇ-ફાઇ બંધ છે</translation>
 <translation id="3554215588514239132">ડેવલપર ટૂલ પૅનલ બતાવો અથવા છુપાવો</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> પિન કરી હતી</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">આઇટમ લોડ કરી શકાઈ નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
 <translation id="3735740477244556633">આ પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="3738664582935948253">તમે હવે સ્ક્રીન રેકોર્ડિંગમાં ક્લિક અને કીબોર્ડ શૉર્ટકટ બતાવી શકો છો</translation>
+<translation id="3741482431277446954">માઉસનું જમણું બટન</translation>
 <translation id="3742055079367172538">સ્ક્રીનશૉટ લેવાયો</translation>
 <translation id="3743775386021959186">ફોકસ ચાલુ છે, <ph name="REMAINING_TIME" /> બાકી</translation>
 <translation id="3750403286520637847">હવામાન સંબંધી સૂચન છુપાવો</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">આખો દિવસ</translation>
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963124517343721543">તમારી અગાઉની વિન્ડો અને ટૅબ ખોલીને તમે જ્યાંથી છોડ્યું હતું, ત્યાંથી સરળતાથી ચાલુ રાખો. આગળ કરવા લાયક કાર્યો માટે મનગમતા બનાવેલા સૂચનો પણ તમને જોવા મળશે.</translation>
-<translation id="396506362088290977">તમારા માઇકના સાઉન્ડનું પરીક્ષણ કરો</translation>
 <translation id="3969043077941541451">બંધ</translation>
 <translation id="3970324493235864154">તમારા ફોનના નોટિફિકેશન જુઓ</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
@@ -1300,7 +1304,6 @@
 <translation id="536019650977002321">તમારા ઍડમિનિસ્ટ્રેટર ઑડિયો કૅપ્ચર કરવાની મંજૂરી આપતા નથી. વધુ માહિતી માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> સ્પીચની ફાઇલો આંશિક રીતે ડાઉનલોડ કરી</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> આ ટૅબ પર જાઓ</translation>
-<translation id="5363835273551457276">તમે તમારા માઇક્રોફોનના સાઉન્ડનું પરીક્ષણ કરી શકો છો. રોકવા માટે પૅનલ બંધ કરો.</translation>
 <translation id="5364693579536176785">સ્ટોરેજ સ્પેસ</translation>
 <translation id="5369573834963677938">આ ડિવાઇસ પરના અન્ય વપરાશકર્તાઓ માટે ચહેરાથી નિયંત્રિત કરવાની સુવિધા ઉપલબ્ધ રહેશે</translation>
 <translation id="5369717264580061086">Files ઍપમાં ફાઇલનો પ્રીવ્યૂ કરો</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7118268675952955085">સ્ક્રીનશૉટ</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ખોલો</translation>
 <translation id="7119327711295338600">આગલો શબ્દ અથવા અક્ષર પસંદ કરો</translation>
+<translation id="7124556000457919678">જ્યારે ચાલુ હોય, ત્યારે માઉસ કીની સુવિધા થોભાવો અને ફરી શરૂ કરો</translation>
 <translation id="7126996685418858413">ગયા અઠવાડિયે ખોલેલી</translation>
 <translation id="7130207228079676353">સૌથી વધુ શક્ય</translation>
 <translation id="7131634465328662194">તમે ઑટોમૅટિક રીતે સાઇન આઉટ થઈ જશો.</translation>
@@ -1851,6 +1855,7 @@
 <translation id="7198435252016571249">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="7219573373513695352">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">માઉસના બન્ને બટન</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% બૅટરી બાકી છે. તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. અપડેટ લાગુ કરવા માટે આ Chromebookને ફરી શરૂ કરવાની જરૂર છે. આમાં 1 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2152,6 +2157,7 @@
 <translation id="8203224998425013577">વધુ ઇમોજી અને GIFs બતાવો</translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>
 <translation id="8205469348819768313">Page Down કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
+<translation id="8213376797713070611">માઉસનું ડાબું બટન</translation>
 <translation id="8214996719228530800">Canary ચૅનલ</translation>
 <translation id="8219451629189078428">આ સમય દરમ્યાન, તમારું Chromebook ચાલુ રહેવું અને પાવરથી કનેક્ટ થયેલું હોવું આવશ્યક છે. ખાતરી કરો કે ચાર્જર અથવા અડૅપ્ટર કેબલ તમારા Chromebook અને પાવર આઉટલેટ, એમ બન્નેમાં યોગ્ય રીતે પ્લગ-ઇન કરવામાં આવ્યા હોય. તમારું Chromebook બંધ કરશો નહીં.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ઉમેરો</translation>
@@ -2377,6 +2383,7 @@
 <translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
 <translation id="9050012935252397793">બ્લૂટૂથ અનુપલબ્ધ છે</translation>
+<translation id="9050999376345823055">રિલીઝ કરવા માટે "." દબાવો</translation>
 <translation id="906458777597946297">વિંડો મોટી કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9070640332319875144">Assistant સેટિંગ</translation>

@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">میرا ذاتی تخلیق کریں</translation>
 <translation id="2574249610672786438">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chrome استعمال کرتے ہیں، اپنے تمام آلات پر سائن ان کریں</translation>
 <translation id="2577981599306533385">‏<ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور Google سروسز پر مزید آپ کے ساتھ تعامل نہیں کر سکے گا۔</translation>
-<translation id="2578337197553672982">‏نوجوان ذہنوں کے لیے Google کا مواد</translation>
 <translation id="2579297619530305344">'آپ کے تمام آلات پر پاس ورڈز' کی شیٹ پوری طرح کھلتی ہے</translation>
 <translation id="2581165646603367611">‏یہ سائٹس کی کوکیز، کیش اور اس دیگر ڈیٹا کو صاف کر دے گی جسے Chrome اہم نہیں خیال کرتا ہے۔</translation>
 <translation id="2587052924345400782">جدید تر ورژن دستیاب ہے</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">قیمت ٹریک کی جا رہی ہے۔ کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔</translation>
 <translation id="4425173294238317796">پاسکی کی تصدیقی شیٹ</translation>
 <translation id="442518031075347249">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">سبھی بُک مارکس</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ٹیب بند کریں</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> میں بُک مارک کردہ</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">‏Chrome کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4749960740855309258">ایک نیا ٹیب کھولیں</translation>
-<translation id="4750356170202299988">نوجوان ذہنوں کے لیے مواد</translation>
 <translation id="4758061975920522644">صرف تصویر کا اشتراک کریں</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4763480195061959176">ویڈیو</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{آپ کو اب اسے تبدیل کرنا چاہیے}other{آپ کو اب انہیں تبدیل کرنا چاہیے}}</translation>
 <translation id="7196215469483532480">رازداری کی گائیڈ کی وضاحت سے متعلق معلومات مکمل اونچائی پر کھلی ہوئی ہے</translation>
-<translation id="7205672015775254816">‏نوجوان ذہنوں کے لیے Google کا مواد - آف ہے</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ٹیبز کو پس منظر کے نئے ٹیبز کے بطور بحال کریں۔</translation>
 <translation id="7217781228893594884">‏آپ کے Chrome چھوڑنے پر پوشیدگی ٹیبز مقفل ہو جائیں گی</translation>
 <translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7886917304091689118">‏Chrome میں چل رہا ہے</translation>
 <translation id="7887174313503389866">کلیدی رازداری اور سیکیورٹی کنٹرولز کا ایک زیر رہنمائی ٹور کریں۔ مزید اختیارات کے لیے، انفرادی ترتیبات پر جائیں۔</translation>
-<translation id="7896724475402191389">نوجوان ذہنوں کے لیے مواد -آف ہے</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{آپ کی تنظیم نے 1 کو مسدود کر دیا}other{آپ کی تنظیم نے # کو مسدود کر دیا}}</translation>
 <translation id="7914399737746719723">ایپ انسٹال ہو گئی</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">آپ کے پاس <ph name="FROM_ACCOUNT" /> کی جانب سے بُک مارکس، سرگزشت اور دیگر ترتیبات ہیں۔</translation>
 <translation id="8387617938027387193">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="8393700583063109961">پیغام بھیجیں</translation>
+<translation id="8396098434728053815">ٹیب آڈیو کا بھی اشتراک کریں</translation>
 <translation id="8398389123831319859">پوشیدگی پر سوئچ کرنے کے لیے دو بار تھپتھپائیں اور دبائے رکھیں</translation>
 <translation id="8402673309244746971">درج ذيل پر جائيں</translation>
 <translation id="8413126021676339697">مکمل سرگزشت دکھائیں</translation>

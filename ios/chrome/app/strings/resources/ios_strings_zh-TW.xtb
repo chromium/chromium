@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">將圖片儲存到…</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護措施。除非你認為自己有可能成為網路攻擊的目標，否則不建議採用這項措施。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
+<translation id="5520668942302483373">退出群組</translation>
 <translation id="5524590039848017563">已收合主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話方塊</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">已建立標籤，目前無法提供日期資訊</translation>
 <translation id="5647096944343801045">大型進入點</translation>
 <translation id="5647193778876139879">按住地址。</translation>
+<translation id="5647702255748985085">要退出群組嗎？</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5652623411397330904">你追蹤的產品會顯示在這裡。</translation>
 <translation id="5657156137487675418">允許所有 Cookie</translation>
@@ -1115,6 +1117,7 @@
 <translation id="6027619584715411062">只要在裝置上登入帳戶，即可存取你的書籤、密碼等資訊。</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6032845897905314562">新功能</translation>
+<translation id="6038823991892265570">管理 Google 儲存空間</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多</translation>

@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_DATA_MODEL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_DATA_MODEL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_USAGE_HISTORY_INFORMATION_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_USAGE_HISTORY_INFORMATION_H_
 
 #include <stddef.h>
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/form_group.h"
 
 namespace autofill {
 
-// This class is an interface for the primary data models that back Autofill.
-// The information in objects of this class is managed by the
-// PersonalDataManager.
-class AutofillDataModel : public FormGroup {
+// This class holds information referring to usage history of Autofill objects.
+class UsageHistoryInformation {
  public:
-  ~AutofillDataModel() override;
-  AutofillDataModel(const AutofillDataModel&);
+  explicit UsageHistoryInformation(size_t usage_history_size = 1);
+  ~UsageHistoryInformation();
+  UsageHistoryInformation(const UsageHistoryInformation&);
 
   // Calculates the number of days since the model was last used by subtracting
   // the model's last recent |use_date_| from the |current_time|.
@@ -46,7 +45,7 @@ class AutofillDataModel : public FormGroup {
   // and shifting the existing use dates backwards.
   void RecordUseDate(base::Time time);
 
-  bool UseDateEqualsInSeconds(const AutofillDataModel* other) const;
+  bool UseDateEqualsInSeconds(const UsageHistoryInformation& other) const;
 
   base::Time modification_date() const { return modification_date_; }
   void set_modification_date(base::Time time) { modification_date_ = time; }
@@ -58,26 +57,23 @@ class AutofillDataModel : public FormGroup {
   // The function defines a strict weak ordering that can be used for sorting.
   // Since data models can have the same score, it doesn't define a total order.
   // `comparison_time_` allows consistent sorting throughout the comparisons.
-  bool HasGreaterRankingThan(const AutofillDataModel* other,
+  bool HasGreaterRankingThan(const UsageHistoryInformation& other,
                              base::Time comparison_time) const;
 
   // Given two ranking scores for two data model suggestions, returns if `score`
   // is greater than `other_score`. In the case of a tie-breaker, uses the most
   // recent use date as the winner.
-  virtual bool CompareRankingScores(double score,
-                                    double other_score,
-                                    base::Time other_use_date) const;
+  bool CompareRankingScores(double score,
+                            double other_score,
+                            base::Time other_use_date) const;
 
- protected:
-  explicit AutofillDataModel(size_t usage_history_size = 1);
+  // Merges the use dates of `*this` and `other` into `*this*` by choosing the
+  // most recent use dates.
+  void MergeUseDates(const UsageHistoryInformation& other);
 
   // Calculate the ranking score of a card or profile depending on their use
   // count and most recent use date.
   double GetRankingScore(base::Time current_time) const;
-
-  // Merges the use dates of `*this` and `other` into `*this*` by choosing the
-  // most recent use dates.
-  void MergeUseDates(const AutofillDataModel& other);
 
  private:
   // The number of times this model has been used.
@@ -99,4 +95,4 @@ class AutofillDataModel : public FormGroup {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_DATA_MODEL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_USAGE_HISTORY_INFORMATION_H_

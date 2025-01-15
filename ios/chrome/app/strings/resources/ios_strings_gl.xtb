@@ -991,6 +991,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5506763544823940561">Gardar imaxe en…</translation>
 <translation id="5511959326926949696">Protección opcional extrema para o navegador. Só se debe usar se consideras que podes ser obxecto dun ciberataque moi sofisticado.</translation>
 <translation id="5513681519188741830">Hai <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Saír do grupo</translation>
 <translation id="5524590039848017563">Botón contraído da barra de ferramentas principal</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5532545557415295622">Cadro de diálogo do tempo de espera de inactividade</translation>
@@ -1030,6 +1031,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5646284034397250191">Etiqueta creada. Data pendente</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5647193778876139879">Mantén premido un enderezo.</translation>
+<translation id="5647702255748985085">Queres saír do grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Os produtos dos que fagas seguimento aparecerán aquí.</translation>
 <translation id="5657156137487675418">Permitir todas as cookies</translation>
@@ -1115,6 +1117,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6027619584715411062">Inicia sesión para poder acceder aos teus marcadores, contrasinais e moito máis en todos os teus dispositivos.</translation>
 <translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
 <translation id="6032845897905314562">nova función</translation>
+<translation id="6038823991892265570">Xestionar almacenamento de Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
@@ -1150,6 +1153,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6160780110287872296">Queres descargar o ficheiro?</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6168647875670665004">Suxestións de artigos</translation>
+<translation id="6169031022444660352">Para eliminar todas as credenciais gardadas, primeiro debes configurar un contrasinal no teu dispositivo.</translation>
 <translation id="6173499589275053515">O contrasinal gardouse na túa Conta de Google, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
@@ -1201,6 +1205,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6355820205320395730">Os contrasinais pouco seguros son fáciles de adiviñar. Asegúrate de crear contrasinais seguros. <ph name="BEGIN_LINK" />Ver máis consellos de seguranza<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Escolle un buscador da lista.</translation>
+<translation id="6368102751067608420">Para eliminar todos os datos do xestor de contrasinais</translation>
 <translation id="6374469231428023295">Tentar de novo</translation>
 <translation id="6387994324662817823">Os contrasinais gárdanse no xestor de contrasinais de Google só neste dispositivo.</translation>
 <translation id="6404422529625928907">Abrir en Google Drive</translation>

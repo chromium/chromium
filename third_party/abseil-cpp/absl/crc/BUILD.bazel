@@ -42,6 +42,7 @@ cc_library(
     deps = [
         "//absl/base",
         "//absl/base:config",
+        "//absl/types:optional",
     ],
 )
 

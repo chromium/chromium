@@ -154,8 +154,8 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
-        "//absl:msvc_compiler": ["-DEFAULTLIB:bcrypt.lib"],
-        "//absl:clang-cl_compiler": ["-DEFAULTLIB:bcrypt.lib"],
+        "@rules_cc//cc/compiler:msvc-cl": ["-DEFAULTLIB:bcrypt.lib"],
+        "@rules_cc//cc/compiler:clang-cl": ["-DEFAULTLIB:bcrypt.lib"],
         "//absl:mingw_compiler": [
             "-DEFAULTLIB:bcrypt.lib",
             "-lbcrypt",
@@ -183,9 +183,9 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = select({
-        "//absl:msvc_compiler": [],
-        "//absl:clang-cl_compiler": [],
-        "//absl:wasm": [],
+        "@rules_cc//cc/compiler:msvc-cl": [],
+        "@rules_cc//cc/compiler:clang-cl": [],
+        "@rules_cc//cc/compiler:emscripten": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,
     deps = [
@@ -414,8 +414,8 @@ cc_library(
         "randen_hwaes.h",
     ],
     copts = ABSL_DEFAULT_COPTS + ABSL_RANDOM_RANDEN_COPTS + select({
-        "//absl:msvc_compiler": [],
-        "//absl:clang-cl_compiler": [],
+        "@rules_cc//cc/compiler:msvc-cl": [],
+        "@rules_cc//cc/compiler:clang-cl": [],
         "//conditions:default": ["-Wno-pass-failed"],
     }),
     linkopts = ABSL_DEFAULT_LINKOPTS,

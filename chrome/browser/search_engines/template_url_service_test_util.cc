@@ -20,6 +20,8 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -166,9 +168,12 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
     }
   }
 
+  regional_capabilities_service_ =
+      regional_capabilities::CreateServiceWithFakeClient(*profile_->GetPrefs());
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          *profile_->GetPrefs(), local_state_,
+          *profile_->GetPrefs(), local_state_, *regional_capabilities_service_,
           /*is_profile_eligible_for_dse_guest_propagation=*/false);
 
   ResetModel(false);
@@ -178,6 +183,7 @@ TemplateURLServiceTestUtil::~TemplateURLServiceTestUtil() {
   ClearModel();
   web_data_service_->ShutdownOnUISequence();
   search_engine_choice_service_.reset();
+  regional_capabilities_service_.reset();
   profile_.reset();
 
   // Flush the message loop to make application verifiers happy.

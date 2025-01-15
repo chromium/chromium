@@ -450,13 +450,13 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 
   // Create a card on disk with specific use stats.
   cards_from_local_storage.emplace_back();
-  cards_from_local_storage.back().set_use_count(3U);
-  cards_from_local_storage.back().set_use_date(disk_time);
+  cards_from_local_storage.back().usage_history().set_use_count(3U);
+  cards_from_local_storage.back().usage_history().set_use_date(disk_time);
 
   // Create a card pulled from wallet with the same id, but a different billing
   // address id.
   wallet_cards.emplace_back();
-  wallet_cards.back().set_use_count(10U);
+  wallet_cards.back().usage_history().set_use_count(10U);
 
   // Setup the TestPaymentsAutofillTable with the `cards_from_local_storage`.
   TestPaymentsAutofillTable table(cards_from_local_storage);
@@ -466,8 +466,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   ASSERT_EQ(1U, wallet_cards.size());
 
   // Make sure the use stats from disk were kept
-  EXPECT_EQ(3U, wallet_cards.back().use_count());
-  EXPECT_EQ(disk_time, wallet_cards.back().use_date());
+  EXPECT_EQ(3U, wallet_cards.back().usage_history().use_count());
+  EXPECT_EQ(disk_time, wallet_cards.back().usage_history().use_date());
 }
 
 // Verify that the credential data on disk are kept when server cards are

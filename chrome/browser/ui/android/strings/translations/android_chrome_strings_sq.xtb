@@ -340,7 +340,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2571834852878229351">Krijo fjalëkalimin tim</translation>
 <translation id="2574249610672786438">Për të parë skedat e tua nga çdo vend ku përdor Chrome, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) do të humbasë menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe nuk do të mund të ndërveprojë më me ty në shërbimet e Google.</translation>
-<translation id="2578337197553672982">Përmbajtje nga Google për mendjet e të vegjëlve</translation>
 <translation id="2579297619530305344">Fleta "Fjalëkalimet në të gjitha pajisjet e tua" u hap në lartësi të plotë</translation>
 <translation id="2581165646603367611">Kjo do të pastrojë kukit, memorien e përkohshme dhe të dhënat e tjera të sajteve që Chrome nuk i konsideron si të rëndësishme.</translation>
 <translation id="2587052924345400782">Një version më i ri është i disponueshëm</translation>
@@ -734,6 +733,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4425140285732600465">Çmimi po monitorohet. Merr sinjalizime nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="4425173294238317796">Fleta e konfirmimit të çelësit të kalimit</translation>
 <translation id="442518031075347249">Nuk do të mund ta përdorësh më kartën virtuale me Google Pay. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Të gjithë faqeshënuesit</translation>
 <translation id="4430277756566635951">Aktualisht është zgjedhur <ph name="EMAIL" />. Zgjidh një llogari.</translation>
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Faqeshënuesi u shtua te <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4742795653798179840">Të dhënat e Chrome u fshinë</translation>
 <translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4749960740855309258">Hap një skedë të re</translation>
-<translation id="4750356170202299988">Përmbajtje për mendjet e të vegjëlve</translation>
 <translation id="4758061975920522644">Ndaj vetëm imazhin</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7191430249889272776">Skeda u hap në sfond.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Duhet ta ndryshosh këtë tani}other{Duhet t'i ndryshosh këto tani}}</translation>
 <translation id="7196215469483532480">Shpjegimi i udhëzuesit të privatësisë u hap në lartësi të plotë</translation>
-<translation id="7205672015775254816">Përmbajtje nga Google për mendjet e të vegjëlve - joaktive</translation>
 <translation id="7207760545532569765">Restauro <ph name="TAB_COUNT" /> skeda si skeda të reja në sfond.</translation>
 <translation id="7217781228893594884">Skedat "e fshehta" do të kyçen kur të largohesh nga Chrome</translation>
 <translation id="7221869452894271364">Ringarkoje këtë faqe</translation>
@@ -1533,7 +1531,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7876243839304621966">Hiqi të gjitha</translation>
 <translation id="7886917304091689118">Po ekzekutohet në Chrome</translation>
 <translation id="7887174313503389866">Bëj një turne udhëzues për kontrollet kryesore të privatësisë dhe sigurisë. Për më shumë opsione, shko te cilësimet individuale.</translation>
-<translation id="7896724475402191389">Përmbajtje për mendjet e të vegjëlve - joaktive</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 u bllokua nga organizata jote}other{# u bllokuan nga organizata jote}}</translation>
 <translation id="7914399737746719723">Aplikacioni u instalua</translation>
@@ -1647,6 +1644,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8378850197701296741">Ke faqeshënues, historik dhe cilësime të tjera nga <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiko që je ti</translation>
 <translation id="8393700583063109961">Dërgo mesazh</translation>
+<translation id="8396098434728053815">Ndaj po ashtu audion e skedës</translation>
 <translation id="8398389123831319859">Trokit dy herë dhe mbaj shtypur për të kaluar te modaliteti "I fshehtë"</translation>
 <translation id="8402673309244746971">Shko te "Po ndjek"</translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>

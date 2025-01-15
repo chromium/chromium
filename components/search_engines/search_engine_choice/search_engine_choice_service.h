@@ -23,6 +23,9 @@ class PolicyService;
 namespace variations {
 class VariationsService;
 }
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
 
 class PrefRegistrySimple;
 class PrefService;
@@ -43,12 +46,15 @@ class SearchEngineChoiceService : public KeyedService {
   SearchEngineChoiceService(
       PrefService& profile_prefs,
       PrefService* local_state,
+      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
       bool is_profile_eligible_for_dse_guest_propagation,
       int variations_country_id = country_codes::kCountryIDUnknown);
-  SearchEngineChoiceService(PrefService& profile_prefs,
-                            PrefService* local_state,
-                            bool is_profile_eligible_for_dse_guest_propagation,
-                            variations::VariationsService* variations_service);
+  SearchEngineChoiceService(
+      PrefService& profile_prefs,
+      PrefService* local_state,
+      regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
+      bool is_profile_eligible_for_dse_guest_propagation,
+      variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -73,6 +79,7 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns the country ID to use in the context of any search engine choice
   // logic. Can be overridden using `switches::kSearchEngineChoiceCountry`.
   // See `//components/country_codes` for the Country ID format.
+  // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
   int GetCountryId();
 
   // Records that the choice was made by settings the timestamp if applicable.
@@ -101,6 +108,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
+  // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
   void ClearCountryIdCacheForTesting();
 
   // Returns whether the profile is eligible for the default search engine to be
@@ -136,14 +144,10 @@ class SearchEngineChoiceService : public KeyedService {
 
   void ProcessPendingChoiceScreenDisplayState();
 
-  int GetCountryIdInternal();
-
-#if BUILDFLAG(IS_ANDROID)
-  void ProcessGetCountryResponseFromPlayApi(int country_id);
-#endif
-
   const raw_ref<PrefService> profile_prefs_;
   const raw_ptr<PrefService> local_state_;
+  const raw_ref<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
   bool is_profile_eligible_for_dse_guest_propagation_ = false;
   base::ObserverList<Observer> observers_;
   const int variations_country_id_;

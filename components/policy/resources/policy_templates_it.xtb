@@ -183,6 +183,17 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se questo criterio viene impostato su Disabled, la funzionalità della lista della spesa non sarà disponibile.
       </translation>
 <translation id="1144147113722324623">Attiva gli upgrade automatici a HTTPS di audio e video e mostra l'avviso "Non sicuro" per le immagini.</translation>
+<translation id="1146804230175611166">La funzionalità di ricerca nella cronologia basata sull'AI consente agli utenti di effettuare ricerche nella loro cronologia di navigazione e di ricevere risposte generate in base ai contenuti della pagina, non solo al titolo e all'URL.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1147732569915511430">L'hash SHA-256 dell'immagine dell'avatar.</translation>
 <translation id="1148415065145333943">Disattiva la modalità di ricarica avanzata della batteria</translation>
 <translation id="1149203480502386713">Attiva l'accordo chiave post-quantistico per TLS</translation>
@@ -203,6 +214,19 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se questo criterio viene disabilitato, la finestra di dialogo di intercettazione dell'accesso non viene attivata.
       Se viene disabilitato, una finestra di dialogo verrà mostrata se la separazione dei profili degli account gestiti viene applicata in modo forzato da <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">La configurazione Kerberos (una riga per elemento array); visita la pagina https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
+<translation id="1159241725763211010">Overlay di Lens consente agli utenti di eseguire ricerche su Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi. Inoltre, consente agli utenti di eseguire ricerche su Google sensibili al contesto della pagina corrente. Per fornire risposte contestuali, Overlay di Lens invia a Google i contenuti della pagina per rispondere alla query dell'utente con il contesto della pagina visualizzata.
+
+Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1160479894929412407">Consenti protocollo QUIC</translation>
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
 <translation id="1161685818042751282">Non importare i certificati del server TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma.</translation>
@@ -2206,6 +2230,17 @@ Se il criterio viene disattivato o se non viene configurato, i log non possono e
       * L'azione predefinita compiuta in caso di inattività durante l'utilizzo della corrente CA è l'arresto.
 
       Se il criterio o una qualsiasi delle relative impostazioni non vengono configurati, vengono utilizzati i valori predefiniti per le diverse impostazioni relative all'alimentazione.</translation>
+<translation id="2589944745979739478">Questa policy consente di controllare le impostazioni della funzionalità di editing in Foto con AI generativa per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2591775699187375408">Limita sempre il processo audio tramite sandbox</translation>
 <translation id="2592091433672667839">Durata inattività prima della visualizzazione del salvaschermo nella schermata di accesso in modalità retail</translation>
 <translation id="259289618675490104">Se il criterio viene impostato su "All" (valore 0) o se non viene configurato, gli utenti possono gestire i certificati. Se viene impostato su "None" (valore 2), gli utenti possono soltanto visualizzare i certificati, ma non possono gestirli.
@@ -2365,6 +2400,17 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="2727844239611930002">Consenti a <ph name="PRODUCT_NAME" /> di stabilire se mostrare o meno la richiesta di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
+<translation id="2729889068935597630">Questa policy definisce l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Ad esempio, se questa policy viene impostata sul valore 1, 1 sarà l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Non inciderà sui valori delle policy impostate manualmente. Per un elenco delle funzionalità incluse, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se una funzionalità inclusa non ha un valore di policy equivalente, verrà utilizzato il valore più alto più vicino. Consulta la documentazione relativa a questa funzionalità per ulteriori dettagli su come interagisce con i valori in questa policy.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2730200383593984228">Consenti a utenti non affiliati di utilizzare app per Android</translation>
 <translation id="2730419309754848345">Stampa PDF come immagine predefinita</translation>
 <translation id="2730644640965800157">Se il criterio viene attivato, viene disattivata la sincronizzazione di <ph name="GOOGLE_DRIVE_NAME" /> nell'app File di <ph name="PRODUCT_OS_NAME" />. Nessun dato viene caricato su Drive.
@@ -4673,6 +4719,7 @@ Questo criterio impedisce agli amministratori aziendali di connettersi a disposi
 Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene configurato.</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449561952193478261">Colore della retroilluminazione della tastiera blu</translation>
+<translation id="4497491764379007385">Partiziona gli URL dei blob durante il recupero e la navigazione.</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
 <translation id="4498626728750662965">Il visualizzatore PDF utilizza il renderer Skia.</translation>
 <translation id="4499376951770369935">Gli aggiornamenti di ChromeOS sono impostati sulla versione definita nel file manifest dell'app kiosk</translation>
@@ -5131,6 +5178,24 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4857223512478723171">Non consentire la modalità a schermo intero</translation>
 <translation id="4857888176748302062">Consenti alle origini di richiedere gli attributi dei dispositivi</translation>
 <translation id="4858735034935305895">Consenti modalità a schermo intero</translation>
+<translation id="4858882153530729282">Questa policy consente di stabilire se gli URL dei blob vengono partizionati durante il recupero e la navigazione.
+Se questa policy viene attivata o se non viene configurata, gli URL dei blob verranno partizionati.
+Se questa policy viene disattivata, gli URL dei blob non verranno partizionati.
+
+Se il partizionamento dello spazio di archiviazione viene disattivato per una determinata origine di primo livello da
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+ o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+anche gli URL dei BLOB non verranno partizionati.
+
+Se devi usare la policy, invia una segnalazione di bug su crbug.com spiegando il tuo
+caso d'uso e aggiungendo in copia per conoscenza {janiceliu, awillia}@chromium.org. La policy sarà valida fino alla versione 138 di
+<ph name="PRODUCT_NAME" />,
+dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questa policy
+verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="4860900625632464759">Consenti agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="486146220825734683">Non consentire agli utenti di memorizzare le password Kerberos</translation>
 <translation id="4861767323695239729">Configura i metodi di immissione consentiti in una sessione utente</translation>
@@ -5410,6 +5475,17 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="504689994545234073">Attiva l'archiviazione locale dei file degli utenti</translation>
 <translation id="5048890362473520096">Attiva sandbox LPAC per i servizi di stampa</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
+<translation id="5055513974503523022">Sfondo AI generativa per videoconferenze consente agli utenti di esprimersi utilizzando le funzionalità di AI generativa per creare sfondi personalizzati per le videoconferenze su <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
 <translation id="5061114193960158745">Questo criterio consente di stabilire l'elenco di siti web che non causeranno mai un cambio di browser. Ogni elemento è considerato come una regola. Le regole con una corrispondenza non aprono un browser alternativo. A differenza del criterio <ph name="URL_LIST_POLICY_NAME" />, le regole vengono applicate in entrambe le direzioni. Quando il componente aggiuntivo <ph name="IE_PRODUCT_NAME" /> è attivo, il criterio consente di stabilire anche se <ph name="IE_PRODUCT_NAME" /> deve aprire questi URL in <ph name="PRODUCT_NAME" />.
@@ -5429,6 +5505,17 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la maggior parte dei dati utente viene rimossa. Vengono conservati solo i file indipendenti dal browser (come i download).
 
       Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, tutti i dati utente vengono conservati. Questa opzione presenta un rischio elevato di errore e richiede il Powerwash per il ripristino.</translation>
+<translation id="507032775281485106">Sfondo AI generativa consente agli utenti di esprimersi utilizzando le funzionalità di AI generativa per creare sfondi personalizzati su <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5071303485174858500">Viene disattivata la sessione Ospite gestita limitata.</translation>
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 
@@ -6231,6 +6318,17 @@ Nota: questo criterio non viene applicato alle modalità ospite o di navigazione
 
       Questo criterio è deprecato. Usa il criterio <ph name="USER_PRINTERS_ALLOWED" />.
       </translation>
+<translation id="5582570632838248297">Confronta schede è uno strumento basato sull'AI per confrontare le informazioni nelle schede di un utente. Ad esempio, la funzionalità può essere offerta all'utente quando sono aperte più schede con prodotti in una categoria simile.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5583806683960333345">Se questa impostazione viene attivata, gli utenti potranno utilizzare il tethering istantaneo, che consente al loro telefono Google di condividere i dati mobili con il dispositivo.
 
       Se questa impostazione viene disattivata, gli utenti non potranno utilizzare il tethering istantaneo.
@@ -7020,6 +7118,17 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="6203715554101884845">Questo criterio consente di elencare gli URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo HID con gli ID fornitore e prodotto indicati nella schermata di accesso. Ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" /> per essere valido, altrimenti viene ignorato. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> deve avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e potrebbe avere un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> viene omesso, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un elemento con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido e viene ignorato.
 
 Se il criterio non viene configurato, viene utilizzato il valore predefinito globale per tutti i siti (nessun accesso automatico).</translation>
+<translation id="6205472215607025971">Organizza schede è uno strumento basato sull'AI che crea automaticamente gruppi di schede in base alle schede aperte di un utente. I suggerimenti si basano sulle schede aperte, non sui contenuti delle pagine.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
@@ -7373,6 +7482,23 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6389858262577493180">Attiva l'uso di <ph name="GLIC" /></translation>
+<translation id="6390338862225976270">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Le funzionalità di AI generativa di DevTools includono:
+
+- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.
+
+- Assistenza AI: ricevi aiuto per comprendere gli stili CSS (dalla versione 131), le richieste di rete, il rendimento e i file (tutto dalla versione 132).
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
 <translation id="6397588391180665797">Consente di segnalare eventi di configurazione di rete degli utenti su dispositivi registrati.
 
@@ -8143,6 +8269,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="692096803256767290">Esegui il rollback del sistema operativo alla versione target</translation>
 <translation id="6921241119085515674">Consenti il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Consenti ai dispositivi di eseguire macchine virtuali su ChromeOS</translation>
+<translation id="6922265559343919728">Scegli se gli URL dei blob devono essere partizionati durante il recupero e la navigazione</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.
 
@@ -10234,6 +10361,17 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 
       Questo criterio esegue l'override di <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.</translation>
 <translation id="8528951285051082869">Non consentire ad alcuna app web di accedere a determinati tipi di file tramite l'API File Handling</translation>
+<translation id="8529958869261780079">Questa policy consente di controllare le impostazioni della funzionalità Aiutami a leggere per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8533145294731270627">Blocca download dannosi e tipi di file pericolosi.</translation>
 <translation id="8543108307976719751">Impedisci le connessioni di accesso remoto a questo computer</translation>
 <translation id="8543639085146778837">Consenti la raccolta di log di testo WebRTC dai servizi Google</translation>
@@ -10266,6 +10404,17 @@ Se lo imposti su Enabled o se non lo configuri, i tuoi utenti potranno attivare 
 Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deve essere impostato su Disabled.</translation>
 <translation id="8559221882677768248">Disattiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="8561512522781085002">Le impostazioni di Pagina su/Pagina giù usano la scorciatoia che contiene il tasto di modifica Ricerca</translation>
+<translation id="8562398722263115493">Aiutami a scrivere è un assistente di scrittura basato sull'AI per creare contenuti brevi sul web. I contenuti suggeriti si basano sui prompt inseriti dall'utente e sui contenuti della pagina web.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
 <translation id="8571119890730528225">Disattiva il partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="8571314270766672278">Esegui il rollback e il reset del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
@@ -10839,6 +10988,17 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="8983537551095611459">Configura l'elenco degli ID delle estensioni esenti dalla procedura di pulizia della sessione Ospite gestita limitata</translation>
 <translation id="8983539044126123594">Attiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="8985219286836584291">Attiva i report sulle informazioni di sistema del dispositivo</translation>
+<translation id="8986457452582123237">Crea temi con l'AI consente agli utenti di creare temi/sfondi personalizzati scegliendo tra un elenco di opzioni.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8986738188516411168">Migliora la produttività consentendo la visualizzazione di informazioni delle app e dei servizi Google sulle piattaforme di sistema di <ph name="PRODUCT_OS_NAME" />.
 
 Se questo criterio viene attivato o se non viene configurato, le integrazioni selezionate in <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" /> verranno attivate.
@@ -11033,7 +11193,19 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9107635531763682565">Se il criterio viene impostato su 1, i siti web possono mostrare le notifiche desktop. Se il criterio viene impostato su 2, le notifiche desktop vengono negate.
 
 Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="910929592571075861">Non partizionare gli URL dei blob durante il recupero e la navigazione.</translation>
 <translation id="9110194749335632373">Impedisci le connessioni di accesso da remoto da parte degli amministratori aziendali a questo computer</translation>
+<translation id="9110198768621013941">Attiva la policy AutofillPredictionSettings.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, materiali originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, materiali originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9110251436602897914">Segnala informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="9110485853581788150">Un elenco di certificati che <ph name="PRODUCT_NAME" /> non considera attendibili né non attendibili,
 ma che possono essere usati come suggerimenti per la creazione di percorsi. I certificati devono essere codificati in base64.</translation>

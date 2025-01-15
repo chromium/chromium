@@ -320,7 +320,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1210678701920254279">Ver o agregar impresoras y ver trabajos de impresión activos</translation>
 <translation id="1211769675100312947">Tú seleccionas los accesos directos</translation>
 <translation id="1213254615020057352">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la Actividad web y de aplicaciones adicional en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta.</translation>
-<translation id="1214004433265298541">Certificado proporcionado por tu administrador, que puede ver las credenciales de <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nueva aplicación en segundo plano agregada</translation>
 <translation id="1216542092748365687">Quitar huella dactilar</translation>
 <translation id="1216891999012841486">Más información para corregir errores de actualización</translation>
@@ -790,6 +789,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Podrá modificar o eliminar tus archivos.</translation>
 <translation id="1549966883323105187">Accede más rápido a tus contraseñas guardadas</translation>
 <translation id="1550656959113606473">Chrome predeterminado</translation>
+<translation id="1552065819535218588">Chrome dejará de marcar las notificaciones de <ph name="URL" /> como spam</translation>
 <translation id="1552301827267621511">La extensión "<ph name="EXTENSION_NAME" />" seleccionó <ph name="SEARCH_PROVIDER_DOMAIN" /> para realizar búsquedas</translation>
 <translation id="1552752544932680961">Administrar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
@@ -3080,6 +3080,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3159978855457658359">Edita el nombre del dispositivo</translation>
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
+<translation id="3162070126914310576">No se puede inscribir este dispositivo en este momento porque tu unidad organizativa alcanzó su límite de inscripción inicial. Comunícate con tu administrador para obtener asistencia.</translation>
 <translation id="3162766632262775911">Siempre se puede usar el optimizador V8</translation>
 <translation id="3162853326462195145">Cuenta de una institución educativa</translation>
 <translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos del carrito de compras.</translation>
@@ -9053,6 +9054,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="746861123368584540">Se cargó la extensión.</translation>
 <translation id="7469612367552312334">Activado • Usa el lenguaje cotidiano para buscar en tu historial de navegación y encontrar los sitios que visitaste</translation>
 <translation id="7470131554696493512">No permitir que los accesorios Thunderbolt o USB4 accedan a la memoria (RAM) y la compartan</translation>
+<translation id="7470284766345262333">Esta cuenta no está asociada a Google, por lo que no están disponibles funciones como la sincronización de Chrome</translation>
 <translation id="7470424110735398630">Puede ver el contenido del portapapeles</translation>
 <translation id="747114903913869239">Error: No se puede decodificar la extensión</translation>
 <translation id="7471520329163184433">Más lenta</translation>

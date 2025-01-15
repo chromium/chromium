@@ -1206,6 +1206,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
+<translation id="3162070126914310576">Não é possível registrar este dispositivo agora porque sua unidade organizacional atingiu o limite de registro inicial. Entre em contato com seu administrador para receber ajuda.</translation>
 <translation id="3162559335345991374">O Wi-Fi que você está usando pode exigir a visita a uma página de login.</translation>
 <translation id="316638481603975524">Pode pedir para instalar apps da Web</translation>
 <translation id="3168744840365648658">Equipamento de rádio</translation>
@@ -1940,6 +1941,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">O upload do arquivo para o Microsoft OneDrive foi pausado</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Esta política controla o comportamento padrão das seguintes políticas: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Abre um pop-up de confirmação no site do seu banco</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
@@ -2382,6 +2384,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5244521145258281926">Botão "Gerenciar Conta do Google". Ative para gerenciar suas informações, sua privacidade e sua segurança na sua Conta do Google</translation>
 <translation id="5244732203286792411">Carregando…
     Isso pode levar um minuto.</translation>
+<translation id="5248543496748975054">Número do cartão não preenchido?</translation>
 <translation id="5250209940322997802">"Conectar à rede"</translation>
 <translation id="52517543715119994">Saiba mais sobre os recursos do Chrome</translation>
 <translation id="5251803541071282808">Nuvem</translation>
@@ -3998,6 +4001,7 @@ Mais detalhes:
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8118506371121007279">Enviar feedback</translation>
+<translation id="8120720167840853945">Esta política não controla o comportamento padrão de outras políticas.</translation>
 <translation id="8127301229239896662">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao administrador de TI para resolver o problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios. Desativar uma categoria mais ampla também bloqueia os temas relacionados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

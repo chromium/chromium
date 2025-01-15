@@ -387,6 +387,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Ak chcete používať Správcu hesiel s Kľúčenkou systému macOS, znova spustite Chromium a povoľte prístup ku Kľúčenke. Po opätovnom spustení sa karty znova otvoria.</translation>
 <translation id="1652887625750064647">Najlepšia zhoda vygenerovaná umelou inteligenciou</translation>
+<translation id="1653465303147789530">Plaťte spôsobom <ph name="PAYMENT_METHOD" /> bez prepínania aplikácií</translation>
 <translation id="1656024727720460136">Chrome zjednodušil túto stránku, aby sa dala ľahšie prečítať. Chrome načítal pôvodnú stránku cez zabezpečené pripojenie.</translation>
 <translation id="1656489000284462475">Vyzdvihnutie</translation>
 <translation id="1658111267661135323">Televízia a video</translation>
@@ -557,6 +558,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1959001866257244765">Pomôžte zlepšovať bezpečnosť na internete pre všetkých odosielaním <ph name="BEGIN_WHITEPAPER_LINK" />webových adries a obsahu niektorých stránok, ktoré navštevujete, ako aj obmedzených informácií o systéme<ph name="END_WHITEPAPER_LINK" /> Googlu. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravidlá ochrany súkromia<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Váš text a obsah stránky sa odosielajú Googlu a môže byť pomocou nich zlepšená táto funkcia.
   <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Absolvujte jednorazovú bezpečnostnú kontrolu, aby ste mohli platiť rýchlejšie</translation>
 <translation id="1962204205936693436">Záložky (<ph name="DOMAIN" />)</translation>
 <translation id="1973335181906896915">Chyba serializácie</translation>
 <translation id="1973785048533660168">Práca v administratíve</translation>
@@ -1204,6 +1206,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3156511682997763015">O 10 sekúnd vpred</translation>
 <translation id="3157931365184549694">Obnoviť</translation>
 <translation id="3158539265159265653">Disk</translation>
+<translation id="3162070126914310576">Toto zariadenie sa momentálne nedá zaregistrovať, pretože vaša organizačná jednotka dosiahla počiatočný limit registrácie. Kontaktujte správcu a požiadajte o pomoc.</translation>
 <translation id="3162559335345991374">Sieť Wi‑Fi, ktorú používate, môže vyžadovať, aby ste navštívili jej prihlasovaciu stránku</translation>
 <translation id="316638481603975524">Môže žiadať o povolenie inštalovať webové aplikácie</translation>
 <translation id="3168744840365648658">Rádiozariadenia</translation>
@@ -1581,6 +1584,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="378611282717571199">Najlepšie zhody pre „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Veľkosť 16</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
+<translation id="3791118028061680614">Platenie bez prepínania aplikácií</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> palcov)</translation>
 <translation id="3792826587784915501">Kultové a indie filmy</translation>
 <translation id="3793574014653384240">Počty a príčiny nedávnych zrútení</translation>
@@ -1933,6 +1937,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4384395682990721132">A4×3</translation>
 <translation id="4387692837058041921">Nahrávanie súborov do služby Microsoft OneDrive bolo pozastavené</translation>
 <translation id="4390472908992056574">Okraj</translation>
+<translation id="4395550503472021297">Toto pravidlo určuje predvolené správanie nasledujúcich pravidiel: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Otvorí vyskakovacie okno na overenie webu banky</translation>
 <translation id="4406883609789734330">Živý prepis</translation>
 <translation id="4406896451731180161">výsledky vyhľadávania</translation>
@@ -2375,6 +2380,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5244521145258281926">Tlačidlo Spravovať účet Google, ktorého aktivovaním môžete spravovať svoje informácie, ochranu súkromia a zabezpečenie v účte Google</translation>
 <translation id="5244732203286792411">Načítava sa…
     Môže to chvíľu trvať.</translation>
+<translation id="5248543496748975054">Nie je vyplnené číslo karty?</translation>
 <translation id="5250209940322997802">„Pripojte sa k sieti“</translation>
 <translation id="52517543715119994">Informácie o funkciách Chromu</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3990,6 +3996,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8116925261070264013">Vypnuté</translation>
 <translation id="8118489163946903409">Spôsob platby</translation>
 <translation id="8118506371121007279">Odoslať spätnú väzbu</translation>
+<translation id="8120720167840853945">Toto pravidlo neurčuje predvolené správanie žiadnych iných pravidiel.</translation>
 <translation id="8127301229239896662">Softvér <ph name="SOFTWARE_NAME" /> nebol v počítači alebo sieti riadne nainštalovaný. Požiadajte správcu IT, aby tento problém vyriešil.</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8133495915926741232">Vyberte, ktoré všeobecné kategórie tém môžu pomáhať prispôsobovať reklamy. Vypnutím všeobecnej kategórie zablokujete aj jej súvisiace témy. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>

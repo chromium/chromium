@@ -1047,6 +1047,11 @@ void WizardController::ShowQuickStartScreen() {
 }
 
 void WizardController::ShowNetworkScreen() {
+  if (switches::IsOOBENetworkSetupSkippedForTesting()) {
+    OnNetworkScreenExit(NetworkScreen::Result::NOT_APPLICABLE);
+    return;
+  }
+
   SetCurrentScreen(GetScreen(NetworkScreenView::kScreenId));
 }
 

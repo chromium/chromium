@@ -321,7 +321,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1210678701920254279">Verificar ou adicionar impressoras e conferir trabalhos de impressão ativos</translation>
 <translation id="1211769675100312947">Atalhos selecionados por você</translation>
 <translation id="1213254615020057352">Envie dados de uso e diagnóstico. Ajude a melhorar a experiência da criança com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Essa configuração é aplicada pelo proprietário, que pode optar por enviar dados de uso e diagnóstico deste dispositivo para o Google. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela.</translation>
-<translation id="1214004433265298541">Certificado fornecido pelo seu administrador, que pode conferir as credenciais de <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Novo aplicativo de fundo adicionado</translation>
 <translation id="1216542092748365687">Remover impressão digital</translation>
 <translation id="1216891999012841486">Saiba mais sobre como corrigir erros de atualização</translation>
@@ -795,6 +794,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1549788673239553762"><ph name="APP_NAME" /> deseja acessar <ph name="VOLUME_NAME" />. Ele pode modificar ou excluir seus arquivos.</translation>
 <translation id="1549966883323105187">Acesse suas senhas salvas com mais rapidez</translation>
 <translation id="1550656959113606473">Chrome padrão</translation>
+<translation id="1552065819535218588">O Chrome não vai mais marcar as notificações de <ph name="URL" /> como spam</translation>
 <translation id="1552301827267621511">A extensão <ph name="EXTENSION_NAME" /> mudou o mecanismo de pesquisa para <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gerenciar extensão</translation>
 <translation id="1553538517812678578">ilimitado</translation>
@@ -3096,6 +3096,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3159978855457658359">Editar o nome do dispositivo</translation>
 <translation id="3160928651883997588">Preferências de VPN</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="3162070126914310576">Não é possível registrar este dispositivo agora porque sua unidade organizacional atingiu o limite de registro inicial. Entre em contato com seu administrador para receber ajuda.</translation>
 <translation id="3162766632262775911">Sites com permissão de uso contínuo do otimizador V8</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
 <translation id="3162899666601560689">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras</translation>
@@ -9073,6 +9074,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="746861123368584540">Extensão carregada</translation>
 <translation id="7469612367552312334">Ativada: pesquise seu histórico de navegação usando linguagem natural para encontrar sites que você visitou</translation>
 <translation id="7470131554696493512">Impedir que acessórios Thunderbolt ou USB4 acessem e compartilhem a memória (RAM)</translation>
+<translation id="7470284766345262333">Esta conta não está associada ao Google, então recursos como a Sincronização do Chrome estão indisponíveis</translation>
 <translation id="7470424110735398630">Permitir o acesso à área de transferência</translation>
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>

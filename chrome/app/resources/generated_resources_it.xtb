@@ -160,6 +160,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1101254380285078812">{COUNT,plural, =1{1 password}other{{COUNT} password}}</translation>
 <translation id="1102759278139578486">Impossibile scaricare i file di annotazioni del nodo principale. Riprova più tardi.</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Perderai immediatamente l'accesso a questo gruppo di schede, che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="1106350001632362876">Aumenta soglia</translation>
 <translation id="1107482171728500359">Condividi microfono</translation>
 <translation id="110850812463801904">Connettiti manualmente a OneDrive</translation>
@@ -320,7 +321,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1210678701920254279">Visualizza o aggiungi stampanti e visualizza i processi di stampa attivi</translation>
 <translation id="1211769675100312947">Le scorciatoie vengono selezionate da te</translation>
 <translation id="1213254615020057352">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google.</translation>
-<translation id="1214004433265298541">Certificato fornito dall'amministratore che può visualizzare le credenziali per il dominio <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nuova applicazione in background aggiunta</translation>
 <translation id="1216542092748365687">Rimuovere l'impronta</translation>
 <translation id="1216891999012841486">Scopri di più sulla correzione degli errori di aggiornamento</translation>
@@ -793,6 +793,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vorrebbe accedere a <ph name="VOLUME_NAME" />. Potrebbe modificare o eliminare i tuoi file.</translation>
 <translation id="1549966883323105187">Accedi alle tue password salvate più velocemente</translation>
 <translation id="1550656959113606473">Impostazioni predefinite di Chrome</translation>
+<translation id="1552065819535218588">Chrome non etichetterà più le notifiche di <ph name="URL" /> come spam</translation>
 <translation id="1552301827267621511">L'estensione "<ph name="EXTENSION_NAME" />" ha modificato la ricerca per utilizzare <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gestisci estensione</translation>
 <translation id="1553538517812678578">illimitato</translation>
@@ -1692,6 +1693,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2173801458090845390">Aggiungi ID richiesta a questo dispositivo</translation>
 <translation id="2175384018164129879">Gestisci motori di ricerca e ricerca nei siti</translation>
+<translation id="2175526076681939329">Utilizza tasto principale</translation>
 <translation id="217576141146192373">Impossibile aggiungere la stampante. Controlla la configurazione della stampante e riprova.</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="217631816678106981">Non incollare</translation>
@@ -3413,6 +3415,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3407392651057365886">Vengono precaricate più pagine. Le pagine potrebbero essere precaricate tramite i server di Google quando richiesto da altri siti</translation>
 <translation id="3407967630066378878">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali sul lato sinistro di questo <ph name="DEVICE_TYPE" />. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Fotocamera e microfono in uso</translation>
+<translation id="3409157109901479672">Lato sinistro</translation>
 <translation id="3409513286451883969">&amp;Traduci selezione in <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Passa alla selezione</translation>
 <translation id="3413122095806433232">Autorità emittenti di CA: <ph name="LOCATION" /></translation>
@@ -4698,6 +4701,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4290826901752066702"><ph name="NUM" /> membro</translation>
 <translation id="4290898381118933198">Scorri per navigare da una pagina all'altra</translation>
 <translation id="4291265871880246274">Finestra di dialogo per l'accesso</translation>
+<translation id="4292613336957320546">Accelerazione</translation>
 <translation id="429312253194641664">Un sito sta riproducendo contenuti multimediali</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> eliminato dalla cronologia dei download, ma si trova ancora sul dispositivo</translation>
 <translation id="4295072614469448764">L'app è disponibile nel tuo terminale. Potrebbe anche essere presente un'icona nell'Avvio app.</translation>
@@ -5865,6 +5869,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, ricerca in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Inserisci il PIN del token di sicurezza. Se non conosci il PIN, devi reimpostare il token di sicurezza.</translation>
 <translation id="5139955368427980650">&amp;Apri</translation>
+<translation id="5140742218917419811">Tassti da utilizzare</translation>
 <translation id="5141421572306659464">Account principale</translation>
 <translation id="5141957579434225843">Ad esempio, utilizza oà, oè, uỳ anziché òa, òe, ùy</translation>
 <translation id="5143374789336132547">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata quando fai clic sul pulsante Pagina iniziale.</translation>
@@ -5883,6 +5888,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5149602533174716626">Copia frame</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
 <translation id="5151354047782775295">Libera spazio sul disco, altrimenti alcuni dati potrebbero essere eliminati automaticamente</translation>
+<translation id="5153074793829217329">Usa la tastiera o un tastierino numerico per controllare il cursore del mouse</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Impostazioni avanzate per <ph name="PRINTING_DESTINATION" /></translation>
@@ -7972,6 +7978,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6689714331348768690">Fai venire al computer <ph name="SUPERVISED_USER_NAME" />. Tuo figlio leggerà alcune frasi sullo schermo per creare il suo modello vocale.
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
+<translation id="6689948774466767379">Tasti mouse</translation>
 <translation id="6690659332373509948">Impossibile analizzare il file: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Avanti</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}other{{COUNT} pagine}}</translation>
@@ -10059,6 +10066,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Aggiungi scheda all'elenco di lettura}other{Aggiungi schede all'elenco di lettura}}</translation>
 <translation id="8169177848833352618">Purtroppo questo computer non soddisfa i requisiti per l'installazione di Bruschetta. Il codice di errore è <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Lato destro</translation>
 <translation id="8174047975335711832">Informazioni del dispositivo</translation>
 <translation id="8176332201990304395">Rosa e bianco</translation>
 <translation id="8176529144855282213">Per attivare l'accesso al microfono, attiva l'interruttore fisico del microfono sul dispositivo</translation>

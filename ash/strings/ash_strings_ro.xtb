@@ -282,6 +282,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1948405482892809935">Comută la următorul utilizator</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">S-a înregistrat ecranul</translation>
+<translation id="1956087014741188812">Întrerupe tastele pentru mouse</translation>
 <translation id="1957958912175573503">Setează limba</translation>
 <translation id="1961239773406905488">Previzualizarea camerei este ascunsă</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="225680501294068881">Se caută gadgeturi...</translation>
 <translation id="2257486738914982088">A apărut o eroare în timpul descărcării <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fișiere sugerate</translation>
+<translation id="2266607665880926261">S-au întrerupt tastele pentru mouse</translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
 <translation id="2268731132310444948">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. După ce ai activat Lansatorul, vei vedea o bară de căutare îmbunătățită. Poți începe să introduci text pentru a căuta fișiere, aplicații și altele. Poți și să primești răspunsuri la întrebările despre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Deconectează tot</translation>
@@ -540,6 +542,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2876338922445400217">Mărește pe ecran</translation>
 <translation id="2878884018241093801">Niciun element recent</translation>
 <translation id="2880541185262491188">Prea multe încercări de introducere a codului PIN. Așteaptă <ph name="TIME_LEFT" /> și încearcă din nou</translation>
+<translation id="2883271196820422439">Reia tastele pentru mouse</translation>
 <translation id="2885950158625301909">Află mai multe</translation>
 <translation id="2891209721153296020">Deselectează</translation>
 <translation id="2894949423239620203">Cablul poate afecta performanța</translation>
@@ -727,6 +730,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Renunță la configurarea afișării fotografiilor și a elementelor media recente ale telefonului</translation>
 <translation id="3542066395059568317">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți da clic dreapta ca să elimini recomandările.</translation>
+<translation id="3545224667633138205">S-au reluat tastele pentru mouse</translation>
 <translation id="3552189655002856821">Conexiunea Wi-Fi este dezactivată</translation>
 <translation id="3554215588514239132">Afișează sau ascunde panoul Developer Tools</translation>
 <translation id="3554637740840164787">S-a fixat <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3727231512028252576">Elementele nu au putut fi încărcate. Încearcă din nou când ești online.</translation>
 <translation id="3735740477244556633">Sortează după</translation>
 <translation id="3738664582935948253">Acum poți afișa clicurile și comenzile rapide de la tastatură în înregistrările ecranului</translation>
+<translation id="3741482431277446954">Butonul din dreapta al mouse-ului</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
 <translation id="3743775386021959186">Modul Focus este activat, timp rămas: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Ascunde sugestia meteo</translation>
@@ -858,7 +863,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3958714870339660776">Toată ziua</translation>
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963124517343721543">Continuă cu ușurință de unde ai rămas, deschizând ferestrele și filele anterioare. Vei vedea și sugestii personalizate privind pașii următori.</translation>
-<translation id="396506362088290977">Testează sunetul microfonului</translation>
 <translation id="3969043077941541451">Dezactivată</translation>
 <translation id="3970324493235864154">Afișează notificările telefonului</translation>
 <translation id="397105322502079400">Se calculează...</translation>
@@ -1300,7 +1304,6 @@ Niciun dispozitiv conectat.</translation>
 <translation id="536019650977002321">Administratorul nu permite înregistrarea audio. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5361524080961918551">S-au descărcat parțial <ph name="LANGUAGE" /> fișiere vocale</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accesează fila</translation>
-<translation id="5363835273551457276">Poți să testezi sunetul microfonului. Închide panoul pentru oprire.</translation>
 <translation id="5364693579536176785">spațiu de stocare</translation>
 <translation id="5369573834963677938">Controlul facial va fi disponibil pentru alți utilizatori ai dispozitivului</translation>
 <translation id="5369717264580061086">Previzualizează fișierul în aplicația Fișiere</translation>
@@ -1830,6 +1833,7 @@ Instalare nouă</translation>
 <translation id="7118268675952955085">captură de ecran</translation>
 <translation id="7118597077555700347">Deschide <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Selectează cuvântul următor sau litera următoare</translation>
+<translation id="7124556000457919678">Când este activată, întrerupe și reia tastele pentru mouse</translation>
 <translation id="7126996685418858413">Deschis în ultima săptămână</translation>
 <translation id="7130207228079676353">CEL MAI PROBABIL DE ACCESAT</translation>
 <translation id="7131634465328662194">Vei fi deconectat(ă) automat.</translation>
@@ -1851,6 +1855,7 @@ Instalare nouă</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
 <translation id="7219573373513695352">Niciun dispozitiv conectat</translation>
 <translation id="7229029500464092426">Memorie <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
+<translation id="7239814253344511868">Ambele butoane ale mouse-ului</translation>
 <translation id="7244725679040769470">Baterie rămasă: <ph name="PERCENTAGE" /> %. Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2152,6 +2157,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8203224998425013577">Afișează mai multe emojiuri și GIF-uri</translation>
 <translation id="8203795194971602413">Clic dreapta</translation>
 <translation id="8205469348819768313">Încerci să folosești Page Down? Folosește</translation>
+<translation id="8213376797713070611">Butonul din stânga al mouse-ului</translation>
 <translation id="8214996719228530800">Canalul Canary</translation>
 <translation id="8219451629189078428">În această perioadă, Chromebookul trebuie să rămână deschis și conectat la o sursă de alimentare. Asigură-te că ai conectat corect cablurile de la încărcător sau de la adaptor, atât la Chromebook, cât și la priza electrică. Nu opri Chromebookul.</translation>
 <translation id="8220076512072059941">Adaugă <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2377,6 +2383,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Funcția Bluetooth nu este disponibilă</translation>
+<translation id="9050999376345823055">Apasă pe . pentru a elibera</translation>
 <translation id="906458777597946297">Maximizați fereastra</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9070640332319875144">Setări pentru Asistent</translation>

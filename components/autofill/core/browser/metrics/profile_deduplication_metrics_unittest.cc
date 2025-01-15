@@ -270,8 +270,8 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_QuasiDuplicateAdoption) {
   AutofillProfile b = test::GetFullProfile();
   b.SetRawInfo(COMPANY_NAME, u"B Company");
 
-  a.set_use_count(50);
-  b.set_use_count(100);
+  a.usage_history().set_use_count(50);
+  b.usage_history().set_use_count(100);
 
   std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);

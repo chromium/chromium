@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -70,6 +72,9 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
         TestWithBrowserView::GetTestingFactories();
     factories.emplace_back(BookmarkModelFactory::GetInstance(),
                            BookmarkModelFactory::GetDefaultFactory());
+    factories.emplace_back(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     factories.emplace_back(ManagedBookmarkServiceFactory::GetInstance(),
                            ManagedBookmarkServiceFactory::GetDefaultFactory());
     factories.emplace_back(

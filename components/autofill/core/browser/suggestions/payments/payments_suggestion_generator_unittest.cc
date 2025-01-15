@@ -778,7 +778,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
         CreditCard credit_card =
             is_expired ? test::GetExpiredCreditCard() : test::GetCreditCard();
         credit_card.SetNumber(base::NumberToString16(card_number++));
-        credit_card.set_use_date(is_disused ? kDisuseTime : kNow);
+        credit_card.usage_history().set_use_date(is_disused ? kDisuseTime
+                                                            : kNow);
         if (is_local) {
           credit_card.set_record_type(CreditCard::RecordType::kLocalCard);
           payments_data().AddCreditCard(credit_card);
@@ -1150,7 +1151,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
         /*guid=*/"00000000-0000-0000-0000-000000000001");
     local_card.SetNumber(u"5454545454545454");
     local_card.SetExpirationYear(2020);
-    local_card.set_use_date(AutofillClock::Now() - base::Days(365));
+    local_card.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(365));
     payments_data().AddCreditCard(local_card);
     payments_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
@@ -2662,8 +2664,9 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
   CreditCard server_card1 = CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000001",
       /*server_id=*/"server_id1", /*instrument_id=*/1);
-  server_card1.set_use_count(100);
-  server_card1.set_use_date(AutofillClock::Now() - base::Days(5));
+  server_card1.usage_history().set_use_count(100);
+  server_card1.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(5));
   Suggestion suggestion1 = CreateCreditCardSuggestionForTest(
       server_card1, *autofill_client(), CREDIT_CARD_NUMBER,
       /*virtual_card_option*/ false,
@@ -2673,8 +2676,9 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
   CreditCard server_card2 = CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000002",
       /*server_id=*/"server_id2", /*instrument_id=*/2);
-  server_card2.set_use_count(200);
-  server_card2.set_use_date(AutofillClock::Now() - base::Days(40));
+  server_card2.usage_history().set_use_count(200);
+  server_card2.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(40));
   Suggestion suggestion2 = CreateCreditCardSuggestionForTest(
       server_card2, *autofill_client(), CREDIT_CARD_NUMBER,
       /*virtual_card_option*/ false,
@@ -2684,8 +2688,9 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
   CreditCard server_card3 = CreateServerCard(
       /*guid=*/"00000000-0000-0000-0000-000000000003",
       /*server_id=*/"server_id3", /*instrument_id=*/3);
-  server_card3.set_use_count(10);
-  server_card3.set_use_date(AutofillClock::Now() - base::Days(10));
+  server_card3.usage_history().set_use_count(10);
+  server_card3.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(10));
   Suggestion suggestion3 = CreateCreditCardSuggestionForTest(
       server_card3, *autofill_client(), CREDIT_CARD_NUMBER,
       /*virtual_card_option*/ false,

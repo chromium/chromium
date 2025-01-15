@@ -340,7 +340,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2571834852878229351">직접 만들기</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 “<ph name="GROUP_NAME" />” 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, Google 서비스 전반에서 나와 더 이상 소통할 수 없게 됩니다.</translation>
-<translation id="2578337197553672982">어린이를 위한 Google 콘텐츠</translation>
 <translation id="2579297619530305344">모든 기기의 비밀번호가 전체 높이로 열림</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
@@ -734,6 +733,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
 <translation id="4425173294238317796">패스키 확인 시트</translation>
 <translation id="442518031075347249">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK1" />가상 카드에 관해 자세히 알아보기<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">모든 북마크</translation>
 <translation id="4430277756566635951">현재 <ph name="EMAIL" />님이 선택되었습니다. 계정을 선택하세요.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> 탭 닫기</translation>
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>
@@ -806,7 +806,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
-<translation id="4750356170202299988">어린이를 위한 콘텐츠</translation>
 <translation id="4758061975920522644">이미지만 공유</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4763480195061959176">동영상</translation>
@@ -1378,7 +1377,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{지금 변경해야 합니다.}other{지금 변경해야 합니다.}}</translation>
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
-<translation id="7205672015775254816">어린이를 위한 Google 콘텐츠 - 사용 안함</translation>
 <translation id="7207760545532569765">탭 <ph name="TAB_COUNT" />개를 새 백그라운드 탭으로 복원합니다.</translation>
 <translation id="7217781228893594884">Chrome을 종료하면 시크릿 탭이 잠깁니다.</translation>
 <translation id="7221869452894271364">페이지 새로고침</translation>
@@ -1533,7 +1531,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7886917304091689118">Chrome에서 실행 중</translation>
 <translation id="7887174313503389866">주요 개인 정보 보호 및 보안 제어 기능을 둘러보세요. 추가 옵션을 알아보려면 개별 설정으로 이동합니다</translation>
-<translation id="7896724475402191389">어린이를 위한 콘텐츠 - 사용 안함</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{조직에서 1개를 차단함}other{조직에서 #개를 차단함}}</translation>
 <translation id="7914399737746719723">앱이 설치됨</translation>
@@ -1647,6 +1644,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
+<translation id="8396098434728053815">탭 오디오도 공유</translation>
 <translation id="8398389123831319859">시크릿 모드로 전환하려면 두 번 탭하고 길게 누르세요.</translation>
 <translation id="8402673309244746971">팔로우 중으로 이동</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>

@@ -3856,7 +3856,7 @@ Si cette règle est désactivée ou si elle n'est pas configurée, les règles c
 
 Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
 
-Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si les deux règles sont activées, les règles cloud utilisateurs prévalent aussi sur les règles de la plate-forme en conflit.</translation>
+Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" />. Si les deux règles sont activées, les règles cloud utilisateur prévalent aussi sur les règles de la plate-forme en conflit.</translation>
 <translation id="390296766888987595">Le clavier à l'écran n'est affiché que si l'utilisateur ou l'application le demande.</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="3904304709151553598">Désactiver les rapports sur les ventilateurs de l'appareil</translation>
@@ -7274,6 +7274,7 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
 <translation id="6383774771168138899">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
+<translation id="6389858262577493180">Activer l'utilisation de <ph name="GLIC" /></translation>
 <translation id="6394350458541421998">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser la règle PresentationScreenDimDelayScale à la place.</translation>
 <translation id="6397588391180665797">Signale la configuration du réseau des utilisateurs sur les appareils enregistrés.
 
@@ -7852,6 +7853,7 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 <translation id="6766216162565713893">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil Bluetooth à proximité</translation>
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
 <translation id="6774132787348495175">Ne pas autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
+<translation id="6776202826080834193">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent utiliser la fonctionnalité <ph name="GLIC" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas interagir avec <ph name="GLIC" />. Le bouton de la barre d'onglets est masqué et <ph name="GLIC" /> n'est pas disponible via un raccourci clavier, sauf s'il est activé dans un autre profil.</translation>
 <translation id="678121785914414680">Cette règle permet de lister les types de fichiers à ouvrir automatiquement une fois téléchargés. Les extensions doivent être indiquées sans le séparateur qui les précède (par exemple, "txt" et non ".txt").
 
 Ces fichiers à ouvrir automatiquement restent soumis aux vérifications de la navigation sécurisée (si activée) et ne seront ouverts que si le résultat est concluant.
@@ -10306,6 +10308,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
       Si <ph name="PRODUCT_NAME" /> est en cours d'utilisation lorsque le paramètre de cette règle change, la modification ne s'applique qu'aux nouveaux onglets ouverts.</translation>
 <translation id="8685748277907759932">Empêcher les utilisateurs d'employer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="8686700500128191717">Activer les rapports sur les utilisateurs de l'appareil</translation>
+<translation id="8687570136798972353">Activer <ph name="GLIC" /></translation>
 <translation id="8687958770985542440">Réactiver les API Web Components v0 jusqu'à la version M84.</translation>
 <translation id="8693243869659262736">Utiliser le client DNS intégré</translation>
 <translation id="8695006038397632296">Créer et importer des demandes d'installation d'extensions dans la console d'administration</translation>
@@ -10915,6 +10918,7 @@ Pour que cette règle soit effective, la règle <ph name="FULL_RESTORE_ENABLED_N
       Si la règle est définie sur "True", ces informations sont transmises.</translation>
 <translation id="9131419675479917141">Autoriser les utilisateurs à définir un code peu sécurisé, mais afficher un avertissement</translation>
 <translation id="913195841488580904">Bloquer l'accès à une liste d'URL</translation>
+<translation id="9132345265506256744">Désactiver l'utilisation de <ph name="GLIC" />.</translation>
 <translation id="9133526448421932754">Rétroéclairage du clavier jaune</translation>
 <translation id="9135033364005346124">Activer le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Afficher une notification lorsqu'un périphérique USB est détecté</translation>
@@ -11053,7 +11057,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="981346395360763138">Services de localisation Google</translation>
 <translation id="982192230088110287">Si cette règle est activée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est obligatoire. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> est bloqué.
 
-Si cette règle est désactivée ou si elle n'est pas configurée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est facultative. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
+Si cette règle est désactivée ou si elle n'est pas configurée, l'enregistrement du navigateur à <ph name="CHROME_ENTERPRISE_CORE_NAME" /> est facultatif. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
 
 Cette règle est utilisée pour l'enregistrement de la règle cloud s'appliquant aux ordinateurs de bureau. Pour en savoir plus, consultez https://support.google.com/chrome/a/answer/9301891.</translation>
 <translation id="982195863867062122">Activer <ph name="DBSC_FEATURE_NAME" />.</translation>

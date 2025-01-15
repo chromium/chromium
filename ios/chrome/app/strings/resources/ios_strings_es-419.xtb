@@ -991,6 +991,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5506763544823940561">Guardar imagen en…</translation>
 <translation id="5511959326926949696">Protección extrema opcional para tu navegador. Solo debe usarse si crees que podrías recibir un ciberataque muy sofisticado.</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Salir del grupo</translation>
 <translation id="5524590039848017563">Botón principal de la barra de herramientas contraído</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5532545557415295622">Diálogo de tiempo de espera de inactividad</translation>
@@ -1030,6 +1031,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5646284034397250191">Se creó la etiqueta. Fecha pendiente</translation>
 <translation id="5647096944343801045">Punto de entrada grande</translation>
 <translation id="5647193778876139879">Mantén presionada una dirección.</translation>
+<translation id="5647702255748985085">¿Quieres abandonar el grupo?</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
 <translation id="5657156137487675418">Permitir todas las cookies</translation>
@@ -1115,6 +1117,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6027619584715411062">Accede para obtener tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6027945736510816438">¿Quisiste decir <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">nueva función</translation>
+<translation id="6038823991892265570">Administrar el almacenamiento de Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>

@@ -340,7 +340,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2571834852878229351">Creu fy un fy hun</translation>
 <translation id="2574249610672786438">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch ar eich holl ddyfeisiau</translation>
 <translation id="2577981599306533385">Bydd <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) yn colli mynediad at y grŵp tabiau '<ph name="GROUP_NAME" />' ar unwaith, ac ni fydd yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
-<translation id="2578337197553672982">Cynnwys gan Google ar gyfer meddyliau ifanc</translation>
 <translation id="2579297619530305344">Agorwyd cyfrineiriau ar eich holl ddyfeisiau ar uchder llawn</translation>
 <translation id="2581165646603367611">Bydd hyn yn clirio cwcis, storfa, a data eraill o wefannau nad yw Chrome yn credu sy'n bwysig.</translation>
 <translation id="2587052924345400782">Mae fersiwn mwy newydd ar gael</translation>
@@ -734,6 +733,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4425140285732600465">Yn dilyn y pris. Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="4425173294238317796">Taflen cadarnhau cod pas</translation>
 <translation id="442518031075347249">Ni fyddwch yn gallu defnyddio eich cerdyn rhithwir gyda Google Pay mwyach. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Pob Nod tudalen</translation>
 <translation id="4430277756566635951">Mae <ph name="EMAIL" /> wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>
 <translation id="4452411734226507615">Cau'r tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Wedi creu nod tudalen yn <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4742795653798179840">Wedi dileu data Chrome</translation>
 <translation id="4742970037960872810">Tynnu'r amlygu</translation>
 <translation id="4749960740855309258">Agor tab newydd</translation>
-<translation id="4750356170202299988">Cynnwys ar gyfer meddyliau ifanc</translation>
 <translation id="4758061975920522644">Rhannu llun yn unig</translation>
 <translation id="4759238208242260848">Lawrlwythiadau</translation>
 <translation id="4763480195061959176">fideo</translation>
@@ -1378,7 +1377,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7191430249889272776">Mae tab wedi'i agor yn y cefndir.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Dylech newid hwn nawr}zero{Dylech newid y rhain nawr}two{Dylech newid y rhain nawr}few{Dylech newid y rhain nawr}many{Dylech newid y rhain nawr}other{Dylech newid y rhain nawr}}</translation>
 <translation id="7196215469483532480">Esboniad canllaw preifatrwydd sydd wedi'i agor ar uchder llawn</translation>
-<translation id="7205672015775254816">Cynnwys gan Google ar gyfer meddyliau ifanc - wedi'i ddiffodd</translation>
 <translation id="7207760545532569765">Adfer <ph name="TAB_COUNT" /> o dabiau fel tabiau cefndirol newydd.</translation>
 <translation id="7217781228893594884">Bydd tabiau anhysbys yn cael eu cloi pan fyddwch yn gadael Chrome</translation>
 <translation id="7221869452894271364">Ail-lwytho'r dudalen hon</translation>
@@ -1533,7 +1531,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7876243839304621966">Tynnu pob un</translation>
 <translation id="7886917304091689118">Yn Rhedeg yn Chrome</translation>
 <translation id="7887174313503389866">Cymerwch daith dywysedig o reolyddion diogelwch a phreifatrwydd allweddol. Am ragor o opsiynau, ewch i osodiadau unigol.</translation>
-<translation id="7896724475402191389">Cynnwys ar gyfer meddyliau ifanc - wedi'i ddiffodd</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Rhwystrwyd 1 gan eich sefydliad}zero{Rhwystrwyd # gan eich sefydliad}two{Rhwystrwyd # gan eich sefydliad}few{Rhwystrwyd # gan eich sefydliad}many{Rhwystrwyd # gan eich sefydliad}other{Rhwystrwyd # gan eich sefydliad}}</translation>
 <translation id="7914399737746719723">Gosodwyd ap</translation>
@@ -1647,6 +1644,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8378850197701296741">Mae gennych nodau tudalen, hanes a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Cadarnhewch mai chi sydd yno</translation>
 <translation id="8393700583063109961">Anfon neges</translation>
+<translation id="8396098434728053815">Rhannu sain tab hefyd</translation>
 <translation id="8398389123831319859">Tapiwch ddwywaith a daliwch i newid i'r modd Anhysbys</translation>
 <translation id="8402673309244746971">Mynd i Yn Dilyn</translation>
 <translation id="8413126021676339697">Dangos hanes llawn</translation>

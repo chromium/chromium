@@ -321,7 +321,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1210678701920254279">Se eller tilføj printere, og se aktive udskriftsjobs</translation>
 <translation id="1211769675100312947">Genveje udvælges af dig</translation>
 <translation id="1213254615020057352">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
-<translation id="1214004433265298541">Certifikat fra din administrator, som kan se loginoplysninger for <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Der er tilføjet en ny baggrunds-app</translation>
 <translation id="1216542092748365687">Fjern fingeraftryk</translation>
 <translation id="1216891999012841486">Få flere oplysninger om, hvordan du løser opdateringsproblemer</translation>
@@ -3098,6 +3097,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3159978855457658359">Rediger enhedsnavn</translation>
 <translation id="3160928651883997588">Præferencer for VPN</translation>
 <translation id="3161522574479303604">Alle sprog</translation>
+<translation id="3162070126914310576">Denne enhed kan ikke tilmeldes lige nu, fordi din organisationsenhed har nået sin grænse for indledende tilmelding. Kontakt din administrator for at få hjælp.</translation>
 <translation id="3162766632262775911">Har altid tilladelse til at anvende V8-optimering</translation>
 <translation id="3162853326462195145">Skolekonto</translation>
 <translation id="3162899666601560689">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv</translation>
@@ -9073,6 +9073,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="746861123368584540">Udvidelsen er indlæst</translation>
 <translation id="7469612367552312334">Til • Brug dagligsprog til at søge i din browserhistorik og finde websites, du har besøgt</translation>
 <translation id="7470131554696493512">Bloker Thunderbolt- eller USB4-tilbehør, så det ikke kan få adgang til og dele hukommelsen (RAM, Random-access memory)</translation>
+<translation id="7470284766345262333">Denne konto er ikke knyttet til Google, og derfor er funktioner som f.eks. Chrome-synkronisering ikke tilgængelige</translation>
 <translation id="7470424110735398630">Har tilladelse til at se din udklipsholder</translation>
 <translation id="747114903913869239">Fejl: Udvidelsen kunne ikke afkodes</translation>
 <translation id="7471520329163184433">Langsommere</translation>

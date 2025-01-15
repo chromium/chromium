@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1066101356081285416">Chrome siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani ishlashini taʼminlash va hamma uchun Google Shopping xizmatini yaxshilash uchun joʻnatmani kuzatish raqami va veb-sayt nomi Chrome brauzeriga yuboriladi. Buni istalgan vaqtda <ph name="BEGIN_LINK" />Joʻnatmani kuzatish raqamlari<ph name="END_LINK" /> orqali yangilash mumkin.</translation>
+<translation id="1076643793026027628">Chrome YouTube Inkognito havolalarini Inkognito rejimida avtomatik tarzda ochadi.</translation>
 <translation id="1086486568852410168">Google Lens orqali qidirish</translation>
 <translation id="1143896152279775643">Parolingiz Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="1146503048444965320">Chromeda yangi varaq ochish</translation>
@@ -127,6 +128,7 @@ Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi
 <translation id="4636900170638246267">Bu sayt va Chrome hisobiga kiring.</translation>
 <translation id="4646014602299206846">Chrome siz ochgan saytlardagi joʻnatmani kuzatish raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim etish va xaridlarni yaxshilash uchun maʼlumotlaringiz Googleʼga ulashiladi.</translation>
 <translation id="4647910807533196601">Oxirgi varaq Chromeda ochilsin</translation>
+<translation id="4693084815234024320">Siz Chrome Inkognito rejimidasiz</translation>
 <translation id="4724297637870447613">Chrome doim yoningizda</translation>
 <translation id="4738647308035481133">Google Chrome sahifasi</translation>
 <translation id="4742795653798179840">Chrome maʼlumotlarini oʻchirish</translation>

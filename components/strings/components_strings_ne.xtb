@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain का सहायताले पासवर्ड म्यानेजर प्रयोग गर्न Chromium रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="1652887625750064647">AI मा आधारित उत्कृष्ट सुझाव</translation>
+<translation id="1653465303147789530">एपहरू अदलबदल नगरिकनै <ph name="PAYMENT_METHOD" /> मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="1656024727720460136">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा सुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
 <translation id="1656489000284462475">पिकअप</translation>
 <translation id="1658111267661135323">टिभी तथा भिडियो</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765">Google लाई आफूले हेर्ने केही पृष्ठका <ph name="BEGIN_WHITEPAPER_LINK" />URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू<ph name="END_WHITEPAPER_LINK" /> पठाएर वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्न मद्दत गर्नुहोस्। <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">तपाईंको टेक्स्ट र पेजमा भएको सामग्री Google मा पठाइन्छन् र यो सुविधाको गुणस्तर सुधार्नका निम्ति प्रयोग गरिन सक्छ।
   <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">अझ छिटो भुक्तानी गर्न एक पटके सुरक्षा जाँच पूरा गर्नुहोस्</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="1973335181906896915">अनुक्रमण त्रुटि</translation>
 <translation id="1973785048533660168">क्लेरिकल तथा प्रशासनिक जागिर</translation>
@@ -1204,6 +1206,7 @@
 <translation id="3156511682997763015">१० सेकेन्ड फर्वार्ड गर्नुहोस्</translation>
 <translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="3158539265159265653">डिस्क</translation>
+<translation id="3162070126914310576">तपाईंको संस्थागत एकाइले दर्ता गर्न मिल्ने जति डिभाइसहरू दर्ता गरिसकेको हुनाले यो डिभाइस अहिले नै दर्ता गर्न मिल्दैन। सहायता प्राप्त गर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="3162559335345991374">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi लाई तपाईँले यसको लगइन पृष्ठको भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="316638481603975524">वेब एप इन्स्टल गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="3168744840365648658">रेडियो उपकरण</translation>
@@ -1582,6 +1585,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" सँग सबैभन्दा बढी मिल्दाजुल्दा परिणाम</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
+<translation id="3791118028061680614">एपहरू अदलबदल नगरिकनै भुक्तानी गर्नुहोस्</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इन्च)</translation>
 <translation id="3792826587784915501">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
 <translation id="3793574014653384240">हालसालै भएका क्र्यासहरूको सङ्ख्या र तिनको कारण</translation>
@@ -1935,6 +1939,7 @@
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive मा फाइल अपलोड गर्ने प्रक्रिया रोकिएको छ</translation>
 <translation id="4390472908992056574">बिट</translation>
+<translation id="4395550503472021297">यो नीतिले निम्न नीतिहरूको स्वचालित कारबाही नियन्त्रण गरिरहेको छ: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">यसले तपाईंको बैंकको वेबसाइटमा पुष्टि गर्न एउटा पप-अप खोल्छ</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4406896451731180161">खोजका परिणाम</translation>
@@ -2377,6 +2382,7 @@
 <translation id="5244521145258281926">Google खाता व्यवस्थापन गर्नुहोस्, आफ्नो Google खातामा गई आफ्नो जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="5244732203286792411">लोड गरिँदै छ...
     यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
+<translation id="5248543496748975054">कार्ड नम्बर हालिएको छैन?</translation>
 <translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
 <translation id="52517543715119994">Chrome का सुविधाहरूका बारेमा जान्नुहोस्</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
@@ -3992,6 +3998,7 @@
 <translation id="8116925261070264013">म्युट गरियो</translation>
 <translation id="8118489163946903409">भुक्तानी विधि</translation>
 <translation id="8118506371121007279">प्रतिक्रिया दिनुहोस्</translation>
+<translation id="8120720167840853945">यो नीतिले अन्य कुनै पनि नीतिको स्वचालित कारबाही नियन्त्रण गरिरहेको छैन।</translation>
 <translation id="8127301229239896662">तपाईंको कम्प्युटर वा नेटवर्कमा "<ph name="SOFTWARE_NAME" />" सही ढङ्गले स्थापना भएन। आफ्नो IT प्रशासकलाई यो समस्या समाधान गर्न लगाउनुहोस्‌।</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8133495915926741232">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्। तपाईंले कुनै बृहत् विषय अफ गर्नुभयो भने त्यससँग सम्बन्धित विषयहरू पनि ब्लक हुने छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

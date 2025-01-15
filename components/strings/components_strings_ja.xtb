@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">登山</translation>
 <translation id="2215727959747642672">ファイルの編集</translation>
 <translation id="2215963164070968490">犬</translation>
+<translation id="2219376942605837404">比較表にタブを追加</translation>
 <translation id="2219658597883514593">チュートリアルをもう一度開始</translation>
 <translation id="2219735899272417925">デバイスのリセットが必要</translation>
 <translation id="2221227930294879156">飲食料品のイベント</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3067505415088964188">低価格</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは 1 分後に開始されます</translation>
+<translation id="3068976060094139647">アカウントが Google Pay にリンクされているため、このカードを自動入力できます。</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} 個のアイテム}other{{ITEMS} 個のアイテム}}</translation>
 <translation id="3076865167425975822">オペレーティング システム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4151403195736952345">全体の既定値を使用（検出）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>
 <translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は、<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />でいつでも変更できます。</translation>
+<translation id="415440494507469262">比較表にタブを追加</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4165422751765527461">新しいタブでヘルプセンター記事を開きます</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -3395,6 +3398,7 @@
 <translation id="706960991003274248">比較表はアカウント <ph name="EMAIL" /> に保存されます</translation>
 <translation id="7070144569727915108">システム設定</translation>
 <translation id="70705239631109039">接続は完全には保護されていません</translation>
+<translation id="7071122206197538392">新しい比較表</translation>
 <translation id="7075452647191940183">リクエストが大きすぎます</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4107,6 +4111,7 @@
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8301894345671534559">コードの入力</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
+<translation id="8304912090860925649">新しい比較表</translation>
 <translation id="830498451218851433">2 つ折り</translation>
 <translation id="8308653357438598313">ライブ動画ストリーミング</translation>
 <translation id="8311895354659782580">不動産情報</translation>

@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">यो फोटो यसमा सेभ गर्नुहोस्…</translation>
 <translation id="5511959326926949696">तपाईंको ब्राउजरको उच्च सुरक्षाका लागि ऐच्छिक सेटिङ तपाईंलाई आफू अत्यन्तै जटिल प्रकृतिको लक्षित साइबर आक्रमणको जोखिममा छु जस्तो लाग्छ भने मात्र यो सेटिङ प्रयोग गर्नुहोला।</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> घन्टाअघि</translation>
+<translation id="5520668942302483373">समूह छाड्नुहोस्</translation>
 <translation id="5524590039848017563">मुख्य टुलबारको बटन कोल्याप्स गरिएको छ</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} वटा कमजोर पासवर्ड भेटियो}other{{COUNT} वटा कमजोर पासवर्ड भेटिए}}</translation>
 <translation id="5532545557415295622">निष्क्रिय हुँदा टाइम आउटसम्बन्धी डायलग</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">लेबल बनाइएको छ। मिति हाल्न बाँकी छ</translation>
 <translation id="5647096944343801045">ठुलो इन्ट्री पोइन्ट</translation>
 <translation id="5647193778876139879">कुनै ठेगानामा टच एण्ड होल्ड गर्नुहोस्।</translation>
+<translation id="5647702255748985085">समूह छाड्ने हो?</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5652623411397330904">तपाईंले ट्र्याक गर्ने उत्पादनहरू यहाँ देखाइने छन्।</translation>
 <translation id="5657156137487675418">सबै कुकीहरूलाई अनुमति दिनुहोस्</translation>
@@ -1115,6 +1117,7 @@
 <translation id="6027619584715411062">आफ्ना बुकमार्क, पासवर्डलगायतका कुरा आफ्ना सबै डिभाइसहरूमा प्राप्त गर्न साइन इन गर्नुहोस्।</translation>
 <translation id="6027945736510816438">तपाईंले <ph name="WEBSITE" /> लेख्न खोज्नुभएको हो?</translation>
 <translation id="6032845897905314562">नयाँ सुविधा</translation>
+<translation id="6038823991892265570">Google भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6042308850641462728">थप</translation>
@@ -1150,6 +1153,7 @@
 <translation id="6160780110287872296">फाइल डाउनलोड गर्ने हो?</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6168647875670665004">लेखका सुझावहरू</translation>
+<translation id="6169031022444660352">तपाईंले आफ्नो डिभाइसमा पासकोड सेटअप गरेपछि मात्र तपाईं सेभ गरिएका सबै क्रिडेन्सियलहरू मेटाउन सक्नुहुन्छ।</translation>
 <translation id="6173499589275053515">यो पासवर्ड तपाईंको Google खाता <ph name="EMAIL" /> मा सेभ गरिएको छ</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> मा बनाइएको</translation>
@@ -1201,6 +1205,7 @@
 <translation id="6355820205320395730">कमजोर पासवर्डहरू सजिलैसँग अनुमान लगाउन सकिन्छ। आफूले राख्न लागेका पासवर्डहरू भरपर्दा छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="BEGIN_LINK" />सुरक्षासम्बन्धी थप सुझावहरू हेर्नुहोस्।<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> फलो गर्नुहोस्</translation>
 <translation id="6368038301482806847">सूचीबाट सर्च इन्जिन एप छनौट गर्नुहोस्</translation>
+<translation id="6368102751067608420">पासवर्ड म्यानेजरका सबै जानकारी मेटाउन</translation>
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6387994324662817823">पासवर्डहरू यो डिभाइसको Google पासवर्ड म्यानेजरमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="6404422529625928907">Google Drive मा खोल्नुहोस्</translation>

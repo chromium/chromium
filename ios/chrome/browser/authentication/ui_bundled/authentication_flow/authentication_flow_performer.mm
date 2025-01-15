@@ -213,7 +213,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Presented"));
 
-  if (IsManagedProfileCreationUpdatedScreenEnabled()) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     _managedConfirmationScreenCoordinator =
         [[ManagedProfileCreationCoordinator alloc]
             initWithBaseViewController:viewController

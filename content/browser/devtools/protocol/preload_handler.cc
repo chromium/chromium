@@ -267,8 +267,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
           PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
       return Preload::PrefetchStatusEnum::PrefetchHeldback;
-    case PrefetchStatus::kPrefetchAllowed:
-      return Preload::PrefetchStatusEnum::PrefetchAllowed;
     case PrefetchStatus::kPrefetchResponseUsed:
       return Preload::PrefetchStatusEnum::PrefetchResponseUsed;
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:

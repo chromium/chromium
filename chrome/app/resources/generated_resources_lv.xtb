@@ -322,7 +322,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1210678701920254279">Printeru skatīšana vai pievienošana un aktīvo drukas uzdevumu skatīšana</translation>
 <translation id="1211769675100312947">Jūs atlasāt saīsnes</translation>
 <translation id="1213254615020057352">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot bērna Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo iestatījumu ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus uz Google serveriem. Ja jūsu bērnam ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā.</translation>
-<translation id="1214004433265298541">Sertifikāts, ko izsniedzis jūsu administrators, kurš var skatīt akreditācijas datus domēnam <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Pievienota jauna fona lietotne</translation>
 <translation id="1216542092748365687">Pirksta nospieduma noņemšana</translation>
 <translation id="1216891999012841486">Uzzināt vairāk par atjaunināšanas kļūdu labošanu</translation>
@@ -795,6 +794,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1549788673239553762">Lietotne <ph name="APP_NAME" /> vēlas piekļūt krātuvei <ph name="VOLUME_NAME" />. Tā var pārveidot vai dzēst failus.</translation>
 <translation id="1549966883323105187">Ātrāka piekļuve saglabātajām parolēm</translation>
 <translation id="1550656959113606473">Chrome noklusējuma skats</translation>
+<translation id="1552065819535218588">Chrome vairs neatzīmēs paziņojumus no vietnes <ph name="URL" /> kā mēstules</translation>
 <translation id="1552301827267621511">Paplašinājums “<ph name="EXTENSION_NAME" />” meklēšanai iestatīja meklētājprogrammu <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Pārvaldīt paplašinājumu</translation>
 <translation id="1553538517812678578">neierobežots</translation>
@@ -3085,6 +3085,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3159978855457658359">Ierīces nosaukuma rediģēšana</translation>
 <translation id="3160928651883997588">VPN preferences</translation>
 <translation id="3161522574479303604">Visas valodas</translation>
+<translation id="3162070126914310576">Šo ierīci pašlaik nevar reģistrēt, jo jūsu organizācijas vienībai ir sasniegts sākotnējās reģistrācijas ierobežojums. Lai saņemtu palīdzību, sazinieties ar administratoru.</translation>
 <translation id="3162766632262775911">Vienmēr atļauts izmantot V8 optimizētāju</translation>
 <translation id="3162853326462195145">Skolas konts</translation>
 <translation id="3162899666601560689">Vietnes drīkst izmantot sīkfailus, lai uzlabotu pārlūkošanas pieredzi, piemēram, lai nodrošinātu ilgstošu pierakstīšanos vai saglabātu pirkumu grozā ievietotās preces.</translation>
@@ -9056,6 +9057,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="746861123368584540">Paplašinājums ir ielādēts.</translation>
 <translation id="7469612367552312334">Ieslēgta • Varat izmantot ikdienišķas frāzes, lai veiktu meklēšanu pārlūkošanas vēsturē un atrastu apmeklētās vietnes.</translation>
 <translation id="7470131554696493512">Bloķēt Thunderbolt vai USB4 piederumu piekļuvi atmiņai (RAM) un atmiņas kopīgošanu</translation>
+<translation id="7470284766345262333">Šis konts nav saistīts ar Google, tādēļ nav pieejamas tādas funkcijas kā Chrome sinhronizācija.</translation>
 <translation id="7470424110735398630">Drīkst skatīt starpliktuvi</translation>
 <translation id="747114903913869239">Kļūda: nespēj dekodēt paplašinājumu</translation>
 <translation id="7471520329163184433">Lēnāk</translation>

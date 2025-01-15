@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,15 +17,13 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -33,7 +32,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -46,7 +44,6 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
-
 namespace {
 
 // Margins around any illustration.

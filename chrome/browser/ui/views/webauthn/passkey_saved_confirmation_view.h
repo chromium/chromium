@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_SAVED_CONFIRMATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_SAVED_CONFIRMATION_VIEW_H_
 
+#include <string>
+
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/views/view.h"
 
 // A view informing the user that their passkey was saved.
 class PasskeySavedConfirmationView : public PasswordBubbleViewBase {

@@ -753,8 +753,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Create a profile in the US.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.set_use_count(50U);
-  california.set_use_date(kJanuary2017);
+  california.usage_history().set_use_count(50U);
+  california.usage_history().set_use_date(kJanuary2017);
   AddAutofillProfile(california);  // California, USA.
 
   InvokePaymentRequestUI();
@@ -809,8 +809,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   // State/Region is no longer set.
   EXPECT_EQ(u"", profile->GetInfo(autofill::ADDRESS_HOME_STATE, kLocale));
-  EXPECT_EQ(50U, profile->use_count());
-  EXPECT_EQ(kJanuary2017, profile->use_date());
+  EXPECT_EQ(50U, profile->usage_history().use_count());
+  EXPECT_EQ(kJanuary2017, profile->usage_history().use_date());
 }
 
 // Tests that there is no error label for an international phone from another
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Create a profile in the US and add a valid AU phone number in local format.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.set_use_count(50U);
+  california.usage_history().set_use_count(50U);
   california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, u"02 9374 4000");
   AddAutofillProfile(california);
 
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Create a profile in the US and add a impossible number.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.set_use_count(50U);
+  california.usage_history().set_use_count(50U);
   california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, u"02 9374 40001");
   AddAutofillProfile(california);
 

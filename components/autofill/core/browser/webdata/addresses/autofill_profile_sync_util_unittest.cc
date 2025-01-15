@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -33,9 +34,6 @@ using syncer::EntityData;
 constexpr char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 constexpr char kGuidInvalid[] = "EDC609ED";
 
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
-
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructBaseSpecifics().
 AutofillProfile ConstructBaseProfile(
@@ -43,8 +41,8 @@ AutofillProfile ConstructBaseProfile(
   AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           country_code);
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.set_profile_label("profile_label");
 
@@ -948,7 +946,7 @@ class AutofillProfileSyncUtilTest
                                 features::kAutofillUseNLAddressModel,
                                 features::kAutofillSupportPhoneticNameForJP},
                                {});
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
   }
 
   AutofillProfile GetAutofillProfileForCountry(I18nCountryModel country_model) {

@@ -511,13 +511,14 @@ FormFieldParser::FieldMatchesMatchPatternRef(
 bool FormFieldParser::ParseField(
     ParsingContext& context,
     AutofillScanner* scanner,
-    base::span<const MatchPatternRef> patterns,
-    std::optional<FieldAndMatchInfo>* match,
     const char* regex_name,
+    std::optional<FieldAndMatchInfo>* match,
     MatchParams (*projection)(const MatchParams&)) {
   if (scanner->IsEnd()) {
     return false;
   }
+  base::span<const MatchPatternRef> patterns =
+      GetMatchPatterns(regex_name, context.page_language, context.pattern_file);
   AutofillField* field = scanner->Cursor();
   if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
           context, patterns, *field, regex_name, {projection})) {
@@ -528,18 +529,6 @@ bool FormFieldParser::ParseField(
     return true;
   }
   return false;
-}
-
-// static
-bool FormFieldParser::ParseField(
-    ParsingContext& context,
-    AutofillScanner* scanner,
-    const char* regex_name,
-    std::optional<FieldAndMatchInfo>* match,
-    MatchParams (*projection)(const MatchParams&)) {
-  base::span<const MatchPatternRef> patterns =
-      GetMatchPatterns(regex_name, context.page_language, context.pattern_file);
-  return ParseField(context, scanner, patterns, match, regex_name, projection);
 }
 
 // static

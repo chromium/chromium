@@ -110,7 +110,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   }
   std::u16string name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(*icon_index)
+                            ? storage.ChooseNameForNewProfile()
                             : local_profile_name;
   ProfileManager::CreateMultiProfileAsync(
       name, *icon_index,

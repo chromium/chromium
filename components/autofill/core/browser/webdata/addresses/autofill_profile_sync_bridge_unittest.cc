@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -76,8 +77,6 @@ constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
 constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
 constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
 constexpr char kLocaleString[] = "en-US";
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 AutofillProfile CreateAutofillProfile(
     const AutofillProfileSpecifics& specifics) {
@@ -102,7 +101,7 @@ AutofillProfileSpecifics CreateAutofillProfileSpecifics(
   // Make it consistent with the constructor of AutofillProfile constructor (the
   // clock value is overrided by TestAutofillClock in the test fixture).
   specifics.set_use_count(1);
-  specifics.set_use_date(kJune2017.ToTimeT());
+  specifics.set_use_date(test::kJune2017.ToTimeT());
   return specifics;
 }
 
@@ -144,8 +143,8 @@ AutofillProfile ConstructCompleteProfile() {
   AutofillProfile profile(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                           AddressCountryCode("ES"));
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.SetRawInfo(NAME_FULL, u"John K. Doe, Jr.");
   profile.SetRawInfo(NAME_FIRST, u"John");
@@ -253,7 +252,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);
@@ -440,8 +439,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(10U);
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_count(10U);
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AutofillProfileChange change(AutofillProfileChange::UPDATE, kGuidA, local);
 
   EXPECT_CALL(
@@ -715,7 +714,7 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
-  local.set_use_count(27);
+  local.usage_history().set_use_count(27);
   AddAutofillProfilesToTable({local});
 
   // The synced profiles are identical to the local ones, except that the guids
@@ -723,7 +722,7 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
   // name which makes them not be identical.
   AutofillProfile remote = local;
   remote.set_guid(kGuidB);
-  remote.set_use_count(13);
+  remote.usage_history().set_use_count(13);
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Note, this populates the full name for structured profiles.
   remote.FinalizeAfterImport();
@@ -755,7 +754,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -780,7 +779,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -804,7 +803,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_count(12);
+  local.usage_history().set_use_count(12);
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -1141,8 +1140,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(0);
-  local.set_use_date(base::Time());
+  local.usage_history().set_use_count(0);
+  local.usage_history().set_use_date(base::Time());
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have use_count/use_date.
@@ -1188,10 +1187,10 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(test_case.local_use_count);
-  local.set_use_date(test_case.local_use_date);
-  ASSERT_EQ(test_case.local_use_count, local.use_count());
-  ASSERT_EQ(test_case.local_use_date, local.use_date());
+  local.usage_history().set_use_count(test_case.local_use_count);
+  local.usage_history().set_use_date(test_case.local_use_date);
+  ASSERT_EQ(test_case.local_use_count, local.usage_history().use_count());
+  ASSERT_EQ(test_case.local_use_date, local.usage_history().use_date());
   AddAutofillProfilesToTable({local});
 
   // Remote data has usage stats.
@@ -1204,8 +1203,8 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
 
   // Expect the local autofill profile to have usage stats after sync.
   AutofillProfile merged(local);
-  merged.set_use_count(test_case.merged_use_count);
-  merged.set_use_date(test_case.merged_use_date);
+  merged.usage_history().set_use_count(test_case.merged_use_count);
+  merged.usage_history().set_use_date(test_case.merged_use_date);
 
   // Expect no changes to remote data.
   EXPECT_CALL(mock_processor(), Put).Times(0);

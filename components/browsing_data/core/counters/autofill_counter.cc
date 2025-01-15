@@ -79,8 +79,8 @@ void AutofillCounter::Count() {
   num_credit_cards_ = base::ranges::count_if(
       personal_data_manager_->payments_data_manager().GetLocalCreditCards(),
       [start, end](const autofill::CreditCard* card) {
-        return (card->modification_date() >= start &&
-                card->modification_date() < end);
+        return (card->usage_history().modification_date() >= start &&
+                card->usage_history().modification_date() < end);
       });
 
   // Addresses.
@@ -88,8 +88,8 @@ void AutofillCounter::Count() {
       personal_data_manager_->address_data_manager().GetProfilesByRecordType(
           autofill::AutofillProfile::RecordType::kLocalOrSyncable),
       [start, end](const autofill::AutofillProfile* address) {
-        return (address->modification_date() >= start &&
-                address->modification_date() < end);
+        return (address->usage_history().modification_date() >= start &&
+                address->usage_history().modification_date() < end);
       });
 
   CancelAllRequests();

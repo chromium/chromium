@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">יצירת סיסמה משלי</translation>
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
 <translation id="2577981599306533385">‏הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", וגם האפשרות ליצור איתך אינטראקציה בשירותי Google, יאבדו באופן מיידי.</translation>
-<translation id="2578337197553672982">‏תוכן של Google לילדים</translation>
 <translation id="2579297619530305344">הסיסמאות בכל המכשירים נפתחו במסך מלא</translation>
 <translation id="2581165646603367611">‏פעולה זו תמחק את קובצי ה-Cookie, את המטמון ונתונים אחרים של אתרים ש-Chrome לא מחשיב כחשובים.</translation>
 <translation id="2587052924345400782">יש גרסה חדשה יותר</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="4425173294238317796">גיליון האישור של מפתח הגישה</translation>
 <translation id="442518031075347249">‏לא תהיה לך יותר אפשרות להשתמש בכרטיס הווירטואלי באמצעות Google Pay. <ph name="BEGIN_LINK1" />כאן יש מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">כל הסימניות</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4749960740855309258">פתיחת כרטיסייה חדשה</translation>
-<translation id="4750356170202299988">תוכן לילדים</translation>
 <translation id="4758061975920522644">שיתוף התמונה בלבד</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4763480195061959176">סרטוני וידאו</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{צריך לשנות את הסיסמה הזו עכשיו}one{צריך לשנות את הסיסמאות האלה עכשיו}two{צריך לשנות את הסיסמאות האלה עכשיו}other{צריך לשנות את הסיסמאות האלה עכשיו}}</translation>
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>
-<translation id="7205672015775254816">‏תוכן של Google לילדים – מושבת</translation>
 <translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7217781228893594884">‏כרטיסיות פרטיות ננעלות כשסוגרים את Chrome</translation>
 <translation id="7221869452894271364">רענון הדף</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7886917304091689118">‏פועל ב-Chrome</translation>
 <translation id="7887174313503389866">סיור מודרך באמצעי הבקרה החשובים ביותר על פרטיות ואבטחה. לאפשרויות נוספות, יש לעבור להגדרות ספציפיות.</translation>
-<translation id="7896724475402191389">תוכן לילדים – מושבת</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{הורדה אחת נחסמה על ידי הארגון שלך}one{‫# הורדות נחסמו על ידי הארגון שלך}two{‫# הורדות נחסמו על ידי הארגון שלך}other{‫# הורדות נחסמו על ידי הארגון שלך}}</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">יש לך סימניות, היסטוריה והגדרות אחרות מהחשבון <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>
 <translation id="8393700583063109961">שליחת הודעה</translation>
+<translation id="8396098434728053815">שיתוף גם של האודיו מהכרטיסייה</translation>
 <translation id="8398389123831319859">כדי לעבור למצב פרטי, לוחצים לחיצה כפולה ולוחצים לחיצה ארוכה</translation>
 <translation id="8402673309244746971">מעבר אל הפיד 'במעקב'</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>

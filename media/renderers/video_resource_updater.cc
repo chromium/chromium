@@ -839,11 +839,8 @@ void VideoResourceUpdater::CopyHardwarePlane(
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kVideo);
 
-  // TODO(crbug.com/378688985): This is not correct value, but it was
-  // historically this way.  Correct value is in
-  // hardware_resource::shared_image::surface_origin(), which is always top
-  // left.
-  transferable_resource.origin = shared_image->surface_origin();
+  transferable_resource.origin =
+      hardware_resource->shared_image()->surface_origin();
   transferable_resource.color_space = copy_color_space;
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());

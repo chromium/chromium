@@ -991,6 +991,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5506763544823940561">Shrani sliko v …</translation>
 <translation id="5511959326926949696">Ekstremna dodatna zaščita za brskalnik. Uporabite jo samo, če menite, da ste morda tarča zelo kompleksnega kibernetskega napada.</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Zapusti skupino</translation>
 <translation id="5524590039848017563">Strnjen primarni gumb orodne vrstice</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} šibko geslo}one{{COUNT} šibko geslo}two{{COUNT} šibki gesli}few{{COUNT} šibka gesla}other{{COUNT} šibkih gesel}}</translation>
 <translation id="5532545557415295622">Pogovorno okno za časovno omejitev nedejavnosti</translation>
@@ -1030,6 +1031,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5646284034397250191">Oznaka je ustvarjena. Datum še ni določen.</translation>
 <translation id="5647096944343801045">Velika vstopna točka</translation>
 <translation id="5647193778876139879">Pridržite naslov.</translation>
+<translation id="5647702255748985085">Želite zapustiti skupino?</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5652623411397330904">Izdelki, ki jih spremljate, bodo prikazani tukaj.</translation>
 <translation id="5657156137487675418">Dovoli vse piškotke</translation>
@@ -1151,6 +1153,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6160780110287872296">Želite prenesti datoteko?</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6168647875670665004">Predlogi za članke</translation>
+<translation id="6169031022444660352">Če želite izbrisati vse shranjene poverilnice, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="6173499589275053515">Geslo je shranjeno v računu Google, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Nazadnje sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Ustvarjeno dne <ph name="DATE" /></translation>
@@ -1202,6 +1205,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6355820205320395730">Šibka gesla je preprosto ugotoviti. Vedno ustvarite zapletena gesla. <ph name="BEGIN_LINK" />Oglejte si več varnostnih nasvetov.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Spremljaj <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Na seznamu izberite iskalnik.</translation>
+<translation id="6368102751067608420">Če želite izbrisati vse podatke upravitelja gesel</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="6387994324662817823">Gesla so shranjena v Google Upravitelju gesel samo v tej napravi.</translation>
 <translation id="6404422529625928907">Odpri v Googlu Drive</translation>

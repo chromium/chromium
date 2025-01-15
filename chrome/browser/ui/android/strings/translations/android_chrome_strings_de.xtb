@@ -340,7 +340,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2571834852878229351">Eigenes erstellen</translation>
 <translation id="2574249610672786438">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) verliert dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und kann nicht mehr über Google-Dienste mit dir interagieren.</translation>
-<translation id="2578337197553672982">Inhalte von Google für betreute Nutzer</translation>
 <translation id="2579297619530305344">Die Ansicht „Deine Passwörter auf allen deinen Geräten abrufen“ ist vollständig geöffnet</translation>
 <translation id="2581165646603367611">Alle Cookies, der Cache und andere Daten von Websites, die Chrome nicht für wichtig hält, werden gelöscht.</translation>
 <translation id="2587052924345400782">Neuere Version verfügbar</translation>
@@ -734,6 +733,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4425140285732600465">Preis wird beobachtet. Du wirst bei einem Preisnachlass benachrichtigt.</translation>
 <translation id="4425173294238317796">Passkey-Bestätigungsansicht</translation>
 <translation id="442518031075347249">Du kannst deine virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Alle Lesezeichen</translation>
 <translation id="4430277756566635951">Aktuell ausgewählt: <ph name="EMAIL" />. Wähle ein Konto aus.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>
@@ -806,7 +806,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
 <translation id="4742970037960872810">Markierung entfernen</translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
-<translation id="4750356170202299988">Inhalte für betreute Nutzer</translation>
 <translation id="4758061975920522644">Nur Bild teilen</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">Video</translation>
@@ -1378,7 +1377,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Wir empfehlen, das Passwort jetzt zu ändern}other{Wir empfehlen, die Passwörter jetzt zu ändern}}</translation>
 <translation id="7196215469483532480">Erläuterungen zum Datenschutz-Leitfaden sind vollständig geöffnet</translation>
-<translation id="7205672015775254816">Inhalte von Google für betreute Nutzer – aus</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> Tabs als neue Tabs im Hintergrund wiederherstellen.</translation>
 <translation id="7217781228893594884">Inkognitotabs werden gesperrt, wenn du Chrome schließt</translation>
 <translation id="7221869452894271364">Diese Seite neu laden</translation>
@@ -1533,7 +1531,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7876243839304621966">Alle entfernen</translation>
 <translation id="7886917304091689118">Wird in Chrome ausgeführt</translation>
 <translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
-<translation id="7896724475402191389">Inhalte für betreute Nutzer – aus</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 Download wurde von deiner Organisation blockiert}other{# Downloads wurden von deiner Organisation blockiert}}</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
@@ -1647,6 +1644,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8378850197701296741">Du hast Lesezeichen, den Verlauf und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
 <translation id="8387617938027387193">Deine Identität bestätigen</translation>
 <translation id="8393700583063109961">Nachricht senden</translation>
+<translation id="8396098434728053815">Auch Audio des Tabs teilen</translation>
 <translation id="8398389123831319859">Doppeltippen und gedrückt halten, um in den Inkognitomodus zu wechseln</translation>
 <translation id="8402673309244746971">Zu „Folge ich“</translation>
 <translation id="8413126021676339697">Gesamtverlauf anzeigen</translation>

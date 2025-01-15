@@ -178,16 +178,17 @@ void LayoutReplaced::RecalcVisualOverflow() {
 }
 
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
-    const PhysicalSize* overridden_intrinsic_size) const {
+    const gfx::SizeF& in_natural_size) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (!object_view_box) [[likely]] {
     return std::nullopt;
   }
 
-  const auto& intrinsic_size =
-      overridden_intrinsic_size ? *overridden_intrinsic_size : intrinsic_size_;
-  if (intrinsic_size.IsEmpty())
+  const PhysicalSize natural_size =
+      PhysicalSize::FromSizeFRound(in_natural_size);
+  if (natural_size.IsEmpty()) {
     return std::nullopt;
+  }
 
   if (!CanApplyObjectViewBox())
     return std::nullopt;
@@ -195,8 +196,7 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   DCHECK_EQ(object_view_box->GetType(), BasicShape::kBasicShapeInsetType);
 
   Path path;
-  gfx::RectF bounding_box(0, 0, intrinsic_size.width.ToFloat(),
-                          intrinsic_size.height.ToFloat());
+  const gfx::RectF bounding_box{gfx::SizeF(natural_size)};
   object_view_box->GetPath(path, bounding_box, 1.f);
 
   const PhysicalRect view_box_rect =
@@ -204,16 +204,17 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   if (view_box_rect.IsEmpty())
     return std::nullopt;
 
-  const PhysicalRect intrinsic_rect(PhysicalOffset(), intrinsic_size);
-  if (view_box_rect == intrinsic_rect)
+  const PhysicalRect natural_rect(PhysicalOffset(), natural_size);
+  if (view_box_rect == natural_rect) {
     return std::nullopt;
+  }
 
   return view_box_rect;
 }
 
 PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
     const PhysicalRect& base_content_rect,
-    const PhysicalSize* overridden_intrinsic_size) const {
+    const IntrinsicSizingInfo& sizing_info) const {
   // |intrinsic_size| provides the size of the embedded content rendered in the
   // replaced element. This is the reference size that object-view-box applies
   // to.
@@ -241,31 +242,28 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
   // transparent pixels. Regions outside object-view-box (but within image
   // bounds) are scaled as defined by object-fit above and treated as ink
   // overflow.
-  const auto& intrinsic_size_for_object_view_box =
-      overridden_intrinsic_size ? *overridden_intrinsic_size : intrinsic_size_;
-  const auto view_box =
-      ComputeObjectViewBoxRect(&intrinsic_size_for_object_view_box);
+  const auto view_box = ComputeObjectViewBoxRect(sizing_info.size);
 
   // If no view box override was applied, then we don't need to adjust the
   // view-box paint rect.
   if (!view_box) {
-    return ComputeObjectFitAndPositionRect(base_content_rect,
-                                           overridden_intrinsic_size);
+    return ComputeObjectFitAndPositionRect(base_content_rect, sizing_info);
   }
 
   // Compute the paint rect based on bounds provided by the view box.
   DCHECK(!view_box->IsEmpty());
-  const PhysicalSize view_box_size(view_box->Width(), view_box->Height());
-  const auto view_box_paint_rect =
-      ComputeObjectFitAndPositionRect(base_content_rect, &view_box_size);
+  const auto view_box_paint_rect = ComputeObjectFitAndPositionRect(
+      base_content_rect,
+      IntrinsicSizingInfo::MakeFixed(gfx::SizeF(view_box->size)));
   if (view_box_paint_rect.IsEmpty())
     return view_box_paint_rect;
 
   // Scale the original image bounds by the scale applied to the view box.
-  auto scaled_width = intrinsic_size_for_object_view_box.width.MulDiv(
-      view_box_paint_rect.Width(), view_box->Width());
-  auto scaled_height = intrinsic_size_for_object_view_box.height.MulDiv(
-      view_box_paint_rect.Height(), view_box->Height());
+  const auto natural_size = PhysicalSize::FromSizeFRound(sizing_info.size);
+  auto scaled_width =
+      natural_size.width.MulDiv(view_box_paint_rect.Width(), view_box->Width());
+  auto scaled_height = natural_size.height.MulDiv(view_box_paint_rect.Height(),
+                                                  view_box->Height());
   const PhysicalSize scaled_image_size(scaled_width, scaled_height);
 
   // Scale the offset from the image origin by the scale applied to the view
@@ -282,7 +280,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
 
 PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
     const PhysicalRect& base_content_rect,
-    const PhysicalSize* overridden_intrinsic_size) const {
+    const IntrinsicSizingInfo& sizing_info) const {
   NOT_DESTROYED();
   EObjectFit object_fit = StyleRef().GetObjectFit();
 
@@ -292,18 +290,17 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
     return base_content_rect;
   }
 
-  // TODO(davve): intrinsicSize doubles as both intrinsic size and intrinsic
-  // ratio. In the case of SVG images this isn't correct since they can have
-  // intrinsic ratio but no intrinsic size. In order to maintain aspect ratio,
-  // the intrinsic size for SVG might be faked from the aspect ratio,
-  // see SVGImage::containerSize().
-  PhysicalSize intrinsic_size(
-      overridden_intrinsic_size ? *overridden_intrinsic_size : IntrinsicSize());
-  if (intrinsic_size.IsEmpty())
+  const PhysicalSize intrinsic_size =
+      PhysicalSize::FromSizeFRound(sizing_info.size);
+  const PhysicalSize aspect_ratio =
+      PhysicalSize::FromSizeFRound(sizing_info.aspect_ratio);
+
+  if (intrinsic_size.IsEmpty() && aspect_ratio.IsEmpty()) {
     return base_content_rect;
+  }
 
   PhysicalSize scaled_intrinsic_size(intrinsic_size);
-  PhysicalRect final_rect = base_content_rect;
+  PhysicalSize object_size = base_content_rect.size;
   switch (object_fit) {
     case EObjectFit::kScaleDown:
       // Srcset images have an intrinsic size depending on their destination,
@@ -315,16 +312,22 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
       [[fallthrough]];
     case EObjectFit::kContain:
     case EObjectFit::kCover:
-      final_rect.size = final_rect.size.FitToAspectRatio(
-          intrinsic_size, object_fit == EObjectFit::kCover
+      if (!aspect_ratio.IsEmpty()) {
+        object_size = object_size.FitToAspectRatio(
+            aspect_ratio, object_fit == EObjectFit::kCover
                               ? kAspectRatioFitGrow
                               : kAspectRatioFitShrink);
+      }
       if (object_fit != EObjectFit::kScaleDown ||
-          final_rect.Width() <= scaled_intrinsic_size.width)
+          object_size.width <= scaled_intrinsic_size.width) {
         break;
+      }
       [[fallthrough]];
     case EObjectFit::kNone:
-      final_rect.size = scaled_intrinsic_size;
+      object_size = intrinsic_size.IsEmpty()
+                        ? PhysicalSize::FromSizeFRound(ConcreteObjectSize(
+                              sizing_info, gfx::SizeF(base_content_rect.size)))
+                        : scaled_intrinsic_size;
       break;
     case EObjectFit::kFill:
       break;
@@ -332,15 +335,13 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
       NOTREACHED();
   }
 
-  LayoutUnit x_offset =
+  const PhysicalOffset object_position(
       MinimumValueForLength(StyleRef().ObjectPosition().X(),
-                            base_content_rect.Width() - final_rect.Width());
-  LayoutUnit y_offset =
+                            base_content_rect.Width() - object_size.width),
       MinimumValueForLength(StyleRef().ObjectPosition().Y(),
-                            base_content_rect.Height() - final_rect.Height());
-  final_rect.Move(PhysicalOffset(x_offset, y_offset));
+                            base_content_rect.Height() - object_size.height));
 
-  return final_rect;
+  return {base_content_rect.offset + object_position, object_size};
 }
 
 void LayoutReplaced::ApplyObjectViewBox(
@@ -348,9 +349,7 @@ void LayoutReplaced::ApplyObjectViewBox(
   if (!sizing_info.has_width || !sizing_info.has_height) {
     return;
   }
-  const PhysicalSize natural_size =
-      PhysicalSize::FromSizeFRound(sizing_info.size);
-  if (auto view_box = ComputeObjectViewBoxRect(&natural_size)) {
+  if (auto view_box = ComputeObjectViewBoxRect(sizing_info.size)) {
     sizing_info.size = gfx::SizeF(view_box->size);
     if (!sizing_info.aspect_ratio.IsEmpty()) {
       sizing_info.aspect_ratio = sizing_info.size;
@@ -368,7 +367,8 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
 PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
     const PhysicalRect& base_content_rect) const {
   NOT_DESTROYED();
-  return ComputeReplacedContentRect(base_content_rect);
+  const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
+  return ComputeReplacedContentRect(base_content_rect, sizing_info);
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(

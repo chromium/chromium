@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">To znači da će Chromium svaki put zahtevati sajt za računar.</translation>
 <translation id="2270466829363945454">Kupujte</translation>
 <translation id="2313870531055795960">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chromium-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
+<translation id="2314220608288760290">Chromium automatski otvara YouTube linkove bez arhiviranja u režimu bez arhiviranja.</translation>
 <translation id="231828342043114302">Da biste dobijali personalizovani sadržaj na osnovu interesovanja, prijavite se u Chromium.</translation>
 <translation id="2326738825692478496">Neki Chromium podaci još nisu sačuvani na Google nalogu.
 
@@ -284,6 +285,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8240981428553046115">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="8254729934443216898">Istražite nove funkcije koje vam pomažu da maksimalno iskoristite Chromium.</translation>
 <translation id="829047622686389424">Prilagođeni fid napravljen za vas.</translation>
+<translation id="8293572045658095405">Koristite Chromium režim bez arhiviranja</translation>
 <translation id="830951810931292870">Otvara unete URL-ove u Chromium-u u režimu bez arhiviranja.</translation>
 <translation id="8409374867500149834">Imate najjaču Chromium zaštitu od štetnih veb-sajtova</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}}</translation>

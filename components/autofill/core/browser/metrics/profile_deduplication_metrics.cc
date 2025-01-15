@@ -160,10 +160,10 @@ void LogQuasiDuplicateAdoption(
     int duplication_rank,
     base::span<const DifferingProfileWithTypeSet> min_incompatible_sets) {
   for (const auto& [other_profile, types] : min_incompatible_sets) {
-    const size_t score =
-        std::min(profile.use_count(), other_profile->use_count());
-    const size_t total_use_count =
-        profile.use_count() + other_profile->use_count();
+    const size_t score = std::min(profile.usage_history().use_count(),
+                                  other_profile->usage_history().use_count());
+    const size_t total_use_count = profile.usage_history().use_count() +
+                                   other_profile->usage_history().use_count();
     // This metric is recording a pair (score, total_use_count), where both
     // values are capped such that they fit in range [0, 99] and then encoded
     // such that 8 lowest bits are represent the capped total_use_count, the

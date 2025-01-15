@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_account_info_view.h"

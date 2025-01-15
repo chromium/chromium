@@ -4,17 +4,24 @@
 
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"

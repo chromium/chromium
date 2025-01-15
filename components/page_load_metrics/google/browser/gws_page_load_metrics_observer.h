@@ -139,6 +139,7 @@ class GWSPageLoadMetricsObserver
   virtual bool IsFromNewTabPage(
       content::NavigationHandle* navigation_handle) = 0;
   virtual bool IsBrowserStartupComplete() = 0;
+  virtual bool IsIncognitoProfile() const = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);
 
   void MaybeRecordUnexpectedHeaders(

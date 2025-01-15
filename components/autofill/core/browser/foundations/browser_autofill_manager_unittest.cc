@@ -1339,7 +1339,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     AutofillProfile profile1 =
         FillDataToAutofillProfile(GetElvisAddressFillData());
     profile1.set_guid(kElvisProfileGuid);
-    profile1.set_use_date(base::Time::Now() - base::Days(2));
+    profile1.usage_history().set_use_date(base::Time::Now() - base::Days(2));
     personal_data().address_data_manager().AddProfile(profile1);
 
     AutofillProfile profile2(
@@ -1348,7 +1348,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid(MakeGuid(2));
-    profile2.set_use_date(base::Time::Now() - base::Days(1));
+    profile2.usage_history().set_use_date(base::Time::Now() - base::Days(1));
     personal_data().address_data_manager().AddProfile(profile2);
 
     AutofillProfile profile3(
@@ -1356,7 +1356,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
                          "US", "");
     profile3.set_guid(MakeGuid(3));
-    profile3.set_use_date(base::Time::Now());
+    profile3.usage_history().set_use_date(base::Time::Now());
     personal_data().address_data_manager().AddProfile(profile3);
   }
 
@@ -1366,8 +1366,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "4234567890123456",  // Visa
                             "04", "2999", "1");
     credit_card1.set_guid(MakeGuid(4));
-    credit_card1.set_use_count(10);
-    credit_card1.set_use_date(base::Time::Now() - base::Days(5));
+    credit_card1.usage_history().set_use_count(10);
+    credit_card1.usage_history().set_use_date(base::Time::Now() -
+                                              base::Days(5));
     personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
     CreditCard credit_card2;
@@ -1375,8 +1376,9 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "5187654321098765",  // Mastercard
                             "10", "2998", "1");
     credit_card2.set_guid(MakeGuid(5));
-    credit_card2.set_use_count(5);
-    credit_card2.set_use_date(base::Time::Now() - base::Days(4));
+    credit_card2.usage_history().set_use_count(5);
+    credit_card2.usage_history().set_use_date(base::Time::Now() -
+                                              base::Days(4));
     personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
@@ -1775,7 +1777,7 @@ TEST_P(SuggestionMatchingTest,
   // letter for last name.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.set_guid(MakeGuid(103));
-  profile1.set_use_date(base::Time::Now() - base::Days(2));
+  profile1.usage_history().set_use_date(base::Time::Now() - base::Days(2));
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -1783,7 +1785,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
-  profile2.set_use_date(base::Time::Now() - base::Days(1));
+  profile2.usage_history().set_use_date(base::Time::Now() - base::Days(1));
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -1791,7 +1793,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
-  profile3.set_use_date(base::Time::Now());
+  profile3.usage_history().set_use_date(base::Time::Now());
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
@@ -2318,15 +2320,15 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "378282246310005" /* American Express */, "04",
                           "2010", "1");
   credit_card1.set_guid(MakeGuid(2));
-  credit_card1.set_use_count(300);
-  credit_card1.set_use_date(base::Time::Now() - base::Days(10));
+  credit_card1.usage_history().set_use_count(300);
+  credit_card1.usage_history().set_use_date(base::Time::Now() - base::Days(10));
   personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   // Add an expired card with a lower ranking score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
-  credit_card2.set_use_count(3);
-  credit_card2.set_use_date(base::Time::Now() - base::Days(1));
+  credit_card2.usage_history().set_use_count(3);
+  credit_card2.usage_history().set_use_date(base::Time::Now() - base::Days(1));
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "04", "2011", "1");
   credit_card2.set_guid(MakeGuid(3));
@@ -2375,12 +2377,12 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   CreditCard credit_card1(MakeGuid(1), test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "4234567890123456" /* Visa */, "04", "2010", "1");
-  credit_card1.set_use_date(now - base::Days(10));
+  credit_card1.usage_history().set_use_date(now - base::Days(10));
   personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   // Add an expired local card last used 180 days ago.
   CreditCard credit_card2(MakeGuid(2), test::kEmptyOrigin);
-  credit_card2.set_use_date(now - base::Days(182));
+  credit_card2.usage_history().set_use_date(now - base::Days(182));
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "378282246310005" /* American Express */, "01",
                           "2010", "1");
@@ -2479,7 +2481,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "378282246310005" /* American Express */, "04",
                           "2910", "1");
   credit_card0.set_guid(MakeGuid(1));
-  credit_card0.set_use_date(base::Time::Now() - base::Days(1));
+  credit_card0.usage_history().set_use_date(base::Time::Now() - base::Days(1));
   personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -6951,8 +6953,8 @@ class BrowserAutofillManagerTestForSharingNickname
     test::SetCreditCardInfo(&local_card, "Clyde Barrow",
                             "378282246310005" /* American Express */, "04",
                             "2910", "1");
-    local_card.set_use_count(3);
-    local_card.set_use_date(base::Time::Now() - base::Days(1));
+    local_card.usage_history().set_use_count(3);
+    local_card.usage_history().set_use_date(base::Time::Now() - base::Days(1));
     local_card.SetNickname(base::UTF8ToUTF16(local_nickname_));
     local_card.set_guid(MakeGuid(1));
     return local_card;
@@ -7337,8 +7339,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   // Create a profile and add it to the PDM.
   personal_data().test_address_data_manager().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
-  profile.set_use_date(base::Time::Now());
-  profile.set_use_count(1u);
+  profile.usage_history().set_use_date(base::Time::Now());
+  profile.usage_history().set_use_count(1u);
   personal_data().address_data_manager().AddProfile(profile);
   const AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
@@ -7348,8 +7350,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   const base::Time hour_later = base::Time::Now();
 
   FillAutofillFormData(form, form.fields()[0], pdm_profile->guid());
-  EXPECT_EQ(2U, pdm_profile->use_count());
-  EXPECT_LE(hour_later, pdm_profile->use_date());
+  EXPECT_EQ(2U, pdm_profile->usage_history().use_count());
+  EXPECT_LE(hour_later, pdm_profile->usage_history().use_date());
 }
 
 // Tests that `ProfileTokenQuality` is correctly integrated into

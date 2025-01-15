@@ -149,7 +149,6 @@
 <translation id="7693372326588366043">רענון רשימת המארחים</translation>
 <translation id="7714222945760997814">דיווח על הבעיה</translation>
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
-<translation id="7881455334687220899">‏זכויות יוצרים 2024 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>
 <translation id="7936528439960309876">עגינה לימין</translation>
 <translation id="7970576581263377361">‏האימות נכשל. יש להיכנס שוב ל-Chromium.</translation>
@@ -181,7 +180,6 @@
 <translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">‏זכויות יוצרים 2024 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>
 <translation id="9126115402994542723">אין לבקש שוב קוד אימות בעת התחברות למארח הזה ממכשיר זה.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>

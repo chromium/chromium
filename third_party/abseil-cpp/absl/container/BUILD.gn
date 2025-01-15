@@ -387,6 +387,7 @@ absl_source_set("raw_hash_set") {
   public = [ "internal/raw_hash_set.h" ]
   deps = [
     ":common",
+    ":common_policy_traits",
     ":compressed_tuple",
     ":container_memory",
     ":hash_function_defaults",

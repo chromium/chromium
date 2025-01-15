@@ -299,6 +299,25 @@ const char* HRESULTToString(HRESULT result) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+const char* BackendTypeToString(wgpu::BackendType backend_type) {
+  switch (backend_type) {
+    case wgpu::BackendType::D3D11:
+      return "D3D11";
+    case wgpu::BackendType::D3D12:
+      return "D3D12";
+    case wgpu::BackendType::Metal:
+      return "Metal";
+    case wgpu::BackendType::Vulkan:
+      return "Vulkan";
+    case wgpu::BackendType::OpenGL:
+      return "OpenGL";
+    case wgpu::BackendType::OpenGLES:
+      return "OpenGLES";
+    default:
+      CHECK(false);
+  }
+}
+
 }  // namespace
 
 // static
@@ -448,7 +467,10 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
-  void LogInitFailure(std::string_view reason, bool generate_crash_report) {
+  void LogInitFailure(std::string_view reason,
+                      bool generate_crash_report,
+                      wgpu::BackendType backend_type,
+                      bool force_fallback_adapter) {
     LOG(ERROR) << reason;
 
     if (!generate_crash_report) {
@@ -456,6 +478,10 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
     }
 
     SCOPED_CRASH_KEY_STRING256("dawn-shared-context", "init-failure", reason);
+    SCOPED_CRASH_KEY_STRING32("dawn-shared-context", "backend-type",
+                              BackendTypeToString(backend_type));
+    SCOPED_CRASH_KEY_BOOL("dawn-shared-context", "fallback-adapter",
+                          force_fallback_adapter);
     // Also include any warning messages collected during the initialization.
     SCOPED_CRASH_KEY_STRING1024("dawn-shared-context", "init-warning-msgs",
                                 init_warning_msgs_);
@@ -607,14 +633,16 @@ bool DawnSharedContext::Initialize(
     // On Android, it's expected that some devices might not support Dawn atm.
     // So don't generate report for it.
     LogInitFailure("No adapters found.",
-                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID));
+                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID),
+                   backend_type, force_fallback_adapter);
     return false;
   }
   adapter_ = wgpu::Adapter(adapters[0].Get());
 
   if (!validate_adapter_fn(backend_type, adapter_)) {
     LogInitFailure("Validate adapter failed.",
-                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID));
+                   /*generate_crash_report=*/!BUILDFLAG(IS_ANDROID),
+                   backend_type, force_fallback_adapter);
     return false;
   }
 
@@ -655,7 +683,8 @@ bool DawnSharedContext::Initialize(
   wgpu::SupportedLimits supportedLimits = {};
   if (adapter_.GetLimits(&supportedLimits) != wgpu::Status::Success) {
     LogInitFailure("Failed to call adapter.GetLimits().",
-                   /*generate_crash_report=*/true);
+                   /*generate_crash_report=*/true, backend_type,
+                   force_fallback_adapter);
     return false;
   }
 
@@ -695,7 +724,8 @@ bool DawnSharedContext::Initialize(
   }
 
   if (!device_) {
-    LogInitFailure("Failed to create device.", /*generate_crash_report=*/true);
+    LogInitFailure("Failed to create device.", /*generate_crash_report=*/true,
+                   backend_type, force_fallback_adapter);
     return false;
   }
 

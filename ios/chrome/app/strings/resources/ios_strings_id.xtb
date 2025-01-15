@@ -991,6 +991,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5506763544823940561">Simpan gambar di…</translation>
 <translation id="5511959326926949696">Perlindungan opsional yang ekstrem untuk browser. Peringatan ini hanya boleh digunakan jika Anda yakin bahwa Anda mungkin menjadi target serangan cyber yang sangat canggih.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> j lalu</translation>
+<translation id="5520668942302483373">Keluar dari Grup</translation>
 <translation id="5524590039848017563">Tombol toolbar utama yang diciutkan</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} sandi lemah}other{{COUNT} sandi lemah}}</translation>
 <translation id="5532545557415295622">Dialog waktu tunggu tidak ada aktivitas</translation>
@@ -1030,6 +1031,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5646284034397250191">Label dibuat. Batas waktu belum ditentukan</translation>
 <translation id="5647096944343801045">Titik entri besar</translation>
 <translation id="5647193778876139879">Sentuh lama alamat.</translation>
+<translation id="5647702255748985085">Keluar dari grup?</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5652623411397330904">Produk yang Anda pantau akan muncul di sini.</translation>
 <translation id="5657156137487675418">Izinkan semua cookie</translation>

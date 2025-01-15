@@ -991,6 +991,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5506763544823940561">Enregistrer l'image dans…</translation>
 <translation id="5511959326926949696">Protection extrême facultative pour votre navigateur. Elle ne doit être utilisée que si vous soupçonnez être la cible d'une cyberattaque très sophistiquée.</translation>
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Quitter le groupe</translation>
 <translation id="5524590039848017563">Bouton de la barre d'outils principale réduit</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="5532545557415295622">Boîte de dialogue Délai d'inactivité</translation>
@@ -1030,6 +1031,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5646284034397250191">Étiquette créée. En attente de la date</translation>
 <translation id="5647096944343801045">Grand point d'entrée</translation>
 <translation id="5647193778876139879">Maintenez le doigt sur une adresse.</translation>
+<translation id="5647702255748985085">Quitter le groupe?</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5652623411397330904">Les produits que vous suivez s'afficheront ici.</translation>
 <translation id="5657156137487675418">Autoriser tous les témoins</translation>

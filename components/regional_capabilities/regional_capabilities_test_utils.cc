@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
+
+#include "base/functional/callback.h"
+
+namespace regional_capabilities {
+
+std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
+    PrefService& profile_prefs,
+    int country_id) {
+  return std::make_unique<RegionalCapabilitiesService>(
+      profile_prefs,
+      std::make_unique<FakeRegionalCapabilitiesServiceClient>(country_id));
+}
+
+FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
+    int country_id)
+    : country_id_(country_id) {}
+
+FakeRegionalCapabilitiesServiceClient::
+    ~FakeRegionalCapabilitiesServiceClient() = default;
+
+void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
+    base::OnceCallback<void(int)> on_country_id_fetched) {
+  std::move(on_country_id_fetched).Run(country_id_);
+}
+
+}  // namespace regional_capabilities

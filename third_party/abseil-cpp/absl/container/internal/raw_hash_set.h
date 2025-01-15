@@ -209,6 +209,7 @@
 #include "absl/base/port.h"
 #include "absl/base/prefetch.h"
 #include "absl/container/internal/common.h"  // IWYU pragma: export // for node_handle
+#include "absl/container/internal/common_policy_traits.h"
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
@@ -2436,23 +2437,14 @@ class raw_hash_set {
   static_assert(std::is_lvalue_reference<reference>::value,
                 "Policy::element() must return a reference");
 
-  template <typename T>
-  struct SameAsElementReference
-      : std::is_same<typename std::remove_cv<
-                         typename std::remove_reference<reference>::type>::type,
-                     typename std::remove_cv<
-                         typename std::remove_reference<T>::type>::type> {};
-
   // An enabler for insert(T&&): T must be convertible to init_type or be the
   // same as [cv] value_type [ref].
-  // Note: we separate SameAsElementReference into its own type to avoid using
-  // reference unless we need to. MSVC doesn't seem to like it in some
-  // cases.
   template <class T>
-  using RequiresInsertable = typename std::enable_if<
-      absl::disjunction<std::is_convertible<T, init_type>,
-                        SameAsElementReference<T>>::value,
-      int>::type;
+  using Insertable = absl::disjunction<
+      std::is_same<absl::remove_cvref_t<reference>, absl::remove_cvref_t<T>>,
+      std::is_convertible<T, init_type>>;
+  template <class T>
+  using IsNotBitField = std::is_pointer<T*>;
 
   // RequiresNotInit is a workaround for gcc prior to 7.1.
   // See https://godbolt.org/g/Y4xsUh.
@@ -2462,6 +2454,17 @@ class raw_hash_set {
 
   template <class... Ts>
   using IsDecomposable = IsDecomposable<void, PolicyTraits, Hash, Eq, Ts...>;
+
+  template <class T>
+  using IsDecomposableAndInsertable =
+      IsDecomposable<std::enable_if_t<Insertable<T>::value, T>>;
+
+  // Evaluates to true if an assignment from the given type would require the
+  // source object to remain alive for the life of the element.
+  template <class U>
+  using IsLifetimeBoundAssignmentFrom = std::conditional_t<
+      policy_trait_element_is_owner<Policy>::value, std::false_type,
+      type_traits_internal::IsLifetimeBoundAssignment<init_type, U>>;
 
  public:
   static_assert(std::is_same<pointer, value_type*>::value,
@@ -2706,7 +2709,8 @@ class raw_hash_set {
   //   absl::flat_hash_set<int> a, b{a};
   //
   // RequiresNotInit<T> is a workaround for gcc prior to 7.1.
-  template <class T, RequiresNotInit<T> = 0, RequiresInsertable<T> = 0>
+  template <class T, RequiresNotInit<T> = 0,
+            std::enable_if_t<Insertable<T>::value, int> = 0>
   raw_hash_set(std::initializer_list<T> init, size_t bucket_count = 0,
                const hasher& hash = hasher(), const key_equal& eq = key_equal(),
                const allocator_type& alloc = allocator_type())
@@ -2717,7 +2721,8 @@ class raw_hash_set {
                const allocator_type& alloc = allocator_type())
       : raw_hash_set(init.begin(), init.end(), bucket_count, hash, eq, alloc) {}
 
-  template <class T, RequiresNotInit<T> = 0, RequiresInsertable<T> = 0>
+  template <class T, RequiresNotInit<T> = 0,
+            std::enable_if_t<Insertable<T>::value, int> = 0>
   raw_hash_set(std::initializer_list<T> init, size_t bucket_count,
                const hasher& hash, const allocator_type& alloc)
       : raw_hash_set(init, bucket_count, hash, key_equal(), alloc) {}
@@ -2726,7 +2731,8 @@ class raw_hash_set {
                const hasher& hash, const allocator_type& alloc)
       : raw_hash_set(init, bucket_count, hash, key_equal(), alloc) {}
 
-  template <class T, RequiresNotInit<T> = 0, RequiresInsertable<T> = 0>
+  template <class T, RequiresNotInit<T> = 0,
+            std::enable_if_t<Insertable<T>::value, int> = 0>
   raw_hash_set(std::initializer_list<T> init, size_t bucket_count,
                const allocator_type& alloc)
       : raw_hash_set(init, bucket_count, hasher(), key_equal(), alloc) {}
@@ -2735,7 +2741,8 @@ class raw_hash_set {
                const allocator_type& alloc)
       : raw_hash_set(init, bucket_count, hasher(), key_equal(), alloc) {}
 
-  template <class T, RequiresNotInit<T> = 0, RequiresInsertable<T> = 0>
+  template <class T, RequiresNotInit<T> = 0,
+            std::enable_if_t<Insertable<T>::value, int> = 0>
   raw_hash_set(std::initializer_list<T> init, const allocator_type& alloc)
       : raw_hash_set(init, 0, hasher(), key_equal(), alloc) {}
 
@@ -2951,12 +2958,23 @@ class raw_hash_set {
   //
   //   flat_hash_map<std::string, int> m;
   //   m.insert(std::make_pair("abc", 42));
-  // TODO(cheshire): A type alias T2 is introduced as a workaround for the nvcc
-  // bug.
-  template <class T, RequiresInsertable<T> = 0, class T2 = T,
-            typename std::enable_if<IsDecomposable<T2>::value, int>::type = 0,
-            T* = nullptr>
+  template <class T,
+            std::enable_if_t<IsDecomposableAndInsertable<T>::value &&
+                                 IsNotBitField<T>::value &&
+                                 !IsLifetimeBoundAssignmentFrom<T>::value,
+                             int> = 0>
   std::pair<iterator, bool> insert(T&& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return emplace(std::forward<T>(value));
+  }
+
+  template <class T,
+            std::enable_if_t<IsDecomposableAndInsertable<T>::value &&
+                                 IsNotBitField<T>::value &&
+                                 IsLifetimeBoundAssignmentFrom<T>::value,
+                             int> = 0>
+  std::pair<iterator, bool> insert(
+      T&& value ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(std::forward<T>(value));
   }
 
@@ -2971,10 +2989,20 @@ class raw_hash_set {
   //   const char* p = "hello";
   //   s.insert(p);
   //
-  template <
-      class T, RequiresInsertable<const T&> = 0,
-      typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
+  template <class T, std::enable_if_t<
+                         IsDecomposableAndInsertable<const T&>::value &&
+                             !IsLifetimeBoundAssignmentFrom<const T&>::value,
+                         int> = 0>
   std::pair<iterator, bool> insert(const T& value)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return emplace(value);
+  }
+  template <class T,
+            std::enable_if_t<IsDecomposableAndInsertable<const T&>::value &&
+                                 IsLifetimeBoundAssignmentFrom<const T&>::value,
+                             int> = 0>
+  std::pair<iterator, bool> insert(
+      const T& value ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return emplace(value);
   }
@@ -2985,22 +3013,43 @@ class raw_hash_set {
   //   flat_hash_map<std::string, int> s;
   //   s.insert({"abc", 42});
   std::pair<iterator, bool> insert(init_type&& value)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+      ABSL_ATTRIBUTE_LIFETIME_BOUND
+#if __cplusplus >= 202002L
+    requires(!IsLifetimeBoundAssignmentFrom<init_type>::value)
+#endif
+  {
     return emplace(std::move(value));
   }
+#if __cplusplus >= 202002L
+  std::pair<iterator, bool> insert(
+      init_type&& value ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this))
+      ABSL_ATTRIBUTE_LIFETIME_BOUND
+    requires(IsLifetimeBoundAssignmentFrom<init_type>::value)
+  {
+    return emplace(std::move(value));
+  }
+#endif
 
-  // TODO(cheshire): A type alias T2 is introduced as a workaround for the nvcc
-  // bug.
-  template <class T, RequiresInsertable<T> = 0, class T2 = T,
-            typename std::enable_if<IsDecomposable<T2>::value, int>::type = 0,
-            T* = nullptr>
+  template <class T,
+            std::enable_if_t<IsDecomposableAndInsertable<T>::value &&
+                                 IsNotBitField<T>::value &&
+                                 !IsLifetimeBoundAssignmentFrom<T>::value,
+                             int> = 0>
   iterator insert(const_iterator, T&& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(std::forward<T>(value)).first;
   }
+  template <class T,
+            std::enable_if_t<IsDecomposableAndInsertable<T>::value &&
+                                 IsNotBitField<T>::value &&
+                                 IsLifetimeBoundAssignmentFrom<T>::value,
+                             int> = 0>
+  iterator insert(const_iterator, T&& value ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(
+                                      this)) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return insert(std::forward<T>(value)).first;
+  }
 
-  template <
-      class T, RequiresInsertable<const T&> = 0,
-      typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
+  template <class T, std::enable_if_t<
+                         IsDecomposableAndInsertable<const T&>::value, int> = 0>
   iterator insert(const_iterator,
                   const T& value) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return insert(value).first;
@@ -3016,7 +3065,8 @@ class raw_hash_set {
     for (; first != last; ++first) emplace(*first);
   }
 
-  template <class T, RequiresNotInit<T> = 0, RequiresInsertable<const T&> = 0>
+  template <class T, RequiresNotInit<T> = 0,
+            std::enable_if_t<Insertable<const T&>::value, int> = 0>
   void insert(std::initializer_list<T> ilist) {
     insert(ilist.begin(), ilist.end());
   }
@@ -3055,8 +3105,8 @@ class raw_hash_set {
   //   flat_hash_map<std::string, std::string> m = {{"abc", "def"}};
   //   // Creates no std::string copies and makes no heap allocations.
   //   m.emplace("abc", "xyz");
-  template <class... Args, typename std::enable_if<
-                               IsDecomposable<Args...>::value, int>::type = 0>
+  template <class... Args,
+            std::enable_if_t<IsDecomposable<Args...>::value, int> = 0>
   std::pair<iterator, bool> emplace(Args&&... args)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return PolicyTraits::apply(EmplaceDecomposable{*this},
@@ -3066,8 +3116,8 @@ class raw_hash_set {
   // This overload kicks in if we cannot deduce the key from args. It constructs
   // value_type unconditionally and then either moves it into the table or
   // destroys.
-  template <class... Args, typename std::enable_if<
-                               !IsDecomposable<Args...>::value, int>::type = 0>
+  template <class... Args,
+            std::enable_if_t<!IsDecomposable<Args...>::value, int> = 0>
   std::pair<iterator, bool> emplace(Args&&... args)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     alignas(slot_type) unsigned char raw[sizeof(slot_type)];
@@ -3259,9 +3309,8 @@ class raw_hash_set {
     return node;
   }
 
-  template <
-      class K = key_type,
-      typename std::enable_if<!std::is_same<K, iterator>::value, int>::type = 0>
+  template <class K = key_type,
+            std::enable_if_t<!std::is_same<K, iterator>::value, int> = 0>
   node_type extract(const key_arg<K>& key) {
     auto it = find(key);
     return it == end() ? node_type() : extract(const_iterator{it});

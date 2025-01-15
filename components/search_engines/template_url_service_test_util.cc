@@ -10,6 +10,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -77,9 +78,12 @@ void TemplateURLServiceUnitTestBase::SetUp() {
       switches::kSearchEngineChoiceCountry,
       switches::kDefaultListCountryOverride);
 
+  regional_capabilities_service_ =
+      regional_capabilities::CreateServiceWithFakeClient(pref_service_);
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, &local_state_,
+          pref_service_, &local_state_, *regional_capabilities_service_,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
           /*is_profile_eligible_for_dse_guest_propagation=*/false,
 #endif

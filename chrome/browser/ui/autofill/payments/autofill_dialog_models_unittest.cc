@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -17,8 +18,7 @@ namespace {
 class YearComboboxModelTest : public testing::Test {
  public:
   YearComboboxModelTest() {
-    auto kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
   }
 
  private:

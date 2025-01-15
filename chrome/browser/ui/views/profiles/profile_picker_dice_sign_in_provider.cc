@@ -109,13 +109,13 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
         profile_path_, /*incognito=*/false, std::move(profile_init_callback));
     DCHECK(profile_exists);
   } else {
-    size_t icon_index = profiles::GetPlaceholderAvatarIndex();
     // Silently create the new profile for browsing on GAIA (so that the sign-in
     // cookies are stored in the right profile).
     ProfileManager::CreateMultiProfileAsync(
-        profile_manager->GetProfileAttributesStorage().ChooseNameForNewProfile(
-            icon_index),
-        icon_index, /*is_hidden=*/true, std::move(profile_init_callback));
+        profile_manager->GetProfileAttributesStorage()
+            .ChooseNameForNewProfile(),
+        profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/true,
+        std::move(profile_init_callback));
   }
 }
 

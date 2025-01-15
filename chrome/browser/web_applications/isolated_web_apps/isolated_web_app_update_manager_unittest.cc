@@ -45,9 +45,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -70,6 +72,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -91,6 +94,7 @@ namespace {
 
 using base::ToVector;
 using base::test::DictionaryHasValue;
+using base::test::ErrorIs;
 using base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
@@ -364,7 +368,8 @@ class IsolatedWebAppUpdateManagerUpdateTest
     provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
 
-    auto command_scheduler = std::make_unique<MockCommandScheduler>(*profile());
+    auto command_scheduler =
+        std::make_unique<NiceMock<MockCommandScheduler>>(*profile());
     command_scheduler->DelegateToRealImpl();
     provider().SetScheduler(std::move(command_scheduler));
 
@@ -692,6 +697,94 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
 
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, KeyRotationUpdateRetry) {
+  // Install bundle with ed25519 id.
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+
+  auto capture_discovery_task_result = [&](base::FunctionRef<void()> trigger) {
+    UpdateDiscoveryTaskFuture future;
+    UpdateDiscoveryTaskResultWaiter waiter(
+        provider(), GetAppId(GetIwa1WebBundleId()), future.GetCallback());
+    trigger();
+    return future.Take();
+  };
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Rotate the signing key from ed25519 to ecdsaP256. This will
+                // trigger an unsuccessful update.
+                ASSERT_THAT(
+                    test::UpdateKeyDistributionInfo(
+                        base::Version("1.0.0"), GetIwa1WebBundleId().id(),
+                        test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+                    base::test::HasValue());
+              }),
+              ErrorIs(_));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by a minute -- this will trigger the first
+                // exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(1));
+              }),
+              ErrorIs(_));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by two minutes -- this will trigger the second
+                // exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(2));
+              }),
+              ErrorIs(_));
+
+  // Now substitute the bundle served by the manifest.
+  test_update_server().AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(GetIwa1WebBundleId(),
+                       {test::GetDefaultEcdsaP256KeyPair()}));
+
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Fast forward by another four minutes -- this will trigger the
+                // third & successful exponential update attempt.
+                task_environment().FastForwardBy(base::Minutes(4));
+              }),
+              ValueIs(_));
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, SubsequentKeyRotations) {
+  // Install bundle with ed25519 id.
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("1.0.0"));
+
+  auto web_bundle_id = GetIwa1WebBundleId();
+  auto app_id = GetAppId(web_bundle_id);
+
+  for (uint32_t comp_v = 1; comp_v <= 10; comp_v++) {
+    auto key_pair = web_package::test::Ed25519KeyPair::CreateRandom();
+    test_update_server().AddBundle(
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+            .BuildBundle(web_bundle_id, {key_pair}));
+
+    ASSERT_THAT(
+        provider().registrar_unsafe().GetAppById(app_id),
+        test::IwaIs(_, test::IsolationDataIs(
+                           _, _, _, _, /*integrity_block_data=*/
+                           testing::Not(test::IntegrityBlockDataPublicKeysAre(
+                               key_pair.public_key)))));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({app_id});
+    ASSERT_THAT(test::UpdateKeyDistributionInfo(
+                    base::Version(base::StringPrintf("%d.0.0", comp_v)),
+                    web_bundle_id.id(), key_pair.public_key.bytes()),
+                base::test::HasValue());
+    manifest_updated_observer.Wait();
+
+    ASSERT_THAT(provider().registrar_unsafe().GetAppById(app_id),
+                test::IwaIs(_, test::IsolationDataIs(
+                                   _, _, _, _, /*integrity_block_data=*/
+                                   test::IntegrityBlockDataPublicKeysAre(
+                                       key_pair.public_key))));
+  }
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,

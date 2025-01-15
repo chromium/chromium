@@ -358,7 +358,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscardedInternal(
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
     case PrefetchStatus::kPrefetchHeldback:
-    case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::

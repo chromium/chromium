@@ -10,8 +10,11 @@ namespace autofill {
 
 bool AutofillProfileTestApi::EqualsIncludingUsageStats(
     const AutofillProfile& other) const {
-  return profile_->use_count() == other.use_count() &&
-         profile_->UseDateEqualsInSeconds(&other) && *profile_ == other;
+  return profile_->usage_history().use_count() ==
+             other.usage_history().use_count() &&
+         profile_->usage_history().UseDateEqualsInSeconds(
+             other.usage_history()) &&
+         *profile_ == other;
 }
 
 }  // namespace autofill

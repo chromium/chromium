@@ -991,6 +991,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5506763544823940561">Gorde irudia hemen…</translation>
 <translation id="5511959326926949696">Arakatzailerako muturreko aukerako babesa. Zibereraso oso sofistikatu bat pairatuko duzula uste baduzu soilik erabili beharko zenuke.</translation>
 <translation id="5513681519188741830">Duela <ph name="TIME" /> h</translation>
+<translation id="5520668942302483373">Irten taldetik</translation>
 <translation id="5524590039848017563">Tolestutako tresna-barra nagusiaren botoia</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
 <translation id="5532545557415295622">Inaktibitate-egoeraren denbora-mugaren leihoa</translation>
@@ -1030,6 +1031,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5646284034397250191">Sortu da etiketa. Data falta da.</translation>
 <translation id="5647096944343801045">Sarrera-puntu handia</translation>
 <translation id="5647193778876139879">Eduki helbide bat sakatuta.</translation>
+<translation id="5647702255748985085">Taldetik irten nahi duzu?</translation>
 <translation id="5648166631817621825">Azken zazpi egunetakoak</translation>
 <translation id="5652623411397330904">Jarraipena egiten diezun produktuak hemen agertuko dira.</translation>
 <translation id="5657156137487675418">Baimendu cookie guztiak</translation>
@@ -1115,6 +1117,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6027619584715411062">Hasi saioa laster-markak, pasahitzak eta bestelako datuak gailu guztietan lortzeko.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> esan nahi al zenuen?</translation>
 <translation id="6032845897905314562">eginbide berria</translation>
+<translation id="6038823991892265570">Kudeatu Google-ko biltegia</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6042308850641462728">Gehiago</translation>
@@ -1150,6 +1153,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6160780110287872296">Fitxategia deskargatu nahi duzu?</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6168647875670665004">Artikulu-iradokizunak</translation>
+<translation id="6169031022444660352">Gordetako kredentzial guztiak ezabatzeko, gailuan sarbide-gako bat konfiguratu behar duzu.</translation>
 <translation id="6173499589275053515">Gorde da pasahitza zure Google-ko kontuan (<ph name="EMAIL" />)</translation>
 <translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Sortze-data: <ph name="DATE" /></translation>
@@ -1201,6 +1205,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6355820205320395730">Seguruak ez diren pasahitzak erraz asmatzen dira. Ziurtatu pasahitz seguruak sortzen dituzula. <ph name="BEGIN_LINK" />Ikusi segurtasun-aholku gehiago.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Jarraitu <ph name="DOMAIN_NAME" /> domeinuari</translation>
 <translation id="6368038301482806847">Hautatu bilatzaile bat zerrendatik.</translation>
+<translation id="6368102751067608420">Pasahitz-kudeatzailearen datu guztiak ezabatzeko</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
 <translation id="6387994324662817823">Pasahitzak gailu honetan soilik gordetzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="6404422529625928907">Ireki Google Drive-n</translation>

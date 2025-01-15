@@ -150,6 +150,14 @@ StyleShape::Segment ShapeCommandToShapeSegment(
       return StyleShape::LineBySegment{
           StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint())};
     case SVGPathSegType::kPathSegLineToHorizontalAbs:
+      if (auto* identifier_value =
+              DynamicTo<CSSIdentifierValue>(command.GetEndPoint())) {
+        if (identifier_value->GetValueID() == CSSValueID::kXStart) {
+          return StyleShape::HLineToSegment{Length::Percent(0)};
+        } else if (identifier_value->GetValueID() == CSSValueID::kXEnd) {
+          return StyleShape::HLineToSegment{Length::Percent(100)};
+        }
+      }
       return StyleShape::HLineToSegment{
           StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
                                                        CSSValueID::kRight>(
@@ -160,6 +168,14 @@ StyleShape::Segment ShapeCommandToShapeSegment(
                                                        CSSValueID::kRight>(
               state, command.GetEndPoint())};
     case SVGPathSegType::kPathSegLineToVerticalAbs:
+      if (auto* identifier_value =
+              DynamicTo<CSSIdentifierValue>(command.GetEndPoint())) {
+        if (identifier_value->GetValueID() == CSSValueID::kYStart) {
+          return StyleShape::VLineToSegment{Length::Percent(0)};
+        } else if (identifier_value->GetValueID() == CSSValueID::kYEnd) {
+          return StyleShape::VLineToSegment{Length::Percent(100)};
+        }
+      }
       return StyleShape::VLineToSegment{
           StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
                                                        CSSValueID::kBottom>(

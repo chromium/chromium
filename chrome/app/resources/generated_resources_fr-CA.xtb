@@ -160,6 +160,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1101254380285078812">{COUNT,plural, =1{1 mot de passe}one{{COUNT} mot de passe}other{{COUNT} mots de passe}}</translation>
 <translation id="1102759278139578486">Impossible de télécharger les fichiers d'annotation du nœud principal. Réessayez plus tard.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Vous perdrez immédiatement l'accès au groupe d'onglets, et il sera supprimé de tous vos appareils.</translation>
 <translation id="1106350001632362876">Augmenter le seuil</translation>
 <translation id="1107482171728500359">Partager le microphone</translation>
 <translation id="110850812463801904">Se connecter manuellement à OneDrive</translation>
@@ -321,7 +322,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1210678701920254279">Affichez ou ajoutez des imprimantes et consultez les tâches d'impression actives</translation>
 <translation id="1211769675100312947">Vous organisez les raccourcis vous-même</translation>
 <translation id="1213254615020057352">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
-<translation id="1214004433265298541">Certificat fourni par votre administrateur qui peut afficher les authentifiants pour <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nouvelle application en arrière-plan ajoutée</translation>
 <translation id="1216542092748365687">Supprimer l'empreinte digitale</translation>
 <translation id="1216891999012841486">En savoir plus sur la résolution des erreurs de mise à jour</translation>
@@ -1694,6 +1694,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2173801458090845390">Ajouter un identifiant de réquisition à cet appareil</translation>
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et la recherche de sites</translation>
+<translation id="2175526076681939329">Utiliser des touches primaires</translation>
 <translation id="217576141146192373">Impossible d'ajouter l'imprimante. Veuillez vérifier la configuration de votre imprimante, puis réessayer.</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="217631816678106981">Ne pas coller</translation>
@@ -3087,6 +3088,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3159978855457658359">Modifier le nom de l'appareil</translation>
 <translation id="3160928651883997588">Préférences de RPV</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
+<translation id="3162070126914310576">Cet appareil ne peut pas être inscrit pour le moment, car votre unité organisationnelle a atteint sa limite d'inscription initiale. Communiquez avec votre administrateur pour obtenir de l'aide.</translation>
 <translation id="3162766632262775911">Toujours autorisé à utiliser l'optimiseur V8</translation>
 <translation id="3162853326462195145">Compte scolaire</translation>
 <translation id="3162899666601560689">Les sites peuvent utiliser des témoins afin d'améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats</translation>
@@ -3416,6 +3418,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3407392651057365886">Plus de pages sont préchargées. Les pages peuvent être préchargées par les serveurs de Google lorsqu'elles sont demandées par d'autres sites.</translation>
 <translation id="3407967630066378878">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales sur le côté gauche de ce <ph name="DEVICE_TYPE" />. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Caméra et microphone en cours d'utilisation</translation>
+<translation id="3409157109901479672">Côté gauche</translation>
 <translation id="3409513286451883969">&amp;Traduire la sélection en <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Aller à la sélection</translation>
 <translation id="3413122095806433232">Émetteurs de l'autorité de certification : <ph name="LOCATION" /></translation>
@@ -4701,6 +4704,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4290826901752066702"><ph name="NUM" /> membre</translation>
 <translation id="4290898381118933198">Balayer pour passer d'une page à l'autre</translation>
 <translation id="4291265871880246274">Boîte de dialogue de connexion</translation>
+<translation id="4292613336957320546">Accélération</translation>
 <translation id="429312253194641664">Un site lit du contenu multimédia</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements, mais il est toujours sur votre appareil</translation>
 <translation id="4295072614469448764">L'application est disponible dans votre terminal. Une icône peut également être disponible dans votre lanceur d'applications.</translation>
@@ -5868,6 +5872,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, recherche <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Entrez le NIP de votre clé de sécurité. Si vous ne connaissez pas le NIP, vous devrez réinitialiser la clé de sécurité.</translation>
 <translation id="5139955368427980650">&amp;Ouvrir</translation>
+<translation id="5140742218917419811">Touches à utiliser</translation>
 <translation id="5141421572306659464">Compte principal</translation>
 <translation id="5141957579434225843">Par exemple, utilisez oà, oè, uỳ au lieu de òa, òe, ùy</translation>
 <translation id="5143374789336132547">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
@@ -5886,6 +5891,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5149602533174716626">Cop&amp;amp;ier l'image vidéo</translation>
 <translation id="5150254825601720210">Nom du serveur SSL du certificat Netscape</translation>
 <translation id="5151354047782775295">Libérez de l'espace disque ou certaines données pourront être supprimées automatiquement</translation>
+<translation id="5153074793829217329">Utilisez votre clavier ou un clavier numérique pour contrôler le curseur de votre souris.</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Paramètres avancés pour <ph name="PRINTING_DESTINATION" /></translation>
@@ -7979,6 +7985,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6689714331348768690">Demandez à <ph name="SUPERVISED_USER_NAME" /> de venir à l'ordinateur. Votre enfant lira quelques phrases sur cet écran pour créer son modèle vocal.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> a besoin d'aide pour lire, demandez à votre enfant de répéter après vous. Chuchotez loin du micro pour que l'Assistant apprenne la voix de votre enfant et non la vôtre.</translation>
+<translation id="6689948774466767379">Touches de souris</translation>
 <translation id="6690659332373509948">Impossible d'analyser le fichier : <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">A&amp;vancer</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}one{{COUNT} page}other{{COUNT} pages}}</translation>
@@ -9059,6 +9066,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="746861123368584540">Extension chargée</translation>
 <translation id="7469612367552312334">Activé • Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités</translation>
 <translation id="7470131554696493512">Empêcher les accessoires Thunderbolt ou USB4 d'accéder à la mémoire (RAM) et de la partager</translation>
+<translation id="7470284766345262333">Ce compte n'est pas associé à Google, donc les fonctionnalités comme la Synchronisation Chrome ne sont pas accessibles</translation>
 <translation id="7470424110735398630">Autorisés à consulter le contenu de votre presse-papiers</translation>
 <translation id="747114903913869239">Erreur : impossible de décoder l'extension</translation>
 <translation id="7471520329163184433">Plus lente</translation>
@@ -10063,6 +10071,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8169177848833352618">Malheureusement, cette machine ne répond pas aux exigences d'installation de Bruschetta. Le code d'erreur est <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Côté droit</translation>
 <translation id="8174047975335711832">Renseignements sur l'appareil</translation>
 <translation id="8176332201990304395">Rose et blanc</translation>
 <translation id="8176529144855282213">Pour activer l'accès au microphone, activez le commutateur de microphone physique sur votre appareil</translation>

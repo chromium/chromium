@@ -528,15 +528,15 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
     for (int i = 0; i < num_cards_of_type; ++i) {
       // Create a card that's still in active use.
       CreditCard card_in_use = test::GetRandomCreditCard(record_type);
-      card_in_use.set_use_date(now - base::Days(30));
-      card_in_use.set_use_count(10);
+      card_in_use.usage_history().set_use_date(now - base::Days(30));
+      card_in_use.usage_history().set_use_count(10);
 
       // Create a card that's not in active use.
       CreditCard card_in_disuse = test::GetRandomCreditCard(record_type);
       card_in_disuse.SetExpirationYear(one_month_ago_exploded.year);
       card_in_disuse.SetExpirationMonth(one_month_ago_exploded.month);
-      card_in_disuse.set_use_date(now - base::Days(200));
-      card_in_disuse.set_use_count(10);
+      card_in_disuse.usage_history().set_use_date(now - base::Days(200));
+      card_in_disuse.usage_history().set_use_count(10);
 
       // Add the cards to the personal data manager in the appropriate way.
       auto& repo = (record_type == CreditCard::RecordType::kLocalCard)
@@ -4000,7 +4000,8 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
   base::HistogramTester histogram_tester;
   CreditCard credit_card;
-  credit_card.set_use_date(AutofillClock::Now() - base::Days(21));
+  credit_card.usage_history().set_use_date(AutofillClock::Now() -
+                                           base::Days(21));
   credit_card.RecordAndLogUse();
   histogram_tester.ExpectBucketCount("Autofill.DaysSinceLastUse.CreditCard", 21,
                                      1);
@@ -4010,7 +4011,7 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
   base::HistogramTester histogram_tester;
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.set_use_date(AutofillClock::Now() - base::Days(13));
+  profile.usage_history().set_use_date(AutofillClock::Now() - base::Days(13));
   profile.RecordAndLogUse();
   histogram_tester.ExpectBucketCount("Autofill.DaysSinceLastUse.Profile", 13,
                                      1);

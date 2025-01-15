@@ -340,7 +340,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2571834852878229351">Өзүмдүкүн түзүү</translation>
 <translation id="2574249610672786438">Chrome колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн бардык түзмөктөрдөн аккаунтуңузга кириңиз</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) дароо “<ph name="GROUP_NAME" />” өтмөктөр тобуна кире албай жана мындан ары Google кызматтарында сиз менен баарлаша албай калат.</translation>
-<translation id="2578337197553672982">Жаштарга арналган Google контенти</translation>
 <translation id="2579297619530305344">Бардык түзмөктөрдөгү сырсөздөр барагы толук экранда ачылды</translation>
 <translation id="2581165646603367611">Ушуну менен Chrome үчүн анча маанилүү болбогон кукилер, кэш жана сайттын башка нерселери тазаланат.</translation>
 <translation id="2587052924345400782">Жаңыраак версиясы бар</translation>
@@ -734,6 +733,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4425140285732600465">Баасына көз салуу. Кандайдыр бир сайтта баасы төмөндөсө, эскертүүлөрдү аласыз.</translation>
 <translation id="4425173294238317796">Киргизүүчү ачкычты ырастоо бети</translation>
 <translation id="442518031075347249">Мындан ары Google Pay'де виртуалдык картаңызды колдоно албай каласыз. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Бардык кыстармалар</translation>
 <translation id="4430277756566635951">Учурда <ph name="EMAIL" /> тандалды. Аккаунт тандаңыз.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> өтмөгүн жабуу</translation>
 <translation id="4452548195519783679">Кыстарма <ph name="FOLDER_NAME" /> куржунуна кошулду</translation>
@@ -806,7 +806,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4742795653798179840">Chrome'догу маалымат өчүрүлдү</translation>
 <translation id="4742970037960872810">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="4749960740855309258">Жаңы өтмөк ачуу</translation>
-<translation id="4750356170202299988">Жаштарга арналган контент</translation>
 <translation id="4758061975920522644">Сүрөттү гана бөлүшүү</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -1378,7 +1377,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7191430249889272776">Өтмөк фондо ачылды.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Муну азыр өзгөртүшүңүз керек}other{Буларды азыр өзгөртүшүңүз керек}}</translation>
 <translation id="7196215469483532480">Купуялык жетектемесинин түшүндүрмөсү толугу менен ачылды</translation>
-<translation id="7205672015775254816">Жаштарга арналган Google контенти - өчүк</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> өтмөктү фондогу жаңы өтмөктөр катары калыбына келтирүү.</translation>
 <translation id="7217781228893594884">Chrome'дон чыкканыңызда жашыруун өтмөктөр кулпуланат</translation>
 <translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
@@ -1533,7 +1531,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7876243839304621966">Баарын алып салуу</translation>
 <translation id="7886917304091689118">Chrome'до иштеп жатат</translation>
 <translation id="7887174313503389866">Негизги купуялык жана коопсуздукту көзөмөлдөө каражаттары тууралуу коштомо. Кошумча параметрлерди көрүү үчүн жеке параметрлерге өтүңүз.</translation>
-<translation id="7896724475402191389">Жаштарга арналган контент - өчүк</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 жүктөп алуу уюмуңуз тарабынан бөгөттөлдү}other{# жүктөп алуу уюмуңуз тарабынан бөгөттөлдү}}</translation>
 <translation id="7914399737746719723">Колдонмо орнотулду</translation>
@@ -1647,6 +1644,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8378850197701296741">Сизде <ph name="FROM_ACCOUNT" /> аккаунтунун кыстармалары, таржымалдары жана башка параметрлери бар.</translation>
 <translation id="8387617938027387193">Өзүңүздү ырастаңыз</translation>
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
+<translation id="8396098434728053815">Өтмөктөгү аудиону да бөлүшүңүз</translation>
 <translation id="8398389123831319859">Жашыруун режимге өтүү үчүн эки жолу басып, коё бербей кармап туруңуз</translation>
 <translation id="8402673309244746971">Жазылгандарга өтүү</translation>
 <translation id="8413126021676339697">Таржымалды толугу менен көрсөтүү</translation>

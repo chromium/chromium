@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -16,9 +18,9 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
-#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
 
 namespace {

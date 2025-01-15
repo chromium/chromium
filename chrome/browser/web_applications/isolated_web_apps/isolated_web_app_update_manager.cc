@@ -148,6 +148,16 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
 namespace {
 
+constexpr net::BackoffEntry::Policy kUpdateRetryBackoffPolicy = {
+    .num_errors_to_ignore = 0,
+    .initial_delay_ms = base::Minutes(1).InMilliseconds(),
+    .multiply_factor = 2.0,
+    .jitter_factor = 0.0,
+    .maximum_backoff_ms = base::Hours(5).InMilliseconds(),
+    .entry_lifetime_ms = -1,
+    .always_use_initial_delay = false,
+};
+
 using IwaBundleIdToUpdateOptionsMap =
     base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>;
 
@@ -233,6 +243,37 @@ bool ShouldProceedWithVersionChange(
   return false;
 }
 
+std::vector<webapps::AppId> GetIwasAffectedByKeyRotation(
+    WebAppProvider& provider) {
+  std::vector<webapps::AppId> iwa_ids;
+
+  base::flat_map<web_package::SignedWebBundleId,
+                 std::reference_wrapper<const WebApp>>
+      installed_iwas = GetInstalledIwas(provider.registrar_unsafe());
+
+  // Queue updates for all apps affected by key rotation.
+  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
+    auto result = LookupRotatedKey(web_bundle_id);
+    // If the rotated key is null, there's no point in updating the
+    // app (as the update won't succeed anyway).
+    if (result != KeyRotationLookupResult::kKeyFound) {
+      continue;
+    }
+
+    KeyRotationData data =
+        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
+    // If either the bundle or the pending update already includes the rotated
+    // key, there's no need to rush with updates.
+    if (data.current_installation_has_rk || data.pending_update_has_rk) {
+      continue;
+    }
+
+    iwa_ids.push_back(iwa.get().app_id());
+  }
+
+  return iwa_ids;
+}
+
 }  // namespace
 
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
@@ -249,7 +290,8 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // IWAs in incognito windows.
           !profile.IsOffTheRecord()),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
-      task_queue_{*this} {}
+      task_queue_{*this},
+      key_rotation_backoff_retry_entry_(&kUpdateRetryBackoffPolicy) {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -487,29 +529,29 @@ void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
     return;
   }
 
-  base::flat_map<web_package::SignedWebBundleId,
-                 std::reference_wrapper<const WebApp>>
-      installed_iwas = GetInstalledIwas(provider_->registrar_unsafe());
+  key_rotation_backoff_retry_entry_.Reset();
+  QueueUpdatesForIwasAffectedByKeyRotation();
+}
 
-  // Queue updates for all apps affected by key rotation.
-  for (const auto& [web_bundle_id, iwa] : installed_iwas) {
-    auto result = LookupRotatedKey(web_bundle_id);
-    // If the rotated key is null, there's no point in updating the
-    // app (as the update won't succeed anyway).
-    if (result != KeyRotationLookupResult::kKeyFound) {
-      continue;
-    }
-
-    KeyRotationData data =
-        GetKeyRotationData(web_bundle_id, *iwa.get().isolation_data());
-    // If either the bundle or the pending update already includes the rotated
-    // key, there's no need to rush with updates.
-    if (data.current_installation_has_rk || data.pending_update_has_rk) {
-      continue;
-    }
-
-    MaybeDiscoverUpdatesForApp(iwa.get().app_id());
+void IsolatedWebAppUpdateManager::QueueUpdatesForIwasAffectedByKeyRotation() {
+  std::vector<webapps::AppId> iwa_ids =
+      GetIwasAffectedByKeyRotation(*provider_);
+  if (iwa_ids.empty()) {
+    key_rotation_backoff_retry_entry_.Reset();
+    return;
   }
+  key_rotation_backoff_retry_entry_.InformOfRequest(/*succeeded=*/false);
+
+  for (const auto& iwa_id : iwa_ids) {
+    MaybeDiscoverUpdatesForApp(iwa_id);
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&IsolatedWebAppUpdateManager::
+                         QueueUpdatesForIwasAffectedByKeyRotation,
+                     weak_factory_.GetWeakPtr()),
+      key_rotation_backoff_retry_entry_.GetTimeUntilRelease());
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {

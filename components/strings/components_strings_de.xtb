@@ -701,6 +701,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2215539479425228550">Klettern und Bergsteigen</translation>
 <translation id="2215727959747642672">Dateien bearbeiten</translation>
 <translation id="2215963164070968490">Hunde</translation>
+<translation id="2219376942605837404">Tab zur Vergleichstabelle hinzufügen</translation>
 <translation id="2219658597883514593">Anleitung neu starten</translation>
 <translation id="2219735899272417925">Gerät muss zurückgesetzt werden</translation>
 <translation id="2221227930294879156">Veranstaltungen zum Thema Essen und Getränke</translation>
@@ -1151,6 +1152,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="306573536155379004">Spiel gestartet.</translation>
 <translation id="3067505415088964188">Der Preis ist niedrig</translation>
 <translation id="3068118691172921711">Der Dateiupload in <ph name="CLOUD_PROVIDER" /> beginnt in 1 Minute</translation>
+<translation id="3068976060094139647">Du kannst diese Karte automatisch ausfüllen lassen, weil dein Konto mit Google Pay verknüpft ist.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} Element}other{{ITEMS} Elemente}}</translation>
 <translation id="3076865167425975822">Betriebssysteme</translation>
 <translation id="3080254622891793721">Grafik</translation>
@@ -1204,6 +1206,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3156511682997763015">10 Sekunden vorspulen</translation>
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3158539265159265653">CD</translation>
+<translation id="3162070126914310576">Dieses Gerät kann derzeit nicht registriert werden, da die maximale Anzahl an Geräten für die Erstregistrierung in deiner Organisationseinheit bereits erreicht wurde. Bei Fragen wende dich bitte an deinen Administrator.</translation>
 <translation id="3162559335345991374">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken aufrufen.</translation>
 <translation id="316638481603975524">Darf nachfragen, ob Web-Apps installiert werden können</translation>
 <translation id="3168744840365648658">Funkausrüstung</translation>
@@ -1783,6 +1786,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4151403195736952345">Globalen Standard verwenden (Erkennen)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Seite 1}other{Seite {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome prüft jetzt deine Identität, bevor Zahlungsmethoden ausgefüllt werden. Du kannst dies jederzeit in den <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> aktualisieren.</translation>
+<translation id="415440494507469262">Tab zur Vergleichstabelle hinzufügen</translation>
 <translation id="4159784952369912983">Violett</translation>
 <translation id="4165422751765527461">Hilfeartikel wird in einem neuen Tab geöffnet</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
@@ -1935,6 +1939,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Datei-Upload in Microsoft OneDrive wurde pausiert</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Mit dieser Richtlinie wird das Standardverhalten der folgenden Richtlinien festgelegt: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Öffnet ein Bestätigungs-Pop-up auf der Website deiner Bank</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4406896451731180161">Suchergebnisse</translation>
@@ -2377,6 +2382,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5244521145258281926">Schaltfläche „Google-Konto verwalten“ – aktivieren, um Daten, Datenschutz- und Sicherheits­einstellungen in deinem Google-Konto zu verwalten</translation>
 <translation id="5244732203286792411">Wird geladen…
     Dies kann einen Moment dauern.</translation>
+<translation id="5248543496748975054">Fehlt die Kartennummer?</translation>
 <translation id="5250209940322997802">"Mit Netzwerk verbinden"</translation>
 <translation id="52517543715119994">Informationen zu Chrome-Funktionen</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3387,6 +3393,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="706960991003274248">Vergleichstabellen werden in deinem Konto (<ph name="EMAIL" />) gespeichert</translation>
 <translation id="7070144569727915108">Systemeinstellungen</translation>
 <translation id="70705239631109039">Deine Verbindung ist nicht uneingeschränkt sicher</translation>
+<translation id="7071122206197538392">Neue Vergleichstabelle</translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -3993,6 +4000,7 @@ Weitere Details:
 <translation id="8116925261070264013">Stummgeschaltet</translation>
 <translation id="8118489163946903409">Zahlungsmethode</translation>
 <translation id="8118506371121007279">Feedback geben</translation>
+<translation id="8120720167840853945">Mit dieser Richtlinie wird derzeit das Standardverhalten von keinen anderen Richtlinien festgelegt.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" war nicht ordnungsgemäß auf deinem Computer oder im Netzwerk installiert. Bitte deinen IT-Administrator, das Problem zu lösen.</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8133495915926741232">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden sollen. Wenn du eine allgemeine Kategorie deaktivierst, werden die zugehörigen Themen ebenfalls blockiert. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -4097,6 +4105,7 @@ Weitere Details:
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
 <translation id="8301894345671534559">Code eingeben</translation>
 <translation id="8303854710873047864">Abschnitt "<ph name="SECTION" />" eingeblendet</translation>
+<translation id="8304912090860925649">Neue Vergleichstabelle</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="8308653357438598313">Live-Videostreaming</translation>
 <translation id="8311895354659782580">Immobilienanzeigen</translation>

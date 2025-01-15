@@ -6,13 +6,18 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_VIEW_H_
 
 #include <memory>
+#include <string>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {

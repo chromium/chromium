@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Дараагийн хэрэглэгч рүү сэлгэх</translation>
 <translation id="1951012854035635156">Туслах</translation>
 <translation id="1954252331066828794">Дэлгэцийн үйлдлийг бичиж дууссан</translation>
+<translation id="1956087014741188812">Хулганын товчийг түр зогсоох</translation>
 <translation id="1957958912175573503">Хэлээ тохируулах</translation>
 <translation id="1961239773406905488">Камерын урьдчилан үзэлтийг нуусан байна</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Төхөөрөмжийг хайж байна...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" />-г татаж авах явцад алдаа гарлаа</translation>
 <translation id="2258734398699965611">Санал болгосон файлууд</translation>
+<translation id="2266607665880926261">Хулганын товчийг түр зогсоосон</translation>
 <translation id="2268130516524549846">Bluetooth-г идэвхгүй болгосон байна</translation>
 <translation id="2268731132310444948">Аяллын <ph name="TOTAL_STEPS" />-н <ph name="STEP" />-р алхам. Эхлүүлэгчийг идэвхжүүлсний дараа та сайжруулсан хайлтын талбарыг авна. Та файл, апп болон бусад зүйлээ хайхын тулд бичиж эхлэх боломжтой. Та мөн өөрийн <ph name="PRODUCT_NAME" />-н талаарх асуултуудад хариулт авах боломжтой.</translation>
 <translation id="2268813581635650749">Бүгдээс гарах</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Дэлгэцэд томруулах</translation>
 <translation id="2878884018241093801">Сүүлийн үеийн зүйл байхгүй</translation>
 <translation id="2880541185262491188">ПИН-г оруулахаар хэт олон удаа оролдсон. <ph name="TIME_LEFT" /> хүлээгээд, дахин оролдоно уу</translation>
+<translation id="2883271196820422439">Хулганын товчийг үргэлжлүүлэх</translation>
 <translation id="2885950158625301909">Нэмэлт мэдээлэл авах</translation>
 <translation id="2891209721153296020">"Сонголтыг болиулах"</translation>
 <translation id="2894949423239620203">Кабель нь гүйцэтгэлд нөлөөлж магадгүй</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-н сүлжээний цэг</translation>
 <translation id="3540893133818942399">Утасныхаа саяхны зургууд болон медиаг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="3542066395059568317">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой. Та зөвлөмжүүдийг хасахын тулд баруун талыг товшиж болно.</translation>
+<translation id="3545224667633138205">Хулганын товчийг үргэлжлүүлсэн</translation>
 <translation id="3552189655002856821">Wi-Fi унтраалттай байна</translation>
 <translation id="3554215588514239132">Хөгжүүлэгчийн хэрэгслийн түр зуурын самбарыг харуулах эсвэл нуух</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />-г бэхэллээ</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Зүйлсийг ачаалж чадсангүй. Онлайн үед дахин оролдоно уу.</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3738664582935948253">Та одоо дэлгэцийн бичлэгт товшилт болон товчлуурын шууд холбоос харуулах боломжтой</translation>
+<translation id="3741482431277446954">Хулганын баруун товч</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
 <translation id="3743775386021959186">Төвлөрөх горим асаалттай байна. <ph name="REMAINING_TIME" /> үлдсэн</translation>
 <translation id="3750403286520637847">Цаг агаарын зөвлөмжийг нуух</translation>
@@ -859,7 +864,6 @@
 <translation id="3958714870339660776">Бүтэн өдөр</translation>
 <translation id="3962859241508114581">Өмнөх бичлэг</translation>
 <translation id="3963124517343721543">Өмнөх цонх, табуудаа нээснээр орхисон газраасаа хялбархан үргэлжлүүлээрэй. Мөн та дараа хийх зүйлсийн талаар хувийн болгосон зөвлөмжийг харах болно.</translation>
-<translation id="396506362088290977">Микрофоныхоо дууг турших</translation>
 <translation id="3969043077941541451">Унтраах</translation>
 <translation id="3970324493235864154">Утасныхаа мэдэгдлүүдийг харах</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
@@ -1301,7 +1305,6 @@
 <translation id="536019650977002321">Танай администратор аудио бичихийг зөвшөөрдөггүй. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг хэсэгчлэн татсан</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> таб руу очих</translation>
-<translation id="5363835273551457276">Та микрофоныхоо дууг турших боломжтой. Зогсоохын тулд түр зуурын самбарыг хаана уу.</translation>
 <translation id="5364693579536176785">хадгалах сангийн зай</translation>
 <translation id="5369573834963677938">Царайн хяналт нь төхөөрөмж дээрх бусад хэрэглэгчид боломжтой болно</translation>
 <translation id="5369717264580061086">Файлс аппад файл урьдчилан үзэх</translation>
@@ -1831,6 +1834,7 @@
 <translation id="7118268675952955085">дэлгэцийн агшин</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" />-г нээх</translation>
 <translation id="7119327711295338600">Дараагийн үг эсвэл үсгийг сонгох</translation>
+<translation id="7124556000457919678">Асаасан үед хулганын товчийг түр зогсоож, үргэлжлүүлэх</translation>
 <translation id="7126996685418858413">Өнгөрсөн долоо хоногт нээсэн</translation>
 <translation id="7130207228079676353">ДАРАГДАХ МАГАДЛАЛТАЙ</translation>
 <translation id="7131634465328662194">Таныг автоматаар гаргана.</translation>
@@ -1852,6 +1856,7 @@
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="7219573373513695352">Ямар ч төхөөрөмж холбогдоогүй</translation>
 <translation id="7229029500464092426">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /></translation>
+<translation id="7239814253344511868">Хулганын хоёр товч</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% батарей үлдсэн. Төхөөрөмжөө тэжээлд залгана уу.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Энэ Chromebook-д шинэчлэлтийг хэрэгжүүлэхийн тулд үүнийг дахин эхлүүлэх шаардлагатай. Үүнд 1 минут хүртэл хугацаа шаардагдаж болно.</translation>
 <translation id="7256057185598509352">Шуурхай түлхүүр 2</translation>
@@ -2153,6 +2158,7 @@
 <translation id="8203224998425013577">Илүү олон эможи болон GIF харуулах</translation>
 <translation id="8203795194971602413">Баруун талыг товших</translation>
 <translation id="8205469348819768313">Page Down-г ашиглахаар оролдож байна уу? Ашиглах</translation>
+<translation id="8213376797713070611">Хулганын зүүн товч</translation>
 <translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> нэмэх</translation>
@@ -2379,6 +2385,7 @@
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="9050012935252397793">Bluetooth боломжгүй байна</translation>
+<translation id="9050999376345823055">Суллахын тулд "." дээр дарах</translation>
 <translation id="906458777597946297">Цонхыг томсгох</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9070640332319875144">Туслагчийн тохиргоо</translation>

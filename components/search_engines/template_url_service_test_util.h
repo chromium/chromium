@@ -16,6 +16,10 @@
 class WebDatabaseService;
 class KeywordWebDataService;
 
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}
+
 namespace search_engines {
 class SearchEngineChoiceService;
 }
@@ -75,6 +79,8 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>
+      regional_capabilities_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;

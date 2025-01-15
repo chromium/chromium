@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">將圖片儲存至…</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護功能。除非你認為自己有可能成為極危險網絡攻擊的目標，否則不建議採用功能。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
+<translation id="5520668942302483373">離開群組</translation>
 <translation id="5524590039848017563">收合咗主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話框</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">已建立標籤，目前無法提供日期資料</translation>
 <translation id="5647096944343801045">大型入口點</translation>
 <translation id="5647193778876139879">輕觸並按住地址。</translation>
+<translation id="5647702255748985085">要離開群組嗎？</translation>
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5652623411397330904">您追蹤的產品會在此顯示。</translation>
 <translation id="5657156137487675418">允許所有 Cookie</translation>
@@ -1151,6 +1153,7 @@
 <translation id="6160780110287872296">要下載檔案嗎？</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6168647875670665004">文章建議</translation>
+<translation id="6169031022444660352">如要刪除所有已儲存的憑證，你必須先為裝置設定密碼。</translation>
 <translation id="6173499589275053515">密碼已儲存至您的 Google 帳戶 (<ph name="EMAIL" />)</translation>
 <translation id="6187302354554850004">上次同步時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
@@ -1202,6 +1205,7 @@
 <translation id="6355820205320395730">安全性弱的密碼很容易被猜到。請務必設定安全度高的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">由清單度揀搜尋引擎。</translation>
+<translation id="6368102751067608420">如要刪除所有密碼管理工具資料</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6387994324662817823">密碼只會儲存至此裝置上的「Google 密碼管理工具」。</translation>
 <translation id="6404422529625928907">喺 Google 雲端硬碟度打開</translation>

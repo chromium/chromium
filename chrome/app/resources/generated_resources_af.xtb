@@ -320,7 +320,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1210678701920254279">Bekyk of voeg drukkers by en sien aktiewe druktake</translation>
 <translation id="1211769675100312947">Kortpaaie word deur jou saamgestel</translation>
 <translation id="1213254615020057352">Stuur gebruik- en diagnostiese data. Help om jou kind se Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie instelling word deur die eienaar toegepas. Die eienaar kan kies om diagnostiese en gebruikdata van hierdie toestel na Google toe te stuur. As die bykomende Web- en App-aktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word.</translation>
-<translation id="1214004433265298541">Sertifikaat is verskaf deur jou admin, wat eiebewyse vir <ph name="DOMAIN" /> kan bekyk</translation>
 <translation id="1215411991991485844">Nuwe agtergrondprogram bygevoeg</translation>
 <translation id="1216542092748365687">Verwyder vingerafdruk</translation>
 <translation id="1216891999012841486">Kom meer te wete oor hoe om opdateringfoute reg te maak</translation>
@@ -794,6 +793,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" /> hê. Dit sal dalk jou lêers wysig of uitvee.</translation>
 <translation id="1549966883323105187">Kry jou gestoorde wagwoorde vinniger</translation>
 <translation id="1550656959113606473">Verstek-Chrome</translation>
+<translation id="1552065819535218588">Chrome sal ophou om kennisgewings van <ph name="URL" /> af as strooipos te merk</translation>
 <translation id="1552301827267621511">Die "<ph name="EXTENSION_NAME" />"-uitbreiding het soektog verander om <ph name="SEARCH_PROVIDER_DOMAIN" /> te gebruik</translation>
 <translation id="1552752544932680961">Bestuur uitbreiding</translation>
 <translation id="1553538517812678578">onbeperk</translation>
@@ -3096,6 +3096,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3159978855457658359">Wysig toestelnaam</translation>
 <translation id="3160928651883997588">VPN-voorkeure</translation>
 <translation id="3161522574479303604">Alle tale</translation>
+<translation id="3162070126914310576">Hierdie toestel kan nie op die oomblik ingeskryf word nie omdat jou organisasie-eenheid hul aanvanklike inskrywinglimiet bereik het. Kontak jou administrateur vir bystand.</translation>
 <translation id="3162766632262775911">Altyd toegelaat om die V8-optimeerder te gebruik</translation>
 <translation id="3162853326462195145">Skoolrekening</translation>
 <translation id="3162899666601560689">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou</translation>
@@ -9069,6 +9070,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="746861123368584540">Uitbreiding is gelaai</translation>
 <translation id="7469612367552312334">Gebruik alledaagse taal om jou blaaigeskiedenis te deursoek en die werwe wat jy besoek het, te kry</translation>
 <translation id="7470131554696493512">Blokkeer Thunderbolt of USB4-bykomstighede om toegang tot geheue (RAM) te verkry en dit te deel</translation>
+<translation id="7470284766345262333">Hierdie rekening word nie geassosieer met Google nie, daarom is kenmerke soos Chrome-sinkronisering nie beskikbaar nie</translation>
 <translation id="7470424110735398630">Mag jou knipbord sien</translation>
 <translation id="747114903913869239">Fout: Kon nie uitbreiding ontsyfer nie</translation>
 <translation id="7471520329163184433">Stadiger</translation>

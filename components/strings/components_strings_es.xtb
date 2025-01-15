@@ -703,6 +703,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2215539479425228550">Escalada y montañismo</translation>
 <translation id="2215727959747642672">Edición de archivos</translation>
 <translation id="2215963164070968490">Perros</translation>
+<translation id="2219376942605837404">Añadir pestaña a la tabla comparativa</translation>
 <translation id="2219658597883514593">Reiniciar tutorial</translation>
 <translation id="2219735899272417925">Es necesario restablecer el dispositivo</translation>
 <translation id="2221227930294879156">Eventos de alimentación y bebida</translation>
@@ -1153,6 +1154,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="306573536155379004">Juego iniciado.</translation>
 <translation id="3067505415088964188">Precio bajo</translation>
 <translation id="3068118691172921711">La subida de archivos a <ph name="CLOUD_PROVIDER" /> empezará dentro de 1 minuto</translation>
+<translation id="3068976060094139647">Puedes rellenar automáticamente los datos de esta tarjeta porque tu cuenta está vinculada a Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elemento}other{{ITEMS} elementos}}</translation>
 <translation id="3076865167425975822">Sistemas operativos</translation>
 <translation id="3080254622891793721">Gráfico</translation>
@@ -1789,6 +1791,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4151403195736952345">Utilizar valor predeterminado global (por defecto)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
 <translation id="4154277373259957087">Ahora, Chrome verificará tu identidad antes de rellenar los métodos de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Añadir pestaña a la tabla comparativa</translation>
 <translation id="4159784952369912983">Morado</translation>
 <translation id="4165422751765527461">Abre un artículo del Centro de Ayuda en una pestaña nueva</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
@@ -3395,6 +3398,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="706960991003274248">Las tablas de comparación se guardan en tu cuenta <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">configuración del sistema</translation>
 <translation id="70705239631109039">Tu conexión no es completamente segura</translation>
+<translation id="7071122206197538392">Nueva tabla comparativa</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4106,6 +4110,7 @@ Más información:
 <translation id="8298115750975731693">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Introducir código</translation>
 <translation id="8303854710873047864">Sección <ph name="SECTION" /> mostrada</translation>
+<translation id="8304912090860925649">Nueva tabla comparativa</translation>
 <translation id="830498451218851433">Plegado al medio</translation>
 <translation id="8308653357438598313">Emisión de vídeo en directo</translation>
 <translation id="8311895354659782580">Anuncios inmobiliarios</translation>

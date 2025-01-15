@@ -155,11 +155,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   }
 
   // This function calculates the placement of the replaced contents. It takes
-  // intrinsic size of the replaced contents, stretch to fit CSS content box
-  // according to object-fit, object-position and object-view-box.
+  // natural dimensions of the replaced contents, stretch to fit CSS content
+  // box according to object-fit, object-position and object-view-box.
   PhysicalRect ComputeReplacedContentRect(
       const PhysicalRect& base_content_rect,
-      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
+      const IntrinsicSizingInfo& sizing_info) const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -179,16 +179,16 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // ImageResourceObserver
   gfx::Size GetSpeculativeDecodeSize() const override;
 
+ private:
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
   std::optional<PhysicalRect> ComputeObjectViewBoxRect(
-      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
+      const gfx::SizeF& natural_size) const;
 
- private:
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
-      const PhysicalSize* overridden_intrinsic_size) const;
+      const IntrinsicSizingInfo& sizing_info) const;
 
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.

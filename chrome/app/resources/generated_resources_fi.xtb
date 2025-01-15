@@ -320,7 +320,6 @@
 <translation id="1210678701920254279">Katso tai lisää tulostimia ja tarkista aktiiviset tulostustyöt</translation>
 <translation id="1211769675100312947">Sinä valitset pikakuvakkeet</translation>
 <translation id="1213254615020057352">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan lapsesi Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän asetuksen käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka- ja käyttödataa Googlelle. Jos muun verkko- ja sovellustoiminnan asetus on lapsella päällä, tätä dataa voidaan tallentaa hänen Google-tililleen.</translation>
-<translation id="1214004433265298541">Järjestelmänvalvojan antama varmenne, jolla on oikeus nähdä verkkotunnuksen <ph name="DOMAIN" /> kirjautumistiedot</translation>
 <translation id="1215411991991485844">Uusi taustasovellus lisätty</translation>
 <translation id="1216542092748365687">Poista sormenjälki</translation>
 <translation id="1216891999012841486">Lue lisää päivitysvirheiden korjaamisesta</translation>
@@ -794,6 +793,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1549788673239553762"><ph name="APP_NAME" /> haluaa käyttää tallennusvälinettä <ph name="VOLUME_NAME" />. Luvan saatuaan sovellus voi muokata tai poistaa tiedostojasi.</translation>
 <translation id="1549966883323105187">Tarkista tallennetut salasanasi nopeammin</translation>
 <translation id="1550656959113606473">Chromen oletusversio</translation>
+<translation id="1552065819535218588">Chrome ei enää merkitse sivuston <ph name="URL" /> ilmoituksia roskasisällöksi</translation>
 <translation id="1552301827267621511"><ph name="EXTENSION_NAME" /> muutti hakupalvelua, se on nyt <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Hallinnoi laajennusta</translation>
 <translation id="1553538517812678578">rajoittamaton</translation>
@@ -3095,6 +3095,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3159978855457658359">Muokkaa laitteen nimeä</translation>
 <translation id="3160928651883997588">VPN-asetukset</translation>
 <translation id="3161522574479303604">Kaikki kielet</translation>
+<translation id="3162070126914310576">Tätä laitetta ei voi rekisteröidä nyt, koska organisaatioyksikön alkuperäinen rekisteröintiraja on saavutettu. Pyydä apua järjestelmänvalvojalta.</translation>
 <translation id="3162766632262775911">V8-optimoijan käyttö on aina sallittu</translation>
 <translation id="3162853326462195145">Koulutili</translation>
 <translation id="3162899666601560689">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön</translation>
@@ -9065,6 +9066,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="746861123368584540">Laajennus ladattu</translation>
 <translation id="7469612367552312334">Päällä • Hae avaamiasi sivustoja selaushistoriasta arkikielellä</translation>
 <translation id="7470131554696493512">Estä Thunderbolt‐ tai USB4-lisälaitteita käyttämästä ja jakamasta muistia (RAM)</translation>
+<translation id="7470284766345262333">Tätä tiliä ei ole yhdistetty Googleen, joten Chromen synkronointi ja muut ominaisuudet eivät ole käytettävissä</translation>
 <translation id="7470424110735398630">Leikepöydän tarkastelu sallittu</translation>
 <translation id="747114903913869239">Virhe: laajennuksen koodauksen purkaminen ei onnistunut</translation>
 <translation id="7471520329163184433">Hitaampi</translation>

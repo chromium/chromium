@@ -29486,8 +29486,9 @@ Called by update_net_error_codes.py.-->
   <int value="40" label="Prefetch Heldback">
     The URL is eligible but heldback because it belongs to the Holdback group.
   </int>
-  <int value="41" label="Prefetch Allowed">
+  <int value="41" label="DEPRECATED Prefetch Allowed">
     The URL is eligible and not in the Holdback group (allowed to prefetch).
+    (Deprecated M134)
   </int>
   <int value="42" label="Prefetch Response Used">
     The URL is prefetched successfully and the repsonse is used for the next

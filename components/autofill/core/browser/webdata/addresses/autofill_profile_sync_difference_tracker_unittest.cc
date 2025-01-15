@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -32,8 +33,6 @@ using testing::IsEmpty;
 constexpr char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 constexpr char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
 constexpr char kLocaleString[] = "en-US";
-constexpr base::Time kJune2017 =
-    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 struct UpdatesToSync {
   std::vector<AutofillProfile> profiles_to_upload_to_sync;
@@ -53,7 +52,7 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
@@ -402,7 +401,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                         AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(27);
+  local.usage_history().set_use_count(27);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
@@ -412,12 +411,12 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
-  remote.set_use_count(13);
+  remote.usage_history().set_use_count(13);
   remote.FinalizeAfterImport();
   // The remote profile wins (as regards the storage key).
   AutofillProfile merged(remote);
   // Merging two profile takes their max use count.
-  merged.set_use_count(27);
+  merged.usage_history().set_use_count(27);
 
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
@@ -435,7 +434,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                         AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(13);
+  local.usage_history().set_use_count(13);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
@@ -446,7 +445,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Merging two profile takes their max use count, so use count of 27 is taken.
-  remote.set_use_count(27);
+  remote.usage_history().set_use_count(27);
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());

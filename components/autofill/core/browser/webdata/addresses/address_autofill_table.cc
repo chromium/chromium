@@ -161,9 +161,11 @@ void AddLegacyAutofillProfileDetailsFromStatement(sql::Statement& s,
         ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY}) {
     profile->SetRawInfo(type, s.ColumnString16(index++));
   }
-  profile->set_use_count(s.ColumnInt64(index++));
-  profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->usage_history().set_use_count(s.ColumnInt64(index++));
+  profile->usage_history().set_use_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->usage_history().set_modification_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile->set_language_code(s.ColumnString(index++));
   profile->set_profile_label(s.ColumnString(index++));
 }
@@ -368,11 +370,11 @@ bool AddProfileMetadataToTable(sql::Database* db,
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt(index++, static_cast<int>(profile.record_type()));
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  bind_optional_time(index++, profile.use_date(2));
-  bind_optional_time(index++, profile.use_date(3));
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().use_count());
+  s.BindInt64(index++, profile.usage_history().use_date().ToTimeT());
+  bind_optional_time(index++, profile.usage_history().use_date(2));
+  bind_optional_time(index++, profile.usage_history().use_date(3));
+  s.BindInt64(index++, profile.usage_history().modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
@@ -433,9 +435,9 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
                  kLabel, kInitialCreatorId, kLastModifierId});
   int index = 0;
   s.BindString(index++, profile.guid());
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().use_count());
+  s.BindInt64(index++, profile.usage_history().use_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
@@ -542,11 +544,13 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
     }
     return base::Time::FromTimeT(s.ColumnInt64(index));
   };
-  profile.set_use_count(s.ColumnInt64(index++));
-  profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
-  profile.set_use_date(as_optional_time(index++), 2);
-  profile.set_use_date(as_optional_time(index++), 3);
-  profile.set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile.usage_history().set_use_count(s.ColumnInt64(index++));
+  profile.usage_history().set_use_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
+  profile.usage_history().set_use_date(as_optional_time(index++), 2);
+  profile.usage_history().set_use_date(as_optional_time(index++), 3);
+  profile.usage_history().set_modification_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile.set_language_code(s.ColumnString(index++));
   profile.set_profile_label(s.ColumnString(index++));
   profile.set_initial_creator_id(s.ColumnInt(index++));

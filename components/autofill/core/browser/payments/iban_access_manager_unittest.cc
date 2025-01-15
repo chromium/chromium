@@ -242,7 +242,7 @@ TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   Iban local_iban = test::GetLocalIban();
   local_iban.set_value(kFullIbanValue);
-  local_iban.set_use_count(kDefaultUseCount);
+  local_iban.usage_history().set_use_count(kDefaultUseCount);
   personal_data().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(local_iban));
   suggestion.payload = Suggestion::Guid(local_iban.guid());
@@ -256,7 +256,8 @@ TEST_F(IbanAccessManagerTest, LocalIban_LogUsageMetric) {
   EXPECT_EQ(personal_data()
                 .payments_data_manager()
                 .GetIbanByGUID(local_iban.guid())
-                ->use_count(),
+                ->usage_history()
+                .use_count(),
             kDefaultUseCount + 1);
 }
 
@@ -266,7 +267,7 @@ TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
   SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
 
   Iban server_iban = test::GetServerIban();
-  server_iban.set_use_count(kDefaultUseCount);
+  server_iban.usage_history().set_use_count(kDefaultUseCount);
   server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
   personal_data().test_payments_data_manager().AddServerIban(server_iban);
   Suggestion suggestion(SuggestionType::kIbanEntry);
@@ -281,7 +282,8 @@ TEST_F(IbanAccessManagerTest, ServerIban_LogUsageMetric) {
   EXPECT_EQ(personal_data()
                 .payments_data_manager()
                 .GetIbanByInstrumentId(server_iban.instrument_id())
-                ->use_count(),
+                ->usage_history()
+                .use_count(),
             kDefaultUseCount + 1);
 }
 

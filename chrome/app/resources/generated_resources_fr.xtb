@@ -321,7 +321,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1210678701920254279">Afficher ou ajouter des imprimantes, et afficher les tâches d'impression actives</translation>
 <translation id="1211769675100312947">Les raccourcis affichés sont ceux que vous avez vous-même définis</translation>
 <translation id="1213254615020057352">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données liées à l'utilisation de l'appareil et des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Ce paramètre est appliqué par le propriétaire. Le propriétaire peut choisir d'envoyer à Google des données de diagnostic et d'utilisation concernant cet appareil. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
-<translation id="1214004433265298541">Certificat fourni par votre administrateur, qui peut afficher les identifiants pour <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nouvelle application en arrière-plan ajoutée</translation>
 <translation id="1216542092748365687">Supprimer une empreinte</translation>
 <translation id="1216891999012841486">En savoir plus sur la correction des erreurs de mise à jour</translation>
@@ -794,6 +793,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1549788673239553762">"<ph name="APP_NAME" />" souhaite accéder à "<ph name="VOLUME_NAME" />". L'application peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1549966883323105187">Accéder plus rapidement à vos mots de passe enregistrés</translation>
 <translation id="1550656959113606473">Chrome par défaut</translation>
+<translation id="1552065819535218588">Chrome ne signalera plus les notifications de <ph name="URL" /> comme spam</translation>
 <translation id="1552301827267621511">L'extension "<ph name="EXTENSION_NAME" />" a remplacé le moteur de recherche par <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Gérer l'extension</translation>
 <translation id="1553538517812678578">sans limite</translation>
@@ -3084,6 +3084,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3159978855457658359">Modifier le nom de l'appareil</translation>
 <translation id="3160928651883997588">Préférences VPN</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
+<translation id="3162070126914310576">Impossible d'enregistrer cet appareil pour le moment, car votre unité organisationnelle a atteint sa limite d'enregistrements initiale. Contactez votre administrateur pour obtenir de l'aide.</translation>
 <translation id="3162766632262775911">Toujours autorisés à utiliser l'optimiseur V8</translation>
 <translation id="3162853326462195145">Compte scolaire</translation>
 <translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
@@ -9056,6 +9057,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="746861123368584540">Extension chargée</translation>
 <translation id="7469612367552312334">Activé • Utilisez un langage courant pour faire une recherche dans votre historique de navigation et trouver les sites que vous avez consultés</translation>
 <translation id="7470131554696493512">Empêcher les accessoires Thunderbolt ou USB4 d'accéder à la mémoire (RAM) et de la partager</translation>
+<translation id="7470284766345262333">Ce compte n'est pas associé à Google. Des fonctionnalités comme la synchronisation Chrome ne sont donc pas disponibles.</translation>
 <translation id="7470424110735398630">Autorisé à voir votre presse-papiers</translation>
 <translation id="747114903913869239">Erreur : impossible de décoder l'extension.</translation>
 <translation id="7471520329163184433">Plus lent</translation>

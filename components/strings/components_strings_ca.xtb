@@ -701,6 +701,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2215539479425228550">Escalada i alpinisme</translation>
 <translation id="2215727959747642672">Edició de fitxers</translation>
 <translation id="2215963164070968490">Gossos</translation>
+<translation id="2219376942605837404">Afegeix una pestanya a la taula de comparació</translation>
 <translation id="2219658597883514593">Reinicia el tutorial</translation>
 <translation id="2219735899272417925">Cal restablir el dispositiu</translation>
 <translation id="2221227930294879156">Esdeveniments gastronòmics</translation>
@@ -1151,6 +1152,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="306573536155379004">S'ha iniciat el joc.</translation>
 <translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3068118691172921711">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 minut</translation>
+<translation id="3068976060094139647">Pots emplenar automàticament les dades d'aquesta targeta perquè el teu compte està enllaçat a Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} element}other{{ITEMS} elements}}</translation>
 <translation id="3076865167425975822">Sistemes operatius</translation>
 <translation id="3080254622891793721">Gràfic</translation>
@@ -1786,6 +1788,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4151403195736952345">Utilitza el valor predeterminat global (detecta)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Pàgina 1}other{Pàgina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verificarà la teva identitat abans d'emplenar les formes de pagament. Pots actualitzar aquesta informació en qualsevol moment a <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Afegeix una pestanya a la taula de comparació</translation>
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4165422751765527461">Obre un article del Centre d'ajuda en una pestanya nova</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
@@ -3392,6 +3395,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="706960991003274248">Les taules de comparació es desen al teu compte (<ph name="EMAIL" />)</translation>
 <translation id="7070144569727915108">configuració del sistema</translation>
 <translation id="70705239631109039">La connexió no és del tot segura</translation>
+<translation id="7071122206197538392">Nova taula de comparació</translation>
 <translation id="7075452647191940183">La sol·licitud és massa llarga</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4107,7 @@ Detalls addicionals:
 <translation id="8298115750975731693">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Introdueix el codi</translation>
 <translation id="8303854710873047864">S'ha mostrat la secció "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">Nova taula de comparació</translation>
 <translation id="830498451218851433">Plegat per la meitat</translation>
 <translation id="8308653357438598313">Reproducció de vídeo en directe</translation>
 <translation id="8311895354659782580">Anuncis de béns immobles</translation>

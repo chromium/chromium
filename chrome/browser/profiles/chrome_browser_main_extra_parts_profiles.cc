@@ -79,6 +79,7 @@
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -1170,6 +1171,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ReduceAcceptLanguageFactory::GetInstance();
   RendererUpdaterFactory::GetInstance();
+  regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif

@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">Захаваць відарыс у…</translation>
 <translation id="5511959326926949696">Дадатковы ўзровень абароны для вашага браўзера. Яго варта выкарыстоўваць толькі тады, калі вы лічыце, што можаце стаць мэтай вельмі складанай кібератакі.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> гадз таму</translation>
+<translation id="5520668942302483373">Выйсці з групы</translation>
 <translation id="5524590039848017563">Кнопка згорнутай асноўнай панэлі інструментаў</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="5532545557415295622">Дыялогавае акно пра час чакання пры бяздзейнасці</translation>
@@ -1030,6 +1031,7 @@
 <translation id="5646284034397250191">Метка створана. Дата яшчэ не вызначана.</translation>
 <translation id="5647096944343801045">Вялікая кропка ўваходу</translation>
 <translation id="5647193778876139879">Націсніце на адрас і ўтрымлівайце.</translation>
+<translation id="5647702255748985085">Пакінуць групу?</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5652623411397330904">Тавары, якія вы адсочваеце, будуць паказвацца тут.</translation>
 <translation id="5657156137487675418">Дазволіць усе файлы cookie</translation>
@@ -1115,6 +1117,7 @@
 <translation id="6027619584715411062">Каб атрымаць доступ да закладак, пароляў і іншых даных на ўсіх сваіх прыладах, увайдзіце ў Chrome.</translation>
 <translation id="6027945736510816438">Ці мелі вы на ўвазе <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">новая функцыя</translation>
+<translation id="6038823991892265570">Кіраваць сховішчам Google</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>

@@ -11018,17 +11018,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDecider)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"migrate-syncing-user-to-signed-in",
-     flag_descriptions::kMigrateSyncingUserToSignedInName,
-     flag_descriptions::kMigrateSyncingUserToSignedInDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kMigrateSyncingUserToSignedIn)},
-
-    {"undo-migration-of-syncing-user-to-signed-in",
-     flag_descriptions::kUndoMigrationOfSyncingUserToSignedInName,
-     flag_descriptions::kUndoMigrationOfSyncingUserToSignedInDescription,
-     flags_ui::kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kUndoMigrationOfSyncingUserToSignedIn)},
-
     {"sensitive-content", flag_descriptions::kSensitiveContentName,
      flag_descriptions::kSensitiveContentDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

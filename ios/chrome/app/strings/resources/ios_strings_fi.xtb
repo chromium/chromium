@@ -991,6 +991,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5506763544823940561">Tallenna kuva…</translation>
 <translation id="5511959326926949696">Erittäin vahva valinnainen suojaus selaimellesi. Sitä kannattaa käyttää vain, jos uskot joutuvasi hyvin kehittyneen kyberhyökkäyksen kohteeksi.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h sitten</translation>
+<translation id="5520668942302483373">Poistu ryhmästä</translation>
 <translation id="5524590039848017563">Tiivistetty ensisijaisen työkalupalkin painike</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} heikko salasana}other{{COUNT} heikkoa salasanaa}}</translation>
 <translation id="5532545557415295622">Epäaktiivisuudesta johtuvan aikakatkaisun valintaikkuna</translation>
@@ -1030,6 +1031,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5646284034397250191">Tunniste luotu. Päivämäärä lisätään myöhemmin</translation>
 <translation id="5647096944343801045">Suuri aloituskohta</translation>
 <translation id="5647193778876139879">Kosketa osoitetta pitkään.</translation>
+<translation id="5647702255748985085">Haluatko poistua ryhmästä?</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5652623411397330904">Seuraamasi tuotteet näkyvät täällä.</translation>
 <translation id="5657156137487675418">Salli kaikki evästeet</translation>
@@ -1115,6 +1117,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6027619584715411062">Kirjaudu sisään, niin saat kirjanmerkkisi, salasanasi ja muuta kaikille laitteillesi.</translation>
 <translation id="6027945736510816438">Tarkoititko: <ph name="WEBSITE" />?</translation>
 <translation id="6032845897905314562">uusi ominaisuus</translation>
+<translation id="6038823991892265570">Hallinnoi Google-tallennustilaa</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>

@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">মোৰ নিজৰ সৃষ্টি কৰক</translation>
 <translation id="2574249610672786438">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ আপোনাৰ সকলো ডিভাইচত ছাইন ইন কৰক</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />)এ লগে লগে “<ph name="GROUP_NAME" />” টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু তেওঁ সমগ্ৰ Google সেৱাত আপোনাৰ সৈতে ভাব বিনিময় কৰিব নোৱাৰিব।</translation>
-<translation id="2578337197553672982">Googleএ নৱপ্ৰজন্মৰ বাবে আগবঢ়োৱা সমল</translation>
 <translation id="2579297619530305344">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড সম্পূৰ্ণ উচ্চতাত খোলা আছে</translation>
 <translation id="2581165646603367611">ই কুকি, কেশ্ব আৰু Chromeএ গুৰুত্বপূর্ণ বুলি নভবা ছাইটসমূহৰ অন্য ডেটা মচিব।</translation>
 <translation id="2587052924345400782">নতুন সংস্কৰণ উপলব্ধ</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">মূল্য ট্ৰেক কৰাটো সক্ষম কৰা হ’ল। কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক।</translation>
 <translation id="4425173294238317796">পাছকী নিশ্চিতকৰণ শ্বীট</translation>
 <translation id="442518031075347249">আপুনি আপোনাৰ ভাৰ্চুৱেল কাৰ্ডখন Google Payৰ জৰিয়তে আৰু ব্যৱহাৰ কৰিব নোৱাৰিব। <ph name="BEGIN_LINK1" />ভাৰ্চুৱেল কাৰ্ডৰ বিষয়ে অধিক জানক<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">আটাইবোৰ বুকমাৰ্ক</translation>
 <translation id="4430277756566635951">বর্তমান <ph name="EMAIL" /> বাছনি কৰা হৈছে। এটা একাউণ্ট বাছনি কৰক।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> টেব বন্ধ কৰক</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />লৈ বুকমার্ক কৰা হৈছে</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">Chromeৰ ডেটা মচা হ’ল</translation>
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4749960740855309258">এটা নতুন টেব খোলক</translation>
-<translation id="4750356170202299988">নৱপ্ৰজন্মৰ বাবে সমল</translation>
 <translation id="4758061975920522644">কেৱল প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4763480195061959176">ভিডিঅ’</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{আপুনি এতিয়াই এইটো সলনি কৰা উচিত}one{আপুনি এতিয়াই এইবোৰ সলনি কৰা উচিত}other{আপুনি এতিয়াই এইবোৰ সলনি কৰা উচিত}}</translation>
 <translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
-<translation id="7205672015775254816">Googleএ নৱপ্ৰজন্মৰ বাবে আগবঢ়োৱা সমল - অফ আছে</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> টা টেবক নতুন নেপথ্যৰ টেব হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="7217781228893594884">আপুনি Chromeৰ পৰা বাহিৰ ওলালে ইনক’গ্নিট’ টেবসমূহ লক কৰা হ’ব</translation>
 <translation id="7221869452894271364">এই পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">সকলো আঁতৰাওক</translation>
 <translation id="7886917304091689118">Chromeত চলি আছে</translation>
 <translation id="7887174313503389866">গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহৰ বিষয়ে এক ধাৰণা লওক। অধিক বিকল্পৰ বাবে, ব্যক্তিগত ছেটিঙলৈ যাওক।</translation>
-<translation id="7896724475402191389">নৱপ্ৰজন্মৰ বাবে সমল - অফ আছে</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{আপোনাৰ প্ৰশাসকে ১ টা অৱৰোধ কৰিছে}one{আপোনাৰ প্ৰতিষ্ঠানে # টা অৱৰোধ কৰিছে}other{আপোনাৰ প্ৰতিষ্ঠানে # টা অৱৰোধ কৰিছে}}</translation>
 <translation id="7914399737746719723">এপ্‌ ইনষ্টল কৰা হৈছে</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">আপোনাৰ ওচৰত <ph name="FROM_ACCOUNT" />ৰ বুকমাৰ্ক, ইতিহাস আৰু অন্য ছেটিং আছে।</translation>
 <translation id="8387617938027387193">এইয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
+<translation id="8396098434728053815">টেবৰ অডিঅ’ও শ্বেয়াৰ কৰক</translation>
 <translation id="8398389123831319859">ইনক’গনিট’লৈ সলনি কৰিবলৈ দুবাৰ টিপি ধৰি ৰাখক</translation>
 <translation id="8402673309244746971">ফ’ল’ কৰি থকা হৈছেলৈ যাওক</translation>
 <translation id="8413126021676339697">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>

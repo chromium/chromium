@@ -246,11 +246,13 @@ function createRoutes(): SettingsRoutes {
       r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
     }
 
+    // <if expr="enable_glic">
     if (visibility.glic !== false &&
         loadTimeData.getBoolean('showGlicSettings')) {
       r.GLIC = r.BASIC.createSection(
           '/glic', 'glic', loadTimeData.getString('glicPageTitle'));
     }
+    // </if>
 
     // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');

@@ -991,6 +991,7 @@
 <translation id="5506763544823940561">ছবি এখানে সেভ করুন…</translation>
 <translation id="5511959326926949696">আপনার ব্রাউজারের জন্য ঐচ্ছিক অত্যন্ত শক্তিশালী সুরক্ষা। এটি তখনই ব্যবহার করা উচিত যখন আপনার মনে হয় যে আপনি দারুণ অত্যাধুনিক সাইবার অ্যাটাকের টার্গেট হতে পারেন।</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
+<translation id="5520668942302483373">গ্রুপ ছেড়ে বেরিয়ে যান</translation>
 <translation id="5524590039848017563">প্রাথমিক টুলবারের বোতাম আড়াল করা হয়েছে</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="5532545557415295622">নিষ্ক্রিয় টাইমআউট ডায়ালগ</translation>
@@ -1031,6 +1032,7 @@
 <translation id="5646284034397250191">লেবেল তৈরি করা হয়েছে। তারিখ দেওয়া হয়নি</translation>
 <translation id="5647096944343801045">বড় এন্ট্রি পয়েন্ট</translation>
 <translation id="5647193778876139879">কোনও ঠিকানাতে টাচ করে ধরে থাকুন।</translation>
+<translation id="5647702255748985085">গ্রুপ থেকে বেরিয়ে আসতে চান?</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5652623411397330904">আপনার ট্র্যাক করা প্রোডাক্ট এখানে দেখা যাবে।</translation>
 <translation id="5657156137487675418">সকল কুকিজ মঞ্জুর করুন</translation>

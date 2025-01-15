@@ -219,7 +219,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1719094688023114093">Titl uživo je uključen.</translation>
 <translation id="1720011244392820496">Uključite WiFi sinhronizaciju</translation>
 <translation id="1720230731642245863">Hotspot je isključen</translation>
-<translation id="1731815243805539470">Pređite na prethodnog korisnika</translation>
+<translation id="1731815243805539470">Pređi na prethodnog korisnika</translation>
 <translation id="1733996486177697563">Prelazite sa tamne na svetlu temu i obratno. Dodirnite i zadržite radnu površinu, pa izaberite Pozadina i stil.</translation>
 <translation id="1736898441010944794">Stavka „<ph name="NAME" />“ je vidljiva za Bluetooth uređaje.</translation>
 <translation id="1737078180382804488">Odbacite podešavanje pregleda obaveštenja na telefonu</translation>
@@ -279,7 +279,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastaturom na dodirnom ekranu.</translation>
 <translation id="1929331825127010451">Nazad na pitanje</translation>
-<translation id="1948405482892809935">Pređite na sledećeg korisnika</translation>
+<translation id="1948405482892809935">Pređi na sledećeg korisnika</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1954252331066828794">Snimanje ekrana je dovršeno</translation>
 <translation id="1956087014741188812">Pauzirajte korišćenje tastera miša</translation>
@@ -863,7 +863,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3958714870339660776">Ceo dan</translation>
 <translation id="3962859241508114581">Prethodna pesma</translation>
 <translation id="3963124517343721543">Lako nastavite tamo gde ste stali tako što ćete otvoriti prethodne prozore i kartice. Videćete i personalizovane predloge za predložene aktivnosti.</translation>
-<translation id="396506362088290977">Testirajte zvuk mikrofona</translation>
 <translation id="3969043077941541451">Isključi</translation>
 <translation id="3970324493235864154">Pregledajte obaveštenja na telefonu</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
@@ -1019,7 +1018,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4453876312474547652">Privremenu memoriju ćete videti kad pritisnete i zadržite Ctrl + V. Ovu prečicu možete da isključite ako onemogućite oznaku #clipboard-history-longpress u odeljku chrome://flags (os://flags ako koristite Lacros).</translation>
 <translation id="445765352722456792">Prilagodi predloge</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
-<translation id="4458688154122353284">Zaustavite snimanje ekrana</translation>
+<translation id="4458688154122353284">Zaustavi snimanje ekrana</translation>
 <translation id="445923051607553918">Pridružite se WiFi mreži</translation>
 <translation id="4471354919263203780">Preuzimaju se datoteke za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ažurirajte uređaj}=1{Ažurirajte uređaj u roku od 1 sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
@@ -1306,7 +1305,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="536019650977002321">Administrator ne dozvoljava snimanje zvuka. Dodatne informacije potražite od administratora.</translation>
 <translation id="5361524080961918551">Fajlovi govora za jezik <ph name="LANGUAGE" /> su delimično preuzeti</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Idite na ovu karticu</translation>
-<translation id="5363835273551457276">Možete da testirate zvuk mikrofona. Zatvorite okno da biste zaustavili.</translation>
 <translation id="5364693579536176785">memorijski prostor</translation>
 <translation id="5369573834963677938">Kontrola licem će biti dostupna drugim korisnicima na uređaju</translation>
 <translation id="5369717264580061086">Pregledajte fajl u aplikaciji Fajlovi</translation>
@@ -2307,7 +2305,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="875593634123171288">Pregledajte podešavanja VPN-a</translation>
 <translation id="8756799553341497810">Možete da počnete sa prilagođavanjem rasporeda aplikacija kada izađete iz ovog prikaza.</translation>
 <translation id="8759408218731716181">Nije moguće podesiti višestruko prijavljivanje</translation>
-<translation id="8763883995157866248">Prebacite uređaj u režim spavanja</translation>
+<translation id="8763883995157866248">Prebaci uređaj u režim spavanja</translation>
 <translation id="877404052021108314">90 °F u C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalirana aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Povežite sa uređajem <ph name="NETWORK_NAME" /></translation>

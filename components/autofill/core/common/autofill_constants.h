@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-// The origin of an AutofillDataModel created or modified in the settings page.
+// The origin of a CreditCard created or modified in the settings page.
 extern const char kSettingsOrigin[];
 
 // The maximum number of `FieldLogEvent` objects that we store per field. We

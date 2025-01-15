@@ -1204,6 +1204,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
+<translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="316638481603975524">Can ask to install web apps</translation>
 <translation id="3168744840365648658">Radio Equipment</translation>
@@ -2380,6 +2381,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5244521145258281926">Manage Google Account, activate to manage your info, privacy and security in your Google Account</translation>
 <translation id="5244732203286792411">Loading…
     This may take a minute.</translation>
+<translation id="5248543496748975054">Card number not filled in?</translation>
 <translation id="5250209940322997802">'Connect to network'</translation>
 <translation id="52517543715119994">Learn about Chrome features</translation>
 <translation id="5251803541071282808">Cloud</translation>

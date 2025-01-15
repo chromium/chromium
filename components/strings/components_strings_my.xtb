@@ -704,6 +704,7 @@
 <translation id="2215539479425228550">အမြင့်တက်ခြင်း၊ တောင်တက်ခြင်း</translation>
 <translation id="2215727959747642672">ဖိုင်တည်းဖြတ်ခြင်း</translation>
 <translation id="2215963164070968490">ခွေးများ</translation>
+<translation id="2219376942605837404">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="2219658597883514593">ရှင်းလင်းပို့ချချက် ပြန်စရန်</translation>
 <translation id="2219735899272417925">စက်ကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်</translation>
 <translation id="2221227930294879156">အစားအသောက်ပွဲ</translation>
@@ -1158,6 +1159,7 @@
 <translation id="306573536155379004">ဂိမ်းစတင်ပါပြီ။</translation>
 <translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် ၁ မိနစ်အတွင်း စတင်ပါမည်</translation>
+<translation id="3068976060094139647">သင့်အကောင့်ကို Google Pay နှင့် လင့်ခ်ချိတ်ထားသဖြင့် ဤကတ်ကို အော်တိုဖြည့်နိုင်သည်။</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{ပစ္စည်း {ITEMS} ခု}other{ပစ္စည်း {ITEMS} ခု}}</translation>
 <translation id="3076865167425975822">လည်ပတ်သည့်စနစ်</translation>
 <translation id="3080254622891793721">ဂရပ်ဖစ်</translation>
@@ -1211,6 +1213,7 @@
 <translation id="3156511682997763015">ရှေ့သို့ ၁၀ စက္ကန့်ရစ်ရန်</translation>
 <translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3158539265159265653">ဒစ်ခ်</translation>
+<translation id="3162070126914310576">သင့်အဖွဲ့အစည်းဌာနသည် ၎င်း၏ ကနဦး စာရင်းသွင်းကန့်သတ်ချက် ပြည့်သွားသဖြင့် ဤစက်ကို လောလောဆယ် စာရင်းသွင်း၍မရပါ။ အကူအညီအတွက် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="3162559335345991374">သင်အသုံးပြုနေသော Wi-Fi ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
 <translation id="316638481603975524">ဝဘ်အက်ပ်များ ထည့်သွင်းရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="3168744840365648658">ရေဒီယိုသုံးစက်ပစ္စည်း</translation>
@@ -1788,6 +1791,7 @@
 <translation id="4151403195736952345">အလုံးစုံဆိုင်ရာ မူလပုံစံကို အသုံးပြုပါ (ထောက်လှမ်းပါ)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{စာမျက်နှာ ၁}other{စာမျက်နှာ {COUNT}}}</translation>
 <translation id="4154277373259957087">ငွေပေးချေနည်းလမ်းများ မဖြည့်သွင်းမီ Chrome က သင်ဖြစ်ကြောင်း ယခု စိစစ်ပါမည်။ ၎င်းကို <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> တွင် အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
+<translation id="415440494507469262">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4165422751765527461">တဘ်အသစ်တွင် ‘ကူညီရေးဌာန ဆောင်းပါး’ ကို ဖွင့်ပေးသည်</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
@@ -2384,6 +2388,7 @@
 <translation id="5244521145258281926">Google Account တွင် သင့်အချက်အလက်၊ အချက်အလက်လုံခြုံမှုနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန်အတွက် ‘Google Account စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="5244732203286792411">ဖွင့်နေသည်...
     တစ်မိနစ်ခန့် ကြာနိုင်သည်။</translation>
+<translation id="5248543496748975054">ကတ်နံပါတ် ဖြည့်မထားဘူးလား။</translation>
 <translation id="5250209940322997802">"ကွန်ရက်သို့ ချိတ်ဆက်ရန်"</translation>
 <translation id="52517543715119994">Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန်</translation>
 <translation id="5251803541071282808">မိုးတိမ်</translation>
@@ -3393,6 +3398,7 @@
 <translation id="706960991003274248">နှိုင်းယှဉ်မှုပြဇယားများကို သင့်အကောင့် <ph name="EMAIL" /> တွင် သိမ်းထားသည်</translation>
 <translation id="7070144569727915108">စနစ်ဆက်တင်များ</translation>
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
+<translation id="7071122206197538392">နှိုင်းယှဉ်ပြဇယားအသစ်</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4105,6 +4111,7 @@
 <translation id="8298115750975731693">သင်အသုံးပြုနေသော Wi-Fi ( <ph name="WIFI_NAME" /> ) ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />။</translation>
 <translation id="8301894345671534559">ကုဒ် ထည့်ရန်</translation>
 <translation id="8303854710873047864">ကဏ္ဍ "<ph name="SECTION" />" ခု ပြထားသည်</translation>
+<translation id="8304912090860925649">နှိုင်းယှဉ်ပြဇယားအသစ်</translation>
 <translation id="830498451218851433">တစ်ဝက် ခေါက်ရန်</translation>
 <translation id="8308653357438598313">ဗီဒီယိုတိုက်ရိုက်လွှင့်ခြင်း</translation>
 <translation id="8311895354659782580">အိမ်ခြံမြေစာရင်း</translation>

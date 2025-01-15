@@ -1204,6 +1204,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3156511682997763015">Eteenpäin 10 sekuntia</translation>
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158539265159265653">Levy</translation>
+<translation id="3162070126914310576">Tätä laitetta ei voi rekisteröidä nyt, koska organisaatioyksikön alkuperäinen rekisteröintiraja on saavutettu. Pyydä apua järjestelmänvalvojalta.</translation>
 <translation id="3162559335345991374">Käyttämäsi Wi-Fi saattaa edellyttää kirjautumista.</translation>
 <translation id="316638481603975524">Saa pyytää lupaa asentaa verkkosovelluksia</translation>
 <translation id="3168744840365648658">Radiolaitteet</translation>
@@ -1938,6 +1939,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Tiedostojen lataus Microsoft OneDriveen on keskeytetty</translation>
 <translation id="4390472908992056574">Reuna</translation>
+<translation id="4395550503472021297">Tämä käytäntö ohjaa seuraavien käytäntöjen oletustoimintaa: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Avaa ponnahdusikkunan pankin verkkosivustolla tapahtuvaa vahvistusta varten</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
 <translation id="4406896451731180161">hakutulokset</translation>
@@ -2380,6 +2382,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5244521145258281926">Ylläpidä Google-tiliä, aktivoi ylläpitääksesi tietojasi, yksityisyyttäsi ja tietoturvaasi Google-tilillä</translation>
 <translation id="5244732203286792411">Ladataan…
     Tässä voi mennä hetki.</translation>
+<translation id="5248543496748975054">Eikö kortin numeroa ole täytetty?</translation>
 <translation id="5250209940322997802">Yhdistä verkkoon</translation>
 <translation id="52517543715119994">Lue lisää Chromen ominaisuuksista</translation>
 <translation id="5251803541071282808">Pilvi</translation>
@@ -3996,6 +3999,7 @@ Lisätietoja:
 <translation id="8116925261070264013">Mykistetty</translation>
 <translation id="8118489163946903409">Maksutapa</translation>
 <translation id="8118506371121007279">Anna palautetta</translation>
+<translation id="8120720167840853945">Tämä käytäntö ei ohjaa muiden käytäntöjen oletustoimintaa.</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> on asennettu virheellisesti tietokoneellesi tai verkkoon. Pyydä järjestelmänvalvojaasi ratkaisemaan ongelma.</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8133495915926741232">Valitse, minkä laajojen aihekategorioiden avulla mainoksia voidaan personoida. Jos laitat laajemman kategorian pois päältä, myös siihen liittyvät aiheet estetään. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>

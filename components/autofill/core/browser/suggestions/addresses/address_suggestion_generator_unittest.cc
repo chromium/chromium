@@ -232,7 +232,7 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
   profile3.SetRawInfo(ADDRESS_HOME_STATE, std::u16string());
 
   // For easier results verification, make sure |profile| is suggested first.
-  profile.set_use_count(5);
+  profile.usage_history().set_use_count(5);
   address_data().AddProfile(profile);
   address_data().AddProfile(profile1);
   address_data().AddProfile(profile2);
@@ -284,8 +284,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
 
     // Set ranking score such that they appear before the "last" profile (added
     // next).
-    profile.set_use_count(12);
-    profile.set_use_date(AutofillClock::Now() - base::Days(1));
+    profile.usage_history().set_use_count(12);
+    profile.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
 
     address_data().AddProfile(profile);
     profiles.push_back(profile);
@@ -297,8 +297,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
                        "johnwayne@me.xyz", "Fox",
                        "000 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile.set_use_count(1);
-  profile.set_use_date(AutofillClock::Now() - base::Days(7));
+  profile.usage_history().set_use_count(1);
+  profile.usage_history().set_use_date(AutofillClock::Now() - base::Days(7));
   address_data().AddProfile(profile);
 
   std::vector<AutofillProfile> suggested_profiles =
@@ -321,8 +321,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile3.set_use_date(AutofillClock::Now() - base::Days(1));
-  profile3.set_use_count(5);
+  profile3.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
+  profile3.usage_history().set_use_count(5);
   address_data().AddProfile(profile3);
 
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -330,8 +330,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
-  profile1.set_use_count(10);
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
+  profile1.usage_history().set_use_count(10);
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -339,8 +339,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile2.set_use_date(AutofillClock::Now() - base::Days(15));
-  profile2.set_use_count(300);
+  profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(15));
+  profile2.usage_history().set_use_count(300);
   address_data().AddProfile(profile2);
 
   std::vector<AutofillProfile> suggested_profiles =
@@ -437,7 +437,7 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(200));
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -445,7 +445,7 @@ TEST_F(AddressSuggestionGeneratorTest,
                        "johnwayne@me.xyz", "Fox",
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile2.set_use_date(AutofillClock::Now() - base::Days(20));
+  profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(20));
   address_data().AddProfile(profile2);
 
   // Query with empty string only returns profile2.
@@ -487,7 +487,7 @@ TEST_F(AddressSuggestionGeneratorTest,
 // Expect only one unique suggestion.
 TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
   AutofillProfile profile_1 = test::GetFullProfile();
-  profile_1.set_use_count(10);
+  profile_1.usage_history().set_use_count(10);
   AutofillProfile profile_2 = test::GetFullProfile();
   address_data().AddProfile(profile_1);
   address_data().AddProfile(profile_2);
@@ -506,12 +506,12 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
       3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
   profiles[0].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[0].SetRawInfo(NAME_LAST, u"Morrison");
-  profiles[0].set_use_count(10);
+  profiles[0].usage_history().set_use_count(10);
   address_data().AddProfile(profiles[0]);
 
   profiles[1].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[1].SetRawInfo(NAME_LAST, u"Parker");
-  profiles[1].set_use_count(5);
+  profiles[1].usage_history().set_use_count(5);
   address_data().AddProfile(profiles[1]);
 
   profiles[2].SetRawInfo(NAME_FIRST, u"Mary");
@@ -533,7 +533,8 @@ TEST_F(AddressSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.SetRawInfo(NAME_FULL,
                        base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
-    profile.set_use_count(kMaxDeduplicatedProfilesForSuggestion + 10 - i);
+    profile.usage_history().set_use_count(
+        kMaxDeduplicatedProfilesForSuggestion + 10 - i);
     profiles.push_back(profile);
     address_data().AddProfile(profile);
   }
@@ -573,7 +574,7 @@ TEST_F(AddressSuggestionGeneratorTest,
       AutofillProfile::RecordType::kLocalOrSyncable);
   // Set high use count for profile 2 so that it has greater ranking than
   // profile_1
-  profile_2.set_use_count(100);
+  profile_2.usage_history().set_use_count(100);
   address_data().AddProfile(profile_2);
 
   std::vector<AutofillProfile> profiles_to_suggest =
@@ -637,10 +638,10 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   AutofillProfile profile_1 = test::GetFullProfile();
   AutofillProfile profile_2 = test::GetFullProfile2();
-  profile_1.set_use_count(10);
-  profile_1.set_use_date(kDisusedTime);
-  profile_2.set_use_count(1);
-  profile_2.set_use_date(kDisusedTime);
+  profile_1.usage_history().set_use_count(10);
+  profile_1.usage_history().set_use_date(kDisusedTime);
+  profile_2.usage_history().set_use_count(1);
+  profile_2.usage_history().set_use_date(kDisusedTime);
   address_data().AddProfile(profile_1);
   address_data().AddProfile(profile_2);
 

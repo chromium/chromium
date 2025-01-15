@@ -10,6 +10,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 
@@ -171,12 +172,12 @@ void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
 }
 
 // static
-void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
+void PaymentsRequest::SetStringIfNotEmpty(const FormGroup& form_group,
                                           const FieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {
-  std::u16string value = profile.GetInfo(type, app_locale);
+  std::u16string value = form_group.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
 }

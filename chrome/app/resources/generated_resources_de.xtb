@@ -160,6 +160,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1101254380285078812">{COUNT,plural, =1{1 Passwort}other{{COUNT} Passwörter}}</translation>
 <translation id="1102759278139578486">Dateien zur Annotation von Hauptknoten können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
+<translation id="1104098698795583187">Du verlierst dann sofort den Zugriff auf diese Tabgruppe und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="1106350001632362876">Schwellenwert erhöhen</translation>
 <translation id="1107482171728500359">Mikrofon freigeben</translation>
 <translation id="110850812463801904">Manuell mit OneDrive verbinden</translation>
@@ -320,7 +321,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1210678701920254279">Drucker ansehen oder hinzufügen und aktive Druckaufträge abrufen</translation>
 <translation id="1211769675100312947">Du kannst die Verknüpfungen personalisieren</translation>
 <translation id="1213254615020057352">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese Einstellung wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
-<translation id="1214004433265298541">Zertifikat von deinem Administrator, der die Anmeldedaten für <ph name="DOMAIN" /> ansehen kann</translation>
 <translation id="1215411991991485844">Neue Hintergrund-App hinzugefügt</translation>
 <translation id="1216542092748365687">Fingerabdruck entfernen</translation>
 <translation id="1216891999012841486">Weitere Informationen zum Beheben von Updatefehlern</translation>
@@ -790,6 +790,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1549788673239553762"><ph name="APP_NAME" /> möchte auf <ph name="VOLUME_NAME" /> zugreifen. Deine Dateien können geändert oder gelöscht werden.</translation>
 <translation id="1549966883323105187">Gespeicherte Passwörter schneller aufrufen</translation>
 <translation id="1550656959113606473">Chrome-Standard</translation>
+<translation id="1552065819535218588">Benachrichtigungen von <ph name="URL" /> werden in Chrome nicht mehr als Spam gemeldet</translation>
 <translation id="1552301827267621511">Die Erweiterung "<ph name="EXTENSION_NAME" />" hat <ph name="SEARCH_PROVIDER_DOMAIN" /> als neuen Suchanbieter festgelegt</translation>
 <translation id="1552752544932680961">Erweiterung verwalten</translation>
 <translation id="1553538517812678578">unbegrenzt</translation>
@@ -1689,6 +1690,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2173801458090845390">Diesem Gerät eine Anforderungs-ID hinzufügen</translation>
 <translation id="2175384018164129879">Suchmaschinen und die Websitesuche verwalten</translation>
+<translation id="2175526076681939329">Primäre Tasten verwenden</translation>
 <translation id="217576141146192373">Drucker kann nicht hinzugefügt werden. Prüfe bitte die Konfiguration des Druckers und versuche es noch einmal.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="217631816678106981">Nicht einfügen</translation>
@@ -3080,6 +3082,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3159978855457658359">Gerätename bearbeiten</translation>
 <translation id="3160928651883997588">VPN-Einstellungen</translation>
 <translation id="3161522574479303604">Alle Sprachen</translation>
+<translation id="3162070126914310576">Dieses Gerät kann derzeit nicht registriert werden, da die maximale Anzahl an Geräten für die Erstregistrierung in deiner Organisationseinheit bereits erreicht wurde. Bei Fragen wende dich bitte an deinen Administrator.</translation>
 <translation id="3162766632262775911">Dürfen immer das V8-Optimierungstool verwenden</translation>
 <translation id="3162853326462195145">Konto einer Bildungseinrichtung</translation>
 <translation id="3162899666601560689">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben</translation>
@@ -3407,6 +3410,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3407392651057365886">Es werden mehr Seiten vorab geladen. Seiten können über Google-Server vorab geladen werden, wenn dies von anderen Websites angefordert wird.</translation>
 <translation id="3407967630066378878">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor links an diesem <ph name="DEVICE_TYPE" /> zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="3408555740610481810">Kamera und Mikrofon werden verwendet</translation>
+<translation id="3409157109901479672">Linke Seite</translation>
 <translation id="3409513286451883969">Auswahl auf <ph name="LANGUAGE" /> übersetzen</translation>
 <translation id="3412265149091626468">Auswahl anzeigen</translation>
 <translation id="3413122095806433232">Aussteller von Zertifizierungsstellen: <ph name="LOCATION" /></translation>
@@ -4692,6 +4696,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4290826901752066702"><ph name="NUM" /> Mitglied</translation>
 <translation id="4290898381118933198">Zum Wechseln zwischen Seiten wischen</translation>
 <translation id="4291265871880246274">Dialogfeld zur Anmeldung</translation>
+<translation id="4292613336957320546">Beschleunigung</translation>
 <translation id="429312253194641664">Eine Website gibt Medien wieder</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> wurde aus dem Downloadverlauf gelöscht, die Datei ist aber noch auf deinem Gerät vorhanden</translation>
 <translation id="4295072614469448764">Die App ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
@@ -5859,6 +5864,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-Suche</translation>
 <translation id="5139823398361067371">Gib die PIN für deinen Sicherheitsschlüssel ein. Falls du sie nicht kennst, musst du den Sicherheitsschlüssel zurücksetzen.</translation>
 <translation id="5139955368427980650">Ö&amp;ffnen</translation>
+<translation id="5140742218917419811">Zu verwendende Tasten</translation>
 <translation id="5141421572306659464">Primäres Konto</translation>
 <translation id="5141957579434225843">Verwende beispielsweise oà, oè, uỳ statt òa, òe, ùy</translation>
 <translation id="5143374789336132547">Durch die Erweiterung <ph name="EXTENSION_NAME" /> wurde die Seite geändert, die beim Klicken auf die Schaltfläche "Startseite" erscheint.</translation>
@@ -5877,6 +5883,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5149602533174716626">Videoframe kop&amp;ieren</translation>
 <translation id="5150254825601720210">SSL-Servername für Netscape-Zertifikat</translation>
 <translation id="5151354047782775295">Gib Speicherplatz frei oder ausgewählte Daten werden automatisch gelöscht</translation>
+<translation id="5153074793829217329">Cursor mit der Tastatur oder einem Ziffernblock steuern</translation>
 <translation id="5153234146675181447">Smartphone entfernen</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Erweiterte Einstellungen für <ph name="PRINTING_DESTINATION" /></translation>
@@ -7965,6 +7972,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6689714331348768690">Bitte <ph name="SUPERVISED_USER_NAME" />, an den Computer zu kommen. Dein Kind muss einige Sätze auf diesem Bildschirm vorlesen, damit sein Sprachmodell erstellt werden kann.
     <ph name="BR" />
     Falls <ph name="SUPERVISED_USER_NAME" /> Hilfe beim Lesen braucht, lies vor und lasse dein Kind den Text wiederholen. Flüstere dabei und sprich nicht in Richtung des Mikrofons, damit Assistant die Stimme deines Kindes lernt und nicht deine.</translation>
+<translation id="6689948774466767379">Tastaturmaus</translation>
 <translation id="6690659332373509948">Datei kann nicht geparst werden: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Vorwärts</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 Seite}other{{COUNT} Seiten}}</translation>
@@ -9046,6 +9054,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="746861123368584540">Erweiterung geladen</translation>
 <translation id="7469612367552312334">Ein • Du kannst Alltagssprache verwenden, um in deinem Browserverlauf nach Websites zu suchen, die du besucht hast</translation>
 <translation id="7470131554696493512">Zugriff auf den Arbeitsspeicher (RAM) und dessen Freigabe durch Thunderbolt- oder USB4-Zubehör blockieren</translation>
+<translation id="7470284766345262333">Dieses Konto ist nicht mit Google verknüpft; einige Funktionen, z. B. die Chrome-Synchronisierung, sind daher nicht verfügbar</translation>
 <translation id="7470424110735398630">Dürfen auf meine Zwischenablage zugreifen</translation>
 <translation id="747114903913869239">Fehler: Erweiterung kann nicht entschlüsselt werden.</translation>
 <translation id="7471520329163184433">Langsamer</translation>
@@ -10051,6 +10060,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8168435359814927499">Inhalte</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="8169177848833352618">Die Anforderungen zum Installieren von Bruschetta werden nicht erfüllt. Fehlercode: <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Rechte Seite</translation>
 <translation id="8174047975335711832">Gerätebezogene Informationen</translation>
 <translation id="8176332201990304395">Rosa und Weiß</translation>
 <translation id="8176529144855282213">Aktiviere den Mikrofonzugriff über den physischen Mikrofonschalter an deinem Gerät</translation>

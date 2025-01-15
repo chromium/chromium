@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/webauthn/ring_progress_bar.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 

@@ -229,20 +229,10 @@ class FormFieldParser {
       std::u16string_view pattern,
       std::vector<std::u16string>* groups = nullptr);
 
-  // Attempts to parse a form field with the given pattern.  Returns true on
-  // success and populates `match`.
+  // Looks up the patterns using `regex_name` and attempts to parse a form field
+  // with them.  Returns true on success and populates `match`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s.
-  static bool ParseField(
-      ParsingContext& context,
-      AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      std::optional<FieldAndMatchInfo>* match,
-      const char* regex_name = "",
-      MatchParams (*match_pattern_projection)(const MatchParams&) = nullptr);
-
-  // This is just a wrapper which doesn't require `patterns` and looks them up
-  // using `regex_name`.
   static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,

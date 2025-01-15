@@ -991,6 +991,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5506763544823940561">Vista mynd í…</translation>
 <translation id="5511959326926949696">Stóraukin, valfrjáls vörn fyrir vafrann. Hana ætti aðeins að nota ef þú telur hættu á að þú verðir fyrir háþróaðri netárás.</translation>
 <translation id="5513681519188741830">Fyrir <ph name="TIME" /> klst.</translation>
+<translation id="5520668942302483373">Yfirgefa hóp</translation>
 <translation id="5524590039848017563">Samandreginn aðalhnappur tækjastiku</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} lélegt aðgangsorð}one{{COUNT} lélegt aðgangsorð}other{{COUNT} léleg aðgangsorð}}</translation>
 <translation id="5532545557415295622">Gluggi með tímamörkum aðgerðarleysis</translation>
@@ -1030,6 +1031,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5646284034397250191">Merking búin til. Dagsetning bíður staðfestingar</translation>
 <translation id="5647096944343801045">Stór aðgangsstaður</translation>
 <translation id="5647193778876139879">Haltu heimilisfangi inni.</translation>
+<translation id="5647702255748985085">Hætta í hópi?</translation>
 <translation id="5648166631817621825">Síðastliðna sjö daga</translation>
 <translation id="5652623411397330904">Vörurnar sem þú vaktar birtast hér.</translation>
 <translation id="5657156137487675418">Leyfa öll fótspor</translation>

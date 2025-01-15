@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Нууц үгний менежерийг macOS Keychain-тэй ашиглахын тулд Chromium-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="1652887625750064647">ХОУ-ы хамгийн сайн таарах илэрц</translation>
+<translation id="1653465303147789530">Апп сэлгэхгүйгээр <ph name="PAYMENT_METHOD" />-р төлөх</translation>
 <translation id="1656024727720460136">Chrome нь энэ хуудсыг уншихад илүү амар болгож хялбаршуулсан. Chrome нь аюулгүй холболтоор эх хуудсыг сэргээсэн.</translation>
 <translation id="1656489000284462475">Авах</translation>
 <translation id="1658111267661135323">ТВ болон видео</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Зарим зочилдог хуудасныхаа URL, системийн хязгаарлагдмал мэдээлэл болон зарим хуудасны контент<ph name="END_WHITEPAPER_LINK" />-ыг Google-д илгээж, хүн бүрд вебийн аюулгүй байдлыг сайжруулахад тусална уу. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Нууцлалын бодлого<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Таны текст болон хуудасны контентыг Google-д илгээсэн бөгөөд энэ онцлогийг сайжруулахад ашиглаж магадгүй.
   <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Илүү хурдан төлөхийн тулд нэг удаагийн аюулгүй байдлын шалгалтыг гүйцэтгэнэ үү</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Хавчуургууд</translation>
 <translation id="1973335181906896915">Цувралын алдаа</translation>
 <translation id="1973785048533660168">Бичиг хэрэг болон захиргааны ажлын байрууд</translation>
@@ -701,6 +703,7 @@
 <translation id="2215539479425228550">Авиралт, ууланд авиралт</translation>
 <translation id="2215727959747642672">Файл засах</translation>
 <translation id="2215963164070968490">Нохой</translation>
+<translation id="2219376942605837404">Харьцуулалтын хүснэгтэд таб нэмэх</translation>
 <translation id="2219658597883514593">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="2219735899272417925">Төхөөрөмжийг шинэчлэх шаардлагатай</translation>
 <translation id="2221227930294879156">Хоол хүнс болон уух зүйлийн арга хэмжээнүүд</translation>
@@ -1151,6 +1154,7 @@
 <translation id="306573536155379004">Тоглоом эхэллээ.</translation>
 <translation id="3067505415088964188">Үнэ хямд байна</translation>
 <translation id="3068118691172921711">Таны файлыг <ph name="CLOUD_PROVIDER" />-д 1 минутын дараа байршуулж эхэлнэ</translation>
+<translation id="3068976060094139647">Таны дансыг Google Pay-д холбосон тул та энэ картыг автоматаар бөглөх боломжтой.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} зүйл}other{{ITEMS} зүйл}}</translation>
 <translation id="3076865167425975822">Үйлдлийн системүүд</translation>
 <translation id="3080254622891793721">График</translation>
@@ -1587,6 +1591,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-н хамгийн сайн таарах илэрц</translation>
 <translation id="3789155188480882154">Хэмжээ 16</translation>
 <translation id="3789841737615482174">Суулгах</translation>
+<translation id="3791118028061680614">Апп сэлгэхгүйгээр төлөх</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инч)</translation>
 <translation id="3792826587784915501">Шүтэгдсэн, инди кинонууд</translation>
 <translation id="3793574014653384240">Сүүлийн үед гарсан гэмтлийн тоо болон шалтгаан</translation>
@@ -1787,6 +1792,7 @@
 <translation id="4151403195736952345">Global default-г ашиглах (Илрүүлэх)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Хуудас 1}other{Хуудас {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome одоо төлбөрийн хэрэгслийг бөглөхөөс өмнө таныг мөн болохыг баталгаажуулна. Та үүнийг хүссэн үедээ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />-д шинэчлэх боломжтой.</translation>
+<translation id="415440494507469262">Харьцуулалтын хүснэгтэд таб нэмэх</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4165422751765527461">Тусламжийн төвийн нийтлэлийг шинэ табд нээнэ</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
@@ -3392,6 +3398,7 @@
 <translation id="706960991003274248">Харьцуулалтын хүснэгтийг таны <ph name="EMAIL" /> бүртгэлд хадгалдаг</translation>
 <translation id="7070144569727915108">системийн тохиргоо</translation>
 <translation id="70705239631109039">Таны холболт бүрэн аюулгүй биш байна</translation>
+<translation id="7071122206197538392">Харьцуулалтын шинэ хүснэгт</translation>
 <translation id="7075452647191940183">Хүсэлт хэт том байна</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4102,6 +4109,7 @@
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
 <translation id="8301894345671534559">Код оруулах</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
+<translation id="8304912090860925649">Харьцуулалтын шинэ хүснэгт</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
 <translation id="8308653357438598313">Шууд видео дамжуулалт</translation>
 <translation id="8311895354659782580">Үл хөдлөх хөрөнгийн жагсаалтууд</translation>

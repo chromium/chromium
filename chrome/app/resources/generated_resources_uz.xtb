@@ -160,6 +160,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1101254380285078812">{COUNT,plural, =1{1 ta parol}other{{COUNT} ta parol}}</translation>
 <translation id="1102759278139578486">Asosiy tugun izoh fayllari yuklab olinmadi. Keyinroq qayta urining.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
+<translation id="1104098698795583187">Bu sahifalar guruhiga ruxsat darhol yopiladi va u barcha qurilmalardan oʻchiriladi</translation>
 <translation id="1106350001632362876">Chegarani oshirish</translation>
 <translation id="1107482171728500359">Mikrofonni ulashish</translation>
 <translation id="110850812463801904">OneDrive omboriga mustaqil ulanish</translation>
@@ -320,7 +321,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1210678701920254279">Printerlarni koʻrish yoki kiritish hamda faol chop etish vazifalarini koʻrish</translation>
 <translation id="1211769675100312947">Boshqaruvingizdagi yorliqlar</translation>
 <translation id="1213254615020057352">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu parametr qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi.</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" /> hisob maʼlumotlarini koʻra oladigan administratoringiz tomonidan taqdim etilgan sertifikat</translation>
 <translation id="1215411991991485844">Yangi orqa fon ilovasi qo‘shildi</translation>
 <translation id="1216542092748365687">Barmoq izini olib tashlash</translation>
 <translation id="1216891999012841486">Yangilanish xatolarini tuzatish haqida batafsil</translation>
@@ -1692,6 +1692,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2173801458090845390">Qurilmaga identifikator so‘rovini qo‘shish</translation>
 <translation id="2175384018164129879">Qidiruv vositalari va sayt qidiruvini boshqarish</translation>
+<translation id="2175526076681939329">Asosiy tugmalarni ishlatish</translation>
 <translation id="217576141146192373">Printer kiritilmadi. Printer sozlamalarini tekshiring va qayta urining.</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="217631816678106981">Joylanmasin</translation>
@@ -3414,6 +3415,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3407392651057365886">Aksariyat sahifalar oldindan yuklanadi. Sahifalar boshqa saytlar tomonidan talab qilinganida Google serverlari orqali oldindan yuklanadi.</translation>
 <translation id="3407967630066378878">Barmoq izini sozlash uchun farzandingiz <ph name="DEVICE_TYPE" /> qurilmasining chap orqasidagi barmoq izi skaneriga teginishiga ruxsat bering. Farzandingiz barmoq izlari yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmasida saqlanadi.</translation>
 <translation id="3408555740610481810">Kamera va mikrofon band</translation>
+<translation id="3409157109901479672">Chap tomoni</translation>
 <translation id="3409513286451883969">Tanlovni <ph name="LANGUAGE" /> tiliga &amp;tarjima qilish</translation>
 <translation id="3412265149091626468">Belgilanishga o‘tish</translation>
 <translation id="3413122095806433232">Sertifikatlash markazi noshiri: <ph name="LOCATION" /></translation>
@@ -4699,6 +4701,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4290826901752066702"><ph name="NUM" /> ta ishtirokchi</translation>
 <translation id="4290898381118933198">Sahifalarni varaqlash uchun yonga suring</translation>
 <translation id="4291265871880246274">Kirish oynasi</translation>
+<translation id="4292613336957320546">Tezlanishi</translation>
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> yuklanmalar tarixidan oʻchirildi, lekin fayl qurilmangizda saqlangan</translation>
 <translation id="4295072614469448764">Ilova terminalingizda mavjud. Launcherda ikonka bo‘lishi kerak.</translation>
@@ -5866,6 +5869,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5139112070765735680"><ph name="DEFAULT_SEARCH_ENGINE_NAME" /> orqali qidirish: <ph name="QUERY_NAME" /></translation>
 <translation id="5139823398361067371">Elektron kalit PIN kodini kiriting. PIN kodni bilmasangiz, elektron kalit sozlamalarini qayta tiklash kerak.</translation>
 <translation id="5139955368427980650">&amp;Ochish</translation>
+<translation id="5140742218917419811">Ishlatish uchun tugmalar</translation>
 <translation id="5141421572306659464">Asosiy hisob</translation>
 <translation id="5141957579434225843">Masalan, òa, òe, ùy oʻrniga oà, oè, uỳ ishlating</translation>
 <translation id="5143374789336132547">“<ph name="EXTENSION_NAME" />” kengaytmasi “Boshi” tugmasi bosilganda ko‘rsatiladigan sahifani o‘zgartirdi.</translation>
@@ -5884,6 +5888,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5149602533174716626">Video kadridan nusxa olish</translation>
 <translation id="5150254825601720210">Netscape SSL sertifikat serveri nomi</translation>
 <translation id="5151354047782775295">Diskdan joy bo‘shating yoki avtomatik o‘chirilishi mumkin bo‘lgan ma’lumotlarni tanlang</translation>
+<translation id="5153074793829217329">Sichqonchangiz kursorini nazorat qilish uchun klaviaturangiz yoki raqamli klaviaturangizni ishlating</translation>
 <translation id="5153234146675181447">Telefonni unutish</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />  – kengaytirilgan sozlamalar</translation>
@@ -7976,6 +7981,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> kompyuter oldiga kelsin. Farzandingiz uchun ovoz modelini yaratish uchun u ekrandagi bir nechta iborani oʻqishi kerak.
     <ph name="BR" />
     Agar <ph name="SUPERVISED_USER_NAME" /> hali oʻqiy olmasa, iboralarni ortingizdan qaytarsin. Mikrofondan uzoqroq gapiring vs Assistent farzandingiz ovozini siznikidan ajrata oladi.</translation>
+<translation id="6689948774466767379">Sichqoncha tugmalari</translation>
 <translation id="6690659332373509948">Faylni tahlil qilib bo‘lmadi bo‘lmadi: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Oldinga</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sahifa}other{{COUNT} sahifa}}</translation>
@@ -10060,6 +10066,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Varaqni mutolaa roʻyxatiga kiritish}other{Varaqlarni mutolaa roʻyxatiga kiritish}}</translation>
 <translation id="8169177848833352618">Bu kompyuter Bruschetta oʻrnatish talablariga javob bermaydi. Xatolik kodi: <ph name="ERROR" /></translation>
+<translation id="8172303073969862496">Oʻng tomoni</translation>
 <translation id="8174047975335711832">Qurilma haqida axborot</translation>
 <translation id="8176332201990304395">Pushti va oq</translation>
 <translation id="8176529144855282213">Mikrofonga kirishga ruxsat berish uchun qurilmangizdagi mavjud mikrofonni yoqing</translation>

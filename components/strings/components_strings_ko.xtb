@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="1652887625750064647">AI 최적 일치</translation>
+<translation id="1653465303147789530">앱을 전환하지 않고 <ph name="PAYMENT_METHOD" />(으)로 결제</translation>
 <translation id="1656024727720460136">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 보안 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="1656489000284462475">수령</translation>
 <translation id="1658111267661135323">TV 및 동영상</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠<ph name="END_WHITEPAPER_LINK" />를 Google에 전송하여 모든 웹 사용자를 위해 보안을 강화하는 데 참여해 주세요. <ph name="BEGIN_PRIVACY_PAGE_LINK" />개인정보처리방침<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">텍스트 및 페이지 콘텐츠가 Google로 전송되며, 이 기능을 개선하는 데 사용될 수 있습니다.
   <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">일회성 보안 확인을 완료하여 더 빠르게 결제하세요</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
 <translation id="1973785048533660168">사무 관리직</translation>
@@ -701,6 +703,7 @@
 <translation id="2215539479425228550">등산</translation>
 <translation id="2215727959747642672">파일 수정</translation>
 <translation id="2215963164070968490">개</translation>
+<translation id="2219376942605837404">비교 표에 탭 추가</translation>
 <translation id="2219658597883514593">가이드 다시 시작</translation>
 <translation id="2219735899272417925">기기 재설정 필요</translation>
 <translation id="2221227930294879156">식음료 이벤트</translation>
@@ -1151,6 +1154,7 @@
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
 <translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3068118691172921711">1분 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
+<translation id="3068976060094139647">계정이 Google Pay에 연결되어 있으므로 이 카드를 자동 완성할 수 있습니다.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{항목 {ITEMS}개}other{항목 {ITEMS}개}}</translation>
 <translation id="3076865167425975822">운영체제</translation>
 <translation id="3080254622891793721">그래픽</translation>
@@ -1586,6 +1590,7 @@
 <translation id="378611282717571199">‘<ph name="SEARCH_QUERY" />’의 최적 일치 항목</translation>
 <translation id="3789155188480882154">크기 16</translation>
 <translation id="3789841737615482174">설치</translation>
+<translation id="3791118028061680614">앱을 전환하지 않고 결제</translation>
 <translation id="3792100426446126328"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />인치)</translation>
 <translation id="3792826587784915501">컬트 및 독립 영화</translation>
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
@@ -1786,6 +1791,7 @@
 <translation id="4151403195736952345">글로벌 기본값 사용(감지)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{페이지 1}other{페이지 {COUNT}}}</translation>
 <translation id="4154277373259957087">이제 Chrome에서 결제 수단을 입력하기 전에 본인 인증을 진행합니다. 언제든지 <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />에서 업데이트할 수 있습니다.</translation>
+<translation id="415440494507469262">비교 표에 탭 추가</translation>
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4165422751765527461">새 탭에서 고객센터 도움말을 엽니다</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
@@ -3392,6 +3398,7 @@
 <translation id="706960991003274248">비교표가 내 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="7070144569727915108">시스템 설정</translation>
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
+<translation id="7071122206197538392">새 비교 표</translation>
 <translation id="7075452647191940183">요청이 너무 큼</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4102,6 +4109,7 @@
 <translation id="8298115750975731693">사용 중인 Wi-Fi(<ph name="WIFI_NAME" />)에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
 <translation id="8301894345671534559">코드 입력</translation>
 <translation id="8303854710873047864">‘<ph name="SECTION" />’ 섹션 표시됨</translation>
+<translation id="8304912090860925649">새 비교 표</translation>
 <translation id="830498451218851433">폴드 하프</translation>
 <translation id="8308653357438598313">라이브 동영상 스트리밍</translation>
 <translation id="8311895354659782580">부동산 매물</translation>

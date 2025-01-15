@@ -160,6 +160,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1101254380285078812">{COUNT,plural, =1{1 wachtwoord}other{{COUNT} wachtwoorden}}</translation>
 <translation id="1102759278139578486">Kan annotatiebestanden voor hoofdknooppunt niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
+<translation id="1104098698795583187">Je raakt meteen de toegang tot deze tabbladgroep kwijt en de groep wordt verwijderd van al je apparaten</translation>
 <translation id="1106350001632362876">Drempelwaarde verhogen</translation>
 <translation id="1107482171728500359">Microfoon delen</translation>
 <translation id="110850812463801904">Handmatig koppelen aan OneDrive</translation>
@@ -320,7 +321,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1210678701920254279">Printers bekijken of toevoegen en actieve afdruktaken zien</translation>
 <translation id="1211769675100312947">Snelkoppelingen worden door jou beheerd</translation>
 <translation id="1213254615020057352">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
-<translation id="1214004433265298541">Certificaat verstrekt door je beheerder die de inloggegevens voor <ph name="DOMAIN" /> kan bekijken</translation>
 <translation id="1215411991991485844">Nieuwe achtergrondapp toegevoegd</translation>
 <translation id="1216542092748365687">Vingerafdruk verwijderen</translation>
 <translation id="1216891999012841486">Meer informatie over hoe je updatefouten oplost</translation>
@@ -1693,6 +1693,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2173801458090845390">Aanvraag-ID toevoegen aan dit apparaat</translation>
 <translation id="2175384018164129879">Zoek&amp;machines en Site Search beheren</translation>
+<translation id="2175526076681939329">Primaire toetsen gebruiken</translation>
 <translation id="217576141146192373">Kan printer niet toevoegen. Controleer de configuratie van je printer en probeer het opnieuw.</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="217631816678106981">Niet plakken</translation>
@@ -3412,6 +3413,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3407392651057365886">Er worden meer pagina's vooraf geladen. Pagina's kunnen op verzoek van andere sites vooraf worden geladen via de servers van Google.</translation>
 <translation id="3407967630066378878">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor aan de linkerkant van deze <ph name="DEVICE_TYPE" /> aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="3408555740610481810">Camera en microfoon in gebruik</translation>
+<translation id="3409157109901479672">Linkerzijde</translation>
 <translation id="3409513286451883969">&amp;Selectie vertalen naar het <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Ga naar selectie</translation>
 <translation id="3413122095806433232">CA-uitgevers: <ph name="LOCATION" /></translation>
@@ -4696,6 +4698,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4290826901752066702"><ph name="NUM" /> lid</translation>
 <translation id="4290898381118933198">Swipen om tussen pagina's te navigeren</translation>
 <translation id="4291265871880246274">Inlogvenster</translation>
+<translation id="4292613336957320546">Versnelling</translation>
 <translation id="429312253194641664">Een site speelt media af</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> is verwijderd uit de downloadgeschiedenis, maar staat nog steeds op je apparaat</translation>
 <translation id="4295072614469448764">De app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
@@ -5863,6 +5866,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, zoeken in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Geef de pincode van je beveiligingssleutel op. Als je de pincode niet weet, moet je de beveiligingssleutel resetten.</translation>
 <translation id="5139955368427980650">&amp;Openen</translation>
+<translation id="5140742218917419811">Te gebruiken toetsen</translation>
 <translation id="5141421572306659464">Primair account</translation>
 <translation id="5141957579434225843">Gebruik bijvoorbeeld oà, oè, uỳ in plaats van òa, òe, ùy</translation>
 <translation id="5143374789336132547">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je op de Homepage-knop klikt.</translation>
@@ -5881,6 +5885,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5149602533174716626">Videoframe kop&amp;iëren</translation>
 <translation id="5150254825601720210">SSL-servernaam van Netscape-certificaat</translation>
 <translation id="5151354047782775295">Maak schijfruimte vrij of bepaalde gegevens kunnen automatisch worden verwijderd</translation>
+<translation id="5153074793829217329">Gebruik je toetsenbord of een numeriek toetsenblok om de muiscursor te bedienen</translation>
 <translation id="5153234146675181447">Telefoon vergeten</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Geavanceerde instellingen voor <ph name="PRINTING_DESTINATION" /></translation>
@@ -7969,6 +7974,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6689714331348768690">Vraag <ph name="SUPERVISED_USER_NAME" /> om naar de computer te komen. Je kind leest een paar zinnen op dit scherm voor om een eigen spraakmodel te maken.
     <ph name="BR" />
 Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je kind jou dan nazeggen. Fluister weg van de microfoon zodat de Assistent de stem van je kind leert herkennen in plaats van die van jou.</translation>
+<translation id="6689948774466767379">Muistoetsen</translation>
 <translation id="6690659332373509948">Fout bij het parseren van dit bestand: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Vooruit</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}other{{COUNT} pagina's}}</translation>
@@ -10054,6 +10060,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
 <translation id="8169177848833352618">Dit apparaat voldoet niet aan de vereisten voor de installatie van Bruschetta. De foutcode is <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Rechterzijde</translation>
 <translation id="8174047975335711832">Apparaatgegevens</translation>
 <translation id="8176332201990304395">Roze/wit</translation>
 <translation id="8176529144855282213">Zet de fysieke microfoonschakelaar op je apparaat aan om toegang tot de microfoon aan te zetten</translation>

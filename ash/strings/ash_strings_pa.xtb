@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">ਅਗਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਪੂਰੀ ਹੋਈ</translation>
+<translation id="1956087014741188812">ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਰੋਕੋ</translation>
 <translation id="1957958912175573503">ਆਪਣੀ ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1961239773406905488">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">ਡਿਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="2258734398699965611">ਸੁਝਾਈਆਂ ਗਈਆਂ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="2266607665880926261">ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="2268130516524549846">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਲਾਂਚਰ ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਨੂੰ ਇੱਕ ਵਿਸਤ੍ਰਿਤ ਖੋਜ ਪੱਟੀ ਦਿਖਾਈ ਦੇਵੇਗੀ। ਤੁਸੀਂ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ, ਐਪਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੀ ਖੋਜ ਕਰਨ ਲਈ ਟਾਈਪ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2268813581635650749">ਸਭ ਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">ਸਕ੍ਰੀਨ 'ਤੇ ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="2878884018241093801">ਕੋਈ ਹਾਲੀਆ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
 <translation id="2880541185262491188">ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀ ਕਈ ਵਾਰ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਗਈ। <ph name="TIME_LEFT" /> ਤੱਕ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="2883271196820422439">ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2885950158625301909">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="2891209721153296020">"ਅਣਚੁਣਿਆ ਕਰੋ"</translation>
 <translation id="2894949423239620203">ਕੇਬਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦੀ ਹੈ</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ਹੌਟਸਪੌਟ</translation>
 <translation id="3540893133818942399">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="3542066395059568317">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ। ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="3545224667633138205">ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3552189655002856821">ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ</translation>
 <translation id="3554215588514239132">ਵਿਕਾਸਕਾਰ ਟੂਲ ਪੈਨਲ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">ਆਈਟਮਾਂ ਲੋਡ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ। ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3735740477244556633">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="3738664582935948253">ਤੁਸੀਂ ਹੁਣ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗਾਂ ਵਿੱਚ ਕਲਿੱਕਾਂ ਅਤੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾ ਸਕਦੇ ਹੋ</translation>
+<translation id="3741482431277446954">ਸੱਜਾ ਮਾਊਸ ਬਟਨ</translation>
 <translation id="3742055079367172538">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਿਆ ਗਿਆ</translation>
 <translation id="3743775386021959186">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /> ਬਾਕੀ</translation>
 <translation id="3750403286520637847">ਮੌਸਮ ਸੰਬੰਧੀ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
@@ -858,7 +863,6 @@
 <translation id="3958714870339660776">ਪੂਰਾ ਦਿਨ</translation>
 <translation id="3962859241508114581">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="3963124517343721543">ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹ ਕੇ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਹੀ ਆਸਾਨੀ ਨਾਲ ਜਾਰੀ ਰੱਖੋ। ਅੱਗੇ ਤੁਹਾਨੂੰ ਕਰਨਯੋਗ ਚੀਜ਼ਾਂ ਲਈ ਵਿਅਕਤੀਗਤ ਸੁਝਾਅ ਵੀ ਦਿਖਾਈ ਦੇਣਗੇ।</translation>
-<translation id="396506362088290977">ਆਪਣੇ ਮਾਈਕ ਦੀ ਧੁਨੀ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3969043077941541451">ਬੰਦ ਹੈ</translation>
 <translation id="3970324493235864154">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
@@ -1301,7 +1305,6 @@
 <translation id="536019650977002321">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਆਡੀਓ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ਇਸ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
-<translation id="5363835273551457276">ਤੁਸੀਂ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਧੁਨੀ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹੋ। ਰੋਕਣ ਲਈ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="5364693579536176785">ਸਟੋਰੇਜ ਜਗ੍ਹਾ</translation>
 <translation id="5369573834963677938">ਚਿਹਰਾ ਕੰਟਰੋਲ ਡੀਵਾਈਸ ਦੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਵੀ ਉਪਲਬਧ ਹੋਵੇਗਾ</translation>
 <translation id="5369717264580061086">Files ਐਪ ਵਿੱਚ ਫ਼ਾਈਲ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
@@ -1831,6 +1834,7 @@
 <translation id="7118268675952955085">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="7119327711295338600">ਅਗਲਾ ਸ਼ਬਦ ਜਾਂ ਅੱਖਰ ਚੁਣੋ</translation>
+<translation id="7124556000457919678">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਰੋਕੋ ਅਤੇ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7126996685418858413">ਪਿਛਲੇ ਹਫ਼ਤੇ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7130207228079676353">ਸਭ ਤੋਂ ਵੱਧ ਸੰਭਾਵੀ ਐਪਾਂ</translation>
 <translation id="7131634465328662194">ਤੁਹਾਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
@@ -1852,6 +1856,7 @@
 <translation id="7198435252016571249">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7219573373513695352">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ</translation>
 <translation id="7229029500464092426">ਮੈਮੋਰੀ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ਕੁੱਲ</translation>
+<translation id="7239814253344511868">ਦੋਵੇਂ ਮਾਊਸ ਬਟਨ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ਇਸ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਵਿੱਚ 1 ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2153,6 +2158,7 @@
 <translation id="8203224998425013577">ਹੋਰ ਇਮੋਜੀ ਅਤੇ GIF ਦਿਖਾਓ</translation>
 <translation id="8203795194971602413">ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="8205469348819768313">ਕੀ Page Down ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
+<translation id="8213376797713070611">ਖੱਬਾ ਮਾਊਸ ਬਟਨ</translation>
 <translation id="8214996719228530800">Canary ਚੈਨਲ</translation>
 <translation id="8219451629189078428">ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਚਾਲੂ ਰਹਿਣ ਅਤੇ ਪਾਵਰ ਨਾਲ ਕਨੈਕਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਚਾਰਜਰ ਜਾਂ ਅਡਾਪਟਰ ਕੇਬਲਾਂ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਪਾਵਰ ਸਾਕੇਟ ਦੋਵਾਂ ਵਿੱਚ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੱਗੀਆਂ ਹੋਈਆਂ ਹਨ। ਆਪਣੀ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -2378,6 +2384,7 @@
 <translation id="9034924485347205037">Linux ਫ਼ਾਈਲਾਂ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="9050012935252397793">ਬਲੂਟੁੱਥ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="9050999376345823055">ਛੱਡਣ ਲਈ "." ਦਬਾਓ</translation>
 <translation id="906458777597946297">window ਨੂੰ ਅਧਿਕਤਮ ਬਣਾਓ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="9070640332319875144">Assistant ਸੈਟਿੰਗਾਂ</translation>

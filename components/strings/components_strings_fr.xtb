@@ -1204,6 +1204,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
+<translation id="3162070126914310576">Impossible d'enregistrer cet appareil pour le moment, car votre unité organisationnelle a atteint sa limite d'enregistrements initiale. Contactez votre administrateur pour obtenir de l'aide.</translation>
 <translation id="3162559335345991374">Pour utiliser ce réseau Wi-Fi, il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
 <translation id="316638481603975524">Peut demander à installer des applis Web</translation>
 <translation id="3168744840365648658">Équipement radio</translation>
@@ -1937,6 +1938,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">L'importation du fichier vers Microsoft OneDrive a été suspendue</translation>
 <translation id="4390472908992056574">Brim</translation>
+<translation id="4395550503472021297">Cette règle contrôle le comportement par défaut des règles suivantes : <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Ouvre un pop-up pour effectuer la validation sur le site Web de votre banque</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
@@ -2379,6 +2381,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5244521145258281926">Bouton "Gérer le compte Google" à activer pour gérer vos infos, votre vie privée et votre sécurité dans votre compte Google</translation>
 <translation id="5244732203286792411">Chargement…
     Cela peut prendre une minute.</translation>
+<translation id="5248543496748975054">Le numéro de carte n'est pas renseigné ?</translation>
 <translation id="5250209940322997802">"Se connecter au réseau"</translation>
 <translation id="52517543715119994">En savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -3996,6 +3999,7 @@ Informations supplémentaires :
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="8118489163946903409">Mode de paiement</translation>
 <translation id="8118506371121007279">Ajouter un commentaire</translation>
+<translation id="8120720167840853945">Cette règle ne contrôle pas le comportement par défaut d'autres règles.</translation>
 <translation id="8127301229239896662">Le logiciel "<ph name="SOFTWARE_NAME" />" n'a pas été installé correctement sur votre ordinateur ou sur votre réseau. Demandez à l'administrateur informatique de résoudre le problème.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8133495915926741232">Sélectionnez les grandes catégories de thèmes à utiliser pour personnaliser les annonces. Si vous désactivez une catégorie plus grande, les thèmes associés seront aussi bloqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

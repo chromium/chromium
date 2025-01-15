@@ -831,6 +831,17 @@
 #define ABSL_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
+// Internal attribute; name and documentation TBD.
+//
+// See the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetime_capture_by
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::lifetime_capture_by)
+#define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(Owner) \
+  [[clang::lifetime_capture_by(Owner)]]
+#else
+#define ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(Owner)
+#endif
+
 // ABSL_ATTRIBUTE_VIEW indicates that a type is solely a "view" of data that it
 // points to, similarly to a span, string_view, or other non-owning reference
 // type.

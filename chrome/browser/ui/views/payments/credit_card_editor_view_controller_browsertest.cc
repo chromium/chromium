@@ -382,8 +382,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   NavigateTo("/payment_request_no_shipping_test.html");
   // Add expired card.
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  card.set_use_count(5U);
-  card.set_use_date(kJanuary2017);
+  card.usage_history().set_use_count(5U);
+  card.usage_history().set_use_date(kJanuary2017);
   card.SetExpirationMonth(1);
   card.SetExpirationYear(2017);
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -459,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(2017, credit_card->expiration_year());
   // It retains other properties.
   EXPECT_EQ(card.guid(), credit_card->guid());
-  EXPECT_EQ(5U, credit_card->use_count());
-  EXPECT_EQ(kJanuary2017, credit_card->use_date());
+  EXPECT_EQ(5U, credit_card->usage_history().use_count());
+  EXPECT_EQ(kJanuary2017, credit_card->usage_history().use_date());
   EXPECT_EQ(u"4111111111111111", credit_card->number());
   EXPECT_EQ(u"Test User",
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));

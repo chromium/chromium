@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Претраге у тренду</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2119636449201577317">Отвори у…</translation>
+<translation id="2120553909046681540">Организација је искључила приватно прегледање.</translation>
 <translation id="2122754583996902531">Прегледачем се управља. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="2147127444698817042">Доступно само на iPhone-у</translation>
@@ -337,6 +338,7 @@
 <translation id="2384692388811649784">Сакриј картице без архивирања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
+<translation id="2394659309569789395">Ипак отвори сајт</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
 <translation id="2410754283952462441">Изаберите налог</translation>
 <translation id="2424805048070062787">Наставите са овом картицом</translation>
@@ -991,6 +993,7 @@
 <translation id="5506763544823940561">Сачувај слику у…</translation>
 <translation id="5511959326926949696">Заштита за прегледач коју треба да користите само у крајњем случају. Треба да је користите само ако сматрате да сте можда циљани веома софистицираним сајбер нападом.</translation>
 <translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
+<translation id="5520668942302483373">Изађи из групе</translation>
 <translation id="5524590039848017563">Скупљено дугме примарне траке с алаткама</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}few{{COUNT} слабе лозинке}other{{COUNT} слабих лозинки}}</translation>
 <translation id="5532545557415295622">Дијалог за временско ограничење за неактивност</translation>
@@ -1030,6 +1033,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5646284034397250191">Ознака је направљена. Датум је на чекању</translation>
 <translation id="5647096944343801045">Велика улазна тачка</translation>
 <translation id="5647193778876139879">Додирните и задржите адресу.</translation>
+<translation id="5647702255748985085">Желите да напустите групу?</translation>
 <translation id="5648166631817621825">Последњих 7 дана</translation>
 <translation id="5652623411397330904">Производи које пратите ће се приказивати овде.</translation>
 <translation id="5657156137487675418">Дозволи све колачиће</translation>

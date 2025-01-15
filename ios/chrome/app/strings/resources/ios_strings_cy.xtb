@@ -769,7 +769,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4495516234578759322">Dod o hyd i'r un eitem nesaf</translation>
 <translation id="4502423230170890588">Tynnu o'r ddyfais hon</translation>
 <translation id="4508750114462689118">Cau'r anogwr mewngofnodi</translation>
-<translation id="4517684186578051919">Device Information</translation>
+<translation id="4517684186578051919">Gwybodaeth am y Ddyfais</translation>
 <translation id="4520798012560649652">Dysgu rhagor am y modd Anhysbys</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} nod tudalen}zero{{count} nod tudalen}two{{count} nod tudalen}few{{count} nod tudalen}many{{count} nod tudalen}other{{count} nod tudalen}}</translation>
 <translation id="4525629404718770519">Dangos rhagolygon dolenni</translation>
@@ -991,6 +991,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5506763544823940561">Cadw'r llun yn…</translation>
 <translation id="5511959326926949696">Amddiffyniad dewisol eithafol ar gyfer eich porwr. Dim ond os credwch y gallech gael eich targedu gan ymosodiad seiber hynod soffistigedig y dylid ei ddefnyddio.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> a yn ôl</translation>
+<translation id="5520668942302483373">Gadael y grŵp</translation>
 <translation id="5524590039848017563">Botwm y prif far offer wedi'i grebachu</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} cyfrinair gwan}zero{{COUNT} cyfrinair gwan}two{{COUNT} gyfrinair gwan}few{{COUNT} cyfrinair gwan}many{{COUNT} cyfrinair gwan}other{{COUNT} cyfrinair gwan}}</translation>
 <translation id="5532545557415295622">Deialog terfyn amser segur</translation>
@@ -1030,6 +1031,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5646284034397250191">Label wedi'i greu. Wrthi'n aros am ddyddiad.</translation>
 <translation id="5647096944343801045">Pwynt mynediad mawr</translation>
 <translation id="5647193778876139879">Pwyso a dal cyfeiriad.</translation>
+<translation id="5647702255748985085">Gadael y grŵp?</translation>
 <translation id="5648166631817621825">Saith diwrnod diwethaf</translation>
 <translation id="5652623411397330904">Bydd y cynhyrchion rydych yn eu holrhain yn ymddangos yma.</translation>
 <translation id="5657156137487675418">Caniatáu'r holl gwcis</translation>

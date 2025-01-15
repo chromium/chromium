@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
   AddAutofillProfile(shipping_address1);
   autofill::AutofillProfile shipping_address2 =
       autofill::test::GetFullProfile2();
-  shipping_address2.set_use_count(2000);
+  shipping_address2.usage_history().set_use_count(2000);
   AddAutofillProfile(shipping_address2);
 
   // Complete the Payment Request.
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateTo("/payment_request_retry_with_payer_errors.html");
 
   autofill::AutofillProfile contact = autofill::test::GetFullProfile();
-  contact.set_use_count(1000);
+  contact.usage_history().set_use_count(1000);
   AddAutofillProfile(contact);
 
   autofill::AutofillProfile contact2 = autofill::test::GetFullProfile2();

@@ -86,6 +86,7 @@ static_library("search_engines") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/regional_capabilities",
     "//components/search_provider_logos:switches",
     "//components/signin/public/base",
     "//components/strings",
@@ -185,6 +186,8 @@ static_library("test_support") {
     "//components/metrics:metrics_pref_names",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
@@ -221,6 +224,7 @@ source_set("unit_tests") {
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/regional_capabilities",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/variations:test_support",
@@ -256,10 +260,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/template_url_service_android_unittest.cc" ]
-    deps += [
-      "//components/search_engines/android:jni_headers",
-      "//components/search_engines/android:test_utils_jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
 }
 

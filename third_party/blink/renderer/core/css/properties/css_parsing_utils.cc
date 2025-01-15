@@ -6862,8 +6862,15 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
         switch (end_point_origin) {
           case CSSValueID::kTo:
             end_point =
-                ConsumePositionComponent(args, context, UnitlessQuirk::kForbid,
-                                         horizontal_edge, vertical_edge);
+                command_type == CSSValueID::kHline
+                    ? ConsumeIdent<CSSValueID::kXStart, CSSValueID::kXEnd>(args)
+                    : ConsumeIdent<CSSValueID::kYStart, CSSValueID::kYEnd>(
+                          args);
+            if (!end_point) {
+              end_point = ConsumePositionComponent(
+                  args, context, UnitlessQuirk::kForbid, horizontal_edge,
+                  vertical_edge);
+            }
             break;
           case CSSValueID::kBy:
             end_point = ConsumeLengthOrPercent(
@@ -6982,27 +6989,20 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
       // arc [[<by-to> <coordinate-pair>] || [of <length-percentage>{1,2}] ||
       // <arc-sweep>? || <arc-size>?|| rotate <angle>? ]
       case CSSValueID::kArc: {
+        const CSSValuePair* end_point =
+            ConsumeShapeCommandEndPoint(args, context, end_point_origin);
+        if (!end_point) {
+          return nullptr;
+        }
+
         CSSValueID sweep = CSSValueID::kInvalid;
         CSSValueID size = CSSValueID::kInvalid;
 
-        const CSSValuePair* end_point = nullptr;
         const CSSValuePair* radius = nullptr;
         const CSSPrimitiveValue* angle = nullptr;
         while (!args.AtEnd() && args.Peek().GetType() != kCommaToken) {
           CSSValueID next_id = args.Peek().Id();
           switch (next_id) {
-            case CSSValueID::kTo:
-            case CSSValueID::kBy: {
-              if (end_point) {
-                return nullptr;
-              }
-              end_point =
-                  ConsumeShapeCommandEndPoint(args, context, end_point_origin);
-              if (!end_point) {
-                return nullptr;
-              }
-              break;
-            }
             case CSSValueID::kOf: {
               if (radius) {
                 return nullptr;
@@ -7062,7 +7062,7 @@ cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
           }
         }
 
-        if (!end_point || !radius) {
+        if (!radius) {
           return nullptr;
         }
 

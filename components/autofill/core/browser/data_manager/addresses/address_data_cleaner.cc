@@ -321,7 +321,8 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
   // pointers in `profiles`.
   std::vector<std::string> guids_to_delete;
   for (const AutofillProfile* profile : profiles) {
-    if (IsAutofillEntryWithUseDateDeletable(profile->use_date())) {
+    if (IsAutofillEntryWithUseDateDeletable(
+            profile->usage_history().use_date())) {
       guids_to_delete.push_back(profile->guid());
     }
   }

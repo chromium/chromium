@@ -340,7 +340,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2571834852878229351">Opret selv</translation>
 <translation id="2574249610672786438">Log ind på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />" og kan ikke længere interagere med dig i Google-tjenester.</translation>
-<translation id="2578337197553672982">Google-indhold til børn og unge</translation>
 <translation id="2579297619530305344">Adgangskoder på alle dine enheder er åbnet i fuld højde</translation>
 <translation id="2581165646603367611">Dette rydder cookies, cache og andre data fra websites, som ikke er vigtige ifølge Chrome.</translation>
 <translation id="2587052924345400782">Der findes en nyere version</translation>
@@ -734,6 +733,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
 <translation id="4425173294238317796">Felt til bekræftelse af adgangsnøgle</translation>
 <translation id="442518031075347249">Du vil ikke længere kunne bruge dit virtuelle kort med Google Pay. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
@@ -806,7 +806,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4742795653798179840">Chrome-dataene er slettet</translation>
 <translation id="4742970037960872810">Fjern fremhævning</translation>
 <translation id="4749960740855309258">Åbn en ny fane</translation>
-<translation id="4750356170202299988">Indhold til børn og unge</translation>
 <translation id="4758061975920522644">Del kun billede</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bør ændre adgangskoden med det samme}one{Du bør ændre adgangskoden med det samme}other{Du bør ændre adgangskoderne med det samme}}</translation>
 <translation id="7196215469483532480">Beskrivelsen af Privatlivsguide er åbnet i fuld højde</translation>
-<translation id="7205672015775254816">Google-indhold til børn og unge – fra</translation>
 <translation id="7207760545532569765">Gendan <ph name="TAB_COUNT" /> faner som nye baggrundsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner låses, når du lukker Chrome</translation>
 <translation id="7221869452894271364">Genindlæs denne side</translation>
@@ -1533,7 +1531,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7876243839304621966">Fjern alt</translation>
 <translation id="7886917304091689118">Kører i Chrome</translation>
 <translation id="7887174313503389866">Få en rundvisning i vigtige privatlivs- og sikkerhedsindstillinger. Gå til de individuelle indstillinger for at se flere valgmuligheder.</translation>
-<translation id="7896724475402191389">Indhold til børn og unge – fra</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 er blokeret af din organisation}one{# er blokeret af din organisation}other{# er blokeret af din organisation}}</translation>
 <translation id="7914399737746719723">Appen blev installeret</translation>
@@ -1647,6 +1644,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8378850197701296741">Du har bogmærker, historik og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verificer din identitet</translation>
 <translation id="8393700583063109961">Send en besked</translation>
+<translation id="8396098434728053815">Del også fanelyd</translation>
 <translation id="8398389123831319859">Tryk to gange, og hold fingeren nede for at skifte til Inkognito</translation>
 <translation id="8402673309244746971">Gå til Følger</translation>
 <translation id="8413126021676339697">Vis hele historikken</translation>

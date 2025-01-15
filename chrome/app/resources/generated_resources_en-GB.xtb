@@ -320,7 +320,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1210678701920254279">View or add printers and see active print jobs</translation>
 <translation id="1211769675100312947">Shortcuts are curated by you</translation>
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
-<translation id="1214004433265298541">Certificate provided by your administrator who can view credentials for <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">New background app added</translation>
 <translation id="1216542092748365687">Remove fingerprint</translation>
 <translation id="1216891999012841486">Learn more about fixing update errors</translation>
@@ -3097,6 +3096,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3159978855457658359">Edit device name</translation>
 <translation id="3160928651883997588">VPN preferences</translation>
 <translation id="3161522574479303604">All languages</translation>
+<translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3162766632262775911">Always allowed to use the V8 optimiser</translation>
 <translation id="3162853326462195145">School account</translation>
 <translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
@@ -9070,6 +9070,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="746861123368584540">Extension loaded</translation>
 <translation id="7469612367552312334">On • Use everyday language to search your browsing history and find sites that you visited</translation>
 <translation id="7470131554696493512">Block Thunderbolt or USB4 accessories from accessing and sharing memory (RAM)</translation>
+<translation id="7470284766345262333">This account isn't associated with Google so features such as Chrome sync are unavailable</translation>
 <translation id="7470424110735398630">Allowed to see your clipboard</translation>
 <translation id="747114903913869239">Error: Unable to decode extension</translation>
 <translation id="7471520329163184433">Slower</translation>

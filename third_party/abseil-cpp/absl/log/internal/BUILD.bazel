@@ -23,7 +23,7 @@ load(
 
 package(
     default_visibility = [
-        "//absl/log:__pkg__",
+        ":internal_users",
     ],
     features = [
         "header_modules",
@@ -33,6 +33,13 @@ package(
 )
 
 licenses(["notice"])
+
+package_group(
+    name = "internal_users",
+    packages = [
+        "//absl/log",
+    ],
+)
 
 package_group(
     name = "structured_proto_users",
@@ -183,6 +190,7 @@ cc_library(
         ":log_sink_set",
         ":nullguard",
         ":proto",
+        ":structured_proto",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -287,10 +295,16 @@ cc_library(
     hdrs = ["structured.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        ":internal_users",
+        ":structured_proto_users",
+    ],
     deps = [
         ":log_message",
+        ":structured_proto",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/functional:any_invocable",
         "//absl/strings",
     ],
 )
@@ -342,7 +356,7 @@ cc_library(
         "//absl/strings",
         "//absl/time",
     ] + select({
-        "//absl:msvc_compiler": [],
+        "@rules_cc//cc/compiler:msvc-cl": [],
         "//conditions:default": [
         ],
     }),
@@ -355,6 +369,10 @@ cc_library(
     hdrs = ["test_helpers.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        ":internal_users",
+        ":structured_proto_users",
+    ],
     deps = [
         ":globals",
         "//absl/base:config",
@@ -372,6 +390,10 @@ cc_library(
     hdrs = ["test_matchers.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        ":internal_users",
+        ":structured_proto_users",
+    ],
     deps = [
         ":test_helpers",
         "//absl/base:config",
@@ -382,7 +404,7 @@ cc_library(
         "//absl/time",
         "@googletest//:gtest",
     ] + select({
-        "//absl:msvc_compiler": [],
+        "@rules_cc//cc/compiler:msvc-cl": [],
         "//conditions:default": [
         ],
     }),
@@ -402,6 +424,10 @@ cc_library(
     hdrs = ["proto.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        ":internal_users",
+        ":structured_proto_users",
+    ],
     deps = [
         "//absl/base",
         "//absl/base:config",

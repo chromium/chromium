@@ -7700,6 +7700,7 @@ test("unit_tests") {
       "../browser/ui/views/passwords/password_bubble_view_test_base.cc",
       "../browser/ui/views/passwords/password_bubble_view_test_base.h",
       "../browser/ui/views/passwords/password_change/failed_password_change_view_unittest.cc",
+      "../browser/ui/views/passwords/password_change/no_password_change_form_view_unittest.cc",
       "../browser/ui/views/passwords/password_change/password_change_info_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/password_change/privacy_notice_view_unittest.cc",
       "../browser/ui/views/passwords/password_change/successful_password_change_view_unittest.cc",

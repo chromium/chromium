@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "components/constrained_window/constrained_window_views.h"

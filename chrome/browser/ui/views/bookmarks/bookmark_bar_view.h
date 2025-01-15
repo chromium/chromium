@@ -38,13 +38,13 @@
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
+class BookmarkMergedSurfaceService;
 struct BookmarkParentFolder;
 class Browser;
 class BrowserView;
 class Profile;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
@@ -67,9 +67,10 @@ class MenuItemView;
 class LabelButton;
 }  // namespace views
 
-// BookmarkBarView renders the BookmarkModel.  Each starred entry on the
-// BookmarkBar is rendered as a MenuButton. An additional MenuButton aligned to
-// the right allows the user to quickly see recently starred entries.
+// BookmarkBarView renders the `BookmarkMergedSurfaceService`.  Each starred
+// entry on the BookmarkBar is rendered as a MenuButton. An additional
+// MenuButton aligned to the right allows the user to quickly see recently
+// starred entries.
 //
 // BookmarkBarView shows the bookmarks from a specific Profile. BookmarkBarView
 // waits until the HistoryService for the profile has been loaded before
@@ -318,8 +319,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
-  bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* parent,
-                             size_t index);
+  bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* node);
 
   // Implementation for BookmarkNodeRemoved. Returns true if LayoutAndPaint() is
   // required.
@@ -389,13 +389,13 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
   size_t GetIndexForButton(views::View* button);
 
-  // Returns the target drop BookmarkNode parent pointer and updates `index`
-  // with the right value.
-  const bookmarks::BookmarkNode* GetParentNodeAndIndexForDrop(size_t& index);
+  // Returns the target drop `BookmarkParentFolder` and updates `index` with the
+  // right value.
+  BookmarkParentFolder GetParentFolderAndIndexForDrop(size_t& index);
 
   // Drops Bookmark `data` and updates `output_drag_op` accordingly.
   void PerformDrop(const bookmarks::BookmarkNodeData data,
-                   const bookmarks::BookmarkNode* parent_node,
+                   const BookmarkParentFolder& parent_folder,
                    const size_t index,
                    const bool copy,
                    const ui::DropTargetEvent& event,
@@ -414,9 +414,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
 
-  // BookmarkModel that owns the entries and folders that are shown in this
-  // view. This is owned by the Profile.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+  // `BookmarkMergedSurfaceService` that manages the entries and folders that
+  // are shown in this view. This is owned by the Profile.
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_service_ = nullptr;
 
   // ManagedBookmarkService. This is owned by the Profile.
   raw_ptr<bookmarks::ManagedBookmarkService> managed_ = nullptr;

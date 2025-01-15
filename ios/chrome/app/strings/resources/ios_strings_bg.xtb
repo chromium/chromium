@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Набиращи популярност търсения</translation>
 <translation id="21133533946938348">Фиксиране на раздела</translation>
 <translation id="2119636449201577317">Отваряне във…</translation>
+<translation id="2120553909046681540">Организацията ви е изключила режима за частно сърфиране.</translation>
 <translation id="2122754583996902531">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="2147127444698817042">Налице само за iPhone</translation>
@@ -337,6 +338,7 @@
 <translation id="2384692388811649784">Скриване на разделите в режим „инкогнито“</translation>
 <translation id="2386793615875593361">1 избрана</translation>
 <translation id="2390457533592708044">Скриване на „<ph name="MODULE_NAME" />“</translation>
+<translation id="2394659309569789395">Отваряне на сайта въпреки това</translation>
 <translation id="2403129868389095715">Пратката ви не може да бъде доставена</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
 <translation id="2424805048070062787">Продължаване с този раздел</translation>
@@ -991,6 +993,7 @@
 <translation id="5506763544823940561">Запазване на изображението във…</translation>
 <translation id="5511959326926949696">Изключителна защита за браузъра ви, която можете да използвате по избор. Възползвайте се от нея само ако смятате, че може да сте обект на добре обмислена кибератака.</translation>
 <translation id="5513681519188741830">Преди <ph name="TIME" /> ч</translation>
+<translation id="5520668942302483373">Напускане на групата</translation>
 <translation id="5524590039848017563">Свит бутон в основната лента с инструменти</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
 <translation id="5532545557415295622">Диалогов прозорец за времето за изчакване при неактивност</translation>
@@ -1030,6 +1033,7 @@
 <translation id="5646284034397250191">Създаден бе етикет. Предстои добавяне на дата</translation>
 <translation id="5647096944343801045">Голяма входна точка</translation>
 <translation id="5647193778876139879">Докоснете и задръжте адрес.</translation>
+<translation id="5647702255748985085">Искате ли да напуснете групата?</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5652623411397330904">Продуктите, които следите, ще се показват тук.</translation>
 <translation id="5657156137487675418">Разрешаване на всички „бисквитки“</translation>
@@ -1151,6 +1155,7 @@
 <translation id="6160780110287872296">Да се изтегли ли файлът?</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6168647875670665004">Предложения за статии</translation>
+<translation id="6169031022444660352">За да изтриете всички запазени идентификационни данни, първо трябва да зададете код за достъп на устройството си.</translation>
 <translation id="6173499589275053515">Паролата е запазена в профила ви в Google <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Създадено на <ph name="DATE" /></translation>
@@ -1202,6 +1207,7 @@
 <translation id="6355820205320395730">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Изберете търсеща машина от списъка.</translation>
+<translation id="6368102751067608420">За да изтриете всички данни в Мениджър на пароли</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6387994324662817823">Паролите се запазват в мениджъра на паролите в Google само на това устройство.</translation>
 <translation id="6404422529625928907">Отваряне в Google Диск</translation>

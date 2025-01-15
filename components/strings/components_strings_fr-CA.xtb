@@ -701,6 +701,7 @@
 <translation id="2215539479425228550">Escalade et alpinisme</translation>
 <translation id="2215727959747642672">Modification des fichiers</translation>
 <translation id="2215963164070968490">Chiens</translation>
+<translation id="2219376942605837404">Ajouter un onglet au tableau de comparaison</translation>
 <translation id="2219658597883514593">Redémarrer le tutoriel</translation>
 <translation id="2219735899272417925">Réinitialisation de l'appareil requise</translation>
 <translation id="2221227930294879156">Événements liés à l'alimentation et aux boissons</translation>
@@ -1151,6 +1152,7 @@
 <translation id="306573536155379004">Jeu démarré.</translation>
 <translation id="3067505415088964188">Le prix est bas</translation>
 <translation id="3068118691172921711">Le téléversement de votre fichier vers <ph name="CLOUD_PROVIDER" /> commencera dans une minute</translation>
+<translation id="3068976060094139647">Vous pouvez remplir automatiquement cette carte, car votre compte est associé à Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} élément}one{{ITEMS} élément}other{{ITEMS} éléments}}</translation>
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Images</translation>
@@ -1204,6 +1206,7 @@
 <translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158539265159265653">Disque</translation>
+<translation id="3162070126914310576">Cet appareil ne peut pas être inscrit pour le moment, car votre unité organisationnelle a atteint sa limite d'inscription initiale. Communiquez avec votre administrateur pour obtenir de l'aide.</translation>
 <translation id="3162559335345991374">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
 <translation id="316638481603975524">Peut demander d'installer des applis Web</translation>
 <translation id="3168744840365648658">Équipement radio</translation>
@@ -1785,6 +1788,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4151403195736952345">Paramètres par défaut (Détecter)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome va maintenant vérifier qu'il s'agit bien de vous avant de renseigner les modes de paiement. Vous pouvez le mettre à jour à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Ajouter un onglet au tableau de comparaison</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -2380,6 +2384,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5244521145258281926">Bouton Gérer le compte Google, activez-le pour gérer vos informations, votre confidentialité et votre sécurité dans votre compte Google</translation>
 <translation id="5244732203286792411">Chargement en cours…
     Cette opération peut prendre une minute.</translation>
+<translation id="5248543496748975054">Le champs du numéro de carte n'a pas été rempli?</translation>
 <translation id="5250209940322997802">« Se connecter au réseau »</translation>
 <translation id="52517543715119994">En savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="5251803541071282808">Politique provenant du nuage</translation>
@@ -3390,6 +3395,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="706960991003274248">Les tableaux de comparaison sont enregistrés dans votre compte <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">paramètres système</translation>
 <translation id="70705239631109039">Votre connexion n'est pas parfaitement sécurisée</translation>
+<translation id="7071122206197538392">Nouveau tableau de comparaison</translation>
 <translation id="7075452647191940183">La taille de la requête est trop grande</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4100,6 +4106,7 @@ Détails supplémentaires :
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Entrer le code</translation>
 <translation id="8303854710873047864">Section « <ph name="SECTION" /> » affichée</translation>
+<translation id="8304912090860925649">Nouveau tableau de comparaison</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Diffusion en direct de vidéos</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>

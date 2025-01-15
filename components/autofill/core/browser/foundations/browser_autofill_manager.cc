@@ -68,12 +68,12 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/data_model/transliterator.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -1975,7 +1975,7 @@ void BrowserAutofillManager::DidShowSuggestions(
               .GetProfileByGUID(profile_used_payload.guid.value());
 
       profile_last_used_time_per_guid[profile_used_payload.guid.value()] =
-          now - profile_used->use_date();
+          now - profile_used->usage_history().use_date();
       field_types_used.insert(*suggestion.field_by_field_filling_type_used);
     }
     metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(

@@ -26,11 +26,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // In MI state, shipping is $5.00.
   autofill::AutofillProfile michigan = autofill::test::GetFullProfile2();
-  michigan.set_use_count(100U);
+  michigan.usage_history().set_use_count(100U);
   AddAutofillProfile(michigan);
   // In CA state, there is free shipping.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.set_use_count(50U);
+  california.usage_history().set_use_count(50U);
   AddAutofillProfile(california);
 
   InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
@@ -76,11 +76,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // In MI state, shipping is $5.00.
   autofill::AutofillProfile michigan = autofill::test::GetFullProfile2();
-  michigan.set_use_count(100U);
+  michigan.usage_history().set_use_count(100U);
   AddAutofillProfile(michigan);
   // In CA state, there is free shipping.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.set_use_count(50U);
+  california.usage_history().set_use_count(50U);
   AddAutofillProfile(california);
 
   InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +

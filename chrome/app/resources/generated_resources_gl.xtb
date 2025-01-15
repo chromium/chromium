@@ -320,7 +320,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1210678701920254279">Mira ou engade impresoras e consulta os traballos de impresión activos</translation>
 <translation id="1211769675100312947">Ti seleccionas os atallos</translation>
 <translation id="1213254615020057352">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario, o cal pode optar por enviarlle a Google datos de diagnóstico e uso deste dispositivo. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google</translation>
-<translation id="1214004433265298541">Certificado fornecido polo teu administrador, que pode ver as credenciais de <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Engadiuse unha nova aplicación en segundo plano</translation>
 <translation id="1216542092748365687">Quitar impresión dixital</translation>
 <translation id="1216891999012841486">Máis información sobre a solución de erros de actualización</translation>
@@ -792,6 +791,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quere acceder a <ph name="VOLUME_NAME" />. É posible que modifique ou elimine os teus ficheiros.</translation>
 <translation id="1549966883323105187">Accede aos contrasinais gardados máis rápido</translation>
 <translation id="1550656959113606473">Tema predeterminado de Chrome</translation>
+<translation id="1552065819535218588">Chrome deixará de marcar como spam as notificacións de <ph name="URL" /></translation>
 <translation id="1552301827267621511">A extensión <ph name="EXTENSION_NAME" /> cambiou o provedor de busca para que se utilice <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Xestionar extensión</translation>
 <translation id="1553538517812678578">ilimitado</translation>
@@ -3082,6 +3082,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3159978855457658359">Editar nome do dispositivo</translation>
 <translation id="3160928651883997588">Preferencias da VPN</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="3162070126914310576">Non se pode inscribir este dispositivo neste momento porque a unidade da túa organización chegou ao límite de inscrición inicial. Se necesitas axuda, fala coa persoa administradora.</translation>
 <translation id="3162766632262775911">Permiso concedido para usar sempre o optimizador de V8</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
 <translation id="3162899666601560689">Os sitios poden utilizar cookies para mellorar a túa experiencia de navegación a través de funcións como manter a sesión iniciada ou lembrar artigos da túa cesta da compra</translation>
@@ -9054,6 +9055,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="746861123368584540">Cargouse a extensión</translation>
 <translation id="7469612367552312334">Activado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>
 <translation id="7470131554696493512">Impedir que accesorios USB4 ou Thunderbolt accedan á memoria (RAM) e a compartan</translation>
+<translation id="7470284766345262333">Esta conta non está asociada a Google, polo que non están dispoñibles funcións como Sincronización de Chrome</translation>
 <translation id="7470424110735398630">Permiso concedido para consultar o portapapeis</translation>
 <translation id="747114903913869239">Erro: non se puido descodificar a extensión</translation>
 <translation id="7471520329163184433">Máis lento</translation>

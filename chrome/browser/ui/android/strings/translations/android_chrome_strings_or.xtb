@@ -340,7 +340,6 @@
 <translation id="2571834852878229351">ନିଜର ପାସୱାର୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2574249610672786438">ଆପଣ Chrome ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ତୁରନ୍ତ “<ph name="GROUP_NAME" />” ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ସମଗ୍ର Google ସେବାରେ ଆପଣଙ୍କ ସହ ଇଣ୍ଟରାକ୍ଟ କରିବାକୁ ଆଉ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
-<translation id="2578337197553672982">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ Googleର ବିଷୟବସ୍ତୁ</translation>
 <translation id="2579297619530305344">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂର୍ଣ୍ଣ ଉଚ୍ଚତାରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="2581165646603367611">ଏହାଦ୍ୱାରା Chrome ମହତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ଭାବୁନଥିବା, କୁକିସ୍, କ୍ୟାଶ୍ ଏବଂ ସାଇଟ୍‌ର ଅନ୍ୟାନ୍ୟ ଡାଟାଗୁଡ଼ିକ ଖାଲି ହୋଇଯିବ।</translation>
 <translation id="2587052924345400782">ନୂତନତର ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି</translation>
@@ -734,6 +733,7 @@
 <translation id="4425140285732600465">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି। ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ।</translation>
 <translation id="4425173294238317796">ପାସକୀ ସୁନିଶ୍ଚିତକରଣ ସିଟ</translation>
 <translation id="442518031075347249">ଆପଣ Google Pay ମାଧ୍ୟମରେ ଆପଣଙ୍କ ଭର୍ଚୁଆଲ କାର୍ଡ ବ୍ୟବହାର କରିବାକୁ ଆଉ ସକ୍ଷମ ହେବେ ନାହିଁ। <ph name="BEGIN_LINK1" />ଭର୍ଚୁଆଲ କାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">ସମସ୍ତ ବୁକମାର୍କ</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" />କୁ ବର୍ତ୍ତମାନ ଚୟନ କରାଯାଇଛି। ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" />ଟ୍ୟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />ରେ ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
@@ -806,7 +806,6 @@
 <translation id="4742795653798179840">ଡିଲିଟ କରାଯାଇଥିବା Chrome ଡାଟା</translation>
 <translation id="4742970037960872810">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4749960740855309258">ଏକ ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
-<translation id="4750356170202299988">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ</translation>
 <translation id="4758061975920522644">କେବଳ ଛବି ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
 <translation id="4763480195061959176">ଭିଡିଓ</translation>
@@ -1378,7 +1377,6 @@
 <translation id="7191430249889272776">ପୃଷ୍ଠପଟରେ ଟାବ୍‌ ଖୋଲାଅଛି।</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ଆପଣ ବର୍ତ୍ତମାନ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ଉଚିତ}other{ଆପଣ ବର୍ତ୍ତମାନ ଏଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିବା ଉଚିତ}}</translation>
 <translation id="7196215469483532480">ଗୋପନୀୟତା ଗାଇଡର ବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
-<translation id="7205672015775254816">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ Googleର ବିଷୟବସ୍ତୁ - ବନ୍ଦ ଅଛି</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" />ଟି ଟାବକୁ ନୂଆ ପୃଷ୍ଠପଟ ଟାବଗୁଡ଼ିକ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="7217781228893594884">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକ ଲକ ହୋଇଯିବ</translation>
 <translation id="7221869452894271364">ଏହି ପୃଷ୍ଠାଟି ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1533,7 +1531,6 @@
 <translation id="7876243839304621966">ସବୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7886917304091689118">Chromeରେ ଚାଲୁଛି</translation>
 <translation id="7887174313503389866">ମୁଖ୍ୟ ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ। ଅଧିକ ବିକଳ୍ପ ପାଇଁ, ବ୍ୟକ୍ତିଗତ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
-<translation id="7896724475402191389">ଛୋଟ ପିଲାମାନଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ - ବନ୍ଦ ଅଛି</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା 1 ବ୍ଲକ କରାଯାଇଛି}other{ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା # ବ୍ଲକ କରାଯାଇଛି}}</translation>
 <translation id="7914399737746719723">ଆପ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
@@ -1647,6 +1644,7 @@
 <translation id="8378850197701296741">ଆପଣଙ୍କ ପାଖରେ <ph name="FROM_ACCOUNT" />ର ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଅନ୍ୟ ସେଟିଂସ ଅଛି।</translation>
 <translation id="8387617938027387193">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8393700583063109961">ମେସେଜ୍‌ ପଠାନ୍ତୁ</translation>
+<translation id="8396098434728053815">ଟାବ ଅଡିଓ ମଧ୍ୟ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8398389123831319859">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରିବା ପାଇଁ ଦୁଇଥର ଟାପ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="8402673309244746971">ନିମ୍ନୋକ୍ତ ଫିଡକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8413126021676339697">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>

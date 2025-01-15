@@ -340,7 +340,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2571834852878229351">Sortu neurea</translation>
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) erabiltzaileak berehala galduko du "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta aurrerantzean ezingo du jardun interakzioan zurekin Google-ren zerbitzuetan.</translation>
-<translation id="2578337197553672982">Gazteentzako edukia, Google-ren eskutik</translation>
 <translation id="2579297619530305344">"Pasahitzak gailu guztietan" leihoa altuera osoan irekita dago</translation>
 <translation id="2581165646603367611">Chrome-k garrantzi gabekotzat jotzen dituen cookieak, cachea eta bestelako datuak ezabatuko dira.</translation>
 <translation id="2587052924345400782">Bertsio berriagoa dago</translation>
@@ -734,6 +733,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
 <translation id="4425173294238317796">Sarbide-gakoa berresteko orria</translation>
 <translation id="442518031075347249">Aurrerantzean, ezingo duzu erabili txartel birtuala Google Pay-rekin. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Laster-marka guztiak</translation>
 <translation id="4430277756566635951">Orain <ph name="EMAIL" /> dago hautatuta. Aukeratu kontu bat.</translation>
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
@@ -806,7 +806,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
 <translation id="4742970037960872810">Kendu nabarmentzea</translation>
 <translation id="4749960740855309258">Ireki beste fitxa bat</translation>
-<translation id="4750356170202299988">Gazteentzako edukia</translation>
 <translation id="4758061975920522644">Partekatu irudia soilik</translation>
 <translation id="4759238208242260848">Deskargak</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1378,7 +1377,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7191430249889272776">Atzeko planoan ireki da fitxa.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Berehala aldatzea gomendatzen dizugu}other{Berehala aldatzea gomendatzen dizugu}}</translation>
 <translation id="7196215469483532480">Pribatutasun-gidaren azalpena altuera osoan irekita dago</translation>
-<translation id="7205672015775254816">Gazteentzako edukia, Google-ren eskutik: desaktibatuta</translation>
 <translation id="7207760545532569765">Leheneratu <ph name="TAB_COUNT" /> fitxa atzeko planoko fitxa gisa.</translation>
 <translation id="7217781228893594884">Ezkutuko moduko fitxak blokeatu egingo dira Chrome-tik irteten zarenean</translation>
 <translation id="7221869452894271364">Kargatu berriro orri hau</translation>
@@ -1533,7 +1531,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7876243839304621966">Kendu guztiak</translation>
 <translation id="7886917304091689118">Chrome-n abian da</translation>
 <translation id="7887174313503389866">Egin pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenei buruzko txango gidatu bat. Aukera gehiago ikusteko, joan ezarpen bakoitzera.</translation>
-<translation id="7896724475402191389">Gazteentzako edukia: desaktibatuta</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 blokeatu du zure erakundeak}other{# blokeatu ditu zure erakundeak}}</translation>
 <translation id="7914399737746719723">Instalatu da aplikazioa</translation>
@@ -1647,6 +1644,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> kontuko laster-markak, historia eta beste ezarpen batzuk dituzu.</translation>
 <translation id="8387617938027387193">Egiaztatu zeu zarela</translation>
 <translation id="8393700583063109961">Bidali mezua</translation>
+<translation id="8396098434728053815">Partekatu fitxaren audioa ere</translation>
 <translation id="8398389123831319859">Ezkutuko modura aldatzeko, sakatu birritan eta eduki sakatuta hau</translation>
 <translation id="8402673309244746971">Joan hurrengora</translation>
 <translation id="8413126021676339697">Erakutsi historia osoa</translation>

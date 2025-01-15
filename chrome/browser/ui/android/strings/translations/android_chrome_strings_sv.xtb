@@ -340,7 +340,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2571834852878229351">Skapa ett eget</translation>
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och kan inte längre interagera med dig i Googles tjänster.</translation>
-<translation id="2578337197553672982">Innehåll från Google för unga</translation>
 <translation id="2579297619530305344">Lösenorden på alla dina enheter har öppnats över hela skärmen</translation>
 <translation id="2581165646603367611">Det här alternativet rensar cookies, cacheminnet och annan data från webbplatser som bedöms vara oviktiga.</translation>
 <translation id="2587052924345400782">Det finns en nyare version</translation>
@@ -735,6 +734,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="4425173294238317796">Bekräftelseark för nyckel</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
+<translation id="4426508677408162512">Alla bokmärken</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
@@ -807,7 +807,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
 <translation id="4749960740855309258">Öppna en ny flik</translation>
-<translation id="4750356170202299988">Innehåll för unga</translation>
 <translation id="4758061975920522644">Dela endast bild</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1379,7 +1378,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bör ändra detta nu}other{Du bör ändra dessa nu}}</translation>
 <translation id="7196215469483532480">Förklaringen till integritetsguiden har öppnats över hela skärmen</translation>
-<translation id="7205672015775254816">Innehåll från Google för unga – inaktiverat</translation>
 <translation id="7207760545532569765">Återställ <ph name="TAB_COUNT" /> flikar som nya flikar i bakgrunden.</translation>
 <translation id="7217781228893594884">Inkognitoflikar låses när du lämnar Chrome</translation>
 <translation id="7221869452894271364">Hämta sidan igen</translation>
@@ -1534,7 +1532,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7876243839304621966">Ta bort alla</translation>
 <translation id="7886917304091689118">Körs i Chrome</translation>
 <translation id="7887174313503389866">Få en guidad rundtur av viktiga integritets- och säkerhetskontroller. Öppna den enskilda inställningarna för att se fler alternativ.</translation>
-<translation id="7896724475402191389">Innehåll för unga – inaktiverat</translation>
 <translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 har blockerats av organisationen}other{# har blockerats av organisationen}}</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>
@@ -1648,6 +1645,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8378850197701296741">Du har bokmärken, historik och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
+<translation id="8396098434728053815">Dela även ljud från flikar</translation>
 <translation id="8398389123831319859">Tryck snabbt två gånger och håll kvar fingret för att byta till inkognito</translation>
 <translation id="8402673309244746971">Öppna Följer</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>

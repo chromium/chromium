@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{१ पासवर्ड}other{{COUNT} पासवर्ड}}</translation>
 <translation id="1102759278139578486">मुख्य नोड भाष्य फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">तुम्ही लगेच या टॅब गटाचा ॲक्सेस गमवाल आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="1106350001632362876">मर्यादा वाढवा</translation>
 <translation id="1107482171728500359">मायक्रोफोन शेअर करा</translation>
 <translation id="110850812463801904">OneDrive शी मॅन्युअली कनेक्ट करा</translation>
@@ -320,7 +321,6 @@
 <translation id="1210678701920254279">प्रिंटर पहा किंवा जोडा आणि अ‍ॅक्टिव्ह प्रिंट जॉब पहा</translation>
 <translation id="1211769675100312947">तुम्ही निवडलेले शॉर्टकट</translation>
 <translation id="1213254615020057352">वापर आणि निदान डेटा पाठवा. Google ला निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा आपोआप पाठवून तुमच्या मुलाच्या Android अनुभवात सुधारणा करण्यात मदत करा. हे तुमच्या मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टम व अ‍ॅप स्थिरता तसेच इतर सुधारणांमध्ये मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल. हे सेटिंग मालकाद्वारे लागू केले जाते. या डिव्हाइससाठी Google ला निदान आणि वापर डेटा पाठवणे मालकाला निवडता येते. तुमच्या मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा त्यांच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो.</translation>
-<translation id="1214004433265298541"><ph name="DOMAIN" /> साठी तुमच्या क्रेडेंशियल पाहू शकणाऱ्या अ‍ॅडमिनिस्ट्रेटरने सर्टिफिकेट दिले आहे</translation>
 <translation id="1215411991991485844">नवीन पार्श्वभूमी ॲप्लिकेशन जोडला</translation>
 <translation id="1216542092748365687">फिंगरप्रिंट काढा</translation>
 <translation id="1216891999012841486">अपडेटशी संबंधित एररचे निराकरण करण्याबद्दल अधिक जाणून घ्या</translation>
@@ -1702,6 +1702,7 @@
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
+<translation id="2175526076681939329">प्राथमिक की वापरा</translation>
 <translation id="217576141146192373">प्रिंटर जोडता आला नाही. कृपया तुमच्या प्रिंटरचे कॉन्फिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="217631816678106981">पेस्ट करू नका</translation>
@@ -3426,6 +3427,7 @@
 <translation id="3407392651057365886">अधिक पेज प्रीलोड केलेली आहेत. इतर साइटद्वारे विनंती केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
 <translation id="3407967630066378878">फिंगरप्रिंट सेट करण्यासाठी, तुमच्या लहान मुलाला या <ph name="DEVICE_TYPE" /> च्या डाव्या बाजूला असलेल्या फिंगरप्रिंट सेन्सरला स्पर्श करण्यास सांगा. तुमच्या लहान मुलाचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तो या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="3408555740610481810">कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
+<translation id="3409157109901479672">डावी बाजू</translation>
 <translation id="3409513286451883969">निवड <ph name="LANGUAGE" /> मध्ये भाषांतरित करा</translation>
 <translation id="3412265149091626468">निवड वर जा</translation>
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
@@ -4709,6 +4711,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> सदस्य</translation>
 <translation id="4290898381118933198">पेजदरम्यान नेव्हिगेट करण्यासाठी स्वाइप करा</translation>
 <translation id="4291265871880246274">लॉग इन डायलॉग</translation>
+<translation id="4292613336957320546">अ‍ॅक्सिलरेशन</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="4294392694389031609">डाउनलोड इतिहासामधून <ph name="FILE_NAME" /> हटवली, पण ती अजूनही तुमच्या डिव्हाइसवर आहे</translation>
 <translation id="4295072614469448764">तुमच्या टर्मिनलमध्ये अ‍ॅप उपलब्ध आहे. तुमच्या लाँचरमध्ये आयकन देखील असू शकतो.</translation>
@@ -5877,6 +5880,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="5139823398361067371">तुमच्या सिक्युरिटी कीचा पिन एंटर करा. तुम्हाला पिन माहीत नसल्यास, तुम्ही सिक्युरिटी की रीसेट करणे आवश्यक आहे.</translation>
 <translation id="5139955368427980650">&amp;उघडा</translation>
+<translation id="5140742218917419811">वापरण्यासाठी की</translation>
 <translation id="5141421572306659464">प्राथमिक खाते</translation>
 <translation id="5141957579434225843">उदाहरणार्थ, òa, òe, ùy ऐवजी oà, oè, uỳ वापरा</translation>
 <translation id="5143374789336132547">The extension "<ph name="EXTENSION_NAME" />" has changed what page is shown when you click the Home button.</translation>
@@ -5895,6 +5899,7 @@
 <translation id="5149602533174716626">व्हिडिओ फ्रेम कॉपी करा</translation>
 <translation id="5150254825601720210">Netscape सर्टिफिकेट SSL सर्व्हर नाव</translation>
 <translation id="5151354047782775295">डिस्क स्थान मोकळे करा किंवा निवडलेला डेटा स्वयंचलितपणे हटवला जाऊ शकतो</translation>
+<translation id="5153074793829217329">तुमच्या माउसचा कर्सर नियंत्रित करण्यासाठी तुमचा कीबोर्ड वापरा किंवा अंकीय कीपॅड वापरा</translation>
 <translation id="5153234146675181447">फोन विसरा</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> यासाठी प्रगत सेटिंग्ज</translation>
@@ -7990,6 +7995,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ला कॉंप्युटरजवळ बोलवा. तुमचे लहान मूल त्यांचे व्हॉइस मॉडेल तयार करण्यासाठी या स्क्रीनवरील काही वाक्ये वाचेल.
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> ला वाचताना मदत हवी असल्यास, तुमच्या लहान मुलाला तुमच्या पाठोपाठ म्हणायला सांगा. माइकपासून लांब हळू आवाजात बोला जेणेकरून, Assistant हे तुमच्या लहान मुलाचा आवाज ओळखायला शिकेल, तुमचा नाही.</translation>
+<translation id="6689948774466767379">माउस की</translation>
 <translation id="6690659332373509948">फाइल पार्स करता आली नाही: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;पुढील</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{एक पेज}other{{COUNT} पेज}}</translation>
@@ -10075,6 +10081,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8168435359814927499">आशय</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{वाचन सूचीवर टॅब जोडा}other{वाचन सूचीवर टॅब जोडा}}</translation>
 <translation id="8169177848833352618">दुर्दैवाने, हे मशीन Bruschetta इंस्टॉल करण्यासाठीच्या आवश्यकतांची पूर्तता करत नाही. एरर कोड <ph name="ERROR" /> आहे.</translation>
+<translation id="8172303073969862496">उजवी बाजू</translation>
 <translation id="8174047975335711832">डिव्हाइस माहिती</translation>
 <translation id="8176332201990304395">गुलाबी आणि पांढरा</translation>
 <translation id="8176529144855282213">मायक्रोफोनचा अ‍ॅक्सेस सुरू करण्यासाठी, तुमच्या डिव्हाइसवरील मायक्रोफोनचा प्रत्यक्ष स्विच सुरू करा</translation>
