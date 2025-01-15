@@ -169,7 +169,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kImeUsEnglishModelUpdate,
       &features::kImeFstDecoderParamsUpdate,
       &features::kAutocorrectByDefault,
-      &features::kAutocorrectUseReplaceSurroundingText,
       &features::kInputMethodKoreanRightAltKeyDownFix,
       &features::kImeSwitchCheckConnectionStatus};
 

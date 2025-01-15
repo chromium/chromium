@@ -977,17 +977,8 @@ void AutocorrectManager::UndoAutocorrect() {
     const uint32_t after =
         autocorrect_range.end() - surrounding_text.selection_range.end();
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutocorrectUseReplaceSurroundingText)) {
-      input_context->ReplaceSurroundingText(
-          before, after, pending_autocorrect_->original_text);
-    } else {
-      input_context->DeleteSurroundingText(before, after);
-      // Replace with the original text.
-      input_context->CommitText(
-          pending_autocorrect_->original_text,
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-    }
+    input_context->ReplaceSurroundingText(before, after,
+                                          pending_autocorrect_->original_text);
   }
 
   MeasureAndLogAssistiveAutocorrectQualityBreakdown(
