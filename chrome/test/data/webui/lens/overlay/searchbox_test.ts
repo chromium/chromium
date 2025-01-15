@@ -6,10 +6,10 @@ import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
+import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
-import {assertTrue, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -51,8 +51,11 @@ suite('Searchbox', () => {
     assertTrue(isVisible(lensOverlayElement.$.searchbox));
     lensOverlayElement.$.searchbox.$.input.value = 'hello';
 
-    // Simulate searchbox being focused
+    // Simulate searchbox being focused and the autocomplete request being
+    // started.
     lensOverlayElement.setSearchboxFocusForTesting(true);
+    document.dispatchEvent(new CustomEvent('query-autocomplete'));
+    await waitAfterNextRender(lensOverlayElement);
     assertTrue(isVisible(lensOverlayElement.$.searchboxGhostLoader));
 
     // Simulate escape being pressed from the searchbox with empty input.
