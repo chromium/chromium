@@ -1029,12 +1029,14 @@ TEST_F(AutofillProfileComparatorTest,
   AutofillProfile p1 = CreateProfileWithName(CreateNameInfo(
       u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと", u""));
   // The same phonetic name, but saved as alternative_full_name with separator.
-  AutofillProfile p2 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと・あおい"));
+  AutofillProfile p2 = CreateProfileWithName(
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと・あおい"));
   // The same phonetic name, but saved as alternative_full_name with white space
   // separator.
-  AutofillProfile p3 = CreateProfileWithName(CreateNameInfo(
-      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと あおい"));
+  AutofillProfile p3 = CreateProfileWithName(
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと あおい"));
 
   // Semantically the same profiles as `p2`, `p3`, `p4`, but using Katakana for
   // alternative name.
@@ -1046,7 +1048,11 @@ TEST_F(AutofillProfileComparatorTest,
       u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト アオイ"));
 
   MergeNamesAndExpect(
-      p1, p1_katakana,
+      p2, p1_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと・あおい"));
+  MergeNamesAndExpect(
+      p3, p1_katakana,
       CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
                      u"やまもと あおい"));
   MergeNamesAndExpect(
@@ -1054,17 +1060,29 @@ TEST_F(AutofillProfileComparatorTest,
       CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
                      u"やまもと・あおい"));
   MergeNamesAndExpect(
+      p3, p2_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと あおい"));
+  MergeNamesAndExpect(
+      p2, p3_katakana,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと・あおい"));
+  MergeNamesAndExpect(
       p3, p3_katakana,
       CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
                      u"やまもと あおい"));
 
-  // This scenario is not possible in real life(since everything is converted to
-  // Hiragana for storage), but it's worth testing to ensure that the merge
-  // result is correct.
+  // As long as the values in profile are semantically correct, it doesn't
+  // matter what it the result of merging since db will do the transliteration
+  // on save.
   MergeNamesAndExpect(
-      p1_katakana, p3_katakana,
+      p1, p1_katakana,
       CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト",
                      u"ヤマモト アオイ"));
+  MergeNamesAndExpect(
+      p1_katakana, p1,
+      CreateNameInfo(u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと",
+                     u"やまもと あおい"));
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {

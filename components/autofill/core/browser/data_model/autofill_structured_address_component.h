@@ -173,7 +173,7 @@ class AddressComponent {
   // Compares the values and verification statuses with |other| recursively
   // down the tree. Returns true iff all values and verification statuses of
   // this node and its subtree and |other| with its subtree are the same.
-  bool SameAs(const AddressComponent& other) const;
+  virtual bool SameAs(const AddressComponent& other) const;
 
   // Copies the values and verification statuses from |other| recursively down
   // the tree.
@@ -199,6 +199,15 @@ class AddressComponent {
   // Returns a constant reference to |value_.value()|. If the value is not
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
+
+  // Formats `value` to be used for comparison.
+  // In the default implementation this is `value` normalized but this function
+  // can be overridden in subclasses to apply further operations on `value`.
+  // `other` represents the component we are comparing with and is required
+  // for consistent rewriting rules.
+  virtual std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const;
 
   // Returns a canonicalized version of the value or std::nullopt if
   // canonicalization is not possible or not implemented.
@@ -473,15 +482,6 @@ class AddressComponent {
   // |other| represents the component we are comparing with and is required
   // for consistent rewriting rules.
   std::u16string GetValueForComparison(const AddressComponent& other) const;
-
-  // Formats `value` to be used for comparison.
-  // In the default implementation this is `value` normalized but this function
-  // can be overridden in subclasses to apply further operations on `value`.
-  // `other` represents the component we are comparing with and is required
-  // for consistent rewriting rules.
-  virtual std::u16string GetValueForComparison(
-      const std::u16string& value,
-      const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
   // precedence to the newer value.

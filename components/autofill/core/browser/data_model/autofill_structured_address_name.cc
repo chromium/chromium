@@ -227,34 +227,63 @@ std::u16string NameFull::GetFormatString() const {
 
 NameFull::~NameFull() = default;
 
+AlternativeNameAddressComponent::AlternativeNameAddressComponent(
+    FieldType storage_type,
+    SubcomponentsList subcomponents,
+    unsigned int merge_mode)
+    : AddressComponent(storage_type, subcomponents, merge_mode) {}
+
+bool AlternativeNameAddressComponent::SameAs(
+    const AddressComponent& other) const {
+  if (this == &other) {
+    return true;
+  }
+
+  if (GetStorageType() != other.GetStorageType()) {
+    return false;
+  }
+
+  if (GetValueForComparison(GetValue(), other) !=
+          other.GetValueForComparison(other.GetValue(), *this) ||
+      GetVerificationStatus() != other.GetVerificationStatus()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < other.Subcomponents().size(); i++) {
+    if (!(Subcomponents()[i]->SameAs(*other.Subcomponents()[i]))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::u16string AlternativeNameAddressComponent::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return TransliterateAlternativeName(
+      AddressComponent::GetValueForComparison(GetValue(), other),
+      TransliterationId::kKatakanaToHiragana);
+}
+
 AlternativeGivenName::AlternativeGivenName()
-    : AddressComponent(ALTERNATIVE_GIVEN_NAME, {}, MergeMode::kDefault) {}
+    : AlternativeNameAddressComponent(ALTERNATIVE_GIVEN_NAME,
+                                      {},
+                                      MergeMode::kDefault) {}
 
 AlternativeGivenName::~AlternativeGivenName() = default;
 
-std::u16string AlternativeGivenName::GetValueForComparison(
-    const std::u16string& value,
-    const AddressComponent& other) const {
-  return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
-}
-
 AlternativeFamilyName::AlternativeFamilyName()
-    : AddressComponent(ALTERNATIVE_FAMILY_NAME, {}, MergeMode::kDefault) {}
+    : AlternativeNameAddressComponent(ALTERNATIVE_FAMILY_NAME,
+                                      {},
+                                      MergeMode::kDefault) {}
 
 AlternativeFamilyName::~AlternativeFamilyName() = default;
 
-std::u16string AlternativeFamilyName::GetValueForComparison(
-    const std::u16string& value,
-    const AddressComponent& other) const {
-  return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
-}
-
 AlternativeFullName::AlternativeFullName()
-    : AddressComponent(ALTERNATIVE_FULL_NAME, {}, MergeMode::kDefault) {
+    : AlternativeNameAddressComponent(ALTERNATIVE_FULL_NAME,
+                                      {},
+                                      MergeMode::kDefault) {
   RegisterChildNode(&given_name_);
   RegisterChildNode(&family_name_);
 }
@@ -291,14 +320,6 @@ std::u16string AlternativeFullName::GetFormatString() const {
   // TODO(crbug.com/40275657): Add i18n support for name format strings.
   return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
                                       info);
-}
-
-std::u16string AlternativeFullName::GetValueForComparison(
-    const std::u16string& value,
-    const AddressComponent& other) const {
-  return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), other),
-      TransliterationId::kKatakanaToHiragana);
 }
 
 }  // namespace autofill

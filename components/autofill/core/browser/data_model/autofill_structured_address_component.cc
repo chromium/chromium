@@ -214,6 +214,12 @@ const std::u16string& AddressComponent::GetValue() const {
   return base::EmptyString16();
 }
 
+std::u16string AddressComponent::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return NormalizeValue(value);
+}
+
 std::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {
   return std::nullopt;
 }
@@ -1549,12 +1555,6 @@ std::u16string AddressComponent::GetNormalizedValue() const {
 std::u16string AddressComponent::GetValueForComparison(
     const AddressComponent& other) const {
   return GetValueForComparison(GetValue(), other);
-}
-
-std::u16string AddressComponent::GetValueForComparison(
-    const std::u16string& value,
-    const AddressComponent& other) const {
-  return NormalizeValue(value);
 }
 
 }  // namespace autofill

@@ -333,6 +333,111 @@ INSTANTIATE_TEST_SUITE_P(
         // Latin characters.
         AlternativeNameParserTestRecord{"Karol Kotynia", "Karol", "Kotynia"}));
 
+TEST(AutofillStructuredAlternativeNameSameAsTest, SameAsAlternativeFullName) {
+  AlternativeFullName name;
+  name.SetValueForType(ALTERNATIVE_FULL_NAME, u"やまもと あおい",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // The same component but using Katakana.
+  AlternativeFullName other_name;
+  other_name.SetValueForType(ALTERNATIVE_FULL_NAME, u"ヤマモト アオイ",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_TRUE(name.SameAs(other_name));
+  EXPECT_TRUE(other_name.SameAs(name));
+}
+
+TEST(AutofillStructuredAlternativeNameSameAsTest,
+     DifferentSameAsAlternativeFullName) {
+  AlternativeFullName name;
+  name.SetValueForType(ALTERNATIVE_FULL_NAME, u"やまもと あおい",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // Different component using Katakana.
+  AlternativeFullName other_name;
+  other_name.SetValueForType(ALTERNATIVE_FULL_NAME, u"サクラ レイ",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_FALSE(name.SameAs(other_name));
+  EXPECT_FALSE(other_name.SameAs(name));
+}
+
+TEST(AutofillStructuredAlternativeNameSameAsTest, SameAsAlternativeGivenName) {
+  AlternativeGivenName name;
+  name.SetValueForType(ALTERNATIVE_GIVEN_NAME, u"あおい",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // The same component but using Katakana.
+  AlternativeGivenName other_name;
+  other_name.SetValueForType(ALTERNATIVE_GIVEN_NAME, u"アオイ",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_TRUE(name.SameAs(other_name));
+  EXPECT_TRUE(other_name.SameAs(name));
+}
+
+TEST(AutofillStructuredAlternativeNameSameAsTest,
+     DifferentSameAsAlternativeGivenName) {
+  AlternativeGivenName name;
+  name.SetValueForType(ALTERNATIVE_GIVEN_NAME, u"あおい",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // Different component using Katakana.
+  AlternativeGivenName other_name;
+  other_name.SetValueForType(ALTERNATIVE_GIVEN_NAME, u"レイ",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_FALSE(name.SameAs(other_name));
+  EXPECT_FALSE(other_name.SameAs(name));
+}
+
+TEST(AutofillStructuredAlternativeNameSameAsTest, SameAsAlternativeFamilyName) {
+  AlternativeFamilyName name;
+  name.SetValueForType(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // The same component but using Katakana.
+  AlternativeFamilyName other_name;
+  other_name.SetValueForType(ALTERNATIVE_FAMILY_NAME, u"ヤマモト",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_TRUE(name.SameAs(other_name));
+  EXPECT_TRUE(other_name.SameAs(name));
+}
+
+TEST(AutofillStructuredAlternativeNameSameAsTest,
+     DifferentSameAsAlternativeFamilyName) {
+  AlternativeFamilyName name;
+  name.SetValueForType(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                       VerificationStatus::kObserved);
+  name.CompleteFullTree();
+
+  // Different component using Katakana.
+  AlternativeFamilyName other_name;
+  other_name.SetValueForType(ALTERNATIVE_FAMILY_NAME, u"サクラ",
+                             VerificationStatus::kObserved);
+  other_name.CompleteFullTree();
+
+  EXPECT_TRUE(name.SameAs(name));
+  EXPECT_FALSE(name.SameAs(other_name));
+  EXPECT_FALSE(other_name.SameAs(name));
+}
+
 // Tests the detection of CJK name characteristics.
 TEST(AutofillStructuredName, HasCjkNameCharacteristics) {
   EXPECT_FALSE(HasCjkNameCharacteristics("Peterson"));
