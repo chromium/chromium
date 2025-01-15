@@ -19,7 +19,7 @@ class BnplManagerTestApi {
   ~BnplManagerTestApi() = default;
 
   void PopulateManagerWithUserAndBnplIssuerDetails(
-      std::string billing_customer_number,
+      int64_t billing_customer_number,
       std::string risk_data,
       std::string instrument_id,
       std::string context_token,

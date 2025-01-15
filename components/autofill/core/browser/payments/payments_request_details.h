@@ -454,7 +454,7 @@ struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
   ~GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
 
   // The number for the Google Payments account this request is sent to.
-  std::string_view billing_customer_number;
+  int64_t billing_customer_number;
   // The fingerprint data for the user and the device.
   std::string_view risk_data;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
@@ -477,8 +477,13 @@ struct BnplFetchVcnResponseDetails {
   BnplFetchVcnResponseDetails& operator=(BnplFetchVcnResponseDetails&&);
   ~BnplFetchVcnResponseDetails();
 
-  // TODO(crbug.com/378518641): Implement BNPL fetch VCN response details when
-  // implementing the payment server call in payments network interface.
+  std::string pan;
+  std::string cvv;
+  // The expiration month of the card. It falls in between 1 - 12.
+  std::string expiration_month;
+  // The four-digit expiration year of the card.
+  std::string expiration_year;
+  std::string cardholder_name;
 };
 
 }  // namespace autofill::payments
