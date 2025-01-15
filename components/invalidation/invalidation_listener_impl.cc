@@ -100,14 +100,10 @@ InvalidationListenerImpl::InvalidationListenerImpl(
           base::StrCat({kFmAppId, "-", base::NumberToString(project_number_)})),
       log_prefix_(base::StrCat(
           {log_prefix, "-", base::NumberToString(project_number_)})),
-      registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {
-  LOG(WARNING) << log_prefix_
-               << " Created for project_number: " << project_number_;
-}
+      registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {}
 
 InvalidationListenerImpl::~InvalidationListenerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(WARNING) << log_prefix_ << " Destroying";
 }
 
 // InvalidationListener overrides.
@@ -115,8 +111,6 @@ void InvalidationListenerImpl::AddObserver(Observer* observer) {
   const std::string type = observer->GetType();
   CHECK(!type_to_handler_.contains(type));
   CHECK(!observers_.HasObserver(observer));
-
-  LOG(WARNING) << log_prefix_ << " Observed by " << observer->GetType();
 
   observers_.AddObserver(observer);
   type_to_handler_[type] = observer;
@@ -137,17 +131,12 @@ void InvalidationListenerImpl::RemoveObserver(const Observer* observer) {
   CHECK(type_to_handler_.contains(type));
   type_to_handler_.erase(type);
   observers_.RemoveObserver(observer);
-
-  LOG(WARNING) << log_prefix_ << " Stopped observation by "
-               << observer->GetType();
 }
 
 void InvalidationListenerImpl::Start(
     RegistrationTokenHandler* registration_token_handler) {
   // Does not allow double start.
   CHECK(!registration_token_handler_);
-
-  LOG(WARNING) << log_prefix_ << " Starting";
 
   // Note that `AddAppHandler()` causes an immediate replay of all received
   // invalidations in background on Android.
@@ -260,8 +249,6 @@ void InvalidationListenerImpl::OnRegistrationTokenReceived(
 
   if (succeeded) {
     registration_token_ = new_registration_token;
-    LOG(WARNING) << log_prefix_
-                 << " Registration token: " << new_registration_token;
     registration_token_handler_->OnRegistrationTokenReceived(
         registration_token_.value(),
         base::Time::Now() + kRegistrationTokenTimeToLive);
