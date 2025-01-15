@@ -569,6 +569,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BookmarkManagerPrivateAPI",
 #if defined(TOOLKIT_VIEWS)
     "BookmarkExpandedStateTracker",
+    "BookmarkMergedSurfaceService",
 #endif
     "BookmarkModel",
     "BookmarkUndoService",

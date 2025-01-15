@@ -389,13 +389,13 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
   size_t GetIndexForButton(views::View* button);
 
-  // Returns the target drop BookmarkNode parent pointer and updates `index`
-  // with the right value.
-  const bookmarks::BookmarkNode* GetParentNodeAndIndexForDrop(size_t& index);
+  // Returns the target drop `BookmarkParentFolder` and updates `index` with the
+  // right value.
+  BookmarkParentFolder GetParentFolderAndIndexForDrop(size_t& index);
 
   // Drops Bookmark `data` and updates `output_drag_op` accordingly.
   void PerformDrop(const bookmarks::BookmarkNodeData data,
-                   const bookmarks::BookmarkNode* parent_node,
+                   const BookmarkParentFolder& parent_folder,
                    const size_t index,
                    const bool copy,
                    const ui::DropTargetEvent& event,
