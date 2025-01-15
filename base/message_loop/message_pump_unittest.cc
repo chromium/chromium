@@ -27,6 +27,10 @@
 #include "base/test/test_support_android.h"
 #endif
 
+#if !BUILDFLAG(IS_IOS)
+#include "base/message_loop/message_pump_default.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
@@ -436,5 +440,41 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(MessagePumpType::DEFAULT,
                                            MessagePumpType::UI,
                                            MessagePumpType::IO));
+
+// On iOS, MessagePumpDefault is not used.
+#if !BUILDFLAG(IS_IOS)
+TEST(MessagePumpDefaultTest, BusyLoop) {
+  MessagePumpDefault message_pump;
+
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  base::TimeDelta busy_loop_for = base::Milliseconds(1);
+  message_pump.SetBusyLoop(busy_loop_for);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Many long waits, no more busy looping.
+  for (int i = 0; i < 10; i++) {
+    message_pump.RecordWaitTime(busy_loop_for * 10);
+  }
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // One short wait, busy loop.
+  message_pump.RecordWaitTime(busy_loop_for / 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+  // But as long as the moving average is high enough, don't loop.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_FALSE(message_pump.ShouldBusyLoop());
+
+  // Eventually, the moving average gets low enough
+  for (int i = 0; i < 100; i++) {
+    message_pump.RecordWaitTime(busy_loop_for / 10);
+  }
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+
+  // Even if the last wait time was higher than the limit.
+  message_pump.RecordWaitTime(busy_loop_for * 1.5);
+  EXPECT_TRUE(message_pump.ShouldBusyLoop());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace base

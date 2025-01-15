@@ -2505,6 +2505,14 @@ BASE_FEATURE_PARAM(bool,
                    "prioritize_prerendering_only",
                    false);
 
+// If true is specified, kBoostRenderProcessForLoading feature also prioritizes
+// the renderer process for restore cases.
+BASE_FEATURE_PARAM(bool,
+                   kBoostRenderProcessForLoadingPrioritizeRestore,
+                   &kBoostRenderProcessForLoading,
+                   "prioritize_restore",
+                   false);
+
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,

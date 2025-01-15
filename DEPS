@@ -276,11 +276,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'd3ffbdadbfe9840b0f0059171663afee4fb9fca7',
+  'src_internal_revision': '78435df27cb90886925b42b3e6f2be8a2bd5c7b8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '123e9e755027e173fc3dc63ea0a9fd28d1dc81ce',
+  'skia_revision': '839e579f261ba7cebc5de3f2bc199812c2e356df',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -1444,7 +1444,7 @@ deps = {
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '48bc7d758d79ec6049131ba223987d08a7d138ef',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'ad2a20e6ea93a53e01eaf8b47f90aa1b470ffc46',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1934,7 +1934,7 @@ deps = {
 
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '9a9142793a90d65cd1424f6826be89ec15bfa233',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'a90906c74d9da1ed0d55b0452c3e00c35fc82c1f',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -2752,16 +2752,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@1a75b1ca039e2c16c1b01924c910cc8ac54798bc',
-  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@c16e6a34b72de51d07c121a1c202806bac0be9dc',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@0ac2f28da823b8fa25c24f7ca62d192757846567',
+  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@8b0e7b6e839279f4547bf0bb14466c42d9869498',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@a380cd25433092dbce9a455a3feb1242138febee',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@995922d48149384766cc646159a9e28701f01f0c',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@b8566d4593aa7c31539ecbeca479f66bb3439b73',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@d4a196d8c84e032d27f999adcea3075517c1c97f',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@369f59ad598b60d6ed9f553af651c5cccd20234c',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@315964ad5aabd5b148a484e5fbea8a365c8d1eb3',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@5a88b6042edb8f03eefc8de73bd73a899989373f',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@f4f4a7a1d3d62f458c63a003a29f992b23a170f1',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@9037216c5935b271bcf18125020cfcd12a5596e6',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -2806,7 +2806,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '6daec622c38e10bb9a2c314eae52eae817cbc703',
+    Var('webrtc_git') + '/src.git' + '@' + 'cffff6f30d3adc5f5d9f2098875906064c300903',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -4533,7 +4533,7 @@ deps = {
 
   'src/chrome/updater/internal': {
     'url': Var('chrome_git') + '/chrome/updater/internal.git' + '@' +
-        'e8e0e06cc5b990d06b4583886f0f8946241fb221',
+        '2156fafa6a12ebd5c6388aabf8e149d8e50f5ed5',
     'condition': 'checkout_src_internal',
   },
 

@@ -163,21 +163,17 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                   action:@selector(showMainMenu)
         forControlEvents:UIControlEventTouchUpInside];
 
+  _field.borderStyle = UITextBorderStyleRoundedRect;
   _field.placeholder = @"Search or type URL";
   _field.backgroundColor = [UIColor whiteColor];
   _field.tintColor = _headerBackgroundView.backgroundColor;
   [_field setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
                             forAxis:UILayoutConstraintAxisHorizontal];
   _field.delegate = self;
-  _field.layer.cornerRadius = 2.0;
   _field.keyboardType = UIKeyboardTypeWebSearch;
   _field.autocapitalizationType = UITextAutocapitalizationTypeNone;
   _field.clearButtonMode = UITextFieldViewModeWhileEditing;
   _field.autocorrectionType = UITextAutocorrectionTypeNo;
-  UIView* spacerView = [[UIView alloc] init];
-  spacerView.frame = CGRectMake(0, 0, 8, 8);
-  _field.leftViewMode = UITextFieldViewModeAlways;
-  _field.leftView = spacerView;
 
   // Constraints.
   _headerBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;

@@ -59,7 +59,8 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
   ~Request();
 
  private:
-  void OnMethodResponse(dbus::Response* response);
+  void OnMethodResponse(dbus::Response* response,
+                        dbus::ErrorResponse* error_response);
   void OnResponseSignal(dbus::Signal* signal);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,

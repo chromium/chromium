@@ -1667,6 +1667,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kBoostRenderProcessForLoadingPrioritizePrerenderingOnly);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBoostRenderProcessForLoadingPrioritizeRestore);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStreamlineRendererInit);

@@ -720,6 +720,22 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "debug_try_builder",
+            # Enable the instance tracer in a CQ compile-only builder, since
+            # developers use this config, but it otherwise has no build coverage
+            # and periodically breaks.
+            #
+            # However, do not include this in Linux Builder (dbg), since there
+            # is a runtime performance cost with the instance tracer enabled:
+            # ~10% in release builds and likely much higher for debug builds.
+            #
+            # While this means there is a delta between these two builders, this
+            # should not be problematic in practice since:
+            # - there is a lot of remaining coverage for builds without the
+            #   instance tracer enabled
+            # - a successful build with the instance tracer enabled almost
+            #   always implies a successful build with the instance tracer
+            #   disabled, while the reverse is not true.
+            "enable_backup_ref_ptr_instance_tracer",
             "remoteexec",
             "linux",
             "x64",

@@ -297,9 +297,13 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, SingleSameOriginFrame) {
   auto* frame_a = root->Tree().FirstChild();
 
   // `GetContainerDeferredFetchPolicyOnNavigation()` should have been executed
-  // when iframe is loaded.
+  // when iframe A is loaded, which sets the policy to `kDeferredFetch`. After
+  // that, `ShouldClearDeferredFetchPolicy()` leads A to clear its policy.
+  // Hence, the final value is `kDisabled.
   EXPECT_EQ(frame_a->Owner()->GetFramePolicy().deferred_fetch_policy,
-            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+            FramePolicy::DeferredFetchPolicy::kDisabled);
+  // Manually calling `GetContainerDeferredFetchPolicyOnNavigation()` again to
+  // verify it actually returns `kDeferredFetch`.
   EXPECT_EQ(FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(
                 frame_a->Owner(), KURL(frame_a_url)),
             FramePolicy::DeferredFetchPolicy::kDeferredFetch);
@@ -666,6 +670,83 @@ TEST_F(AreSameOriginTest, MultipleLevelFrames) {
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_a, frame_d));
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_c));
   EXPECT_FALSE(FetchLaterUtil::AreSameOrigin(frame_b, frame_d));
+}
+
+using ShouldClearDeferredFetchPolicyTest = DeferredFetchPolicyTestBase;
+
+TEST_F(ShouldClearDeferredFetchPolicyTest,
+       MultipleDifferentOriginSiblingFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  //      -> frame_b (same-origin)
+  //      -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url,
+             RenderWithIframes(
+                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
+             {{frame_a_url, ""},
+              {frame_b_url, ""},
+              {frame_c_url, ""},
+              {frame_d_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_b = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_b->Tree().NextSibling();
+  auto* frame_d = frame_c->Tree().NextSibling();
+
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(root));
+  // Frame A and root are same origin, so Frame A should clear its deferred
+  // fetch policy inherited from root.
+  EXPECT_TRUE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_a));
+  // Frame B and root are same origin, so Frame B should clear its deferred
+  // fetch policy inherited from root.
+  EXPECT_TRUE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_b));
+  // Frame C and root are different origin, so Frame C should keep its owned
+  // deferred fetch policy.
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_c));
+  // Frame D and root are different origin, so Frame D should keep its owned
+  // deferred fetch policy.
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_d));
+}
+
+TEST_F(ShouldClearDeferredFetchPolicyTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+  auto* frame_b = frame_d->Tree().FirstChild();
+
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(root));
+  // Frame A and root are same origin, so Frame A should clear its deferred
+  // fetch policy inherited from root.
+  EXPECT_TRUE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_a));
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_b));
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_c));
+  // Frame D and root are different origin, so Frame D should keep its owned
+  // deferred fetch policy.
+  EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_d));
 }
 
 }  // namespace blink

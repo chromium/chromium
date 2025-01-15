@@ -89,38 +89,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Standalone"/>
 </variants>
 
-<variants name="FuseboxFileSystemType">
-  <variant name="ArcContent"/>
-  <variant name="ArcDocumentsProvider"/>
-  <variant name="DeviceMedia"/>
-  <variant name="DeviceMediaAsFileStorage"/>
-  <variant name="DriveFs"/>
-  <variant name="Local"/>
-  <variant name="LocalMedia"/>
-  <variant name="NonExternal"/>
-  <variant name="Other"/>
-  <variant name="Provided"/>
-  <variant name="Unknown"/>
-</variants>
-
-<!-- See third_party/cros_system_api/dbus/fusebox/fusebox.proto -->
-
-<variants name="FuseboxRpcMethod">
-  <variant name="Close2"/>
-  <variant name="Create"/>
-  <variant name="Flush"/>
-  <variant name="MkDir"/>
-  <variant name="Open2"/>
-  <variant name="Read2"/>
-  <variant name="ReadDir2"/>
-  <variant name="Rename"/>
-  <variant name="RmDir"/>
-  <variant name="Stat2"/>
-  <variant name="Truncate"/>
-  <variant name="Unlink"/>
-  <variant name="Write2"/>
-</variants>
-
 <variants name="GraphApiGetDeltaCallType">
   <variant name="GetDeltaIncremental" summary="incremental delta HTTP call"/>
   <variant name="GetDeltaInitial" summary="initial delta HTTP call"/>
@@ -557,18 +525,6 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: this records the filesystem selected when formatting
     an external drive.
   </summary>
-</histogram>
-
-<histogram name="FileBrowser.Fusebox.RPC.{FileSystemType}.{RpcMethod}"
-    enum="FuseboxPosixErrorCode" expires_after="2025-01-31">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The error code returned by the Fusebox D-Bus RPC server, broken down by the
-    storage::FileSystemType of the RPC argument and the RPC method name.
-  </summary>
-  <token key="FileSystemType" variants="FuseboxFileSystemType"/>
-  <token key="RpcMethod" variants="FuseboxRpcMethod"/>
 </histogram>
 
 <histogram name="FileBrowser.Glitch" enum="FileManagerGlitch"

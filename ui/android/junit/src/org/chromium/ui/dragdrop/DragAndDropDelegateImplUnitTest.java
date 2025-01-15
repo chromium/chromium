@@ -419,7 +419,6 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @EnableFeatures({UiAndroidFeatureList.DRAG_DROP_FILES})
     public void testDragImage_ReceivedDropBeforeDragEnds() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =

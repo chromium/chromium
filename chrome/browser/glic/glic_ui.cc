@@ -8,10 +8,8 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/guest_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,8 +30,7 @@ GlicUIConfig::GlicUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIGlicHost) {}
 
 bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return GlicEnabling::IsEnabledForProfile(
-      Profile::FromBrowserContext(browser_context));
+  return base::FeatureList::IsEnabled(features::kGlic);
 }
 
 GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {

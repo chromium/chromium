@@ -12055,6 +12055,9 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 
     if (common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame() &&
+        (!navigation_request->IsRestore() ||
+         blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
+             .Get()) &&
         ShouldBoostRenderProcessForLoading(lifecycle_state_,
                                            frame_tree_->is_prerendering()) &&
         // By default, bump the process priority only for browser (embedder)

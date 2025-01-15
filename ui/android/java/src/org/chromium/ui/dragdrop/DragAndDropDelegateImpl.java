@@ -463,10 +463,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             recordDragTargetType(mDragTargetType);
         }
         // Allow drop into ContentView when files are supported by clank.
-        boolean imageInUse =
-                !mIsDropOnView
-                        || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES);
-        DropDataProviderUtils.clearImageCache(imageInUse && dragResult);
+        DropDataProviderUtils.clearImageCache(dragResult);
     }
 
     /**

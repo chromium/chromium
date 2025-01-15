@@ -4424,14 +4424,12 @@ public class AwContents implements SmartClipProvider {
                 return false;
             }
 
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DRAG_DROP_FILES)) {
-                if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-                    releaseDragAndDropPermissions();
-                } else if (event.getAction() == DragEvent.ACTION_DROP) {
-                    Activity activity = ContextUtils.activityFromContext(mContext);
-                    if (activity != null) {
-                        mDragAndDropPermissions = activity.requestDragAndDropPermissions(event);
-                    }
+            if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                releaseDragAndDropPermissions();
+            } else if (event.getAction() == DragEvent.ACTION_DROP) {
+                Activity activity = ContextUtils.activityFromContext(mContext);
+                if (activity != null) {
+                    mDragAndDropPermissions = activity.requestDragAndDropPermissions(event);
                 }
             }
             return mWebContents.getEventForwarder().onDragEvent(event, mContainerView);

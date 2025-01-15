@@ -287,6 +287,19 @@ class BASE_EXPORT MessagePump {
   // returns a valid IOWatcher implementation to use. Otherwise returns null.
   virtual IOWatcher* GetIOWatcher();
 
+  // May cause the message pump to busy loop for the specified duration. May not
+  // work for all message pump types, and is only an upper bound of busy looping
+  // time. This may be used to avoid sleeping when a short wait is
+  // expected. This is exposed here rather than being internal to allow setting
+  // it depending on the context (e.g. on some threads only, or only when the
+  // thread is expected to benefit from it).
+  void SetBusyLoop(base::TimeDelta max_busy_loop_time) {
+    max_busy_loop_time_ = max_busy_loop_time;
+  }
+
+ protected:
+  base::TimeDelta max_busy_loop_time_;
+
  private:
   // TODO(crbug.com/379190028): Individual MessagePump subclasses should own and
   // initialize their own IOWatcher.

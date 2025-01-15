@@ -199,6 +199,7 @@
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scrollend_event.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -928,6 +929,13 @@ Document::Document(const DocumentInit& initializer,
   lifecycle_.AdvanceTo(DocumentLifecycle::kInactive);
 
   UpdateThemeColorCache();
+
+  if (IsFetchLaterUseDeferredFetchPolicyEnabled() && GetFrame()) {
+    if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(GetFrame()->Owner());
+        owner) {
+      owner->MaybeClearDeferredFetchPolicy();
+    }
+  }
 
   // The parent's parser should be suspended together with all the other
   // objects, else this new Document would have a new ExecutionContext which

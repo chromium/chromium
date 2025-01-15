@@ -462,8 +462,13 @@ class AutocompleteMediator
             mEditSessionState = EditSessionState.INACTIVE;
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
-            // a consequence the omnibox is unfocused).
-            clearSuggestions();
+            // a consequence the omnibox is unfocused), unless it is for hub search.
+            // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
+            // exiting hub search that dismisses the URL bar and suggestions list together.
+            if (mDataProvider.getPageClassification(/* isPrefetch= */ false)
+                    != PageClassification.ANDROID_HUB_VALUE) {
+                clearSuggestions();
+            }
         }
     }
 

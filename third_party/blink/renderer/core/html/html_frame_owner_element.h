@@ -145,6 +145,11 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
   void UpdateDeferredFetchPolicy(const KURL& to_url);
 
+  // Potentially clear its deferred-fetch policy.
+  // Must be called during "document creation" flow as described in
+  // https://whatpr.org/html/10903/d1c086a...0e0afb3/document-lifecycle.html
+  void MaybeClearDeferredFetchPolicy();
+
   void CancelPendingLazyLoad();
 
   void ParseAttribute(const AttributeModificationParams&) override;

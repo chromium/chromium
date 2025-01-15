@@ -105,6 +105,8 @@ class CollaborationControllerTest : public testing::Test {
 };
 
 TEST_F(CollaborationControllerTest, FullFlowAllStates) {
+  base::HistogramTester histogram_tester;
+
   RunLoop run_loop;
 
   // Start Join flow.
@@ -151,7 +153,6 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   std::move(authentication_ui_calback).Run(Outcome::kSuccess);
   EXPECT_EQ(controller_->GetStateForTesting(),
             StateId::kCheckingFlowRequirements);
-
 
   // The user should be shown invitation screen for joining a collaboration
   // group.
@@ -222,6 +223,13 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   EXPECT_CALL(*delegate_, OnFlowFinished());
   std::move(promote_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      "CollaborationService.JoinFlow",
+      metrics::CollaborationServiceJoinEvent::kOpenedNewGroup, 1);
 }
 
 TEST_F(CollaborationControllerTest, UrlHandlingError) {

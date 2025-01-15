@@ -171,18 +171,6 @@ class AILanguageModel : public AIContextBoundObject,
       CreateLanguageModelCallback callback,
       uint32_t size);
 
-  // This function is passed as a completion callback to the
-  // `GetSizeInTokens()`. It will
-  // - Add the item into context, and remove the oldest items to reduce the
-  // context size if the number of tokens in the current context exceeds the
-  // limit.
-  // - Signal the completion of model execution through the `responder` with the
-  // new size of the context.
-  void AddPromptHistoryAndSendCompletion(
-      const PromptApiRequest& history_item,
-      blink::mojom::ModelStreamingResponder* responder,
-      uint32_t size);
-
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;

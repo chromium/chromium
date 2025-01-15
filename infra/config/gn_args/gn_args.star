@@ -575,6 +575,16 @@ gn_args.config(
     },
 )
 
+# Enables the instance tracer for BackupRefPtr. This provides more useful stack
+# traces when triggering the dangling pointer detector, but at the cost of some
+# runtime performance (last measured at ~10% in release builds).
+gn_args.config(
+    name = "enable_backup_ref_ptr_instance_tracer",
+    args = {
+        "enable_backup_ref_ptr_instance_tracer": True,
+    },
+)
+
 gn_args.config(
     name = "enable_blink_animation_use_time_delta",
     args = {

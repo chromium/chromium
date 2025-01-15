@@ -440,6 +440,22 @@ void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy(const KURL& to_url) {
   }
 }
 
+void HTMLFrameOwnerElement::MaybeClearDeferredFetchPolicy() {
+  if (!IsFetchLaterUseDeferredFetchPolicyEnabled()) {
+    return;
+  }
+
+  CHECK(ContentFrame());
+  if (FetchLaterUtil::ShouldClearDeferredFetchPolicy(ContentFrame())) {
+    frame_policy_.deferred_fetch_policy =
+        FramePolicy::DeferredFetchPolicy::kDisabled;
+  }
+
+  auto* frame = GetDocument().GetFrame();
+  frame->GetLocalFrameHostRemote().DidChangeFramePolicy(
+      ContentFrame()->GetFrameToken(), frame_policy_);
+}
+
 network::mojom::blink::TrustTokenParamsPtr
 HTMLFrameOwnerElement::ConstructTrustTokenParams() const {
   return nullptr;

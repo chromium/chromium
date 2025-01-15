@@ -34,7 +34,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.MotionEventUtils;
 
@@ -243,7 +242,6 @@ public class EventForwarderTest {
                         anyInt());
     }
 
-    @EnableFeatures({UiAndroidFeatureList.DRAG_DROP_FILES})
     @Test
     public void testDragDropEvent() {
         // Text.

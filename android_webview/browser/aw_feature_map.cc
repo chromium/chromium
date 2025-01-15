@@ -27,7 +27,6 @@ namespace {
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewBackForwardCache,
-    &features::kWebViewDragDropFiles,
     &features::kWebViewFileSystemAccess,
     &::features::kWebViewFrameRateHints,
     &features::kWebViewInvokeZoomPickerOnGSU,

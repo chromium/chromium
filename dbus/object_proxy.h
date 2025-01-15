@@ -127,7 +127,7 @@ class CHROME_DBUS_EXPORT ObjectProxy
   //
   // If the method call is successful, a pointer to Response object will
   // be passed to the callback. If unsuccessful, nullptr will be passed to
-  // the callback.
+  // the callback and ObjectProxy will emit a log message with the error.
   //
   // Must be called in the origin thread.
   virtual void CallMethod(MethodCall* method_call,
@@ -141,7 +141,8 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // In case of error, ErrorResponse object is passed to the |callback|
   // if the remote object returned an error, or nullptr if a response was not
   // received at all (e.g., D-Bus connection is not established). In either
-  // error case, Response* should be nullptr.
+  // error case, Response* should be nullptr. Unlike CallMethod() above,
+  // ObjectProxy will not emit a log message with the error.
   virtual void CallMethodWithErrorResponse(MethodCall* method_call,
                                            int timeout_ms,
                                            ResponseOrErrorCallback callback);

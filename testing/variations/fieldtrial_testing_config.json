@@ -3447,6 +3447,7 @@
                         "prioritize_prerendering": "false",
                         "prioritize_prerendering_only": "false",
                         "prioritize_renderer_initiated": "true",
+                        "prioritize_restore": "false",
                         "target_urls": "[]"
                     },
                     "enable_features": [

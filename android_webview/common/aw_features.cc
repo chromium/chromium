@@ -37,11 +37,6 @@ BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
              "WebViewDisableSharpeningAndMSAA",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows JS DataTransfer Files from content URIs in drag-drop.
-BASE_FEATURE(kWebViewDragDropFiles,
-             "WebViewDragDropFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable JS FileSystemAccess API.
 // This flag is set by WebView internal code based on an app's targetSdkVersion.
 // It is enabled for version B+. The default value here is not relevant, and is

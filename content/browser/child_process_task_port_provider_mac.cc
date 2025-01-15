@@ -8,7 +8,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -18,7 +17,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "content/common/mac/task_port_policy.h"
+#include "content/common/mac/system_policy.h"
 #endif
 
 namespace content {
@@ -71,21 +70,12 @@ ChildProcessTaskPortProvider::~ChildProcessTaskPortProvider() {}
 
 bool ChildProcessTaskPortProvider::ShouldRequestTaskPorts() const {
 #if BUILDFLAG(IS_MAC)
-  // Set a crash key for the lifetime of the browser process to help debug
-  // other failures.
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "amfi-status", base::debug::CrashKeySize::Size64);
-  static const bool should_request_task_ports =
-      [](base::debug::CrashKeyString* crash_key) -> bool {
-    const MachTaskPortPolicy task_port_policy(GetMachTaskPortPolicy());
-    bool allow_everything = task_port_policy.AmfiIsAllowEverything();
-    base::debug::SetCrashKeyString(
-        crash_key,
-        base::StringPrintf("rv=%d status=0x%llx allow_everything=%d",
-                           task_port_policy.amfi_status_retval,
-                           task_port_policy.amfi_status, allow_everything));
-    return !allow_everything;
-  }(crash_key);
+  static const bool should_request_task_ports = []() -> bool {
+    auto policy = GetMachTaskPortPolicy();
+    return policy
+        .transform([](auto policy) { return !policy.AmfiIsAllowEverything(); })
+        .value_or(true);
+  }();
   return should_request_task_ports;
 #else
   return true;

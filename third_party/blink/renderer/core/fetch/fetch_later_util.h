@@ -72,6 +72,15 @@ class CORE_EXPORT FetchLaterUtil {
   // The returned is also a node navigable of the control document for `frame`.
   static Frame* GetDeferredFetchControlFrame(Frame* frame);
 
+  // Tells if `frame` should clear its deferred-fetch policy.
+  // https://whatpr.org/fetch/1647.html#potentially-free-deferred-fetch-quota
+  //
+  // Note that policy is stored in `frame`'s container if exists.
+  //
+  // This must be called during "document creation" flow as described in
+  // https://whatpr.org/html/10903/d1c086a...0e0afb3/document-lifecycle.html
+  static bool ShouldClearDeferredFetchPolicy(Frame* frame);
+
  private:
   friend class CountDescendantsWithReservedMinimalQuotaTest;
   FRIEND_TEST_ALL_PREFIXES(AreSameOriginTest,

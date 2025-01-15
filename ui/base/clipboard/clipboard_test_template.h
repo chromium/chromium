@@ -63,10 +63,6 @@
 #include "ui/gfx/half_float.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -87,13 +83,7 @@ namespace ui {
 template <typename ClipboardTraits>
 class ClipboardTest : public PlatformTest {
  public:
-#if BUILDFLAG(IS_ANDROID)
-  ClipboardTest() {
-    feature_list_.InitAndEnableFeature(features::kClipboardFiles);
-  }
-#else
   ClipboardTest() = default;
-#endif
   ~ClipboardTest() override = default;
 
   // PlatformTest:
@@ -119,9 +109,6 @@ class ClipboardTest : public PlatformTest {
  private:
   // Clipboard has a protected destructor, so scoped_ptr doesn't work here.
   raw_ptr<Clipboard> clipboard_ = nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list_;
-#endif
 };
 
 // A mock delegate for testing.

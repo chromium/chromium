@@ -1067,7 +1067,10 @@ bool AutocompleteController::ShouldRunProvider(
         AutocompleteInput::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
 
-    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
+    if (keyword_turl &&
+        (keyword_turl->starter_pack_id() > 0 ||
+         keyword_turl->policy_origin() ==
+             TemplateURLData::PolicyOrigin::kSearchAggregator)) {
       switch (provider->type()) {
         // Keyword provider creates the suggestion attached to the keyword chip
         // and search provider creates the SEARCH_OTHER_ENGINE suggestion
@@ -1099,6 +1102,10 @@ bool AutocompleteController::ShouldRunProvider(
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kTabs);
 
+        case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+          return keyword_turl->policy_origin() ==
+                 TemplateURLData::PolicyOrigin::kSearchAggregator;
+
         // No other providers should run when in a starter pack scope.
         default:
           return false;
@@ -1119,11 +1126,10 @@ bool AutocompleteController::ShouldRunProvider(
                base::StartsWith(keyword_turl->url(), "https://drive.google.com",
                                 base::CompareCase::INSENSITIVE_ASCII);
 
-      // Don't run aggregator provider unless the user is in a aggregator scope.
+      // Don't run aggregator provider unless the user is in a aggregator scope,
+      // which is handled above.
       case AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
-        return keyword_turl &&
-               keyword_turl->policy_origin() ==
-                   TemplateURLData::PolicyOrigin::kSearchAggregator;
+        return false;
 
       // Treat all other providers as usual.
       default:

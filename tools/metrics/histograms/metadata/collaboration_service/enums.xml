@@ -34,6 +34,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Canceled - after sign in requirement"/>
   <int value="3" label="Canceled - due to sign in requirement"/>
   <int value="4" label="Not signed in on join attempt"/>
+  <int value="5" label="Accepted - the join invitation"/>
+  <int value="6" label="Opened - new group"/>
+  <int value="7" label="Opened - existing group"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
