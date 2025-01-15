@@ -382,7 +382,7 @@ void OmniboxSendSuggestionsFunction::NotifySuggestionsReady() {
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   OmniboxSuggestionsWatcherFactory::GetForBrowserContext(profile)
-      ->NotifySuggestionsReady(&*params_);
+      ->NotifySuggestionsReady(&*params_, extension_id());
 }
 
 ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {

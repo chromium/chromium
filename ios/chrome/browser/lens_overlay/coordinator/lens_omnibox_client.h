@@ -84,10 +84,10 @@ class LensOmniboxClient final : public OmniboxClient {
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
 
-  bool ProcessExtensionKeyword(const std::u16string& text,
-                               const TemplateURL* template_url,
-                               const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(const std::u16string& text,
+                             const TemplateURL* template_url,
+                             const AutocompleteMatch& match,
+                             WindowOpenDisposition disposition) override;
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;

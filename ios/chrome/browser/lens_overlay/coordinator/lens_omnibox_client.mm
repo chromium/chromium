@@ -188,13 +188,12 @@ LensOmniboxClient::GetLensOverlaySuggestInputs() const {
   return lens_overlay_suggest_inputs_;
 }
 
-bool LensOmniboxClient::ProcessExtensionKeyword(
+void LensOmniboxClient::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
-  return false;
 }
 
 void LensOmniboxClient::DiscardNonCommittedNavigations() {

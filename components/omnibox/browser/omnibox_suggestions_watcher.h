@@ -29,7 +29,8 @@ class OmniboxSuggestionsWatcher : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnOmniboxSuggestionsReady(
-        extensions::api::omnibox::SendSuggestions::Params* suggestions) {}
+        extensions::api::omnibox::SendSuggestions::Params* suggestions,
+        const std::string& extension_id) {}
 
     virtual void OnOmniboxDefaultSuggestionChanged() {}
   };
@@ -41,7 +42,8 @@ class OmniboxSuggestionsWatcher : public KeyedService {
       delete;
 
   void NotifySuggestionsReady(
-      extensions::api::omnibox::SendSuggestions::Params* suggestions);
+      extensions::api::omnibox::SendSuggestions::Params* suggestions,
+      const std::string& extension_id);
   void NotifyDefaultSuggestionChanged();
 
   // Add/remove observer.

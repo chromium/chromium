@@ -69,10 +69,14 @@ void UnscopedExtensionProvider::Stop(bool clear_cached_results,
   }
 }
 
-std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()
-    const {
+TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
   // Make sure the model is loaded. This is cheap and quickly bails out if
   // the model is already loaded.
   template_url_service_->Load();
-  return template_url_service_->GetUnscopedModeExtensionIds();
+  return template_url_service_;
+}
+
+std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()
+    const {
+  return GetTemplateURLService()->GetUnscopedModeExtensionIds();
 }

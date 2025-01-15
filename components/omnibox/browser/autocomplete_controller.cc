@@ -260,6 +260,12 @@ bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::CLIPBOARD_IMAGE;
 }
 
+// Returns whether this match is provided by an extension in unscoped mode.
+bool IsUnscopedExtensionMatch(const AutocompleteMatch& match) {
+  return match.provider && match.provider->type() ==
+                               AutocompleteProvider::TYPE_UNSCOPED_EXTENSION;
+}
+
 // Returns which rich autocompletion type, if any, had (or would have had for
 // counterfactual variations) an impact; i.e. whether the top scoring rich
 // autocompleted suggestion outscores the top scoring default suggestion.
@@ -1675,8 +1681,10 @@ void AutocompleteController::UpdateKeywordDescriptions(
   std::u16string last_keyword;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
-      if (AutocompleteMatchHasCustomDescription(*i))
+      if (AutocompleteMatchHasCustomDescription(*i) ||
+          IsUnscopedExtensionMatch(*i)) {
         continue;
+      }
       i->description.clear();
       i->description_class.clear();
       DCHECK(!i->keyword.empty());

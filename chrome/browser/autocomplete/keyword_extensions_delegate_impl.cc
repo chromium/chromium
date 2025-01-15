@@ -138,7 +138,8 @@ void KeywordExtensionsDelegateImpl::OnOmniboxInputEntered() {
 }
 
 void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
-    omnibox_api::SendSuggestions::Params* suggestions) {
+    omnibox_api::SendSuggestions::Params* suggestions,
+    const std::string& extension_id) {
   DCHECK(suggestions);
 
   if (suggestions->request_id != current_input_id_)
@@ -159,6 +160,7 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
   }
 
   const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
+  DCHECK_EQ(extension_id, template_url->GetExtensionId());
 
   for (size_t i = 0; i < suggestions->suggest_results.size(); ++i) {
     const omnibox_api::SuggestResult& suggestion =

@@ -37,6 +37,8 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   bool done() const { return done_; }
   ACMatches* matches() { return &matches_; }
 
+  TemplateURLService* GetTemplateURLService() const;
+
  private:
   ~UnscopedExtensionProvider() override;
 
