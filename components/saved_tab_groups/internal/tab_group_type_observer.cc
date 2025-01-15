@@ -36,6 +36,10 @@ void TabGroupTypeObserver::OnInitialized() {
   synthetic_field_trial_helper_->UpdateHadSharedTabGroupIfNeeded(false);
 }
 
+void TabGroupTypeObserver::OnWillBeDestroyed() {
+  obs_.Reset();
+}
+
 void TabGroupTypeObserver::OnTabGroupAdded(const SavedTabGroup& group,
                                            TriggerSource source) {
   synthetic_field_trial_helper_->UpdateHadSavedTabGroupIfNeeded(true);
