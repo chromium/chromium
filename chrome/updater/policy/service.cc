@@ -43,31 +43,78 @@
 #include "components/crash/core/common/crash_key.h"
 
 namespace updater {
-namespace {
 
-// Sorts the managed policy managers ahead of the non-managed ones in the
-// vector, and creates a named map indexed by `source()`.
-PolicyService::PolicyManagers SortManagers(
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers) {
+PolicyService::PolicyManagers::PolicyManagers(
+    scoped_refptr<ExternalConstants> external_constants) {
+  CreateManagers(external_constants);
+  InitializeManagersVector();
+}
+
+PolicyService::PolicyManagers::PolicyManagers(
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers)
+    : managers_(std::move(managers)) {
+  SortManagersVector();
+}
+
+PolicyService::PolicyManagers::~PolicyManagers() = default;
+
+void PolicyService::PolicyManagers::CreateManagers(
+    scoped_refptr<ExternalConstants> external_constants) {
+  dm_policy_manager_ =
+      CreateDMPolicyManager(external_constants->IsMachineManaged());
+  external_constants_policy_manager_ =
+      external_constants ? base::MakeRefCounted<PolicyManager>(
+                               external_constants->GroupPolicies())
+                         : nullptr;
+  platform_policy_manager_ =
+      CreatePlatformPolicyManager(external_constants->IsMachineManaged());
+  default_policy_manager_ = GetDefaultValuesPolicyManager();
+}
+
+// The order of the policy managers:
+//   1) External constants policy manager (if present).
+//   2) Platform policy manager (Group policy on Windows, and Managed
+//      Preferences on macOS). See NOTE below.
+//   3) DM policy manager (if present). See NOTE below.
+//   4) The default value policy manager.
+// NOTE: If `CloudPolicyOverridesPlatformPolicy`, then the DM policy manager
+//    has a higher priority than the platform policy manger.
+void PolicyService::PolicyManagers::InitializeManagersVector() {
+  managers_.clear();
+  if (dm_policy_manager_) {
+    managers_.push_back(dm_policy_manager_);
+  }
+
+  if (platform_policy_manager_) {
+    if (CloudPolicyOverridesPlatformPolicy(
+            {dm_policy_manager_, platform_policy_manager_,
+             external_constants_policy_manager_})) {
+      VLOG(1) << __func__ << ": CloudPolicyOverridesPlatformPolicy=1";
+      managers_.push_back(platform_policy_manager_);
+    } else {
+      managers_.insert(managers_.begin(), platform_policy_manager_);
+    }
+  }
+
+  if (external_constants_policy_manager_) {
+    managers_.insert(managers_.begin(), external_constants_policy_manager_);
+  }
+
+  managers_.push_back(default_policy_manager_);
+
+  SortManagersVector();
+}
+
+void PolicyService::PolicyManagers::SortManagersVector() {
   base::ranges::stable_sort(
-      managers, [](const scoped_refptr<PolicyManagerInterface>& lhs,
-                   const scoped_refptr<PolicyManagerInterface>& rhs) {
+      managers_, [](const scoped_refptr<PolicyManagerInterface>& lhs,
+                    const scoped_refptr<PolicyManagerInterface>& rhs) {
         return lhs->HasActiveDevicePolicies() &&
                !rhs->HasActiveDevicePolicies();
       });
-
-  base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
-      manager_names;
-  base::ranges::for_each(
-      managers,
-      [&manager_names](const scoped_refptr<PolicyManagerInterface>& manager) {
-        manager_names[manager->source()] = manager;
-      });
-
-  return {managers, manager_names};
 }
 
-bool CloudPolicyOverridesPlatformPolicy(
+bool PolicyService::PolicyManagers::CloudPolicyOverridesPlatformPolicy(
     const std::vector<scoped_refptr<PolicyManagerInterface>>& providers) {
 #if BUILDFLAG(IS_WIN)
   // On Windows, by default, Group Policy has a higher priority than the
@@ -92,58 +139,16 @@ bool CloudPolicyOverridesPlatformPolicy(
              : ((*it)->CloudPolicyOverridesPlatformPolicy()).value();
 }
 
-}  // namespace
-
-std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
-    scoped_refptr<ExternalConstants> external_constants,
-    scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-    scoped_refptr<PolicyManagerInterface> platform_policy_manager) {
-  // The order of the policy managers:
-  //   1) External constants policy manager (if present).
-  //   2) Platform policy manager (Group policy on Windows, and Managed
-  //      Preferences on macOS). See NOTE below.
-  //   3) DM policy manager (if present). See NOTE below.
-  //   4) The default value policy manager.
-  // NOTE: If `CloudPolicyOverridesPlatformPolicy`, then the DM policy manager
-  //    has a higher priority than the platform policy manger.
-  std::vector<scoped_refptr<PolicyManagerInterface>> managers;
-  if (dm_policy_manager) {
-    managers.push_back(dm_policy_manager);
-  }
-  scoped_refptr<PolicyManagerInterface> external_constants_policy_manager =
-      external_constants ? base::MakeRefCounted<PolicyManager>(
-                               external_constants->GroupPolicies())
-                         : nullptr;
-
-  if (platform_policy_manager) {
-    if (CloudPolicyOverridesPlatformPolicy(
-            {dm_policy_manager, platform_policy_manager,
-             external_constants_policy_manager})) {
-      VLOG(1) << __func__ << ": CloudPolicyOverridesPlatformPolicy=1";
-      managers.push_back(std::move(platform_policy_manager));
-    } else {
-      managers.insert(managers.begin(), std::move(platform_policy_manager));
-    }
-  }
-
-  if (external_constants_policy_manager) {
-    managers.insert(managers.begin(), external_constants_policy_manager);
-  }
-  managers.push_back(GetDefaultValuesPolicyManager());
-  return managers;
+void PolicyService::PolicyManagers::ResetDeviceManagementManager(
+    scoped_refptr<PolicyManagerInterface> dm_manager) {
+  dm_policy_manager_ = dm_manager;
+  InitializeManagersVector();
 }
-
-PolicyService::PolicyManagers::PolicyManagers(
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-    base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
-        manager_names)
-    : managers(std::move(managers)), manager_names(std::move(manager_names)) {}
-PolicyService::PolicyManagers::~PolicyManagers() = default;
 
 PolicyService::PolicyService(
     std::vector<scoped_refptr<PolicyManagerInterface>> managers,
     scoped_refptr<PersistedData> persisted_data)
-    : policy_managers_(SortManagers(std::move(managers))),
+    : policy_managers_(std::move(managers)),
       persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(false) {}
 
@@ -151,11 +156,7 @@ PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
     scoped_refptr<PersistedData> persisted_data,
     bool is_ceca_experiment_enabled)
-    : policy_managers_(SortManagers(CreateManagers(
-          external_constants,
-          CreateDMPolicyManager(external_constants->IsMachineManaged()),
-          CreatePlatformPolicyManager(
-              external_constants->IsMachineManaged())))),
+    : policy_managers_(external_constants),
       external_constants_(external_constants),
       persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
@@ -220,38 +221,15 @@ void PolicyService::FetchPoliciesDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__ << ": " << result;
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-      base::BindOnce(
-          [](scoped_refptr<ExternalConstants> external_constants,
-             scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-             scoped_refptr<PolicyManagerInterface> platform_policy_manager) {
-            return CreateManagers(external_constants, dm_policy_manager,
-                                  platform_policy_manager);
-          },
-          external_constants_,
-          dm_policy_manager ? dm_policy_manager
-          : policy_managers_.manager_names.contains(kSourceDMPolicyManager)
-              ? policy_managers_.manager_names[kSourceDMPolicyManager]
-              : nullptr,
-          policy_managers_.manager_names.contains(kSourcePlatformPolicyManager)
-              ? policy_managers_.manager_names[kSourcePlatformPolicyManager]
-              : nullptr),
-      base::BindOnce(&PolicyService::PolicyManagerLoaded,
-                     base::WrapRefCounted(this), result));
-}
-
-void PolicyService::PolicyManagerLoaded(
-    int result,
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result == kErrorOk) {
-    policy_managers_ = SortManagers(std::move(managers));
+    policy_managers_.ResetDeviceManagementManager(dm_policy_manager);
+
     VLOG(1) << "Policies after refresh:" << std::endl
             << GetAllPoliciesAsString();
   } else {
     VLOG(1) << "Failed to refresh policies: " << result;
   }
+
   last_fetch_result_ = result;
   std::move(fetch_policies_callback_).Run(result);
 }
@@ -263,7 +241,7 @@ std::string PolicyService::source() const {
   // separated by ';'. For example: "group_policy;device_management".
   std::vector<std::string> sources;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers) {
+       policy_managers_.managers()) {
     if (policy_manager->HasActiveDevicePolicies() &&
         !policy_manager->source().empty()) {
       sources.push_back(policy_manager->source());
@@ -393,7 +371,7 @@ std::set<std::string> PolicyService::GetAppsWithPolicy() const {
   std::set<std::string> apps_with_policy;
 
   base::ranges::for_each(
-      policy_managers_.managers,
+      policy_managers_.managers(),
       [&apps_with_policy](
           const scoped_refptr<PolicyManagerInterface>& manager) {
         auto apps = manager->GetAppsWithPolicy();
@@ -704,7 +682,7 @@ PolicyStatus<U> PolicyService::QueryPolicy(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyStatus<U> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers) {
+       policy_managers_.managers()) {
     const std::optional<U> transformed_result =
         [&transform](std::optional<T> query_result) {
           if constexpr (std::same_as<T, U>) {
@@ -736,7 +714,7 @@ PolicyStatus<T> PolicyService::QueryAppPolicy(
   }
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
-       policy_managers_.managers) {
+       policy_managers_.managers()) {
     std::optional<T> query_result =
         std::invoke(policy_query_function, policy_manager, app_id);
     if (query_result.has_value()) {

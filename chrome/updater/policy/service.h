@@ -84,16 +84,33 @@ class PolicyStatus {
 // This class is sequence affine and its instance is bound to the main sequence.
 class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
-  struct PolicyManagers {
-    PolicyManagers(
-        std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-        base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
-            manager_names);
+  class PolicyManagers {
+   public:
+    explicit PolicyManagers(
+        scoped_refptr<ExternalConstants> external_constants);
+    explicit PolicyManagers(
+        std::vector<scoped_refptr<PolicyManagerInterface>> managers);
     ~PolicyManagers();
 
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers;
-    base::flat_map<std::string, scoped_refptr<PolicyManagerInterface>>
-        manager_names;
+    void ResetDeviceManagementManager(
+        scoped_refptr<PolicyManagerInterface> dm_manager);
+
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers() const {
+      return managers_;
+    }
+
+   private:
+    void CreateManagers(scoped_refptr<ExternalConstants> external_constants);
+    void InitializeManagersVector();
+    void SortManagersVector();
+    static bool CloudPolicyOverridesPlatformPolicy(
+        const std::vector<scoped_refptr<PolicyManagerInterface>>& providers);
+
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers_;
+    scoped_refptr<PolicyManagerInterface> dm_policy_manager_;
+    scoped_refptr<PolicyManagerInterface> external_constants_policy_manager_;
+    scoped_refptr<PolicyManagerInterface> platform_policy_manager_;
+    scoped_refptr<PolicyManagerInterface> default_policy_manager_;
   };
 
   PolicyService(std::vector<scoped_refptr<PolicyManagerInterface>> managers,
@@ -172,17 +189,11 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,
   // the policy managers within the policy service are reloaded/reset with the
-  // provided DM policy manager. The DM policy manager is preloaded separately
-  // in a blocking sequence since it needs to do I/O to load policies, and then
-  // PolicyManagerLoaded is called.
+  // provided DM policy manager.
   void FetchPoliciesDone(
       scoped_refptr<PolicyFetcher> fetcher,
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
-
-  void PolicyManagerLoaded(
-      int result,
-      std::vector<scoped_refptr<PolicyManagerInterface>> managers);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
@@ -238,11 +249,6 @@ struct PolicyServiceProxyConfiguration {
   std::optional<std::string> proxy_pac_url;
   std::optional<std::string> proxy_url;
 };
-
-std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
-    scoped_refptr<ExternalConstants> external_constants,
-    scoped_refptr<PolicyManagerInterface> dm_policy_manager,
-    scoped_refptr<PolicyManagerInterface> group_policy_manager);
 
 }  // namespace updater
 
