@@ -133,13 +133,17 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
   for (const auto& site : sites) {
     for (const auto& [scheme, port] :
          {std::make_pair("http", 80), std::make_pair("https", 443)}) {
-      auto key = net::CookiePartitionKey::FromStorageKeyComponents(
-          net::SchemefulSite(
-              url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
-          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
-          /*nonce=*/std::nullopt);
-      if (key.has_value()) {
-        keys.push_back(*key);
+      for (auto ancestorChainBit :
+           {net::CookiePartitionKey::AncestorChainBit::kSameSite,
+            net::CookiePartitionKey::AncestorChainBit::kCrossSite}) {
+        auto key = net::CookiePartitionKey::FromStorageKeyComponents(
+            net::SchemefulSite(
+                url::Origin::CreateFromNormalizedTuple(scheme, site, port)),
+            ancestorChainBit,
+            /*nonce=*/std::nullopt);
+        if (key.has_value()) {
+          keys.push_back(*key);
+        }
       }
     }
   }

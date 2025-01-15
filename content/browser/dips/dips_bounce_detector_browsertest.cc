@@ -4045,6 +4045,29 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
               base::test::ValueIs(""));
 }
 
+IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DeleteEmbedded1Ps) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set storage on a.test embedded in another a.test.
+  ASSERT_TRUE(WriteToPartitionedStorage("a.test", "a.test", "foo=bar"));
+  // Confirm written.
+  EXPECT_THAT(ReadFromPartitionedStorage("a.test", "a.test"),
+              base::test::ValueIs("foo=bar"));
+
+  // Perform a stateful bounce on a.test to make it eligible for deletion.
+  ASSERT_TRUE(DoStatefulBounce("b.test", "a.test", "c.test"));
+
+  // Trigger DIPS deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  DIPSService::Get(web_contents->GetBrowserContext())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  ASSERT_THAT(deleted_sites.Get(), ElementsAre("a.test"));
+
+  // Confirm partitioned a.test storage was deleted.
+  EXPECT_THAT(ReadFromPartitionedStorage("a.test", "a.test"),
+              base::test::ValueIs(""));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSDataDeletionBrowserTest,
                          ::testing::Values(&kCookieStorage, &kLocalStorage));
