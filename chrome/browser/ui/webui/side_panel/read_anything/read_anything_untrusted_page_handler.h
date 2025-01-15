@@ -159,9 +159,11 @@ class ReadAnythingUntrustedPageHandler :
                               content::LanguageInstallStatus install_status,
                               const std::string& error) override;
   // extensions::ExtensionRegistryObserver implementation.
-  void OnExtensionInstalled(content::BrowserContext* browser_context,
-                            const extensions::Extension* extension,
-                            bool is_update) override;
+
+  // OnExtensionReady is called even if the TTS engine was previously installed,
+  // which read anything needs to know about to access the new voices.
+  void OnExtensionReady(content::BrowserContext* browser_context,
+                        const extensions::Extension* extension) override;
 #endif
 
   // TranslateDriver::LanguageDetectionObserver:
