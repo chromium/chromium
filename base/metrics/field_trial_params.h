@@ -120,7 +120,11 @@ struct FeatureParam {
   }
   BASE_EXPORT T GetWithoutCache() const;
 
-  // RAW_PTR_EXCLUSION: #global-scope
+  // RAW_PTR_EXCLUSION: Using raw_ptr here would make FeatureParam lose its
+  // trivial destructor, causing it to be classified as a non-trivial class
+  // member in contexts where it's included. This can complicate code and
+  // impact performance. base::Features are expected to be globals with
+  // static lifetime, so this is pretty much always safe.
   RAW_PTR_EXCLUSION const Feature* const feature;
   const char* const name;
   const DefaultValueType default_value;
