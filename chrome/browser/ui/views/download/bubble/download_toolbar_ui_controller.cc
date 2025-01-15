@@ -48,6 +48,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -56,6 +58,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/progress_ring_utils.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -69,6 +72,10 @@
 #endif
 
 namespace {
+
+constexpr int kProgressRingRadius = 9;
+constexpr int kProgressRingRadiusTouchMode = 12;
+constexpr float kProgressRingStrokeWidth = 2.0f;
 
 // Close the partial bubble after 5 seconds if the user doesn't interact with
 // it.
@@ -92,6 +99,155 @@ SkColor GetIconColor(bool is_dormant,
     color_id = kColorDownloadToolbarButtonInactive;
   }
   return color_provider->GetColor(color_id);
+}
+
+class DownloadProgressRing : public views::View, gfx::AnimationDelegate {
+  METADATA_HEADER(DownloadProgressRing, views::View)
+ public:
+  enum class DownloadStatus { kIdle, kDormant, kScanning, kDownloading };
+
+  DownloadProgressRing(DownloadProgressRing&) = delete;
+  DownloadProgressRing& operator=(const DownloadProgressRing&) = delete;
+  ~DownloadProgressRing() override = default;
+
+  // Create a DownloadProgressRing and adds it to |parent|. The
+  // returned progress ring is owned by the |parent|.
+  static DownloadProgressRing* Install(ToolbarButton* parent) {
+    auto progress_ring =
+        base::WrapUnique<DownloadProgressRing>(new DownloadProgressRing());
+    auto* ring = parent->AddChildView(std::move(progress_ring));
+    return ring;
+  }
+
+  // Returns the progress ring if it is a direct child of the `parent`.
+  static DownloadProgressRing* GetProgressRing(ToolbarButton* parent) {
+    for (auto& child : parent->children()) {
+      if (views::IsViewClass<DownloadProgressRing>(child)) {
+        return views::AsViewClass<DownloadProgressRing>(child);
+      }
+    }
+    return nullptr;
+  }
+
+  void SetIdle() {
+    status_ = DownloadStatus::kIdle;
+    scanning_animation_.End();
+    SchedulePaint();
+  }
+
+  void SetDormant() {
+    status_ = DownloadStatus::kDormant;
+    scanning_animation_.End();
+    SchedulePaint();
+  }
+
+  void SetScanning() {
+    status_ = DownloadStatus::kScanning;
+    scanning_animation_.Show();
+    SchedulePaint();
+  }
+
+  void SetDownloading(int progress_percentage) {
+    status_ = DownloadStatus::kDownloading;
+    download_progress_percentage_ = progress_percentage;
+    scanning_animation_.End();
+    SchedulePaint();
+  }
+
+  DownloadStatus GetStatus() { return status_; }
+
+  void UpdateColors(SkColor background_color, SkColor progress_color) {
+    background_color_ = background_color;
+    progress_color_ = progress_color;
+    SchedulePaint();
+  }
+
+ private:
+  DownloadProgressRing() {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    // Don't allow the view to process events.
+    SetCanProcessEventsWithinSubtree(false);
+    scanning_animation_.SetSlideDuration(base::Milliseconds(2500));
+    scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
+  }
+
+  // AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override {
+    SchedulePaint();
+  }
+
+  // View:
+  void Layout(PassKey) override {
+    LayoutSuperclass<views::View>(this);
+    // Fill the parent completely.
+    SetBoundsRect(parent()->GetLocalBounds());
+  }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    // Do not show the progress ring when there is no in progress download.
+    if (status_ == DownloadStatus::kIdle) {
+      return;
+    }
+
+    int ring_radius = ui::TouchUiController::Get()->touch_ui()
+                          ? kProgressRingRadiusTouchMode
+                          : kProgressRingRadius;
+    int x = width() / 2 - ring_radius;
+    int y = height() / 2 - ring_radius;
+    int diameter = 2 * ring_radius;
+    gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
+
+    if (status_ == DownloadStatus::kDormant) {
+      // Draw a static solid ring.
+      views::DrawProgressRing(canvas, gfx::RectFToSkRect(ring_bounds),
+                              background_color_, background_color_,
+                              kProgressRingStrokeWidth,
+                              /*start_angle=*/0,
+                              /*sweep_angle=*/0);
+      return;
+    }
+
+    if (status_ == DownloadStatus::kScanning) {
+      if (!scanning_animation_.is_animating()) {
+        scanning_animation_.Reset();
+        scanning_animation_.Show();
+      }
+      views::DrawSpinningRing(
+          canvas, gfx::RectFToSkRect(ring_bounds), background_color_,
+          progress_color_, kProgressRingStrokeWidth, /*start_angle=*/
+          gfx::Tween::IntValueBetween(scanning_animation_.GetCurrentValue(), 0,
+                                      360));
+      return;
+    }
+
+    if (status_ == DownloadStatus::kDownloading) {
+      views::DrawProgressRing(
+          canvas, gfx::RectFToSkRect(ring_bounds), background_color_,
+          progress_color_, kProgressRingStrokeWidth, /*start_angle=*/-90,
+          /*sweep_angle=*/360 * download_progress_percentage_ / 100.0);
+    }
+  }
+
+  DownloadStatus status_ = DownloadStatus::kIdle;
+  int download_progress_percentage_ = 0;
+  SkColor background_color_ = SK_ColorBLACK;
+  SkColor progress_color_ = SK_ColorBLACK;
+  gfx::SlideAnimation scanning_animation_{this};
+};
+BEGIN_METADATA(DownloadProgressRing)
+END_METADATA
+
+DownloadProgressRing* GetProgressRing(BrowserView* browser_view) {
+  auto* button = GetDownloadsButton(browser_view);
+  if (!button) {
+    return nullptr;
+  }
+  auto* progress_ring = DownloadProgressRing::GetProgressRing(button);
+  if (!progress_ring) {
+    progress_ring = DownloadProgressRing::Install(button);
+  }
+  return progress_ring;
 }
 
 gfx::Insets GetPrimaryViewMargin() {
@@ -193,8 +349,33 @@ void DownloadToolbarUIController::UpdateDownloadIcon(
     active_ = *updates.new_active;
   }
 
-  if (update_icon) {
+  if (updates.new_progress) {
+    const ProgressInfo& new_progress = *updates.new_progress;
+    // Only change the icon if the download count or progress certainty have
+    // changed. If only the percentage changed, the icon itself doesn't
+    // necessarily need to change; the ring change is captured by possibly
+    // scheduling a paint.
+    if (!new_progress.FieldsEqualExceptPercentage(progress_info_)) {
+      update_icon = true;
+    }
+
+    // Schedule a paint when we hit 0 downloads, even if this button is
+    // dormant. This will clear the ring. This is needed to avoid a ring being
+    // left over on a dormant button when going from >0 to 0 downloads.
+    if (new_progress.download_count == 0 && progress_info_.download_count > 0) {
+      redraw_progress_soon_ = true;
+    }
+
+    if (!is_dormant_ && new_progress.progress_percentage !=
+                            progress_info_.progress_percentage) {
+      redraw_progress_soon_ = true;
+    }
+    progress_info_ = new_progress;
+  }
+
+  if (redraw_progress_soon_ || update_icon) {
     UpdateIcon();
+    redraw_progress_soon_ = false;
   }
 }
 
@@ -282,9 +463,24 @@ void DownloadToolbarUIController::UpdateIcon() {
     return;
   }
 
-  if (!GetDownloadsButton(browser_view_)) {
+  auto* button = GetDownloadsButton(browser_view_);
+  if (!button) {
     return;
   }
+
+  bool is_disabled = !action_item_->GetEnabled() || is_dormant_;
+  bool is_active = active_ == IconActive::kActive;
+  SkColor disabled_color =
+      button->GetColorProvider()->GetColor(kColorToolbarButtonIconInactive);
+  SkColor background_color =
+      is_disabled ? disabled_color
+                  : button->GetColorProvider()->GetColor(
+                        kColorDownloadToolbarButtonRingBackground);
+  SkColor progress_color =
+      is_disabled ? disabled_color
+                  : button->GetColorProvider()->GetColor(
+                        is_active ? kColorDownloadToolbarButtonActive
+                                  : kColorDownloadToolbarButtonInactive);
 
   const gfx::VectorIcon* new_icon;
   SkColor icon_color =
@@ -305,6 +501,28 @@ void DownloadToolbarUIController::UpdateIcon() {
                     (!is_dormant_ && (active_ == IconActive::kActive)));
 
   action_item_->SetImage(ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
+
+  redraw_progress_soon_ = false;
+
+  DownloadProgressRing* progress_ring = GetProgressRing(browser_view_);
+  // Do not show the progress ring when there is no in progress download.
+  if (state_ == IconState::kComplete || progress_info_.download_count == 0) {
+    progress_ring->SetIdle();
+    return;
+  }
+
+  progress_ring->UpdateColors(background_color, progress_color);
+
+  if (is_dormant_) {
+    progress_ring->SetDormant();
+    return;
+  }
+
+  if (ShouldShowScanningAnimation()) {
+    progress_ring->SetScanning();
+    return;
+  }
+  progress_ring->SetDownloading(progress_info_.progress_percentage);
 }
 
 void DownloadToolbarUIController::OpenPrimaryDialog() {
@@ -388,6 +606,22 @@ void DownloadToolbarUIController::InvokeUI() {
   controller_->OnButtonPressed();
 }
 
+bool DownloadToolbarUIController::IsProgressRingInDownloadingStateForTesting() {
+  if (auto* progress_ring = GetProgressRing(browser_view_)) {
+    return progress_ring->GetStatus() ==
+           DownloadProgressRing::DownloadStatus::kDownloading;
+  }
+  return false;
+}
+
+bool DownloadToolbarUIController::IsProgressRingInDormantStateForTesting() {
+  if (auto* progress_ring = GetProgressRing(browser_view_)) {
+    return progress_ring->GetStatus() ==
+           DownloadProgressRing::DownloadStatus::kDormant;
+  }
+  return false;
+}
+
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(
     views::Button* toolbar_button,
     base::OnceClosure press_callback)
@@ -422,14 +656,19 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
     return;
   }
 
+  auto* button = GetDownloadsButton(browser_view_);
+  // The bubble should not show if the button doesn't exist since it would have
+  // nothing to anchor to.
+  if (!button) {
+    return;
+  }
+
   // If we are in immersive fullscreen, reveal the toolbar to show the bubble.
   if (browser_view_ && browser_view_->immersive_mode_controller()) {
     immersive_revealed_lock_ =
         browser_view_->immersive_mode_controller()->GetRevealedLock(
             ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
-
-  auto* button = GetDownloadsButton(browser_view_);
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       button, views::BubbleBorder::TOP_RIGHT,
       views::BubbleBorder::DIALOG_SHADOW,
@@ -608,6 +847,12 @@ void DownloadToolbarUIController::CloseAutofillPopup() {
     autofill_client->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kOverlappingWithAnotherPrompt);
   }
+}
+
+bool DownloadToolbarUIController::ShouldShowScanningAnimation() const {
+  bool should_show = !is_dormant_ && (state_ == IconState::kDeepScanning ||
+                                      !progress_info_.progress_certain);
+  return should_show;
 }
 
 void DownloadToolbarUIController::UpdateIconDormant() {
