@@ -2581,6 +2581,13 @@ def main():
                     print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
+                    print('')
+                    print(
+                        'This check originates in third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py.'
+                    )
+                    print(
+                        'If you think this should be allowed, send a CL with an edit to that file.'
+                    )
         except (IOError, UnicodeDecodeError) as e:
             print('could not open %s: %s' % (path, e))
 
