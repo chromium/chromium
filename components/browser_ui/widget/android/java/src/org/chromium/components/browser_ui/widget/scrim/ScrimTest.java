@@ -284,10 +284,7 @@ public class ScrimTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ALL_KEYS)
-                                    .with(TOP_MARGIN, 0)
-                                    .with(AFFECTS_STATUS_BAR, false)
                                     .with(ANCHOR_VIEW, mAnchorView)
-                                    .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .with(BACKGROUND_COLOR, Color.RED)
@@ -366,10 +363,7 @@ public class ScrimTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ALL_KEYS)
-                                    .with(TOP_MARGIN, 0)
-                                    .with(AFFECTS_STATUS_BAR, false)
                                     .with(ANCHOR_VIEW, mAnchorView)
-                                    .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .with(AFFECTS_NAVIGATION_BAR, true)
@@ -389,13 +383,9 @@ public class ScrimTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ALL_KEYS)
-                                    .with(TOP_MARGIN, 0)
-                                    .with(AFFECTS_STATUS_BAR, false)
                                     .with(ANCHOR_VIEW, mAnchorView)
-                                    .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
-                                    .with(AFFECTS_NAVIGATION_BAR, false)
                                     .build();
                         });
         showScrim(model, false);
@@ -416,9 +406,7 @@ public class ScrimTest {
                         () -> {
                             return new PropertyModel.Builder(ALL_KEYS)
                                     .with(TOP_MARGIN, topMargin)
-                                    .with(AFFECTS_STATUS_BAR, false)
                                     .with(ANCHOR_VIEW, mAnchorView)
-                                    .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                                     .with(CLICK_DELEGATE, mClickDelegate)
                                     .with(VISIBILITY_CALLBACK, mVisibilityChangeCallback)
                                     .build();
@@ -513,7 +501,6 @@ public class ScrimTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new PropertyModel.Builder(ALL_KEYS)
-                            .with(TOP_MARGIN, 0)
                             .with(AFFECTS_STATUS_BAR, affectsStatusBar)
                             .with(ANCHOR_VIEW, mAnchorView)
                             .with(SHOW_IN_FRONT_OF_ANCHOR_VIEW, showInFrontOfAnchor)

@@ -912,9 +912,7 @@ public class TabGridDialogView extends FrameLayout {
         mScrimPropertyModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, mDialogContainerView)
-                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                        .with(ScrimProperties.TOP_MARGIN, 0)
                         .with(ScrimProperties.CLICK_DELEGATE, scrimClickRunnable)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
                         .build();
