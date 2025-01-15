@@ -10,12 +10,14 @@
 #include <string>
 
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
+#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -128,6 +130,36 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
 
   std::vector<std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
       received_redirects_;
+};
+
+class ScopedMockContentBrowserClient : public TestContentBrowserClient {
+ public:
+  ScopedMockContentBrowserClient();
+  ~ScopedMockContentBrowserClient() override;
+
+  MOCK_METHOD(
+      void,
+      WillCreateURLLoaderFactory,
+      (BrowserContext * browser_context,
+       RenderFrameHost* frame,
+       int render_process_id,
+       URLLoaderFactoryType type,
+       const url::Origin& request_initiator,
+       const net::IsolationInfo& isolation_info,
+       std::optional<int64_t> navigation_id,
+       ukm::SourceIdObj ukm_source_id,
+       network::URLLoaderFactoryBuilder& factory_builder,
+       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+           header_client,
+       bool* bypass_redirect_checks,
+       bool* disable_secure_dns,
+       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+       scoped_refptr<base::SequencedTaskRunner>
+           navigation_response_task_runner),
+      (override));
+
+ private:
+  raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
 }  // namespace content

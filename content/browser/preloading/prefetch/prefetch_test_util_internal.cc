@@ -11,6 +11,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/public/common/content_client.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -436,6 +437,14 @@ void PrefetchTestURLLoaderClient::OnDataAvailable(
 
 void PrefetchTestURLLoaderClient::OnDataComplete() {
   body_finished_ = true;
+}
+
+ScopedMockContentBrowserClient::ScopedMockContentBrowserClient() {
+  old_browser_client_ = SetBrowserClientForTesting(this);
+}
+
+ScopedMockContentBrowserClient::~ScopedMockContentBrowserClient() {
+  EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
 }
 
 }  // namespace content

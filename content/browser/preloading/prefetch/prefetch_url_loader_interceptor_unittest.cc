@@ -41,21 +41,17 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -144,41 +140,6 @@ class TestPrefetchOriginProber : public PrefetchOriginProber {
   OnProbeResultCallback callback_;
 
   int num_probes_{0};
-};
-
-class ScopedMockContentBrowserClient : public TestContentBrowserClient {
- public:
-  ScopedMockContentBrowserClient() {
-    old_browser_client_ = SetBrowserClientForTesting(this);
-  }
-
-  ~ScopedMockContentBrowserClient() override {
-    EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
-  }
-
-  MOCK_METHOD(
-      void,
-      WillCreateURLLoaderFactory,
-      (BrowserContext * browser_context,
-       RenderFrameHost* frame,
-       int render_process_id,
-       URLLoaderFactoryType type,
-       const url::Origin& request_initiator,
-       const net::IsolationInfo& isolation_info,
-       std::optional<int64_t> navigation_id,
-       ukm::SourceIdObj ukm_source_id,
-       network::URLLoaderFactoryBuilder& factory_builder,
-       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
-           header_client,
-       bool* bypass_redirect_checks,
-       bool* disable_secure_dns,
-       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
-       scoped_refptr<base::SequencedTaskRunner>
-           navigation_response_task_runner),
-      (override));
-
- private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
 class TestPrefetchService : public PrefetchService {
