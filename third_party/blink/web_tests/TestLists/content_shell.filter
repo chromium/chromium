@@ -21,7 +21,6 @@ virtual/popover-hint-disabled/wpt_internal/*
 virtual/async-script-scheduling-disabled/wpt_internal/*
 virtual/async-script-scheduling-apply-to-cross-site-only/wpt_internal/*
 virtual/async-script-scheduling-apply-to-allowlist/wpt_internal/*
-virtual/async-script-scheduling-finished-parsing/wpt_internal/*
 virtual/async-script-scheduling-paint-or-parsing/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
