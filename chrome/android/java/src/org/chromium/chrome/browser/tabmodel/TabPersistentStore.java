@@ -108,6 +108,7 @@ public class TabPersistentStore {
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
 
     private int mDuplicateTabIdsSeen;
+    private boolean mSkipSaveTabList;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -1510,9 +1511,20 @@ public class TabPersistentStore {
 
     /** Kick off an AsyncTask to save the current list of Tabs. */
     public void saveTabListAsynchronously() {
+        if (ChromeFeatureList.sAndroidTabSkipSaveTabsKillswitch.isEnabled() && mSkipSaveTabList) {
+            return;
+        }
         if (mSaveListTask != null) mSaveListTask.cancel(true);
         mSaveListTask = new SaveListTask();
         mSaveListTask.executeOnTaskRunner(mSequencedTaskRunner);
+    }
+
+    /**
+     * Sets the condition which no-ops {#saveTabList} used in cases where there are batch updates to
+     * {@link TabModel}s.
+     */
+    public void setSkipSaveTabList(boolean skipSaveTabList) {
+        mSkipSaveTabList = skipSaveTabList;
     }
 
     private class SaveTabTask extends AsyncTask<Void> {

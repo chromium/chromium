@@ -188,6 +188,8 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH =
             "AndroidTabDeclutterRescueKillswitch";
+    public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
+            "AndroidTabSkipSaveTabsTaskKillswitch";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
@@ -588,6 +590,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false);
     public static final CachedFlag sAndroidAppIntegrationV2 =
             newCachedFlag(ANDROID_APP_INTEGRATION_V2, false);
+    public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
+            newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sNewTabPageCustomization =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
@@ -813,8 +817,8 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationV2,
-                    sNewTabPageCustomization,
                     sAndroidAppIntegrationWithFavicon,
+                    sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
@@ -871,6 +875,7 @@ public abstract class ChromeFeatureList {
                     sNavBarColorAnimation,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
+                    sNewTabPageCustomization,
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
                     sPriceInsights,

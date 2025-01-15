@@ -219,8 +219,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         // If the feature flag is enabled, then start the declutter process. Otherwise, rescue
         // tabs that may have been archived previously.
+        mTabPersistentStore.setSkipSaveTabList(true);
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
-            mArchivedTabModelOrchestrator.maybeBeginDeclutter();
+            mArchivedTabModelOrchestrator.maybeBeginDeclutter(
+                    () -> {
+                        mTabPersistentStore.setSkipSaveTabList(false);
+                        mTabPersistentStore.saveTabListAsynchronously();
+                    });
         } else {
             mArchivedTabModelOrchestrator.maybeRescueArchivedTabs();
         }

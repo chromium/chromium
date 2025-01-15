@@ -197,6 +197,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterArchiveTabGroups,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
     &kAndroidTabDeclutterRescueKillswitch,
+    &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidToolbarScrollAblation,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
@@ -525,6 +526,10 @@ BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch,
 
 BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
              "AndroidTabDeclutterRescueKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,
+             "AndroidTabSkipSaveTabsTaskKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,
