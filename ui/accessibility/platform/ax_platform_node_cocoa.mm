@@ -326,6 +326,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     dict = @{
+      @"accessibilityPerformConfirm" : NSAccessibilityConfirmAction,
       @"accessibilityPerformPress" : NSAccessibilityPressAction,
       @"accessibilityPerformShowMenu" : NSAccessibilityShowMenuAction,
       @"accessibilityPerformDecrement" : NSAccessibilityDecrementAction,
@@ -1453,6 +1454,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return NO;
   }
   return [self performAction:ax::mojom::Action::kIncrement];
+}
+
+- (BOOL)accessibilityPerformConfirm {
+  // Placeholder for the future. Needs to implement Return press key action.
+  return NO;
 }
 
 - (NSMutableArray*)internalAccessibilityAttributeNames {
