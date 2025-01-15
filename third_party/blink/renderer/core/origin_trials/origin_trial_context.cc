@@ -427,7 +427,7 @@ bool OriginTrialContext::InstallFeatures(
     installed_features_.insert(enabled_feature);
 
     if (enabled_feature ==
-        mojom::blink::OriginTrialFeature::kPageFreezeOptOut) {
+        mojom::blink::OriginTrialFeature::kBackgroundPageFreezeOptOut) {
       if (auto* rc = document.GetResourceCoordinator()) {
         UseCounter::Count(document.GetExecutionContext(),
                           WebFeature::kPageFreezeOptOut);
