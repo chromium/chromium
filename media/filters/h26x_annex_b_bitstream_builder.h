@@ -97,10 +97,7 @@ class MEDIA_EXPORT H26xAnnexBBitstreamBuilder {
   // Return a pointer to the stream. FinishNALU() must be called before
   // accessing the stream, otherwise some bits may still be cached and not in
   // the buffer.
-  //
-  // TODO(crbug.com/40284755): Return a span up to `pos_` which is the range of
-  // initialized bytes in `data_`.
-  const uint8_t* data() const;
+  base::span<const uint8_t> data() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(H26xAnnexBBitstreamBuilderAppendBitsTest,

@@ -56,7 +56,8 @@ TEST_F(H264BuilderTest, H264BuildParseIdentity) {
   BuildPackedH264PPS(bitstream_builder, sps, pps);
 
   H264Parser parser;
-  parser.SetStream(bitstream_builder.data(), bitstream_builder.BytesInBuffer());
+  parser.SetStream(bitstream_builder.data().data(),
+                   bitstream_builder.BytesInBuffer());
   H264NALU nalu;
   EXPECT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
