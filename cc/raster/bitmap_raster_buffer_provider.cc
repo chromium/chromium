@@ -76,9 +76,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         << "Why are we rastering a tile that's not dirty?";
 
     size_t stride = 0u;
-    viz::SharedImageFormat format = backing_->shared_image
-                                        ? viz::SinglePlaneFormat::kBGRA_8888
-                                        : viz::SinglePlaneFormat::kRGBA_8888;
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
     RasterBufferProvider::PlaybackToMemory(
         pixels_, format, resource_size_, stride, raster_source,
         raster_full_rect, playback_rect, transform, color_space_,
@@ -118,9 +116,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  DCHECK_EQ(resource.format(), frame_sink_->shared_image_interface()
-                                   ? viz::SinglePlaneFormat::kBGRA_8888
-                                   : viz::SinglePlaneFormat::kRGBA_8888);
+  DCHECK_EQ(resource.format(), viz::SinglePlaneFormat::kBGRA_8888);
 
   const gfx::Size& size = resource.size();
   const gfx::ColorSpace& color_space = resource.color_space();
@@ -150,9 +146,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
 void BitmapRasterBufferProvider::Flush() {}
 
 viz::SharedImageFormat BitmapRasterBufferProvider::GetFormat() const {
-  return frame_sink_->shared_image_interface()
-             ? viz::SinglePlaneFormat::kBGRA_8888
-             : viz::SinglePlaneFormat::kRGBA_8888;
+  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 bool BitmapRasterBufferProvider::IsResourcePremultiplied() const {
