@@ -5,14 +5,13 @@
 #ifndef CONTENT_COMMON_MAC_TASK_PORT_POLICY_H_
 #define CONTENT_COMMON_MAC_TASK_PORT_POLICY_H_
 
-#include <cstdint>
+#include <stdint.h>
+
+#include "base/types/expected.h"
 
 namespace content {
 
 struct MachTaskPortPolicy {
-  // Return value of undocumented MACF policy system call to AMFI to get the
-  // configuration status.
-  int amfi_status_retval = 0;
   // The configuration status value of the MACF policy system call.
   uint64_t amfi_status = 0;
 
@@ -23,7 +22,12 @@ struct MachTaskPortPolicy {
 };
 
 // Gets the current MachTaskPortPolicy.
-MachTaskPortPolicy GetMachTaskPortPolicy();
+// Returns `errno` if an error occurred.
+base::expected<MachTaskPortPolicy, int> GetMachTaskPortPolicy();
+
+// Set crash keys containing system policy state for the lifetime of the
+// process to help debug failures.
+void SetSystemPolicyCrashKeys();
 
 }  // namespace content
 

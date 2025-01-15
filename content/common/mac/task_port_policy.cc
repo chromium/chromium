@@ -4,8 +4,11 @@
 
 #include "content/common/mac/task_port_policy.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/strings/stringprintf.h"
+
 extern "C" {
-int __sandbox_ms(const char* policy, int op, void* arg);
+int __mac_syscall(const char* policy, int op, void* arg);
 }
 
 namespace content {
@@ -25,18 +28,37 @@ enum AmfiStatusFlags {
 }  // namespace
 
 bool MachTaskPortPolicy::AmfiIsAllowEverything() const {
-  return amfi_status_retval == 0 && (amfi_status & kAmfiAllowEverything) != 0;
+  return (amfi_status & kAmfiAllowEverything) != 0;
 }
 
-MachTaskPortPolicy GetMachTaskPortPolicy() {
+base::expected<MachTaskPortPolicy, int> GetMachTaskPortPolicy() {
   MachTaskPortPolicy policy;
 
   // Undocumented MACF system call to Apple Mobile File Integrity.kext. In
   // macOS 12.4 21F79 (and at least back to macOS 12.0), this returns a
   // bitmask containing the AMFI status flags.
-  policy.amfi_status_retval = __sandbox_ms("AMFI", 0x60, &policy.amfi_status);
+  if (__mac_syscall("AMFI", 0x60, &policy.amfi_status) != 0) {
+    return base::unexpected(errno);
+  }
 
   return policy;
+}
+
+void SetSystemPolicyCrashKeys() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "amfi-status", base::debug::CrashKeySize::Size64);
+
+  auto task_port_policy = GetMachTaskPortPolicy();
+  if (task_port_policy.has_value()) {
+    base::debug::SetCrashKeyString(
+        crash_key,
+        base::StringPrintf("rv=0 status=0x%llx allow_everything=%d",
+                           task_port_policy->amfi_status,
+                           task_port_policy->AmfiIsAllowEverything()));
+  } else {
+    base::debug::SetCrashKeyString(
+        crash_key, base::StringPrintf("rv=%d", task_port_policy.error()));
+  }
 }
 
 }  // namespace content
