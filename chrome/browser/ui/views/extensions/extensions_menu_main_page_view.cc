@@ -526,6 +526,8 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   int tooltip_bubble_width = layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  int menu_button_margin = layout_provider->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
 
   return views::Builder<views::FlexLayoutView>()
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
@@ -537,6 +539,8 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                   views::Builder<views::Label>()
                       .CopyAddressTo(&site_settings_label_)
                       .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
+                      .SetMultiLine(true)
+                      .SetAllowCharacterBreak(true)
                       .SetEnabledColorId(kColorExtensionsMenuText)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   views::Builder<views::TooltipIcon>(
@@ -549,6 +553,8 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                           views::BubbleBorder::Arrow::TOP_RIGHT)),
           views::Builder<views::ToggleButton>()
               .CopyAddressTo(&site_settings_toggle_)
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::TLBR(0, menu_button_margin, 0, 0))
               .SetCallback(base::BindRepeating(
                   [](views::ToggleButton* toggle_button,
                      base::RepeatingCallback<void(bool)> callback) {

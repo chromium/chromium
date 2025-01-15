@@ -609,6 +609,40 @@ void SharedImageInterfaceProxy::NotifyMailboxAdded(
   AddMailbox(mailbox);
 }
 
+void SharedImageInterfaceProxy::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  auto params = mojom::CreateSharedImagePoolParams::New();
+  params->pool_id = pool_id;
+  params->client_remote = std::move(client_remote);
+  {
+    base::AutoLock lock(lock_);
+    // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
+    // release ids as seen by the service.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewCreateSharedImagePool(
+                std::move(params))),
+        /*sync_token_fences=*/{}, ++next_release_id_);
+  }
+}
+
+void SharedImageInterfaceProxy::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  auto params = mojom::DestroySharedImagePoolParams::New();
+  params->pool_id = pool_id;
+  {
+    base::AutoLock lock(lock_);
+    // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
+    // release ids as seen by the service.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewDestroySharedImagePool(
+                std::move(params))),
+        /*sync_token_fences=*/{}, ++next_release_id_);
+  }
+}
+
 SharedImageInterfaceProxy::SharedImageRefData::SharedImageRefData() = default;
 SharedImageInterfaceProxy::SharedImageRefData::~SharedImageRefData() = default;
 

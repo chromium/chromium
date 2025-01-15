@@ -1757,24 +1757,25 @@ bool ui::IsNSRange(id value) {
   return std::distance(lineStarts.begin(), iterator);
 }
 
-- (id)AXRangeForLine:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  if (!_owner->IsTextField())
-    return nil;
+- (NSRange)accessibilityRangeForLine:(NSInteger)lineIndex {
+  if (![self instanceActive]) {
+    return NSMakeRange(0, 0);
+  }
 
-  int lineIndex = [(NSNumber*)parameter intValue];
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   std::u16string value = _owner->GetValueForControl();
   int valueLength = static_cast<int>(value.size());
 
   int lineCount = static_cast<int>(lineStarts.size());
-  if (lineIndex < 0 || lineIndex >= lineCount)
-    return nil;
+  if (lineIndex < 0 || lineIndex >= lineCount) {
+    return NSMakeRange(0, 0);
+  }
+
   int start = lineStarts[lineIndex];
   int end =
       (lineIndex < (lineCount - 1)) ? lineStarts[lineIndex + 1] : valueLength;
-  return [NSValue valueWithRange:NSMakeRange(start, end - start)];
+  return NSMakeRange(start, end - start);
 }
 
 // Returns the accessibility value for the given attribute and parameter. If the
@@ -1804,11 +1805,6 @@ bool ui::IsNSRange(id value) {
     // here, but at the moment, test infrastructure still directly calls this
     // api endpoint.
     return nil;
-  }
-
-  if ([attribute
-          isEqualToString:NSAccessibilityRangeForLineParameterizedAttribute]) {
-    return [self AXRangeForLine:parameter];
   }
 
   // LINT.IfChange(accessibilityCellForColumn)

@@ -86,27 +86,22 @@ class ServiceWorkerLiveVersionRefImpl
 mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl>
 ServiceWorkerStorageControlImpl::Create(
     mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner) {
+    const base::FilePath& user_data_directory) {
   return mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new ServiceWorkerStorageControlImpl(
-          user_data_directory, std::move(database_task_runner))),
+      base::WrapUnique(
+          new ServiceWorkerStorageControlImpl(user_data_directory)),
       std::move(receiver));
 }
 
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
-    : storage_(ServiceWorkerStorage::Create(user_data_directory,
-                                            std::move(database_task_runner))),
+    const base::FilePath& user_data_directory)
+    : storage_(ServiceWorkerStorage::Create(user_data_directory)),
       receiver_(this) {}
 
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
     mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver)
-    : storage_(ServiceWorkerStorage::Create(user_data_directory,
-                                            std::move(database_task_runner))),
+    : storage_(ServiceWorkerStorage::Create(user_data_directory)),
       receiver_(this, std::move(receiver)) {}
 
 ServiceWorkerStorageControlImpl::~ServiceWorkerStorageControlImpl() = default;

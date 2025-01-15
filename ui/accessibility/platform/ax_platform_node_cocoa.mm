@@ -429,6 +429,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
   static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
       @selector(accessibilityCellForColumn:row:),
+      @selector(accessibilityRangeForLine:),
   };
 
   // See if the method is permitted by checking its corresponding parameterized
@@ -2422,10 +2423,17 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // Parameterized text-specific attributes.
 
 - (id)AXRangeForLine:(id)parameter {
-  if (![parameter isKindOfClass:[NSNumber class]] || [parameter intValue] != 0)
+  NSNumber* lineNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!lineNumber) {
     return nil;
+  }
 
-  return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
+  int lineIndex = [lineNumber intValue];
+  if (lineIndex != 0) {
+    return nil;
+  }
+
+  return [NSValue valueWithRange:[self accessibilityRangeForLine:lineIndex]];
 }
 
 - (id)AXStringForRange:(id)parameter {
@@ -2460,12 +2468,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  if (![parameter isKindOfClass:[NSNumber class]])
+  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!indexNumber) {
     return nil;
-
-  // TODO(crbug.com/41456329): Implement this for real.
+  }
   return [NSValue
-      valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
+      valueWithRange:[self accessibilityStyleRangeForIndex:[indexNumber
+                                                               intValue]]];
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
@@ -3362,17 +3371,19 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSRange)accessibilityStyleRangeForIndex:(NSInteger)index {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
+  }
 
-  return [[self AXStyleRangeForIndex:@(index)] rangeValue];
+  // TODO(crbug.com/41456329): Implement this for real.
+  return NSMakeRange(0, [self accessibilityNumberOfCharacters]);
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line {
-  if (!_node)
+  if (![self instanceActive]) {
     return NSMakeRange(0, 0);
-
-  return [[self AXRangeForLine:@(line)] rangeValue];
+  }
+  return NSMakeRange(0, [[self getAXValueAsString] length]);
 }
 
 - (NSRange)accessibilityRangeForPosition:(NSPoint)point {

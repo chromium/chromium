@@ -218,7 +218,7 @@ std::vector<std::vector<T>> Permutations(const std::vector<T>& xs) {
   ps.reserve(factorial(xs.size()));
   ps.push_back(xs);
   base::ranges::sort(ps.front());
-  while (base::ranges::next_permutation(ps.front())) {
+  while (std::ranges::next_permutation(ps.front()).found) {
     ps.push_back(ps.front());
   }
   CHECK_EQ(ps.size(), factorial(xs.size()));

@@ -21,7 +21,7 @@ class UnscopedExtensionProviderDelegate {
   virtual ~UnscopedExtensionProviderDelegate();
 
   // Starts a new request to the extension.
-  virtual bool Start(const AutocompleteInput& input,
+  virtual void Start(const AutocompleteInput& input,
                      bool minimal_changes,
                      std::set<std::string> unscoped_mode_extension_ids) = 0;
 

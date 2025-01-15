@@ -45,7 +45,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     }
     // |extra_data| length is based on what was parsed from the patch so this
     // copy should be valid.
-    dst_it = base::ranges::copy(*extra_data, dst_it);
+    dst_it = std::ranges::copy(*extra_data, dst_it).out;
     CHECK_EQ(dst_it, next_dst_it);
     dst_it = std::copy_n(old_image.begin() + equivalence->src_offset,
                          equivalence->length, dst_it);

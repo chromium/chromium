@@ -169,7 +169,6 @@ void InitGlobalNt() {
   INIT_RTL(strlen);
   INIT_RTL(wcslen);
   INIT_RTL(memcpy);
-  INIT_RTL(memset);
   sandbox::g_nt.Initialized = true;
 }
 

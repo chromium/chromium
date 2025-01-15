@@ -154,11 +154,10 @@ TemplateURLService::TemplateURLVector
 LoadedTemplateURLServiceUnitTestBase::GetKeywordTemplateURLs() {
   TemplateURLService::TemplateURLVector turls =
       template_url_service().GetTemplateURLs();
-  turls.erase(base::ranges::remove_if(turls,
-                                      [](const TemplateURL* turl) {
-                                        return turl->starter_pack_id() != 0;
-                                      }),
-              turls.end());
+  auto to_remove = std::ranges::remove_if(turls, [](const TemplateURL* turl) {
+    return turl->starter_pack_id() != 0;
+  });
+  turls.erase(to_remove.begin(), to_remove.end());
   return turls;
 }
 

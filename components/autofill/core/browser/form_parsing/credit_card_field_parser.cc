@@ -349,8 +349,9 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
                            std::u16string_view year_needle) {
       return option.find(year_needle) != std::u16string_view::npos;
     };
-    return base::ranges::search(field->options(), year_needles, is_substring,
-                                option_projection) != field->options().end();
+    return !std::ranges::search(field->options(), year_needles, is_substring,
+                                option_projection)
+                .empty();
   };
   return OptionsContain(years_to_check_2_digit, &SelectOption::value) ||
          OptionsContain(years_to_check_2_digit, &SelectOption::text);

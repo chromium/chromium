@@ -565,10 +565,16 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return takeover_action ? takeover_action->GetVectorIcon()
                              : vector_icons::kSearchChromeRefreshIcon;
 
+    case Type::SEARCH_OTHER_ENGINE:
+      if (provider != nullptr &&
+          provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+        return omnibox::kExtensionAppIcon;
+      }
+      return vector_icons::kSearchChromeRefreshIcon;
+
     case Type::SEARCH_WHAT_YOU_TYPED:
     case Type::SEARCH_SUGGEST_ENTITY:
     case Type::SEARCH_SUGGEST_PROFILE:
-    case Type::SEARCH_OTHER_ENGINE:
     case Type::CONTACT_DEPRECATED:
     case Type::VOICE_SUGGEST:
     case Type::CLIPBOARD_TEXT:

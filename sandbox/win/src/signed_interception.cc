@@ -7,7 +7,6 @@
 #include <ntstatus.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_params.h"
@@ -81,9 +80,7 @@ TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
 
     // Avoid memset inserted by -ftrivial-auto-var-init=pattern on debug builds.
     STACK_UNINITIALIZED CrossCallReturn answer;
-    // SAFETY cannot use {} constructor as this code runs too early and might
-    // introduce a call to the CRT's memset. Instead use ntdll memset.
-    UNSAFE_BUFFERS(GetNtExports()->memset(&answer, 0, sizeof(answer)));
+    Memset(&answer, 0, sizeof(answer));
 
     answer.nt_status = STATUS_INVALID_IMAGE_HASH;
     SharedMemIPCClient ipc(memory);

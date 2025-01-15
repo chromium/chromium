@@ -107,6 +107,8 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
+  "javatests/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarRenderTest.java",
+  "javatests/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientLocationDelegationTest.java",

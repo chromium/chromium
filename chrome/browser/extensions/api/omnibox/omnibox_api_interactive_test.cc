@@ -110,7 +110,7 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-using ContextType = extensions::browser_test_util::ContextType;
+using ContextType = browser_test_util::ContextType;
 
 class OmniboxApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
@@ -184,11 +184,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
            ]);
          });)";
 
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
@@ -301,11 +300,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
            results.push({text, disposition});
          });)";
 
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   LocationBar* location_bar = GetLocationBar(browser());
@@ -626,11 +624,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
            ]);
          });)";
 
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
@@ -926,11 +923,10 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
            "permissions" : [ "omnibox.directInput" ]
          })";
 
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"()");
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   TemplateURLService* turl_service =
@@ -961,11 +957,10 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
            "optional_permissions" : [ "omnibox.directInput" ]
          })";
 
-  extensions::TestExtensionDir test_dir;
+  TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"()");
-  const extensions::Extension* extension =
-      LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   TemplateURLService* turl_service =
@@ -1000,6 +995,97 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
       turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
 }
 
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           let richDescription =
+               'Description with style: <match>&lt;match&gt;</match>, ' +
+               '<dim>[dim]</dim>, <url>(url)</url>';
+           let simpleDescription = 'simple description';
+           suggest([
+             {content: 'first', description: richDescription},
+             {content: 'second', description: simpleDescription},
+             {content: 'third', description: simpleDescription},
+           ]);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Prevent the stop timer from killing the hints fetch early, which might
+  // cause test flakiness due to timeout.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(20));
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if the 3 suggestions are received (+1 for the default search entry).
+  ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
+
+  // First suggestion, complete with rich description.
+  {
+    EXPECT_EQ(u"first", result.match_at(1).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(1).provider->type());
+
+    std::u16string rich_description =
+        u"Description with style: <match>, [dim], (url)";
+    EXPECT_EQ(rich_description, result.match_at(1).contents);
+    EXPECT_EQ(result.match_at(1).provider->type(),
+              AutocompleteProvider::TYPE_UNSCOPED_EXTENSION);
+    const ExpectedMatchComponents expected_components = {
+        {u"Description with style: ", ACMatchClassification::NONE},
+        {u"<match>", ACMatchClassification::MATCH},
+        {u", ", ACMatchClassification::NONE},
+        {u"[dim]", ACMatchClassification::DIM},
+        {u", ", ACMatchClassification::NONE},
+        {u"(url)", ACMatchClassification::URL},
+    };
+    VerifyMatchComponents(expected_components, result.match_at(1));
+  }
+
+  // Second and third suggestions, with simple descriptions.
+  {
+    std::u16string simple_description = u"simple description";
+    const ExpectedMatchComponents expected_components = {
+        {simple_description, ACMatchClassification::NONE},
+    };
+
+    EXPECT_EQ(u"second", result.match_at(2).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(2).provider->type());
+    EXPECT_EQ(simple_description, result.match_at(2).contents);
+    VerifyMatchComponents(expected_components, result.match_at(2));
+
+    EXPECT_EQ(u"third", result.match_at(3).fill_into_edit);
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(3).provider->type());
+    EXPECT_EQ(simple_description, result.match_at(3).contents);
+    VerifyMatchComponents(expected_components, result.match_at(3));
+  }
+}
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          UnscopedOmniboxApiTest,
                          testing::Values(ContextType::kServiceWorker));

@@ -2351,12 +2351,12 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   }
 
   if (get_unclustered_visits_only) {
-    auto remove_it = base::ranges::remove_if(
+    auto to_remove = std::ranges::remove_if(
         visit_rows.begin(), visit_rows.end(), [&](auto& visit) {
           // This may seem slow, but it's an indexed lookup.
           return db_->GetClusterIdContainingVisit(visit.visit_id) > 0;
         });
-    visit_rows.erase(remove_it, visit_rows.end());
+    visit_rows.erase(to_remove.begin(), to_remove.end());
   }
 
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());

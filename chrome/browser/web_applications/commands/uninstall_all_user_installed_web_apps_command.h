@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 
 namespace webapps {
 enum class UninstallResultCode;

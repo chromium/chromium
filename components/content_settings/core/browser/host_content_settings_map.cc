@@ -729,11 +729,15 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
       };
       bool empty = num_requester.empty();
       int max_requester =
-          empty ? 0 : base::ranges::max(num_requester, {}, get_value).second;
+          empty
+              ? 0
+              : base::ranges::max_element(num_requester, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxRequester",
                                    max_requester);
       int max_toplevel =
-          empty ? 0 : base::ranges::max(num_toplevel, {}, get_value).second;
+          empty
+              ? 0
+              : base::ranges::max_element(num_toplevel, {}, get_value)->second;
       base::UmaHistogramCounts1000(histogram_name + ".MaxTopLevel",
                                    max_toplevel);
     }

@@ -133,8 +133,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inflatedId="@+id/bookmark_bar"
-            android:layout="@layout/bookmark_bar"
-            android:minHeight="@dimen/bookmark_bar_min_height" />
+            android:layout="@layout/bookmark_bar" />
 
         <ViewStub
             android:inflatedId="@+id/toolbar_progress_bar_container"

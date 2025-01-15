@@ -808,6 +808,19 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityLineForIndex) {
   EXPECT_EQ([text_field accessibilityLineForIndex:0], 0);
 }
 
+// accessibilityRangeForLine
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRangeForLine) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSRange range = [text_field accessibilityRangeForLine:0];
+  EXPECT_EQ(range.location, 0U);
+  EXPECT_EQ(range.length, 11U);
+}
+
 // accessibilityStringForRange
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   Init(std::string(R"HTML(
@@ -818,6 +831,19 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
   AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
   NSString* string = [text_field accessibilityStringForRange:NSMakeRange(0, 3)];
   EXPECT_TRUE([string isEqualToString:@"hey"]);
+}
+
+// accessibilityStyleRangeForIndex
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityStyleRangeForIndex) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSRange range = [text_field accessibilityStyleRangeForIndex:0];
+  EXPECT_EQ(range.location, 0U);
+  EXPECT_EQ(range.length, 11U);
 }
 
 // Non-header cells should not support accessibilitySortDirection, even if

@@ -1838,7 +1838,7 @@ void ServiceWorkerContextWrapper::BindStorageControl(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&storage::ServiceWorkerStorageControlImpl::Create),
-          std::move(receiver), user_data_directory_, database_task_runner));
+          std::move(receiver), user_data_directory_));
 }
 
 void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(

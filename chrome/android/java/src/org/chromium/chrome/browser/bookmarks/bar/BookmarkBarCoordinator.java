@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.app.Activity;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -23,17 +26,38 @@ public class BookmarkBarCoordinator {
     /**
      * Constructs the bookmark bar coordinator.
      *
+     * @param activity the activity which is hosting the bookmark bar.
      * @param browserControlsManager the manager for browser control positioning/visibility.
      * @param heightChangeCallback a callback to notify of bookmark bar height change events.
+     * @param profileSupplier the supplier for the currently active profile.
      * @param viewStub the stub used to inflate the bookmark bar.
      */
     public BookmarkBarCoordinator(
+            @NonNull Activity activity,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull Callback<Integer> heightChangeCallback,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ViewStub viewStub) {
-        final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
-        mMediator = new BookmarkBarMediator(browserControlsManager, heightChangeCallback, model);
         mView = (BookmarkBar) viewStub.inflate();
+
+        // Bind view/model for 'All Bookmarks' button.
+        final var allBookmarksButtonModel =
+                new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                allBookmarksButtonModel,
+                mView.findViewById(R.id.bookmark_bar_all_bookmarks_button),
+                BookmarkBarButtonViewBinder::bind);
+
+        // Bind view/model for bookmark bar and instantiate mediator.
+        final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
+        mMediator =
+                new BookmarkBarMediator(
+                        activity,
+                        allBookmarksButtonModel,
+                        browserControlsManager,
+                        heightChangeCallback,
+                        model,
+                        profileSupplier);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);
     }
 

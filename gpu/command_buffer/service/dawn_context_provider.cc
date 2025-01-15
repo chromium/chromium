@@ -515,16 +515,21 @@ bool DawnSharedContext::Initialize(
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
-  instance_ = webgpu::DawnInstance::Create(
-      &platform_, gpu_preferences, webgpu::SafetyLevel::kUnsafe,
 #ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
-      // TODO(369445924): fix this code once the new callback type is about to
-      // be landed in dawn.
-      [this](wgpu::LoggingType type, wgpu::StringView message) {
-        DawnSharedContext::LogInfo(type, message, this);
-      });
+  dawn::native::DawnInstanceDescriptor dawn_instance_desc;
+  dawn_instance_desc.SetLoggingCallback(
+      [](wgpu::LoggingType type, wgpu::StringView message,
+         DawnSharedContext* context) {
+        DawnSharedContext::LogInfo(type, message, context);
+      },
+      this);
+  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
+                                           webgpu::SafetyLevel::kUnsafe,
+                                           &dawn_instance_desc);
 #else
-      &DawnSharedContext::LogInfo, this);
+  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
+                                           webgpu::SafetyLevel::kUnsafe,
+                                           &DawnSharedContext::LogInfo, this);
 #endif
 
   std::vector<const char*> enabled_toggles =

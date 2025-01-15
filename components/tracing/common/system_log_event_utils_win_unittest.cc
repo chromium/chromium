@@ -185,7 +185,7 @@ TEST(SystemLogEventUtilsTest, CopyUserSidx64) {
   // too far.
   auto more_bytes = base::HeapArray<uint8_t>::Uninit(bytes_span.size() + 1);
   // Copy the data and set some byte at the end.
-  *base::ranges::copy(bytes_span, more_bytes.begin()) = 0x44;
+  *std::ranges::copy(bytes_span, more_bytes.begin()).out = 0x44;
   // Read out the sid.
   base::BufferIterator<const uint8_t> iterator3(more_bytes);
   ASSERT_NE(CopySid(sizeof(uint64_t), iterator3), std::nullopt);

@@ -610,9 +610,9 @@ void AutofillManager::ParseFormsAsync(
   // into `form_structures_`, duplicates may be destroyed and we'd end up with
   // dangling pointers.
   base::ranges::sort(form_structures, {}, &FormStructure::global_id);
-  form_structures.erase(
-      base::ranges::unique(form_structures, {}, &FormStructure::global_id),
-      form_structures.end());
+  auto repeated =
+      std::ranges::unique(form_structures, {}, &FormStructure::global_id);
+  form_structures.erase(repeated.begin(), repeated.end());
 
   ParseFormsAsyncCommon(
       std::move(form_structures),

@@ -35,6 +35,7 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
 
   void set_done(bool done) { done_ = done; }
   bool done() const { return done_; }
+  ACMatches* matches() { return &matches_; }
 
  private:
   ~UnscopedExtensionProvider() override;

@@ -189,8 +189,6 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void SetUpStorage() {
     storage_impl_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         user_data_directory_.GetPath(),
-        /*database_task_runner=*/
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
         remote_.BindNewPipeAndPassReceiver());
   }
 

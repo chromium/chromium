@@ -153,10 +153,9 @@ void GetAddressComponents(
   }
   // Filter empty lines. Those can appear e.g. when the line consists only of
   // literals and |include_literals| is false.
-  address_components->erase(
-      base::ranges::remove_if(*address_components,
-                              [](auto line) { return line.empty(); }),
-      address_components->end());
+  auto to_remove = std::ranges::remove_if(
+      *address_components, [](auto line) { return line.empty(); });
+  address_components->erase(to_remove.begin(), to_remove.end());
 }
 
 std::vector<AutofillAddressUIComponent> GetAddressComponents(

@@ -2449,13 +2449,6 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", false};
 
-// If enabled, ServiceWorkerStorage suppresses posting tasks when it is
-// possible. This behavior is expected to improve performance by getting rid of
-// redundant posting tasks.
-BASE_FEATURE(kServiceWorkerStorageSuppressPostTask,
-             "ServiceWorkerStorageSuppressPostTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // (crbug.com/352578800): Enables building a sysnthetic response by
 // ServiceWorker. For navigation requests, the pre-learned static response
 // header is returned in parallel with dispatching the network request.

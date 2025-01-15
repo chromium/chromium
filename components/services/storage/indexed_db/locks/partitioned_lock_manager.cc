@@ -273,16 +273,16 @@ void PartitionedLockManager::LockReleased(PartitionedLockId released_lock_id) {
 
 void PartitionedLockManager::LockRequestCancelled() {
   base::TimeTicks start = base::TimeTicks::Now();
-  auto remove_iter = base::ranges::remove_if(
+  auto to_remove = std::ranges::remove_if(
       request_queue_,
       [](AcquisitionRequest& request) { return !request.locks_holder; });
-  if (remove_iter == request_queue_.end()) {
+  if (to_remove.empty()) {
     return;
   }
   const size_t request_queue_size = request_queue_.size();
   // Iterate through the entire queue starting from the erased element, as any
   // subsequent queued request could now be free to start.
-  for (auto iter = request_queue_.erase(remove_iter, request_queue_.end());
+  for (auto iter = request_queue_.erase(to_remove.begin(), to_remove.end());
        iter != request_queue_.end(); MaybeGrantLocksAndIterate(iter)) {
   }
   base::TimeDelta duration = base::TimeTicks::Now() - start;
