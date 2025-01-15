@@ -31,6 +31,10 @@
 
 using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
+// Not defined in current versions of library, but may be in the future:
+#define NSAccessibilityChildrenInNavigationOrderAttribute \
+  @"AXChildrenInNavigationOrder"
+
 @interface AXAnnouncementSpec ()
 
 @property(nonatomic, strong) NSString* announcement;
@@ -284,6 +288,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     dict = @{
       @"accessibilityCellForColumn:row:" :
           NSAccessibilityCellForColumnAndRowParameterizedAttribute,
+      @"accessibilityChildrenInNavigationOrder" :
+          NSAccessibilityChildrenInNavigationOrderAttribute,
       @"accessibilityColumns" : NSAccessibilityColumnsAttribute,
       @"accessibilityColumnCount" : NSAccessibilityColumnCountAttribute,
       @"accessibilityColumnIndexRange" :
@@ -2300,6 +2306,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     }
   }
   return NSAccessibilityUnignoredChildren(children);
+}
+
+- (NSArray*)accessibilityChildrenInNavigationOrder {
+  // We follow Webkit's implementation here.
+  return [self accessibilityChildren];
 }
 
 - (id)AXWindow {
