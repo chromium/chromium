@@ -1001,13 +1001,13 @@ class MediaCodecBridge {
                 // This is always provided by MediaFormatBuilder, but we should see if the input
                 // format has the real value.
                 mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-                if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) {
-                    if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
-                        mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-                    }
-                    return true;
+                if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                    mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
                 }
             }
+
+            // Aligned resolutions are only required for encoding.
+            if ((flags & MediaCodec.CONFIGURE_FLAG_ENCODE) == 0) return true;
 
             // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
             // unfortunately, see https://crbug.com/1084702 for details. It seems they
