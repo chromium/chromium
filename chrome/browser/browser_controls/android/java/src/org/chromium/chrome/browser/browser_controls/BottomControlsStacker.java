@@ -118,6 +118,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // The heights of each layer at their fully shown positions.
     private final SparseIntArray mLayerRestingOffsets = new SparseIntArray();
 
+    // Whether layer is contributing to the minHeight. This is calculated during height calculation,
+    // and won't update when the layers are being repositioned during scroll.
+    private final SparseBooleanArray mLayerHasMinHeight = new SparseBooleanArray();
+    private boolean mHasMoreThanOneNonScrollableLayer;
+
     private final BrowserControlsSizer mBrowserControlsSizer;
 
     private int mTotalHeight = INVALID_HEIGHT;
@@ -182,6 +187,23 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     /** Returns the calculated total min height of all visible layers. */
     public int getTotalMinHeight() {
         return mTotalMinHeight;
+    }
+
+    /**
+     * Whether the layer with {@link type} is not scrollable. To other words, return true iff the
+     * layer is contributing to the bottom control's minHeight.
+     */
+    public boolean isLayerNonScrollable(int type) {
+        return mLayers.get(type) != null && mLayerHasMinHeight.get(type);
+    }
+
+    /**
+     * Whether there are more than one layer that returns true with {@link #isLayerNonScrollable}.
+     * To other words, returns true when more than one layer is contributing to browser control's
+     * minHeight.
+     */
+    public boolean hasMultipleNonScrollableLayer() {
+        return mHasMoreThanOneNonScrollableLayer;
     }
 
     /** Returns if viz is able to move the browser controls now. */
@@ -525,6 +547,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported. Layer: "
                             + layer.getType();
 
+            // When min height exists before processing the current layer's height, it means more
+            // than one non-scrollable layer exists.
+            mHasMoreThanOneNonScrollableLayer = minHeight != 0;
+
             if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                 if (shouldScrollOff) {
                     if (mOffsetTagsInfo != null) {
@@ -537,6 +563,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
             height += layer.getHeight();
             minHeight += shouldScrollOff ? 0 : layer.getHeight();
+            mLayerHasMinHeight.put(type, !shouldScrollOff);
         }
 
         mTotalHeight = height;

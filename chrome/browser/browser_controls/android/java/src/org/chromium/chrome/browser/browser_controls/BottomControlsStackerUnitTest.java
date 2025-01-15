@@ -279,6 +279,8 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test
@@ -292,6 +294,8 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(100, 100);
+        assertLayerNonScrollable(TOP_LAYER, true);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test
@@ -306,6 +310,8 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.addLayer(layer);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(0, 0);
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test
@@ -328,6 +334,10 @@ public class BottomControlsStackerUnitTest {
 
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertLayerNonScrollable(BOTTOM_LAYER, false);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test
@@ -350,6 +360,10 @@ public class BottomControlsStackerUnitTest {
 
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 110);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, true);
+        assertLayerNonScrollable(BOTTOM_LAYER, true);
+        assertHasMultipleNonScrollableLayer(true);
     }
 
     @Test
@@ -372,6 +386,10 @@ public class BottomControlsStackerUnitTest {
 
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 10);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertLayerNonScrollable(BOTTOM_LAYER, true);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test
@@ -401,6 +419,11 @@ public class BottomControlsStackerUnitTest {
 
         verify(mBrowserControlsSizer).setBottomControlsHeight(180, 80);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertLayerNonScrollable(MID_LAYER, true);
+        assertLayerNonScrollable(BOTTOM_LAYER, true);
+        assertHasMultipleNonScrollableLayer(true);
     }
 
     @Test
@@ -423,6 +446,10 @@ public class BottomControlsStackerUnitTest {
 
         verify(mBrowserControlsSizer).setBottomControlsHeight(120, 0);
         verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, false);
+        assertLayerNonScrollable(BOTTOM_LAYER, false);
+        assertHasMultipleNonScrollableLayer(false);
     }
 
     @Test(expected = AssertionError.class)
@@ -1580,6 +1607,20 @@ public class BottomControlsStackerUnitTest {
 
     private void assertLayerYOffset(TestLayer layer, int expectedOffset) {
         assertEquals("Different yOffset observed.", expectedOffset, layer.mYOffset);
+    }
+
+    private void assertLayerNonScrollable(@LayerType int type, boolean nonScrollable) {
+        assertEquals(
+                "isLayerNonScrollable(" + type + ") is unexpected.",
+                nonScrollable,
+                mBottomControlsStacker.isLayerNonScrollable(type));
+    }
+
+    private void assertHasMultipleNonScrollableLayer(boolean hasOtherLayers) {
+        assertEquals(
+                "hasMultipleNonScrollableLayer() is unexpected.",
+                hasOtherLayers,
+                mBottomControlsStacker.hasMultipleNonScrollableLayer());
     }
 
     private static class TestLayer implements BottomControlsLayer {
