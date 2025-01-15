@@ -190,6 +190,9 @@ const char kHistogramLoadTypeFirstContentfulPaintNewNavigation[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.LoadType."
     "NewNavigation";
 
+const char kHistogramFirstContentfulPaintIncognito[] =
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Incognito";
+
 const char kHistogramPageTimingForegroundDuration[] =
     "PageLoad.PageTiming.ForegroundDuration";
 const char kHistogramPageTimingForegroundDurationAfterPaint[] =
@@ -306,12 +309,13 @@ const char kHistogramMemoryTotal[] =
 
 }  // namespace internal
 
-UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
+UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver(bool is_incognito)
     : transition_(ui::PAGE_TRANSITION_LINK),
       was_no_store_main_resource_(false),
       cache_bytes_(0),
       network_bytes_(0),
-      network_bytes_including_headers_(0) {
+      network_bytes_including_headers_(0),
+      is_incognito_(is_incognito) {
   // Emit a trigger to allow trace collection tied to navigations. For
   // simplicity, this signal happens during `WillStartRequest`, which is a bit
   // later than the `navigation_start` timestamp used in
@@ -441,6 +445,11 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramParseStartToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
                             timing.parse_timing->parse_start.value());
+
+    if (is_incognito_) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaintIncognito,
+                          timing.paint_timing->first_contentful_paint.value());
+    }
 
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramTotalSubresourceLoadTimeAtFirstContentfulPaint,

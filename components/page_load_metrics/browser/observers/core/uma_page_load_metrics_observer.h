@@ -60,6 +60,8 @@ extern const char kHistogramLoadTypeFirstContentfulPaintReload[];
 extern const char kHistogramLoadTypeFirstContentfulPaintForwardBack[];
 extern const char kHistogramLoadTypeFirstContentfulPaintNewNavigation[];
 
+extern const char kHistogramFirstContentfulPaintIncognito[];
+
 extern const char kHistogramLoadTypeParseStartReload[];
 extern const char kHistogramLoadTypeParseStartForwardBack[];
 extern const char kHistogramLoadTypeParseStartNewNavigation[];
@@ -138,7 +140,7 @@ enum class PageLoadBackForwardCacheEvent {
 class UmaPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  UmaPageLoadMetricsObserver();
+  explicit UmaPageLoadMetricsObserver(bool is_incognito);
 
   UmaPageLoadMetricsObserver(const UmaPageLoadMetricsObserver&) = delete;
   UmaPageLoadMetricsObserver& operator=(const UmaPageLoadMetricsObserver&) =
@@ -265,6 +267,9 @@ class UmaPageLoadMetricsObserver
 
   bool received_first_subresource_load_ = false;
   base::TimeDelta total_subresource_load_time_;
+
+  // Whether the WebContents being observed is for an Incognito profile.
+  bool is_incognito_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_

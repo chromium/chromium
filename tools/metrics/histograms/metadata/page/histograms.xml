@@ -3878,6 +3878,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Incognito"
+    units="ms" expires_after="2025-06-21">
+  <owner>kjarosz@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    The time from navigation start to first contentful paint. This is a version
+    of PageLoad.PaintTiming.NavigationToFirstContentfulPaint recorded only in
+    incognito.
+
+    This metric does not include all page loads, see the description of
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint for details.
+
+    This histogram is of special interest to polonium@google.com. Do not modify
+    it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI{WebUIName}"
     units="ms" expires_after="2025-06-08">
   <owner>anthonyvd@chromium.org</owner>

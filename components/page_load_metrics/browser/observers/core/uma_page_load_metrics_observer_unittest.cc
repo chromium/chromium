@@ -59,13 +59,16 @@ class UmaPageLoadMetricsObserverTest
   using page_load_metrics::PageLoadMetricsObserverContentTestHarness::
       web_contents;
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
+    tracker->AddObserver(
+        std::make_unique<UmaPageLoadMetricsObserver>(IsIncognito()));
   }
 
   ::base::test::TracingEnvironment tracing_environment_;
 
  protected:
   bool WithFencedFrames() { return GetParam(); }
+
+  virtual bool IsIncognito() { return false; }
 
   content::RenderFrameHost* AppendChildFrame(content::RenderFrameHost* parent,
                                              const char* frame_name) {
@@ -285,6 +288,9 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
   tester()->histogram_tester().ExpectTotalCount(
       kHistogramFirstContentfulPaintFileScheme, 0);
 
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaintIncognito, 0);
+
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   page_load_metrics::mojom::PageLoadTiming timing2;
@@ -306,6 +312,9 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramFirstImagePaint, first_image_paint.InMilliseconds(),
       1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaintIncognito, 0);
 
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramDomContentLoaded, 1);
@@ -339,6 +348,8 @@ TEST_P(UmaPageLoadMetricsObserverTest,
       internal::kHistogramFirstContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLargestContentfulPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaintIncognito, 0);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest,
@@ -363,6 +374,8 @@ TEST_P(UmaPageLoadMetricsObserverTest,
       internal::kHistogramFirstContentfulPaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLargestContentfulPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaintIncognito, 0);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
@@ -1741,4 +1754,41 @@ TEST_P(UmaPageLoadMetricsObserverTest, LCPSpeculationRulesPrerender) {
   // Navigate again to force histogram recording without setting the flag.
   NavigateAndCommit(GURL("https://c.test"));
   TestHistogram(kHistogram, {{kExpected, 1}});
+}
+
+class UmaPageLoadMetricsObserverIncognitoTest
+    : public UmaPageLoadMetricsObserverTest {
+ protected:
+  bool IsIncognito() override { return true; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UmaPageLoadMetricsObserverIncognitoTest,
+                         testing::Bool());
+
+TEST_P(UmaPageLoadMetricsObserverIncognitoTest, FirstContentfulPaintIncognito) {
+  base::TimeDelta first_image_paint = base::Milliseconds(30);
+  base::TimeDelta first_contentful_paint = first_image_paint;
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.paint_timing->first_image_paint = first_image_paint;
+  timing.paint_timing->first_contentful_paint = first_contentful_paint;
+  timing.document_timing->dom_content_loaded_event_start =
+      base::Milliseconds(40);
+  timing.document_timing->load_event_start = base::Milliseconds(100);
+  PopulateRequiredTimingFields(&timing);
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateTimingUpdate(timing);
+
+  for (auto histogram : {internal::kHistogramFirstContentfulPaint,
+                         internal::kHistogramFirstContentfulPaintIncognito}) {
+    tester()->histogram_tester().ExpectTotalCount(histogram, 1);
+    tester()->histogram_tester().ExpectBucketCount(
+        histogram, first_contentful_paint.InMilliseconds(), 1);
+  }
 }
