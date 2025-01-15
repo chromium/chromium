@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/drag_state.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -220,6 +221,12 @@ void DragController::DragEnded() {
   drag_initiator_ = nullptr;
   did_initiate_drag_ = false;
   page_->GetDragCaret().Clear();
+  // When dragging occurs, the mousedown event is triggered, causing the caret's
+  // blinking state to be suspended. Therefore, it is necessary to reset the
+  // blinking state after dragging.
+  if (auto* focused_frame = page_->GetFocusController().FocusedFrame()) {
+    focused_frame->Selection().SetCaretBlinkingSuspended(false);
+  }
 }
 
 void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
