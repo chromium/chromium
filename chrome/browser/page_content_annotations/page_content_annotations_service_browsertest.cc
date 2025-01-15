@@ -1170,6 +1170,24 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
       "OptimizationGuide.AnnotatedPageContent.TotalSize", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
+                       SameDocument) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  GURL url2(embedded_test_server()->GetURL("a.test", "/hello.html/#a"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url2, 1);
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 2);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AnnotatedPageContent.TotalSize", 2);
+}
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 }  // namespace page_content_annotations
