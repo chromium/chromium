@@ -534,7 +534,13 @@ void MessagingBackendServiceImpl::SetCurrentlySelectedTabOnStartup() {
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
-    const tab_groups::SavedTabGroup& added_group) {
+    const tab_groups::SavedTabGroup& added_group,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(added_group);
   if (!collaboration_group_id) {
@@ -549,7 +555,13 @@ void MessagingBackendServiceImpl::OnTabGroupAdded(
 }
 
 void MessagingBackendServiceImpl::OnTabGroupRemoved(
-    tab_groups::SavedTabGroup removed_group) {
+    tab_groups::SavedTabGroup removed_group,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(removed_group);
   if (!collaboration_group_id) {
@@ -575,7 +587,13 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
 }
 
 void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
-    const tab_groups::SavedTabGroup& updated_group) {
+    const tab_groups::SavedTabGroup& updated_group,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(updated_group);
   if (!collaboration_group_id) {
@@ -590,7 +608,13 @@ void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
 }
 
 void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
-    const tab_groups::SavedTabGroup& updated_group) {
+    const tab_groups::SavedTabGroup& updated_group,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(updated_group);
   if (!collaboration_group_id) {
@@ -605,7 +629,13 @@ void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
 }
 
 void MessagingBackendServiceImpl::OnTabAdded(
-    const tab_groups::SavedTabGroupTab& added_tab) {
+    const tab_groups::SavedTabGroupTab& added_tab,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(added_tab);
   if (!collaboration_group_id) {
@@ -630,7 +660,13 @@ void MessagingBackendServiceImpl::OnTabAdded(
 }
 
 void MessagingBackendServiceImpl::OnTabRemoved(
-    tab_groups::SavedTabGroupTab removed_tab) {
+    tab_groups::SavedTabGroupTab removed_tab,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(removed_tab);
   if (!collaboration_group_id) {
@@ -674,7 +710,13 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 }
 
 void MessagingBackendServiceImpl::OnTabUpdated(
-    const tab_groups::SavedTabGroupTab& updated_tab) {
+    const tab_groups::SavedTabGroupTab& updated_tab,
+    tab_groups::TriggerSource source) {
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // TODO(crbug.com/385003046): Handle this.
+    return;
+  }
+
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(updated_tab);
   if (!collaboration_group_id) {

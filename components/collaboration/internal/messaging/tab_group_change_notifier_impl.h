@@ -56,7 +56,8 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
 
   // Processes updates to group metadata and tabs within a group.
   void ProcessTabGroupUpdates(const tab_groups::SavedTabGroup& before,
-                              const tab_groups::SavedTabGroup& after);
+                              const tab_groups::SavedTabGroup& after,
+                              tab_groups::TriggerSource source);
 
   // Looks for the selected tab within our last known shared tab groups and
   // returns it if found, else returns std::nullopt.

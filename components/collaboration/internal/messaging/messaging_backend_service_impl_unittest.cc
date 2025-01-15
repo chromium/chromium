@@ -628,25 +628,29 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEvents) {
   tab_group.SetCreatedByAttribution(gaia1);
   tab_group.SetUpdatedByAttribution(gaia2);
 
-  tg_notifier_observer_->OnTabGroupAdded(tab_group);
+  tg_notifier_observer_->OnTabGroupAdded(tab_group,
+                                         tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_ADDED, DirtyType::kNone,
                            now.ToTimeT());
   EXPECT_EQ(gaia1, GaiaId(message.triggering_user_gaia_id()));
 
-  tg_notifier_observer_->OnTabGroupRemoved(tab_group);
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_REMOVED,
                            DirtyType::kNone, now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
-  tg_notifier_observer_->OnTabGroupNameUpdated(tab_group);
+  tg_notifier_observer_->OnTabGroupNameUpdated(
+      tab_group, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_NAME_UPDATED,
                            DirtyType::kNone, now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
-  tg_notifier_observer_->OnTabGroupColorUpdated(tab_group);
+  tg_notifier_observer_->OnTabGroupColorUpdated(
+      tab_group, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_COLOR_UPDATED,
                            DirtyType::kNone, now.ToTimeT());
@@ -813,7 +817,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabAdded(*tab1);
+  tg_notifier_observer_->OnTabAdded(*tab1, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip,
                            now.ToTimeT());
@@ -861,7 +865,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabUpdated(*tab2);
+  tg_notifier_observer_->OnTabUpdated(*tab2, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_UPDATED,
                            DirtyType::kDotAndChip, now.ToTimeT());
@@ -912,7 +916,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
                   expected_message_dot_tab_group)))
       .Times(1)
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
-  tg_notifier_observer_->OnTabRemoved(tab3);
+  tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_REMOVED, DirtyType::kNone,
                            now.ToTimeT());
@@ -1290,7 +1294,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
           DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
 
   // Removing the currently selected tab should inform the delegate.
-  tg_notifier_observer_->OnTabRemoved(*tab1);
+  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
 
   // We should have received a stored message about the removed tab.
   EXPECT_NE("", db_message.uuid());
@@ -1335,7 +1339,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(
           DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
-  tg_notifier_observer_->OnTabRemoved(*tab1);
+  tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1371,7 +1375,7 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
   EXPECT_CALL(*mock_instant_message_delegate_,
               DisplayInstantaneousMessage(_, _))
       .Times(0);
-  tg_notifier_observer_->OnTabRemoved(*tab2);
+  tg_notifier_observer_->OnTabRemoved(*tab2, tab_groups::TriggerSource::REMOTE);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
@@ -1404,7 +1408,8 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
           DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
 
   // Removing the tab group should inform the delegate.
-  tg_notifier_observer_->OnTabGroupRemoved(tab_group);
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
 
   // We should have received a stored message about the removed tab group.
   EXPECT_NE("", db_message.uuid());
@@ -1450,7 +1455,8 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
           DoAll(SaveArg<0>(&message), MoveArg<1>(&succes_callback)));
 
   // Removing the tab group should inform the delegate.
-  tg_notifier_observer_->OnTabGroupRemoved(tab_group);
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
 
   // If the callback provides success=false we should not clear the bit.
   EXPECT_CALL(*unowned_messaging_backend_store_, ClearDirtyMessage(_, _))
