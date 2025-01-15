@@ -31,6 +31,10 @@
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
+#endif
+
 namespace {
 
 // Navigates a browser window for |profile|, creating one if necessary, to the
@@ -165,6 +169,14 @@ void BrowserCloseManager::CloseBrowsers() {
     if (background_mode_manager) {
       background_mode_manager->SuspendBackgroundMode();
     }
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  auto* glic_background_mode_manager =
+      glic::GlicBackgroundModeManager::GetInstance();
+  if (glic_background_mode_manager) {
+    glic_background_mode_manager->ExitBackgroundMode();
   }
 #endif
 

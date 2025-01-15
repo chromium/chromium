@@ -42,7 +42,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/mac/auth_session_request.h"
@@ -878,13 +877,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
             FirstRunServiceFactory::GetForBrowserContextIfExists(profile)) {
       fre_service->FinishFirstRunWithoutResumeTask();
     }
-  }
-
-  // Exit Glic background mode so the browser can fully close.
-  auto* glic_background_mode_manager =
-      glic::GlicBackgroundModeManager::GetInstance();
-  if (glic_background_mode_manager) {
-    glic_background_mode_manager->ExitBackgroundMode();
   }
 
   // Check for in-process downloads, and prompt the user if they really want
