@@ -269,16 +269,7 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     // non-empty non-extension keyword (i.e., a regular keyword that
     // supports replacement and that has extra text following it),
     // then SearchProvider creates the exact (a.k.a. verbatim) match.
-    //
-    // TODO(manukh): The above comment seems to on longer be true; search won't
-    //   create keyword suggestions. So when `VitalizeAutocompletedKeywords` is
-    //   true, create them here. If `VitalizeAutocompletedKeywords` proves
-    //   useful, we should clean up the keyword provider. Otherwise, we should
-    //   consider deleting the keyword provider; it's matches are scored to low
-    //   to appear usually anyways.
-    if (!remaining_input.empty() && !is_extension_keyword &&
-        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get()
-             .enabled) {
+    if (!remaining_input.empty() && !is_extension_keyword) {
       return;
     }
     // TODO(pkasting): We should probably check that if the user explicitly
@@ -333,10 +324,7 @@ int KeywordProvider::CalculateRelevance(metrics::OmniboxInputType type,
                                         bool prefer_keyword,
                                         bool allow_exact_keyword_match) {
   if (!complete) {
-    return (type == metrics::OmniboxInputType::URL)
-               ? 700
-               : omnibox_feature_configs::VitalizeAutocompletedKeywords::Get()
-                     .score;
+    return (type == metrics::OmniboxInputType::URL) ? 700 : 450;
   }
   if (!supports_replacement)
     return 1500;

@@ -7796,27 +7796,6 @@
             ]
         }
     ],
-    "DesktopOmniboxKeywordProvider": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled",
-                    "params": {
-                        "VitalizeAutocompletedKeywordsScore": "900"
-                    },
-                    "enable_features": [
-                        "OmniboxVitalizeAutocompletedKeywords"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [
