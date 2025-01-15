@@ -1398,6 +1398,16 @@ void AppMenu::BookmarkModelChanged() {
   }
 }
 
+void AppMenu::BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                                size_t old_index,
+                                const bookmarks::BookmarkNode* new_parent,
+                                size_t new_index) {
+  // The delegate is also an observer and will handle updating the menu.
+  // Overriding the BookmarkNodeMoved method prevents the base class from
+  // invoking `BookmarkModelChanged`, which would close the menu.
+  CHECK(bookmark_menu_delegate_.get());
+}
+
 void AppMenu::OnGlobalErrorsChanged() {
   // A change in the global errors list can add or remove items from the
   // menu. Close the menu to avoid have a stale menu on-screen.

@@ -63,6 +63,7 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -638,8 +639,18 @@ void BookmarkMenuDelegate::BookmarkNodeMoved(const BookmarkNode* old_parent,
   if (old_parent_menu) {
     old_parent_menu->ChildrenChanged();
   }
-  if (new_parent_menu && !new_parent->HasAncestor(old_parent)) {
-    new_parent_menu->ChildrenChanged();
+
+  if (new_parent_menu) {
+    if (!new_parent->HasAncestor(old_parent)) {
+      new_parent_menu->ChildrenChanged();
+    }
+
+    // Open the new parent menu if the model was changed from a drag.
+    views::MenuController* new_menu_controller =
+        new_parent_menu ? new_parent_menu->GetMenuController() : nullptr;
+    if (new_menu_controller && new_menu_controller->drag_in_progress()) {
+      new_menu_controller->SelectItemAndOpenSubmenu(new_parent_menu);
+    }
   }
 }
 
