@@ -64,7 +64,8 @@ namespace {
 
 using ImageData = std::vector<unsigned char>;
 
-// First eight are generic icons, which use IDS_NUMBERED_PROFILE_NAME.
+// First eight are generic icons, which used to be called "User <i>" for i=1..7,
+// and are no longer available.
 const int kDefaultNames[] = {
   IDS_DEFAULT_AVATAR_NAME_8,
   IDS_DEFAULT_AVATAR_NAME_9,
@@ -650,31 +651,14 @@ size_t ProfileAttributesStorage::GetNumberOfProfiles() const {
   return profile_attributes_entries_.size();
 }
 
-std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
-    size_t icon_index) const {
+std::u16string ProfileAttributesStorage::ChooseNameForNewProfile() const {
   std::u16string name;
   for (int name_index = 1;; ++name_index) {
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     // Using native digits will break IsDefaultProfileName() below because
     // it uses sscanf.
     // TODO(jshin): fix IsDefaultProfileName to handle native digits.
     name = l10n_util::GetStringFUTF16(IDS_NEW_NUMBERED_PROFILE_NAME,
                                       base::NumberToString16(name_index));
-#else
-    // TODO(crbug.com/41444689): Clean up this code.
-    if (icon_index < profiles::GetGenericAvatarIconCount() ||
-        profiles::IsModernAvatarIconIndex(icon_index)) {
-      name = l10n_util::GetStringFUTF16Int(IDS_NUMBERED_PROFILE_NAME,
-                                           name_index);
-    } else {
-      // TODO(jshin): Check with UX if appending |name_index| to the default
-      // name without a space is intended.
-      name = l10n_util::GetStringUTF16(
-          kDefaultNames[icon_index - profiles::GetGenericAvatarIconCount()]);
-      if (name_index > 1)
-        name.append(base::FormatNumber(name_index));
-    }
-#endif
 
     // Loop through previously named profiles to ensure we're not duplicating.
     std::vector<ProfileAttributesEntry*> entries =
@@ -1081,9 +1065,8 @@ void ProfileAttributesStorage::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     // "Saratoga", ...) to new style default names Person %n ("Person 1").
     if (!IsDefaultProfileName(
             profile_name, /*include_check_for_legacy_profile_name=*/false)) {
-      entries[i]->SetLocalProfileName(
-          ChooseNameForNewProfile(entries[i]->GetAvatarIconIndex()),
-          /*is_default_name=*/true);
+      entries[i]->SetLocalProfileName(ChooseNameForNewProfile(),
+                                      /*is_default_name=*/true);
       continue;
     }
 
@@ -1092,9 +1075,8 @@ void ProfileAttributesStorage::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     // Person 1, Person 2.
     for (size_t j = i + 1; j < entries.size(); j++) {
       if (profile_name == entries[j]->GetLocalProfileName()) {
-        entries[j]->SetLocalProfileName(
-            ChooseNameForNewProfile(entries[j]->GetAvatarIconIndex()),
-            /*is_default_name=*/true);
+        entries[j]->SetLocalProfileName(ChooseNameForNewProfile(),
+                                        /*is_default_name=*/true);
       }
     }
   }

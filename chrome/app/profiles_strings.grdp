@@ -230,9 +230,6 @@
   <message name="IDS_LEGACY_DEFAULT_PROFILE_NAME" desc="The legacy default name given to a new profile.">
     Default Profile
   </message>
-  <message name="IDS_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI.">
-    User <ph name="VALUE">$1<ex>1</ex></ph>
-  </message>
   <message name="IDS_NEW_NUMBERED_PROFILE_NAME" desc="The name given to a newly created profile. Displayed in wrench menu and settings UI using the --new-profile-management flag.">
     Person <ph name="VALUE">$1<ex>1</ex></ph>
   </message>

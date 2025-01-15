@@ -1157,8 +1157,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     } else {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-      profile_name =
-          base::UTF16ToUTF8(storage.ChooseNameForNewProfile(avatar_index));
+      profile_name = base::UTF16ToUTF8(storage.ChooseNameForNewProfile());
 #else
       profile_name = l10n_util::GetStringUTF8(IDS_DEFAULT_PROFILE_NAME);
 #endif

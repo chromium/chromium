@@ -446,13 +446,11 @@ void ProfilePickerView::Reset(StepSwitchFinishedCallback callback) {
 void ProfilePickerView::SwitchToSignedOutPostIdentityFlow(
     std::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
-  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
-
   ProfileManager::CreateMultiProfileAsync(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .ChooseNameForNewProfile(icon_index),
-      icon_index, /*is_hidden=*/true,
+          .ChooseNameForNewProfile(),
+      profiles::GetPlaceholderAvatarIndex(), /*is_hidden=*/true,
       base::BindOnce(&ProfilePickerView::OnLocalProfileInitialized,
                      weak_ptr_factory_.GetWeakPtr(), profile_color,
                      std::move(switch_finished_callback)));

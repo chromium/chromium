@@ -1974,14 +1974,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameResetsDefaultName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(profile_name1,
@@ -2010,7 +2010,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -2026,7 +2026,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(custom_profile_name,
@@ -2055,7 +2055,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -2080,7 +2080,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(gaia_given_name,
