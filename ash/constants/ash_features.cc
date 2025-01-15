@@ -3380,8 +3380,7 @@ bool IsClipboardHistoryUrlTitlesEnabled() {
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kContinuousOverviewScrollAnimation) &&
-         chromeos::features::IsJellyEnabled();
+  return base::FeatureList::IsEnabled(kContinuousOverviewScrollAnimation);
 }
 
 bool IsCoralFeatureEnabled() {
@@ -4060,8 +4059,7 @@ bool IsOobeGaiaInfoScreenEnabled() {
 }
 
 bool IsOobeJellyEnabled() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kOobeJelly);
+  return base::FeatureList::IsEnabled(kOobeJelly);
 }
 
 bool IsModifierSplitEnabled() {
@@ -4160,8 +4158,7 @@ bool IsOsSyncConsentRevampEnabled() {
 }
 
 bool IsParentAccessJellyEnabled() {
-  return chromeos::features::IsJellyEnabled() &&
-         base::FeatureList::IsEnabled(kParentAccessJelly);
+  return base::FeatureList::IsEnabled(kParentAccessJelly);
 }
 
 bool IsPasswordlessGaiaEnabledForConsumers() {
