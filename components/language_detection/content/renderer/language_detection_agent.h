@@ -9,7 +9,6 @@
 #include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/language_detection/content/renderer/language_detection_model_manager.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace language_detection {
 
@@ -40,9 +39,6 @@ class LanguageDetectionAgent : public content::RenderFrameObserver {
   // Whether the render frame observed by |this| was initially hidden and
   // the request for a model is delayed until the frame is in the foreground.
   bool waiting_for_first_foreground_;
-
-  mojo::Remote<mojom::ContentLanguageDetectionDriver>
-      language_detection_handler_;
 
   // Not owned by `this`. It must outlive `this`.
   const raw_ref<language_detection::LanguageDetectionModel>
