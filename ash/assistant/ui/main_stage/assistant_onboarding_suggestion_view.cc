@@ -162,10 +162,11 @@ void AssistantOnboardingSuggestionView::OnThemeChanged() {
   label_->SetEnabledColor(GetForegroundColor(index_));
 
   if (assistant::util::IsResourceLinkType(url_, ResourceLinkType::kIcon)) {
-    icon_->SetImage(assistant::util::CreateVectorIcon(
-        assistant::util::AppendOrReplaceColorParam(url_,
-                                                   GetForegroundColor(index_)),
-        kIconSizeDip));
+    icon_->SetImage(
+        ui::ImageModel::FromImageSkia(assistant::util::CreateVectorIcon(
+            assistant::util::AppendOrReplaceColorParam(
+                url_, GetForegroundColor(index_)),
+            kIconSizeDip)));
   }
 }
 
@@ -263,7 +264,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
 void AssistantOnboardingSuggestionView::UpdateIcon(const gfx::ImageSkia& icon) {
   if (!icon.isNull())
-    icon_->SetImage(icon);
+    icon_->SetImage(ui::ImageModel::FromImageSkia(icon));
 }
 
 void AssistantOnboardingSuggestionView::OnButtonPressed() {
