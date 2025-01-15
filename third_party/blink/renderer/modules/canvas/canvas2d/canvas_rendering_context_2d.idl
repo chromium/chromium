@@ -64,3 +64,4 @@ interface CanvasRenderingContext2D {
 CanvasRenderingContext2D includes BaseRenderingContext2D;
 CanvasRenderingContext2D includes CanvasPath;
 CanvasRenderingContext2D includes Canvas2dGPUTransfer;
+CanvasRenderingContext2D includes CanvasRecordingContext2D;
