@@ -568,8 +568,8 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
         intercept_response_received_args, arg_ready_closure);
 
     auto done = base::BindOnce(
-        &InterceptedRequest::InterceptWithCookieHeader, base::Unretained(this),
-        xrw_enabled,
+        &InterceptedRequest::InterceptWithCookieHeader,
+        weak_factory_.GetWeakPtr(), xrw_enabled,
         base::BindOnce(&OnShouldInterceptRequestAsyncResult,
                        base::Unretained(intercept_response_received_args),
                        arg_ready_closure));
