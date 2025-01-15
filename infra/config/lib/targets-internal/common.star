@@ -666,6 +666,41 @@ def _finalize_resultdb(resultdb):
     d = {a: getattr(resultdb, a) for a in dir(resultdb)}
     return {k: v for k, v in d.items() if v != None}
 
+# flag to merge -> inter-value separator
+_FLAGS_TO_MERGE = {
+    "--enable-features=": ",",
+    "--extra-browser-args=": " ",
+    "--test-launcher-filter-file=": ";",
+    "--extra-app-args=": ",",
+}
+
+def _merge_args(spec_value):
+    new_args = []
+    merged = {}
+    for arg in spec_value["args"]:
+        found_flag = False
+        for flag in _FLAGS_TO_MERGE:
+            # Add a placeholder, recording the index and the flag's value. Later
+            # instances of the flag will add their value to the list without
+            # updating new_args. After all arguments have been examined, the
+            # placeholders will be replaced with the flag with combined values.
+            if arg.startswith(flag):
+                value = arg.removeprefix(flag)
+                if flag not in merged:
+                    merged[flag] = len(new_args), [value]
+                    new_args.append(None)
+                else:
+                    _, values = merged[flag]
+                    values.append(value)
+                found_flag = True
+                break
+        if not found_flag:
+            new_args.append(arg)
+    for flag, (idx, values) in merged.items():
+        separator = _FLAGS_TO_MERGE[flag]
+        new_args[idx] = flag + separator.join(values)
+    spec_value["args"] = new_args
+
 def _spec_init(node, settings, *, additional_fields = {}, binary_node = None):
     """Init for gtest and isolated script test specs."""
     binary_node = binary_node or _get_test_binary_node(node)
@@ -707,7 +742,7 @@ def _resolve_magic_args(builder_name, settings, spec_value):
             new_args.append(arg)
     spec_value["args"] = new_args
 
-def _spec_finalize(builder_name, settings, spec_value, default_merge_script, default_test_type):
+def _spec_finalize(builder_name, settings, spec_value, default_merge_script, default_test_type, *, default_shard_level_retries_on_ctp = 1):
     swarming = _finalize_swarming(spec_value["swarming"])
     spec_value["swarming"] = swarming
 
@@ -737,8 +772,8 @@ def _spec_finalize(builder_name, settings, spec_value, default_merge_script, def
                 autotest_name = "chromium"
             spec_value["autotest_name"] = autotest_name
 
-        if spec_value.get("experiment_percentage") != 100:
-            spec_value.setdefault("shard_level_retries_on_ctp", 1)
+        if spec_value.get("experiment_percentage") != 100 and default_shard_level_retries_on_ctp != None:
+            spec_value.setdefault("shard_level_retries_on_ctp", default_shard_level_retries_on_ctp)
 
     elif swarming:
         # Ensure all Android Swarming tests run only on userdebug builds if
@@ -757,6 +792,7 @@ def _spec_finalize(builder_name, settings, spec_value, default_merge_script, def
 
     if spec_value["args"]:
         _resolve_magic_args(builder_name, settings, spec_value)
+        _merge_args(spec_value)
 
     return test_type, spec_value
 

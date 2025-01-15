@@ -3832,6 +3832,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
+    targets = [
+        # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
+        # enabled here, but are removed for various reasons. See the definition
+        # for gpu_fyi_chromeos_release_gtests for more information.
+        targets.bundle(
+            targets = "gpu_common_gtests_passthrough",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -3839,6 +3854,42 @@ targets.bundle(
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
+    targets = [
+        targets.bundle(
+            targets = "gpu_common_and_optional_telemetry_tests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_passthrough_telemetry_tests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webcodecs_telemetry_test",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
     ],
 )
 

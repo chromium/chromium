@@ -84,8 +84,9 @@ int GetTabIdForMatchedRule(content::BrowserContext* browser_context,
   }
 
   DCHECK(ExtensionsBrowserClient::Get());
-  return ExtensionsBrowserClient::Get()->IsValidTabId(browser_context,
-                                                      request_tab_id)
+  return ExtensionsBrowserClient::Get()->IsValidTabId(
+             browser_context, request_tab_id, /*include_incognito=*/true,
+             /*web_contents=*/nullptr)
              ? request_tab_id
              : extension_misc::kUnknownTabId;
 }

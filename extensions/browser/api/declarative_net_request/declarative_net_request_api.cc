@@ -542,8 +542,9 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   // valid as it would cause the API call to return all rules matched that were
   // not associated with any currently open tabs.
   if (tab_id && *tab_id != extension_misc::kUnknownTabId &&
-      !ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(),
-                                                    *tab_id)) {
+      !ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(), *tab_id,
+                                                    /*include_incognito=*/true,
+                                                    /*web_contents=*/nullptr)) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         declarative_net_request::kTabNotFoundError,
         base::NumberToString(*tab_id))));
@@ -641,8 +642,9 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
     const auto& update_options = *params->options.tab_update;
     int tab_id = update_options.tab_id;
 
-    if (!ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(),
-                                                      tab_id)) {
+    if (!ExtensionsBrowserClient::Get()->IsValidTabId(
+            browser_context(), tab_id, /*include_incognito=*/true,
+            /*web_contents=*/nullptr)) {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
           declarative_net_request::kTabNotFoundError,
           base::NumberToString(tab_id))));

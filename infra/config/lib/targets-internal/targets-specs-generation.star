@@ -328,41 +328,6 @@ def _get_bundle_resolver():
 
     return resolve
 
-# flag to merge -> inter-value separator
-_FLAGS_TO_MERGE = {
-    "--enable-features=": ",",
-    "--extra-browser-args=": " ",
-    "--test-launcher-filter-file=": ";",
-    "--extra-app-args=": ",",
-}
-
-def _merge_args(spec_value):
-    new_args = []
-    merged = {}
-    for arg in spec_value["args"]:
-        found_flag = False
-        for flag in _FLAGS_TO_MERGE:
-            # Add a placeholder, recording the index and the flag's value. Later
-            # instances of the flag will add their value to the list without
-            # updating new_args. After all arguments have been examined, the
-            # placeholders will be replaced with the flag with combined values.
-            if arg.startswith(flag):
-                value = arg.removeprefix(flag)
-                if flag not in merged:
-                    merged[flag] = len(new_args), [value]
-                    new_args.append(None)
-                else:
-                    _, values = merged[flag]
-                    values.append(value)
-                found_flag = True
-                break
-        if not found_flag:
-            new_args.append(arg)
-    for flag, (idx, values) in merged.items():
-        separator = _FLAGS_TO_MERGE[flag]
-        new_args[idx] = flag + separator.join(values)
-    spec_value["args"] = new_args
-
 def get_targets_spec_generator():
     """Get a generator for builders' targets specs.
 
@@ -401,8 +366,6 @@ def get_targets_spec_generator():
         for test_name, spec in test_spec_by_name.items():
             spec_value = dict(spec.value)
             type_key, sort_key, spec_value = spec.handler.finalize(builder_name, test_name, settings, spec_value)
-            if "args" in spec_value:
-                _merge_args(spec_value)
             if test_name in current_autoshard_exceptions:
                 spec_value["swarming"]["shards"] = current_autoshard_exceptions[test_name]
             finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}

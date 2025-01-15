@@ -55,7 +55,8 @@
           "builder": "gpu-fyi-try-chromeos-skylab-volteer",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ChromeOS FYI Release Skylab (volteer)/targets"
     }
   },
   "$build/reclient": {

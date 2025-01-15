@@ -1362,6 +1362,9 @@ targets.legacy_basic_suite(
                 # to run. Split them into roughly 5-minute shards.
                 shards = 20,
             ),
+            skylab = targets.skylab(
+                shards = 20,
+            ),
         ),
     },
 )
@@ -1464,6 +1467,9 @@ targets.legacy_basic_suite(
                 targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
             ],
             swarming = targets.swarming(
+                shards = 6,
+            ),
+            skylab = targets.skylab(
                 shards = 6,
             ),
         ),

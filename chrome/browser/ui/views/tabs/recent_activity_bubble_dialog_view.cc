@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
@@ -409,6 +410,10 @@ void RecentActivityBubbleCoordinator::ShowCommon(
       RecentActivityBubbleDialogView::CreateBubble(std::move(bubble));
   bubble_widget_observation_.Observe(widget);
   widget->Show();
+
+  tab_groups::saved_tab_groups::metrics::RecordSharedTabGroupManageType(
+      tab_groups::saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::
+          kRecentActivity);
 }
 
 void RecentActivityBubbleCoordinator::Show(

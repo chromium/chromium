@@ -190,8 +190,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsScreenshotRestricted(
       content::WebContents* web_contents) const override;
   bool IsValidTabId(content::BrowserContext* context,
-                    int tab_id) const override;
-  bool IsValidTabId(content::BrowserContext* context,
                     int tab_id,
                     bool include_incognito,
                     content::WebContents** web_contents) const override;
