@@ -2964,6 +2964,9 @@ extern const char kReadAnythingDocsLoadMoreButtonDescription[];
 extern const char kLinkPreviewName[];
 extern const char kLinkPreviewDescription[];
 
+extern const char kMoveThemePrefsToSpecificsName[];
+extern const char kMoveThemePrefsToSpecificsDescription[];
+
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];
 

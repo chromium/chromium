@@ -5080,6 +5080,13 @@ const char kLinkPreviewDescription[] =
     "security, privacy, and usability. The feature might be unstable and "
     "unusable on some platforms, e.g. macOS or touch devices.";
 
+const char kMoveThemePrefsToSpecificsName[] =
+    "Move theme prefs to ThemeSpecifics";
+const char kMoveThemePrefsToSpecificsDescription[] =
+    "Uses new fields in ThemeSpecifics for theme attributes which were "
+    "previously synced using preferences, thereby putting syncing of all the "
+    "theme attributes behind the Themes sync toggle.";
+
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 const char kMuteNotificationSnoozeActionDescription[] =

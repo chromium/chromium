@@ -15809,6 +15809,7 @@ from previous Chrome versions.
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
   <int value="-1863893966" label="InstallPromptSegmentation:enabled"/>
   <int value="-1863249844" label="AccessibilityService:disabled"/>
+  <int value="-1863066403" label="MoveThemePrefsToSpecifics:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
@@ -23947,6 +23948,7 @@ from previous Chrome versions.
   <int value="1376437124" label="show-cert-link"/>
   <int value="1376758377" label="StaticStorageQuota:disabled"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
+  <int value="1377778121" label="MoveThemePrefsToSpecifics:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1378638083" label="UniversalInstallRootScopeNoManifest:enabled"/>
