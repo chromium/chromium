@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
-import androidx.test.annotation.UiThreadTest;
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ActivityScenario.ActivityAction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,26 +33,22 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
-import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-// TODO(crbug.com): Move to junit tests.
 /** Unit tests for {@link BookmarkBarCoordinator}. */
-@Batch(Batch.PER_CLASS)
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class BookmarkBarCoordinatorTest {
 
-    @ClassRule
-    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -62,19 +59,12 @@ public class BookmarkBarCoordinatorTest {
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkBar mView;
 
-    @BeforeClass
-    public static void setUpClass() {
-        sActivityTestRule.launchActivity(null);
-    }
-
     @Before
-    @UiThreadTest
     public void setUp() {
-        createCoordinator();
+        onActivity(this::createCoordinator);
     }
 
-    private void createCoordinator() {
-        final var activity = sActivityTestRule.getActivity();
+    private void createCoordinator(@NonNull Activity activity) {
         final var viewStub = new ViewStub(activity, R.layout.bookmark_bar);
         viewStub.setOnInflateListener((stub, view) -> mView = (BookmarkBar) view);
 
@@ -94,16 +84,18 @@ public class BookmarkBarCoordinatorTest {
         assertNotNull("Verify view stub inflation during construction.", mView);
     }
 
+    private void onActivity(@NonNull ActivityAction<TestActivity> callback) {
+        mActivityScenarioRule.getScenario().onActivity(callback);
+    }
+
     @Test
     @SmallTest
-    @UiThreadTest
     public void testConstructorWhenTopControlOffsetIsNonZero() {
         testConstructor(/* topControlOffset= */ -1);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testConstructorWhenTopControlOffsetIsZero() {
         testConstructor(/* topControlOffset= */ 0);
     }
@@ -111,13 +103,11 @@ public class BookmarkBarCoordinatorTest {
     private void testConstructor(int topControlOffset) {
         // Initialize browser controls manager.
         final int topControlsHeight = 1;
-        when(mBrowserControlsManager.getTopControlsHeight())
-                .thenAnswer(invocation -> topControlsHeight);
-        when(mBrowserControlsManager.getTopControlOffset())
-                .thenAnswer(invocation -> topControlOffset);
+        when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
+        when(mBrowserControlsManager.getTopControlOffset()).thenReturn(topControlOffset);
 
         // Invoke constructor.
-        createCoordinator();
+        onActivity(this::createCoordinator);
 
         assertEquals(
                 "Verify view top margin.",
@@ -132,14 +122,18 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testOnBookmarkBarHeightChanged() {
-        // Verify initial state. Note that the `mHeightChangeCallback` is expected to have been
-        // registered for observation during `mCoordinator` construction.
+        // Verify initial state.
         ObservableSupplier<Integer> heightSupplier = mCoordinator.getHeightSupplier();
         assertEquals("Verify initial state.", 0, heightSupplier.get().intValue());
-        verify(mHeightChangeCallback).onResult(0);
-        verifyNoMoreInteractions(mHeightSupplierObserver);
+
+        // NOTE: the `mHeightChangeCallback` is expected to have been registered for observation
+        // during `mCoordinator` construction and notified of initial height via posted task.
+        onActivity(
+                activity -> {
+                    verify(mHeightChangeCallback).onResult(0);
+                    verifyNoMoreInteractions(mHeightSupplierObserver);
+                });
 
         // Register another observer explicitly.
         heightSupplier.addObserver(mHeightSupplierObserver);
@@ -171,12 +165,10 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testOnTopControlsHeightChanged() {
         // Initialize browser controls manager.
         final int topControlsHeight = 1;
-        when(mBrowserControlsManager.getTopControlsHeight())
-                .thenAnswer(invocation -> topControlsHeight);
+        when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
 
         // Simulate top controls height changed.
         final var obs = ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
@@ -194,7 +186,6 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testOnTopControlsOffsetChanged() {
         // Initialize browser controls manager.
         final var topControlOffset = new AtomicInteger(-1);

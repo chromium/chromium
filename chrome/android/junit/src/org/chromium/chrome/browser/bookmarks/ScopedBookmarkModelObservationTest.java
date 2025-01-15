@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScopedBookmarkModelObservationTest {
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BookmarkItem mFolder;
     @Mock private BookmarkId mFolderId;
@@ -97,7 +98,7 @@ public class ScopedBookmarkModelObservationTest {
         }
     }
 
-    private static List<BookmarkId> getIds(List<BookmarkItem> items) {
+    private static List<BookmarkId> getIds(@NonNull List<BookmarkItem> items) {
         return items.stream().map(BookmarkItem::getId).collect(Collectors.toList());
     }
 
