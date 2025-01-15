@@ -17,6 +17,8 @@ class PrefService;
 
 namespace autofill {
 
+class AddressDataManager;
+class PaymentsDataManager;
 class PaymentInstrument;
 
 // Android wrapper of the PersonalDataManager which provides access from the
@@ -157,8 +159,11 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcard);
 
-  // Removes the profile or credit card represented by |guid|.
-  void RemoveByGUID(JNIEnv* env, std::string& guid);
+  // Removes the credit card or IBAN represented by `guid`.
+  void RemoveByGUID(JNIEnv* env, const std::string& guid);
+
+  // Removes the profile represented by `guid`.
+  void RemoveProfile(JNIEnv* env, const std::string& guid);
 
   // Delete all local credit cards.
   void DeleteAllLocalCreditCards(JNIEnv* env);
@@ -296,13 +301,26 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   static std::vector<int> GetPaymentRailsFromPaymentInstrument(
       const PaymentInstrument& payment_instrument);
 
+  AddressDataManager& address_data_manager() {
+    return pdm_observation_.GetSource()->address_data_manager();
+  }
+
+  const AddressDataManager& address_data_manager() const {
+    return const_cast<PersonalDataManagerAndroid*>(this)
+        ->address_data_manager();
+  }
+
+  PaymentsDataManager& payments_data_manager() {
+    return pdm_observation_.GetSource()->payments_data_manager();
+  }
+
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;
 
-  // Pointer to the PersonalDataManager for the main profile.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      pdm_observation_{this};
 
-  raw_ptr<PrefService> prefs_;
+  const raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace autofill

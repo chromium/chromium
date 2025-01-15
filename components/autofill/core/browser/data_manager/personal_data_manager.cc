@@ -104,12 +104,6 @@ void PersonalDataManager::SetSyncServiceForTest(
   payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
 }
 
-void PersonalDataManager::RemoveByGUID(const std::string& guid) {
-  if (!payments_data_manager_->RemoveByGUID(guid)) {
-    address_data_manager_->RemoveProfile(guid);
-  }
-}
-
 bool PersonalDataManager::IsDataLoaded() const {
   return address_data_manager_->has_initial_load_finished() &&
          payments_data_manager_->is_payments_data_loaded();

@@ -714,7 +714,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   for (NSIndexPath* indexPath in indexPaths) {
     AutofillCardItem* item = base::apple::ObjCCastStrict<AutofillCardItem>(
         [self.tableViewModel itemAtIndexPath:indexPath]);
-    _personalDataManager->RemoveByGUID(item.GUID);
+    _personalDataManager->payments_data_manager().RemoveByGUID(item.GUID);
   }
 
   self.editing = NO;

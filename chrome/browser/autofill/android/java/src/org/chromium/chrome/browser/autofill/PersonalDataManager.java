@@ -780,7 +780,7 @@ public class PersonalDataManager implements Destroyable {
 
     public void deleteProfile(String guid) {
         ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().removeByGUID(mPersonalDataManagerAndroid, guid);
+        PersonalDataManagerJni.get().removeProfile(mPersonalDataManagerAndroid, guid);
     }
 
     public String setProfile(AutofillProfile profile) {
@@ -1279,6 +1279,9 @@ public class PersonalDataManager implements Destroyable {
                 @JniType("std::u16string") String cardNumber, boolean emptyIfInvalid);
 
         void removeByGUID(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
+
+        void removeProfile(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         void recordAndLogProfileUse(

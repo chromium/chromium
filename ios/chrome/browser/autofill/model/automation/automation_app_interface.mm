@@ -132,19 +132,20 @@ NSError* PrepareAutofillProfileWithValues(
   // Clear all existing local data and save the profile and credit card
   // generated to the personal data manager.
   ProfileIOS* profileIOS = chrome_test_util::GetOriginalProfile();
-  PersonalDataManager* personal_data_manager =
+  PersonalDataManager* pdm =
       PersonalDataManagerFactory::GetForProfile(profileIOS);
-  for (const autofill::CreditCard* local_card :
-       personal_data_manager->payments_data_manager().GetLocalCreditCards()) {
-    personal_data_manager->RemoveByGUID(local_card->guid());
+  autofill::PaymentsDataManager& paydm = pdm->payments_data_manager();
+  for (const autofill::CreditCard* local_card : paydm.GetLocalCreditCards()) {
+    paydm.RemoveByGUID(local_card->guid());
   }
+  autofill::AddressDataManager& adm = pdm->address_data_manager();
   for (const autofill::AutofillProfile* local_profile :
-       personal_data_manager->address_data_manager().GetProfilesByRecordType(
+       adm.GetProfilesByRecordType(
            autofill::AutofillProfile::RecordType::kLocalOrSyncable)) {
-    personal_data_manager->RemoveByGUID(local_profile->guid());
+    adm.RemoveProfile(local_profile->guid());
   }
-  personal_data_manager->payments_data_manager().AddCreditCard(credit_card);
-  personal_data_manager->address_data_manager().AddProfile(profile);
+  paydm.AddCreditCard(credit_card);
+  adm.AddProfile(profile);
 
   return nil;
 }

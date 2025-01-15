@@ -233,7 +233,8 @@ class WebViewPasswordStoreObserver
 }
 
 - (void)deleteProfile:(CWVAutofillProfile*)profile {
-  _personalDataManager->RemoveByGUID(profile.internalProfile->guid());
+  _personalDataManager->address_data_manager().RemoveProfile(
+      profile.internalProfile->guid());
 }
 
 - (void)fetchCreditCardsWithCompletionHandler:

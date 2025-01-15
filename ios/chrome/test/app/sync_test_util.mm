@@ -320,7 +320,7 @@ void ClearAutofillProfile(std::string guid) {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForProfile(profile);
-  personal_data_manager->RemoveByGUID(guid);
+  personal_data_manager->address_data_manager().RemoveProfile(guid);
 }
 
 BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,

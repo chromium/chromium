@@ -124,14 +124,6 @@ class PersonalDataManager : public KeyedService,
   void AddObserver(PersonalDataManagerObserver* observer);
   void RemoveObserver(PersonalDataManagerObserver* observer);
 
-  // Depending on what the `guid` identifies, removes either an AutofillProfile,
-  // a credit card or an IBAN.
-  // TODO(crbug.com/322170538): Remove. Callers should use one of the following
-  // functions instead:
-  // - `address_data_manager().RemoveProfile()`.
-  // - `payments_data_manager().RemoveByGUID()`.
-  void RemoveByGUID(const std::string& guid);
-
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;
 
