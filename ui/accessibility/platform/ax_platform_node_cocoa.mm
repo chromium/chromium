@@ -435,7 +435,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
   static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
       @selector(accessibilityCellForColumn:row:),
+      @selector(accessibilityRangeForIndex:),
       @selector(accessibilityRangeForLine:),
+      @selector(accessibilityRangeForPosition:),
   };
 
   // See if the method is permitted by checking its corresponding parameterized
@@ -2456,14 +2458,23 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXRangeForPosition:(id)parameter {
-  // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
-  NOTIMPLEMENTED();
-  return nil;
+  NSValue* positionValue = base::apple::ObjCCast<NSValue>(parameter);
+  if (!positionValue) {
+    return nil;
+  }
+
+  NSPoint point = [positionValue pointValue];
+  return [NSValue valueWithRange:[self accessibilityRangeForPosition:point]];
 }
 
 - (id)AXRangeForIndex:(id)parameter {
-  NOTIMPLEMENTED();
-  return nil;
+  NSNumber* indexNumber = base::apple::ObjCCast<NSNumber>(parameter);
+  if (!indexNumber) {
+    return nil;
+  }
+
+  NSInteger index = [indexNumber intValue];
+  return [NSValue valueWithRange:[self accessibilityRangeForIndex:index]];
 }
 
 - (id)AXBoundsForRange:(id)parameter {
@@ -3375,10 +3386,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSRange)accessibilityRangeForIndex:(NSInteger)index {
-  if (!_node)
-    return NSMakeRange(0, 0);
-
-  return [[self AXRangeForIndex:@(index)] rangeValue];
+  NOTIMPLEMENTED();
+  return NSMakeRange(0, 0);
 }
 
 - (NSRange)accessibilityStyleRangeForIndex:(NSInteger)index {
@@ -3398,7 +3407,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSRange)accessibilityRangeForPosition:(NSPoint)point {
-  return [[self AXRangeForPosition:[NSValue valueWithPoint:point]] rangeValue];
+  // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
+  NOTIMPLEMENTED();
+  return NSMakeRange(0, 0);
 }
 
 // NSAccessibility: setting content and values.
