@@ -38,16 +38,8 @@ BASE_FEATURE(kRestrictExternalVkImageBackingScanoutSupportToFuchsia,
 // TODO(crbug.com/330865436): Eliminate once killswitches checked within this
 // function roll out safely.
 bool RestrictScanoutSupportToFuchsia() {
-  // Restricting SCANOUT support here requires that SW VideoFrames are
-  // guarding their addition of SCANOUT usage by SCANOUT support being present
-  // in SharedImageCapabilities.
-  if (!base::FeatureList::IsEnabled(
-          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_OZONE)
-  // On Ozone, It also requires that we are computing SCANOUT support in
+  // On Ozone, this requires that we are computing SCANOUT support in
   // SharedImageCapabilities by overlays being supported rather than the
   // too-generous native pixmaps being supported.
   if (!base::FeatureList::IsEnabled(

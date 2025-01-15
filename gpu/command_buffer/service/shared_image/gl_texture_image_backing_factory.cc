@@ -52,10 +52,6 @@ bool SupportScanout() {
     return true;
   }
   if (!base::FeatureList::IsEnabled(
-          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(
           features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
     return true;
   }
