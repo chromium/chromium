@@ -140,7 +140,7 @@ class TabAppSelectionView::TabAppSelectionItemView
         owner_(params.owner) {
     views::Builder<views::BoxLayoutView>(this)
         .SetAccessibleRole(ax::mojom::Role::kMenuItem)
-        .SetAccessibleName(u"TempAccessibleName")
+        .SetAccessibleName(base::UTF8ToUTF16(params.title))
         .SetBetweenChildSpacing(kItemChildSpacing)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
         .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
@@ -180,6 +180,8 @@ class TabAppSelectionView::TabAppSelectionItemView
       close_button_->layer()->SetOpacity(0.f);
       close_button_->SetEnabled(false);
       close_button_->SetID(TabAppSelectionView::kCloseButtonID);
+      close_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_BIRCH_CORAL_SELECTOR_ITEM_CLOSE_BUTTON_TOOLTIP));
     }
 
     auto* delegate = Shell::Get()->saved_desk_delegate();

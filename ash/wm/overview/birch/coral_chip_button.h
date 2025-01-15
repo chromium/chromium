@@ -62,6 +62,10 @@ class ASH_EXPORT CoralChipButton : public BirchChipButton {
   // Destroys `rainbow_border_animated_image_`.
   void DestroyBorderAnimation();
 
+  // Updates the add-on chevron button's tooltip according to current selector
+  // menu state and group title.
+  void UpdateAddonButtonTooltip();
+
   raw_ptr<views::AnimatedImageView> title_loading_animated_image_ = nullptr;
   raw_ptr<views::AnimatedImageView> rainbow_border_animated_image_ = nullptr;
 
@@ -70,6 +74,8 @@ class ASH_EXPORT CoralChipButton : public BirchChipButton {
   // The selection menu to select tabs and apps for coral launching. Created
   // once the coral add on button is clicked.
   std::unique_ptr<TabAppSelectionHost> tab_app_selection_widget_;
+
+  raw_ptr<Button> chevron_button_ = nullptr;
 
   base::WeakPtrFactory<CoralChipButton> weak_factory_{this};
 };

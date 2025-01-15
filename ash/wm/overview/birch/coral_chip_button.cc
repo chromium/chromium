@@ -42,15 +42,7 @@ CoralChipButton::~CoralChipButton() = default;
 void CoralChipButton::OnSelectionWidgetVisibilityChanged() {
   CHECK(tab_app_selection_widget_);
   UpdateRoundedCorners(tab_app_selection_widget_->IsVisible());
-
-  views::View* chevron_button = addon_view();
-
-  CHECK(chevron_button);
-  views::AsViewClass<IconButton>(chevron_button)
-      ->SetTooltipText(l10n_util::GetStringUTF16(
-          tab_app_selection_widget_->IsVisible()
-              ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
-              : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
+  UpdateAddonButtonTooltip();
 }
 
 void CoralChipButton::ShutdownSelectionWidget() {
@@ -85,6 +77,10 @@ void CoralChipButton::UpdateTitle(
   }
 
   SetAccessibleName(item_->GetAccessibleName());
+
+  if (chevron_button_) {
+    UpdateAddonButtonTooltip();
+  }
 }
 
 void CoralChipButton::Init(BirchItem* item) {
@@ -114,9 +110,11 @@ void CoralChipButton::Init(BirchItem* item) {
 
   auto button = birch_bar_util::CreateCoralAddonButton(
       std::move(callback), vector_icons::kCaretUpIcon);
-  button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
+  button->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN, item_->title()));
+  chevron_button_ = button.get();
   SetAddon(std::move(button));
+  UpdateAddonButtonTooltip();
 }
 
 void CoralChipButton::ExecuteCommand(int command_id, int event_flags) {
@@ -230,6 +228,15 @@ void CoralChipButton::DestroyBorderAnimation() {
     stop_border_animation_timer_.Stop();
     RemoveChildViewT(std::exchange(rainbow_border_animated_image_, nullptr));
   }
+}
+
+void CoralChipButton::UpdateAddonButtonTooltip() {
+  CHECK(chevron_button_);
+  chevron_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      tab_app_selection_widget_ && tab_app_selection_widget_->IsVisible()
+          ? IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_SHOWN
+          : IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN,
+      item_->title()));
 }
 
 BEGIN_METADATA(CoralChipButton)
