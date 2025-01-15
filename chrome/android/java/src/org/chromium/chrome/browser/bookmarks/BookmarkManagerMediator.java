@@ -220,7 +220,9 @@ class BookmarkManagerMediator
                 public void onDestroy() {
                     removeUiObserver(mBookmarkUiObserver);
                     getSelectionDelegate().removeObserver(mSelectionObserver);
-                    mPromoHeaderManager.destroy();
+                    if (mPromoHeaderManager != null) {
+                        mPromoHeaderManager.destroy();
+                    }
                 }
 
                 @Override
@@ -359,7 +361,7 @@ class BookmarkManagerMediator
     private final boolean mIsDialogUi;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
     private final Profile mProfile;
-    private final BookmarkPromoHeader mPromoHeaderManager;
+    private final @Nullable BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkUndoController mBookmarkUndoController;
     private final BookmarkQueryHandler mBookmarkQueryHandler;
     private final ModelList mModelList;
@@ -440,9 +442,6 @@ class BookmarkManagerMediator
         mShoppingService = shoppingService;
         mSnackbarManager = snackbarManager;
         mCanShowSigninPromo = canShowSigninPromo;
-        mPromoHeaderManager =
-                new BookmarkPromoHeader(
-                        mContext, mProfile.getOriginalProfile(), this::updateHeader);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
             mBookmarkBatchUploadCardCoordinator =
                     new BookmarkBatchUploadCardCoordinator(
@@ -452,6 +451,11 @@ class BookmarkManagerMediator
                             mProfile.getOriginalProfile(),
                             mSnackbarManager,
                             this::updateBatchUploadCard);
+            mPromoHeaderManager = null;
+        } else {
+            mPromoHeaderManager =
+                    new BookmarkPromoHeader(
+                            mContext, mProfile.getOriginalProfile(), this::updateHeader);
         }
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
@@ -586,6 +590,7 @@ class BookmarkManagerMediator
         }
     }
 
+    @Nullable
     BookmarkPromoHeader getPromoHeaderManager() {
         return mPromoHeaderManager;
     }
