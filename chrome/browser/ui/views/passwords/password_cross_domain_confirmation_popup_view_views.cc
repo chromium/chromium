@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -108,18 +109,23 @@ PasswordCrossDomainConfirmationPopupViewViews::
                              .SetStyle(ui::ButtonStyle::kDefault)
                              .SetCallback(std::move(cancel_callback))
                              .Build());
-  controls->AddChildView(
+  auto* confirmation_button = controls->AddChildView(
       views::Builder<views::MdTextButton>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_CONFIRM_BUTTON_LABEL))
           .SetStyle(ui::ButtonStyle::kProminent)
           .SetCallback(std::move(confirmation_callback))
           .Build());
-
+  confirmation_button->GetViewAccessibility().SetName(base::JoinString(
+      {controller->GetTitleText(), controller->GetBodyText(),
+       l10n_util::GetStringUTF16(
+           IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_CONFIRM_BUTTON_LABEL)},
+      u" "));
   int popup_width = std::max(headline->GetPreferredSize().width(),
                              layout_provider->GetDistanceMetric(
                                  DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
   SetPreferredSize(gfx::Size(popup_width, GetHeightForWidth(popup_width)));
+  SetInitiallyFocusedView(confirmation_button);
 }
 
 PasswordCrossDomainConfirmationPopupViewViews::
