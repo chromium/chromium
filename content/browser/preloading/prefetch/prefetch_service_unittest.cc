@@ -15,13 +15,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
@@ -31,7 +29,7 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
-#include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
@@ -56,7 +54,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_chain.h"
@@ -65,8 +62,6 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -94,10 +89,6 @@ namespace {
 #else
 #define DISABLED_CHROMEOS_AND_CASTOS(x) x
 #endif
-
-const int kTotalTimeDuration = 4321;
-
-const int kConnectTimeDuration = 123;
 
 const int kHeaderLatency = 456;
 
@@ -352,13 +343,11 @@ class TestablePrefetchRequestStatusListener
   base::WeakPtr<ProbePrefetchRequestStatusListener> probe_listener_ = nullptr;
 };
 
-class PrefetchServiceTestBase : public RenderViewHostTestHarness {
+class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
  public:
   const int kServiceWorkerCheckDuration = 1000;
   PrefetchServiceTestBase()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        test_url_loader_factory_(/*observe_loader_requests=*/true),
+      : test_url_loader_factory_(/*observe_loader_requests=*/true),
         test_shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
@@ -367,7 +356,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    PrefetchingMetricsTestBase::SetUp();
 
     browser_context()
         ->GetDefaultStoragePartition()
@@ -383,11 +372,6 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
         [](std::string_view) { return false; });
     PrefetchService::SetServiceWorkerContextForTesting(
         service_worker_context_.get());
-
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    attempt_entry_builder_ =
-        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
-            content_preloading_predictor::kSpeculationRules);
   }
 
   void TearDown() override {
@@ -402,7 +386,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     test_content_browser_client_.reset();
     request_handler_keep_alive_.clear();
     service_worker_context_.reset();
-    RenderViewHostTestHarness::TearDown();
+    PrefetchingMetricsTestBase::TearDown();
   }
 
   virtual void InitScopedFeatureList() {
@@ -948,242 +932,6 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     return test_content_browser_client_.get();
   }
 
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return test_ukm_recorder_.get();
-  }
-
-  const test::PreloadingAttemptUkmEntryBuilder* attempt_entry_builder() {
-    return attempt_entry_builder_.get();
-  }
-
-  // ##### Helpers for prefetching-related metrics #####
-  // Tests prefetching-side (i.e. not serving-side) metrics including
-  // "PrefetchProxy.Prefetch.*" UMAs, `PrefetchReferringPageMetrics` and
-  // Preloading_Attempt UKMs.
-
-  // Prefetch didn't receive any net errors nor non-redirect responses.
-  // Use more specific methods below to check UKMs, if applicable.
-  void ExpectPrefetchNoNetErrorOrResponseReceived(
-      const base::HistogramTester& histogram_tester,
-      bool is_eligible,
-      bool browser_initiated_prefetch = false) {
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.RespCode", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.NetError", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
-
-    if (!browser_initiated_prefetch) {
-      std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-          PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-      EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-      EXPECT_EQ(referring_page_metrics->prefetch_eligible_count,
-                is_eligible ? 1 : 0);
-      EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-    }
-  }
-
-  // Prefetch was not started because it was not eligible.
-  void ExpectPrefetchNotEligible(const base::HistogramTester& histogram_tester,
-                                 PreloadingEligibility expected_eligibility,
-                                 bool is_accurate = false,
-                                 bool browser_initiated_prefetch = false) {
-    ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
-                                               /*is_eligible=*/false,
-                                               browser_initiated_prefetch);
-
-    if (!browser_initiated_prefetch) {
-      ExpectCorrectUkmLogs(
-          {.eligibility = expected_eligibility,
-           .holdback = PreloadingHoldbackStatus::kUnspecified,
-           .outcome = PreloadingTriggeringOutcome::kUnspecified,
-           .is_accurate = is_accurate});
-    }
-  }
-
-  // Prefetch was started but failed before the final response nor any network
-  // error is received.
-  void ExpectPrefetchFailedBeforeResponseReceived(
-      const base::HistogramTester& histogram_tester,
-      PrefetchStatus expected_prefetch_status,
-      bool is_accurate = false) {
-    ExpectPrefetchNoNetErrorOrResponseReceived(histogram_tester,
-                                               /*is_eligible=*/true);
-    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
-                                        expected_prefetch_status, 1);
-    ExpectCorrectUkmLogs(
-        {.outcome = PreloadingTriggeringOutcome::kFailure,
-         .failure = ToPreloadingFailureReason(expected_prefetch_status),
-         .is_accurate = is_accurate});
-  }
-
-  // Prefetch was started but failed due to a network error, before the final
-  // response is received.
-  void ExpectPrefetchFailedNetError(
-      const base::HistogramTester& histogram_tester,
-      int expected_net_error_code,
-      blink::mojom::SpeculationEagerness eagerness =
-          blink::mojom::SpeculationEagerness::kEager,
-      bool is_accurate_triggering = false,
-      bool browser_initiated_prefetch = false) {
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.RespCode", 0);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.NetError",
-        std::abs(expected_net_error_code), 1);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
-    histogram_tester.ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
-
-    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
-                                        PrefetchStatus::kPrefetchFailedNetError,
-                                        1);
-
-    if (!browser_initiated_prefetch) {
-      std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-          PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-      EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-      EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-      EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-
-      ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
-                            .failure = ToPreloadingFailureReason(
-                                PrefetchStatus::kPrefetchFailedNetError),
-                            .is_accurate = is_accurate_triggering,
-                            .eagerness = eagerness});
-    }
-  }
-
-  // Prefetch was started but failed on or after the final response is
-  // received.
-  void ExpectPrefetchFailedAfterResponseReceived(
-      const base::HistogramTester& histogram_tester,
-      net::HttpStatusCode expected_response_code,
-      int expected_body_length,
-      PrefetchStatus expected_prefetch_status) {
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.RespCode", expected_response_code, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.BodyLength", expected_body_length, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-        1);
-
-    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-        PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-    EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-
-    histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
-                                        expected_prefetch_status, 1);
-    ExpectCorrectUkmLogs(
-        {.outcome = PreloadingTriggeringOutcome::kFailure,
-         .failure = ToPreloadingFailureReason(expected_prefetch_status)});
-  }
-
-  void ExpectPrefetchSuccess(const base::HistogramTester& histogram_tester,
-                             int expected_body_length,
-                             blink::mojom::SpeculationEagerness eagerness =
-                                 blink::mojom::SpeculationEagerness::kEager,
-                             bool is_accurate = false) {
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.BodyLength", expected_body_length, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
-        1);
-
-    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-        PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-    EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-    EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
-
-    ExpectCorrectUkmLogs({.is_accurate = is_accurate, .eagerness = eagerness});
-  }
-
-  ukm::SourceId ForceLogsUploadAndGetUkmId() {
-    MockNavigationHandle mock_handle;
-    mock_handle.set_is_in_primary_main_frame(true);
-    mock_handle.set_is_same_document(false);
-    mock_handle.set_has_committed(true);
-    // Makes sure the accurate bit is always false.
-    mock_handle.set_url(GURL("http://Not.Accurate.Trigger.Url/"));
-    auto* preloading_data =
-        PreloadingData::GetOrCreateForWebContents(web_contents());
-    // Sets the accurate bit, and records `TimeToNextNavigation`.
-    static_cast<PreloadingDataImpl*>(preloading_data)
-        ->DidStartNavigation(&mock_handle);
-    // Records the UKMs.
-    static_cast<PreloadingDataImpl*>(preloading_data)
-        ->DidFinishNavigation(&mock_handle);
-    return mock_handle.GetNextPageUkmSourceId();
-  }
-
-  struct ExpectCorrectUkmLogsArgs {
-    PreloadingEligibility eligibility = PreloadingEligibility::kEligible;
-    PreloadingHoldbackStatus holdback = PreloadingHoldbackStatus::kAllowed;
-    PreloadingTriggeringOutcome outcome = PreloadingTriggeringOutcome::kReady;
-    PreloadingFailureReason failure = PreloadingFailureReason::kUnspecified;
-    bool is_accurate = false;
-    bool expect_ready_time = false;
-    blink::mojom::SpeculationEagerness eagerness =
-        blink::mojom::SpeculationEagerness::kEager;
-  };
-  void ExpectCorrectUkmLogs(ExpectCorrectUkmLogsArgs args) {
-    const auto source_id = ForceLogsUploadAndGetUkmId();
-    auto actual_attempts = test_ukm_recorder()->GetEntries(
-        ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(actual_attempts.size(), 1u);
-
-    std::optional<base::TimeDelta> ready_time = std::nullopt;
-    if (args.outcome == PreloadingTriggeringOutcome::kReady ||
-        args.outcome == PreloadingTriggeringOutcome::kSuccess ||
-        args.expect_ready_time) {
-      ready_time = base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
-    }
-
-    const auto expected_attempts = {attempt_entry_builder()->BuildEntry(
-        source_id, PreloadingType::kPrefetch, args.eligibility, args.holdback,
-        args.outcome, args.failure, args.is_accurate, ready_time,
-        args.eagerness)};
-
-    EXPECT_THAT(actual_attempts,
-                testing::UnorderedElementsAreArray(expected_attempts))
-        << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
-                                                    expected_attempts);
-    // We do not test the `PreloadingPrediction` as it is added in
-    // `PreloadingDecider`.
-  }
-
   // ##### Helpers for serving-related metrics #####
   static void ExpectServingMetrics(
       const base::Location& location,
@@ -1405,9 +1153,6 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
       test_content_browser_client_;
 
   std::map<GURL, mojo::ScopedDataPipeProducerHandle> producer_handle_for_gurl_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
-      attempt_entry_builder_;
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
 

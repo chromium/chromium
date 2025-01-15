@@ -9,10 +9,16 @@
 #include <ostream>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
+#include "content/public/test/preloading_test_util.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -160,6 +166,92 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
 
  private:
   raw_ptr<ContentBrowserClient> old_browser_client_;
+};
+
+// Helper for testing prefetching-side (i.e. not serving-side) metrics including
+// "PrefetchProxy.Prefetch.*" UMAs, `PrefetchReferringPageMetrics` and
+// Preloading_Attempt UKMs.
+class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
+ public:
+  PrefetchingMetricsTestBase();
+  ~PrefetchingMetricsTestBase() override;
+
+  const int kTotalTimeDuration = 4321;
+  const int kConnectTimeDuration = 123;
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const test::PreloadingAttemptUkmEntryBuilder* attempt_entry_builder() {
+    return attempt_entry_builder_.get();
+  }
+
+  void SetUp() override;
+  void TearDown() override;
+
+  // Prefetch didn't receive any net errors nor non-redirect responses.
+  // Use more specific methods below to check UKMs, if applicable.
+  void ExpectPrefetchNoNetErrorOrResponseReceived(
+      const base::HistogramTester& histogram_tester,
+      bool is_eligible,
+      bool browser_initiated_prefetch = false);
+
+  // Prefetch was not started because it was not eligible.
+  void ExpectPrefetchNotEligible(const base::HistogramTester& histogram_tester,
+                                 PreloadingEligibility expected_eligibility,
+                                 bool is_accurate = false,
+                                 bool browser_initiated_prefetch = false);
+
+  // Prefetch was started but failed before the final response nor any network
+  // error is received.
+  void ExpectPrefetchFailedBeforeResponseReceived(
+      const base::HistogramTester& histogram_tester,
+      PrefetchStatus expected_prefetch_status,
+      bool is_accurate = false);
+
+  // Prefetch was started but failed due to a network error, before the final
+  // response is received.
+  void ExpectPrefetchFailedNetError(
+      const base::HistogramTester& histogram_tester,
+      int expected_net_error_code,
+      blink::mojom::SpeculationEagerness eagerness =
+          blink::mojom::SpeculationEagerness::kEager,
+      bool is_accurate_triggering = false,
+      bool browser_initiated_prefetch = false);
+
+  // Prefetch was started but failed on or after the final response is
+  // received.
+  void ExpectPrefetchFailedAfterResponseReceived(
+      const base::HistogramTester& histogram_tester,
+      net::HttpStatusCode expected_response_code,
+      int expected_body_length,
+      PrefetchStatus expected_prefetch_status);
+
+  void ExpectPrefetchSuccess(const base::HistogramTester& histogram_tester,
+                             int expected_body_length,
+                             blink::mojom::SpeculationEagerness eagerness =
+                                 blink::mojom::SpeculationEagerness::kEager,
+                             bool is_accurate = false);
+
+  ukm::SourceId ForceLogsUploadAndGetUkmId();
+
+  struct ExpectCorrectUkmLogsArgs {
+    PreloadingEligibility eligibility = PreloadingEligibility::kEligible;
+    PreloadingHoldbackStatus holdback = PreloadingHoldbackStatus::kAllowed;
+    PreloadingTriggeringOutcome outcome = PreloadingTriggeringOutcome::kReady;
+    PreloadingFailureReason failure = PreloadingFailureReason::kUnspecified;
+    bool is_accurate = false;
+    bool expect_ready_time = false;
+    blink::mojom::SpeculationEagerness eagerness =
+        blink::mojom::SpeculationEagerness::kEager;
+  };
+  void ExpectCorrectUkmLogs(ExpectCorrectUkmLogsArgs args);
+
+ private:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
 };
 
 }  // namespace content
