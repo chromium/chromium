@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 
@@ -39,7 +40,7 @@ void RecordEndProcessEvent(const base::TimeTicks& start_time,
         kEndProcessCountToString[end_process_count - 1].c_str());
 
     // Record the event.
-    UMA_HISTOGRAM_LONG_TIMES_100(histogram_name, end_time - start_time);
+    base::UmaHistogramLongTimes100(histogram_name, end_time - start_time);
   }
 }
 
