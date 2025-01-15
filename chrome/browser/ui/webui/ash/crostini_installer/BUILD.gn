@@ -49,4 +49,5 @@ mojom("mojo_bindings") {
   sources = [ "crostini_installer.mojom" ]
   public_deps =
       [ "//chrome/browser/ash/crostini:crostini_installer_types_mojom" ]
+  webui_module_path = "/"
 }
