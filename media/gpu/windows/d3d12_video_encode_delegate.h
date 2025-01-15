@@ -35,6 +35,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
 
   virtual EncoderStatus Initialize(VideoEncodeAccelerator::Config config);
   virtual size_t GetMaxNumOfRefFrames() const = 0;
+  // Returns whether the delegate supports changing |Bitrate::Mode| using
+  // |UpdateRateControl()| during encoding.
+  virtual bool SupportsRateControlReconfiguration() const = 0;
+
+  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
 
   // Do video processing if the input frame format or resolution is not
   // expected and then call |EncodeImpl()|.
@@ -52,6 +57,38 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       bool force_keyframe) = 0;
 
  protected:
+  class D3D12VideoEncoderRateControl {
+   public:
+    D3D12VideoEncoderRateControl();
+
+    D3D12VideoEncoderRateControl(const D3D12VideoEncoderRateControl& other);
+    D3D12VideoEncoderRateControl& operator=(
+        const D3D12VideoEncoderRateControl& other);
+
+    static std::optional<D3D12VideoEncoderRateControl> Create(
+        Bitrate bitrate,
+        uint32_t framerate);
+
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE GetMode() const;
+
+    const D3D12_VIDEO_ENCODER_RATE_CONTROL& GetD3D12VideoEncoderRateControl()
+        const {
+      return rate_control_;
+    }
+
+    bool operator==(const D3D12VideoEncoderRateControl& other) const;
+
+   private:
+    D3D12_VIDEO_ENCODER_RATE_CONTROL rate_control_{};
+    // We will assign the union member later, so the default initialization is
+    // fine.
+    union {
+      D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP cqp;
+      D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR cbr;
+      D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR vbr;
+    } params_{};
+  };
+
   virtual EncoderStatus InitializeVideoEncoder(
       const VideoEncodeAccelerator::Config& config) = 0;
 
@@ -67,12 +104,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC input_size_{};
   DXGI_FORMAT input_format_ = DXGI_FORMAT_UNKNOWN;
 
-  union {
-    D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP cqp;
-    D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR cbr;
-    D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR vbr;
-  } rate_control_params_;
-  D3D12_VIDEO_ENCODER_RATE_CONTROL rate_control_{};
+  D3D12VideoEncoderRateControl rate_control_;
 
   // Output profile requested by |config| in |Initialize()|.
   // The implementation may use a different profile for compatibility.

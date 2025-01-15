@@ -59,6 +59,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
 
+  void RequestEncodingParametersChangeTask(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size);
+
   Microsoft::WRL::ComPtr<ID3D12Resource>
   CreateResourceForGpuMemoryBufferVideoFrame(const VideoFrame& frame);
 

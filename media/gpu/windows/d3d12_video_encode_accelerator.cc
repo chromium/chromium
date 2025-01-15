@@ -134,7 +134,14 @@ void D3D12VideoEncodeAccelerator::UseOutputBitstreamBuffer(
 void D3D12VideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
-    const std::optional<gfx::Size>& size) {}
+    const std::optional<gfx::Size>& size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
+  encoder_task_runner_->PostTask(
+      FROM_HERE,
+      BindOnce(
+          &D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask,
+          encoder_weak_this_, bitrate, framerate, size));
+}
 
 void D3D12VideoEncodeAccelerator::Destroy() {
   DVLOGF(2);
@@ -229,6 +236,23 @@ void D3D12VideoEncodeAccelerator::UseOutputBitstreamBufferTask(
                  bitstream_buffers_.front());
     input_frames_queue_.pop();
     bitstream_buffers_.pop();
+  }
+}
+
+void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
+    const Bitrate& bitrate,
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+
+  if (size.has_value()) {
+    return NotifyError({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                        "Update output frame size is not supported"});
+  }
+
+  if (!encoder_->UpdateRateControl(bitrate, framerate)) {
+    VLOGF(1) << "Failed to update bitrate " << bitrate.ToString()
+             << " and framerate " << framerate;
   }
 }
 
