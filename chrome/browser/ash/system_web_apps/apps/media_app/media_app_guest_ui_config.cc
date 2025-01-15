@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "base/functional/bind.h"
 #include "base/version.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -131,8 +130,7 @@ ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
   return std::make_unique<specialized_features::FeatureAccessChecker>(
       std::move(config), Profile::FromWebUI(web_ui)->GetPrefs(),
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui)),
-      base::BindRepeating(
-          []() { return g_browser_process->variations_service(); }));
+      g_browser_process->variations_service());
 }
 
 PrefService* ChromeMediaAppGuestUIDelegate::GetPrefService(

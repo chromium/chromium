@@ -5,14 +5,12 @@
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
 #include <memory>
-#include <string>
 
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
@@ -87,13 +85,6 @@ class FeatureAccessCheckerTest : public testing::Test {
     return identity_test_environment_.identity_manager();
   }
 
-  FeatureAccessChecker::VariationsServiceCallback
-  GetVariationsServiceCallback() {
-    return base::BindRepeating(
-        [](variations::VariationsService* service) { return service; },
-        variations_service_.get());
-  }
-
  protected:
   TestingPrefServiceSimple pref_;
   base::test::TaskEnvironment task_environment_;
@@ -107,9 +98,9 @@ class FeatureAccessCheckerTest : public testing::Test {
 };
 
 TEST_F(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPassIfUnset) {
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(
-                                 /* config= */ {}, &pref_, GetIdentityManager(),
-                                 GetVariationsServiceCallback())
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(/* config= */ {}, &pref_,
+                                                  GetIdentityManager(),
+                                                  variations_service_.get())
                                  .Check()),
               IsEmpty());
 }
@@ -121,7 +112,7 @@ TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -133,7 +124,7 @@ TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kDisabledInSettings));
 }
@@ -143,12 +134,11 @@ TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckFailIfNoPrefService) {
   config.settings_toggle_pref = kSettingsTogglePref;
   pref_.SetBoolean(kSettingsTogglePref, true);
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(config, /*prefs=*/nullptr,
-                                          GetIdentityManager(),
-                                          GetVariationsServiceCallback())
-                         .Check()),
-      ElementsAre(kDisabledInSettings));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, /*prefs=*/nullptr,
+                                                  GetIdentityManager(),
+                                                  variations_service_.get())
+                                 .Check()),
+              ElementsAre(kDisabledInSettings));
 }
 
 TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckPass) {
@@ -158,7 +148,7 @@ TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -170,7 +160,7 @@ TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kConsentNotAccepted));
 }
@@ -181,12 +171,11 @@ TEST_F(FeatureAccessCheckerTest,
   config.consent_accepted_pref = kConsentAcceptedPref;
   pref_.SetBoolean(kConsentAcceptedPref, true);
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(config, /*prefs=*/nullptr,
-                                          GetIdentityManager(),
-                                          GetVariationsServiceCallback())
-                         .Check()),
-      ElementsAre(kConsentNotAccepted));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, /*prefs=*/nullptr,
+                                                  GetIdentityManager(),
+                                                  variations_service_.get())
+                                 .Check()),
+              ElementsAre(kConsentNotAccepted));
 }
 
 TEST_F(FeatureAccessCheckerTest, FeatureFlagPass) {
@@ -195,7 +184,7 @@ TEST_F(FeatureAccessCheckerTest, FeatureFlagPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -206,7 +195,7 @@ TEST_F(FeatureAccessCheckerTest, FeatureFlagFail) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kFeatureFlagDisabled));
 }
@@ -217,7 +206,7 @@ TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -228,7 +217,7 @@ TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kFeatureManagementCheckFailed));
 }
@@ -244,7 +233,7 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -259,7 +248,7 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
@@ -272,12 +261,11 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFailIfNoIdentityManager) {
   config.secret_key = {.flag = std::string(kSecretKeyFlag),
                        .sha1_hashed_key_value = hashed};
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(config, &pref_,
-                                          /*identity_manager=*/nullptr,
-                                          GetVariationsServiceCallback())
-                         .Check()),
-      ElementsAre(kSecretKeyCheckFailed));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, &pref_,
+                                                  /*identity_manager=*/nullptr,
+                                                  variations_service_.get())
+                                 .Check()),
+              ElementsAre(kSecretKeyCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest,
@@ -293,7 +281,7 @@ TEST_F(FeatureAccessCheckerTest,
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
@@ -312,7 +300,7 @@ TEST_F(FeatureAccessCheckerTest,
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
@@ -332,7 +320,7 @@ TEST_F(
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -352,7 +340,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -370,7 +358,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kAccountCapabilitiesCheckFailed));
 }
@@ -386,7 +374,7 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kAccountCapabilitiesCheckFailed));
 }
@@ -405,12 +393,11 @@ TEST_F(FeatureAccessCheckerTest,
         return capabilities.can_use_manta_service();
       });
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(config, &pref_,
-                                          /*identity_manager=*/nullptr,
-                                          GetVariationsServiceCallback())
-                         .Check()),
-      ElementsAre(kAccountCapabilitiesCheckFailed));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, &pref_,
+                                                  /*identity_manager=*/nullptr,
+                                                  variations_service_.get())
+                                 .Check()),
+              ElementsAre(kAccountCapabilitiesCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
@@ -420,7 +407,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -433,7 +420,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfExactMatch) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -446,7 +433,7 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassOneOfMany) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -459,36 +446,22 @@ TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailCountryNotInList) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
-                         .Check()),
-      ElementsAre(kCountryCheckFailed));
-}
-
-TEST_F(FeatureAccessCheckerTest,
-       CountryCodeCheckFailNoVariationsServiceCallback) {
-  FeatureAccessConfig config;
-  config.country_codes = {"us"};
-
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(
-                         config, &pref_, GetIdentityManager(),
-                         /*variations_service_callback=*/base::NullCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kCountryCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailNoVariationsService) {
   FeatureAccessConfig config;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "fr");
   config.country_codes = {"us"};
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(
-                                 config, &pref_, GetIdentityManager(),
-                                 base::BindRepeating(
-                                     []() -> variations::VariationsService* {
-                                       return nullptr;
-                                     }))
-                                 .Check()),
-              ElementsAre(kCountryCheckFailed));
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
+                                          /*variations_service=*/nullptr)
+                         .Check()),
+      ElementsAre(kCountryCheckFailed));
 }
 
 TEST_F(FeatureAccessCheckerTest, KioskModeCheckPassIfNotInKioskMode) {
@@ -497,7 +470,7 @@ TEST_F(FeatureAccessCheckerTest, KioskModeCheckPassIfNotInKioskMode) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       IsEmpty());
 }
@@ -512,7 +485,7 @@ TEST_F(FeatureAccessCheckerTest, KioskModeCheckFailIfInKioskMode) {
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),
-                                          GetVariationsServiceCallback())
+                                          variations_service_.get())
                          .Check()),
       ElementsAre(kDisabledInKioskModeCheckFailed));
 }

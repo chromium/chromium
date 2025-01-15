@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -98,12 +97,11 @@ ScannerKeyedService::ScannerKeyedService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
-      access_checker_(CreateFeatureAccessConfig(),
-                      /*prefs=*/pref_service,
-                      /*identity_manager=*/identity_manager_,
-                      base::BindRepeating([]() {
-                        return g_browser_process->variations_service();
-                      })),
+      access_checker_(
+          CreateFeatureAccessConfig(),
+          /*prefs=*/pref_service,
+          /*identity_manager=*/identity_manager_,
+          /*variations_service=*/g_browser_process->variations_service()),
       scanner_provider_(std::move(scanner_provider)) {
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =

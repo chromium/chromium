@@ -52,7 +52,6 @@ source_set("braille_display_private") {
     public_deps += [ "//third_party/libbrlapi" ]
 
     deps += [
-      "//components/nacl/common:minimal_content_dummy",
       "//content/public/browser",
       "//content/public/common",
     ]

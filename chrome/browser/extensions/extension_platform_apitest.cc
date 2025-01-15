@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api_test_util.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -134,6 +135,11 @@ bool ExtensionPlatformApiTest::RunExtensionTest(
     url_to_open = extension->GetResourceURL(run_options.extension_url);
   }
 
+  // If there is a page url to load, navigate it.
+  if (!url_to_open.is_empty()) {
+    OpenURL(url_to_open, run_options.open_in_incognito);
+  }
+
   {
     base::test::ScopedRunLoopTimeout timeout(
         FROM_HERE, std::nullopt,
@@ -208,6 +214,15 @@ void ExtensionPlatformApiTest::UseHttpsTestServer() {
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   https_test_server_.get()->SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+}
+
+void ExtensionPlatformApiTest::OpenURL(const GURL& url,
+                                       bool open_in_incognito) {
+  if (open_in_incognito) {
+    PlatformOpenURLOffTheRecord(profile(), url);
+  } else {
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  }
 }
 
 }  // namespace extensions
