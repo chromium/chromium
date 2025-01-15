@@ -1331,6 +1331,8 @@ void GraphBuilderOrt::AddResample2dOperation(
   const std::string node_name = GetNodeName(resample2d.label);
   const std::string input_name = GetOperandName(resample2d.input_operand_id);
   const std::string output_name = GetOperandName(resample2d.output_operand_id);
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(resample2d.input_operand_id).descriptor.shape();
   const std::vector<uint32_t>& output_shape =
       GetOperand(resample2d.output_operand_id).descriptor.shape();
   std::vector<const char*> input_names = {input_name.c_str()};
@@ -1342,33 +1344,39 @@ void GraphBuilderOrt::AddResample2dOperation(
   const std::string roi_name = "";
   input_names.push_back(roi_name.c_str());
 
+  // When axes != [2, 3], webnn blink side will insert transpose before and
+  // after resample2d -
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.cc;l=1438.
   CHECK_EQ(resample2d.axes.size(), 2u);
+  CHECK_EQ(resample2d.axes[0], 2u);
+  CHECK_EQ(resample2d.axes[1], 3u);
+
+  CHECK_EQ(input_shape.size(), 4u);
   std::string scales_name;
   std::string sizes_name;
+  // Here we using default axes([0,..., R-1]) due to this issue-
+  // https://github.com/shiyi9801/chromium/issues/92.
   if (resample2d.scales) {
-    // The number of elements of scales should be the same as the rank of axes
-    // if provided.
-    std::array<float, 2> scales_data = {resample2d.scales->at(0),
+    // The number of elements of scales should be the same as the rank of input
+    // or axes.
+    std::array<float, 4> scales_data = {1, 1, resample2d.scales->at(0),
                                         resample2d.scales->at(1)};
-    scales_name = CreateInitializer<float>({2}, scales_data);
+    scales_name = CreateInitializer<float>({4}, scales_data);
     sizes_name = "";
   } else {
-    // The number of elements of sizes should be the same as the length of axes
-    // if provided.
-    std::array<int64_t, 2> sizes_data = {
-        base::checked_cast<int64_t>(output_shape[resample2d.axes[0]]),
-        base::checked_cast<int64_t>(output_shape[resample2d.axes[1]])};
-    sizes_name = CreateInitializer<int64_t>({2}, sizes_data);
+    // The number of elements of sizes should be the same as the rank of input
+    // or axes.
+    CHECK_EQ(output_shape.size(), 4u);
+    std::array<int64_t, 4> sizes_data = {
+        base::checked_cast<int64_t>(output_shape[0]),
+        base::checked_cast<int64_t>(output_shape[1]),
+        base::checked_cast<int64_t>(output_shape[2]),
+        base::checked_cast<int64_t>(output_shape[3])};
+    sizes_name = CreateInitializer<int64_t>({4}, sizes_data);
     scales_name = "";
   }
   input_names.push_back(scales_name.c_str());
   input_names.push_back(sizes_name.c_str());
-
-  std::array<int64_t, 2> axes = {
-      base::checked_cast<int64_t>(resample2d.axes[0]),
-      base::checked_cast<int64_t>(resample2d.axes[1])};
-  ScopedOrtOpAttrPtr attr_axes =
-      model_builder_.CreateAttribute(/*name=*/"axes", axes);
 
   std::string mode;
   switch (resample2d.mode) {
@@ -1379,10 +1387,8 @@ void GraphBuilderOrt::AddResample2dOperation(
       mode = "nearest";
       break;
   }
-  ScopedOrtOpAttrPtr attr_mode =
-      model_builder_.CreateAttribute(/*name=*/"mode", mode);
-  std::array<OrtOpAttr*, 2> attributes = {attr_axes.Release(),
-                                          attr_mode.Release()};
+  std::array<OrtOpAttr*, 1> attributes = {
+      model_builder_.CreateAttribute(/*name=*/"mode", mode).Release()};
 
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
