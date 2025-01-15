@@ -138,21 +138,6 @@ export class SettingsNearbyShareSubpageElement extends
                 settings.isFastInitiationHardwareSupported)`,
       },
 
-      isDeviceVisible_: {
-        type: Boolean,
-        value: true,  // Correctly populated on settings load.
-      },
-
-      selectedVisibilityLabel_: {
-        type: String,
-        value: '',  // Populated on settings load.
-      },
-
-      isEveryoneModeOnlyForTenMinutes_: {
-        type: Boolean,
-        value: true,
-      },
-
       yourDevicesLabel_: {
         type: String,
         value: 'Your devices',
@@ -162,46 +147,30 @@ export class SettingsNearbyShareSubpageElement extends
         type: String,
         value: 'Contacts',
       },
-
-      everyoneLabel_: {
-        type: String,
-        value: 'Everyone',
-      },
-
-      yourDevicesSublabel_: {
-        type: String,
-        computed: 'getYourDevicesVisibilitySublabel_(profileLabel_)',
-      },
     };
   }
 
   static get observers() {
     return [
       'enabledChange_(settings.enabled)',
-      'setSettingsVisibilityMenu_(settings.visibility)',
     ];
   }
 
   isSettingsRetreived: boolean;
   settings: NearbySettings;
-  private isDeviceVisible_: boolean;
-  private isEveryoneModeOnlyForTenMinutes_: boolean;
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;
   private receiveObserver_: ReceiveObserverReceiver|null;
-  private selectedVisibilityLabel_: string;
   private shouldShowFastInititationNotificationToggle_: boolean;
   private showDataUsageDialog_: boolean;
   private showDeviceNameDialog_: boolean;
   private showReceiveDialog_: boolean;
   private showVisibilityDialog_: boolean;
   private yourDevicesLabel_: string;
-  private yourDevicesSublabel_: string;
   private contactsLabel_: string;
-  private everyoneLabel_: string;
 
   constructor() {
     super();
