@@ -43,8 +43,8 @@ AutofillProfile ConstructBaseProfile(
   AutofillProfile profile(kGuid, AutofillProfile::RecordType::kLocalOrSyncable,
                           country_code);
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.set_profile_label("profile_label");
 

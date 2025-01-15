@@ -448,7 +448,10 @@ bool AutofillProfileComparator::MergeEmailAddresses(
   } else if (e2.empty()) {
     best = &e1;
   } else {
-    best = old_profile.use_date() > new_profile.use_date() ? &e2 : &e1;
+    best = old_profile.usage_history().use_date() >
+                   new_profile.usage_history().use_date()
+               ? &e2
+               : &e1;
   }
 
   email_info.SetInfo(EMAIL_ADDRESS, *best, app_locale_);
@@ -479,7 +482,10 @@ bool AutofillProfileComparator::MergeCompanyNames(
       best = &c2;
       break;
     case SAME_TOKENS:
-      best = old_profile.use_date() > new_profile.use_date() ? &c2 : &c1;
+      best = old_profile.usage_history().use_date() >
+                     new_profile.usage_history().use_date()
+                 ? &c2
+                 : &c1;
       break;
   }
   company_info.SetInfo(COMPANY_NAME, *best, app_locale_);
@@ -609,8 +615,8 @@ bool AutofillProfileComparator::MergeAddresses(
 
   address = old_profile.GetAddress();
   return address.MergeStructuredAddress(
-      new_profile.GetAddress(),
-      old_profile.use_date() < new_profile.use_date());
+      new_profile.GetAddress(), old_profile.usage_history().use_date() <
+                                    new_profile.usage_history().use_date());
 }
 
 std::optional<FieldTypeSet>

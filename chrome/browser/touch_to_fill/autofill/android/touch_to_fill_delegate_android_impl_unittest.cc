@@ -746,9 +746,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       .ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard disused_expired_card = test::GetExpiredCreditCard();
-  credit_card.set_use_date(AutofillClock::Now());
-  disused_expired_card.set_use_date(AutofillClock::Now() -
-                                    kDisusedDataModelTimeDelta * 2);
+  credit_card.usage_history().set_use_date(AutofillClock::Now());
+  disused_expired_card.usage_history().set_use_date(
+      AutofillClock::Now() - kDisusedDataModelTimeDelta * 2);
   autofill_client_.GetPersonalDataManager()
       .payments_data_manager()
       .AddCreditCard(credit_card);

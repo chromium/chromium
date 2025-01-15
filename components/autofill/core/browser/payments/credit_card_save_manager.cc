@@ -920,8 +920,9 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   for (const AutofillProfile* profile :
        client_->GetPersonalDataManager().address_data_manager().GetProfiles()) {
     has_profile = true;
-    if ((now - profile->use_date()) < fifteen_minutes ||
-        (now - profile->modification_date()) < fifteen_minutes) {
+    if ((now - profile->usage_history().use_date()) < fifteen_minutes ||
+        (now - profile->usage_history().modification_date()) <
+            fifteen_minutes) {
       candidate_profiles.push_back(*profile);
     }
   }

@@ -910,8 +910,10 @@ void CopyRelevantWalletMetadataAndCvc(
       if (saved_card->server_id() == server_card.server_id()) {
         // The wallet data doesn't have the use stats. Use the ones present on
         // disk to not overwrite them with bad data.
-        server_card.set_use_count(saved_card->use_count());
-        server_card.set_use_date(saved_card->use_date());
+        server_card.usage_history().set_use_count(
+            saved_card->usage_history().use_count());
+        server_card.usage_history().set_use_date(
+            saved_card->usage_history().use_date());
 
         // Wallet data from the server doesn't have the CVC data as it's
         // decoupled. Use the data present in the local storage, to prevent

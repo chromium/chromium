@@ -102,8 +102,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   if (!entry.profile_label().empty())
     specifics->set_profile_label(entry.profile_label());
 
-  specifics->set_use_count(entry.use_count());
-  specifics->set_use_date(entry.use_date().ToTimeT());
+  specifics->set_use_count(entry.usage_history().use_count());
+  specifics->set_use_date(entry.usage_history().use_date().ToTimeT());
   specifics->set_address_home_language_code(
       data_util::TruncateUTF8(entry.language_code()));
 
@@ -331,8 +331,9 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).
-  profile.set_use_count(specifics.use_count());
-  profile.set_use_date(base::Time::FromTimeT(specifics.use_date()));
+  profile.usage_history().set_use_count(specifics.use_count());
+  profile.usage_history().set_use_date(
+      base::Time::FromTimeT(specifics.use_date()));
   profile.set_language_code(specifics.address_home_language_code());
 
   // Set the profile label if it exists.

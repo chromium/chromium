@@ -276,23 +276,25 @@ TEST_P(AddressAutofillTableProfileTest, UseDates) {
   AutofillProfile profile = CreateAutofillProfile();
   // Since the table stores time_ts, microseconds get lost in conversion.
   const base::Time initial_use_date =
-      base::Time::FromTimeT(profile.use_date().ToTimeT());
-  ASSERT_FALSE(profile.use_date(2).has_value());
-  ASSERT_FALSE(profile.use_date(3).has_value());
+      base::Time::FromTimeT(profile.usage_history().use_date().ToTimeT());
+  ASSERT_FALSE(profile.usage_history().use_date(2).has_value());
+  ASSERT_FALSE(profile.usage_history().use_date(3).has_value());
 
   table_.AddAutofillProfile(profile);
   profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.use_date(1), initial_use_date);
-  EXPECT_FALSE(profile.use_date(2).has_value());
-  EXPECT_FALSE(profile.use_date(3).has_value());
+  EXPECT_EQ(profile.usage_history().use_date(1), initial_use_date);
+  EXPECT_FALSE(profile.usage_history().use_date(2).has_value());
+  EXPECT_FALSE(profile.usage_history().use_date(3).has_value());
 
-  profile.RecordUseDate(initial_use_date + base::Days(1));
-  profile.RecordUseDate(initial_use_date + base::Days(2));
+  profile.usage_history().RecordUseDate(initial_use_date + base::Days(1));
+  profile.usage_history().RecordUseDate(initial_use_date + base::Days(2));
   table_.UpdateAutofillProfile(profile);
   profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.use_date(1), initial_use_date + base::Days(2));
-  EXPECT_EQ(profile.use_date(2), initial_use_date + base::Days(1));
-  EXPECT_EQ(profile.use_date(3), initial_use_date);
+  EXPECT_EQ(profile.usage_history().use_date(1),
+            initial_use_date + base::Days(2));
+  EXPECT_EQ(profile.usage_history().use_date(2),
+            initial_use_date + base::Days(1));
+  EXPECT_EQ(profile.usage_history().use_date(3), initial_use_date);
 }
 
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {

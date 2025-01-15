@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -116,7 +117,7 @@ class PaymentsRequest {
                                      const FieldType& type,
                                      const std::string& app_locale,
                                      base::Value::List& list);
-  static void SetStringIfNotEmpty(const AutofillDataModel& profile,
+  static void SetStringIfNotEmpty(const FormGroup& form_group,
                                   const FieldType& type,
                                   const std::string& app_locale,
                                   const std::string& path,

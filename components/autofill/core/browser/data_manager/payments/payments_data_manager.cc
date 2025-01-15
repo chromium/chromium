@@ -777,11 +777,12 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
                });
   });
 
-  base::ranges::sort(
-      available_ibans, [comparison_time = AutofillClock::Now()](
-                           const Iban* iban0, const Iban* iban1) {
-        return iban0->HasGreaterRankingThan(iban1, comparison_time);
-      });
+  base::ranges::sort(available_ibans,
+                     [comparison_time = AutofillClock::Now()](
+                         const Iban* iban0, const Iban* iban1) {
+                       return iban0->usage_history().HasGreaterRankingThan(
+                           iban1->usage_history(), comparison_time);
+                     });
 
   std::vector<Iban> ibans_to_suggest;
   ibans_to_suggest.reserve(available_ibans.size());
@@ -1259,8 +1260,8 @@ std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
       DeduplicatedCreditCardsForSuggestions(ShouldSuggestServerPaymentMethods()
                                                 ? GetCreditCards()
                                                 : GetLocalCreditCards());
-  // Rank the cards by ranking score (see AutofillDataModel for details). All
-  // expired cards should be suggested last, also by ranking score.
+  // Rank the cards by ranking score (see UsageHistoryInformation for details).
+  // All expired cards should be suggested last, also by ranking score.
   base::ranges::sort(
       cards_to_suggest,
       [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
@@ -1625,7 +1626,8 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
     end = base::Time::Max();
   }
   for (const CreditCard* card : GetLocalCreditCards()) {
-    if (card->modification_date() >= begin && card->modification_date() < end) {
+    if (card->usage_history().modification_date() >= begin &&
+        card->usage_history().modification_date() < end) {
       RemoveByGUID(card->guid());
     } else if (base::FeatureList::IsEnabled(
                    features::kAutofillEnableCvcStorageAndFilling) &&

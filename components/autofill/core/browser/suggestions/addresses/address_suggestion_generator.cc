@@ -380,7 +380,7 @@ void RemoveDisusedSuggestions(
   auto is_profile_disused =
       [&min_last_used](
           const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
-        return profile->use_date() <= min_last_used;
+        return profile->usage_history().use_date() <= min_last_used;
       };
   const size_t original_size = profiles.size();
   // Exclude the first address from the list of potentially removed ones so that

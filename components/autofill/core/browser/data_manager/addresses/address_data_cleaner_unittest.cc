@@ -84,24 +84,24 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.SetRawInfo(NAME_MIDDLE, u"J");
   profile1.SetRawInfo(ADDRESS_HOME_LINE1, u"742. Evergreen Terrace");
-  profile1.set_use_count(10);
-  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
+  profile1.usage_history().set_use_count(10);
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(1));
   test_adm_.AddProfile(profile1);
 
   AutofillProfile profile2(AddressCountryCode("US"));
   profile2.SetRawInfo(NAME_MIDDLE, u"Jay");
   profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"742 Evergreen Terrace");
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"12345678910");
-  profile2.set_use_count(5);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(3));
+  profile2.usage_history().set_use_count(5);
+  profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(3));
   test_adm_.AddProfile(profile2);
 
   AutofillProfile profile3(AddressCountryCode("US"));
   profile3.SetRawInfo(NAME_MIDDLE, u"J");
   profile3.SetRawInfo(ADDRESS_HOME_LINE1, u"742 Evergreen Terrace");
   profile3.SetRawInfo(COMPANY_NAME, u"Fox");
-  profile3.set_use_count(3);
-  profile3.set_use_date(AutofillClock::Now() - base::Days(5));
+  profile3.usage_history().set_use_count(3);
+  profile3.usage_history().set_use_date(AutofillClock::Now() - base::Days(5));
   test_adm_.AddProfile(profile3);
 
   base::HistogramTester histogram_tester;
@@ -136,11 +136,11 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   EXPECT_EQ(u"US", deduped_profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   // The use count that results from the merge should be the max of all the
   // profiles use counts.
-  EXPECT_EQ(10U, deduped_profile.use_count());
+  EXPECT_EQ(10U, deduped_profile.usage_history().use_count());
   // The use date that results from the merge should be the one from the
   // profile1 since it was the most recently used profile.
-  EXPECT_LT(profile1.use_date() - base::Seconds(10),
-            deduped_profile.use_date());
+  EXPECT_LT(profile1.usage_history().use_date() - base::Seconds(10),
+            deduped_profile.usage_history().use_date());
 }
 
 // Tests that ApplyDeduplicationRoutine doesn't affect profiles that shouldn't
@@ -245,12 +245,12 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
   // Create a disused address (deletable).
   AutofillProfile profile1 = test::GetFullProfile();
-  profile1.set_use_date(AutofillClock::Now() - base::Days(400));
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(400));
   test_adm_.AddProfile(profile1);
 
   // Create a recently-used address (not deletable).
   AutofillProfile profile2 = test::GetFullCanadianProfile();
-  profile1.set_use_date(AutofillClock::Now() - base::Days(4));
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(4));
   test_adm_.AddProfile(profile2);
 
   test_api(data_cleaner_).DeleteDisusedAddresses();

@@ -250,7 +250,8 @@ TEST_F(ContactInfoSyncBridgeTest,
       bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
   std::vector<AutofillProfile> profiles = GetAllDataFromTable();
   ASSERT_EQ(profiles.size(), 1u);
-  EXPECT_EQ(profiles[0].modification_date(), profile.modification_date());
+  EXPECT_EQ(profiles[0].usage_history().modification_date(),
+            profile.usage_history().modification_date());
 }
 
 // Tests that `ApplyIncrementalSyncChanges()` ensures that at most one H/W

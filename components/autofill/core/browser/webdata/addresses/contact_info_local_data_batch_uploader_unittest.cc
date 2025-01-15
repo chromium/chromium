@@ -77,8 +77,8 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
   AutofillProfile first_profile = test::GetFullProfile();
   AutofillProfile second_profile = test::GetFullProfile2();
   // Set the `first_profile` use_count greater than `second_profile` use_count.
-  first_profile.set_use_count(20);
-  second_profile.set_use_count(10);
+  first_profile.usage_history().set_use_count(20);
+  second_profile.usage_history().set_use_count(10);
   address_data_manager().AddProfile(first_profile);
   address_data_manager().AddProfile(second_profile);
 

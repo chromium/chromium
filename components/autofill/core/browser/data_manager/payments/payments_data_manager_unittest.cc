@@ -158,22 +158,25 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
     test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
                             "378282246310005" /* American Express */, "04",
                             "2999", "1");
-    credit_card0.set_use_count(3);
-    credit_card0.set_use_date(AutofillClock::Now() - base::Days(1));
+    credit_card0.usage_history().set_use_count(3);
+    credit_card0.usage_history().set_use_date(AutofillClock::Now() -
+                                              base::Days(1));
     payments_data_manager().AddCreditCard(credit_card0);
 
     CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
                             test::kEmptyOrigin);
-    credit_card1.set_use_count(300);
-    credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
+    credit_card1.usage_history().set_use_count(300);
+    credit_card1.usage_history().set_use_date(AutofillClock::Now() -
+                                              base::Days(10));
     test::SetCreditCardInfo(&credit_card1, "John Dillinger",
                             "4234567890123456" /* Visa */, "01", "2999", "1");
     payments_data_manager().AddCreditCard(credit_card1);
 
     CreditCard credit_card2("002149C1-EE28-4213-A3B9-DA243FFF021B",
                             test::kEmptyOrigin);
-    credit_card2.set_use_count(1);
-    credit_card2.set_use_date(AutofillClock::Now() - base::Days(1));
+    credit_card2.usage_history().set_use_count(1);
+    credit_card2.usage_history().set_use_date(AutofillClock::Now() -
+                                              base::Days(1));
     test::SetCreditCardInfo(&credit_card2, "Bonnie Parker",
                             "5105105105105100" /* Mastercard */, "12", "2999",
                             "1");
@@ -193,7 +196,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
         CreditCard::RecordType::kMaskedServerCard);
     masked_server_card.set_server_id("masked_id");
     masked_server_card.SetNetworkForMaskedCard(kVisaCard);
-    masked_server_card.set_use_count(15);
+    masked_server_card.usage_history().set_use_count(15);
     test_api(payments_data_manager()).AddServerCreditCard(masked_server_card);
     WaitForOnPaymentsDataChanged();
     ASSERT_EQ(1U, payments_data_manager().GetCreditCards().size());
@@ -204,7 +207,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
                             "08", "2999", "1");
     local_card.set_guid("00000000-0000-0000-0000-000000000009");
     local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-    local_card.set_use_count(5);
+    local_card.usage_history().set_use_count(5);
     payments_data_manager().AddCreditCard(local_card);
     WaitForOnPaymentsDataChanged();
     ASSERT_EQ(2U, payments_data_manager().GetCreditCards().size());
@@ -346,12 +349,13 @@ TEST_F(PaymentsDataManagerTest,
   // `local_iban` and `server_iban` have the same prefix, suffix and length.
   Iban local_iban;
   local_iban.set_value(u"FR76 3000 6000 0112 3456 7890 189");
-  local_iban.set_use_date(AutofillClock::Now() - base::Days(4));
+  local_iban.usage_history().set_use_date(AutofillClock::Now() - base::Days(4));
 
   Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"FR76");
   server_iban.set_suffix(u"0189");
-  server_iban.set_use_date(AutofillClock::Now() - base::Days(2));
+  server_iban.usage_history().set_use_date(AutofillClock::Now() -
+                                           base::Days(2));
 
   AddLocalIban(local_iban);
 
@@ -369,18 +373,22 @@ TEST_F(PaymentsDataManagerTest, GetIbansToSuggestOrdersByFrecency) {
   payments_data_manager().SetSyncingForTest(true);
 
   Iban local_iban1 = test::GetLocalIban();
-  local_iban1.set_use_date(AutofillClock::Now() - base::Days(4));
+  local_iban1.usage_history().set_use_date(AutofillClock::Now() -
+                                           base::Days(4));
   AddLocalIban(local_iban1);
 
   Iban local_iban2 = test::GetLocalIban2();
-  local_iban2.set_use_date(AutofillClock::Now() - base::Days(3));
+  local_iban2.usage_history().set_use_date(AutofillClock::Now() -
+                                           base::Days(3));
   AddLocalIban(local_iban2);
 
   Iban server_iban2 = test::GetServerIban2();
-  server_iban2.set_use_date(AutofillClock::Now() - base::Days(2));
+  server_iban2.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(2));
 
   Iban server_iban3 = test::GetServerIban3();
-  server_iban3.set_use_date(AutofillClock::Now() - base::Days(1));
+  server_iban3.usage_history().set_use_date(AutofillClock::Now() -
+                                            base::Days(1));
 
   GetServerDataTable()->SetServerIbansForTesting({server_iban2, server_iban3});
   payments_data_manager().Refresh();
@@ -496,9 +504,9 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_LocalIban) {
   AdvanceClock(kArbitraryTime - base::Time::Now());
   Iban local_iban;
   local_iban.set_value(u"FR76 3000 6000 0112 3456 7890 189");
-  EXPECT_EQ(local_iban.use_count(), 1u);
-  EXPECT_EQ(local_iban.use_date(), kArbitraryTime);
-  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
+  EXPECT_EQ(local_iban.usage_history().use_count(), 1u);
+  EXPECT_EQ(local_iban.usage_history().use_date(), kArbitraryTime);
+  EXPECT_EQ(local_iban.usage_history().modification_date(), kArbitraryTime);
 
   AddLocalIban(local_iban);
 
@@ -511,9 +519,9 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_LocalIban) {
   WaitForOnPaymentsDataChanged();
   histogram_tester.ExpectTotalCount(
       "Autofill.DaysSinceLastUse.StoredIban.Local", 1);
-  EXPECT_EQ(local_iban.use_count(), 2u);
-  EXPECT_EQ(local_iban.use_date(), kSomeLaterTime);
-  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
+  EXPECT_EQ(local_iban.usage_history().use_count(), 2u);
+  EXPECT_EQ(local_iban.usage_history().use_date(), kSomeLaterTime);
+  EXPECT_EQ(local_iban.usage_history().modification_date(), kArbitraryTime);
 }
 
 TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
@@ -521,9 +529,9 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
   // Create the test clock and set the time to a specific value.
   AdvanceClock(kArbitraryTime - base::Time::Now());
   Iban server_iban = test::GetServerIban();
-  EXPECT_EQ(server_iban.use_count(), 1u);
-  EXPECT_EQ(server_iban.use_date(), kArbitraryTime);
-  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
+  EXPECT_EQ(server_iban.usage_history().use_count(), 1u);
+  EXPECT_EQ(server_iban.usage_history().use_date(), kArbitraryTime);
+  EXPECT_EQ(server_iban.usage_history().modification_date(), kArbitraryTime);
   GetServerDataTable()->SetServerIbansForTesting({server_iban});
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
@@ -537,9 +545,9 @@ TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
   WaitForOnPaymentsDataChanged();
   histogram_tester.ExpectTotalCount(
       "Autofill.DaysSinceLastUse.StoredIban.Server", 1);
-  EXPECT_EQ(server_iban.use_count(), 2u);
-  EXPECT_EQ(server_iban.use_date(), kSomeLaterTime);
-  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
+  EXPECT_EQ(server_iban.usage_history().use_count(), 2u);
+  EXPECT_EQ(server_iban.usage_history().use_date(), kSomeLaterTime);
+  EXPECT_EQ(server_iban.usage_history().modification_date(), kArbitraryTime);
 }
 
 TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
@@ -675,9 +683,9 @@ TEST_F(PaymentsDataManagerTest, RemoveLocalDataModifiedBetween) {
 TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   AdvanceClock(kArbitraryTime - base::Time::Now());
   CreditCard card = test::GetCreditCard();
-  ASSERT_EQ(card.use_count(), 1u);
-  ASSERT_EQ(card.use_date(), kArbitraryTime);
-  ASSERT_EQ(card.modification_date(), kArbitraryTime);
+  ASSERT_EQ(card.usage_history().use_count(), 1u);
+  ASSERT_EQ(card.usage_history().use_date(), kArbitraryTime);
+  ASSERT_EQ(card.usage_history().modification_date(), kArbitraryTime);
   payments_data_manager().AddCreditCard(card);
   WaitForOnPaymentsDataChanged();
 
@@ -688,9 +696,9 @@ TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   const CreditCard* pdm_card =
       payments_data_manager().GetCreditCardByGUID(card.guid());
   ASSERT_TRUE(pdm_card);
-  EXPECT_EQ(pdm_card->use_count(), 2u);
-  EXPECT_EQ(pdm_card->use_date(), kSomeLaterTime);
-  EXPECT_EQ(pdm_card->modification_date(), kArbitraryTime);
+  EXPECT_EQ(pdm_card->usage_history().use_count(), 2u);
+  EXPECT_EQ(pdm_card->usage_history().use_date(), kSomeLaterTime);
+  EXPECT_EQ(pdm_card->usage_history().modification_date(), kArbitraryTime);
 }
 
 // Test that UpdateLocalCvc function working as expected.
@@ -788,9 +796,9 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_BasicInformation) {
   EXPECT_EQ(0, credit_card.Compare(*results[0]));
 
   // Make sure the use count and use date were set.
-  EXPECT_EQ(1U, results[0]->use_count());
-  EXPECT_EQ(kArbitraryTime, results[0]->use_date());
-  EXPECT_EQ(kArbitraryTime, results[0]->modification_date());
+  EXPECT_EQ(1U, results[0]->usage_history().use_count());
+  EXPECT_EQ(kArbitraryTime, results[0]->usage_history().use_date());
+  EXPECT_EQ(kArbitraryTime, results[0]->usage_history().modification_date());
 }
 
 // Test filling credit cards with unicode strings and crazy characters.
@@ -1100,15 +1108,17 @@ TEST_F(PaymentsDataManagerTest,
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(2);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(6);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kMasterCard);
 
   SetServerCards(server_cards);
@@ -1146,15 +1156,17 @@ TEST_F(PaymentsDataManagerTest,
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(2);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(6);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kMasterCard);
 
   SetServerCards(server_cards);
@@ -1186,15 +1198,17 @@ TEST_F(PaymentsDataManagerTest,
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b459");
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(2);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
-  server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
+  server_cards.back().usage_history().set_use_count(6);
+  server_cards.back().usage_history().set_use_date(AutofillClock::Now() -
+                                                   base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kMasterCard);
 
   SetServerCards(server_cards);
@@ -1382,15 +1396,15 @@ TEST_F(PaymentsDataManagerTest, LogStoredCreditCardMetrics) {
   for (auto record_type : record_types) {
     // Create a card that's still in active use.
     CreditCard card_in_use = test::GetRandomCreditCard(record_type);
-    card_in_use.set_use_date(now - base::Days(30));
-    card_in_use.set_use_count(10);
+    card_in_use.usage_history().set_use_date(now - base::Days(30));
+    card_in_use.usage_history().set_use_count(10);
 
     // Create a card that's not in active use.
     CreditCard card_in_disuse = test::GetRandomCreditCard(record_type);
     card_in_disuse.SetExpirationYear(one_month_ago_exploded.year);
     card_in_disuse.SetExpirationMonth(one_month_ago_exploded.month);
-    card_in_disuse.set_use_date(now - base::Days(200));
-    card_in_disuse.set_use_count(10);
+    card_in_disuse.usage_history().set_use_date(now - base::Days(200));
+    card_in_disuse.usage_history().set_use_count(10);
 
     // Add the cards to the personal data manager in the appropriate way.
     if (record_type == CreditCard::RecordType::kLocalCard) {
@@ -1521,7 +1535,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   test_api(payments_data_manager()).AddServerCreditCard(server_card);
 
   // Set server card metadata.
-  server_card.set_use_count(15);
+  server_card.usage_history().set_use_count(15);
   payments_data_manager().UpdateServerCardsMetadata({server_card});
 
   WaitForOnPaymentsDataChanged();
@@ -1539,7 +1553,7 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
                           "08", "2999", "1");
   local_card.set_guid("00000000-0000-0000-0000-000000000009");
   local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-  local_card.set_use_date(AutofillClock::Now() - base::Days(5));
+  local_card.usage_history().set_use_date(AutofillClock::Now() - base::Days(5));
   payments_data_manager().AddCreditCard(local_card);
 
   WaitForOnPaymentsDataChanged();
@@ -1628,7 +1642,7 @@ TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
                           "08", "2999", "1");
   local_card.set_guid("00000000-0000-0000-0000-000000000009");
   local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-  local_card.set_use_count(5);
+  local_card.usage_history().set_use_count(5);
   payments_data_manager().AddCreditCard(local_card);
   WaitForOnPaymentsDataChanged();
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());

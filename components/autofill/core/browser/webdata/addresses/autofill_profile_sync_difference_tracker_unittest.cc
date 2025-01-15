@@ -402,7 +402,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                         AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(27);
+  local.usage_history().set_use_count(27);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
@@ -412,12 +412,12 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
-  remote.set_use_count(13);
+  remote.usage_history().set_use_count(13);
   remote.FinalizeAfterImport();
   // The remote profile wins (as regards the storage key).
   AutofillProfile merged(remote);
   // Merging two profile takes their max use count.
-  merged.set_use_count(27);
+  merged.usage_history().set_use_count(27);
 
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());
@@ -435,7 +435,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
                         AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.set_use_count(13);
+  local.usage_history().set_use_count(13);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
@@ -446,7 +446,7 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Merging two profile takes their max use count, so use count of 27 is taken.
-  remote.set_use_count(27);
+  remote.usage_history().set_use_count(27);
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
   EXPECT_EQ(std::nullopt, MergeSimilarEntriesForInitialSync());

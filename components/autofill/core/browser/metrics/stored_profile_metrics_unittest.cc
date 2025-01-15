@@ -60,12 +60,12 @@ TEST_P(StoredProfileMetricsTestByCategory, NoProfiles) {
 TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
   // Create a recently used (3 days ago) profile.
   AutofillProfile profile0 = test::GetFullProfile();
-  profile0.set_use_date(AutofillClock::Now() - base::Days(3));
+  profile0.usage_history().set_use_date(AutofillClock::Now() - base::Days(3));
   test::SetProfileCategory(profile0, Category());
 
   // Create a profile used a long time (200 days) ago.
   AutofillProfile profile1 = test::GetFullProfile2();
-  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(200));
   test::SetProfileCategory(profile1, Category());
 
   // Log the metrics and verify expectations.

@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
-#include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -465,35 +464,38 @@ TEST(CreditCardTest, AssignmentOperator) {
 
 TEST(CreditCardTest, GetMetadata) {
   CreditCard local_card = test::GetCreditCard();
-  local_card.set_use_count(2);
-  local_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
+  local_card.usage_history().set_use_count(2);
+  local_card.usage_history().set_use_date(
+      base::Time::FromSecondsSinceUnixEpoch(25));
   local_card.set_billing_address_id("123");
   PaymentsMetadata local_metadata = local_card.GetMetadata();
   EXPECT_EQ(local_card.guid(), local_metadata.id);
   EXPECT_EQ(local_card.billing_address_id(), local_metadata.billing_address_id);
-  EXPECT_EQ(local_card.use_count(), local_metadata.use_count);
-  EXPECT_EQ(local_card.use_date(), local_metadata.use_date);
+  EXPECT_EQ(local_card.usage_history().use_count(), local_metadata.use_count);
+  EXPECT_EQ(local_card.usage_history().use_date(), local_metadata.use_date);
 
   CreditCard masked_card = test::GetMaskedServerCard();
-  masked_card.set_use_count(4);
-  masked_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(50));
+  masked_card.usage_history().set_use_count(4);
+  masked_card.usage_history().set_use_date(
+      base::Time::FromSecondsSinceUnixEpoch(50));
   masked_card.set_billing_address_id("abc");
   PaymentsMetadata masked_metadata = masked_card.GetMetadata();
   EXPECT_EQ(masked_card.server_id(), masked_metadata.id);
   EXPECT_EQ(masked_card.billing_address_id(),
             masked_metadata.billing_address_id);
-  EXPECT_EQ(masked_card.use_count(), masked_metadata.use_count);
-  EXPECT_EQ(masked_card.use_date(), masked_metadata.use_date);
+  EXPECT_EQ(masked_card.usage_history().use_count(), masked_metadata.use_count);
+  EXPECT_EQ(masked_card.usage_history().use_date(), masked_metadata.use_date);
 
   CreditCard full_card = test::GetFullServerCard();
-  full_card.set_use_count(6);
-  full_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(100));
+  full_card.usage_history().set_use_count(6);
+  full_card.usage_history().set_use_date(
+      base::Time::FromSecondsSinceUnixEpoch(100));
   full_card.set_billing_address_id("xyz");
   PaymentsMetadata full_metadata = full_card.GetMetadata();
   EXPECT_EQ(full_card.server_id(), full_metadata.id);
   EXPECT_EQ(full_card.billing_address_id(), full_metadata.billing_address_id);
-  EXPECT_EQ(full_card.use_count(), full_metadata.use_count);
-  EXPECT_EQ(full_card.use_date(), full_metadata.use_date);
+  EXPECT_EQ(full_card.usage_history().use_count(), full_metadata.use_count);
+  EXPECT_EQ(full_card.usage_history().use_date(), full_metadata.use_date);
 }
 
 TEST(CreditCardTest, SetMetadata_MatchingId) {
@@ -506,8 +508,8 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_TRUE(local_card.SetMetadata(local_metadata));
   EXPECT_EQ(local_metadata.id, local_card.guid());
   EXPECT_EQ(local_metadata.billing_address_id, local_card.billing_address_id());
-  EXPECT_EQ(local_metadata.use_count, local_card.use_count());
-  EXPECT_EQ(local_metadata.use_date, local_card.use_date());
+  EXPECT_EQ(local_metadata.use_count, local_card.usage_history().use_count());
+  EXPECT_EQ(local_metadata.use_date, local_card.usage_history().use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
   PaymentsMetadata masked_metadata;
@@ -519,8 +521,8 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_EQ(masked_metadata.id, masked_card.server_id());
   EXPECT_EQ(masked_metadata.billing_address_id,
             masked_card.billing_address_id());
-  EXPECT_EQ(masked_metadata.use_count, masked_card.use_count());
-  EXPECT_EQ(masked_metadata.use_date, masked_card.use_date());
+  EXPECT_EQ(masked_metadata.use_count, masked_card.usage_history().use_count());
+  EXPECT_EQ(masked_metadata.use_date, masked_card.usage_history().use_date());
 
   CreditCard full_card = test::GetFullServerCard();
   PaymentsMetadata full_metadata;
@@ -531,8 +533,8 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_TRUE(full_card.SetMetadata(full_metadata));
   EXPECT_EQ(full_metadata.id, full_card.server_id());
   EXPECT_EQ(full_metadata.billing_address_id, full_card.billing_address_id());
-  EXPECT_EQ(full_metadata.use_count, full_card.use_count());
-  EXPECT_EQ(full_metadata.use_date, full_card.use_date());
+  EXPECT_EQ(full_metadata.use_count, full_card.usage_history().use_count());
+  EXPECT_EQ(full_metadata.use_date, full_card.usage_history().use_date());
 }
 
 TEST(CreditCardTest, SetMetadata_NotMatchingId) {
@@ -545,8 +547,8 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_FALSE(local_card.SetMetadata(local_metadata));
   EXPECT_NE(local_metadata.id, local_card.guid());
   EXPECT_NE(local_metadata.billing_address_id, local_card.billing_address_id());
-  EXPECT_NE(local_metadata.use_count, local_card.use_count());
-  EXPECT_NE(local_metadata.use_date, local_card.use_date());
+  EXPECT_NE(local_metadata.use_count, local_card.usage_history().use_count());
+  EXPECT_NE(local_metadata.use_date, local_card.usage_history().use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
   PaymentsMetadata masked_metadata;
@@ -558,8 +560,8 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(masked_metadata.id, masked_card.server_id());
   EXPECT_NE(masked_metadata.billing_address_id,
             masked_card.billing_address_id());
-  EXPECT_NE(masked_metadata.use_count, masked_card.use_count());
-  EXPECT_NE(masked_metadata.use_date, masked_card.use_date());
+  EXPECT_NE(masked_metadata.use_count, masked_card.usage_history().use_count());
+  EXPECT_NE(masked_metadata.use_date, masked_card.usage_history().use_date());
 
   CreditCard full_card = test::GetFullServerCard();
   PaymentsMetadata full_metadata;
@@ -570,8 +572,8 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_FALSE(full_card.SetMetadata(full_metadata));
   EXPECT_NE(full_metadata.id, full_card.server_id());
   EXPECT_NE(full_metadata.billing_address_id, full_card.billing_address_id());
-  EXPECT_NE(full_metadata.use_count, full_card.use_count());
-  EXPECT_NE(full_metadata.use_date, full_card.use_date());
+  EXPECT_NE(full_metadata.use_count, full_card.usage_history().use_count());
+  EXPECT_NE(full_metadata.use_date, full_card.usage_history().use_date());
 }
 
 // Test that if one of the two compared cards is masked server card,
@@ -1668,7 +1670,7 @@ TEST(CreditCardTest, IsDeletable) {
   // Created a card that has not been used since over the deletion threshold.
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
-  card.set_use_date(kArbitraryTime);
+  card.usage_history().set_use_date(kArbitraryTime);
 
   // Set the card to be expired before the threshold.
   base::Time::Exploded now_exploded;
@@ -1973,13 +1975,13 @@ TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
 
   CreditCard model_a = test::GetVirtualCard();
   model_a.set_guid(test_case.guid_a);
-  model_a.set_use_count(test_case.use_count_a);
-  model_a.set_use_date(test_case.use_date_a);
+  model_a.usage_history().set_use_count(test_case.use_count_a);
+  model_a.usage_history().set_use_date(test_case.use_date_a);
 
   CreditCard model_b = test::GetCreditCard();
   model_b.set_guid(test_case.guid_b);
-  model_b.set_use_count(test_case.use_count_b);
-  model_b.set_use_date(test_case.use_date_b);
+  model_b.usage_history().set_use_count(test_case.use_count_b);
+  model_b.usage_history().set_use_date(test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
             model_a.HasGreaterRankingThan(model_b, current_time));

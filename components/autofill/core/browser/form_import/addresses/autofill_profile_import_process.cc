@@ -192,7 +192,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // using a feature flag.
     if (!base::FeatureList::IsEnabled(
             features::test::kAutofillDisableSilentProfileUpdates)) {
-      merged_profile.set_modification_date(AutofillClock::Now());
+      merged_profile.usage_history().set_modification_date(
+          AutofillClock::Now());
       silently_updated_profiles_.emplace_back(merged_profile);
     } else {
       ++number_of_unchanged_profiles;
@@ -252,7 +253,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
   }
 
   if (import_candidate_.has_value()) {
-    import_candidate_->set_modification_date(AutofillClock::Now());
+    import_candidate_->usage_history().set_modification_date(
+        AutofillClock::Now());
   }
 
   // At this point, all existing profiles are either unchanged, updated and/or
@@ -356,7 +358,8 @@ void ProfileImportProcess::SetUserDecision(
       }
 
       confirmed_import_candidate_->FinalizeAfterImport();
-      confirmed_import_candidate_->set_modification_date(AutofillClock::Now());
+      confirmed_import_candidate_->usage_history().set_modification_date(
+          AutofillClock::Now());
       // The `confirmed_import_candidate_` has to have the same `guid` as the
       // original import candidate.
       DCHECK_EQ(import_candidate_->guid(), confirmed_import_candidate_->guid());

@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   autofill::AutofillProfile partial = CreateProfileWithPartialAddress();
   complete.FinalizeAfterImport();
   partial.FinalizeAfterImport();
-  partial.set_use_count(1000);
+  partial.usage_history().set_use_count(1000);
 
   AddAutofillProfile(complete);
   AddAutofillProfile(partial);

@@ -36,43 +36,43 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
   // Create 2 in-use IBANs, one with nickname and the other not. Save as local
   // IBANs.
   Iban iban_in_use_0 = test::GetLocalIban();
-  iban_in_use_0.set_use_date(one_month_ago);
-  iban_in_use_0.set_use_count(10);
+  iban_in_use_0.usage_history().set_use_date(one_month_ago);
+  iban_in_use_0.usage_history().set_use_count(10);
   iban_in_use_0.set_nickname(u"");
   local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_0)));
 
   Iban iban_in_use_1 = test::GetLocalIban();
-  iban_in_use_1.set_use_date(one_month_ago);
-  iban_in_use_1.set_use_count(10);
+  iban_in_use_1.usage_history().set_use_date(one_month_ago);
+  iban_in_use_1.usage_history().set_use_count(10);
   iban_in_use_1.set_nickname(u"My doctor's IBAN");
   local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_1)));
 
   // Create 2 in-use IBANs, one with nickname and the other not. Save as server
   // IBANs.
   Iban iban_in_use_2 = test::GetServerIban();
-  iban_in_use_2.set_use_date(two_months_ago);
-  iban_in_use_2.set_use_count(10);
+  iban_in_use_2.usage_history().set_use_date(two_months_ago);
+  iban_in_use_2.usage_history().set_use_count(10);
   iban_in_use_2.set_nickname(u"");
   server_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_2)));
 
   Iban iban_in_use_3 = test::GetServerIban2();
-  iban_in_use_3.set_use_date(two_months_ago);
-  iban_in_use_3.set_use_count(10);
+  iban_in_use_3.usage_history().set_use_date(two_months_ago);
+  iban_in_use_3.usage_history().set_use_count(10);
   iban_in_use_3.set_nickname(u"My doctor's IBAN");
   server_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_3)));
 
   // Create 3 disused IBANs. Saved as both local and server IBANs.
   for (int i = 0; i < 3; ++i) {
     Iban local_iban_in_disuse = test::GetLocalIban();
-    local_iban_in_disuse.set_use_date(now - base::Days(200));
-    local_iban_in_disuse.set_use_count(10);
+    local_iban_in_disuse.usage_history().set_use_date(now - base::Days(200));
+    local_iban_in_disuse.usage_history().set_use_count(10);
     local_iban_in_disuse.set_nickname(u"");
     local_ibans.push_back(
         std::make_unique<Iban>(std::move(local_iban_in_disuse)));
 
     Iban server_disused_iban = test::GetServerIban();
-    server_disused_iban.set_use_date(now - base::Days(250));
-    server_disused_iban.set_use_count(10);
+    server_disused_iban.usage_history().set_use_date(now - base::Days(250));
+    server_disused_iban.usage_history().set_use_count(10);
     server_disused_iban.set_nickname(u"");
     server_ibans.push_back(std::make_unique<Iban>(server_disused_iban));
   }

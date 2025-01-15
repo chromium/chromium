@@ -284,8 +284,8 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   BindEncryptedU16StringToColumn(
       s, index++, credit_card.GetRawInfo(CREDIT_CARD_NUMBER), encryptor);
 
-  s->BindInt64(index++, credit_card.use_count());
-  s->BindInt64(index++, credit_card.use_date().ToTimeT());
+  s->BindInt64(index++, credit_card.usage_history().use_count());
+  s->BindInt64(index++, credit_card.usage_history().use_date().ToTimeT());
   s->BindInt64(index++, modification_date.ToTimeT());
   s->BindString(index++, credit_card.origin());
   s->BindString(index++, credit_card.billing_address_id());
@@ -333,8 +333,8 @@ void BindIbanToStatement(const Iban& iban,
   int index = 0;
   s->BindString(index++, iban.guid());
 
-  s->BindInt64(index++, iban.use_count());
-  s->BindInt64(index++, iban.use_date().ToTimeT());
+  s->BindInt64(index++, iban.usage_history().use_count());
+  s->BindInt64(index++, iban.usage_history().use_date().ToTimeT());
 
   BindEncryptedU16StringToColumn(s, index++, iban.value(), encryptor);
   s->BindString16(index++, iban.nickname());
@@ -427,10 +427,11 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   credit_card->SetRawInfo(
       CREDIT_CARD_NUMBER,
       DecryptU16StringFromColumn(card_statement, index++, encryptor));
-  credit_card->set_use_count(card_statement.ColumnInt64(index++));
-  credit_card->set_use_date(
+  credit_card->usage_history().set_use_count(
+      card_statement.ColumnInt64(index++));
+  credit_card->usage_history().set_use_date(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
-  credit_card->set_modification_date(
+  credit_card->usage_history().set_modification_date(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
   credit_card->set_origin(card_statement.ColumnString(index++));
   credit_card->set_billing_address_id(card_statement.ColumnString(index++));
@@ -461,8 +462,9 @@ std::unique_ptr<Iban> IbanFromStatement(
   auto iban = std::make_unique<Iban>(Iban::Guid(s.ColumnString(index++)));
 
   DCHECK(base::Uuid::ParseCaseInsensitive(iban->guid()).is_valid());
-  iban->set_use_count(s.ColumnInt64(index++));
-  iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  iban->usage_history().set_use_count(s.ColumnInt64(index++));
+  iban->usage_history().set_use_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
 
   iban->SetRawInfo(IBAN_VALUE,
                    DecryptU16StringFromColumn(s, index++, encryptor));
@@ -790,10 +792,11 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname},
                 "guid=?1");
-  BindCreditCardToStatement(credit_card,
-                            card_updated ? AutofillClock::Now()
-                                         : old_credit_card->modification_date(),
-                            &card_statement, *encryptor());
+  BindCreditCardToStatement(
+      credit_card,
+      card_updated ? AutofillClock::Now()
+                   : old_credit_card->usage_history().modification_date(),
+      &card_statement, *encryptor());
   bool card_result = card_statement.Run();
   CHECK(db()->GetLastChangeCount() > 0);
 
@@ -953,12 +956,12 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>(
         CreditCard::RecordType::kMaskedServerCard, server_id);
     card->SetRawInfo(CREDIT_CARD_NUMBER, last_four);
-    card->set_use_count(s.ColumnInt64(index++));
-    card->set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
+    card->usage_history().set_use_count(s.ColumnInt64(index++));
+    card->usage_history().set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(s.ColumnInt64(index++))));
     // Modification date is not tracked for server cards. Explicitly set it here
     // to override the default value of AutofillClock::Now().
-    card->set_modification_date(base::Time());
+    card->usage_history().set_modification_date(base::Time());
 
     std::string card_network = s.ColumnString(index++);
     // The issuer network must be set after setting the number to override the
@@ -1109,8 +1112,8 @@ bool PaymentsAutofillTable::UpdateServerCardMetadata(const CreditCard& credit_ca
   sql::Statement s;
   InsertBuilder(db(), s, kServerCardMetadataTable,
                 {kUseCount, kUseDate, kBillingAddressId, kId});
-  s.BindInt64(0, credit_card.use_count());
-  s.BindTime(1, credit_card.use_date());
+  s.BindInt64(0, credit_card.usage_history().use_count());
+  s.BindTime(1, credit_card.usage_history().use_date());
   s.BindString(2, credit_card.billing_address_id());
   s.BindString(3, credit_card.server_id());
   s.Run();
@@ -1324,8 +1327,8 @@ bool PaymentsAutofillTable::GetServerIbans(std::vector<std::unique_ptr<Iban>>& i
     }
     std::unique_ptr<Iban> iban =
         std::make_unique<Iban>(Iban::InstrumentId(instrument_id));
-    iban->set_use_count(s.ColumnInt64(index++));
-    iban->set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
+    iban->usage_history().set_use_count(s.ColumnInt64(index++));
+    iban->usage_history().set_use_date(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(s.ColumnInt64(index++))));
     iban->set_nickname(s.ColumnString16(index++));
     iban->set_prefix(s.ColumnString16(index++));

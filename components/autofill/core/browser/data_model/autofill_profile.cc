@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -257,14 +258,14 @@ AutofillProfile CreateStarterProfile(
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  RecordType record_type,
                                  AddressCountryCode country_code)
-    : AutofillDataModel(/*usage_history_size=*/3),
-      guid_(guid),
+    : guid_(guid),
       phone_number_(this),
       address_(country_code),
       record_type_(record_type),
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome),
-      token_quality_(this) {}
+      token_quality_(this),
+      usage_history_information_(/*usage_history_size=*/3) {}
 
 AutofillProfile::AutofillProfile(RecordType record_type,
                                  AddressCountryCode country_code)
@@ -276,10 +277,10 @@ AutofillProfile::AutofillProfile(AddressCountryCode country_code)
     : AutofillProfile(RecordType::kLocalOrSyncable, country_code) {}
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : AutofillDataModel(profile),
-      phone_number_(this),
+    : phone_number_(this),
       address_(profile.GetAddress()),
-      token_quality_(this) {
+      token_quality_(this),
+      usage_history_information_(profile.usage_history_information_) {
   operator=(profile);
 }
 
@@ -289,11 +290,15 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   if (this == &profile)
     return *this;
 
-  set_use_count(profile.use_count());
-  for (size_t i = 1; i <= usage_history_size(); i++) {
-    set_use_date(profile.use_date(i), i);
+  usage_history_information_.set_use_count(
+      profile.usage_history_information_.use_count());
+  for (size_t i = 1; i <= usage_history_information_.usage_history_size();
+       i++) {
+    usage_history_information_.set_use_date(
+        profile.usage_history_information_.use_date(i), i);
   }
-  set_modification_date(profile.modification_date());
+  usage_history_information_.set_modification_date(
+      profile.usage_history_information_.modification_date());
 
   set_guid(profile.guid());
 
@@ -388,13 +393,13 @@ double AutofillProfile::GetRankingScore(base::Time current_time,
       !use_frecency) {
     // Exponentially decay the use count by the days since the data model was
     // last used.
-    return log10(use_count() + 1) *
-           exp(-GetDaysSinceLastUse(current_time) /
+    return log10(usage_history_information_.use_count() + 1) *
+           exp(-usage_history_information_.GetDaysSinceLastUse(current_time) /
                features::kAutofillRankingFormulaAddressProfilesUsageHalfLife
                    .Get());
   }
   // Default to legacy frecency scoring.
-  return AutofillDataModel::GetRankingScore(current_time);
+  return usage_history_information_.GetRankingScore(current_time);
 }
 
 bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
@@ -403,8 +408,8 @@ bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
   const double score = GetRankingScore(comparison_time, use_frecency);
   const double other_score =
       other->GetRankingScore(comparison_time, use_frecency);
-  return AutofillDataModel::CompareRankingScores(score, other_score,
-                                                 other->use_date());
+  return usage_history_information_.CompareRankingScores(
+      score, other_score, other->usage_history().use_date());
 }
 
 void AutofillProfile::GetMatchingTypesWithProfileSources(
@@ -584,14 +589,19 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
 bool AutofillProfile::EqualsForLegacySyncPurposes(
     const AutofillProfile& profile) const {
-  return use_count() == profile.use_count() &&
-         UseDateEqualsInSeconds(&profile) && EqualsSansGuid(profile);
+  return usage_history_information_.use_count() ==
+             profile.usage_history_information_.use_count() &&
+         usage_history_information_.UseDateEqualsInSeconds(
+             profile.usage_history()) &&
+         EqualsSansGuid(profile);
 }
 
 bool AutofillProfile::EqualsForUpdatePurposes(
     const AutofillProfile& new_profile) const {
-  return use_count() == new_profile.use_count() &&
-         UseDateEqualsInSeconds(&new_profile) &&
+  return usage_history_information_.use_count() ==
+             new_profile.usage_history_information_.use_count() &&
+         usage_history_information_.UseDateEqualsInSeconds(
+             new_profile.usage_history()) &&
          language_code() == new_profile.language_code() &&
          token_quality() == new_profile.token_quality() &&
          Compare(new_profile) == 0;
@@ -766,8 +776,10 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   // in the autofill drop-down; we don't need to account for that here. Further,
   // a similar, fully-typed submission that merges to an existing profile should
   // not be counted as a re-use of that profile.
-  set_use_count(std::max(profile.use_count(), use_count()));
-  MergeUseDates(profile);
+  usage_history_information_.set_use_count(
+      std::max(profile.usage_history_information_.use_count(),
+               usage_history_information_.use_count()));
+  usage_history_information_.MergeUseDates(profile.usage_history());
 
   // Update the fields which need to be modified, if any. Note: that we're
   // comparing the fields for representational equality below (i.e., are the
@@ -991,22 +1003,24 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
 void AutofillProfile::RecordAndLogUse() {
   const base::Time now = AutofillClock::Now();
-  const base::TimeDelta time_since_last_used = now - use_date();
-  RecordUseDate(now);
+  const base::TimeDelta time_since_last_used =
+      now - usage_history_information_.use_date();
+  usage_history_information_.RecordUseDate(now);
   // Ensure that use counts are not skewed by multiple filling operations of the
   // form. This is especially important for forms fully annotated with
   // autocomplete=unrecognized. For such forms, keyboard accessory chips only
   // fill a single field at a time as per
   // `AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
   if (time_since_last_used.InSeconds() >= 60) {
-    if (use_count() == 1) {
+    if (usage_history_information_.use_count() == 1) {
       // The max is the number of days a profile wasn't used before it gets
       // deleted (see `kDisusedDataModelDeletionTimeDelta`).
       base::UmaHistogramCustomCounts("Autofill.DaysUntilFirstUsage.Profile",
                                      time_since_last_used.InDays(), 1, 395,
                                      100);
     }
-    set_use_count(use_count() + 1);
+    usage_history_information_.set_use_count(
+        usage_history_information_.use_count() + 1);
     UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
                               time_since_last_used.InDays());
   }
@@ -1196,8 +1210,9 @@ bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
 
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
   os << profile.guid() << " label: " << profile.profile_label() << " "
-     << profile.use_count() << " " << profile.use_date() << " "
-     << profile.language_code() << std::endl;
+     << profile.usage_history().use_count() << " "
+     << profile.usage_history().use_date() << " " << profile.language_code()
+     << std::endl;
 
   // Lambda to print the value and verification status for |type|.
   auto print_values_lambda = [&os, &profile](FieldType type) {
@@ -1307,6 +1322,13 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
       NOTREACHED();
   }
   NOTREACHED();
+}
+
+UsageHistoryInformation& AutofillProfile::usage_history() {
+  return usage_history_information_;
+}
+const UsageHistoryInformation& AutofillProfile::usage_history() const {
+  return usage_history_information_;
 }
 
 }  // namespace autofill

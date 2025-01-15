@@ -189,7 +189,7 @@ void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
   std::erase_if(cards, [comparison_time = AutofillClock::Now(),
                         min_last_used](const CreditCard* card) {
     return card->IsExpired(comparison_time) &&
-           card->use_date() < min_last_used &&
+           card->usage_history().use_date() < min_last_used &&
            card->record_type() == CreditCard::RecordType::kLocalCard;
   });
   const size_t num_cards_suppressed = original_size - cards.size();

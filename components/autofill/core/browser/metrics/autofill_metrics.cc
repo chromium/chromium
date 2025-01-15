@@ -679,7 +679,8 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   // Iterate over all of the cards and gather metrics.
   const base::Time now = AutofillClock::Now();
   for (const CreditCard* card : credit_cards) {
-    const base::TimeDelta time_since_last_use = now - card->use_date();
+    const base::TimeDelta time_since_last_use =
+        now - card->usage_history().use_date();
     const int days_since_last_use = time_since_last_use.InDays();
     const int disused_delta =
         (time_since_last_use > disused_data_threshold) ? 1 : 0;

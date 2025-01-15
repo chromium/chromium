@@ -267,7 +267,8 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   AutofillProfile profile = test::GetFullProfile();
   const base::Time now = base::Time::Now();
   constexpr size_t kProfileLastUsedInDays = 2u;
-  profile.set_use_date(now - base::Days(kProfileLastUsedInDays));
+  profile.usage_history().set_use_date(now -
+                                       base::Days(kProfileLastUsedInDays));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Simulate that the autofill manager has seen this form on page load.
