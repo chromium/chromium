@@ -319,7 +319,7 @@ GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
 LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return base::BindRepeating(
         &LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel,
         base::Unretained(this));
