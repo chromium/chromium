@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace assist_ranker {
@@ -46,16 +45,9 @@ struct PredictorConfig {
   const char* const logging_name;
   const char* const uma_prefix;
   const LogType log_type;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const base::flat_set<std::string>* feature_allowlist;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const base::Feature* field_trial;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const base::FeatureParam<std::string>*
-      field_trial_url_param;
+  raw_ptr<const base::flat_set<std::string>> feature_allowlist;
+  raw_ptr<const base::Feature> field_trial;
+  raw_ptr<const base::FeatureParam<std::string>> field_trial_url_param;
   const float field_trial_threshold_replacement_param;
 };
 
