@@ -391,11 +391,9 @@ bool GlicWindowController::Resize(const gfx::Size& size) {
   if (!glic_window_widget_) {
     return false;
   }
-
-  window_resize_animation_.reset();
+  // TODO(iwells): Set animation duration based on value set by client.
   window_resize_animation_ = std::make_unique<GlicWindowResizeAnimation>(
-      glic_window_widget_.get(), GetGlicView(), size,
-      /*duration=*/base::Milliseconds(150),
+      glic_window_widget_.get(), size, /*duration=*/base::Milliseconds(0),
       base::BindOnce(&GlicWindowController::ResizeFinished, GetWeakPtr()));
   return true;
 }

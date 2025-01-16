@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,6 +27,7 @@ namespace glic {
 
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
