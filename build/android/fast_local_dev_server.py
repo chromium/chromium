@@ -294,7 +294,7 @@ class TaskManager:
   def task_done(cls, task: Task):
     TaskStats.complete_task(build_id=task.build_id)
     with cls._lock:
-      cls._current_tasks.remove(task)
+      cls._current_tasks.discard(task)
 
   @classmethod
   def get_current_tasks(cls, build_id):
