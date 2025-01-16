@@ -1753,9 +1753,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForMask) {
   CreateEffectNode(child);
   auto* mask_layer = AddLayerInActiveTree<FakePictureLayerImpl>();
   SetupMaskProperties(child, mask_layer);
-  Region empty_invalidation;
-  mask_layer->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(child->bounds()), &empty_invalidation);
+  mask_layer->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(child->bounds()));
 
   // Add opacity and a grand_child so that the render surface persists even
   // after we remove the mask.

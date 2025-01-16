@@ -836,9 +836,14 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   sync_tree()->UpdateDrawProperties(update_tiles,
                                     update_image_animation_controller);
 
-  // Defer invalidating images until UpdateDrawProperties is performed since
-  // that updates whether an image should be animated based on its visibility
-  // and the updated data for the image from the main frame.
+  sync_tree()->InvalidateRasterInducingScrolls(
+      pending_invalidation_raster_inducing_scrolls_);
+  pending_invalidation_raster_inducing_scrolls_.clear();
+
+  // Defer invalidating images until UpdateDrawProperties and
+  // InvalidateRasterInducingScroll is performed since those update whether an
+  // image should be animated based on its visibility and the updated data for
+  // the image from the main frame.
   PaintImageIdFlatSet images_to_invalidate =
       tile_manager_.TakeImagesToInvalidateOnSyncTree();
 
@@ -867,14 +872,6 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
                               dirty_paint_worklet_ids.end());
 
   sync_tree()->InvalidateRegionForImages(images_to_invalidate);
-
-  sync_tree()->set_did_raster_inducing_scroll(false);
-  if (!pending_invalidation_raster_inducing_scrolls_.empty()) {
-    base::flat_set<ElementId> scrolls_to_invalidate;
-    std::swap(scrolls_to_invalidate,
-              pending_invalidation_raster_inducing_scrolls_);
-    sync_tree()->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
-  }
 
   // Note that it is important to push the state for checkerboarded and animated
   // images prior to PrepareTiles here when committing to the active tree. This

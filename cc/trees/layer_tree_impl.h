@@ -26,7 +26,6 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/paint/discardable_image_map.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_host.h"
@@ -718,9 +717,6 @@ class CC_EXPORT LayerTreeImpl {
   bool did_raster_inducing_scroll() const {
     return did_raster_inducing_scroll_;
   }
-  void set_did_raster_inducing_scroll(bool did_raster_scroll_impl) {
-    did_raster_inducing_scroll_ = did_raster_scroll_impl;
-  }
 
   // See LayerTreeHost.
   EventListenerProperties event_listener_properties(
@@ -813,6 +809,24 @@ class CC_EXPORT LayerTreeImpl {
 
   void SetViewTransitionContentRect(const viz::ViewTransitionElementResourceId&,
                                     const gfx::RectF&);
+
+  void AddLayerNeedingUpdateDiscardableImageMap(PictureLayerImpl* layer);
+
+  class CC_EXPORT DiscardableImageMapUpdater {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DiscardableImageMapUpdater(LayerTreeImpl* layer_tree_impl);
+    ~DiscardableImageMapUpdater();
+
+    void AddLayerNeedingUpdate(PictureLayerImpl* layer) {
+      layers_needing_update_.push_back(layer);
+    }
+
+   private:
+    LayerTreeImpl* const layer_tree_impl_;
+    std::vector<PictureLayerImpl*> layers_needing_update_;
+  };
 
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
@@ -997,6 +1011,10 @@ class CC_EXPORT LayerTreeImpl {
   // See `CommitState::primary_main_frame_item_sequence_number`.
   int64_t primary_main_frame_item_sequence_number_ =
       RenderFrameMetadata::kInvalidItemSequenceNumber;
+
+  // Used during PullPropertiesFrom().
+  STACK_ALLOCATED_IGNORE("Correctness ensured by DiscardableImageMapUpdater")
+  raw_ptr<DiscardableImageMapUpdater> discardable_image_map_updater_;
 };
 
 }  // namespace cc

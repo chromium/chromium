@@ -50,6 +50,8 @@
 namespace cc {
 namespace {
 
+using ::testing::ElementsAre;
+
 #define EXPECT_BOTH_EQ(expression, x)          \
   do {                                         \
     EXPECT_EQ(x, pending_layer()->expression); \
@@ -3404,12 +3406,11 @@ TEST_F(LegacySWPictureLayerImplTest,
   SetWillChangeTransform(active_layer(), true);
   SetWillChangeTransform(pending_layer(), true);
   layer_bounds = gfx::Size(200, 200);
-  Region invalidation;
   // UpdateRasterSource() requires that the pending tree doesn't have tiles.
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
+  pending_layer()->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(layer_bounds));
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
@@ -3996,12 +3997,11 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // Raster source size change forces adjustment of raster scale.
   layer_bounds = gfx::Size(200, 200);
-  Region invalidation;
   // UpdateRasterSource() requires that the pending tree doesn't have tiles.
   pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(layer_bounds), &invalidation);
+  pending_layer()->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(layer_bounds));
   pending_layer()->PushPropertiesTo(active_layer());
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
@@ -6689,15 +6689,26 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   auto active_image_map = active_layer()->discardable_image_map();
   EXPECT_TRUE(pending_image_map);
   EXPECT_EQ(pending_image_map, active_image_map);
+  EXPECT_THAT(pending_image_map->GetRectsForImage(image.stable_id()),
+              ElementsAre(gfx::Rect(-1, -1, 202, 202)));
 
+  // Simulate a raster-inducing scroll.
+  host_impl()
+      ->pending_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .GetOrCreateSyncedScrollOffsetForTesting(scroll_element_id1)
+      ->SetCurrent(gfx::PointF(0, 100));
   // Invalidating scroll_element_id1 will invalidate scroll visual rect.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});
   EXPECT_EQ(info1.visual_rect, pending_layer()->invalidation().bounds());
   EXPECT_TRUE(active_layer()->invalidation().IsEmpty());
-  // The discardable image map should not be affected.
+  // And regenerate discardable image map with updated image rects.
   pending_image_map = pending_layer()->discardable_image_map();
   EXPECT_EQ(active_image_map, active_layer()->discardable_image_map());
-  EXPECT_EQ(pending_image_map, active_image_map);
+  EXPECT_NE(pending_image_map, active_image_map);
+  EXPECT_THAT(pending_image_map->GetRectsForImage(image.stable_id()),
+              ElementsAre(gfx::Rect(-1, -1, 202, 102)));
 
   ActivateTree();
   SetupPendingTreeWithInvalidation(raster, Region());
@@ -6707,7 +6718,8 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   active_image_map = active_layer()->discardable_image_map();
   EXPECT_EQ(pending_image_map, active_image_map);
 
-  // Same for scroll_list2.
+  // scroll_list2 doesn't contain discardable images. Invalidating
+  // scroll_element_id2 will invalidate scroll visual rect only.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id2});
   EXPECT_EQ(info2.visual_rect, pending_layer()->invalidation().bounds());
   EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
@@ -6718,7 +6730,7 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   EXPECT_TRUE(pending_layer()->invalidation().IsEmpty());
   EXPECT_EQ(info2.visual_rect, active_layer()->invalidation().bounds());
   EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
-  EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
+  EXPECT_EQ(pending_image_map, active_layer()->discardable_image_map());
 }
 
 enum {
@@ -6756,8 +6768,7 @@ class LCDTextTest : public PictureLayerImplTest,
     descendant_->SetContentsOpaque(true);
     descendant_->SetDrawsContent(true);
     descendant_->SetBounds(gfx::Size(200, 200));
-    Region invalidation;
-    descendant_->UpdateRasterSource(raster_source, &invalidation);
+    descendant_->SetRasterSourceForTesting(raster_source);
     ASSERT_TRUE(layer_->CanHaveTilings());
 
     CreateTransformNode(layer_);

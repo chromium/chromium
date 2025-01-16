@@ -21,6 +21,7 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
@@ -4100,12 +4101,17 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   // layer_tree_host_->ActivateCommitState() and the second argument would come
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
-      *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state(),
-      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-          .thread_unsafe_commit_state());
+  auto layer_impl = layer->CreateLayerImpl(host_impl.sync_tree());
+  {
+    cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
+        host_impl.sync_tree());
+    layer->PushPropertiesTo(
+        layer_impl.get(),
+        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+             .pending_commit_state(),
+        const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+            .thread_unsafe_commit_state());
+  }
   Update(artifact2);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -4127,12 +4133,16 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
                        Color::kBlack)
           .Build();
   // Simluate commit to the compositor thread.
-  layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
-      *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state(),
-      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-          .thread_unsafe_commit_state());
+  {
+    cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
+        host_impl.sync_tree());
+    layer->PushPropertiesTo(
+        layer_impl.get(),
+        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+             .pending_commit_state(),
+        const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+            .thread_unsafe_commit_state());
+  }
   Update(artifact3);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
