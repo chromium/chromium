@@ -68,8 +68,8 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   NSArray* headers = sso_cookies_response[headers_key];
   auto headers_key_str = base::SysNSStringToUTF8(headers_key);
 
-  for (NSDictionary* header in headers) {
-    NSDictionary* header_definition = [header valueForKey:kHeader];
+  for (NSDictionary* header_data in headers) {
+    NSDictionary* header_definition = header_data[kHeader];
     for (NSString* key in header_definition) {
       auto header_name = base::SysNSStringToUTF8(key);
 
@@ -81,7 +81,7 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
       }
 
       auto header_value = base::SysNSStringToUTF8(
-          net::FixNSStringIncorrectlyDecodedAsLatin1(header[key]));
+          net::FixNSStringIncorrectlyDecodedAsLatin1(header_definition[key]));
       if (!net::HttpUtil::IsValidHeaderValue(header_value)) {
         VLOG_POLICY(2, EXTENSIBLE_SSO)
             << "[ExtensibleEnterpriseSSO] Invalid header value "
