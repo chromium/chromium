@@ -132,7 +132,8 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
   }
 
   // Pad the remaining space, if any, with zeroes.
-  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
+  std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
+              TokenId(0u));
 
   return output;
 }
@@ -173,7 +174,8 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
   }
 
   // Pad the remaining space, if any, with zeroes.
-  std::fill(output.end(), output.begin() + output.capacity(), TokenId(0u));
+  std::fill_n(std::back_inserter(output), output.capacity() - output.size(),
+              TokenId(0u));
   return output;
 }
 

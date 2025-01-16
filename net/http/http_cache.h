@@ -266,6 +266,13 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   static std::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request);
 
+  // Generates the cache key for a request, but using a different URL. This is
+  // more efficient than copying the HttpRequestInfo object and changing the
+  // URL.
+  static std::optional<std::string> GenerateCacheKeyForRequestWithAlternateURL(
+      const HttpRequestInfo* request,
+      const GURL& url);
+
   enum class ExperimentMode {
     // No additional partitioning is done for top-level navigations.
     kStandard,

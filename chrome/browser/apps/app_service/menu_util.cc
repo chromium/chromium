@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -246,11 +245,11 @@ MenuItems CreateBrowserMenuItems(const Profile* profile) {
 }
 
 ui::ColorId GetColorIdForMenuItemIcon() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ui::kColorAshSystemUIMenuIcon;
 #else
   return ui::kColorMenuIcon;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id) {

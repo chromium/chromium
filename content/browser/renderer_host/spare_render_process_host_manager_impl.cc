@@ -32,6 +32,11 @@ using SpareProcessMaybeTakeAction =
 
 namespace {
 
+// Enables killing spare renders when memory pressure signal is received.
+BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
+             "KillSpareRenderOnMemoryPressure",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr char kSpareRendererDispatchResultUmaName[] =
     "BrowserRenderProcessHost.SpareRendererDispatchResult";
 
@@ -652,7 +657,8 @@ void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   CHECK_NE(memory_pressure_level,
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
-  if (check_memory_pressure_timer_.IsRunning()) {
+  if (check_memory_pressure_timer_.IsRunning() ||
+      !base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
     return;
   }
 

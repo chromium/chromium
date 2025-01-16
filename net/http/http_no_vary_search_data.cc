@@ -110,7 +110,7 @@ HttpNoVarySearchData::ParseFromHeaders(
   std::optional<std::string> normalized_header =
       response_headers.GetNormalizedHeader("No-Vary-Search");
   if (!normalized_header) {
-    // This means there is no No-Vary-Search header. Return nullopt.
+    // This means there is no No-Vary-Search header.
     return base::unexpected(ParseErrorEnum::kOk);
   }
 
@@ -123,6 +123,11 @@ HttpNoVarySearchData::ParseFromHeaders(
 
   return ParseNoVarySearchDictionary(dict.value());
 }
+
+bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =
+    default;
+std::strong_ordering HttpNoVarySearchData::operator<=>(
+    const HttpNoVarySearchData& rhs) const = default;
 
 const base::flat_set<std::string>& HttpNoVarySearchData::no_vary_params()
     const {

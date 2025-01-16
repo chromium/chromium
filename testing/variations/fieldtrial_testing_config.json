@@ -13133,6 +13133,25 @@
             ]
         }
     ],
+    "KillSpareRenderOnMemoryPressure": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "KillSpareRenderOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [
@@ -13202,7 +13221,7 @@
                         "lcpp_font_url_frequency_threshold": "0.1",
                         "lcpp_max_font_url_count_per_origin": "5",
                         "lcpp_max_font_url_length": "1024",
-                        "lcpp_max_font_url_to_preload": "5"
+                        "lcpp_max_font_url_to_preload": "1"
                     },
                     "enable_features": [
                         "LCPPFontURLPredictor"
@@ -13216,7 +13235,7 @@
                         "lcpp_font_url_frequency_threshold": "0.1",
                         "lcpp_max_font_url_count_per_origin": "5",
                         "lcpp_max_font_url_length": "1024",
-                        "lcpp_max_font_url_to_preload": "5"
+                        "lcpp_max_font_url_to_preload": "1"
                     },
                     "enable_features": [
                         "LCPPFontURLPredictor"

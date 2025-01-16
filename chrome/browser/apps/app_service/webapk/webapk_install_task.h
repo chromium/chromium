@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 
 class Profile;
 

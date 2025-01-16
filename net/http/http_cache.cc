@@ -613,6 +613,9 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 
 // static
 bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
+  // WARNING: If this function is changed to look at `request->url` in future,
+  // it will break GenerateCacheKeyForRequestWithAlternateURL(). Add an extra
+  // `url` parameter instead.
   if (IsSplitCacheEnabled()) {
     if (request->network_isolation_key.IsTransient()) {
       return false;
@@ -767,6 +770,14 @@ HttpCache::ExperimentMode HttpCache::GetExperimentMode() {
 // static
 std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
     const HttpRequestInfo* request) {
+  return GenerateCacheKeyForRequestWithAlternateURL(request, request->url);
+}
+
+// static
+std::optional<std::string>
+HttpCache::GenerateCacheKeyForRequestWithAlternateURL(
+    const HttpRequestInfo* request,
+    const GURL& url) {
   CHECK(request);
 
   if (!CanGenerateCacheKeyForRequest(request)) {
@@ -777,7 +788,7 @@ std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
       request->upload_data_stream ? request->upload_data_stream->identifier()
                                   : int64_t(0);
   return GenerateCacheKey(
-      request->url, request->load_flags, request->network_isolation_key,
+      url, request->load_flags, request->network_isolation_key,
       upload_data_identifier, request->is_subframe_document_resource,
       request->is_main_frame_navigation, request->initiator);
 }

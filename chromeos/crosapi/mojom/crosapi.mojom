@@ -78,7 +78,6 @@ import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
-import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
@@ -520,10 +519,7 @@ interface Crosapi {
 
   // BindSharesheet@70 was removed.
 
-  // Binds the Smart Reader manager to the Smart Reader client.
-  [MinVersion=103]
-  BindSmartReaderClient@107(
-      pending_remote<crosapi.mojom.SmartReaderClient> remote);
+  // BindSmartReaderClient@107 was removed.
 
   // BindSpeechRecognition@84 was removed.
 

@@ -87,7 +87,6 @@ mojom("mojom") {
     "remoting.mojom",
     "resource_manager.mojom",
     "screen_ai_downloader.mojom",
-    "smart_reader.mojom",
     "suggestion_service.mojom",
     "sync.mojom",
     "synced_session_client.mojom",

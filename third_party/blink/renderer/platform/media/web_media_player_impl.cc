@@ -1480,9 +1480,7 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // TODO(dalecurtis): Technically this allows seeking on media which return an
   // infinite duration so long as DataSource::IsStreaming() is false. While not
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
-  const WebTimeRange seekable_range(0.0,
-                                    force_seeks_to_zero ? 0.0 : seekable_end);
-  return WebTimeRanges({seekable_range});
+  return WebTimeRanges(0.0, force_seeks_to_zero ? 0.0 : seekable_end);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {

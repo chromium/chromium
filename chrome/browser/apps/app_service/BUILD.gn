@@ -103,35 +103,6 @@ source_set("app_service") {
     sources += [
       "app_notifications.cc",
       "app_notifications.h",
-      "media_requests.cc",
-      "media_requests.h",
-      "menu_item_constants.h",
-      "webapk/webapk_utils.cc",
-      "webapk/webapk_utils.h",
-    ]
-
-    deps += [
-      "//ash/webui/projector_app/public/cpp",
-      "//chrome/browser/apps/app_service/app_install",
-      "//chrome/browser/apps/browser_instance",
-      "//chrome/browser/chromeos/arc",
-      "//chromeos/crosapi/mojom",
-      "//components/webapk:proto",
-      "//third_party/smhasher:murmurhash2",
-      "//ui/wm/public",
-    ]
-
-    # Needed only to allow circular includes.
-    deps += [ "//chrome/browser/chromeos/app_mode" ]
-
-    allow_circular_includes_from += [
-      "//chrome/browser/chromeos/app_mode",
-      "//chrome/browser/chromeos/arc",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "app_service_proxy_ash.cc",
       "app_service_proxy_ash.h",
       "app_shortcut_item.cc",
@@ -140,6 +111,9 @@ source_set("app_service") {
       "file_utils.h",
       "instance_registry_updater.cc",
       "instance_registry_updater.h",
+      "media_requests.cc",
+      "media_requests.h",
+      "menu_item_constants.h",
       "menu_util.cc",
       "menu_util.h",
       "metrics/app_discovery_metrics.cc",
@@ -210,6 +184,8 @@ source_set("app_service") {
       "webapk/webapk_metrics.h",
       "webapk/webapk_prefs.cc",
       "webapk/webapk_prefs.h",
+      "webapk/webapk_utils.cc",
+      "webapk/webapk_utils.h",
     ]
 
     deps += [
@@ -223,10 +199,13 @@ source_set("app_service") {
       "//ash/components/arc/mojom",
       "//ash/public/cpp",
       "//ash/webui/mall:app_id",
+      "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/apps/app_service/app_install",
       "//chrome/browser/apps/app_service/promise_apps/proto",
+      "//chrome/browser/apps/browser_instance",
       "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/app_service",
@@ -249,7 +228,6 @@ source_set("app_service") {
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/time_limits",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/extensions/autotest_private",
@@ -276,6 +254,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
       "//chrome/browser/chromeos/extensions/web_file_handlers",
       "//chrome/browser/image_fetcher",
@@ -297,6 +276,7 @@ source_set("app_service") {
       "//chromeos/ash/experiences/arc/session:connection_holder",
       "//chromeos/components/kiosk:kiosk",
       "//chromeos/components/mgs",
+      "//chromeos/crosapi/mojom",
       "//components/app_restore",
       "//components/exo",
       "//components/image_fetcher/core",
@@ -305,13 +285,21 @@ source_set("app_service") {
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
+      "//components/webapk:proto",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/smhasher:murmurhash2",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
+      "//ui/wm/public",
     ]
+
+    # Needed only to allow circular includes.
+    deps += [ "//chrome/browser/chromeos/app_mode" ]
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
+      "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
       "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
@@ -448,10 +436,6 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
-
-  if (is_chromeos_ash) {
     sources += [
       "file_utils_unittest.cc",
       "metrics/app_platform_metrics_service_unittest.cc",
@@ -509,6 +493,7 @@ source_set("unit_tests") {
       "//chromeos/ash/components/system",
       "//chromeos/ash/experiences/arc/intent_helper",
       "//chromeos/components/mgs:test_support",
+      "//chromeos/crosapi/mojom",
       "//chromeos/dbus/power:power_manager_proto",
       "//components/image_fetcher/core",
       "//components/image_fetcher/core:test_support",
@@ -540,7 +525,7 @@ source_set("test_support") {
     "//skia",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "metrics/app_platform_metrics_service_test_base.cc",
       "metrics/app_platform_metrics_service_test_base.h",

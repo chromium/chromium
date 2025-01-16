@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://crostini-upgrader/app.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BrowserProxy} from 'chrome://crostini-upgrader/browser_proxy.js';
+import {PageCallbackRouter, UpgradePrecheckStatus} from 'chrome://crostini-upgrader/crostini_upgrader.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -67,7 +69,7 @@ class FakePageHandler extends TestBrowserProxy {
 class FakeBrowserProxy {
   constructor() {
     this.handler = new FakePageHandler();
-    this.callbackRouter = new ash.crostiniUpgrader.mojom.PageCallbackRouter();
+    this.callbackRouter = new PageCallbackRouter();
     /** @type {appManagement.mojom.PageRemote} */
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
@@ -165,8 +167,7 @@ suite('<crostini-upgrader-app>', () => {
     assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 0);
     // The UI pauses for 2000 ms before continuing.
     await waitMillis(2010).then(flushTasks());
-    fakeBrowserProxy.page.precheckStatus(
-        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+    fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.OK);
     await flushTasks();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
@@ -190,8 +191,7 @@ suite('<crostini-upgrader-app>', () => {
 
     const kMaxUpgradeAttempts = 3;
     for (let i = 0; i < kMaxUpgradeAttempts; i++) {
-      fakeBrowserProxy.page.precheckStatus(
-          ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+      fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.OK);
       await flushTasks();
       assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
       fakeBrowserProxy.page.onUpgradeProgress(['foo', 'bar']);
@@ -211,18 +211,15 @@ suite('<crostini-upgrader-app>', () => {
     await clickAction();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
-    fakeBrowserProxy.page.precheckStatus(
-        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE);
+    fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.NETWORK_FAILURE);
     await clickAction();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 2);
-    fakeBrowserProxy.page.precheckStatus(
-        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER);
+    fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.LOW_POWER);
     await clickAction();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 3);
-    fakeBrowserProxy.page.precheckStatus(
-        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+    fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.OK);
     await clickAction();
 
     assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
@@ -250,8 +247,7 @@ suite('<crostini-upgrader-app>', () => {
 
     const kMaxUpgradeAttempts = 3;
     for (let i = 0; i < kMaxUpgradeAttempts; i++) {
-      fakeBrowserProxy.page.precheckStatus(
-          ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+      fakeBrowserProxy.page.precheckStatus(UpgradePrecheckStatus.OK);
       await flushTasks();
       assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
       assertFalse(getUpgradeProgressBar().hidden);

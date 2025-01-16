@@ -276,11 +276,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'c8d2127f9a6098600385e12b75e8efeeb89d1c81',
+  'src_internal_revision': 'c99a00378fd55cded045d38d0843b1f6e36bd2f8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '3978daa5237093e9a313bea9230a160e7825ce18',
+  'skia_revision': 'efa5810875cd39ede10452d43538210ee3a05e65',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'b4cb17b8c1dd314a0a7bf6457e14a91c910af14b',
+  'angle_revision': '49e5f944710d911f6386ca0ded9230674ead574d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '3cbe7e294bf79a3d091253b1f0ded0b9c412c5d8',
+  'chromium_variations_revision': '5776d5588ec9886c400b6f27af80ba47fdcb9a73',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -1598,7 +1598,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'D3pIzW-DFJLqHs8Zu2uxb_jVlNJPtk7hbfcqwT7E6c0C',
+          'version': 'MAduAYSc7tNrREw_0Qmolbry40guFe2yYrFJn4DsrUkC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2883,7 +2883,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'MXSWN3kSvOoxThyL_iKEpESx1IcEGMHVCmKxxG_N7UsC',
+          'version': 'xS70Jbjmjdwq1vR9HTuKWHI6WvnhJDdgLhG6GoSJ4QIC',
         },
       ],
       'dep_type': 'cipd',

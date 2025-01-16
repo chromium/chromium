@@ -811,12 +811,11 @@ WebTimeRanges MediaSource::BufferedInternal(
     active_source_buffers_->item(i)->GetBuffered_Locked(&ranges[i], pass_key);
   }
 
-  WebTimeRanges intersection_ranges;
-
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
   //    object and abort these steps.
-  if (ranges.empty())
-    return intersection_ranges;
+  if (ranges.empty()) {
+    return WebTimeRanges();
+  }
 
   // 2. Let active ranges be the ranges returned by buffered for each
   //    SourceBuffer object in activeSourceBuffers.
@@ -828,12 +827,13 @@ WebTimeRanges MediaSource::BufferedInternal(
   }
 
   // Return an empty range if all ranges are empty.
-  if (highest_end_time < 0)
-    return intersection_ranges;
+  if (highest_end_time < 0) {
+    return WebTimeRanges();
+  }
 
   // 4. Let intersection ranges equal a TimeRange object containing a single
   //    range from 0 to highest end time.
-  intersection_ranges.emplace_back(0, highest_end_time);
+  WebTimeRanges intersection_ranges(0, highest_end_time);
 
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
@@ -867,13 +867,13 @@ WebTimeRanges MediaSource::SeekableInternal(
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
-  WebTimeRanges ranges;
 
   double source_duration = GetDuration_Locked(pass_key);
 
   // If duration equals NaN: Return an empty TimeRanges object.
-  if (std::isnan(source_duration))
-    return ranges;
+  if (std::isnan(source_duration)) {
+    return WebTimeRanges();
+  }
 
   // If duration equals positive Infinity:
   if (source_duration == std::numeric_limits<double>::infinity()) {
@@ -887,33 +887,30 @@ WebTimeRanges MediaSource::SeekableInternal(
       //      earliest start time in union ranges and an end time equal to
       //      the highest end time in union ranges and abort these steps.
       if (buffered.empty()) {
-        ranges.emplace_back(live_seekable_range_start_,
-                            live_seekable_range_end_);
-        return ranges;
+        return WebTimeRanges(live_seekable_range_start_,
+                             live_seekable_range_end_);
       }
 
-      ranges.emplace_back(
+      return WebTimeRanges(
           std::min(live_seekable_range_start_, buffered.front().start),
           std::max(live_seekable_range_end_, buffered.back().end));
-      return ranges;
     }
 
     // 2. If the HTMLMediaElement.buffered attribute returns an empty TimeRanges
     //    object, then return an empty TimeRanges object and abort these steps.
-    if (buffered.empty())
-      return ranges;
+    if (buffered.empty()) {
+      return WebTimeRanges();
+    }
 
     // 3. Return a single range with a start time of 0 and an end time equal to
     //    the highest end time reported by the HTMLMediaElement.buffered
     //    attribute.
-    ranges.emplace_back(0, buffered.back().end);
-    return ranges;
+    return WebTimeRanges(0, buffered.back().end);
   }
 
   // 3. Otherwise: Return a single range with a start time of 0 and an end time
   //    equal to duration.
-  ranges.emplace_back(0, source_duration);
-  return ranges;
+  return WebTimeRanges(0, source_duration);
 }
 
 void MediaSource::OnTrackChanged(TrackBase* track) {

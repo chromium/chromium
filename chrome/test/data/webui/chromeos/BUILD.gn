@@ -75,20 +75,11 @@ if (include_js2gtest_tests) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
-  js2gtest("browser_tests_js_mojo_lite_webui") {
-    test_type = "mojo_lite_webui"
-
-    deps = [ "//chrome/browser/ui" ]
-
-    sources = [ "crostini_upgrader_browsertest.js" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
       "crostini_installer_browsertest.js",
+      "crostini_upgrader_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
       "nearby_share/nearby_browsertest.js",
       "nearby_share/shared/nearby_shared_v3_browsertest.js",
@@ -296,8 +287,8 @@ mojom("web_ui_test_bindings") {
   sources = [ "web_ui_test.mojom" ]
   webui_module_path = "/"
 
-  # Some tests are still using the old -lite bindings. See
-  # browser_tests_js_mojo_lite_webui target above.
+  # Some tests in ash/webui/ are using js2gtest's
+  # `test_type = "mojo_lite_webui"` which uses the old -lite bindings.
   generate_legacy_js_bindings = true
 }
 

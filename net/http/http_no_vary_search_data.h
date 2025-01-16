@@ -24,7 +24,7 @@ class HttpResponseHeaders;
 class NET_EXPORT_PRIVATE HttpNoVarySearchData {
  public:
   enum class ParseErrorEnum {
-    kOk,             // Parsing is correct. Also returned if there is no header.
+    kOk,             // There is no No-Vary-Search header.
     kDefaultValue,   // Parsing is correct but led to default value - the header
                      // could be removed.
     kNotDictionary,  // Header value is not a dictionary.
@@ -55,6 +55,11 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
   static base::expected<HttpNoVarySearchData,
                         HttpNoVarySearchData::ParseErrorEnum>
   ParseFromHeaders(const HttpResponseHeaders& response_headers);
+
+  bool operator==(const HttpNoVarySearchData& rhs) const;
+
+  // HttpNoVarySearchData objects can be used as a key in a map.
+  std::strong_ordering operator<=>(const HttpNoVarySearchData& rhs) const;
 
   bool AreEquivalent(const GURL& a, const GURL& b) const;
 

@@ -1073,9 +1073,7 @@ TEST_P(HTMLMediaElementTest, GcMarkingNoAllocWebTimeRanges) {
   EXPECT_DEATH_IF_SUPPORTED(MakeGarbageCollected<TimeRanges>(0, 0), "");
 #endif  // DCHECK_IS_ON()
   // Instead of using TimeRanges, WebTimeRanges can be used without GC
-  Vector<WebTimeRanges> ranges;
-  ranges.emplace_back();
-  ranges[0].emplace_back(0, 0);
+  Vector<WebTimeRanges> ranges = {WebTimeRanges(0, 0)};
 }
 
 // Reproduce crbug.com/970150

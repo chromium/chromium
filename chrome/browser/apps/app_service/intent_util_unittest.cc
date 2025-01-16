@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -36,10 +35,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/strings/strcat.h"
@@ -47,6 +42,7 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "net/base/filename_util.h"
@@ -58,7 +54,7 @@
 #include "url/url_constants.h"
 
 class TestingProfile;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using apps::Condition;
 using apps::ConditionType;
@@ -68,7 +64,7 @@ using apps::PatternMatchType;
 
 class IntentUtilsTest : public testing::Test {
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   arc::mojom::IntentInfoPtr CreateArcIntent() {
     arc::mojom::IntentInfoPtr arc_intent = arc::mojom::IntentInfo::New();
     arc_intent->action = "android.intent.action.PROCESS_TEXT";
@@ -140,10 +136,10 @@ class IntentUtilsTest : public testing::Test {
 
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
   const std::string& start_type = "initialStart";
@@ -232,7 +228,7 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
   EXPECT_EQ(intent_str,
             apps_util::CreateLaunchIntent("com.android.vending", intent));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IntentUtilsTest, CreateNoteTakingFilter) {
   IntentFilterPtr filter = apps_util::CreateNoteTakingFilter();
@@ -327,7 +323,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
   EXPECT_EQ(file_cond2.condition_values[1]->value, "txt");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
   const std::string note_action_handler =
       extensions::api::app_runtime::ToString(
@@ -358,9 +354,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
   apps::IntentPtr intent = apps_util::CreateCreateNoteIntent();
   EXPECT_TRUE(intent->MatchFilter(filter));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   // Foo extension provides file_browser_handlers for html and anything.
   extensions::ExtensionBuilder foo_ext("Foo");
@@ -491,9 +485,6 @@ TEST_F(IntentUtilsForExtensionsTest,
   EXPECT_EQ(file_cond.condition_values[1]->value, ".csv");
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Converting an Arc Intent filter for a URL view intent filter should add a
 // condition covering every possible path.
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
@@ -842,9 +833,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ReturnskFile) {
     }
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
   apps::IntentPtr original_intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, GURL("www.google.com"));
@@ -887,9 +876,7 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
   EXPECT_EQ(*original_intent, *converted_intent);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class IntentUtilsFileTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -1047,4 +1034,4 @@ TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
       ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_local_),
              path));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
