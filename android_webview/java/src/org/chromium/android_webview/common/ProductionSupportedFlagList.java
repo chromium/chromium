@@ -1043,6 +1043,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_AUTOFILL_HANDLE_FOCUS_CHANGE,
                 "When enabled it terminates autofill suggestion after window focus loss"),
+        Flag.baseFeature(
+                "LayoutNGShapeCache", "Enables the text shaping cache for the performance."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
