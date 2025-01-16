@@ -51,7 +51,6 @@ class MockApp : public PaymentApp {
   MOCK_CONST_METHOD0(CanPreselect, bool());
   MOCK_CONST_METHOD0(GetMissingInfoLabel, std::u16string());
   MOCK_CONST_METHOD0(HasEnrolledInstrument, bool());
-  MOCK_METHOD0(RecordUse, void());
   MOCK_CONST_METHOD0(NeedsInstallation, bool());
   MOCK_CONST_METHOD0(GetId, std::string());
   MOCK_CONST_METHOD0(GetLabel, std::u16string());

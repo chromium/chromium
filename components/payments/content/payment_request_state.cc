@@ -408,9 +408,6 @@ void PaymentRequestState::RecordUseStats() {
           *selected_contact_profile_);
     }
   }
-
-  if (selected_app_)
-    selected_app_->RecordUse();
 }
 
 void PaymentRequestState::SetAvailablePaymentAppForRetry() {
