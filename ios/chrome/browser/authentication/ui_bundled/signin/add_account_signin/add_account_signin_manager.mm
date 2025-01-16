@@ -4,13 +4,61 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
+
+namespace {
+// Logs the histograms for add to account operation:
+//   * Signin.AddAccountToDevice.Result
+//   * Signin.AddAccountToDevice.{Interrupted|CancelledByUser|Error|Succes}.Duration
+void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
+                                     base::TimeDelta duration) {
+  base::UmaHistogramEnumeration("Signin.AddAccountToDevice.Result", result);
+  switch (result) {
+    case SigninAddAccountToDeviceResult::kInterrupted:
+      base::UmaHistogramMediumTimes(
+          "Signin.AddAccountToDevice.Interrupted.Duration", duration);
+      break;
+    case SigninAddAccountToDeviceResult::kError:
+      base::UmaHistogramMediumTimes("Signin.AddAccountToDevice.Error.Duration",
+                                    duration);
+      break;
+    case SigninAddAccountToDeviceResult::kCancelledByUser:
+      base::UmaHistogramMediumTimes(
+          "Signin.AddAccountToDevice.CancelledByUser.Duration", duration);
+      break;
+    case SigninAddAccountToDeviceResult::kSuccess:
+      base::UmaHistogramMediumTimes(
+          "Signin.AddAccountToDevice.Success.Duration", duration);
+      break;
+  }
+}
+
+// Converts a SigninAddAccountToDeviceResult to a SigninCoordinatorResult.
+SigninCoordinatorResult ToSigninCoordinatorResult(
+    SigninAddAccountToDeviceResult addAccountResult) {
+  switch (addAccountResult) {
+    case SigninAddAccountToDeviceResult::kInterrupted:
+      return SigninCoordinatorResultInterrupted;
+    case SigninAddAccountToDeviceResult::kCancelledByUser:
+      return SigninCoordinatorResultCanceledByUser;
+    case SigninAddAccountToDeviceResult::kSuccess:
+      return SigninCoordinatorResultSuccess;
+    case SigninAddAccountToDeviceResult::kError:
+      // Errors for adding accounts to devices are mapped to operation being
+      // cancelled by the user (see `[AddAccountSigninManagerDelegate
+      // addAccountSigninManagerFailedWithError:]`).
+      return SigninCoordinatorResultCanceledByUser;
+  }
+}
+}  // namespace
 
 @interface AddAccountSigninManager ()
 
@@ -31,6 +79,8 @@
   raw_ptr<signin::IdentityManager> _identityManager;
   // YES if the add account if done, and the delegate has been called.
   BOOL _addAccountFlowDone;
+  // Timestamp of the last start of the flow to add an account to the device.
+  base::TimeTicks _lastStartAddAccountToDeviceTs;
 }
 
 #pragma mark - Public
@@ -81,6 +131,7 @@
   }
 
   __weak AddAccountSigninManager* weakSelf = self;
+  _lastStartAddAccountToDeviceTs = base::TimeTicks::Now();
   [self.identityInteractionManager
       startAuthActivityWithViewController:self.baseViewController
                                 userEmail:userEmail
@@ -155,25 +206,36 @@
     // See: `interruptAddAccountAnimated:completion:`.
     return;
   }
+  CHECK(!_lastStartAddAccountToDeviceTs.is_null(), base::NotFatalUntil::M135);
+  base::TimeDelta addAccountDuration =
+      base::TimeTicks::Now() - _lastStartAddAccountToDeviceTs;
+  _lastStartAddAccountToDeviceTs = base::TimeTicks();
+
   DCHECK(self.identityInteractionManager);
   _addAccountFlowDone = YES;
   self.identityInteractionManager = nil;
-  SigninCoordinatorResult signinResult = SigninCoordinatorResultSuccess;
+  SigninAddAccountToDeviceResult addAccountResult =
+      SigninAddAccountToDeviceResult::kSuccess;
   if (self.signinInterrupted) {
-    signinResult = SigninCoordinatorResultInterrupted;
+    addAccountResult = SigninAddAccountToDeviceResult::kInterrupted;
     identity = nil;
   } else if (error) {
     // Filter out errors handled internally by `identity`.
     if (ShouldHandleSigninError(error)) {
+      addAccountResult = SigninAddAccountToDeviceResult::kError;
+      LogAddAccountToDeviceHistograms(addAccountResult, addAccountDuration);
       [self.delegate addAccountSigninManagerFailedWithError:error];
       return;
     }
-    signinResult = SigninCoordinatorResultCanceledByUser;
+    addAccountResult = SigninAddAccountToDeviceResult::kCancelledByUser;
     identity = nil;
   }
 
-  [self.delegate addAccountSigninManagerFinishedWithSigninResult:signinResult
-                                                        identity:identity];
+  LogAddAccountToDeviceHistograms(addAccountResult, addAccountDuration);
+  [self.delegate
+      addAccountSigninManagerFinishedWithSigninResult:ToSigninCoordinatorResult(
+                                                          addAccountResult)
+                                             identity:identity];
 }
 
 @end

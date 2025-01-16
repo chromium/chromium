@@ -502,6 +502,55 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.AddAccountToDevice.Result"
+    enum="SigninAddAccountToDeviceResult" expires_after="2025-07-15">
+  <owner>jlebel@google.com</owner>
+  <owner>msarda@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs the result of adding an account to the device. It is logged as soon as
+    the add account to device operation finishes.
+
+    The flow to add account to device is explicitly triggered in Chrome by the
+    user in the following cases: a) a signed out user attempts to sign in to
+    Chrome; b) a Chrome signed in user adds a secondary account.
+
+    Note: This histogram is only logged for account that are added to the device
+    from Chrome. If the users adds the account from another app, then this
+    histogram is not logged.
+
+    Only logged on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AddAccountToDevice.{Result}.Duration" units="ms"
+    expires_after="2025-07-15">
+  <owner>jlebel@google.com</owner>
+  <owner>msarda@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs the duration of the operation of adding an account to the device when
+    the operation {Result}. It is logged as soon as the add account to device
+    operation finishes.
+
+    The flow to add account to device is explicitly triggered in Chrome by the
+    user in the following cases: a) a signed out user attempts to sign in to
+    Chrome; b) a Chrome signed in user adds a secondary account.
+
+    Note: This histogram is only logged for account that are added to the device
+    from Chrome. If the users adds the account from another app, then this
+    histogram is not logged.
+
+    Only logged on iOS.
+  </summary>
+  <token key="Result">
+    <variant name="CancelledByUser" summary="is cancelled by the user"/>
+    <variant name="Error" summary="fails with an error"/>
+    <variant name="Interrupted" summary="is interrupted"/>
+    <variant name="Success" summary="is successful"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2025-07-06">
   <owner>mthiesse@chromium.org</owner>

@@ -653,6 +653,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Managed account"/>
 </enum>
 
+<!-- LINT.IfChange(SigninAddAccountToDeviceResult) -->
+
+<enum name="SigninAddAccountToDeviceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Cancelled by user"/>
+  <int value="3" label="Interrupted"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h:SigninAddAccountToDeviceResult) -->
+
 <enum name="SigninAndroidAddAccountState">
   <int value="0" label="Requested"/>
   <int value="1" label="Started"/>
