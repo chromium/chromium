@@ -22724,6 +22724,7 @@ from previous Chrome versions.
   <int value="894869117" label="SyncEnableBookmarksInTransportMode:enabled"/>
   <int value="895337957"
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
+  <int value="896012368" label="VisitedURLRankingDeduplication:disabled"/>
   <int value="896506516"
       label="enable-canvas-context-lost-in-background (obsolete)"/>
   <int value="896603699" label="PdfOopif:enabled"/>
@@ -24592,6 +24593,7 @@ from previous Chrome versions.
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
   <int value="1632737896" label="AccessibilityFilterKeys:disabled"/>
+  <int value="1633120342" label="VisitedURLRankingDeduplication:enabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>
   <int value="1634273054" label="OsIntegrationSubManagers:enabled"/>
   <int value="1634572985" label="TotallyEdgeToEdge:disabled"/>

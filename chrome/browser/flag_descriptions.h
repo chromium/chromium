@@ -2253,6 +2253,9 @@ extern const char kVideoPictureInPictureControlsUpdate2024Description[];
 extern const char kViewportSegmentsName[];
 extern const char kViewportSegmentsDescription[];
 
+extern const char kVisitedURLRankingServiceDeduplicationName[];
+extern const char kVisitedURLRankingServiceDeduplicationDescription[];
+
 extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
 extern const char
     kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[];

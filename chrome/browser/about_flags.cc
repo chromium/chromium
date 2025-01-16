@@ -3827,6 +3827,33 @@ const FeatureEntry::FeatureVariation kWebAuthnEnclaveAuthenticatorVariations[] =
       nullptr}};
 #endif
 
+const FeatureEntry::FeatureParam kVisitedURLRankingDomainDeduplicationParam[] =
+    {{"url_deduplication_include_title", "false"}};
+
+const FeatureEntry::FeatureParam
+    kVisitedURLRankingDomainDeduplicationIncludeQueryParam[] = {
+        {"url_deduplication_include_title", "false"},
+        {"url_deduplication_fallback", "false"}};
+
+const FeatureEntry::FeatureParam
+    kVisitedURLRankingDomainDeduplicationIncludePathQueryParam[] = {
+        {"url_deduplication_include_title", "false"},
+        {"url_deduplication_clear_path", "false"},
+        {"url_deduplication_fallback", "false"}};
+
+const FeatureEntry::FeatureVariation
+    kVisitedURLRankingDomainDeduplicationVariations[] = {
+        {"- Domain Deduplication", kVisitedURLRankingDomainDeduplicationParam,
+         std::size(kVisitedURLRankingDomainDeduplicationParam), nullptr},
+        {"- Domain Deduplication - Include Query",
+         kVisitedURLRankingDomainDeduplicationIncludeQueryParam,
+         std::size(kVisitedURLRankingDomainDeduplicationIncludeQueryParam),
+         nullptr},
+        {"- Domain Deduplication - Include Path and Query",
+         kVisitedURLRankingDomainDeduplicationIncludePathQueryParam,
+         std::size(kVisitedURLRankingDomainDeduplicationIncludePathQueryParam),
+         nullptr}};
+
 const FeatureEntry::FeatureParam
     kDeferRendererTasksAfterInputMinimalTypesPolicyParam[] = {
         {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
@@ -10801,6 +10828,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(syncer::kSyncEnableBookmarksInTransportMode)},
 #endif
+
+    {"visited-url-ranking-service-domain-deduplication",
+     flag_descriptions::kVisitedURLRankingServiceDeduplicationName,
+     flag_descriptions::kVisitedURLRankingServiceDeduplicationDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         visited_url_ranking::features::kVisitedURLRankingDeduplication,
+         kVisitedURLRankingDomainDeduplicationVariations,
+         "visited-url-ranking-service-domain-deduplication")},
 
     {"visited-url-ranking-service-history-visibility-score-filter",
      flag_descriptions::

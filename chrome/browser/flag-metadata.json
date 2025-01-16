@@ -9083,6 +9083,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "visited-url-ranking-service-domain-deduplication",
+    "owners": ["mfacey@chromium.org","romanarora@chromium.org", "chrome-desktop-ntp@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "visited-url-ranking-service-history-visibility-score-filter",
     "owners": ["romanarora@chromium.org", "ssid@chromium.org", "chrome-desktop-ntp@google.com"],
     "expiry_milestone": 133
