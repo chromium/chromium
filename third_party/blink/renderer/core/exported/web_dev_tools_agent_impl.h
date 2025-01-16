@@ -66,7 +66,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
   WebDevToolsAgentImpl(WebLocalFrameImpl*, bool include_view_agents);
   ~WebDevToolsAgentImpl() override;
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
   DevToolsAgent* GetDevToolsAgent() const { return agent_.Get(); }
 
   void WillBeDestroyed();
