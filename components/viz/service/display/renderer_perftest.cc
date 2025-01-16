@@ -278,7 +278,7 @@ class RendererPerfTest : public VizPerfTest {
     output_surface->SetNeedsSwapSizeNotifications(true);
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
-        &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
+        /*shared_image_manager=*/nullptr,
         /*gpu_scheduler=*/nullptr, renderer_settings_, &debug_settings_,
         kArbitraryFrameSinkId, std::move(display_controller),
         std::move(output_surface), std::move(overlay_processor),

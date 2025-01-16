@@ -60,8 +60,7 @@ DisplayWebView::DisplayWebView(
     OverlayProcessorWebView* overlay_processor_webview,
     viz::FrameSinkManagerImpl* frame_sink_manager,
     RootFrameSink* root_frame_sink)
-    : viz::Display(/*bitmap_manager=*/nullptr,
-                   /*shared_image_manager=*/nullptr,
+    : viz::Display(/*shared_image_manager=*/nullptr,
                    /*gpu_scheduler=*/nullptr,
                    settings,
                    debug_settings,
