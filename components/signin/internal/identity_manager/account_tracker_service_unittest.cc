@@ -350,10 +350,10 @@ class AccountTrackerServiceTest : public testing::Test {
   void ReturnAccountImageFetchSuccess(AccountKey account_key);
   void ReturnAccountImageFetchFailure(AccountKey account_key);
   void ReturnAccountCapabilitiesFetchSuccess(AccountKey account_key);
-#if !BUILDFLAG(IS_CHROMEOS)
-  void ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
+  void SimulateParentalSupervisionCheckComplete(
       AccountKey account_key,
       bool is_subject_to_parental_controls);
+#if !BUILDFLAG(IS_CHROMEOS)
   void TestAccountCapabilitiesSubjectToParentalSupervision(
       bool capability_value,
       signin::Tribool expected_is_child_account);
@@ -496,19 +496,25 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
       AccountKeyToAccountId(account_key), capabilities);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-void AccountTrackerServiceTest::
-    ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
-        AccountKey account_key,
-        bool is_subject_to_parental_controls) {
+void AccountTrackerServiceTest::SimulateParentalSupervisionCheckComplete(
+    AccountKey account_key,
+    bool is_subject_to_parental_controls) {
   IssueAccessToken(account_key);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS does not use account capabilities to set child supervision state,
+  // use the existing API to set the state directly for the test.
+  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(account_key),
+                                       is_subject_to_parental_controls);
+#else
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_is_subject_to_parental_controls(is_subject_to_parental_controls);
   fake_account_capabilities_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), capabilities);
+#endif
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void AccountTrackerServiceTest::
     TestAccountCapabilitiesSubjectToParentalSupervision(
         bool capability_value,
@@ -524,8 +530,7 @@ void AccountTrackerServiceTest::
   ReturnAccountInfoFetchSuccess(kAccountKeyChild);
   ClearAccountTrackerEvents();
 
-  ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(
-      kAccountKeyChild, capability_value);
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, capability_value);
 
   account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
@@ -667,7 +672,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
   CheckAccountCapabilities(kAccountKeyAlpha, account_info);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesSubjectToParentalSupervision) {
   TestAccountCapabilitiesSubjectToParentalSupervision(true,
@@ -679,7 +684,7 @@ TEST_F(AccountTrackerServiceTest,
   TestAccountCapabilitiesSubjectToParentalSupervision(false,
                                                       signin::Tribool::kFalse);
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
   SimulateTokenAvailable(kAccountKeyAlpha);
@@ -977,13 +982,10 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   // This will allow testing removal as well as child accounts which is only
   // allowed for a single account.
   SimulateTokenRevoked(kAccountKeyAlpha);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyBeta),
-                                       true);
-#else
+  // Simulate an update to child account state based on capabilities
+  // change to trigger `SetIsChildAccount`.
   account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyBeta),
                                        true);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   account_tracker()->SetIsAdvancedProtectionAccount(
@@ -1374,14 +1376,8 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
 
 TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   SimulateTokenAvailable(kAccountKeyChild);
-  IssueAccessToken(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, true);
+
   // Response was processed but observer is not notified as fetch results
   // haven't been returned yet.
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
@@ -1393,24 +1389,10 @@ TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
 
 TEST_F(AccountTrackerServiceTest, ChildAccountWithSecondaryEdu) {
   SimulateTokenAvailable(kAccountKeyChild);
-  IssueAccessToken(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, true);
 
   SimulateTokenAvailable(kAccountKeyEdu);
-  IssueAccessToken(kAccountKeyEdu);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyEdu),
-                                       false);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyEdu),
-                                       false);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyEdu, false);
 
   // Response was processed but observer is not notified as fetch results
   // haven't been returned yet.
@@ -1425,16 +1407,10 @@ TEST_F(AccountTrackerServiceTest, ChildAccountWithSecondaryEdu) {
   SimulateTokenRevoked(kAccountKeyEdu);
 }
 
-TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
+TEST_F(AccountTrackerServiceTest, UnsupervisedAccountUpdatedAndRevoked) {
   SimulateTokenAvailable(kAccountKeyChild);
-  IssueAccessToken(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       false);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       false);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, false);
+
   ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
                      net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
@@ -1454,16 +1430,10 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   }));
 }
 
-TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
+TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   SimulateTokenAvailable(kAccountKeyChild);
-  IssueAccessToken(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, true);
+
   ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
                      net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
@@ -1476,23 +1446,11 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
       AccountKeyToAccountId(kAccountKeyChild));
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   SimulateTokenRevoked(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, is_child_account is set to false before removing it.
-  EXPECT_TRUE(CheckAccountTrackerEvents({
-      TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
-                    AccountKeyToGaiaId(kAccountKeyChild),
-                    AccountKeyToEmail(kAccountKeyChild)),
-      TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
-                    AccountKeyToGaiaId(kAccountKeyChild),
-                    AccountKeyToEmail(kAccountKeyChild)),
-  }));
-#else
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
                     AccountKeyToGaiaId(kAccountKeyChild),
                     AccountKeyToEmail(kAccountKeyChild)),
   }));
-#endif
 }
 
 TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedTwiceThenRevoked) {
@@ -1501,13 +1459,8 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedTwiceThenRevoked) {
 
   // Since the account state is already valid, this will notify the
   // observers for the second time.
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, true);
+
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
                     AccountKeyToGaiaId(kAccountKeyChild),
@@ -1517,37 +1470,19 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedTwiceThenRevoked) {
                     AccountKeyToEmail(kAccountKeyChild)),
   }));
   SimulateTokenRevoked(kAccountKeyChild);
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, is_child_account is set to false before removing it.
-  EXPECT_TRUE(CheckAccountTrackerEvents({
-      TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
-                    AccountKeyToGaiaId(kAccountKeyChild),
-                    AccountKeyToEmail(kAccountKeyChild)),
-      TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
-                    AccountKeyToGaiaId(kAccountKeyChild),
-                    AccountKeyToEmail(kAccountKeyChild)),
-  }));
-#else
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(REMOVED, AccountKeyToAccountId(kAccountKeyChild),
                     AccountKeyToGaiaId(kAccountKeyChild),
                     AccountKeyToEmail(kAccountKeyChild)),
   }));
-#endif
 }
 
 TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
   SimulateTokenAvailable(kAccountKeyChild);
-  IssueAccessToken(kAccountKeyChild);
 
   // Set and verify this is a child account.
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#else
-  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       true);
-#endif
+  SimulateParentalSupervisionCheckComplete(kAccountKeyChild, true);
+
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
@@ -1560,14 +1495,11 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
                     AccountKeyToEmail(kAccountKeyChild)),
   }));
 
-  // Now simulate child account graduation.
-#if BUILDFLAG(IS_ANDROID)
-  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
-                                       false);
-#else
+  // Simulate an update to child account graduation based on capabilities
+  // change to trigger `SetIsChildAccount`.
   account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        false);
-#endif
+
   info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
   EXPECT_EQ(signin::Tribool::kFalse, info.is_child_account);
