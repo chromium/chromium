@@ -9,7 +9,15 @@ NSString* const kMagicStackSectionIdentifier = @"MagicStackSectionIdentifier";
 NSString* const kMagicStackEditSectionIdentifier =
     @"MagicStackEditSectionIdentifier";
 
-const int kModuleMaxHeight = 150;
+NSArray* const kAccessibilityContentSizes = [NSArray
+    arrayWithObjects:UIContentSizeCategoryAccessibilityMedium,
+                     UIContentSizeCategoryAccessibilityLarge,
+                     UIContentSizeCategoryAccessibilityExtraLarge,
+                     UIContentSizeCategoryAccessibilityExtraExtraLarge,
+                     UIContentSizeCategoryAccessibilityExtraExtraExtraLarge,
+                     nil];
+
+const int kMaxTextSizeForStyleFootnote = 24;
 
 const CGFloat kMagicStackSpacing = 12.0f;
 

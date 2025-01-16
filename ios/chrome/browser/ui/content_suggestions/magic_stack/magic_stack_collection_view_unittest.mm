@@ -39,6 +39,7 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
     audience_ = OCMStrictProtocolMock(
         @protocol(MagicStackCollectionViewControllerAudience));
     view_controller_.audience = audience_;
+    [view_controller_ loadViewIfNeeded];
     [view_controller_ viewDidLoad];
     [_window addSubview:[view_controller_ view]];
     AddSameConstraints(_window, [view_controller_ view]);
