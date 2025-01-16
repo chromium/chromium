@@ -283,7 +283,7 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
     if (CanRejectRuleSet(collector, *rule_set)) {
       continue;
     }
-    match_request.AddRuleset(rule_set.Get());
+    match_request.AddRuleSet(rule_set.Get());
     if (match_request.IsFull()) {
       func(match_request);
       match_request.ClearAfterMatching();

@@ -2133,7 +2133,7 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
     if (CanRejectRuleSet(collector, *rule_set)) {
       continue;
     }
-    match_request.AddRuleset(rule_set.Get());
+    match_request.AddRuleSet(rule_set.Get());
     if (match_request.IsFull()) {
       if (AnyRuleCausesInvalidation(match_request, collector, is_shadow_host)) {
         matched_any = true;
@@ -3256,7 +3256,7 @@ void StyleEngine::CollectMatchingUserRules(
     ElementRuleCollector& collector) const {
   MatchRequest match_request;
   for (const ActiveStyleSheet& style_sheet : active_user_style_sheets_) {
-    match_request.AddRuleset(style_sheet.second);
+    match_request.AddRuleSet(style_sheet.second);
     if (match_request.IsFull()) {
       collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
       match_request.ClearAfterMatching();
