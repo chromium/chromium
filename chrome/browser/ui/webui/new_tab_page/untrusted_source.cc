@@ -248,6 +248,11 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     ui::TemplateReplacements replacements;
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
     replacements["barHtml"] = data->bar_html;
+    replacements["varsHeadScript"] = base::StringPrintf(
+        "let abp = %s;", base::FeatureList::IsEnabled(
+                             ntp_features::kNtpOneGoogleBarAsyncBarParts)
+                             ? "true"
+                             : "false");
     replacements["inHeadScript"] = data->in_head_script;
     replacements["inHeadStyle"] = data->in_head_style;
     replacements["afterBarScript"] = data->after_bar_script;

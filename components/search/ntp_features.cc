@@ -283,6 +283,11 @@ BASE_FEATURE(kNtpMicrosoftAuthenticationModule,
              "NtpMicrosoftAuthenticationModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the OGB loader will request for the async bar parts payload type.
+BASE_FEATURE(kNtpOneGoogleBarAsyncBarParts,
+             "NtpOneGoogleBarAsyncBarParts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
