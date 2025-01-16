@@ -208,6 +208,7 @@ export namespace Session {
       BrowsingContext.BrowsingContext,
       ...BrowsingContext.BrowsingContext[],
     ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export namespace Session {

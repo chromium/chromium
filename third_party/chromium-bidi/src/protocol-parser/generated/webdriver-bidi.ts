@@ -280,6 +280,7 @@ export namespace Session {
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
         .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }
