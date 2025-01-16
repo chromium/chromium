@@ -3708,8 +3708,11 @@ public class StripLayoutHelper
     }
 
     int getTabDropId() {
+        if (!mReorderDelegate.getReorderingForTabDrop()) {
+            return Tab.INVALID_TAB_ID;
+        }
         StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (!mReorderDelegate.getReorderingForTabDrop() || interactingTab == null) {
+        if (interactingTab == null) {
             return Tab.INVALID_TAB_ID;
         }
 
