@@ -3485,6 +3485,11 @@ void DocumentLoader::RecordUseCountersForCommit() {
   if (!response_.HttpHeaderField(http_names::kNoVarySearch).IsNull())
     CountUse(WebFeature::kNoVarySearch);
 
+  if (frame_->IsOutermostMainFrame() &&
+      !response_.HttpHeaderField(http_names::kRequestOTR).IsNull()) {
+    CountUse(WebFeature::kRequestOTRMainFrame);
+  }
+
   if (was_blocked_by_document_policy_)
     CountUse(WebFeature::kDocumentPolicyCausedPageUnload);
 
