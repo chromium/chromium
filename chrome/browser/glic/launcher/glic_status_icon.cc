@@ -45,6 +45,11 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
       l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_TOOLTIP));
+
+  // If the StatusIcon cannot be created, don't configure it.
+  if (!status_icon_) {
+    return;
+  }
 #if BUILDFLAG(IS_LINUX)
   //  Set a vector icon for proper themeing on Linux.
   status_icon_->SetIcon(kGlicButtonIcon);
@@ -82,8 +87,13 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
 }
 
 GlicStatusIcon::~GlicStatusIcon() {
-  status_icon_->RemoveObserver(this);
-  status_tray_->RemoveStatusIcon(status_icon_);
+  context_menu_ = nullptr;
+  if (status_icon_) {
+    status_icon_->RemoveObserver(this);
+    status_tray_->RemoveStatusIcon(status_icon_);
+    status_icon_ = nullptr;
+  }
+  status_tray_ = nullptr;
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
@@ -135,6 +145,7 @@ void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
+  CHECK(context_menu_);
   context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW,
                                             &hotkey);
   std::optional<size_t> show_menu_item_index =
