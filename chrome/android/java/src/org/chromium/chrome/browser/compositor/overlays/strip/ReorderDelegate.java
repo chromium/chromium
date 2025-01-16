@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_SLIDE_OUT_MS;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -907,6 +909,16 @@ public class ReorderDelegate {
     }
 
     /**
+     * @param adjTitle The {@link StripLayoutGroupTitle} of the group we're dragging past.
+     * @return The threshold needed to trigger a reorder.
+     */
+    private float getGroupSwapThreshold(StripLayoutGroupTitle adjTitle) {
+        if (adjTitle.isCollapsed()) return adjTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        return (adjTitle.getBottomIndicatorWidth() + TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET)
+                * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+    }
+
+    /**
      * @param groupTitle The group title for the desired group. Must not be null.
      * @param towardEnd True if dragging towards the end of the strip.
      * @return The threshold to drag out of a group.
@@ -990,7 +1002,7 @@ public class ReorderDelegate {
             float oldScrollOffset = mScrollDelegate.getScrollOffset();
             float offset = mInteractingGroupTitle.getOffsetX() + deltaX;
 
-            if (reorderGroupIfThresholdReached(stripTabs, offset)) {
+            if (reorderGroupIfThresholdReached(groupTitles, stripTabs, offset)) {
                 offset =
                         adjustOffsetAfterReorder(
                                 mInteractingGroupTitle,
@@ -1074,11 +1086,13 @@ public class ReorderDelegate {
          * If the group has been dragged past the threshold for the given case, update the {@link
          * TabModel} and return {@code true}. Else, return {@code false}.
          *
+         * @param groupTitles The list of {@link StripLayoutGroupTitle}.
          * @param stripTabs The list of {@link StripLayoutTab}.
          * @param offset The distance the group has been dragged from its ideal position.
          * @return {@code True} if the reorder was successful. {@code False} otherwise.
          */
-        private boolean reorderGroupIfThresholdReached(StripLayoutTab[] stripTabs, float offset) {
+        private boolean reorderGroupIfThresholdReached(
+                StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs, float offset) {
             boolean towardEnd = isOffsetTowardEnd(offset);
             int firstTabIndex =
                     StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
@@ -1089,11 +1103,17 @@ public class ReorderDelegate {
             int adjTabIndex = towardEnd ? lastTabIndex + 1 : firstTabIndex - 1;
             if (adjTabIndex >= stripTabs.length || adjTabIndex < 0) return false;
             StripLayoutTab adjStripTab = stripTabs[adjTabIndex];
+            Tab adjTab = mModel.getTabById(adjStripTab.getTabId());
+            assert adjTab != null : "No matching Tab in the TabModel.";
 
             if (mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(adjStripTab.getTabId()))) {
                 // Case A: Attempt to drag past adjacent group.
-                // TODO(crbug.com/376066293): Implement.
-                return false;
+                StripLayoutGroupTitle adjTitle =
+                        StripLayoutUtils.findGroupTitle(groupTitles, adjTab.getTabGroupId());
+                assert adjTitle != null : "No matching group title on the tab strip.";
+                if (Math.abs(offset) <= getGroupSwapThreshold(adjTitle)) return false;
+
+                movePastAdjacentGroup(stripTabs, adjTitle, towardEnd);
             } else {
                 // Case B: Attempt to drab past ungrouped tab.
                 if (Math.abs(offset) <= getTabSwapThreshold()) return false;
@@ -1101,8 +1121,39 @@ public class ReorderDelegate {
                 int destIndex = towardEnd ? adjTabIndex + 1 : adjTabIndex;
                 mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), destIndex);
                 animateViewSliding(adjStripTab);
-                return true;
             }
+
+            return true;
+        }
+
+        /**
+         * Reorders the interacting group past an adjacent group. Animates accordingly.
+         *
+         * @param stripTabs The list of {@link StripLayoutTab}.
+         * @param adjTitle The {@link StripLayoutGroupTitle} of the adjacent group.
+         * @param towardEnd True if dragging towards the end of the strip.
+         */
+        private void movePastAdjacentGroup(
+                StripLayoutTab[] stripTabs, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
+            // Move the interacting group to its new position.
+            List<Tab> adjTabs = mTabGroupModelFilter.getRelatedTabList(adjTitle.getRootId());
+            int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
+            int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs) + 1;
+            int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
+            mTabGroupModelFilter.moveRelatedTabs(mInteractingGroupTitle.getRootId(), destIndex);
+
+            // Animate the displaced views sliding to their new positions.
+            List<Animator> animators = new ArrayList<>();
+            if (!adjTitle.isCollapsed()) {
+                // Only need to animate tabs when expanded.
+                int start = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
+                int end = start + adjTabs.size();
+                for (int i = start; i < end; i++) {
+                    animators.add(getViewSlidingAnimator(stripTabs[i]));
+                }
+            }
+            animators.add(getViewSlidingAnimator(adjTitle));
+            mAnimationHost.startAnimations(animators, /* listener= */ null);
         }
     }
 

@@ -9,8 +9,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -29,7 +29,7 @@ public class StripLayoutUtils {
     // calculated as:
     // closeButtonEndPadding(10) + tabContainerEndPadding(16) + groupTitleStartMargin(13)
     //         - overlap(28-16) =
-    @VisibleForTesting static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
+    static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 27.f;
     static final float MIN_TAB_WIDTH_DP = 108.f;
     static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     static final float TAB_OVERLAP_WIDTH_DP = 28.f;
@@ -86,17 +86,6 @@ public class StripLayoutUtils {
     }
 
     /**
-     * @param model The {@link TabModel} that holds the given tab.
-     * @param stripTab The {@link StripLayoutTab} to find the root ID for.
-     * @return The root ID for the given tab. {@code Tab.INVALID_TAB_ID} if no {@link Tab} found.
-     */
-    static int getRootId(TabModel model, StripLayoutTab stripTab) {
-        if (stripTab == null) return Tab.INVALID_TAB_ID;
-        Tab tab = model.getTabById(stripTab.getTabId());
-        return tab == null ? Tab.INVALID_TAB_ID : tab.getRootId();
-    }
-
-    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
@@ -111,7 +100,21 @@ public class StripLayoutUtils {
 
     /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
-     * @param collaborationId he sharing ID associated with the group.
+     * @param tabGroupId The {@link Token} for the tab group title we're searching for.
+     * @return The {@link StripLayoutGroupTitle} with the {@link Token}. {@code null} otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitle(
+            StripLayoutGroupTitle[] groupTitles, Token tabGroupId) {
+        for (int i = 0; i < groupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = groupTitles[i];
+            if (groupTitle.getTabGroupId().equals(tabGroupId)) return groupTitle;
+        }
+        return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param collaborationId The sharing ID associated with the group.
      * @param tabGroupSyncService The sync service to get tab group data form.
      * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
      *     otherwise.
@@ -162,26 +165,6 @@ public class StripLayoutUtils {
     // ============================================================================================
     // StripLayoutView/Tab array util methods
     // ============================================================================================
-
-    /**
-     * @param stripViews The list of all of the tab strip's views.
-     * @param stripTabs The list of all of the tab strip's tabs.
-     * @param stripTabIndex The index in the list of tabs.
-     * @return The index in the list of views.
-     */
-    static int findStripViewIndexForStripTab(
-            StripLayoutView[] stripViews, StripLayoutTab[] stripTabs, int stripTabIndex) {
-        if (stripTabIndex == TabModel.INVALID_TAB_INDEX) {
-            return TabModel.INVALID_TAB_INDEX;
-        }
-        assert stripTabIndex < stripTabs.length;
-        StripLayoutTab curTab = stripTabs[stripTabIndex];
-        if (stripViews == null || curTab == null) return TabModel.INVALID_TAB_INDEX;
-        for (int i = 0; i < stripViews.length; i++) {
-            if (stripViews[i] instanceof StripLayoutTab tab && curTab == tab) return i;
-        }
-        return TabModel.INVALID_TAB_INDEX;
-    }
 
     /**
      * @param stripTabs The list of {@link StripLayoutTab}.

@@ -1276,7 +1276,7 @@ public class StripLayoutHelper
 
         // 1. If the tab is already at the right spot, don't do anything.
         int index = findIndexForTab(id);
-        if (index == newIndex) return;
+        if (index == newIndex || index + 1 == newIndex) return;
 
         // 2. Swap the tabs.
         StripLayoutUtils.moveElement(mStripTabs, index, newIndex);
