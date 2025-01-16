@@ -176,9 +176,6 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
 
-  // This indicates whether or not to use blit requests.
-  const bool use_blit_requests_;
-
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };
 
