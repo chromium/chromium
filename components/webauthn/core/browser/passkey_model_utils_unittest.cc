@@ -143,7 +143,8 @@ TEST(PasskeyModelUtilsTest, EncryptWebauthnCredentialSpecificsData) {
 
 TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
-      kRpId, kTestUser, kTestKey, kTestKeyVersion);
+      kRpId, kTestUser, kTestKey, kTestKeyVersion,
+      /*generate_hmac_secret=*/false);
   EXPECT_EQ(passkey.sync_id().size(), 16u);
   EXPECT_EQ(passkey.credential_id().size(), 16u);
   EXPECT_EQ(passkey.rp_id(), kRpId);
@@ -173,6 +174,44 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   EXPECT_EQ(ec_key_pub, public_key_spki_der);
 
   EXPECT_TRUE(encrypted_data.hmac_secret().empty());
+  EXPECT_TRUE(encrypted_data.cred_blob().empty());
+  EXPECT_TRUE(encrypted_data.large_blob().empty());
+  EXPECT_EQ(encrypted_data.large_blob_uncompressed_size(), 0u);
+}
+
+TEST(PasskeyModelUtilsTest, GeneratePasskeyWithHMACAndEncryptSecrets) {
+  auto [passkey, public_key_spki_der] = GeneratePasskeyAndEncryptSecrets(
+      kRpId, kTestUser, kTestKey, kTestKeyVersion,
+      /*generate_hmac_secret=*/true);
+  EXPECT_EQ(passkey.sync_id().size(), 16u);
+  EXPECT_EQ(passkey.credential_id().size(), 16u);
+  EXPECT_EQ(passkey.rp_id(), kRpId);
+  EXPECT_EQ(passkey.user_id(),
+            std::string(reinterpret_cast<const char*>(kTestUser.id.data()),
+                        kTestUser.id.size()));
+  EXPECT_EQ(passkey.user_name(), kTestUser.name);
+  EXPECT_EQ(passkey.user_display_name(), kTestUser.display_name);
+  EXPECT_FALSE(passkey.third_party_payments_support());
+  EXPECT_EQ(passkey.last_used_time_windows_epoch_micros(), 0u);
+  EXPECT_GT(passkey.creation_time(), 0u);
+  EXPECT_EQ(passkey.key_version(), kTestKeyVersion);
+
+  // Filled in by the Sync model.
+  EXPECT_TRUE(passkey.newly_shadowed_credential_ids().empty());
+
+  EXPECT_TRUE(passkey.has_encrypted());
+  sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted_data;
+  ASSERT_TRUE(DecryptWebauthnCredentialSpecificsData(kTestKey, passkey,
+                                                     &encrypted_data));
+  EXPECT_FALSE(encrypted_data.private_key().empty());
+  auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+      base::as_byte_span(encrypted_data.private_key()));
+  EXPECT_NE(ec_key, nullptr);
+  std::vector<uint8_t> ec_key_pub;
+  EXPECT_TRUE(ec_key->ExportPublicKey(&ec_key_pub));
+  EXPECT_EQ(ec_key_pub, public_key_spki_der);
+
+  EXPECT_EQ(encrypted_data.hmac_secret().size(), 32u);
   EXPECT_TRUE(encrypted_data.cred_blob().empty());
   EXPECT_TRUE(encrypted_data.large_blob().empty());
   EXPECT_EQ(encrypted_data.large_blob_uncompressed_size(), 0u);
