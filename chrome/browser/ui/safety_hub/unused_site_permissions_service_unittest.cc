@@ -59,6 +59,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::UnorderedElementsAre;
+
 namespace {
 
 const char url1[] = "https://example1.com:443";
@@ -1233,19 +1235,11 @@ TEST_P(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   base::Value::Dict dict = result->ToDictValue();
   auto* revoked_origins_list = dict.FindList(kUnusedSitePermissionsResultKey);
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(3U, revoked_origins_list->size());
-    EXPECT_EQ(url1, revoked_origins_list->front().GetString());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));
   } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url1));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2));
   } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(2U, revoked_origins_list->size());
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url2));
-    EXPECT_TRUE(base::Contains(*revoked_origins_list, url3));
+    EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url2, url3));
   }
 }
 

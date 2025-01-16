@@ -119,7 +119,9 @@ bool FindDropdownItem(const base::Value::List& resolvers,
   dict.Set("value", value);
   dict.Set("policy", policy);
 
-  return base::Contains(resolvers, dict);
+  const base::Value::Dict& (base::Value::*get_dict)() const =
+      &base::Value::GetDict;
+  return base::Contains(resolvers, dict, get_dict);
 }
 
 }  // namespace

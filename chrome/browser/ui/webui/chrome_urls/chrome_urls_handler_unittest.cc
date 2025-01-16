@@ -213,7 +213,7 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   base::span<const base::cstring_view> expected_urls =
       chrome::ChromeDebugURLs();
   for (const GURL& url : url_data->command_urls) {
-    EXPECT_TRUE(base::Contains(expected_urls, url));
+    EXPECT_TRUE(base::Contains(expected_urls, url.spec()));
   }
 }
 

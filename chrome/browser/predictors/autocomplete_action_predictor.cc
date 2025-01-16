@@ -167,7 +167,9 @@ void AutocompleteActionPredictor::RegisterTransitionalMatches(
   const std::u16string lower_user_text(base::i18n::ToLower(user_text));
 
   // Merge this in to an existing match if we already saw |user_text|
-  auto match_it = base::ranges::find(transitional_matches_, lower_user_text);
+  auto match_it = base::ranges::find(
+      transitional_matches_, lower_user_text,
+      &AutocompleteActionPredictor::TransitionalMatch::user_text);
 
   if (match_it == transitional_matches_.end()) {
     if (transitional_matches_size_ + lower_user_text.length() >

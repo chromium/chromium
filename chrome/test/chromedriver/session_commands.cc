@@ -886,7 +886,10 @@ Status ExecuteGetWindowHandles(Session* session,
   }
 
   if (session->web_socket_url) {
-    auto it = base::ranges::find(window_ids, session->bidi_mapper_web_view_id);
+    const std::string& (base::Value::*get_string)() const =
+        &base::Value::GetString;
+    auto it = base::ranges::find(window_ids, session->bidi_mapper_web_view_id,
+                                 get_string);
     if (it != window_ids.end()) {
       window_ids.erase(it);
     }

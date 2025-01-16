@@ -599,7 +599,9 @@ TEST_F(AutocompleteActionPredictorTest,
   auto test = [this](const std::u16string& user_text,
                      bool should_be_registered) {
     predictor()->RegisterTransitionalMatches(user_text, AutocompleteResult());
-    bool registered = base::Contains(*transitional_matches(), user_text);
+    bool registered = base::Contains(
+        *transitional_matches(), user_text,
+        &AutocompleteActionPredictor::TransitionalMatch::user_text);
     EXPECT_EQ(registered, should_be_registered);
   };
 
@@ -642,7 +644,9 @@ TEST_F(AutocompleteActionPredictorTest,
   result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
-  auto it = base::ranges::find(*transitional_matches(), user_text);
+  auto it = base::ranges::find(
+      *transitional_matches(), user_text,
+      &AutocompleteActionPredictor::TransitionalMatch::user_text);
   ASSERT_NE(it, transitional_matches()->end());
   EXPECT_THAT(it->urls, ::testing::ElementsAre(urls[0], urls[1]));
 }

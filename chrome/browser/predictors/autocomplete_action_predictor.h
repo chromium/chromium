@@ -57,6 +57,16 @@ namespace predictors {
 class AutocompleteActionPredictor : public KeyedService,
                                     public history::HistoryServiceObserver {
  public:
+  struct TransitionalMatch {
+    TransitionalMatch();
+    explicit TransitionalMatch(const std::u16string in_user_text);
+    TransitionalMatch(const TransitionalMatch& other);
+    ~TransitionalMatch();
+
+    std::u16string user_text;
+    std::vector<GURL> urls;
+  };
+
   // An `Action` is a recommendation on what pre* technology to invoke on a
   // given `AutocompleteMatch`.
   enum Action {
@@ -140,20 +150,6 @@ class AutocompleteActionPredictor : public KeyedService,
  private:
   friend class AutocompleteActionPredictorTest;
   friend class ::PredictorsHandler;
-
-  struct TransitionalMatch {
-    TransitionalMatch();
-    explicit TransitionalMatch(const std::u16string in_user_text);
-    TransitionalMatch(const TransitionalMatch& other);
-    ~TransitionalMatch();
-
-    std::u16string user_text;
-    std::vector<GURL> urls;
-
-    bool operator==(const std::u16string& other_user_text) const {
-      return user_text == other_user_text;
-    }
-  };
 
   struct DBCacheKey {
     std::u16string user_text;
