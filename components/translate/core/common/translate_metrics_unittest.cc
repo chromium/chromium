@@ -78,7 +78,7 @@ class MetricsRecorder {
     EXPECT_EQ(count, GetTotalCount());
   }
 
-  void CheckCount(HistogramBase::Sample value, int expected) {
+  void CheckCount(HistogramBase::Sample32 value, int expected) {
     if (!samples_) {
       Snapshot();
     }
@@ -90,7 +90,7 @@ class MetricsRecorder {
     ASSERT_TRUE(samples_.get());
     for (std::unique_ptr<SampleCountIterator> i = samples_->Iterator();
          !i->Done(); i->Next()) {
-      HistogramBase::Sample min;
+      HistogramBase::Sample32 min;
       int64_t max;
       HistogramBase::Count count;
       i->Get(&min, &max, &count);
@@ -108,7 +108,7 @@ class MetricsRecorder {
     samples_ = histogram->SnapshotSamples();
   }
 
-  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample value) {
+  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample32 value) {
     if (!samples_)
       return 0;
     HistogramBase::Count count = samples_->GetCount(value);

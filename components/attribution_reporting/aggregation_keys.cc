@@ -37,7 +37,7 @@ bool IsValid(const AggregationKeys::Keys& keys) {
          });
 }
 
-void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
+void RecordAggregatableKeysPerSource(base::HistogramBase::Sample32 count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(

@@ -242,7 +242,7 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
 
 void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
     const std::string& histogram_name,
-    base::HistogramBase::Sample sample) {
+    base::HistogramBase::Sample32 sample) {
   // Report training data for all models which output collection is triggered by
   // |histogram_name|.
   auto hash = base::HashMetricName(histogram_name);

@@ -386,7 +386,7 @@ class TrainingDataCollectorImplTest
   }
 
   void WaitForHistogramSignalUpdated(const std::string& histogram_name,
-                                     base::HistogramBase::Sample sample) {
+                                     base::HistogramBase::Sample32 sample) {
     base::RunLoop run_loop;
     test_recorder_.SetOnAddEntryCallback(
         Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());

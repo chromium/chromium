@@ -1786,7 +1786,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
     ASSERT_TRUE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             VerifySignatureResult::VALID_SIGNATURE),
         1);
   }
@@ -1807,7 +1807,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
     ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             VerifySignatureResult::MISSING_SIGNATURE),
         1);
   }
@@ -1829,7 +1829,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
     ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             VerifySignatureResult::DECODE_FAILED),
         1);
   }
@@ -1852,7 +1852,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
     ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             VerifySignatureResult::INVALID_SEED),
         1);
   }
@@ -1879,7 +1879,7 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignature) {
     ASSERT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             VerifySignatureResult::INVALID_SEED),
         1);
   }

@@ -20,7 +20,7 @@ namespace {
 
 // The exclusive maximum-valued sample that the histogram supports.
 // Arbitrarily chosen.
-inline constexpr base::Histogram::Sample kMaxSample = 1'000'000'000;
+inline constexpr base::Histogram::Sample32 kMaxSample = 1'000'000'000;
 
 constexpr auto kProcessMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
@@ -34,7 +34,8 @@ constexpr auto kProcessMap =
 void ReportOomHistogram(base::HistogramBase* histogram,
                         size_t sampling_frequency,
                         size_t allocations) {
-  base::ClampedNumeric<base::Histogram::Sample> total_allocations = allocations;
+  base::ClampedNumeric<base::Histogram::Sample32> total_allocations =
+      allocations;
   total_allocations *= sampling_frequency;
 
   // The safety provided by `ClampedNumeric` is well and good, but we

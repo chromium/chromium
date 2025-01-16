@@ -158,8 +158,8 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
   const std::string& detected_language = lang_id_result.language;
 
   // Update histograms.
-  const base::HistogramBase::Sample pred_lang_hash =
-      static_cast<base::HistogramBase::Sample>(
+  const base::HistogramBase::Sample32 pred_lang_hash =
+      static_cast<base::HistogramBase::Sample32>(
           base::HashMetricName(detected_language));
   base::UmaHistogramSparse("Translate.CLD3.LanguageDetected", pred_lang_hash);
   if (detected_language != chrome_lang_id::NNetLanguageIdentifier::kUnknown) {
