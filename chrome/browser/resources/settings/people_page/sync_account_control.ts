@@ -290,7 +290,7 @@ export class SettingsSyncAccountControlElement extends
     }
 
     if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
-      return accountAwareRowSubtitle;
+      return loadTimeData.substituteString(accountAwareRowSubtitle, email);
     }
 
     if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED) {
@@ -299,6 +299,10 @@ export class SettingsSyncAccountControlElement extends
 
     if (this.syncStatus &&
         this.syncStatus.hasError && this.syncStatus.statusText) {
+      if (this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
+        return loadTimeData.substituteString(this.syncStatus.statusText, email);
+      }
+
       return this.syncStatus.statusText;
     }
     return '';
