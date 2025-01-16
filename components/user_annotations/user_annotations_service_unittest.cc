@@ -75,7 +75,7 @@ class UserAnnotationsServiceTest : public testing::Test {
     logs_service_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
     service_ = std::make_unique<UserAnnotationsService>(
-        &model_executor_, temp_dir_.GetPath(), os_crypt_.get(),
+        &model_executor_, logs_service_.get(), temp_dir_.GetPath(), os_crypt_.get(),
         optimization_guide_decider_.get());
   }
 

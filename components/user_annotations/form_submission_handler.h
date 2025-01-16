@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/proto/features/forms_annotations.pb.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "components/user_annotations/user_annotations_types.h"
 
@@ -58,7 +59,8 @@ class FormSubmissionHandler {
   // received.
   void OnModelExecuted(
       optimization_guide::OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      std::unique_ptr<optimization_guide::proto::FormsAnnotationsLoggingData>
+          logging_data);
 
   // Sends the result of form submission.
   void SendFormSubmissionResult(

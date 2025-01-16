@@ -4,10 +4,13 @@
 
 #include "components/user_annotations/form_submission_handler.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
@@ -57,16 +60,25 @@ void FormSubmissionHandler::ExecuteModelWithEntries(
   *request.mutable_form_data() = autofill::ToFormDataProto(*form_);
   *request.mutable_entries() = {std::make_move_iterator(entries.begin()),
                                 std::make_move_iterator(entries.end())};
-  user_annotations_service_->model_executor()->ExecuteModel(
+  optimization_guide::ModelExecutionCallbackWithLogging<
+      optimization_guide::proto::FormsAnnotationsLoggingData>
+      wrapper_callback = base::BindOnce(&FormSubmissionHandler::OnModelExecuted,
+                                        weak_ptr_factory_.GetWeakPtr());
+  optimization_guide::ExecuteModelWithLogging(
+      user_annotations_service_->model_executor(),
       optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
-      /*execution_timeout=*/std::nullopt,
-      base::BindOnce(&FormSubmissionHandler::OnModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr()));
+      std::nullopt, std::move(wrapper_callback));
 }
 
 void FormSubmissionHandler::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    std::unique_ptr<optimization_guide::proto::FormsAnnotationsLoggingData>
+        logging_data) {
+  CHECK(logging_data);
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      user_annotations_service_->logs_uploader());
+  *log_entry->log_ai_data_request()->mutable_forms_annotations() =
+      *logging_data;
   if (!result.response.has_value()) {
     SendFormSubmissionResult(
         base::unexpected(UserAnnotationsExecutionResult::kResponseError),
@@ -148,8 +160,9 @@ void FormSubmissionHandler::OnImportFormConfirmation(
     return;
   }
   if (log_entry) {
-    auto* quality_entry = log_entry->quality_data<
-        optimization_guide::FormsAnnotationsFeatureTypeMap>();
+    auto* quality_entry = log_entry->log_ai_data_request()
+                              ->mutable_forms_annotations()
+                              ->mutable_quality();
     if (prompt_acceptance_result.did_thumbs_down_triggered) {
       quality_entry->set_user_feedback(
           optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN);
