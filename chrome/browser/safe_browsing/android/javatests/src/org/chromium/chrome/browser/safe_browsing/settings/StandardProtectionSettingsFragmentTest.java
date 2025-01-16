@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Tests for {@link StandardProtectionSettingsFragment}. */
@@ -128,7 +129,7 @@ public class StandardProtectionSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testSwitchPasswordLeakDetectionPreference() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         startSettings();
 
@@ -215,7 +216,7 @@ public class StandardProtectionSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testPreferencesDisabledInEnhancedProtectionMode() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
         startSettings();
 
@@ -240,7 +241,7 @@ public class StandardProtectionSettingsFragmentTest {
     @SmallTest
     @Feature({"SafeBrowsing"})
     public void testPreferencesDisabledInNoProtectionMode() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
         startSettings();
 
@@ -266,7 +267,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @Policies.Add({@Policies.Item(key = "PasswordLeakDetectionEnabled", string = "true")})
     public void testPasswordLeakDetectionPolicyManaged() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -295,7 +296,7 @@ public class StandardProtectionSettingsFragmentTest {
     @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     @Policies.Add({@Policies.Item(key = "SafeBrowsingExtendedReportingEnabled", string = "true")})
     public void testExtendedReportingPolicyManaged() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();

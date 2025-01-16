@@ -77,6 +77,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -124,7 +125,7 @@ public class PrivacyGuideFragmentTest {
     @Before
     public void setUp() {
         mAllFragments = PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER;
-        mChromeBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        mChromeBrowserTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
@@ -447,7 +448,7 @@ public class PrivacyGuideFragmentTest {
 
         pressBack();
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
-        onView(withId(R.id.msbb_switch)).perform(click());
+        // msbb_switch is checked because history_sync_switch was checked above.
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();
