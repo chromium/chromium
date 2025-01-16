@@ -226,12 +226,6 @@ class SingleClientPlusAddressManagedAccountTest
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSyncUserForTest, "user@managed-domain.com");
   }
-
- private:
-  // Since the data type controller is shared between `PLUS_ADDRESS` and
-  // `PLUS_ADDRESS_SETTING`, this test tests the behavior for both.
-  base::test::ScopedFeatureList settings_feature_{
-      syncer::kSyncPlusAddressSetting};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientPlusAddressManagedAccountTest,

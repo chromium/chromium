@@ -1107,9 +1107,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.PutAll(syncer::ControlTypes());
 
   allowed_types.Put(syncer::PLUS_ADDRESS);
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
-  }
+  allowed_types.Put(syncer::PLUS_ADDRESS_SETTING);
 
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableWalletMetadataInTransportMode)) {

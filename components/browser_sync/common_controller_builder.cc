@@ -650,8 +650,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
   // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
-      plus_address_setting_service_.value() && google_groups_manager_.value() &&
-      base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+      plus_address_setting_service_.value() && google_groups_manager_.value()) {
     controllers.push_back(
         std::make_unique<plus_addresses::PlusAddressDataTypeController>(
             syncer::PLUS_ADDRESS_SETTING,

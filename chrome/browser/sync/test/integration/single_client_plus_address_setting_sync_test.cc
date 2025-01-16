@@ -14,7 +14,6 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
@@ -96,8 +95,7 @@ class SingleClientPlusAddressSettingSyncTest
         /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
                                {{plus_addresses::features::
                                      kEnterprisePlusAddressServerUrl.name,
-                                 "https://not-used.com"}}},
-                              {syncer::kSyncPlusAddressSetting, {}}},
+                                 "https://not-used.com"}}}},
         /*disabled_features=*/{});
   }
 

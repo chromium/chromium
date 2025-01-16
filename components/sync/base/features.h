@@ -44,11 +44,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 
-// Controls if the `PlusAddressSettingSyncBridge`, controlling
-// PLUS_ADDRESS_SETTING should be instantiated.
-// TODO(b/342089839): Cleanup when launched.
-BASE_DECLARE_FEATURE(kSyncPlusAddressSetting);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether Apps toggle value is exposed by Ash to Lacros.
 BASE_DECLARE_FEATURE(kSyncChromeOSAppsToggleSharing);
