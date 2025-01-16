@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
@@ -17,6 +18,13 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+
+namespace {
+constexpr auto kReservedGroupIdMap =
+    base::MakeFixedFlatMap<int, omnibox::GroupId>(
+        {{0, omnibox::GROUP_UNSCOPED_EXTENSION_1},
+         {1, omnibox::GROUP_UNSCOPED_EXTENSION_2}});
+}  // namespace
 
 UnscopedExtensionProviderDelegateImpl::UnscopedExtensionProviderDelegateImpl(
     Profile* profile,
@@ -52,6 +60,8 @@ void UnscopedExtensionProviderDelegateImpl::Start(
 
 void UnscopedExtensionProviderDelegateImpl::IncrementRequestId() {
   current_request_id_++;
+  // Reset suggestions grouping map any time a new request is made.
+  ResetSuggestionGroupsMap();
 }
 
 void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
@@ -62,6 +72,27 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   if (suggestions->request_id != current_request_id_) {
     // This is an old result, so just ignore.
     return;
+  }
+
+  TemplateURLService* turl_service = provider_->GetTemplateURLService();
+  const TemplateURL* template_url = turl_service->FindTemplateURLForExtension(
+      extension_id, TemplateURL::OMNIBOX_API_EXTENSION);
+
+  if (!base::Contains(extension_id_group_map_, extension_id)) {
+    if (next_available_group_index_ == kReservedGroupIdMap.size()) {
+      // Reached max number of groups that can be assigned to an extension.
+      // Discard suggestions from this extension.
+      return;
+    }
+    // This extension doesn't already have an associated groupId. Give it the
+    // next available groupId, and give the group the corresponding header for
+    // the extension. If the max number of extensions have been assigned a
+    // header, don't assign headers to further extensions.
+    omnibox::GroupId current_group =
+        kReservedGroupIdMap.at(next_available_group_index_++);
+    provider_->AddToSuggestionGroupsMap(
+        current_group, base::UTF16ToUTF8(template_url->keyword()));
+    extension_id_group_map_[extension_id] = current_group;
   }
 
   int first_relevance = 10000000;
@@ -102,8 +133,8 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
   match.contents_class.emplace_back(0, ACMatchClassification::DIM);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
 
-  TemplateURLService* model = provider_->GetTemplateURLService();
-  const TemplateURL* template_url = model->FindTemplateURLForExtension(
+  TemplateURLService* turl_service = provider_->GetTemplateURLService();
+  const TemplateURL* template_url = turl_service->FindTemplateURLForExtension(
       extension_id, TemplateURL::OMNIBOX_API_EXTENSION);
 
   match.keyword = template_url->keyword();
@@ -122,5 +153,12 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
 
   match.contents_class =
       extensions::StyleTypesToACMatchClassifications(suggestion);
+  match.suggestion_group_id = extension_id_group_map_[extension_id];
   return match;
+}
+
+void UnscopedExtensionProviderDelegateImpl::ResetSuggestionGroupsMap() {
+  provider_->ClearSuggestionGroupsMap();
+  extension_id_group_map_.clear();
+  next_available_group_index_ = 0;
 }

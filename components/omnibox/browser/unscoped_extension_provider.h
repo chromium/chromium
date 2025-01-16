@@ -29,6 +29,10 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   UnscopedExtensionProvider& operator=(const UnscopedExtensionProvider&) =
       delete;
 
+  void AddToSuggestionGroupsMap(omnibox::GroupId groupId,
+                                const std::string& header_text);
+  void ClearSuggestionGroupsMap();
+
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
@@ -41,6 +45,10 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
 
  private:
   ~UnscopedExtensionProvider() override;
+
+  // Next section available to be given to an extension groupId. Possible
+  // sections are defined in `kReservedSectionMap`.
+  size_t next_available_section_index_ = 0;
 
   std::set<std::string> GetUnscopedModeExtensionIds() const;
 

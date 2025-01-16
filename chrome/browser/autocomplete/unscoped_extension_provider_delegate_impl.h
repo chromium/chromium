@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOCOMPLETE_UNSCOPED_EXTENSION_PROVIDER_DELEGATE_IMPL_H_
 
 #include <string>
+#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -15,6 +16,7 @@
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Should not be included when extensions are disabled"
@@ -61,6 +63,9 @@ class UnscopedExtensionProviderDelegateImpl
       int relevance,
       const std::string& extension_id);
 
+  // Resets all state related to suggestion group mapping.
+  void ResetSuggestionGroupsMap();
+
   // Identifies the current input state. This is incremented each time the
   // autocomplete edit's input changes in any way. It is used to tell
   // whether suggest results from the extension are current.
@@ -70,6 +75,14 @@ class UnscopedExtensionProviderDelegateImpl
   //  Saved suggestions that were received from the extension used
   //  for resetting matches without asking the extension again.
   std::vector<AutocompleteMatch> extension_suggest_matches_;
+
+  // Next group available to be given to a set of extension suggestions.
+  // Possible groups are defined in `kReservedGroupIdMap`.
+  int next_available_group_index_ = 0;
+
+  // Maps extension id to a group. Allows extensions to have distinct headers.
+  std::unordered_map<extensions::ExtensionId, omnibox::GroupId>
+      extension_id_group_map_;
 
   raw_ptr<Profile> profile_;
 

@@ -101,6 +101,12 @@ enum GroupId {
   // IPH suggestions that appear in zero-prefix.  These suggestions are
   // informational only and do not trigger a search or navigation.
   GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP = 60000;
+
+  // Extension suggestions that appear in non-zps input. These suggestions
+  // appear when ExperimentalOmniboxLabs is enabled. Every extension should
+  // have a unique group in order to have its own header.
+  GROUP_UNSCOPED_EXTENSION_1 = 70000;
+  GROUP_UNSCOPED_EXTENSION_2 = 70001;
 }
 
 // Suggestion group sections determine the order in which suggestion groups
@@ -170,4 +176,9 @@ enum GroupSection {
   SECTION_MOBILE_OPEN_TABS = 200;
   SECTION_MOBILE_BOOKMARKS = 201;
   SECTION_MOBILE_HISTORY = 202;
+
+  // Unscoped extension suggestions. These suggestions are sourced from
+  // extensions for non zps input when ExperimentalOmniboxLabs is enabled.
+  SECTION_UNSCOPED_EXTENSION_1 = 300;
+  SECTION_UNSCOPED_EXTENSION_2 = 301;
 }
