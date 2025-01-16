@@ -91,8 +91,9 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
     const gfx::Size badge_icon_size =
         gfx::Size(app_list_config->shortcut_host_badge_icon_dimension(),
                   app_list_config->shortcut_host_badge_icon_dimension());
-    badge_icon_view->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size));
+    badge_icon_view->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            badge_icon, skia::ImageOperations::RESIZE_BEST, badge_icon_size)));
   }
 
   auto title_label = std::make_unique<views::Label>();
