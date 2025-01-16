@@ -22,9 +22,11 @@ ScannerProfileScopedDelegate* FakeScannerDelegate::GetProfileScopedDelegate() {
 
 void FakeScannerDelegate::OpenFeedbackDialog(
     const AccountId& account_id,
-    ScannerFeedbackInfo feedback_info) {
+    ScannerFeedbackInfo feedback_info,
+    SendFeedbackCallback send_feedback_callback) {
   if (!open_feedback_dialog_callback_.is_null()) {
-    open_feedback_dialog_callback_.Run(account_id, std::move(feedback_info));
+    open_feedback_dialog_callback_.Run(account_id, std::move(feedback_info),
+                                       std::move(send_feedback_callback));
   }
 }
 

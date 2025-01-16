@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
@@ -96,6 +97,25 @@ ScannerFeedbackInfo* GetScannerFeedbackInfoForBrowserContext(
   }
 
   return &it->second;
+}
+
+std::optional<ScannerFeedbackInfo> TakeScannerFeedbackInfoForBrowserContext(
+    content::BrowserContext& browser_context,
+    base::UnguessableToken id) {
+  auto* data = BrowserContextData::GetForBrowserContext(browser_context);
+  if (data == nullptr) {
+    return std::nullopt;
+  }
+
+  auto it = data->feedback_info_map.find(id);
+  if (it == data->feedback_info_map.end()) {
+    return std::nullopt;
+  }
+
+  std::optional<ScannerFeedbackInfo> feedback_info = std::move(it->second);
+  data->feedback_info_map.erase(it);
+
+  return feedback_info;
 }
 
 }  // namespace ash

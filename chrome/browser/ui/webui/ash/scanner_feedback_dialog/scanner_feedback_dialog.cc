@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 
+#include <string>
 #include <utility>
 #include <variant>
 
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_browser_context_data.h"
 #include "ash/webui/scanner_feedback_ui/scanner_feedback_page_handler.h"
@@ -25,10 +27,13 @@
 
 namespace ash {
 
-ScannerFeedbackDialog::ScannerFeedbackDialog(ScannerFeedbackInfo info)
+ScannerFeedbackDialog::ScannerFeedbackDialog(
+    ScannerFeedbackInfo info,
+    ScannerDelegate::SendFeedbackCallback send_feedback_callback)
     : SystemWebDialogDelegate(GURL(kScannerFeedbackUntrustedUrl),
                               /*title=*/u""),
-      feedback_info_(std::move(info)) {
+      feedback_info_(std::move(info)),
+      send_feedback_callback_(std::move(send_feedback_callback)) {
   set_show_close_button(false);
   // Taken from orca-feedback.ts's `IDEAL_WIDTH` and `IDEAL_HEIGHT`.
   set_dialog_size(gfx::Size(/*width=*/512, /*height=*/600));
@@ -53,6 +58,7 @@ void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
   // destroy `this` while the new `SystemWebDialogView` is still storing a (now
   // invalid) pointer to `this`.
   CHECK(feedback_info);
+  CHECK(!send_feedback_callback_.is_null());
 
   CHECK(webui);
   content::WebContents* web_contents = webui->GetWebContents();
@@ -68,6 +74,7 @@ void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
   feedback_info_ = std::move(feedback_info_cleanup);
 
   ScannerFeedbackPageHandler& page_handler = controller->page_handler();
+  page_handler.SetSendFeedbackCallback(std::move(send_feedback_callback_));
 
   // This is safe to run twice, as `Widget::Close()` explicitly handles the case
   // where a widget is attempted to be closed while it is already closed.

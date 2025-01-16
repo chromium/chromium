@@ -26,11 +26,13 @@ ChromeScannerDelegate::GetProfileScopedDelegate() {
 
 void ChromeScannerDelegate::OpenFeedbackDialog(
     const AccountId& account_id,
-    ash::ScannerFeedbackInfo feedback_info) {
+    ash::ScannerFeedbackInfo feedback_info,
+    SendFeedbackCallback send_feedback_callback) {
   content::BrowserContext* browser_context =
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
           account_id);
 
-  auto* dialog = new ash::ScannerFeedbackDialog(std::move(feedback_info));
+  auto* dialog = new ash::ScannerFeedbackDialog(
+      std::move(feedback_info), std::move(send_feedback_callback));
   dialog->ShowSystemDialogForBrowserContext(browser_context);
 }

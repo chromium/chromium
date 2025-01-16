@@ -24,12 +24,17 @@
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -98,6 +103,21 @@ void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
                                         ToastCatalogName::kScannerActionFailure,
                                         kPlaceholderActionFailureText));
   }
+}
+
+void OnFeedbackFormSendButtonClicked(const AccountId& account_id,
+                                     ScannerFeedbackInfo feedback_info,
+                                     const std::string& user_description) {
+  // Work around limitations with `feedback::RedactionTool` by prepending two
+  // spaces and appending a new line to any data to be redacted.
+  std::string description =
+      base::StrCat({"details:  ", feedback_info.action_details,
+                    "\nuser_description:  ", user_description, "\n"});
+
+  Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
+      account_id, feedback::kScannerFeedbackProductId, std::move(description),
+      std::string(base::as_string_view(*feedback_info.screenshot)),
+      /*image_mime_type=*/"image/jpeg");
 }
 
 }  // namespace
@@ -182,8 +202,10 @@ void ScannerController::OpenFeedbackDialog(
   CHECK(pretty_printed_action.has_value());
 
   delegate_->OpenFeedbackDialog(
-      account_id, ScannerFeedbackInfo(std::move(*pretty_printed_action),
-                                      std::move(screenshot)));
+      account_id,
+      ScannerFeedbackInfo(std::move(*pretty_printed_action),
+                          std::move(screenshot)),
+      base::BindOnce(&OnFeedbackFormSendButtonClicked, account_id));
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

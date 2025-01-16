@@ -5,6 +5,10 @@
 #ifndef ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_PAGE_HANDLER_H_
 #define ASH_WEBUI_SCANNER_FEEDBACK_UI_SCANNER_FEEDBACK_PAGE_HANDLER_H_
 
+#include <string>
+#include <utility>
+
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/webui/scanner_feedback_ui/mojom/scanner_feedback_ui.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -50,18 +54,26 @@ class ScannerFeedbackPageHandler
   void SetCloseDialogCallback(CloseDialogCallback close_dialog_callback) {
     close_dialog_callback_ = std::move(close_dialog_callback);
   }
+  void SetSendFeedbackCallback(
+      ScannerDelegate::SendFeedbackCallback send_feedback_callback) {
+    send_feedback_callback_ = std::move(send_feedback_callback);
+  }
 
   base::UnguessableToken id() const { return id_; }
 
   // mojom::scanner_feedback_ui::PageHandler:
   void GetFeedbackInfo(GetFeedbackInfoCallback callback) override;
   void CloseDialog() override;
+  void SendFeedback(const std::string& user_description) override;
 
  private:
   const base::UnguessableToken id_;
 
   // Null on construction. Set in `SetCloseDialogCallback`.
   CloseDialogCallback close_dialog_callback_;
+  // Null on construction. Set in `SetSendFeedbackCallback`. Reset to null when
+  // `SendFeedback` is called.
+  ScannerDelegate::SendFeedbackCallback send_feedback_callback_;
 
   const raw_ref<content::BrowserContext> browser_context_;
 

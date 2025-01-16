@@ -15,8 +15,8 @@ namespace ash {
 // A fake ScannerDelegate which can be used in tests.
 class FakeScannerDelegate : public ScannerDelegate {
  public:
-  using OpenFeedbackDialogCallback =
-      base::RepeatingCallback<void(const AccountId&, ScannerFeedbackInfo)>;
+  using OpenFeedbackDialogCallback = base::RepeatingCallback<
+      void(const AccountId&, ScannerFeedbackInfo, SendFeedbackCallback)>;
   FakeScannerDelegate();
   FakeScannerDelegate(const FakeScannerDelegate&) = delete;
   FakeScannerDelegate& operator=(const FakeScannerDelegate&) = delete;
@@ -25,7 +25,8 @@ class FakeScannerDelegate : public ScannerDelegate {
   // ScannerDelegate:
   ScannerProfileScopedDelegate* GetProfileScopedDelegate() override;
   void OpenFeedbackDialog(const AccountId& account_id,
-                          ScannerFeedbackInfo feedback_info) override;
+                          ScannerFeedbackInfo feedback_info,
+                          SendFeedbackCallback send_feedback_callback) override;
 
   void SetOpenFeedbackDialogCallback(OpenFeedbackDialogCallback callback);
 
