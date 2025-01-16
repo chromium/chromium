@@ -1510,7 +1510,7 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="expected_signatures"/>
 </enum>
 
-<!-- LINT.ThenChange() -->
+<!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
