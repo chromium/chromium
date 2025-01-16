@@ -558,7 +558,7 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(
                 0.5f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
 
-        topControlsOffset = TOOLBAR_HEIGHT / 4;
+        topControlsOffset = -TOOLBAR_HEIGHT / 4;
         bottomControlsOffset = 0;
         mBrowserControlsManager.setControlsPosition(
                 ControlsPosition.TOP,
@@ -576,6 +576,8 @@ public class BrowserControlsManagerUnitTest {
         assertEquals(0, mBrowserControlsManager.getBottomControlsMinHeight());
         assertEquals(topControlsOffset, mBrowserControlsManager.getTopControlOffset());
         assertEquals(bottomControlsOffset, mBrowserControlsManager.getBottomControlOffset());
+        assertEquals(
+                TOOLBAR_HEIGHT + topControlsOffset, mBrowserControlsManager.getContentOffset());
 
         // Changing the bottom offset shouldn't affect hidden ratio while position is top.
         notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT);
