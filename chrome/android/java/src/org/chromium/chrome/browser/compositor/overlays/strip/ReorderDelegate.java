@@ -151,7 +151,10 @@ public class ReorderDelegate {
     }
 
     boolean isReorderingTab() {
-        return getInReorderMode() && mActiveStrategy == mTabStrategy;
+        // TODO(crbug.com/380327012): Update when we support group tearing.
+        return getInReorderMode()
+                && (mActiveStrategy == mSourceViewDragDropReorderStrategy
+                        || mActiveStrategy == mTabStrategy);
     }
 
     boolean getReorderingForTabDrop() {
@@ -400,22 +403,26 @@ public class ReorderDelegate {
      * Calculates the start and end margins needed to allow for reordering tabs into/out of groups
      * near the edge of the tab strip. 0 if the first/last tabs aren't grouped, respectively.
      *
-     * @param firstTab The first {@link StripLayoutTab}.
-     * @param lastTab The last {@link StripLayoutTab}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
      */
-    void setEdgeMarginsForReorder(StripLayoutTab firstTab, StripLayoutTab lastTab) {
+    void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
         if (!mInitialized) return;
         float marginWidth = getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
-        // 1. Set the start margin - margin is applied by updating scrollOffset.
+        // 1. Set the start margin. Update the scroll offset to prevent any apparent movement.
+        StripLayoutTab firstTab = stripTabs[0];
         boolean firstTabIsInGroup =
                 mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(firstTab.getTabId()));
         if (firstTabIsInGroup) mScrollDelegate.setReorderStartMargin(marginWidth);
 
         // 2. Set the trailing margin.
+        StripLayoutTab lastTab = stripTabs[stripTabs.length - 1];
         boolean lastTabIsInGroup =
                 mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(lastTab.getTabId()));
         lastTab.setTrailingMargin((lastTabIsInGroup && !lastTab.isCollapsed()) ? marginWidth : 0.f);
+
+        // 2. Ensure the second-to-last tab doesn't have a trailing margin after reorder.
+        if (stripTabs.length > 1) stripTabs[stripTabs.length - 2].setTrailingMargin(0f);
     }
 
     /**
@@ -523,7 +530,7 @@ public class ReorderDelegate {
 
             // 2. Set initial state and add edge margins.
             resetReorderState(startPoint.x);
-            setEdgeMarginsForReorder(stripTabs[0], stripTabs[stripTabs.length - 1]);
+            setEdgeMarginsForReorder(stripTabs);
 
             // 3. Lift the container off the toolbar and perform haptic feedback.
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -561,6 +568,11 @@ public class ReorderDelegate {
                 // idealX.
                 if (!getInReorderMode()) return;
 
+                // 3.b. Update the edge margins, since we may have merged/removed an edge tab
+                // to/from a group.
+                setEdgeMarginsForReorder(stripTabs);
+
+                // 3.c. Adjust the drag offset to prevent any apparent movement.
                 offset =
                         adjustOffsetAfterReorder(
                                 mInteractingTab,
@@ -1289,7 +1301,7 @@ public class ReorderDelegate {
             // 1. Set initial state and add edge margins.
             mInteractingView = interactingView;
             resetReorderState(startPoint.x);
-            setEdgeMarginsForReorder(stripTabs[0], stripTabs[stripTabs.length - 1]);
+            setEdgeMarginsForReorder(stripTabs);
 
             // 2. Add a trailing margin to the interacting tab to indicate where the tab will be
             // inserted should the drag be dropped.
