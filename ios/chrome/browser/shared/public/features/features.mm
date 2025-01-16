@@ -1150,6 +1150,15 @@ BASE_FEATURE(kYoutubeIncognito,
              "YoutubeIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[] =
+    "youtube-incognito-error-handling-without-incognito-interstitial";
+
+bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kYoutubeIncognito,
+      kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam, false);
+}
+
 BASE_FEATURE(kIOSReactivationNotifications,
              "IOSReactivationNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);

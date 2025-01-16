@@ -943,6 +943,15 @@ BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 // incognito.
 BASE_DECLARE_FEATURE(kYoutubeIncognito);
 
+// Feature param to specify whether the youtube incognito handling is done
+// without the incognito interstitial.
+extern const char
+    kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam[];
+
+// Returns whether
+// `kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam` is enabled.
+bool IsYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialEnabled();
+
 // Feature flag to enable Reactivation Notifications.
 BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 
