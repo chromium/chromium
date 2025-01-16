@@ -100,6 +100,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
+  // Returns a ThemeSpecifics based on the currently applied theme.
+  sync_pb::ThemeSpecifics GetThemeSpecificsFromCurrentThemeForTesting() const;
+
   // Client tag and title of the single theme sync_pb::SyncEntity of an account.
   static const char kSyncEntityClientTag[];
   static const char kSyncEntityTitle[];

@@ -744,6 +744,11 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   return theme_specifics;
 }
 
+sync_pb::ThemeSpecifics
+ThemeSyncableService::GetThemeSpecificsFromCurrentThemeForTesting() const {
+  return GetThemeSpecificsFromCurrentTheme();
+}
+
 /* static */
 bool ThemeSyncableService::AreThemeSpecificsEquivalent(
     const sync_pb::ThemeSpecifics& a,
