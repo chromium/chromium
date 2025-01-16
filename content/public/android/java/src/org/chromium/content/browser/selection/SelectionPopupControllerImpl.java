@@ -1419,12 +1419,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /**
      * @param actionModeItem the flag for the action mode item in question. The valid flags are
-     *        {@link #MENU_ITEM_SHARE}, {@link #MENU_ITEM_WEB_SEARCH}, and
-     *        {@link #MENU_ITEM_PROCESS_TEXT}.
-     * @return true if the menu item action is allowed. Otherwise, the menu item
-     *         should be removed from the menu.
+     *     {@link #MENU_ITEM_SHARE}, {@link #MENU_ITEM_WEB_SEARCH}, and {@link
+     *     #MENU_ITEM_PROCESS_TEXT}.
+     * @return true if the menu item action is allowed. Otherwise, the menu item should be removed
+     *     from the menu.
      */
-    private boolean isSelectActionModeAllowed(int actionModeItem) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isSelectActionModeAllowed(int actionModeItem) {
         boolean isAllowedByClient = (mAllowedMenuItems & actionModeItem) != 0;
         if (actionModeItem == MENU_ITEM_SHARE) {
             return isAllowedByClient && isShareAvailable();
