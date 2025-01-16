@@ -1044,11 +1044,7 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
   if (buyable_product.has_image_url()) {
     info->server_image_available = true;
-
-    // Only keep the server-provided image if we're allowed to.
-    if (base::FeatureList::IsEnabled(commerce::kCommerceAllowServerImages)) {
-      info->image_url = GURL(buyable_product.image_url());
-    }
+    info->image_url = GURL(buyable_product.image_url());
   } else {
     info->server_image_available = false;
   }

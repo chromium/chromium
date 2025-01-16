@@ -122,10 +122,6 @@ BASE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates,
              "CommerceAllowOnDemandBookmarkUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceAllowServerImages,
-             "CommerceAllowServerImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCommerceMerchantViewer,
              "CommerceMerchantViewer",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -478,8 +474,9 @@ bool IsNoDiscountMerchant(const GURL& url) {
           .GetNoDiscountMerchantPattern();
   // If pattern from component updater is not available, merchants are
   // considered to have no discounts by default.
-  if (!pattern_from_component)
+  if (!pattern_from_component) {
     return true;
+  }
   return RE2::PartialMatch(url.host_piece(), *pattern_from_component);
 }
 #endif

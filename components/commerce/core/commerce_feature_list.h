@@ -22,7 +22,6 @@ namespace commerce {
 
 BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
-BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
 BASE_DECLARE_FEATURE(kCommerceLocalPDPDetection);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
@@ -128,9 +127,8 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 // The heuristics of cart pages are from top 100 US shopping domains.
 // https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
 constexpr base::FeatureParam<std::string> kCartPattern{
-  &ntp_features::kNtpChromeCartModule,
-      "cart-pattern",
-      // clang-format off
+    &ntp_features::kNtpChromeCartModule, "cart-pattern",
+    // clang-format off
     "(^https?://cart\\.)"
     "|"
     "(/("
@@ -146,20 +144,17 @@ constexpr base::FeatureParam<std::string> kCartPattern{
       "|"
       "(cart-show)"
     ")(/|\\.|$))"
-  // clang-format on
+    // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCartPatternMapping{
-  &ntp_features::kNtpChromeCartModule,
-      "cart-pattern-mapping",
-      // Empty JSON string.
-      ""
-};
+    &ntp_features::kNtpChromeCartModule, "cart-pattern-mapping",
+    // Empty JSON string.
+    ""};
 
 constexpr base::FeatureParam<std::string> kCheckoutPattern{
-  &ntp_features::kNtpChromeCartModule,
-      "checkout-pattern",
-      // clang-format off
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern",
+    // clang-format off
     "/("
     "("
       "("
@@ -172,15 +167,13 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
     "|"
     "(\\w+(checkout|chkout)(s)?)"
     ")(#|/|\\.|$|\\?)"
-  // clang-format on
+    // clang-format on
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-  &ntp_features::kNtpChromeCartModule,
-      "checkout-pattern-mapping",
-      // Empty JSON string.
-      ""
-};
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
+    // Empty JSON string.
+    ""};
 
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];

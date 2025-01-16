@@ -170,9 +170,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages,
-       kProductSpecifications},
-      {});
+      {commerce::kShoppingList, kProductSpecifications}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -244,8 +242,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_FallbackToOnDemand) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
-  test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+  test_features_.InitWithFeatures({commerce::kShoppingList}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -298,8 +295,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_FallbackToOnDemand) {
 
 // Test multiple on demand calls to get product info.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_MultipleOnDemandRequests) {
-  test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+  test_features_.InitWithFeatures({commerce::kShoppingList}, {});
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
       kCurrencyCode, kGpcTitle);
@@ -367,8 +363,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
-  test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+  test_features_.InitWithFeatures({commerce::kShoppingList}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -409,9 +404,8 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
 
 // Test that no object is provided for a negative optimization guide response.
 TEST_P(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
                           OptimizationGuideDecision::kFalse,
@@ -432,9 +426,8 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 
 // Test that the product info cache only keeps track of live tabs.
 TEST_P(ShoppingServiceTest, TestProductInfoCacheURLCount) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   std::string url = "http://example.com/foo";
   NiceMockWebWrapper web1(GURL(url), false);
@@ -857,9 +850,8 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_P(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   NiceMockWebWrapper web(GURL(kProductUrl), false);
 
@@ -911,9 +903,8 @@ TEST_P(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
 // optimization guide has provided a response.
 TEST_P(ShoppingServiceTest,
        TestProductInfoCacheFullLifecycleWithFallback_PageNotLoaded) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   auto result = base::Value::Dict();
   result.Set("image", std::string(kImageUrl));
@@ -986,8 +977,7 @@ TEST_P(ShoppingServiceTest,
 // webapps.
 TEST_P(ShoppingServiceTest,
        TestProductInfoCacheFullLifecycleWithFallback_PageLoaded) {
-  test_features_.InitWithFeatures(
-      {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
+  test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
 
   auto result = base::Value::Dict();
   result.Set("image", std::string(kImageUrl));
@@ -1257,8 +1247,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithLeadImage) {
 }
 
 TEST_P(ShoppingServiceTest, TestDataMergeWithNoLeadImage) {
-  test_features_.InitWithFeatures(
-      {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
+  test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
   ProductInfo info;
 
   base::Value::Dict data_map;
