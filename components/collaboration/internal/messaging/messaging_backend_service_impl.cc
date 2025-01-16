@@ -537,7 +537,7 @@ void MessagingBackendServiceImpl::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& added_group,
     tab_groups::TriggerSource source) {
   if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
+    // No message to show or clear if a tab group was added locally.
     return;
   }
 
@@ -557,15 +557,16 @@ void MessagingBackendServiceImpl::OnTabGroupAdded(
 void MessagingBackendServiceImpl::OnTabGroupRemoved(
     tab_groups::SavedTabGroup removed_group,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(removed_group);
   if (!collaboration_group_id) {
     // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // We should clear all messages for the group if the group is removed.
+    store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
     return;
   }
 
@@ -589,15 +590,14 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
 void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
     const tab_groups::SavedTabGroup& updated_group,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(updated_group);
   if (!collaboration_group_id) {
     // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  if (source == tab_groups::TriggerSource::LOCAL) {
     return;
   }
 
@@ -610,15 +610,13 @@ void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
 void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
     const tab_groups::SavedTabGroup& updated_group,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GroupIdForTabGroup(updated_group);
   if (!collaboration_group_id) {
     // Unable to find collaboration ID from tab group.
+    return;
+  }
+  if (source == tab_groups::TriggerSource::LOCAL) {
     return;
   }
 
@@ -631,15 +629,13 @@ void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
 void MessagingBackendServiceImpl::OnTabAdded(
     const tab_groups::SavedTabGroupTab& added_tab,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(added_tab);
   if (!collaboration_group_id) {
     // Unable to find collaboration ID from tab.
+    return;
+  }
+  if (source == tab_groups::TriggerSource::LOCAL) {
     return;
   }
 
@@ -662,11 +658,6 @@ void MessagingBackendServiceImpl::OnTabAdded(
 void MessagingBackendServiceImpl::OnTabRemoved(
     tab_groups::SavedTabGroupTab removed_tab,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(removed_tab);
   if (!collaboration_group_id) {
@@ -677,7 +668,10 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, removed_tab,
                        collaboration_pb::TAB_REMOVED, DirtyType::kNone);
-  store_->AddMessage(message);
+  if (source == tab_groups::TriggerSource::REMOTE) {
+    // Create a new message only if the tab was removed from remote.
+    store_->AddMessage(message);
+  }
 
   // Tab no longer available, so should not contribute to any dirty tab groups.
   store_->ClearDirtyMessageForTab(*collaboration_group_id,
@@ -694,7 +688,7 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
-  if (last_selected_tab_ &&
+  if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
       last_selected_tab_->saved_tab_guid() == removed_tab.saved_tab_guid() &&
       instant_message_delegate_) {
     InstantMessage instant_message_base;
@@ -712,11 +706,6 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 void MessagingBackendServiceImpl::OnTabUpdated(
     const tab_groups::SavedTabGroupTab& updated_tab,
     tab_groups::TriggerSource source) {
-  if (source == tab_groups::TriggerSource::LOCAL) {
-    // TODO(crbug.com/385003046): Handle this.
-    return;
-  }
-
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupIdForTab(updated_tab);
   if (!collaboration_group_id) {
@@ -727,14 +716,25 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
                        collaboration_pb::TAB_UPDATED, DirtyType::kDotAndChip);
-  store_->AddMessage(message);
-
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
 
-  NotifyDisplayPersistentMessagesForTypes(
-      persistent_message, {PersistentNotificationType::CHIP,
-                           PersistentNotificationType::DIRTY_TAB});
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    // For local updates, hide any dirty messages for tab from storage and
+    // dismiss any messages already being displayed for tab.
+    store_->ClearDirtyMessageForTab(*collaboration_group_id,
+                                    updated_tab.saved_tab_guid(),
+                                    DirtyType::kDotAndChip);
+    NotifyHidePersistentMessagesForTypes(
+        persistent_message, {PersistentNotificationType::CHIP,
+                             PersistentNotificationType::DIRTY_TAB});
+  } else {
+    // For remote updates, show the message on UI.
+    store_->AddMessage(message);
+    NotifyDisplayPersistentMessagesForTypes(
+        persistent_message, {PersistentNotificationType::CHIP,
+                             PersistentNotificationType::DIRTY_TAB});
+  }
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());

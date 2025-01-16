@@ -92,6 +92,20 @@ void MessagingBackendStoreImpl::ClearDirtyMessage(const base::Uuid uuid,
       uuid, dirty_type));
 }
 
+void MessagingBackendStoreImpl::ClearDirtyTabMessagesForGroup(
+    const data_sharing::GroupId& collaboration_id) {
+  std::optional<MessagesPerGroup*> messages_per_group =
+      GetMessagesPerGroup(collaboration_id);
+  if (!messages_per_group) {
+    return;
+  }
+
+  // Clear dirty bit for all tab messages.
+  for (auto& [message_id, message] : messages_per_group.value()->tab_messages) {
+    message.set_dirty(static_cast<int>(DirtyType::kNone));
+  }
+}
+
 std::vector<collaboration_pb::Message>
 MessagingBackendStoreImpl::GetDirtyMessages(DirtyType dirty_type) {
   std::vector<collaboration_pb::Message> result;
