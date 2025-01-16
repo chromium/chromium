@@ -198,6 +198,9 @@ class TabGroup;
 // Creates a UIAction instance for leaving a shared tab group.
 - (UIAction*)actionToLeaveSharedTabGroupWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for deleting a shared tab group.
+- (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for sharing a local tab group.
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block;
 

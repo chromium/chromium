@@ -1569,6 +1569,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator leaveSharedTabGroup:group sourceView:sourceView];
 }
 
+- (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
+                  sourceView:(UIView*)sourceView {
+  CHECK(IsTabGroupSyncEnabled());
+
+  [self.regularTabsMediator deleteSharedTabGroup:group sourceView:sourceView];
+}
+
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
             incognito:(BOOL)incognito {
   CHECK(IsTabGroupInGridEnabled())

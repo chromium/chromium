@@ -480,37 +480,13 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 }
 
 - (void)leaveSharedTabGroup:(const TabGroup*)group {
-  data_sharing::DataSharingService* dataSharingService =
-      data_sharing::DataSharingServiceFactory::GetForProfile(self.profile);
-  tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
-  CHECK(dataSharingService);
-  CHECK(tabGroupSyncService);
+  [self takeActionForActionType:TabGroupActionType::kLeaveSharedTabGroup
+                 sharedTabGroup:group];
+}
 
-  const base::Uuid savedGroupId =
-      tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
-  const tab_groups::CollaborationId collabId =
-      tab_groups::utils::GetTabGroupCollabID(group, tabGroupSyncService);
-  CHECK(!collabId->empty());
-  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
-
-  // Close the group locally to make the leave animation appear faster.
-  tab_groups::utils::CloseTabGroupLocally(group, _webStateList,
-                                          tabGroupSyncService);
-
-  // Asynchronously leave the group on the server.
-  __weak BaseGridMediator* weakSelf = self;
-  dataSharingService->LeaveGroup(
-      groupId,
-      base::BindOnce(^(
-          data_sharing::DataSharingService::PeopleGroupActionOutcome outcome) {
-        // If leaving the group on the server failed, restore the tab group
-        // locally.
-        if (outcome != data_sharing::DataSharingService::
-                           PeopleGroupActionOutcome::kSuccess) {
-          [weakSelf restoreTabGroupAfterLeaveFailure:savedGroupId];
-        }
-      }));
+- (void)deleteSharedTabGroup:(const TabGroup*)group {
+  [self takeActionForActionType:TabGroupActionType::kDeleteSharedTabGroup
+                 sharedTabGroup:group];
 }
 
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
@@ -1180,6 +1156,15 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                              sourceView:sourceView];
 }
 
+- (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
+                  sourceView:(UIView*)sourceView {
+  DCHECK(IsTabGroupSyncEnabled());
+  [self.tabGroupsHandler showTabGroupConfirmationForAction:
+                             TabGroupActionType::kDeleteSharedTabGroup
+                                                     group:group
+                                                sourceView:sourceView];
+}
+
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
   [self closeTabGroup:group.get() andDeleteGroup:NO];
 }
@@ -1709,8 +1694,58 @@ void LogPriceDropMetrics(web::WebState* web_state) {
          withReplacementItem:groupIdentifier];
 }
 
-// Restores the tab group if an error occurred while attempting to leave it.
-- (void)restoreTabGroupAfterLeaveFailure:(const base::Uuid)savedGroupId {
+// Takes the corresponded action to `actionType` for the shared `group`.
+// Not handled TabGroupActionType: kUngroupTabGroup, kDeleteTabGroup.
+- (void)takeActionForActionType:(TabGroupActionType)actionType
+                 sharedTabGroup:(const TabGroup*)group {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
+
+  data_sharing::DataSharingService* dataSharingService =
+      data_sharing::DataSharingServiceFactory::GetForProfile(self.profile);
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
+  CHECK(dataSharingService);
+  CHECK(tabGroupSyncService);
+
+  const base::Uuid savedGroupId =
+      tabGroupSyncService->GetGroup(group->tab_group_id())->saved_guid();
+  const tab_groups::CollaborationId collabId =
+      tab_groups::utils::GetTabGroupCollabID(group, tabGroupSyncService);
+  CHECK(!collabId->empty());
+  const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());
+
+  __weak BaseGridMediator* weakSelf = self;
+  auto callback = base::BindOnce(^(
+      data_sharing::DataSharingService::PeopleGroupActionOutcome outcome) {
+    // If updating the group on the server failed, restore the tab group
+    // locally.
+    if (outcome !=
+        data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess) {
+      [weakSelf restoreTabGroupAfterServerFailure:savedGroupId];
+    }
+  });
+
+  // Close the group locally to make the delete animation appear faster.
+  tab_groups::utils::CloseTabGroupLocally(group, _webStateList,
+                                          tabGroupSyncService);
+  // Asynchronously call on the server.
+  switch (actionType) {
+    case TabGroupActionType::kLeaveSharedTabGroup:
+      dataSharingService->LeaveGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      dataSharingService->DeleteGroup(groupId, std::move(callback));
+      break;
+    case TabGroupActionType::kUngroupTabGroup:
+    case TabGroupActionType::kDeleteTabGroup:
+      NOTREACHED();
+  }
+}
+
+// Restores the tab group if an error occurred while attempting to leave or
+// delete it.
+- (void)restoreTabGroupAfterServerFailure:(const base::Uuid)savedGroupId {
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
   tabGroupSyncService->OpenTabGroup(

@@ -149,6 +149,9 @@ class WebState;
 // Leaves shared `group`. The group is closed locally.
 - (void)leaveSharedTabGroup:(const TabGroup*)group;
 
+// Deletes shared `group`. The group is deleted for everyone.
+- (void)deleteSharedTabGroup:(const TabGroup*)group;
+
 // Returns whether this mediator can handle the drop of `tabGroupInfo`.
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo;
 

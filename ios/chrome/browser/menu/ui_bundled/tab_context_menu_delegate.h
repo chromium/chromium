@@ -87,6 +87,11 @@ class WebStateID;
 - (void)leaveSharedTabGroup:(base::WeakPtr<const TabGroup>)group
                  sourceView:(UIView*)sourceView;
 
+// Tells the delegate to delete the shared group. `sourceView` is the view that
+// the leave action originated from.
+- (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
+                  sourceView:(UIView*)sourceView;
+
 // Tells the delegate to close the group. `incognito` tracks the incognito state
 // of the group.
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group

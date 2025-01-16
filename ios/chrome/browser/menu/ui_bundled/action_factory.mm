@@ -608,6 +608,22 @@
   return action;
 }
 
+- (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
+                      image:image
+                       type:MenuActionType::DeleteSharedTabGroup
+                      block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
   CHECK(IsTabGroupInGridEnabled());
   CHECK(IsTabGroupSyncEnabled());

@@ -10,6 +10,7 @@ enum class TabGroupActionType {
   kUngroupTabGroup,
   kDeleteTabGroup,
   kLeaveSharedTabGroup,
+  kDeleteSharedTabGroup,
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GROUP_ACTION_TYPE_H_
