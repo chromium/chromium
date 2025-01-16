@@ -23,6 +23,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -3398,6 +3399,13 @@ bool DoRecordInterestGroupJoin(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  // NOTE: Join and bid history can expire up to a few hours before the interest
+  // group, since join and bid history are floored to UTC days, but the
+  // interest group doesn't necessarily expire at UTC midnight.
+  //
+  // The reason for this is to reduce the number of join / bid rows stored.
+  //
+  // For joins, this can result in a join count of 0.
   int64_t join_day = join_time.ToDeltaSinceWindowsEpoch()
                          .FloorToMultiple(base::Days(1))
                          .InMicroseconds();
@@ -3973,6 +3981,11 @@ bool DoRecordInterestGroupBid(sql::Database& db,
   // enclose them in a transaction since only one will actually modify the
   // database.
 
+  // NOTE: Join and bid history can expire up to a few hours before the interest
+  // group, since join and bid history are floored to UTC days, but the
+  // interest group doesn't necessarily expire at UTC midnight.
+  //
+  // The reason for this is to reduce the number of join / bid rows stored.
   int64_t bid_day = bid_time.ToDeltaSinceWindowsEpoch()
                         .FloorToMultiple(base::Days(1))
                         .InMicroseconds();
@@ -4390,6 +4403,13 @@ bool GetPreviousWins(sql::Database& db,
   return succeeded;
 }
 
+// NOTE: Join and bid history can expire up to a few hours before the interest
+// group, since join and bid history are floored to UTC days, but the
+// interest group doesn't necessarily expire at UTC midnight.
+//
+// The reason for this is to reduce the number of join / bid rows stored.
+//
+// For joins, this can result in a join count of 0.
 bool GetJoinCount(sql::Database& db,
                   const blink::InterestGroupKey& group_key,
                   base::Time joined_after,
@@ -4416,6 +4436,11 @@ bool GetJoinCount(sql::Database& db,
   return join_count.Succeeded();
 }
 
+// NOTE: Join and bid history can expire up to a few hours before the interest
+// group, since join and bid history are floored to UTC days, but the
+// interest group doesn't necessarily expire at UTC midnight.
+//
+// The reason for this is to reduce the number of join / bid rows stored.
 bool GetBidCount(sql::Database& db,
                  const blink::InterestGroupKey& group_key,
                  base::Time now,
@@ -5459,11 +5484,16 @@ void ReportUpgradeDBResult(bool upgrade_succeeded, int db_version) {
 
 constexpr base::TimeDelta InterestGroupStorage::kHistoryLength;
 constexpr base::TimeDelta InterestGroupStorage::kMaintenanceInterval;
-constexpr base::TimeDelta InterestGroupStorage::kIdlePeriod;
+constexpr base::TimeDelta InterestGroupStorage::kDefaultIdlePeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateSucceededBackoffPeriod;
 constexpr base::TimeDelta InterestGroupStorage::kUpdateFailedBackoffPeriod;
 
 InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
+    : InterestGroupStorage(std::move(path),
+                           /*idle_period=*/kDefaultIdlePeriod) {}
+
+InterestGroupStorage::InterestGroupStorage(const base::FilePath& path,
+                                           base::TimeDelta idle_period)
     : path_to_database_(DBPath(path)),
       max_owners_(blink::features::kInterestGroupStorageMaxOwners.Get()),
       max_owner_regular_interest_groups_(MaxOwnerRegularInterestGroups()),
@@ -5472,7 +5502,7 @@ InterestGroupStorage::InterestGroupStorage(const base::FilePath& path)
       max_ops_before_maintenance_(
           blink::features::kInterestGroupStorageMaxOpsBeforeMaintenance.Get()),
       db_maintenance_timer_(FROM_HERE,
-                            kIdlePeriod,
+                            idle_period,
                             this,
                             &InterestGroupStorage::PerformDBMaintenance) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -6128,6 +6158,17 @@ base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
 
 /* static */ int InterestGroupStorage::GetCurrentVersionNumberForTesting() {
   return kCurrentVersionNumber;
+}
+
+/*static */ std::unique_ptr<InterestGroupStorage>
+InterestGroupStorage::CreateWithIdlePeriodForTesting(
+    const base::FilePath& path,
+    base::TimeDelta idle_period) {
+  return base::WrapUnique(new InterestGroupStorage(path, idle_period));
+}
+
+void InterestGroupStorage::ResetIdleTimerForTesting() {
+  EnsureDBInitialized();
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
