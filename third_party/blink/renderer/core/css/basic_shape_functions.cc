@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/shape_functions.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -104,29 +105,13 @@ StyleShape::Segment CurveCommandToShapeSegment(
           command);
   std::array<StyleShape::ControlPoint, NumControlPoints> control_points;
 
-  std::ranges::transform(
-      curve.GetControlPoints(), control_points.begin(),
-      [&](const cssvalue::CSSShapeControlPoint& value) {
-        StyleShape::ControlPoint result{
-            .point =
-                StyleBuilderConverter::ConvertPosition(state, *value.second)};
-
-        switch (value.first) {
-          case CSSValueID::kStart:
-            result.origin = StyleShape::ControlPoint::Origin::kSegmentStart;
-            break;
-          case CSSValueID::kEnd:
-            result.origin = StyleShape::ControlPoint::Origin::kSegmentEnd;
-            break;
-          case CSSValueID::kOrigin:
-            result.origin = StyleShape::ControlPoint::Origin::kReferenceBox;
-            break;
-          default:
-            NOTREACHED();
-        }
-
-        return result;
-      });
+  std::ranges::transform(curve.GetControlPoints(), control_points.begin(),
+                         [&](const cssvalue::CSSShapeControlPoint& value) {
+                           return StyleShape::ControlPoint{
+                               .origin = ToControlPointOrigin(value.first),
+                               .point = StyleBuilderConverter::ConvertPosition(
+                                   state, *value.second)};
+                         });
 
   return T{
       {{StyleBuilderConverter::ConvertPosition(state, command.GetEndPoint())},
@@ -344,20 +329,9 @@ struct ShapeSegmentToShapeCommandVisitor {
 
   const cssvalue::CSSShapeControlPoint ToControlPoint(
       const StyleShape::ControlPoint& control_point) {
-    CSSValueID origin;
-    switch (control_point.origin) {
-      case StyleShape::ControlPoint::Origin::kReferenceBox:
-        origin = CSSValueID::kOrigin;
-        break;
-      case StyleShape::ControlPoint::Origin::kSegmentStart:
-        origin = CSSValueID::kStart;
-        break;
-      case StyleShape::ControlPoint::Origin::kSegmentEnd:
-        origin = CSSValueID::kEnd;
-        break;
-    }
     return cssvalue::CSSShapeControlPoint(
-        origin, LengthPointToCSSValue(control_point.point, zoom));
+        FromControlPointOrigin(control_point.origin),
+        LengthPointToCSSValue(control_point.point, zoom));
   }
 
   template <SVGPathSegType T>
