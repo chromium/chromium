@@ -191,6 +191,10 @@ class HttpStreamPool::AttemptManager
   // if exists. Subsequent jobs will fail while `this` is alive.
   void OnRequiredHttp11();
 
+  // Runs the stream attempt delay timer if stream attempts are blocked and the
+  // timer is not running. Called by QuicTask.
+  void MaybeRunStreamAttemptDelayTimer();
+
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
@@ -203,6 +207,8 @@ class HttpStreamPool::AttemptManager
   std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
 
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
+
+  QuicTask* quic_task_for_testing() const { return quic_task_.get(); }
 
   IPEndPointStateMap& ip_endpoint_states_for_testing() {
     return ip_endpoint_states_;
@@ -290,10 +296,6 @@ class HttpStreamPool::AttemptManager
   // on-going jobs after service endpoint results has changed. May notify jobs
   // of stream ready.
   bool CanUseExistingSessionAfterEndpointChanges();
-
-  // Runs the stream attempt delay timer if stream attempts are blocked and the
-  // timer is not running.
-  void MaybeRunStreamAttemptDelayTimer();
 
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
@@ -432,6 +434,9 @@ class HttpStreamPool::AttemptManager
   // Updates whether stream attempts should be blocked or not. May cancel
   // `stream_attempt_delay_timer_`.
   void UpdateStreamAttemptState();
+
+  // Cancels `stream_attempt_delay_timer_`.
+  void CancelStreamAttemptDelayTimer();
 
   // Called when `stream_attempt_delay_timer_` is fired.
   void OnStreamAttemptDelayPassed();

@@ -5228,17 +5228,17 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptQuicFail) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptDelayPassed) {
+  constexpr base::TimeDelta kQuicDelay = base::Milliseconds(10);
+  constexpr base::TimeDelta kDnsDelay = base::Milliseconds(40);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
 
-  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
-  quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
+  quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kQuicDelay);
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
-  endpoint_request
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CompleteStartSynchronously(OK);
 
+  // QUIC attempt stalls forever.
   auto quic_data = std::make_unique<MockQuicData>(quic_version());
   quic_data->AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
   quic_data->AddSocketDataToFactory(socket_factory());
@@ -5252,11 +5252,32 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptDelayPassed) {
   requester.set_destination(kDefaultDestination)
       .set_quic_version(quic_version())
       .RequestStream(pool());
-  RunUntilIdle();
   ASSERT_FALSE(requester.result().has_value());
 
-  FastForwardBy(kDelay);
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester.GetStreamKey())
+          .GetAttemptManagerForTesting();
 
+  // Provide an IP address. QUIC attempt isn't triggered yet since it's not
+  // ready for cryptographic handshakes.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester.result().has_value());
+  ASSERT_FALSE(manager->quic_task_for_testing());
+
+  // Complete service endpoint resolution with a delay. Trigger a QUIC attempt,
+  // but TCP-based attempt should not be triggered yet.
+  FastForwardBy(kDnsDelay);
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_FALSE(requester.result().has_value());
+  ASSERT_TRUE(manager->quic_task_for_testing());
+  ASSERT_EQ(manager->InFlightAttemptCount(), 0u);
+
+  // Fire the stream attempt delay timer. The request should complete.
+  FastForwardBy(kQuicDelay);
+  requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
