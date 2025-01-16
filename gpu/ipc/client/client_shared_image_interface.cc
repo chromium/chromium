@@ -89,7 +89,10 @@ void ClientSharedImageInterface::WaitSyncToken(
 }
 
 void ClientSharedImageInterface::Flush() {
-  proxy_->Flush();
+  // |proxy_| might not be needed and is not setup in the tests.
+  if (proxy_) {
+    proxy_->Flush();
+  }
 }
 
 scoped_refptr<gfx::NativePixmap> ClientSharedImageInterface::GetNativePixmap(

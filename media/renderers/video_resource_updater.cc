@@ -465,6 +465,24 @@ class VideoResourceUpdater::SoftwarePlaneResource
   ~SoftwarePlaneResource() override {
     DCHECK(shared_image_);
     shared_image_->UpdateDestructionSyncToken(sync_token_);
+
+    // Delete shared_image_ first so the flush can propagate the destroy to the
+    // service side.
+    mapping_.reset();
+    shared_image_.reset();
+
+    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
+    // itself. We need a flush here to trigger IPC, otherwise there will be
+    // memory regression. There used to be GenVerifiedSyncToken() (which does an
+    // internal flush too) for MakeSoftwareSharedImage(). Now we move
+    // GenVerifiedSyncToken() to where shared_image is created, so a flush has
+    // to be added to the destructor here after that change.
+
+    // |shared_image_interface| can be null when Gpu channel is shutting down or
+    // is lost after gpu crash.
+    if (video_resource_updater_->shared_image_interface()) {
+      video_resource_updater_->shared_image_interface()->Flush();
+    }
   }
 
   const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
