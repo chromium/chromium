@@ -139,7 +139,7 @@ def get_all_readme_through_gn(repo_path: str, targets: Set[str]):
             f"{os.path.join(repo_path, gn2bp_targets.README_MAPPING.get(directory_path, directory_path))}/**README.chromium",
             recursive=True)))
 
-  return readme_files
+  return readme_files | constants.INCLUDED_README
 
 def _get_all_build_files_path(repo_path: str, targets: Set[str]) -> Set[str]:
   all_build_files_path = set()
