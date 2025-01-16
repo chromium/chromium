@@ -19,6 +19,8 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -178,7 +180,9 @@ class GPU_EXPORT SharedImagePoolBase {
 // additional functionality.
 // Clients will use this class and its apis for desired functionality.
 template <typename ClientImageType = ClientImage>
-class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
+class GPU_EXPORT SharedImagePool
+    : public SharedImagePoolBase,
+      public mojom::SharedImagePoolClientInterface {
  public:
   static std::unique_ptr<SharedImagePool<ClientImageType>> Create(
       const ImageInfo& image_info,
@@ -239,6 +243,9 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
   // |image_info_|.
   const ImageInfo& GetImageInfo() { return image_info_; }
 
+  // mojom::SharedImagePoolClientInterface implementation.
+  void OnClearPool() override { Clear(); }
+
   // Returns a weak pointer to this pool, allowing for safe reference without
   // ownership.
   base::WeakPtr<SharedImagePool<ClientImageType>> GetWeakPtr() {
@@ -256,6 +263,8 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
                             std::move(sii),
                             std::move(max_pool_size),
                             std::move(unused_resource_expiration_time)) {}
+
+  mojo::Receiver<mojom::SharedImagePoolClientInterface> receiver_{this};
 
   base::WeakPtrFactory<SharedImagePool<ClientImageType>> weak_ptr_factory_{
       this};
