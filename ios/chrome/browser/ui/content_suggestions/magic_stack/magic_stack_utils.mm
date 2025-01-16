@@ -59,30 +59,3 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
            base::ToLowerASCII(GetCurrentCountryCode(
                GetApplicationContext()->GetVariationsService())) == "us"));
 }
-
-bool isContentOversized(id<UITraitEnvironment> trait_environment) {
-  // The preferred content size of the user's device.
-  NSString* preferred_content_size =
-      trait_environment.traitCollection.preferredContentSizeCategory;
-  return [kAccessibilityContentSizes containsObject:preferred_content_size];
-}
-
-CGFloat GetMagicStackHeight(id<UITraitEnvironment> trait_environment) {
-  // The preferred content size of the user's device.
-  NSString* preferred_content_size =
-      trait_environment.traitCollection.preferredContentSizeCategory;
-  if (isContentOversized(trait_environment)) {
-    // The maximum Magic Stack height in px.
-    return 190;
-  } else if (preferred_content_size ==
-             UIContentSizeCategoryExtraExtraExtraLarge) {
-    return 180;
-  } else if (preferred_content_size == UIContentSizeCategoryExtraExtraLarge) {
-    return 170;
-  } else if (preferred_content_size == UIContentSizeCategoryExtraLarge) {
-    return 160;
-  } else {
-    // The minimum Magic Stack height in px.
-    return 150;
-  }
-}

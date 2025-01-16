@@ -121,7 +121,6 @@ source_set("cells") {
     ":constants",
     ":magic_stack_module_content_view_delegate",
     ":public",
-    ":utils",
     "//base",
     "//google_apis",
     "//ios/chrome/app/strings",

@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/icon_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -712,18 +711,10 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
-  if (_layoutType == IconDetailViewLayoutType::kHero) {
-    label.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:CreateDynamicFont(UIFontTextStyleFootnote,
-                                            UIFontWeightSemibold)
-         maximumPointSize:kMaxTextSizeForStyleFootnote];
-  } else {
-    label.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:[UIFont
-                              preferredFontForTextStyle:UIFontTextStyleFootnote]
-         maximumPointSize:kMaxTextSizeForStyleFootnote];
-  }
-
+  label.font =
+      _layoutType == IconDetailViewLayoutType::kHero
+          ? CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold)
+          : [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.adjustsFontForContentSizeCategory = YES;
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
@@ -738,10 +729,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   label.text = _description;
   label.numberOfLines = 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
-  label.font = [[UIFontMetrics defaultMetrics]
-      scaledFontForFont:[UIFont
-                            preferredFontForTextStyle:UIFontTextStyleFootnote]
-       maximumPointSize:kMaxTextSizeForStyleFootnote];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.adjustsFontForContentSizeCategory = YES;
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 

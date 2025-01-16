@@ -11,11 +11,8 @@ extern NSString* const kMostVisitedSectionIdentifier;
 extern NSString* const kMagicStackSectionIdentifier;
 extern NSString* const kMagicStackEditSectionIdentifier;
 
-// The potential accessibility content sizes.
-extern NSArray* const kAccessibilityContentSizes;
-
-// The max text size of text with the Footnote Text Style.
-extern const int kMaxTextSizeForStyleFootnote;
+// The max height of the modules.
+extern const int kModuleMaxHeight;
 
 // The spacing between modules in the Magic Stack.
 extern const CGFloat kMagicStackSpacing;
