@@ -26,6 +26,8 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -133,6 +135,11 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+  void PreRunTestOnMainThread() override {
+    content::ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
@@ -1544,6 +1551,7 @@ IN_PROC_BROWSER_TEST_P(
     AttributionSrcBrowserTest,
     NoUserActivationAndNavigatedWithoutUserGesture_ClientBounceMetricRecorded) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1570,6 +1578,16 @@ IN_PROC_BROWSER_TEST_P(
       kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
   histograms.ExpectBucketCount(
       kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("Conversions.ClientBounce",
+                              {"UserActivation.5s", "UserInteraction.5s"});
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+            page_url);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              ElementsAre(testing::Pair("UserActivation.5s", 1),
+                          testing::Pair("UserInteraction.5s", 1)));
 }
 
 IN_PROC_BROWSER_TEST_P(
