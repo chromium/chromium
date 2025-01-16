@@ -5911,9 +5911,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
-    expires_after="2025-01-16">
+    expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the number of times the developer UI app was launched. This only
@@ -5923,9 +5922,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CollectionState"
-    enum="AndroidWebViewCrashCollectionState" expires_after="2025-01-16">
+    enum="AndroidWebViewCrashCollectionState" expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the state of crash collection, as seen by the developer UI. This is
@@ -5938,9 +5936,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CrashInteraction"
-    enum="AndroidWebViewCrashInteraction" expires_after="2025-01-16">
+    enum="AndroidWebViewCrashInteraction" expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the user's interaction with crashes in the developer UI's crash
@@ -5955,9 +5952,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.DeveloperModeEnabled"
-    enum="BooleanEnabled" expires_after="2025-01-16">
+    enum="BooleanEnabled" expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether or not WebView is starting up in &quot;developer mode.&quot;
@@ -5967,9 +5963,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagLoadingBlockingTime" units="ms"
-    expires_after="2025-01-16">
+    expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time spent blocking WebView startup to load flags from the
@@ -5980,9 +5975,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagsUi.ToggledFromSearch"
-    enum="Boolean" expires_after="2025-01-16">
+    enum="Boolean" expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     This is recorded each time a user toggles a flag in the developer UI
@@ -5995,12 +5989,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.DevUi.FragmentNavigation{Android_WebView_DevUi_NavType}"
-    enum="AndroidWebViewDevUiFragments" expires_after="2025-01-16">
+    enum="AndroidWebViewDevUiFragments" expires_after="2026-01-15">
 <!-- Name completed by histogram_suffixes
      name="Android.WebView.DevUi.NavType" -->
 
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the user's navigation to a Fragment. &quot;FromIntent&quot; tracks
@@ -6018,9 +6011,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.MenuSelection"
-    enum="AndroidWebViewDevUiMenu" expires_after="2025-01-16">
+    enum="AndroidWebViewDevUiMenu" expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the user's selection in the developer UI overflow menu or action
@@ -6043,12 +6035,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Android.WebView.DevUi.SessionDuration2" units="ms"
-    expires_after="2025-01-16">
+    expires_after="2026-01-15">
 <!-- Name completed by histogram_suffixes
      name="AndroidWebViewFragments" -->
 
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time spent using a specific tool, from creation to destruction.
@@ -6056,9 +6047,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.ToggledFlagCount" units="flags"
-    expires_after="2025-01-16">
+    expires_after="2026-01-15">
   <owner>ntfschr@chromium.org</owner>
-  <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the number of flags we will toggle for this run of WebView. This is
@@ -7328,7 +7318,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
     units="ms" expires_after="2023-09-01">
-  <owner>hazems@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the delay between calling Context#bindService until the
