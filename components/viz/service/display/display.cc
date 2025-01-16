@@ -475,7 +475,7 @@ void Display::InitializeRenderer() {
     resource_provider_ = std::move(resource_provider);
   } else {
     auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
-        bitmap_manager_, shared_image_manager_, gpu_scheduler_);
+        shared_image_manager_, gpu_scheduler_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),

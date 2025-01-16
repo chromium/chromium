@@ -337,7 +337,6 @@ void PixelTest::SetUpSoftwareRenderer() {
   auto* gpu_service = gpu_service_holder_->gpu_service();
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          /*shared_bitmap_manager=*/nullptr,
           gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(

@@ -24,14 +24,12 @@ class Scheduler;
 
 namespace viz {
 
-class SharedBitmapManager;
 
 // DisplayResourceProvider implementation used with SoftwareRenderer.
 class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     : public DisplayResourceProvider {
  public:
   explicit DisplayResourceProviderSoftware(
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
       gpu::Scheduler* scheduler);
   ~DisplayResourceProviderSoftware() override;
@@ -81,7 +79,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
                                     SkAlphaType alpha_type);
   void WaitSyncToken(gpu::SyncToken sync_token);
 
-  const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   const raw_ptr<gpu::Scheduler> gpu_scheduler_;
   std::unique_ptr<gpu::BlockingSequenceRunner> blocking_sequence_runner_;
