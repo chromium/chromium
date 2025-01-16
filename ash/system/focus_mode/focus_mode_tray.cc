@@ -314,6 +314,18 @@ void FocusModeTray::ShowBubble() {
   auto* controller = FocusModeController::Get();
   CHECK(controller->current_session());
 
+  session_snapshot_ =
+      controller->current_session()->GetSnapshot(base::Time::Now());
+
+  // In the ending moment, we need to make sure that `OnEndingBubbleShowing()`
+  // is called to hide the nudge (if it is showing) before we show the bubble.
+  // This is to prevent unexpected focus controller window activation issues.
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    controller->OnEndingBubbleShowing();
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kFocusModeEndingMomentNudge);
+  }
+
   auto bubble_view =
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
@@ -331,8 +343,6 @@ void FocusModeTray::ShowBubble() {
   ending_moment_view_ = bubble_view_container_->AddChildView(
       std::make_unique<FocusModeEndingMomentView>());
 
-  session_snapshot_ =
-      controller->current_session()->GetSnapshot(base::Time::Now());
   UpdateAccessibleName();
   bubble_view->UpdateAccessibleName();
   UpdateBubbleViews(session_snapshot_.value());
@@ -345,12 +355,6 @@ void FocusModeTray::ShowBubble() {
   UpdateProgressRing();
 
   controller->tasks_model().RequestUpdate();
-
-  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
-    controller->OnEndingBubbleShown();
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kFocusModeEndingMomentNudge);
-  }
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
