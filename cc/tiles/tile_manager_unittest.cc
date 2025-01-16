@@ -1803,11 +1803,16 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       bool depends_on_hardware_accelerated_webp_candidates) override {
     if (!resource.software_backing()) {
       auto backing = std::make_unique<TestSoftwareBacking>();
-      backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
+      backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
+          viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+      backing->mailbox_sync_token.Set(
+          gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
+
       backing->pixels = std::make_unique<uint32_t[]>(
           viz::ResourceSizes::CheckedSizeInBytes<size_t>(resource.size(),
                                                          kSharedImageFormat));
       resource.set_software_backing(std::move(backing));
+      is_software_ = true;
     }
     auto* backing =
         static_cast<TestSoftwareBacking*>(resource.software_backing());
@@ -2367,10 +2372,17 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
+          kTileSize, viz::SinglePlaneFormat::kBGRA_8888,
           gfx::ColorSpace::CreateSRGB());
 
-  resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
+  auto backing = std::make_unique<TestSoftwareBacking>();
+  backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
+      viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+  backing->mailbox_sync_token.Set(gpu::GPU_IO,
+                                  gpu::CommandBufferId::FromUnsafeValue(1), 1);
+
+  resource.set_software_backing(std::move(backing));
+  raster_buffer_provider.is_software_ = true;
   host_impl->resource_pool()->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest);
 
@@ -2633,8 +2645,15 @@ class MockReadyToDrawRasterBufferProviderImpl
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override {
-    if (!resource.software_backing())
-      resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
+    if (!resource.software_backing()) {
+      auto backing = std::make_unique<TestSoftwareBacking>();
+      backing->shared_image = gpu::ClientSharedImage::CreateForTesting(
+          viz::SinglePlaneFormat::kBGRA_8888, GL_TEXTURE_2D);
+      backing->mailbox_sync_token.Set(
+          gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
+      resource.set_software_backing(std::move(backing));
+      is_software_ = true;
+    }
     return std::make_unique<FakeRasterBuffer>(expected_hdr_headroom_);
   }
 

@@ -345,16 +345,10 @@ bool ResourcePool::PrepareForExport(
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     SoftwareBacking* software_backing = resource->software_backing();
-    transferable =
-        software_backing->shared_image
-            ? viz::TransferableResource::MakeSoftwareSharedImage(
-                  software_backing->shared_image,
-                  software_backing->mailbox_sync_token, resource->size(),
-                  resource->format(), resource_source)
-            : viz::TransferableResource::MakeSoftwareSharedBitmap(
-                  software_backing->shared_bitmap_id,
-                  software_backing->mailbox_sync_token, resource->size(),
-                  resource->format(), resource_source);
+    DCHECK(software_backing->shared_image);
+    transferable = viz::TransferableResource::MakeSoftwareSharedImage(
+        software_backing->shared_image, software_backing->mailbox_sync_token,
+        resource->size(), resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(

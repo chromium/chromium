@@ -37,6 +37,8 @@ class FakeRasterBufferProviderImpl : public RasterBufferProvider {
       uint64_t pending_callback_id) override;
   void Shutdown() override;
 
+  bool is_software_ = false;
+
  protected:
   void Flush() override;
 };
