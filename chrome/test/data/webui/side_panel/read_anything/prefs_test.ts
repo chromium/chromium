@@ -73,6 +73,30 @@ suite('PrefsTest', () => {
           availableLang));
     });
 
+    test('adds unavailable language to prefs once available', () => {
+      const previouslyAvailableLang = 'da-dk';
+      chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
+      setVoices(app, speechSynthesis, [
+        createSpeechSynthesisVoice({lang: 'en-us', name: 'Google Fiyero'}),
+      ]);
+
+      app.restoreSettingsFromPrefs();
+
+      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          previouslyAvailableLang));
+
+      // The previously unavailable language is now available.
+      setVoices(app, speechSynthesis, [
+        createSpeechSynthesisVoice({lang: 'en-us', name: 'Google Fiyero'}),
+        createSpeechSynthesisVoice({lang: 'da-dk', name: 'Doctor Dillamond'}),
+      ]);
+
+      assertTrue(app.enabledLangs.includes(previouslyAvailableLang));
+      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          previouslyAvailableLang));
+    });
+
     suite('with no initial voices', () => {
       setup(() => {
         chrome.readingMode.baseLanguageForSpeech = 'en';
