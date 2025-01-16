@@ -16,8 +16,9 @@ class PrefService;
 @interface MagicStackHalfSheetMediator
     : NSObject <MagicStackHalfSheetModelDelegate>
 
-// Initializes this class with the appropriate localState.
-- (instancetype)initWithPrefService:(PrefService*)prefService;
+// Initializes this class with the appropriate localState and profile prefs.
+- (instancetype)initWithLocalState:(PrefService*)localState
+                profilePrefService:(PrefService*)profilePrefs;
 
 // Disconnects the mediator.
 - (void)disconnect;

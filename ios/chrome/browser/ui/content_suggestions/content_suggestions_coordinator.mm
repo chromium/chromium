@@ -766,7 +766,10 @@ using segmentation_platform::TipIdentifier;
         [[MagicStackHalfSheetTableViewController alloc] init];
 
     _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
-        initWithPrefService:GetApplicationContext()->GetLocalState()];
+        initWithLocalState:GetApplicationContext()->GetLocalState()
+        profilePrefService:ProfileIOS::FromBrowserState(
+                               self.browser->GetProfile())
+                               ->GetPrefs()];
     _magicStackHalfSheetMediator.consumer =
         _magicStackHalfSheetTableViewController;
     _magicStackHalfSheetTableViewController.delegate = self;

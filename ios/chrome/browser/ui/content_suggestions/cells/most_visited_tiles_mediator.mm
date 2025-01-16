@@ -206,7 +206,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _mostVisitedTilesInMagicStackEnabled) {
-    CHECK(IsHomeCustomizationEnabled());
     CHECK(_inMagicStack);
     [self useFreshMostVisited];
     if (observableBoolean.value) {
