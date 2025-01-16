@@ -105,9 +105,6 @@ std::u16string kDictationOnlySodaDownloadedTitle =
 std::u16string kDictationOnlySodaDownloadedDesc =
     u"Speech is processed locally and dictation works offline, but some voice "
     u"commands won’t work.";
-std::u16string kChromeVoxEnabledTitle = u"ChromeVox enabled";
-std::u16string kChromeVoxEnabledDesc =
-    u"Press Ctrl + Alt + Z to disable spoken feedback.";
 
 constexpr int kTestAutoclickDelayMs = 2000;
 
@@ -461,17 +458,6 @@ void AssertDictationOnlyPumpkinNotifcation(
                                    kDicationOnlyPumpkinDownloadedTitle,
                                    kDicationOnlyPumpkinDownloadedDesc,
                                    /*is_critical=*/true);
-}
-
-void AssertChromeVoxNotificationShownOnce() {
-  message_center::NotificationList::Notifications notifications =
-      message_center::MessageCenter::Get()->GetVisibleNotifications();
-  ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ(kChromeVoxEnabledTitle, (*notifications.begin())->title());
-  ASSERT_EQ(kChromeVoxEnabledDesc, (*notifications.begin())->message());
-
-  ASSERT_EQ(message_center::SystemNotificationWarningLevel::NORMAL,
-            (*notifications.begin())->system_notification_warning_level());
 }
 
 void AssertMessageCenterEmpty() {
@@ -1033,55 +1019,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
   EXPECT_EQ(600, panel->GetWidget()->GetWindowBoundsInScreen().width());
   EXPECT_TRUE(root_windows[0]->GetBoundsInScreen().Contains(
       panel->GetWidget()->GetWindowBoundsInScreen()));
-}
-
-// Ensures that the ChromeVox enabled icon stays in sync with ChromeVox's
-// enabled state. The icon should only be displayed in the message center if
-// ChromeVox is enabled.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxMessageCenter) {
-  ASSERT_FALSE(IsSpokenFeedbackEnabled());
-  ASSERT_FALSE(IsChromeVoxPanelActive());
-  AssertMessageCenterEmpty();
-
-  extensions::ExtensionHostTestHelper host_helper(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kChromeVoxExtensionId);
-  SetSpokenFeedbackEnabled(true);
-  host_helper.WaitForHostCompletedFirstLoad();
-
-  ASSERT_TRUE(IsSpokenFeedbackEnabled());
-  ASSERT_TRUE(IsChromeVoxPanelActive());
-  AssertChromeVoxNotificationShownOnce();
-
-  SetSpokenFeedbackEnabled(false);
-  ASSERT_FALSE(IsSpokenFeedbackEnabled());
-  ASSERT_FALSE(IsChromeVoxPanelActive());
-  AssertMessageCenterEmpty();
-}
-
-// Ensures that the ChromeVox enabled icon does not display multiple times if
-// enabled twice in a row. The icon should only be displayed once in the message
-// center if ChromeVox is enabled.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
-                       ChromeVoxMessageCenterMultiple) {
-  ASSERT_FALSE(IsSpokenFeedbackEnabled());
-  ASSERT_FALSE(IsChromeVoxPanelActive());
-  AssertMessageCenterEmpty();
-
-  extensions::ExtensionHostTestHelper host_helper(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kChromeVoxExtensionId);
-  SetSpokenFeedbackEnabled(true);
-  host_helper.WaitForHostCompletedFirstLoad();
-
-  ASSERT_TRUE(IsSpokenFeedbackEnabled());
-  ASSERT_TRUE(IsChromeVoxPanelActive());
-  AssertChromeVoxNotificationShownOnce();
-
-  // Assert only one ChromeVox notification is shown after enabling spoken
-  // feedback again.
-  SetSpokenFeedbackEnabled(true);
-  AssertChromeVoxNotificationShownOnce();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,

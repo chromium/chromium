@@ -496,12 +496,6 @@ class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
     return test_api_.get();
   }
 
-  void TearDownOnMainThread() override {
-    message_center::MessageCenter::Get()->RemoveAllNotifications(
-        /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
-    LoggedInSpokenFeedbackTest::TearDownOnMainThread();
-  }
-
  private:
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
@@ -512,7 +506,8 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
                        NavigateNotificationCenter) {
   EnableChromeVox();
 
-  // Ensure the tray is visible due to the 'ChromeVox enabled' notification.
+  // Add a notification so that the notification center tray is visible.
+  test_api()->AddNotification();
   ASSERT_TRUE(test_api()->IsTrayShown());
 
   // Press the accelerator that toggles the notification center.
@@ -529,9 +524,10 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
 // Tests that clicking the notification center tray does not crash when spoken
 // feedback is enabled.
 IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
-  // Enable spoken feedback then ensure the tray is visible due to the
-  // 'ChromeVox enabled' notification.
+  // Enable spoken feedback and add a notification to ensure the tray is
+  // visible.
   EnableChromeVox();
+  test_api()->AddNotification();
   ASSERT_TRUE(test_api()->IsTrayShown());
 
   // Click on the tray and verify the bubble shows up.
@@ -560,10 +556,9 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
     test_api()->AddLowPriorityNotification();
   });
 
-  // Verify that the silent notification was announced in addition to the
-  // ChromeVox Enabled notification.
+  // Verify that the silent notification was announced.
   auto expected_announcement = l10n_util::GetStringFUTF16Int(
-      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 2);
+      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 1);
   sm_.ExpectSpeech(base::UTF16ToUTF8(expected_announcement));
 
   // Add another silent notification, this time while the notification center is
@@ -576,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
 
   // Verify that the silent notification was announced.
   expected_announcement = l10n_util::GetStringFUTF16Int(
-      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 3);
+      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 2);
   sm_.ExpectSpeech(base::UTF16ToUTF8(expected_announcement));
 
   sm_.Replay();

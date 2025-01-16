@@ -2996,15 +2996,12 @@ AX_TEST_F(
           .call(doGesture(Gesture.SWIPE_RIGHT4))
           .expectSpeech('Shelf', 'Tool bar')
           .call(doGesture(Gesture.SWIPE_RIGHT4))
-          // Check for the ChromeVox enabled notification.
-          .expectSpeech(
-              ', window', 'Double tap to activate', /1 important notification*/,
-              'Button', ', window', 'Double tap to activate')
+          .expectSpeech(/Calendar*/)
           .call(doGesture(Gesture.SWIPE_RIGHT4))
           .expectSpeech(/Address and search bar*/)
 
           .call(doGesture(Gesture.SWIPE_LEFT4))
-          .expectSpeech(', window', 'Double tap to activate')
+          .expectSpeech(/Calendar*/)
           .call(doGesture(Gesture.SWIPE_LEFT4))
           .expectSpeech('Shelf', 'Tool bar');
 
