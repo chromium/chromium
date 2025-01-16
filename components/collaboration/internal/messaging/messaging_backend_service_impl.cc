@@ -479,6 +479,17 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
   return result;
 }
 
+void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
+    tab_groups::EitherGroupID group_id) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupId(group_id);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration.
+    return;
+  }
+  store_->ClearDirtyTabMessagesForGroup(*collaboration_group_id);
+}
+
 void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {
   if (!success) {
     DVLOG(2) << "Failed to initialize MessagingBackendServiceImpl.";

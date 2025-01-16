@@ -1319,7 +1319,8 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesTwoMessages) {
   EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(4).type);
 }
 
-TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForGroup) {
+TEST_F(MessagingBackendServiceImplTest,
+       TestGetMessagesForGroupAndClearDirtyTabMessagesForGroup) {
   CreateAndInitializeService();
 
   data_sharing::GroupId collaboration_group_id =
@@ -1352,7 +1353,7 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForGroup) {
       CreateSharedTabGroup(collaboration_group_id);
   EXPECT_CALL(*mock_tab_group_sync_service_,
               GetGroup(tab_groups::EitherGroupID(tab_group.saved_guid())))
-      .WillOnce(Return(tab_group));
+      .WillRepeatedly(Return(tab_group));
 
   messages = service_->GetMessagesForGroup(
       tab_groups::EitherGroupID(tab_group.saved_guid()), std::nullopt);
@@ -1365,6 +1366,12 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForGroup) {
   EXPECT_EQ(PersistentNotificationType::DIRTY_TAB, messages.at(1).type);
   EXPECT_EQ(CollaborationEvent::UNDEFINED, messages.at(2).collaboration_event);
   EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP, messages.at(2).type);
+
+  // Clear the dirty messages for the group.
+  EXPECT_CALL(*unowned_messaging_backend_store_, ClearDirtyTabMessagesForGroup)
+      .Times(1);
+  service_->ClearDirtyTabMessagesForGroup(
+      tab_groups::EitherGroupID(tab_group.saved_guid()));
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {

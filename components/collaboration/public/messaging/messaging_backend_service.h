@@ -88,6 +88,12 @@ class MessagingBackendService : public KeyedService,
   virtual std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) = 0;
 
+  // Invoked to clear all dirty messages for a tab group. Meant to be invoked
+  // from the activity card which when dismissed clears out all the individual
+  // tab messages. Doesn't apply to instant messages.
+  virtual void ClearDirtyTabMessagesForGroup(
+      tab_groups::EitherGroupID group_id) = 0;
+
   // Testing-only API for setting activity log.
   virtual void AddActivityLogForTesting(
       data_sharing::GroupId collaboration_id,

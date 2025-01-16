@@ -118,4 +118,11 @@ public interface MessagingBackendService {
      */
     @NonNull
     List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params);
+
+    /**
+     * Clears all dirty messages associated with a group ID. Doesn't apply to instant messages.
+     *
+     * @param groupId The ID of the group to scope messages to.
+     */
+    void clearDirtyTabMessagesForGroup(EitherGroupId groupId);
 }
