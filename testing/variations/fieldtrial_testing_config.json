@@ -716,6 +716,7 @@
                     "params": {
                         "capture_delay": "5s",
                         "include_geometry": "false",
+                        "include_hidden_searchable_content": "true",
                         "include_inner_text": "true",
                         "on_critical_path": "true"
                     },
