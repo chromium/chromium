@@ -53,7 +53,6 @@ origin_files = glob([
     "base/third_party/icu/**",
     "base/third_party/nspr/**",
     "base/third_party/superfasthash/**",
-    "base/third_party/valgrind/**",
     # Those are temporarily needed until Chromium finish the migration
     # of libc++[abi]
     "buildtools/third_party/libc++/**",
@@ -81,7 +80,6 @@ origin_files = glob([
     "third_party/jni_zero/**",
     "third_party/libc++/**",
     "third_party/libc++abi/**",
-    "third_party/libevent/**",
     # Note: Only used for tests.
     "third_party/libxml/**",
     # Note: Only used for tests.
