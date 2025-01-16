@@ -8549,8 +8549,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Holdback",
+                    "disable_features": [
                         "EnableDozeModePowerScheduler"
                     ]
                 }
