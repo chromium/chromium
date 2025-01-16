@@ -4,17 +4,24 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -38,6 +45,51 @@ void OpenAccountMenu() {
   // Ensure the Account Menu is displayed.
   [[EarlGrey selectElementWithMatcher:AccountMenuMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+id<GREYMatcher> SigninScreenMatcher() {
+  return grey_accessibilityID(
+      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
+}
+
+id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
+  return grey_accessibilityID(
+      kManagedProfileCreationScreenAccessibilityIdentifier);
+}
+
+id<GREYMatcher> HistoryScreenMatcher() {
+  return grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier);
+}
+
+id<GREYMatcher> DefaultBrowserScreenMatcher() {
+  return grey_accessibilityID(
+      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
+}
+
+// Returns a matcher for the sign-in screen "Continue as <identity>" button.
+id<GREYMatcher> ContinueButtonWithIdentityMatcher(
+    FakeSystemIdentity* fakeIdentity) {
+  NSString* buttonTitle = l10n_util::GetNSStringF(
+      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  id<GREYMatcher> matcher =
+      grey_allOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText),
+                 grey_sufficientlyVisible(), nil);
+
+  return matcher;
+}
+
+id<GREYMatcher> PromoAcceptButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> PromoDeclineButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace
@@ -115,6 +167,122 @@ void OpenAccountMenu() {
   GREYAssert(
       [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
       @"Profile should have been switched");
+}
+
+@end
+
+@interface SeparateProfilesFRETestCase : ChromeTestCase
+@end
+
+@implementation SeparateProfilesFRETestCase
+
+- (void)setUp {
+  [[self class] testForStartup];
+  [super setUp];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
+  // Note: Can't use the actual feature definition, because its build target
+  // depends on a bunch of stuff that mustn't make it into the EG test target.
+  config.additional_args.push_back(
+      "--disable-features=UpdatedFirstRunSequence");
+
+  // Enable the FRE.
+  config.additional_args.push_back("-FirstRunForceEnabled");
+  config.additional_args.push_back("true");
+
+  // Relaunch the app at each test to rewind the startup state.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  return config;
+}
+
+// Tests signing in with a personal account during the FRE. This shouldn't have
+// any particular side-effects; it mostly exists as a base case for
+// `testSignInWithManagedAccount`.
+- (void)testSignInWithPersonalAccount {
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+
+  NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert([originalProfileName
+                 isEqualToString:[ChromeEarlGrey personalProfileName]],
+             @"Profile should be personal");
+
+  // Signin screen: Press "Continue as foo1".
+  [ChromeEarlGrey waitForMatcher:SigninScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
+                                          personalIdentity)]
+      performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Default broser screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:DefaultBrowserScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
+
+  NSString* newProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert([originalProfileName isEqualToString:newProfileName],
+             @"Profile name should be unchanged");
+  GREYAssert(
+      [newProfileName isEqualToString:[ChromeEarlGrey personalProfileName]],
+      @"Profile should still be personal");
+}
+
+// Tests signing in with a managed account during the FRE. This should convert
+// the existing profile to a managed profile.
+- (void)testSignInWithManagedAccount {
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+
+  NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert([originalProfileName
+                 isEqualToString:[ChromeEarlGrey personalProfileName]],
+             @"Profile should be personal");
+
+  // Signin screen: Press "Continue as foo".
+  [ChromeEarlGrey waitForMatcher:SigninScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:ContinueButtonWithIdentityMatcher(
+                                          managedIdentity)]
+      performAction:grey_tap()];
+
+  // Managed profile creation/confirmation screen: Accept.
+  [ChromeEarlGrey waitForMatcher:ManagedProfileCreationScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:PromoAcceptButtonMatcher()]
+      performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Default broser screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:DefaultBrowserScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+
+  // We should still be in the same profile, now converted to be a managed
+  // profile.
+  NSString* newProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert([originalProfileName isEqualToString:newProfileName],
+             @"Profile name should be unchanged");
+  GREYAssertFalse(
+      [newProfileName isEqualToString:[ChromeEarlGrey personalProfileName]],
+      @"Profile should NOT be personal anymore");
 }
 
 @end
