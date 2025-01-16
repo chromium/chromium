@@ -1442,7 +1442,7 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
 int SimpleSynchronousEntry::InitializeForOpen(
     BackendFileOperations* file_operations,
     SimpleEntryStat* out_entry_stat,
-    SimpleStreamPrefetchData stream_prefetch_data[2]) {
+    std::array<SimpleStreamPrefetchData, 2>& stream_prefetch_data) {
   DCHECK(!initialized_);
   if (!OpenFiles(file_operations, out_entry_stat)) {
     DLOG(WARNING) << "Could not open platform files for entry.";
@@ -1582,7 +1582,7 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
     BackendFileOperations* file_operations,
     int file_size,
     SimpleEntryStat* out_entry_stat,
-    SimpleStreamPrefetchData stream_prefetch_data[2]) {
+    std::array<SimpleStreamPrefetchData, 2>& stream_prefetch_data) {
   SimpleFileTracker::FileHandle file =
       file_tracker_->Acquire(file_operations, this, SubFileForFileIndex(0));
   if (!file.IsOK())
