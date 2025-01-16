@@ -16,6 +16,7 @@
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/field_types.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -42,9 +43,9 @@ autofill::FieldType FieldTypeFromString(std::string_view str, NSError** error) {
   if (string_to_field_type_map.empty()) {
     for (size_t i = autofill::NO_SERVER_DATA;
          i < autofill::MAX_VALID_FIELD_TYPE; ++i) {
-      autofill::AutofillType autofill_type(static_cast<autofill::FieldType>(i));
-      string_to_field_type_map[autofill_type.ToStringView()] =
-          autofill_type.GetStorableType();
+      autofill::FieldType field_type(static_cast<autofill::FieldType>(i));
+      string_to_field_type_map[autofill::FieldTypeToStringView(field_type)] =
+          field_type;
     }
 
     for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
