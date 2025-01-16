@@ -26,16 +26,8 @@ TensorImplTflite::Create(
     WebNNContextImpl* context,
     mojom::TensorInfoPtr tensor_info) {
   size_t size = tensor_info->descriptor.PackedByteLength();
-
-  // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
-  //
-  // TODO(crbug.com/356670455): Consider moving this check to the renderer and
-  // throwing a TypeError.
-  if (!base::IsValueInRangeForNumericType<int>(size)) {
-    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
-    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create tensor."));
-  }
+  // Invalid values are rejected in GraphBuilder.
+  CHECK(base::IsValueInRangeForNumericType<int>(size));
 
   auto buffer_content = std::make_unique<BufferContent>(size);
   auto buffer_state =

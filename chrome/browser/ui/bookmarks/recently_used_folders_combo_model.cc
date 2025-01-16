@@ -55,7 +55,7 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     : bookmark_model_(model), parent_node_(node->parent()) {
   bookmark_model_->AddObserver(this);
 
-  const bookmarks::RecentlyUsedFolders mru_bookmarks =
+  const bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(model, node);
 
   if (!mru_bookmarks.account_nodes.empty()) {

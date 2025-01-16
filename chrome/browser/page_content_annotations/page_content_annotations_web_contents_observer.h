@@ -57,6 +57,8 @@ class PageContentAnnotationsWebContentsObserver
   void DidStopLoading() override;
   void PrimaryPageChanged(content::Page& page) override;
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(

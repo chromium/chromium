@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
-import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -116,7 +116,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
-    @Mock private TabArchiver.Clock mClock;
+    @Mock private TabArchiverImpl.Clock mClock;
     @Mock private ObservableSupplierImpl<Boolean> mSkipSaveTabListSupplier;
     @Mock private TabPersistentStore mTabPersistentStore;
     @Mock private Runnable mRunnable;
@@ -217,7 +217,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);
@@ -406,7 +406,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);
@@ -445,7 +445,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(
                 () -> {
                     doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
-                    mOrchestrator.getTabArchiver().setClockForTesting(mClock);
+                    ((TabArchiverImpl) mOrchestrator.getTabArchiver()).setClockForTesting(mClock);
                     mRegularTabModel.getTabAt(0).setTimestampMillis(0L);
                     mRegularTabModel.getTabAt(1).setTimestampMillis(0L);
                     mTabArchiveSettings.setArchiveTimeDeltaHours(1);

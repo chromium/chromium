@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Trusted Type violation report: evaluating a string.
+  assert_unreached: Reached unreachable code
+[FAIL] Trusted Type violation report: evaluating a Trusted Script.
+  assert_unreached: Reached unreachable code
+[FAIL] Trusted Type violation report: default policy runs in report-only mode.
+  assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

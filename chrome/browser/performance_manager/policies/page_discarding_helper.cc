@@ -44,6 +44,10 @@ BASE_FEATURE(kIgnoreDiscardAttemptMarker,
              "IgnoreDiscardAttemptMarker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSkipDiscardsDrivenByStaleSignal,
+             "SkipDiscardDrivenByStaleSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // NodeAttachedData used to indicate that there's already been an attempt to
 // discard a PageNode.
 class DiscardAttemptMarker
@@ -147,13 +151,18 @@ void PageDiscardingHelper::DiscardMultiplePages(
     base::TimeDelta minimum_time_in_background) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (reclaim_target) {
+    if (base::FeatureList::IsEnabled(kSkipDiscardsDrivenByStaleSignal)) {
+      reclaim_target =
+          unnecessary_discard_monitor_.CorrectReclaimTarget(*reclaim_target);
+    }
+
+    unnecessary_discard_monitor_.OnReclaimTargetBegin(*reclaim_target);
+  }
+
   LOG(WARNING) << "Discarding multiple pages with target (kb): "
                << (reclaim_target ? reclaim_target->target_kb : 0)
                << ", discard_protected_tabs: " << discard_protected_tabs;
-
-  if (reclaim_target) {
-    unnecessary_discard_monitor_.OnReclaimTargetBegin(*reclaim_target);
-  }
 
   // Ensures running post_discard_cb on early return.
   absl::Cleanup run_post_discard_cb_on_return = [&post_discard_cb] {

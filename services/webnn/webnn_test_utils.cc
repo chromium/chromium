@@ -4,6 +4,8 @@
 
 #include "services/webnn/webnn_test_utils.h"
 
+#include <limits.h>
+
 #include "base/check_is_test.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
@@ -26,7 +28,8 @@ uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
                                         mojom::Operand::Kind kind) {
   mojom::OperandPtr operand = mojom::Operand::New();
 
-  operand->descriptor = *OperandDescriptor::Create(type, dimensions);
+  operand->descriptor =
+      OperandDescriptor::UnsafeCreateForTesting(type, dimensions);
   operand->kind = kind;
 
   CHECK(graph_info_->id_to_operand_map.find(operand_id_) ==
@@ -572,6 +575,7 @@ mojom::GraphInfoPtr CloneGraphInfoForTesting(
 ContextProperties GetContextPropertiesForTesting() {
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
        /*arg_min_max_input=*/SupportedDataTypes::All(),

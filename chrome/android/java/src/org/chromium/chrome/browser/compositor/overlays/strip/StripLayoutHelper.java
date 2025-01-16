@@ -1276,7 +1276,7 @@ public class StripLayoutHelper
 
         // 1. If the tab is already at the right spot, don't do anything.
         int index = findIndexForTab(id);
-        if (index == newIndex) return;
+        if (index == newIndex || index + 1 == newIndex) return;
 
         // 2. Swap the tabs.
         StripLayoutUtils.moveElement(mStripTabs, index, newIndex);
@@ -1284,12 +1284,7 @@ public class StripLayoutHelper
             if (mReorderDelegate.isReorderingTab()) {
                 // Update strip start and end margins to create more space for first tab or last tab
                 // to drag out of group.
-                mReorderDelegate.setEdgeMarginsForReorder(
-                        mStripTabs[0], mStripTabs[mStripTabs.length - 1]);
-                // Manually reset last tab's trailing margin after the tab group is removed.
-                if (mStripTabs.length > 1) {
-                    mStripTabs[mStripTabs.length - 2].setTrailingMargin(0f);
-                }
+                mReorderDelegate.setEdgeMarginsForReorder(mStripTabs);
             }
             // When tab groups are moved, each tab is moved one-by-one. During this process, the
             // invariant that tab groups must be contiguous is temporarily broken, so we suppress

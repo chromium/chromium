@@ -931,17 +931,17 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
     return;
   }
 
-  if (!server_response.has_objects_response() ||
-      !server_response.objects_response().has_cluster_info()) {
+  if (!server_response.has_objects_response()) {
     RunFullImageCallbackForError();
     return;
   }
 
-  SendFullImageLatencyGen204IfEnabled(
-      latest_full_image_request_data_->query_start_time_,
-      translate_options_.has_value(), kImageVisualInputTypeQueryParameterValue);
-
   if (!cluster_info_.has_value()) {
+    if (!server_response.objects_response().has_cluster_info()) {
+      RunFullImageCallbackForError();
+      return;
+    }
+
     cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
     cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
 
@@ -962,6 +962,10 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
       request_id_generator_->SetRoutingInfo(cluster_info_->routing_info());
     }
   }
+
+  SendFullImageLatencyGen204IfEnabled(
+      latest_full_image_request_data_->query_start_time_,
+      translate_options_.has_value(), kImageVisualInputTypeQueryParameterValue);
 
   // Image signals and vsint are only valid after an interaction request.
   suggest_inputs_.clear_encoded_image_signals();

@@ -246,7 +246,9 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void SetNeedsPrepareTilesOnImplThread() override {
     did_request_prepare_tiles_ = true;
   }
-  void SetNeedsCommitOnImplThread() override { did_request_commit_ = true; }
+  void SetNeedsCommitOnImplThread(bool urgent) override {
+    did_request_commit_ = true;
+  }
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
   bool IsInsideDraw() override { return false; }

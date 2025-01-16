@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Frame QP encoding, full range
+  assert_equals: corrupted_frames: 0,1,2,3,4,5,6,7,8,9,10,11 expected 0 but got 12
+[FAIL] Frame QP encoding, good range with validation
+  assert_equals: corrupted_frames: 0,1,2,3,4,5,6,7,8,9,10,11 expected 0 but got 12
+Harness: the test ran to completion.
+

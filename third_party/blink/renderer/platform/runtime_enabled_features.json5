@@ -38,7 +38,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux", "iOS"]
+      valid_keys: ["Android", "Win", "ChromeOS_Ash", "Mac", "Linux", "iOS"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -568,6 +568,13 @@
       status: "stable",
       base_feature: "none",
     },
+    // A developer opt-out for background page freezing.
+    {
+      name: "BackgroundPageFreezeOptOut",
+      base_feature: "none",
+      origin_trial_feature_name: "BackgroundPageFreezeOptOut",
+      origin_trial_type: "deprecation",
+    },
     {
       name: "BarcodeDetector",
       status: {
@@ -575,7 +582,6 @@
         // platforms. See //services/shape_detection.
         "Android": "stable",
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "Mac": "stable",
         "default": "test",
       },
@@ -1418,7 +1424,6 @@
       name: "DeviceAttributes",
       status: {
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "default": "experimental",
       },
     },
@@ -1457,7 +1462,6 @@
       status: {
         "Android": "stable",
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
         // so enable the API on all platforms for testing.
         "default": "test"
@@ -1469,7 +1473,6 @@
       status: {
         "Android": "stable",
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         // crbug.com/1143079: Web tests cannot differentiate ChromeOS and Linux,
         // so enable the API on all platforms for testing.
         "default": "test"
@@ -1747,7 +1750,6 @@
         // This list should match the supported operating systems for the
         // kEyeDropper base::Feature.
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "Linux": "stable",
         "Mac": "stable",
         "Win": "stable",
@@ -1980,7 +1982,6 @@
       name: "FileSystemAccessGetCloudIdentifiers",
       status: {
         "ChromeOS_Ash": "experimental",
-        "ChromeOS_Lacros": "experimental",
         "default": "",
       }
     },
@@ -2199,7 +2200,7 @@
     },
     {
       name: "ForceTallerSelectPopup",
-      status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
+      status: {"ChromeOS_Ash": "stable"},
     },
     {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
@@ -2262,7 +2263,6 @@
       name: "HandwritingRecognition",
       status: {
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "default": "experimental",
       },
     },
@@ -2928,7 +2928,6 @@
       status: {
         "Android": "stable",
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "default": "experimental",
       },
       base_feature: "none",
@@ -3155,13 +3154,6 @@
     {
       name: "OverscrollCustomization",
       status: "experimental",
-    },
-    // A developer opt-out for page freezing.
-    {
-      name: "PageFreezeOptOut",
-      base_feature: "none",
-      origin_trial_feature_name: "PageFreezeOptOut",
-      origin_trial_type: "deprecation",
     },
     // Support for page margin boxes.
     // https://www.w3.org/TR/css-page-3/#margin-boxes
@@ -4485,7 +4477,6 @@
       name: "UseBeginFramePresentationFeedback",
       status: {
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
       },
     },
     {
@@ -4640,7 +4631,6 @@
       name: "WebAppTabStrip",
       status: {
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "default": "experimental"
       },
       base_feature: "DesktopPWAsTabStrip",
@@ -4651,7 +4641,6 @@
       name: "WebAppTabStripCustomizations",
       status: {
         "ChromeOS_Ash": "stable",
-        "ChromeOS_Lacros": "stable",
         "default": "experimental"
       },
       base_feature: "DesktopPWAsTabStripCustomizations",
@@ -4769,7 +4758,7 @@
       public: true,
       status: {
         "Android": "stable",
-        "ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable",
+        "ChromeOS_Ash": "stable",
         "Mac": "stable",
         "Win": "stable",
         "default": "experimental",

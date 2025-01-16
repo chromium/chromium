@@ -253,23 +253,11 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
 
   wgpu::DeviceDescriptor device_descriptor;
 
-  std::vector<wgpu::FeatureName> required_features = {
-      // We need to request internal usage to be able to do operations with
-      // internal methods that would need specific usages.
-      wgpu::FeatureName::DawnInternalUsages,
-
-      // AHardwareBuffers are imported directly into Dawn and SyncFDs are used
-      // to synchronize them (if available).
-      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-  };
-  if (adapter.HasFeature(wgpu::FeatureName::SharedFenceSyncFD)) {
-    // Only request SyncFDs if the adapter supports them. They are not available
-    // on some older Android devices and not required to test AHardwareBuffers.
-    required_features.push_back(wgpu::FeatureName::SharedFenceSyncFD);
-  }
-
-  device_descriptor.requiredFeatureCount = required_features.size();
-  device_descriptor.requiredFeatures = required_features.data();
+  // We need to request internal usage to be able to do operations with
+  // internal methods that would need specific usages.
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  device_descriptor.requiredFeatureCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 

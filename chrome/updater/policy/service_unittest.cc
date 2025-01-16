@@ -220,11 +220,22 @@ class FakePolicyManager : public PolicyManagerInterface {
   std::map<std::string, std::string> target_version_prefixes_;
 };
 
-TEST(PolicyService, DefaultPolicyValue) {
-  PolicyManagers managers;
-  managers.push_back(GetDefaultValuesPolicyManager());
-  auto policy_service = base::MakeRefCounted<PolicyService>(
-      std::move(managers), /*persisted_data=*/nullptr);
+class PolicyServiceTest : public ::testing::Test {
+ protected:
+  static scoped_refptr<PolicyService> CreatePolicyServiceForTesting(
+      PolicyManagers managers) {
+    auto policy_service = base::MakeRefCounted<PolicyService>(
+        /*external_constants=*/nullptr,
+        /*persisted_data=*/nullptr,
+        /*is_ceca_experiment_enabled=*/false);
+    policy_service->policy_managers_.SetManagersForTesting(std::move(managers));
+    return policy_service;
+  }
+};
+
+TEST_F(PolicyServiceTest, DefaultPolicyValue) {
+  auto policy_service =
+      CreatePolicyServiceForTesting({GetDefaultValuesPolicyManager()});
   EXPECT_EQ(policy_service->source(), "Default");
 
   EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy());
@@ -254,33 +265,27 @@ TEST(PolicyService, DefaultPolicyValue) {
   EXPECT_EQ(rollback_allowed.policy(), false);
 }
 
-TEST(PolicyService, ValidatePolicyValues) {
+TEST_F(PolicyServiceTest, ValidatePolicyValues) {
   {
-    PolicyManagers managers;
     auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
     manager->SetDownloadPreference("unknown-download-preferences");
     manager->SetProxyMode("random-value");
-    managers.push_back(std::move(manager));
-    managers.push_back(GetDefaultValuesPolicyManager());
 
-    auto policy_service = base::MakeRefCounted<PolicyService>(
-        std::move(managers), /*persisted_data=*/nullptr);
+    auto policy_service = CreatePolicyServiceForTesting(
+        {std::move(manager), GetDefaultValuesPolicyManager()});
     EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy());
     EXPECT_FALSE(policy_service->GetDownloadPreference());
     EXPECT_FALSE(policy_service->GetProxyMode());
   }
 
   {
-    PolicyManagers managers;
     auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
     manager->SetCloudPolicyOverridesPlatformPolicy(false);
     manager->SetDownloadPreference("cacheable");
     manager->SetProxyMode("auto_detect");
-    managers.push_back(std::move(manager));
-    managers.push_back(GetDefaultValuesPolicyManager());
 
-    auto policy_service = base::MakeRefCounted<PolicyService>(
-        std::move(managers), /*persisted_data=*/nullptr);
+    auto policy_service = CreatePolicyServiceForTesting(
+        {std::move(manager), GetDefaultValuesPolicyManager()});
     EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
     EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
     EXPECT_TRUE(policy_service->GetDownloadPreference());
@@ -290,15 +295,12 @@ TEST(PolicyService, ValidatePolicyValues) {
   }
 }
 
-TEST(PolicyService, SinglePolicyManager) {
+TEST_F(PolicyServiceTest, SinglePolicyManager) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "test_source");
   manager->SetCloudPolicyOverridesPlatformPolicy(true);
   manager->SetChannel("app1", "test_channel");
   manager->SetUpdatePolicy("app2", 3);
-  PolicyManagers managers;
-  managers.push_back(std::move(manager));
-  auto policy_service = base::MakeRefCounted<PolicyService>(
-      std::move(managers), /*persisted_data=*/nullptr);
+  auto policy_service = CreatePolicyServiceForTesting({std::move(manager)});
   EXPECT_EQ(policy_service->source(), "test_source");
 
   EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
@@ -326,7 +328,7 @@ TEST(PolicyService, SinglePolicyManager) {
   EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
 }
 
-TEST(PolicyService, MultiplePolicyManagers) {
+TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   PolicyManagers managers;
 
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
@@ -370,8 +372,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   // The default policy manager.
   managers.push_back(GetDefaultValuesPolicyManager());
 
-  auto policy_service = base::MakeRefCounted<PolicyService>(
-      std::move(managers), /*persisted_data=*/nullptr);
+  auto policy_service = CreatePolicyServiceForTesting(std::move(managers));
   EXPECT_EQ(policy_service->source(),
             "group_policy;device_management;imaginary;Default");
 
@@ -603,7 +604,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
                    base::Value::Dict())));
 }
 
-TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
+TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   PolicyManagers managers;
 
   auto manager =
@@ -638,8 +639,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetUpdatePolicy("app2", 1);
   managers.push_back(std::move(manager));
 
-  auto policy_service = base::MakeRefCounted<PolicyService>(
-      std::move(managers), /*persisted_data=*/nullptr);
+  auto policy_service = CreatePolicyServiceForTesting(std::move(managers));
   EXPECT_EQ(policy_service->source(), "device_management;imaginary;Default");
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
@@ -727,8 +727,9 @@ struct PolicyServiceAreUpdatesSuppressedNowTestCase {
 };
 
 class PolicyServiceAreUpdatesSuppressedNowTest
-    : public ::testing::TestWithParam<
-          PolicyServiceAreUpdatesSuppressedNowTestCase> {};
+    : public ::testing::WithParamInterface<
+          PolicyServiceAreUpdatesSuppressedNowTestCase>,
+      public PolicyServiceTest {};
 
 INSTANTIATE_TEST_SUITE_P(
     PolicyServiceAreUpdatesSuppressedNowTestCases,
@@ -757,19 +758,16 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
   manager->SetUpdatesSuppressedTimes(GetParam().updates_suppressed_times);
-  PolicyManagers managers;
-  managers.push_back(std::move(manager));
 
   base::Time now;
   ASSERT_TRUE(base::Time::FromString(GetParam().now_string.c_str(), &now));
   EXPECT_EQ(GetParam().expect_updates_suppressed,
-            base::MakeRefCounted<PolicyService>(managers,
-                                                /*persisted_data=*/nullptr)
+            CreatePolicyServiceForTesting({std::move(manager)})
                 ->AreUpdatesSuppressedNow(now));
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST(PolicyService, CreateManagers) {
+TEST_F(PolicyServiceTest, CreateManagers) {
   base::test::TaskEnvironment environment;
   registry_util::RegistryOverrideManager registry_overrides;
   ASSERT_NO_FATAL_FAILURE(
@@ -799,7 +797,7 @@ TEST(PolicyService, CreateManagers) {
   EXPECT_EQ(managers.managers()[3]->source(), "Group Policy");
 }
 #elif BUILDFLAG(IS_MAC)
-TEST(PolicyService, CreateManagers) {
+TEST_F(PolicyServiceTest, CreateManagers) {
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
@@ -810,7 +808,7 @@ TEST(PolicyService, CreateManagers) {
   EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
 }
 #else
-TEST(PolicyService, CreateManagers) {
+TEST_F(PolicyServiceTest, CreateManagers) {
   auto omaha_settings =
       std::make_unique<::wireless_android_enterprise_devicemanagement::
                            OmahaSettingsClientProto>();
@@ -824,15 +822,14 @@ TEST(PolicyService, CreateManagers) {
 }
 #endif
 
-TEST(PolicyService, PolicyServiceProxyConfiguration_Get) {
+TEST_F(PolicyServiceTest, PolicyServiceProxyConfiguration_Get) {
   // Test proxy mode "auto_detect".
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
   manager->SetProxyMode("auto_detect");
   manager->SetProxyPacUrl("pac://server");
   manager->SetProxyServer("proxy_server");
-  auto policy_service = base::MakeRefCounted<PolicyService>(
-      PolicyManagers({std::move(manager), GetDefaultValuesPolicyManager()}),
-      /*persisted_data=*/nullptr);
+  auto policy_service = CreatePolicyServiceForTesting(
+      {std::move(manager), GetDefaultValuesPolicyManager()});
   std::optional<PolicyServiceProxyConfiguration> proxy_configuration =
       PolicyServiceProxyConfiguration::Get(policy_service);
   ASSERT_TRUE(proxy_configuration);
@@ -845,9 +842,8 @@ TEST(PolicyService, PolicyServiceProxyConfiguration_Get) {
   manager->SetProxyMode("fixed_servers");
   manager->SetProxyPacUrl("pac://server");
   manager->SetProxyServer("proxy_server");
-  policy_service = base::MakeRefCounted<PolicyService>(
-      PolicyManagers({std::move(manager), GetDefaultValuesPolicyManager()}),
-      /*persisted_data=*/nullptr);
+  policy_service = CreatePolicyServiceForTesting(
+      {std::move(manager), GetDefaultValuesPolicyManager()});
   proxy_configuration = PolicyServiceProxyConfiguration::Get(policy_service);
   ASSERT_TRUE(proxy_configuration);
   ASSERT_FALSE(proxy_configuration->proxy_auto_detect);
@@ -860,9 +856,8 @@ TEST(PolicyService, PolicyServiceProxyConfiguration_Get) {
   manager->SetProxyMode("pac_script");
   manager->SetProxyPacUrl("pac://server");
   manager->SetProxyServer("proxy_server");
-  policy_service = base::MakeRefCounted<PolicyService>(
-      PolicyManagers({std::move(manager), GetDefaultValuesPolicyManager()}),
-      /*persisted_data=*/nullptr);
+  policy_service = CreatePolicyServiceForTesting(
+      {std::move(manager), GetDefaultValuesPolicyManager()});
   proxy_configuration = PolicyServiceProxyConfiguration::Get(policy_service);
   ASSERT_TRUE(proxy_configuration);
   ASSERT_FALSE(proxy_configuration->proxy_auto_detect);
@@ -875,9 +870,8 @@ TEST(PolicyService, PolicyServiceProxyConfiguration_Get) {
   manager->SetProxyMode("unknown");
   manager->SetProxyPacUrl("pac://server");
   manager->SetProxyServer("proxy_server");
-  policy_service = base::MakeRefCounted<PolicyService>(
-      PolicyManagers({std::move(manager), GetDefaultValuesPolicyManager()}),
-      /*persisted_data=*/nullptr);
+  policy_service = CreatePolicyServiceForTesting(
+      {std::move(manager), GetDefaultValuesPolicyManager()});
   ASSERT_FALSE(PolicyServiceProxyConfiguration::Get(policy_service));
 }
 

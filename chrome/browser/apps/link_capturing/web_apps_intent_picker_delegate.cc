@@ -61,7 +61,9 @@ void OnAppReparentedRunInNewContents(const std::string& launch_name,
 
 WebAppsIntentPickerDelegate::WebAppsIntentPickerDelegate(Profile* profile)
     : profile_(*profile),
-      provider_(*web_app::WebAppProvider::GetForWebApps(profile)) {}
+      provider_(web_app::AreWebAppsUserInstallable(profile)
+                    ? web_app::WebAppProvider::GetForWebApps(profile)
+                    : nullptr) {}
 
 WebAppsIntentPickerDelegate::~WebAppsIntentPickerDelegate() = default;
 
@@ -72,6 +74,8 @@ bool WebAppsIntentPickerDelegate::ShouldShowIntentPickerWithApps() {
 void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
     const GURL& url,
     IntentPickerAppsCallback apps_callback) {
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
   std::vector<apps::IntentPickerAppInfo> apps;
   base::flat_map<webapps::AppId, std::string> all_controlling_apps =
       provider_->registrar_unsafe().GetAllAppsControllingUrl(url);
@@ -97,6 +101,8 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
 
 bool WebAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
     const webapps::AppId& app_id) {
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
   return provider_->registrar_unsafe().CapturesLinksInScope(app_id);
 }
 
@@ -105,6 +111,8 @@ void WebAppsIntentPickerDelegate::LoadSingleAppIcon(
     const std::string& app_id,
     int size_in_dep,
     IconLoadedCallback icon_loaded_callback) {
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
   CHECK(entry_type == PickerEntryType::kWeb ||
         entry_type == PickerEntryType::kMacOs);
 
@@ -170,6 +178,8 @@ bool WebAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     PickerEntryType entry_type) {
   CHECK(entry_type == PickerEntryType::kWeb ||
         entry_type == PickerEntryType::kMacOs);
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
   if (!features::ShouldShowLinkCapturingUX()) {
     return false;
   }
@@ -233,6 +243,8 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
                                             PickerEntryType entry_type) {
   CHECK(entry_type == apps::PickerEntryType::kWeb ||
         entry_type == apps::PickerEntryType::kMacOs);
+  CHECK(ShouldShowIntentPickerWithApps());
+  CHECK(provider_);
   if (entry_type == apps::PickerEntryType::kWeb) {
     // Note: This call can destroy the current web contents synchronously,
     // which will destroy this object.

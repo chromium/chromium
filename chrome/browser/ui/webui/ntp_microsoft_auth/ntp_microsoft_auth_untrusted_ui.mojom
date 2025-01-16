@@ -5,12 +5,29 @@
 module new_tab_page.mojom;
 
 import "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+struct AccessToken {
+  string token;
+  mojo_base.mojom.Time expiration;
+};
 
 // Factory interface to create parent/child communication interfaces.
 interface MicrosoftAuthUntrustedDocumentInterfacesFactory {
   // Passes the chrome-untrusted:// frame's remote to the embedding
-  // chrome:// parent frame to establish communication.
+  // chrome:// parent frame to establish communication when the Microsoft
+  // Authentication Library is initialized.
   ConnectToParentDocument(
     pending_remote<MicrosoftAuthUntrustedDocument> child_document
   );
+
+  // Passes the chrome-untrusted:// frame's receiver to create a page handler
+  // when the Microsoft Authentication Library is initialized.
+  CreatePageHandler(pending_receiver<MicrosoftAuthUntrustedPageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI document.
+interface MicrosoftAuthUntrustedPageHandler {
+  // Sets Microsoft API access token in the browser-side.
+  SetAccessToken(AccessToken access_token);
 };

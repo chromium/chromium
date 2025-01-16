@@ -100,25 +100,38 @@ config("skia_config") {
     }
   }
 
-  if (is_android) {
+  # `SK_GAMMA_EXPONENT` and `SK_GAMMA_CONTRAST` are settings for text
+  # blitting, chosen to approximate the system browser.
+  if (is_linux || is_chromeos) {
+    defines += [
+      "SK_GAMMA_EXPONENT=1.2",
+      "SK_GAMMA_CONTRAST=0.2",
+    ]
+  } else if (is_android) {
     defines += [
       "SK_BUILD_FOR_ANDROID",
       "USE_CHROMIUM_SKIA",
+      "SK_GAMMA_APPLY_TO_A8",
+      "SK_GAMMA_EXPONENT=1.4",
+      "SK_GAMMA_CONTRAST=0.0",
     ]
-  }
-
-  if (is_mac) {
-    defines += [ "SK_BUILD_FOR_MAC" ]
-  }
-  if (is_ios) {
+  } else if (is_mac) {
+    defines += [
+      "SK_BUILD_FOR_MAC",
+      "SK_GAMMA_SRGB",
+      "SK_GAMMA_CONTRAST=0.0",
+    ]
+  } else if (is_ios) {
     defines += [ "SK_BUILD_FOR_IOS" ]
     if (ios_is_app_extension) {
       defines += [ "SK_BUILD_FOR_IOS_APP_EXTENSION" ]
     }
-  }
-
-  if (is_win) {
-    defines += [ "GR_GL_FUNCTION_TYPE=__stdcall" ]
+  } else if (is_win) {
+    defines += [
+      "GR_GL_FUNCTION_TYPE=__stdcall",
+      "SK_GAMMA_SRGB",
+      "SK_GAMMA_CONTRAST=0.5",
+    ]
   }
 
   if (skia_support_gpu) {
@@ -186,30 +199,6 @@ config("skia_library_config") {
     } else if (arm_optionally_use_neon) {
       defines += [ "SK_ARM_HAS_OPTIONAL_NEON" ]
     }
-  }
-
-  # Settings for text blitting, chosen to approximate the system browser.
-  if (is_linux || is_chromeos) {
-    defines += [
-      "SK_GAMMA_EXPONENT=1.2",
-      "SK_GAMMA_CONTRAST=0.2",
-    ]
-  } else if (is_android) {
-    defines += [
-      "SK_GAMMA_APPLY_TO_A8",
-      "SK_GAMMA_EXPONENT=1.4",
-      "SK_GAMMA_CONTRAST=0.0",
-    ]
-  } else if (is_win) {
-    defines += [
-      "SK_GAMMA_SRGB",
-      "SK_GAMMA_CONTRAST=0.5",
-    ]
-  } else if (is_mac) {
-    defines += [
-      "SK_GAMMA_SRGB",
-      "SK_GAMMA_CONTRAST=0.0",
-    ]
   }
 
   if (is_android) {

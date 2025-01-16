@@ -729,6 +729,9 @@ extern const char kDevicePostureDescription[];
     BUILDFLAG(IS_CHROMEOS)
 extern const char kDocumentPictureInPictureAnimateResizeName[];
 extern const char kDocumentPictureInPictureAnimateResizeDescription[];
+
+extern const char kAudioDuckingName[];
+extern const char kAudioDuckingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -2252,6 +2255,9 @@ extern const char kVideoPictureInPictureControlsUpdate2024Description[];
 
 extern const char kViewportSegmentsName[];
 extern const char kViewportSegmentsDescription[];
+
+extern const char kVisitedURLRankingServiceDeduplicationName[];
+extern const char kVisitedURLRankingServiceDeduplicationDescription[];
 
 extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
 extern const char

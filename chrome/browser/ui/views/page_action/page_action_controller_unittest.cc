@@ -31,15 +31,14 @@ const std::u16string kTooltip = u"Tooltip";
 using ::actions::ActionItem;
 
 using TestPageActionModelObservation =
-    ::base::ScopedObservation<PageActionModelInterface,
-                              PageActionModelObserver>;
+    ::base::ScopedObservation<PageActionModel, PageActionModelObserver>;
 
 class PageActionTestObserver : public PageActionModelObserver {
  public:
   PageActionTestObserver() = default;
   ~PageActionTestObserver() override = default;
 
-  void OnPageActionModelChanged(PageActionModelInterface* model) override {
+  void OnPageActionModelChanged(PageActionModel* model) override {
     ++model_change_count_;
 
     visible_ = model->GetVisible();

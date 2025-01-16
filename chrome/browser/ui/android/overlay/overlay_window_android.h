@@ -38,7 +38,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const base::android::JavaParamRef<jobject>& token,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jwindow_android);
-  void Destroy(JNIEnv* env);
+  void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
   void PreviousTrack(JNIEnv* env);

@@ -236,6 +236,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3130],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/crostini_upgrader/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [3135],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/desk_api/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [3140],

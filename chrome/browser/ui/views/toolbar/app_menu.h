@@ -104,10 +104,6 @@ class AppMenu final : public views::MenuDelegate,
 
   // bookmarks::BaseBookmarkModelObserver overrides:
   void BookmarkModelChanged() override;
-  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
-                         size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
-                         size_t new_index) override;
 
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;

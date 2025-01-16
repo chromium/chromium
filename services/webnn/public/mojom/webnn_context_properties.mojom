@@ -195,5 +195,7 @@ struct DataTypeLimits {
 struct ContextProperties {
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  // All tensors in graph will not exceed the byte length limit.
+  uint64 tensor_byte_length_limit;
   DataTypeLimits data_type_limits;
 };

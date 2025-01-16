@@ -82,14 +82,18 @@ class WebAppRunOnOsLoginManager;
 class WebAppProvider : public KeyedService {
  public:
   // Deprecated: Use GetForWebApps instead.
-  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
-  // profiles where `AreWebAppsEnabled` returns `false`.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
-  // This always returns a WebAppProvider, even if this is in an incognito
-  // profile (it gets the one from the parent).
+  // This returns a WebAppProvider for the given `profile`, or `nullptr` if
+  // installed web apps are not supported on the given `profile`. Use
+  // `web_app::AreWebAppsEnabled` to determine if web apps are supported on a
+  // profile.
+  // Note: On ChromeOS, to support the system web app implementation, this also
+  // considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
+  // returns `false` for `profile`.
   // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
-  // profiles where `AreWebAppsEnabled` returns `false`.
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
   // Returns the WebAppProvider for the current process. In particular:
@@ -102,18 +106,24 @@ class WebAppProvider : public KeyedService {
   // use this if the calling code is shared between Ash and Lacros and expects
   // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
   // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
-  // profiles where `AreWebAppsEnabled` returns `false`.
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running
   // in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  // This returns  `nullptr` if installed web apps are not supported on the
+  // given `profile`. Use `web_app::AreWebAppsEnabled` to determine if web apps
+  // are supported on a profile.
+  // Note: On ChromeOS, to support the system web app implementation, this also
+  // considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
+  // returns `false` for `profile`.
   // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
-  // profiles where `AreWebAppsEnabled` returns `false`.
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForTest(Profile* profile);
 
-  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
-  // profiles where `AreWebAppsEnabled` returns `false` for the web content's
-  // browser.
+  // See `GetForWebApps` above for when this returns `nullptr`.
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
   using OsIntegrationManagerFactory =

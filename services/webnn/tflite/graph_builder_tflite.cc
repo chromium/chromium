@@ -417,8 +417,13 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
       OperandDataType::kInt8,    OperandDataType::kUint8,
       OperandDataType::kInt4};
 
+  // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
+  static constexpr uint64_t kTensorByteLengthLimit =
+      std::numeric_limits<int32_t>::max();
+
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
+      /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kAllDataTypesExceptUint4,
        /*constant=*/kAllDataTypesExceptUint4,
        /*arg_min_max_input=*/kFloat16To32AndInt8To32AndUint8,
@@ -618,8 +623,7 @@ GraphBuilderTflite::SerializeOperand(
   // The buffer index 0 represents input and output operand because there is no
   // data buffer associated.
   uint32_t buffer_index = 0;
-  const mojom::Operand& operand =
-      *graph_info_->id_to_operand_map.at(operand_id);
+  const mojom::Operand& operand = GetOperand(operand_id);
   if (operand.kind == mojom::Operand::Kind::kConstant) {
     // Serialize buffer and return buffer index which starts from 1, it is
     // used to create the constant's tensor.

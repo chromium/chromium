@@ -673,6 +673,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.InnerText.TotalLatency" units="ms"
+    expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the latency of InnerText extracted from 1 WebContents instance. The
+    metric is only recorded when the extraction is triggered by
+    PageContentAnnotationsService. Recorded once per extraction.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.InnerText.TotalSize" units="KB"
+    expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the size of InnerText extracted from 1 WebContents instance. The
+    metric is only recorded when the extraction is triggered by
+    PageContentAnnotationsService. Recorded once per extraction.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.IsPredictionModelValid.{OptimizationTarget}"
     enum="BooleanValid" expires_after="2025-06-08">
   <owner>mcrouse@chromium.org</owner>

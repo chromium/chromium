@@ -345,14 +345,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
             test_provider->registrar_unsafe().GetInstallState(app_id));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // This waits until ExternallyManagedAppManager::SynchronizeInstalledApps()
-  // has finished running, hence we know that for guest mode, the app was not
-  // installed.
   Profile* guest_profile = CreateGuestBrowser()->profile();
-  WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
-  DCHECK(guest_provider);
-  test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
-  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_FALSE(WebAppProvider::GetForTest(guest_profile));
 #endif
 }
 

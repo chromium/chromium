@@ -32,12 +32,6 @@ void FakeDocumentScanAsh::GetScannerNames(GetScannerNamesCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void FakeDocumentScanAsh::ScanFirstPage(const std::string& scanner_name,
-                                        ScanFirstPageCallback callback) {
-  // Implementation removed because it isn't used by the extension API.
-  NOTIMPLEMENTED();
-}
-
 void FakeDocumentScanAsh::GetScannerList(
     const std::string& client_id,
     crosapi::mojom::ScannerEnumFilterPtr filter,

@@ -63,19 +63,8 @@ TensorImplCoreml::Create(
         mojom::Error::Code::kNotSupportedError, "Tensor rank is too large."));
   }
 
-  // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
-  //
-  // TODO(crbug.com/356670455): Consider relaxing this restriction, especially
-  // if partial reads and writes of an MLTensor are supported.
-  //
-  // TODO(crbug.com/356670455): Consider moving this check to the renderer and
-  // throwing a TypeError.
-  if (!base::IsValueInRangeForNumericType<int>(
-          tensor_info->descriptor.PackedByteLength())) {
-    LOG(ERROR) << "[WebNN] Tensor is too large to create.";
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Tensor is too large to create."));
-  }
+  CHECK(base::IsValueInRangeForNumericType<int>(
+      tensor_info->descriptor.PackedByteLength()));
 
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
   if (tensor_info->descriptor.shape().empty()) {

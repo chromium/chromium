@@ -2825,6 +2825,10 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
 
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    const size_t byte_length = operand->descriptor.PackedByteLength();
+    if (byte_length > context_properties.tensor_byte_length_limit) {
+      return std::nullopt;
+    }
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {

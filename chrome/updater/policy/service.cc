@@ -50,25 +50,20 @@ PolicyService::PolicyManagers::PolicyManagers(
   InitializeManagersVector();
 }
 
-PolicyService::PolicyManagers::PolicyManagers(
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers)
-    : managers_(std::move(managers)) {
-  SortManagersVector();
-}
-
 PolicyService::PolicyManagers::~PolicyManagers() = default;
 
 void PolicyService::PolicyManagers::CreateManagers(
     scoped_refptr<ExternalConstants> external_constants) {
+  default_policy_manager_ = GetDefaultValuesPolicyManager();
+  if (!external_constants) {
+    return;
+  }
   dm_policy_manager_ =
       CreateDMPolicyManager(external_constants->IsMachineManaged());
   external_constants_policy_manager_ =
-      external_constants ? base::MakeRefCounted<PolicyManager>(
-                               external_constants->GroupPolicies())
-                         : nullptr;
+      base::MakeRefCounted<PolicyManager>(external_constants->GroupPolicies());
   platform_policy_manager_ =
       CreatePlatformPolicyManager(external_constants->IsMachineManaged());
-  default_policy_manager_ = GetDefaultValuesPolicyManager();
 }
 
 // The order of the policy managers:
@@ -145,12 +140,11 @@ void PolicyService::PolicyManagers::ResetDeviceManagementManager(
   InitializeManagersVector();
 }
 
-PolicyService::PolicyService(
-    std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-    scoped_refptr<PersistedData> persisted_data)
-    : policy_managers_(std::move(managers)),
-      persisted_data_(persisted_data),
-      is_ceca_experiment_enabled_(false) {}
+void PolicyService::PolicyManagers::SetManagersForTesting(
+    std::vector<scoped_refptr<PolicyManagerInterface>> managers) {
+  managers_ = std::move(managers);
+  SortManagersVector();
+}
 
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,

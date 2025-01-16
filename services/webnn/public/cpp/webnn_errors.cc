@@ -130,11 +130,23 @@ std::string NotSupportedMLTensorTypeError(OperandDataType type,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedTensorSizeError(uint64_t byte_length,
+                                        uint64_t size_limit) {
+  return base::StrCat({"The tensor size ", base::NumberToString(byte_length),
+                       " exceeds the size limit ",
+                       base::NumberToString(size_limit)});
+}
+
 std::string GetErrorLabelPrefix(std::string_view label) {
   if (label.empty()) {
     return "";
   }
   return base::StrCat({"[", label, "] "});
+}
+
+std::string ErrorWithLabel(std::string_view label,
+                           std::string_view error_message) {
+  return base::StrCat({GetErrorLabelPrefix(label), error_message});
 }
 
 }  // namespace webnn

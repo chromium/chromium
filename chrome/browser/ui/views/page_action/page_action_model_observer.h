@@ -9,16 +9,15 @@
 
 namespace page_actions {
 
-class PageActionModelInterface;
+class PageActionModel;
 
 // PageActionModelObserver observes events on a PageActionModel.
 class PageActionModelObserver : public base::CheckedObserver {
  public:
   // Invoked when the model's state changes.
-  virtual void OnPageActionModelChanged(PageActionModelInterface* model) {}
+  virtual void OnPageActionModelChanged(PageActionModel* model) {}
   // Invoked when the model is being deleted.
-  virtual void OnPageActionModelWillBeDeleted(PageActionModelInterface* model) {
-  }
+  virtual void OnPageActionModelWillBeDeleted(PageActionModel* model) {}
 };
 
 }  // namespace page_actions

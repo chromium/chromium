@@ -83,9 +83,19 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
   void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // DialogBrowserTest:
@@ -607,12 +617,21 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 //   --ui=GPMPasskeysAuthenticatorDialogTest.InvokeUi_${test_name}
 //
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
-class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
+class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         "user@example.com", signin::ConsentLevel::kSync);
+  }
+
+  void TearDownOnMainThread() override {
+    if (controller_) {
+      // Close the dialog before the entire browser is torn down.
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   // AuthenticatorDialogTest:

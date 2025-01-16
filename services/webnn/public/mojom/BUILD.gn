@@ -115,6 +115,7 @@ source_set("tests") {
     ":webnn_mojom_traits",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//services/webnn:tests",
     "//testing/gtest",
   ]
 }

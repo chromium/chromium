@@ -88,8 +88,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
    public:
     explicit PolicyManagers(
         scoped_refptr<ExternalConstants> external_constants);
-    explicit PolicyManagers(
-        std::vector<scoped_refptr<PolicyManagerInterface>> managers);
     ~PolicyManagers();
 
     void ResetDeviceManagementManager(
@@ -98,6 +96,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
     std::vector<scoped_refptr<PolicyManagerInterface>> managers() const {
       return managers_;
     }
+
+    void SetManagersForTesting(
+        std::vector<scoped_refptr<PolicyManagerInterface>> managers);
 
    private:
     void CreateManagers(scoped_refptr<ExternalConstants> external_constants);
@@ -113,8 +114,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
     scoped_refptr<PolicyManagerInterface> default_policy_manager_;
   };
 
-  PolicyService(std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-                scoped_refptr<PersistedData> persisted_data);
   PolicyService(scoped_refptr<ExternalConstants> external_constants,
                 scoped_refptr<PersistedData> persisted_data,
                 bool is_ceca_experiment_enabled);
@@ -228,6 +227,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   base::OnceCallback<void(int)> fetch_policies_callback_;
   scoped_refptr<PersistedData> persisted_data_;
   const bool is_ceca_experiment_enabled_;
+
+  friend class PolicyServiceTest;
 };
 
 // Decouples the proxy configuration from `PolicyService`.

@@ -239,8 +239,8 @@ void ProxyImpl::SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect) {
   SetNeedsRedrawOnImplThread();
 }
 
-void ProxyImpl::SetNeedsCommitOnImpl() {
-  SetNeedsCommitOnImplThread();
+void ProxyImpl::SetNeedsCommitOnImpl(bool urgent) {
+  SetNeedsCommitOnImplThread(urgent);
 }
 
 void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
@@ -413,7 +413,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // ApplyCompositorChanges. This means we are guaranteed to run another main
   // frame after FCP, which is good because there may be hover effects to apply.
   if (!scroll_and_viewport_changes_synced)
-    scheduler_->SetNeedsBeginMainFrame();
+    scheduler_->SetNeedsBeginMainFrame(false);
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -488,10 +488,10 @@ void ProxyImpl::SetNeedsPrepareTilesOnImplThread() {
   scheduler_->SetNeedsPrepareTiles();
 }
 
-void ProxyImpl::SetNeedsCommitOnImplThread() {
+void ProxyImpl::SetNeedsCommitOnImplThread(bool urgent) {
   TRACE_EVENT0("cc", "ProxyImpl::SetNeedsCommitOnImplThread");
   DCHECK(IsImplThread());
-  scheduler_->SetNeedsBeginMainFrame();
+  scheduler_->SetNeedsBeginMainFrame(urgent);
 }
 
 void ProxyImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
@@ -622,7 +622,7 @@ void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
         base::BindOnce(&ProxyMain::NotifyImageDecodeRequestFinished,
                        proxy_main_weak_ptr_, request_id, decode_succeeded));
   } else {
-    SetNeedsCommitOnImplThread();
+    SetNeedsCommitOnImplThread(/* urgent= */ false);
   }
 }
 

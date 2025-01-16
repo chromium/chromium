@@ -271,7 +271,13 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates that a new begin main frame flow needs to be performed, either
   // to pull updates from the main thread to the impl, or to push deltas from
   // the impl thread to main.
-  void SetNeedsBeginMainFrame();
+  //
+  // If `now` is true, then the BeginMainFrame() update is not throttled, and
+  // the next BeginMainFrame() will be sent at the next opportunity, regardless
+  // of the interval since the last one. This is to be used in cases where
+  // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
+  // that should not wait more than necessary.
+  void SetNeedsBeginMainFrame(bool now = false);
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   void SetMainThreadWantsBeginMainFrameNotExpectedMessages(bool new_state);

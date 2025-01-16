@@ -909,6 +909,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 }
 
 MLOperand* BuildElementWiseBinary(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
     blink_mojom::ElementWiseBinary::Kind kind,
     const webnn::SupportedTensors& tensor_constraint,
@@ -954,7 +955,8 @@ MLOperand* BuildElementWiseBinary(
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(data_type, *output_shape));
+      webnn::OperandDescriptor::Create(context_properties, data_type,
+                                       *output_shape, label));
 
   auto* binary = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/blink_mojom::Operation::Tag::kElementWiseBinary,
@@ -1655,7 +1657,8 @@ MLOperand* MLGraphBuilder::input(ScriptState* script_state,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   auto input_operand = MLOperand::ValidateAndCreateInput(
-      this, desc->dataType().AsEnum(), desc->shape(), std::move(name));
+      ml_context_->GetProperties(), this, desc->dataType().AsEnum(),
+      desc->shape(), std::move(name));
   if (!input_operand.has_value()) {
     exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
@@ -1684,7 +1687,9 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor descriptor,
       webnn::OperandDescriptor::Create(
-          FromBlinkDataType(desc->dataType().AsEnum()), desc->shape()));
+          ml_context_->GetProperties(),
+          FromBlinkDataType(desc->dataType().AsEnum()), desc->shape(),
+          webnn::GetErrorLabelPrefix("constant")));
 
   if (buffer->IsArrayBufferViewAllowShared()) {
     if (GetArrayBufferViewType(descriptor.data_type()) !=
@@ -1939,7 +1944,8 @@ MLOperand* MLGraphBuilder::cumulativeSum(MLOperand* input,
     THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);          \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);          \
     return BuildElementWiseBinary(                                            \
-        this, blink_mojom::ElementWiseBinary::Kind::op_kind,                  \
+        ml_context_->GetProperties(), this,                                   \
+        blink_mojom::ElementWiseBinary::Kind::op_kind,                        \
         ml_context_->GetProperties().data_type_limits.op_snake##_input, a, b, \
         options, exception_state);                                            \
   }
@@ -2033,7 +2039,8 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(cast_data_type, input->Shape()));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       cast_data_type, input->Shape(), label));
 
   auto* cast = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kElementWiseUnary, options,
@@ -2137,7 +2144,9 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(input->DataType(), *output_shape));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       input->DataType(), *output_shape,
+                                       label));
 
   auto* expand = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kExpand, options);
@@ -2836,9 +2845,12 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
     return nullptr;
   }
 
+  // The output tensor byte length is valid because the data type and element
+  // count are the same as input.
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(input->DataType(), output_shape));
+      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
+                                       input->DataType(), output_shape, label));
 
   auto* reshape = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kReshape, options);

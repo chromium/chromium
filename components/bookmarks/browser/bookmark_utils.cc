@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -235,13 +236,17 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-RecentlyUsedFolders::RecentlyUsedFolders() = default;
-RecentlyUsedFolders::RecentlyUsedFolders(const RecentlyUsedFolders&) = default;
-RecentlyUsedFolders& RecentlyUsedFolders::operator=(
-    const RecentlyUsedFolders&) = default;
-RecentlyUsedFolders::~RecentlyUsedFolders() = default;
+BookmarkNodesSplitByAccountAndLocal::BookmarkNodesSplitByAccountAndLocal() =
+    default;
+BookmarkNodesSplitByAccountAndLocal::BookmarkNodesSplitByAccountAndLocal(
+    const BookmarkNodesSplitByAccountAndLocal&) = default;
+BookmarkNodesSplitByAccountAndLocal&
+BookmarkNodesSplitByAccountAndLocal::operator=(
+    const BookmarkNodesSplitByAccountAndLocal&) = default;
+BookmarkNodesSplitByAccountAndLocal::~BookmarkNodesSplitByAccountAndLocal() =
+    default;
 
-RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
+BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
     BookmarkModel* model,
     const BookmarkNode* displayed_node) {
   // `displayed_node` is meant to be a bookmark. Code below is not tested for
@@ -310,7 +315,7 @@ RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
                    permanent_nodes_included.end());
 
   // Split between account and local nodes if there are account nodes.
-  RecentlyUsedFolders result;
+  BookmarkNodesSplitByAccountAndLocal result;
   if (account_nodes_exist) {
     std::vector<const BookmarkNode*> account_nodes;
     std::vector<const BookmarkNode*> local_nodes;
@@ -324,6 +329,42 @@ RecentlyUsedFolders GetMostRecentlyUsedFoldersForDisplay(
   }
   return result;
 }
+
+BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
+    const BookmarkModel* model) {
+  BookmarkNodesSplitByAccountAndLocal permanent_nodes;
+  const bool account_nodes_exists = model->account_bookmark_bar_node();
+  if (account_nodes_exists) {
+    for (const BookmarkNode* node :
+         {model->account_bookmark_bar_node(), model->account_other_node(),
+          model->account_mobile_node()}) {
+      if (!bookmarks::PruneFoldersForDisplay(model, node)) {
+        permanent_nodes.account_nodes.push_back(node);
+      }
+    }
+    // Show only account nodes if we have no local/syncable bookmarks.
+    if (!HasLocalOrSyncableBookmarks(model)) {
+      return permanent_nodes;
+    }
+  }
+
+  for (const BookmarkNode* node : {model->bookmark_bar_node(),
+                                   model->other_node(), model->mobile_node()}) {
+    if (!bookmarks::PruneFoldersForDisplay(model, node)) {
+      permanent_nodes.local_nodes.push_back(node);
+    }
+  }
+
+  return permanent_nodes;
+}
+
+bool HasLocalOrSyncableBookmarks(const BookmarkModel* model) {
+  return base::ranges::any_of(
+      std::array{model->bookmark_bar_node(), model->other_node(),
+                 model->mobile_node()},
+      [](const BookmarkNode* node) { return !node->children().empty(); });
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void GetMostRecentlyAddedEntries(BookmarkModel* model,

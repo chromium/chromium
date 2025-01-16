@@ -1508,6 +1508,15 @@ BASE_FEATURE(kMediaPowerExperiment,
              "MediaPowerExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables audio ducking.
+BASE_FEATURE(kAudioDucking, "AudioDucking", base::FEATURE_ENABLED_BY_DEFAULT);
+// 0 = no attenuation
+// 100 = fully muted
+const base::FeatureParam<int> kAudioDuckingAttenuation{&kAudioDucking,
+                                                       "attenuation", 80};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Enables flash to be ducked by audio focus. This is enabled on Chrome OS which
 // has audio focus enabled.
 BASE_FEATURE(kAudioFocusDuckFlash,

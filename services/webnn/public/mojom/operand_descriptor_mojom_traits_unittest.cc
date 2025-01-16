@@ -12,6 +12,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/tensor_usage_mojom_traits.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -26,8 +27,8 @@ webnn::OperandDescriptor CreateInvalidOperandDescriptor() {
 }  // namespace
 
 TEST(OperandDescriptorMojomTraitsTest, Basic) {
-  auto input = webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt32,
-                                                std::array<uint32_t, 2>{2, 3});
+  auto input = webnn::OperandDescriptor::CreateForDeserialization(
+      webnn::OperandDataType::kInt32, std::array<uint32_t, 2>{2, 3});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -38,8 +39,8 @@ TEST(OperandDescriptorMojomTraitsTest, Basic) {
 }
 
 TEST(OperandDescriptorMojomTraitsTest, Int4) {
-  auto input = webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt4,
-                                                std::array<uint32_t, 2>{3, 3});
+  auto input = webnn::OperandDescriptor::CreateForDeserialization(
+      webnn::OperandDataType::kInt4, std::array<uint32_t, 2>{3, 3});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -54,8 +55,8 @@ TEST(OperandDescriptorMojomTraitsTest, Int4) {
 
 TEST(OperandDescriptorMojomTraitsTest, EmptyShape) {
   // Descriptors with an empty shape are treated as scalars.
-  auto input =
-      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt32, {});
+  auto input = webnn::OperandDescriptor::CreateForDeserialization(
+      webnn::OperandDataType::kInt32, {});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -71,9 +72,9 @@ TEST(OperandDescriptorMojomTraitsTest, ZeroDimension) {
   // Descriptors with a zero-length dimension are not supported.
   const std::array<uint32_t, 3> shape{2, 0, 3};
 
-  ASSERT_FALSE(
-      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt32, shape)
-          .has_value());
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt32, shape)
+                   .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
       webnn::OperandDataType::kInt32, shape);
@@ -90,9 +91,9 @@ TEST(OperandDescriptorMojomTraitsTest, NumberOfElementsTooLarge) {
 
   // Using int4 so that the byte length won't overflow the max size_t on 64-bit
   // platforms.
-  ASSERT_FALSE(
-      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt4, shape)
-          .has_value());
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt4, shape)
+                   .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
       webnn::OperandDataType::kInt4, shape);
@@ -108,9 +109,9 @@ TEST(OperandDescriptorMojomTraitsTest, ByteLengthTooLarge) {
                                       std::numeric_limits<uint32_t>::max()};
 
   // The byte length overflows the max size_t on all platforms.
-  ASSERT_FALSE(
-      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt64, shape)
-          .has_value());
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt64, shape)
+                   .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
       webnn::OperandDataType::kInt64, shape);
@@ -118,6 +119,29 @@ TEST(OperandDescriptorMojomTraitsTest, ByteLengthTooLarge) {
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
           input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, ByteLengthExceedTensorSizeLimit) {
+  // The large tensor out of byte length limit can be created, serialized and
+  // deserialized with `OperandDescriptor::CreateForDeserialization` but not
+  // `OperandDescriptor::Create`
+  const std::array<uint32_t, 2> shape = {
+      base::checked_cast<uint32_t>(std::numeric_limits<int32_t>::max() / 4), 2};
+
+  auto input = webnn::OperandDescriptor::CreateForDeserialization(
+      webnn::OperandDataType::kInt32, shape);
+  ASSERT_TRUE(input.has_value());
+
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          *input, output));
+  EXPECT_EQ(input, output);
+
+  ASSERT_FALSE(webnn::OperandDescriptor::Create(
+                   webnn::GetContextPropertiesForTesting(),
+                   webnn::OperandDataType::kInt32, shape, /*label=*/"clamp")
+                   .has_value());
 }
 
 TEST(OperandDescriptorMojomTraitsTest, DataType) {

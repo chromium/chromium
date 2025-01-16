@@ -30,11 +30,6 @@ namespace webnn {
 
 namespace {
 
-std::string ErrorWithLabel(std::string_view label,
-                           std::string_view error_message) {
-  return base::StrCat({GetErrorLabelPrefix(label), error_message});
-}
-
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 // Return the calculated output size if no error.
@@ -223,6 +218,7 @@ ValidateAndGetConv2dInputInfo(const std::string& label,
 // create output operand given input operand, attributes and output info.
 base::expected<OperandDescriptor, std::string>
 ValidateConv2dBiasAndCreateOutputOperand(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     const Conv2dAttributesBase& attributes,
     const Conv2dInputOutputInfo& output_info) {
@@ -259,7 +255,8 @@ ValidateConv2dBiasAndCreateOutputOperand(
       break;
   }
 
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 // Validate the axes and infer output for reduce operations.
@@ -363,7 +360,9 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
                    ValidateReduceAxesAndInferOutput(
                        input.shape(), std::array<uint32_t, 1>{axis},
                        keep_dimensions, label));
-  return OperandDescriptor::Create(output_data_type, output_shape);
+
+  return OperandDescriptor::Create(context_properties, output_data_type,
+                                   output_shape, label);
 }
 
 base::expected<std::vector<OperandDescriptor>, std::string>
@@ -409,8 +408,8 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
       // Each Operand will have the same new_dimensions shape.
       std::vector<uint32_t> new_dimensions = input.shape();
       new_dimensions[attributes.axis] /= splits;
-      auto split_descriptor =
-          OperandDescriptor::Create(input.data_type(), new_dimensions);
+      auto split_descriptor = OperandDescriptor::Create(
+          context_properties, input.data_type(), new_dimensions, label);
       // `split_descriptor` should always be valid, since it's a subset of the
       // input.
       CHECK(split_descriptor.has_value());
@@ -439,8 +438,8 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
     for (uint32_t split : splits) {
       std::vector<uint32_t> new_dimensions = input.shape();
       new_dimensions[attributes.axis] = split;
-      auto split_descriptor =
-          OperandDescriptor::Create(input.data_type(), new_dimensions);
+      auto split_descriptor = OperandDescriptor::Create(
+          context_properties, input.data_type(), new_dimensions, label);
       // `split_descriptor` should always be valid, since it's a subset of the
       // input.
       CHECK(split_descriptor.has_value());
@@ -666,8 +665,8 @@ base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
                                     .channels = output_channels,
                                     .height = output_height,
                                     .width = output_width};
-  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
-                                                  output_info);
+  return ValidateConv2dBiasAndCreateOutputOperand(context_properties, input,
+                                                  attributes, output_info);
 }
 
 ConvTranspose2dAttributes::ConvTranspose2dAttributes() = default;
@@ -816,8 +815,8 @@ ValidateConvTranspose2dAndInferOutput(
                                     .channels = output_channels,
                                     .height = output_height,
                                     .width = output_width};
-  return ValidateConv2dBiasAndCreateOutputOperand(input, attributes,
-                                                  output_info);
+  return ValidateConv2dBiasAndCreateOutputOperand(context_properties, input,
+                                                  attributes, output_info);
 }
 
 base::expected<OperandDescriptor, std::string>
@@ -847,7 +846,7 @@ ValidateCumulativeSumAndInferOutput(const ContextProperties& context_properties,
   }
 
   // The data type and shape of input determine the output.
-  return OperandDescriptor::Create(input.data_type(), input.shape());
+  return input;
 }
 
 // This helper method is intended to validate scale and zero_point
@@ -919,7 +918,8 @@ ValidateDequantizeLinearAndInferOutput(
   }
 
   // The data type of scale determines the output type.
-  return OperandDescriptor::Create(scale.data_type(), input.shape());
+  return OperandDescriptor::Create(context_properties, scale.data_type(),
+                                   input.shape(), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
@@ -970,7 +970,8 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
     }
   }
 
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
@@ -1043,7 +1044,9 @@ base::expected<OperandDescriptor, std::string> ValidateMatmulAndInferOutput(
     output_dimensions[output_rank - 1] = b_cols;
   }
   CHECK_EQ(output_rank, output_dimensions.size());
-  return OperandDescriptor::Create(a.data_type(), output_dimensions);
+
+  return OperandDescriptor::Create(context_properties, a.data_type(),
+                                   output_dimensions, label);
 }
 
 Pool2dAttributes::Pool2dAttributes() = default;
@@ -1191,7 +1194,9 @@ base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
                       input_channels};
       break;
   }
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 // The current WebNN spec doesn't define the calculation formula of the output
@@ -1293,7 +1298,8 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
     NOTREACHED();
   }
 
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
@@ -1311,7 +1317,7 @@ base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
                    context_properties.data_type_limits.reverse_input)));
   }
 
-  return OperandDescriptor::Create(input.data_type(), input.shape());
+  return input;
 }
 
 base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
@@ -1366,7 +1372,8 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
     }
   }
 
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string>
@@ -1427,7 +1434,8 @@ ValidateGatherElementsAndInferOutput(
     }
   }
 
-  return OperandDescriptor::Create(input.data_type(), indices.shape());
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   indices.shape(), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
@@ -1483,7 +1491,8 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
   base::ranges::copy(input.shape().begin() + indices_last_dimension_size,
                      input.shape().end(), std::back_inserter(output_shape));
 
-  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   std::move(output_shape), label);
 }
 
 GemmAttributes::GemmAttributes() = default;
@@ -1567,7 +1576,9 @@ base::expected<OperandDescriptor, std::string> ValidateGemmAndInferOutput(
           "output tensor."));
     }
   }
-  return OperandDescriptor::Create(a.data_type(), output_shape);
+
+  return OperandDescriptor::Create(context_properties, a.data_type(),
+                                   output_shape, label);
 }
 
 GruAttributes::GruAttributes() = default;
@@ -1669,17 +1680,18 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
   }
 
   std::vector<OperandDescriptor> outputs;
-  ASSIGN_OR_RETURN(OperandDescriptor output,
-                   OperandDescriptor::Create(
-                       input.data_type(),
-                       std::array{num_directions, batch_size, hidden_size}));
+  ASSIGN_OR_RETURN(
+      OperandDescriptor output,
+      OperandDescriptor::Create(
+          context_properties, input.data_type(),
+          std::array{num_directions, batch_size, hidden_size}, label));
   outputs.push_back(std::move(output));
   if (attributes.return_sequence) {
     ASSIGN_OR_RETURN(
         OperandDescriptor return_sequence_output,
         OperandDescriptor::Create(
-            input.data_type(),
-            std::array{steps, num_directions, batch_size, hidden_size}));
+            context_properties, input.data_type(),
+            std::array{steps, num_directions, batch_size, hidden_size}, label));
     outputs.push_back(std::move(return_sequence_output));
   }
 
@@ -1773,7 +1785,8 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
   }
 
   std::array<uint32_t, 2> output_shape{batch_size, hidden_size};
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
@@ -2032,18 +2045,20 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
   }
 
   std::vector<OperandDescriptor> outputs;
-  ASSIGN_OR_RETURN(OperandDescriptor output,
-                   OperandDescriptor::Create(
-                       input.data_type(),
-                       std::array{direction_count, batch_size, hidden_size}));
+  ASSIGN_OR_RETURN(
+      OperandDescriptor output,
+      OperandDescriptor::Create(
+          context_properties, input.data_type(),
+          std::array{direction_count, batch_size, hidden_size}, label));
   outputs.push_back(output);
   outputs.push_back(std::move(output));
   if (attributes.return_sequence) {
     ASSIGN_OR_RETURN(
         OperandDescriptor return_sequence_output,
         OperandDescriptor::Create(
-            input.data_type(),
-            std::array{steps, direction_count, batch_size, hidden_size}));
+            context_properties, input.data_type(),
+            std::array{steps, direction_count, batch_size, hidden_size},
+            label));
     outputs.push_back(std::move(return_sequence_output));
   }
 
@@ -2155,9 +2170,10 @@ ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
   std::vector<OperandDescriptor> outputs;
   outputs.reserve(2);
 
-  ASSIGN_OR_RETURN(OperandDescriptor output,
-                   OperandDescriptor::Create(
-                       input.data_type(), std::array{batch_size, hidden_size}));
+  ASSIGN_OR_RETURN(
+      OperandDescriptor output,
+      OperandDescriptor::Create(context_properties, input.data_type(),
+                                std::array{batch_size, hidden_size}, label));
   outputs.push_back(output);
   outputs.push_back(std::move(output));
 
@@ -2240,7 +2256,8 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
         ErrorWithLabel(label, "The concatenated dimension size is too large."));
   }
 
-  return OperandDescriptor::Create(output_type, output_shape);
+  return OperandDescriptor::Create(context_properties, output_type,
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
@@ -2258,6 +2275,7 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     return base::unexpected(ErrorWithLabel(
         label, "The data type of slope doesn't match the data type of input."));
   }
+  // TODO(crbug.com/387892103): Use bidirectional broadcasting.
   // BroadcastShape unidirectionally broadcasts slope.dimensions to
   // input.dimensions.
   if (!BroadcastShapes(slope.shape(), input.shape(), /*bidirectional=*/false)) {
@@ -2302,7 +2320,8 @@ ValidateQuantizeLinearAndInferOutput(
             context_properties.data_type_limits.quantize_linear_zero_point)));
   }
   // The data type of zero_point determines the output type.
-  return OperandDescriptor::Create(zero_point.data_type(), input.shape());
+  return OperandDescriptor::Create(context_properties, zero_point.data_type(),
+                                   input.shape(), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
@@ -2337,7 +2356,9 @@ base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
           ErrorWithLabel(label, "The tiled dimension size is too large."));
     }
   }
-  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   std::move(output_shape), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
@@ -2365,7 +2386,8 @@ base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
   for (uint32_t i = 0; i < input.Rank(); ++i) {
     output_shape[i] = input.shape()[permutation[i]];
   }
-  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   std::move(output_shape), label);
 }
 
 SliceAttributes::SliceAttributes() = default;
@@ -2465,7 +2487,8 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
     output_shape.push_back(output_size);
   }
 
-  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   std::move(output_shape), label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
@@ -2510,7 +2533,8 @@ base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
                    ValidateReduceAxesAndInferOutput(input.shape(), axes,
                                                     keep_dimensions, label));
 
-  return OperandDescriptor::Create(input.data_type(), output_shape);
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string>
@@ -2741,8 +2765,8 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
         "The condition shape is not broadcastable to the shape broadcasted "
         "from trueValue and falseValue."));
   }
-  return OperandDescriptor::Create(true_value.data_type(),
-                                   *std::move(output_shape));
+  return OperandDescriptor::Create(context_properties, true_value.data_type(),
+                                   *std::move(output_shape), label);
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
@@ -2777,6 +2801,12 @@ base::expected<void, std::string> ValidateTensor(
   if (!context_properties.data_type_limits.input.Has(descriptor.data_type())) {
     return base::unexpected(NotSupportedMLTensorTypeError(
         descriptor.data_type(), context_properties.data_type_limits.input));
+  }
+
+  const size_t byte_length = descriptor.PackedByteLength();
+  if (byte_length > context_properties.tensor_byte_length_limit) {
+    return base::unexpected(NotSupportedTensorSizeError(
+        byte_length, context_properties.tensor_byte_length_limit));
   }
 
   return base::ok();

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_UNTRUSTED_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_MICROSOFT_AUTH_NTP_MICROSOFT_AUTH_UNTRUSTED_UI_H_
 
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
@@ -38,6 +39,9 @@ class NtpMicrosoftAuthUntrustedUI
 
  private:
   // new_tab_page::mojom::MicrosoftAuthUntrustedDocumentInterfacesFactory:
+  void CreatePageHandler(mojo::PendingReceiver<
+                         new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>
+                             handler) override;
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
           child_untrusted_document_remote) override;
@@ -45,6 +49,7 @@ class NtpMicrosoftAuthUntrustedUI
   mojo::Receiver<
       new_tab_page::mojom::MicrosoftAuthUntrustedDocumentInterfacesFactory>
       untrusted_page_factory_{this};
+  std::unique_ptr<MicrosoftAuthUntrustedPageHandler> page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

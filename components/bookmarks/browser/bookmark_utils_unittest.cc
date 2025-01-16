@@ -35,6 +35,7 @@ namespace {
 
 using base::ASCIIToUTF16;
 using std::string;
+using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 class BookmarkUtilsTest : public testing::Test,
@@ -361,7 +362,7 @@ TEST_F(BookmarkUtilsTest, GetRecentlyUsedFoldersWithOnlyLocalBookmarks) {
   const BookmarkNode* const other_bookmark =
       model->AddURL(model->other_node(), 0, title, url);
 
-  const bookmarks::RecentlyUsedFolders mru_bookmarks =
+  const bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(model.get(),
                                                       other_bookmark);
 
@@ -434,7 +435,7 @@ TEST_F(BookmarkUtilsTest, GetRecentlyUsedFoldersWithAccountBookmarks) {
   const BookmarkNode* const bookmark_in_account_other_node =
       model->AddURL(model->account_other_node(), 0, title, url);
 
-  bookmarks::RecentlyUsedFolders mru_bookmarks =
+  bookmarks::BookmarkNodesSplitByAccountAndLocal mru_bookmarks =
       bookmarks::GetMostRecentlyUsedFoldersForDisplay(
           model.get(), bookmark_in_account_other_node);
 
@@ -486,6 +487,43 @@ TEST_F(BookmarkUtilsTest, GetRecentlyUsedFoldersWithAccountBookmarks) {
       model.get(), bookmark_in_account_other_node);
   EXPECT_EQ(account_folder, mru_bookmarks.account_nodes[0]);
   EXPECT_EQ(local_folder, mru_bookmarks.local_nodes[0]);
+}
+
+TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithOnlyLocalBookmarks) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  const BookmarkNodesSplitByAccountAndLocal permanent_display_nodes =
+      GetPermanentNodesForDisplay(model.get());
+
+  EXPECT_TRUE(permanent_display_nodes.account_nodes.empty());
+  EXPECT_THAT(permanent_display_nodes.local_nodes,
+              ElementsAre(model->bookmark_bar_node(), model->other_node()));
+}
+
+TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithAccountBookmarks) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  model->CreateAccountPermanentFolders();
+  BookmarkNodesSplitByAccountAndLocal permanent_display_nodes =
+      GetPermanentNodesForDisplay(model.get());
+
+  EXPECT_FALSE(HasLocalOrSyncableBookmarks(model.get()));
+  EXPECT_TRUE(permanent_display_nodes.local_nodes.empty());
+  EXPECT_THAT(permanent_display_nodes.account_nodes,
+              ElementsAre(model->account_bookmark_bar_node(),
+                          model->account_other_node()));
+
+  // With visible local/syncable bookmarks we should display visible local
+  // permanent nodes too.
+  model->AddURL(model->other_node(), 0, u"Title", GURL("http://google.com"));
+  EXPECT_TRUE(HasLocalOrSyncableBookmarks(model.get()));
+
+  permanent_display_nodes = GetPermanentNodesForDisplay(model.get());
+  // Account nodes still showing.
+  EXPECT_THAT(permanent_display_nodes.account_nodes,
+              ElementsAre(model->account_bookmark_bar_node(),
+                          model->account_other_node()));
+  // Local nodes too.
+  EXPECT_THAT(permanent_display_nodes.local_nodes,
+              ElementsAre(model->bookmark_bar_node(), model->other_node()));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
