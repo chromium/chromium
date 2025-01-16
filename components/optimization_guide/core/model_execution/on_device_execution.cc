@@ -207,10 +207,6 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
                        input->should_ignore_input_context);
 
   logged_request->set_execution_string(input->ToString());
-  // TODO(crbug.com/302327957): Probably do some math to get the accurate number
-  // here.
-  logged_request->set_execution_num_tokens_processed(
-      opts_.token_limits.max_execute_tokens);
   LogRequest(opts_.logger.get(), *logged_request);
 
   auto options = on_device_model::mojom::InputOptions::New();
@@ -313,13 +309,18 @@ void OnDeviceExecution::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
   receiver_.reset();  // Suppress expected disconnect
 
-  proto::OnDeviceModelServiceResponse* logged_response =
-      MutableLoggedResponse();
-  LogResponseHasRepeats(feature_, logged_response->has_repeats());
+  bool has_repeats = MutableLoggedResponse()->has_repeats();
+  // TODO(holte): Make input_token_count available earlier / in more cases.
+  if (!has_repeats) {
+    MutableLoggedRequest()->set_execution_num_tokens_processed(
+        summary->input_token_count);
+  }
+
+  LogResponseHasRepeats(feature_, has_repeats);
   LogResponseCompleteTokens(feature_, num_response_tokens_);
   base::TimeDelta time_to_completion = base::TimeTicks::Now() - start_;
   LogResponseCompleteTime(feature_, time_to_completion);
-  logged_response->set_time_to_completion_millis(
+  MutableLoggedResponse()->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
 
   input_token_count_ = summary->input_token_count;

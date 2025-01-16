@@ -642,57 +642,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest,
-       ModelExecutionLoadsLongContextInChunks) {
-  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
-  Initialize({
-      .base_model = &standard_assets_.base_model,
-      .adaptations = {&compose_asset},
-  });
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-
-  session->AddContext(UserInputRequest("this is long context"));
-  task_environment_.RunUntilIdle();  // Wait for context to be processed.
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  std::vector<std::string> expected_responses = ConcatResponses({
-      "Context: ctx:this i off:0 max:10\n",
-      "Context: s lo off:10 max:4\n",
-      "Context: ng c off:14 max:4\n",
-      "Context: onte off:18 max:4\n",
-      "Input: execute:this is long contextfoo\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       ModelExecutionCancelsOptionalContext) {
-  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
-  Initialize({
-      .base_model = &standard_assets_.base_model,
-      .adaptations = {&compose_asset},
-  });
-  fake_settings_.set_execute_delay(base::Seconds(10));
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-
-  session->AddContext(UserInputRequest("this is long context"));
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  ASSERT_TRUE(response_.GetFinalStatus());
-  std::vector<std::string> expected_responses = ConcatResponses({
-      // min_context tokens are processed, but remaining context is dropped.
-      "Context: ctx:this i off:0 max:10\n",
-      "Input: execute:this is long contextfoo\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
-}
-
 // Without a base model available, sessions should fail to be created.
 TEST_F(OnDeviceModelServiceControllerTest, BaseModelToBeInstalled) {
   on_device_component_state_manager_.get()->OnStartup();
@@ -1608,37 +1557,6 @@ TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
                    "raw_output_check: unsafe_output")));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_min_tokens_for_context", "0"},
-       {"on_device_model_max_tokens_for_context", "22"},
-       {"on_device_model_context_token_chunk_size", "4"},
-       {"on_device_model_topk", "1"},
-       {"on_device_model_temperature", "0"}});
-
-  Initialize(standard_assets_);
-
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-
-  session->AddContext(UserInputRequest("context"));
-  task_environment_.RunUntilIdle();
-
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  std::vector<std::string> expected_responses = ConcatResponses({
-      "Context: ctx: off:0 max:4\n",
-      "Context: cont off:4 max:4\n",
-      "Context: ext off:8 max:4\n",
-      "Input: execute:contextfoo\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -1891,11 +1809,10 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDevice, 1);
-  const std::vector<std::string> expected_responses = ConcatResponses({
-      "Context: ctx:foo off:0 max:10\n",
-      "Input: execute:foobaz\n",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses[1]);
+  std::string expected_response =
+      ("Context: ctx:foo off:0 max:4096\n"
+       "Input: execute:foobaz\n");
+  EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_EQ(response_.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -1908,7 +1825,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
                 ->compose()
                 .response()
                 .output(),
-            "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
+            expected_response);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
@@ -1928,7 +1845,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   ASSERT_FALSE(response_.model_execution_info());
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
+TEST_F(OnDeviceModelServiceControllerTest, AddContextMultipleSessions) {
   Initialize(standard_assets_);
   auto session1 = CreateSession();
   EXPECT_TRUE(session1);
@@ -1943,11 +1860,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
   session2->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
-  const std::vector<std::string> expected_responses1 = {
-      "Context: ctx:bar off:0 max:10\n",
-      "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n",
-  };
-  EXPECT_EQ(*response_.value(), expected_responses1[1]);
+  std::string expected_response1 =
+      ("Context: ctx:bar off:0 max:4096\n"
+       "Input: execute:bar2\n");
+  EXPECT_EQ(*response_.value(), expected_response1);
   EXPECT_EQ(response_.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -1960,16 +1876,15 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
                 ->compose()
                 .response()
                 .output(),
-            "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
+            expected_response1);
 
   ResponseHolder response2;
   session1->ExecuteModel(PageUrlRequest("1"), response2.GetStreamingCallback());
   ASSERT_TRUE(response2.GetFinalStatus());
-  const std::vector<std::string> expected_responses2 = {
-      "Context: ctx:foo off:0 max:10\n",
-      "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n",
-  };
-  EXPECT_EQ(*response2.value(), expected_responses2[1]);
+  std::string expected_response2 =
+      ("Context: ctx:foo off:0 max:4096\n"
+       "Input: execute:foo1\n");
+  EXPECT_EQ(*response2.value(), expected_response2);
   EXPECT_EQ(response2.log_entry()
                 ->log_ai_data_request()
                 ->compose()
@@ -1982,7 +1897,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
                 ->compose()
                 .response()
                 .output(),
-            "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
+            expected_response2);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {

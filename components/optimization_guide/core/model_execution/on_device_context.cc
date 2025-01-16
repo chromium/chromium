@@ -55,9 +55,8 @@ OnDeviceContext::GetOrCreateSession() {
   opts_.model_client->GetModelRemote()->StartSession(
       session_.BindNewPipeAndPassReceiver());
   session_.reset_on_disconnect();
-  progress_ = Progress{};
   if (input_) {
-    AddContext(features::GetOnDeviceModelMinTokensForContext());
+    AddContext();
   }
   return session_;
 }
@@ -67,76 +66,27 @@ void OnDeviceContext::CloneSession(
     proto::OnDeviceModelServiceRequest* logged_request,
     bool ignore_context) {
   auto& session = GetOrCreateSession();
-  CancelOptionalContext();
-  if (input_) {
-    base::UmaHistogramCounts10000(
-        base::StrCat({"OptimizationGuide.ModelExecution."
-                      "OnDeviceContextTokensProcessed.",
-                      GetStringNameForModelExecutionFeature(feature_)}),
-        progress_.tokens_processed_);
-    base::UmaHistogramBoolean(
-        base::StrCat({"OptimizationGuide.ModelExecution."
-                      "OnDeviceContextFinishedProcessing.",
-                      GetStringNameForModelExecutionFeature(feature_)}),
-        progress_.finished_processing_);
-    logged_request->set_input_context_num_tokens_processed(
-        progress_.tokens_processed_);
-    logged_request
-        ->set_time_from_input_context_processed_to_request_initiated_millis(
-            (progress_.cancelled_ - progress_.start_).InMilliseconds());
-    if (!ignore_context) {
-      logged_request->set_input_context_string(OnDeviceInputToString(*input_));
-    }
+  if (input_ && !ignore_context) {
+    logged_request->set_input_context_string(OnDeviceInputToString(*input_));
   }
   session->Clone(std::move(clone));
 }
 
-void OnDeviceContext::CancelOptionalContext() {
-  if (!progress_.cancelled_.is_null()) {
-    // Already cancelled.
-    return;
-  }
-  progress_.cancelled_ = base::Time::Now();
-  if (progress_.can_cancel_) {
-    client_.reset();
-  }
-}
-
-void OnDeviceContext::AddContext(uint32_t num_tokens) {
-  progress_.expected_tokens_ = num_tokens;
-  if (num_tokens == 0) {
-    // This only happens if MinTokens is 0, and we just consider the required
-    // chunk to be trivially complete, and move on to the next chunk.
-    OnComplete(0);
-    return;
-  }
+void OnDeviceContext::AddContext() {
   auto options = on_device_model::mojom::InputOptions::New();
   options->input = input_.Clone();
-  options->max_tokens = num_tokens;
-  options->token_offset = progress_.tokens_processed_;
+  options->max_tokens = opts_.token_limits.max_context_tokens;
+  options->token_offset = 0;
   session_->AddContext(std::move(options), client_.BindNewPipeAndPassRemote());
 }
 
 void OnDeviceContext::OnComplete(uint32_t tokens_processed) {
   client_.reset();
-  progress_.tokens_processed_ += tokens_processed;
-
-  if (!progress_.cancelled_.is_null()) {
-    return;
-  }
-
-  // This means input has been fully processed.
-  if (tokens_processed < progress_.expected_tokens_) {
-    progress_.finished_processing_ = true;
-    return;
-  }
-
-  // Once the initial context is complete, we can cancel future context
-  // processing.
-  progress_.can_cancel_ = true;
-  if (progress_.tokens_processed_ < opts_.token_limits.max_context_tokens) {
-    AddContext(features::GetOnDeviceModelContextTokenChunkSize());
-  }
+  base::UmaHistogramCounts10000(
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceContextTokensProcessed.",
+                    GetStringNameForModelExecutionFeature(feature_)}),
+      tokens_processed);
 }
 
 }  // namespace optimization_guide
