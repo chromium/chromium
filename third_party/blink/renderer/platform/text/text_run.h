@@ -144,15 +144,6 @@ class PLATFORM_EXPORT TextRun final {
     return Is8Bit() ? StringView(Span8()) : StringView(Span16());
   }
 
-  UChar32 CodepointAt(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    if (Is8Bit())
-      return (*this)[i];
-    UChar32 codepoint;
-    U16_GET(Characters16(), 0, i, len_, codepoint);
-    return codepoint;
-  }
-
   UChar32 CodepointAtAndNext(unsigned& i) const {
     SECURITY_DCHECK(i < len_);
     if (Is8Bit())
