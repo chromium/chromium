@@ -227,7 +227,7 @@ bool ChromeAccountManagerService::HasIdentities() const {
 
 bool ChromeAccountManagerService::IsValidIdentity(
     id<SystemIdentity> identity) const {
-  return GetIdentityWithGaiaID(identity.gaiaID) != nil;
+  return GetIdentityWithGaiaID(GaiaId(identity.gaiaID)) != nil;
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(
@@ -236,28 +236,16 @@ bool ChromeAccountManagerService::IsEmailRestricted(
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    NSString* gaia_id) const {
+    const GaiaId& gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
-  if (!gaia_id.length) {
+  if (gaia_id.empty()) {
     return nil;
   }
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id.ToNSString()}},
       profile_name_);
-}
-
-id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    const GaiaId& gaia_id) const {
-  // Do not iterate if the gaia ID is invalid. This is duplicated here
-  // to avoid allocating a NSString unnecessarily.
-  if (gaia_id.empty()) {
-    return nil;
-  }
-
-  // Use the NSString* overload to avoid duplicating implementation.
-  return GetIdentityWithGaiaID(gaia_id.ToNSString());
 }
 
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()

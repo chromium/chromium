@@ -96,9 +96,7 @@ class ChromeAccountManagerService : public KeyedService,
   bool IsEmailRestricted(std::string_view email) const;
 
   // Returns the SystemIdentity with gaia ID equals to `gaia_id` or nil if
-  // no matching identity is found. There are two overloads to reduce the
-  // need to convert between NSString* and std::string.
-  id<SystemIdentity> GetIdentityWithGaiaID(NSString* gaia_id) const;
+  // no matching identity is found.
   id<SystemIdentity> GetIdentityWithGaiaID(const GaiaId& gaia_id) const;
 
   // Returns all SystemIdentity objects, sorted by the ordering used in the
