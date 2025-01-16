@@ -318,11 +318,18 @@ content::BrowserContext* GetBrowserContextForWebApps(
     return profile;
   }
 
+  // On ChromeOS, the system web app implementation requires that incognito
+  // profiles can be used to look up the WebAppProvider of their original
+  // profile.
+  // TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+  // where `AreWebAppsEnabled` returns `false`.
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* original_profile = profile->GetOriginalProfile();
   CHECK(original_profile);
   if (AreWebAppsEnabled(original_profile)) {
     return original_profile;
   }
+#endif
 
   return nullptr;
 }

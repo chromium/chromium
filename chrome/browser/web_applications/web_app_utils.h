@@ -65,11 +65,14 @@ bool AreWebAppsEnabled(Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 
-// Get BrowserContext to use for a WebApp KeyedService creation. If disabled for
-// the profile of the `context`, then will consider the profile's original
-// profile.
-// TODO(https://crbug.com/384063076): Stop returning for profiles where
-// `AreWebAppsEnabled` returns `false`.
+// Get BrowserContext to use for a WebApp KeyedService creation. This will
+// return a `nullptr` if `AreWebAppsEnabled` returns false for the given
+// profile of `context`.
+// Note: On ChromeOS only, if web apps are disabled for the profile of the
+// `context`, then this will consider the profile's original profile to support
+// the system web app implementation.
+// TODO(https://crbug.com/384063076): Stop returning for profiles on ChromeOS
+// where `AreWebAppsEnabled` returns `false`.
 content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context);
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
