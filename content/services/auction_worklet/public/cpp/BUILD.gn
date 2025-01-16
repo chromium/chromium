@@ -31,23 +31,12 @@ source_set("cpp") {
 static_library("test_support") {
   testonly = true
 
-  # See comment at the top of //content/BUILD.gn for why this is disabled in
-  # component builds.
-  if (is_component_build) {
-    check_includes = false
-  }
-
   sources = [
     "cbor_test_util.cc",
     "cbor_test_util.h",
-    "test_bid_builder.cc",
-    "test_bid_builder.h",
   ]
 
-  deps = [
-    "//base/test:test_support",
-    "//content/services/auction_worklet/public/mojom:for_content_tests",
-  ]
+  deps = [ "//base/test:test_support" ]
 
   public_deps = [
     "//base",

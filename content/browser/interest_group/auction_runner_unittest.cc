@@ -73,7 +73,6 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
-#include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -20665,7 +20664,8 @@ TEST_F(AuctionRunnerTest, RealTimeReportingMixedContributionsFeatureDisabled) {
 }
 
 class RoundingTest : public AuctionRunnerTest,
-                     public ::testing::WithParamInterface<size_t> {};
+                     public ::testing::WithParamInterface<size_t> {
+};
 
 TEST_F(RoundingTest, AdCostPassed) {
   const char kBidScript[] = R"(
@@ -21263,11 +21263,11 @@ TEST_F(RoundingTest, ScoreRounded) {
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
-  EXPECT_THAT(
-      result_.report_urls,
-      testing::ElementsAre(testing::AnyOf(
-          GURL("https://seller-reporting.example.com/?score=1.9921875"),
-          GURL("https://seller-reporting.example.com/?score=1.984375"))));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL("https://seller-reporting.example.com/?score=1.9921875"),
+              GURL("https://seller-reporting.example.com/?score=1.984375"))));
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and
@@ -25299,29 +25299,32 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
   const GURL kKAnonUrl("https://ad1.com");
   const GURL kNonKAnonUrl("https://ad2.com");
 
-  auto both_bid =
-      auction_worklet::TestBidBuilder()
-          .SetBidRole(auction_worklet::mojom::BidRole::kBothKAnonModes)
-          .SetAd("ad")
-          .SetAdDescriptor(blink::AdDescriptor(kKAnonUrl))
-          .SetBid(5.0)
-          .Build();
+  auto both_bid = auction_worklet::mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kBothKAnonModes, "ad", 5.0,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_component_urls=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
-  auto enforced_bid =
-      auction_worklet::TestBidBuilder()
-          .SetBidRole(auction_worklet::mojom::BidRole::kEnforcedKAnon)
-          .SetAd("ad")
-          .SetAdDescriptor(blink::AdDescriptor(kKAnonUrl))
-          .SetBid(5.0)
-          .Build();
+  auto enforced_bid = auction_worklet::mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kEnforcedKAnon, "ad", 5.0,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kKAnonUrl),
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_component_urls=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
-  auto non_kanon_bid =
-      auction_worklet::TestBidBuilder()
-          .SetBidRole(auction_worklet::mojom::BidRole::kUnenforcedKAnon)
-          .SetAd("ad")
-          .SetAdDescriptor(blink::AdDescriptor(kNonKAnonUrl))
-          .SetBid(5.0)
-          .Build();
+  auto non_kanon_bid = auction_worklet::mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, "ad", 5.0,
+      /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt, blink::AdDescriptor(kNonKAnonUrl),
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_component_urls=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, /*aggregate_win_signals=*/std::nullopt,
+      base::TimeDelta());
 
   const struct TestCase {
     std::set<KAnonMode> run_in_modes;
