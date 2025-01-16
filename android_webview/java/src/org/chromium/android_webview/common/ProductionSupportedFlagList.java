@@ -551,10 +551,6 @@ public final class ProductionSupportedFlagList {
                 SafeBrowsingFeatures.HASH_PREFIX_REAL_TIME_LOOKUPS,
                 "When enabled, Safe Browsing checks will happen in real time"),
         Flag.baseFeature(
-                SafeBrowsingFeatures.SAFE_BROWSING_ASYNC_REAL_TIME_CHECK,
-                "When enabled, the real time Safe Browsing check will be called asynchronously,"
-                        + " along with an additional v4 check which will be synchronous."),
-        Flag.baseFeature(
                 "AddWarningShownTSToClientSafeBrowsingReport",
                 "When enabled, client reports will include a timestamp of when the warning was "
                         + "shown to the user"),
