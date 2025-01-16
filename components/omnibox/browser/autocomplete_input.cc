@@ -755,8 +755,8 @@ const TemplateURL* AutocompleteInput::AdjustInputForStarterPackEngines(
     AutocompleteInput* input) {
   DCHECK(model);
 
-  // If the feature is disabled, or not in keyword mode, then `input` is
-  // definitely not in a starter pack scope, so early exit.
+  // If not in keyword mode, then `input` is definitely not in a starter pack
+  // scope, so early exit.
   if (!input->prefer_keyword()) {
     return nullptr;
   }

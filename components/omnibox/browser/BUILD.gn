@@ -807,6 +807,7 @@ source_set("unit_tests") {
     "clipboard_provider_unittest.cc",
     "document_provider_unittest.cc",
     "document_suggestions_service_unittest.cc",
+    "enterprise_search_aggregator_provider_unittest.cc",
     "fake_autocomplete_controller.cc",
     "fake_autocomplete_controller.h",
     "favicon_cache_unittest.cc",
