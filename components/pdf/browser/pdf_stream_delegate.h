@@ -45,7 +45,7 @@ class PdfStreamDelegate {
     bool full_frame = false;
     bool allow_javascript = false;
     bool use_skia = false;
-    bool require_corp = false;
+    std::string coep_header;
   };
 
   virtual ~PdfStreamDelegate() = default;
