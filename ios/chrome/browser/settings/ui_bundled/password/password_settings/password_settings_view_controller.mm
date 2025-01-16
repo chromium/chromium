@@ -426,8 +426,9 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
   _savePasswordsItem =
       [[TableViewSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
-  _savePasswordsItem.text =
-      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  _savePasswordsItem.text = l10n_util::GetNSString(
+      IOSPasskeysM2Enabled() ? IDS_IOS_OFFER_TO_SAVE_PASSWORDS_PASSKEYS
+                             : IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
   _savePasswordsItem.accessibilityIdentifier =
       kPasswordSettingsSavePasswordSwitchTableViewId;
   [self updateSavePasswordsSwitch];
@@ -510,8 +511,9 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
   _passwordsInOtherAppsItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypePasswordsInOtherApps];
-  _passwordsInOtherAppsItem.text =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  _passwordsInOtherAppsItem.text = l10n_util::GetNSString(
+      IOSPasskeysM2Enabled() ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS
+                             : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
   _passwordsInOtherAppsItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
   _passwordsInOtherAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
