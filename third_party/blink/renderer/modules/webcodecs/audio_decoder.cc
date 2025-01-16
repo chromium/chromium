@@ -134,10 +134,6 @@ media::SampleFormat PcmCodecToSampleFormat(const String& codec) {
     return media::SampleFormat::kSampleFormatF32;
   }
 
-  // We want to default to F32Planar for unexpected states, as well as the case
-  // of the codec being "1", which is a valid PCM codec for WAV (seen in
-  // media/base/mime_util_internal.cc). This return catches both unexpected
-  // cases and this desired case.
   return media::SampleFormat::kSampleFormatPlanarF32;
 }
 
@@ -316,6 +312,12 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
 
   media::SampleFormat format = media::kSampleFormatPlanarF32;
   if (audio_type->codec == media::AudioCodec::kPCM) {
+    // There is a case of the codec being "1", which is a valid PCM codec for
+    // WAV in media/base/mime_util_internal.cc. We should reject this case for
+    // webcodecs.
+    if (config.codec() == "1") {
+      return std::nullopt;
+    }
     format = PcmCodecToSampleFormat(config.codec());
   }
 
