@@ -411317,6 +411317,10 @@
      ]
     },
     "view-timelines": {
+     "intermediate-transform-expected.txt": [
+      "75cdad88738b6bc254f4db1c6a3cd89756401000",
+      []
+     ],
      "range-boundary-ref.html": [
       "057d0afabcdf579765cc1de8df4c63a6edeea8c4",
       []
@@ -418548,8 +418552,20 @@
      "b6608515aa85a08dbb56531c46c097e179c76200",
      []
     ],
+    "trusted-types-eval-reporting-expected.txt": [
+     "4f26fafe0261869ed1213e7a71d0fd7efbc84132",
+     []
+    ],
+    "trusted-types-eval-reporting-no-unsafe-eval-expected.txt": [
+     "323d7262f074e3fde08fa16c14ce369712df2a0d",
+     []
+    ],
     "trusted-types-eval-reporting-no-unsafe-eval.html.headers": [
      "2bdd8a7d1abaa1200c50f9d58b8c8547dd589e84",
+     []
+    ],
+    "trusted-types-eval-reporting-report-only-expected.txt": [
+     "884b0a2dd0a011a3bfea0a2a7ccb5f3ede4f92b8",
      []
     ],
     "trusted-types-eval-reporting-report-only.html.headers": [
@@ -433712,99 +433728,83 @@
       {}
      ]
     ],
-    "idbdatabase_createObjectStore-createIndex-emptyname.htm": [
-     "161902c2ab0eb655c9642d58d2b1bc4328dabc21",
+    "idbdatabase_createObjectStore.any.js": [
+     "ea65e2e53a3c75c09081221422d63e5979f48e6e",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore.htm": [
-     "cf0651ceb50a9060abd0c53b789e9a6c2f1cdfaf",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore10-1000ends.htm": [
-     "6997562d3ae68751d35950849fd839d198b1845c",
-     [
-      null,
+      "IndexedDB/idbdatabase_createObjectStore.any.html",
       {
-       "timeout": "long"
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.createObjectStore()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
       }
-     ]
-    ],
-    "idbdatabase_createObjectStore10-emptyname.htm": [
-     "0ed28e9e7ee0c2cb80229bcf0ade9dcfb085629b",
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore11.htm": [
-     "f1a9310c070d00f87df9be6741fccffa92ca7dea",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore2.htm": [
-     "d5a98ec8ed7ebc0ab7c1cfff9523cd13a581a9cf",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore3.htm": [
-     "d0006bfe1fa6a7a8297d3c5bd45d4b5686f4d4a1",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore4.htm": [
-     "bd5989335a4fff99f129eaa6cf165de87f91e5d9",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore5.htm": [
-     "a30b73c594669956967a8e371ab5667023bf82b1",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore6.htm": [
-     "54a2df81e9d3999776f7581ddca5f10293b3eda9",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore7.htm": [
-     "b2a7a03b1c8713d467b9d5eec6ae2135ed01e8ce",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_createObjectStore8-parameters.htm": [
-     "99a473d418779b9283734a9f3117b8bac52305a1",
-     [
-      null,
+      "IndexedDB/idbdatabase_createObjectStore.any.serviceworker.html",
       {
-       "timeout": "long"
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.createObjectStore()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
       }
-     ]
-    ],
-    "idbdatabase_createObjectStore9-invalidparameters.htm": [
-     "65b7535abbadbda282a8849a44da7222825aa4c3",
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbdatabase_createObjectStore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.createObjectStore()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbdatabase_createObjectStore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.createObjectStore()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbdatabase_deleteObjectStore.any.js": [
@@ -434270,25 +434270,259 @@
       {}
      ]
     ],
-    "idbindex-rename-abort.html": [
-     "00e6e36de870b1ea08262bf89f1bf2acce9e69ef",
+    "idbindex-rename-abort.any.js": [
+     "31a238992493979486523f09710aff33feb898f8",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex-rename-errors.html": [
-     "7b6b0f17edfad6842ae136866c9774b0428d9d59",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbindex-rename.html": [
-     "b6d97e6ae92c71133c0dc7a953051e517f867cca",
-     [
-      null,
+      "IndexedDB/idbindex-rename-abort.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support in aborted transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-abort.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support in aborted transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-abort.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support in aborted transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-abort.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support in aborted transactions"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idbindex-rename-errors.any.js": [
+     "92227112af8d70e03664eacf472bdc3157601d98",
+     [
+      "IndexedDB/idbindex-rename-errors.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming error handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-errors.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming error handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-errors.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming error handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename-errors.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming error handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idbindex-rename.any.js": [
+     "3d2e58f6f71c069f0ab64e490fdd56c176a8143f",
+     [
+      "IndexedDB/idbindex-rename.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/idbindex-rename.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: index renaming support"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -438923,18 +439157,162 @@
       }
      ]
     ],
-    "transaction-create_in_versionchange.htm": [
-     "4659b1593fda6a6f430a053f371d4b02c0a26cbd",
+    "transaction-create_in_versionchange.any.js": [
+     "777439e78af3ec525e7c827211870c63f011788e",
      [
-      null,
-      {}
+      "IndexedDB/transaction-create_in_versionchange.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Creation During Version Change"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-create_in_versionchange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Creation During Version Change"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-create_in_versionchange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Creation During Version Change"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-create_in_versionchange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Creation During Version Change"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "transaction-deactivation-timing.html": [
-     "4b826f121c07b99781238590295e4eaac5c64fe9",
+    "transaction-deactivation-timing.any.js": [
+     "668e47d05b3de025a89009fe8ac9c7c3d803af27",
      [
-      null,
-      {}
+      "IndexedDB/transaction-deactivation-timing.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Deactivation Timing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-deactivation-timing.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Deactivation Timing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-deactivation-timing.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Deactivation Timing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-deactivation-timing.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Deactivation Timing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "transaction-lifetime-empty.any.js": [
@@ -439130,11 +439508,83 @@
       }
      ]
     ],
-    "transaction-requestqueue.htm": [
-     "cef8699df42dfc6f6fd349de06a28fe87a35a030",
+    "transaction-requestqueue.any.js": [
+     "ac75171474c27b01b5d8fe22067789ed30901b7c",
      [
-      null,
-      {}
+      "IndexedDB/transaction-requestqueue.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Request Queue Handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-requestqueue.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Request Queue Handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-requestqueue.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Request Queue Handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction-requestqueue.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Request Queue Handling"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "transaction-scheduling-across-connections.any.js": [
@@ -439312,11 +439762,83 @@
       }
      ]
     ],
-    "transaction_bubble-and-capture.htm": [
-     "9b6694b980c579d068c5c93a13ef5b61985a6a85",
+    "transaction_bubble-and-capture.any.js": [
+     "9449a756daa11ac857bb254c8cfedf408decbc5e",
      [
-      null,
-      {}
+      "IndexedDB/transaction_bubble-and-capture.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Event Bubbling and Capturing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction_bubble-and-capture.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Event Bubbling and Capturing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction_bubble-and-capture.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Event Bubbling and Capturing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/transaction_bubble-and-capture.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction Event Bubbling and Capturing"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "upgrade-transaction-deactivation-timing.any.js": [
@@ -473104,42 +473626,42 @@
        ]
       ],
       "align-content-block-006.html": [
-       "acdb6454bd4b85780b5abc6da476f5c699e89dfa",
+       "fa45f74a7ed8a2515ca0515636ff19c9d5513a13",
        [
         null,
         {}
        ]
       ],
       "align-content-block-007.html": [
-       "c60f640ab066b35c0fb60b2f5c8d134f61d99b0a",
+       "7c8a7166866e275bd4803fad840711220f2366ce",
        [
         null,
         {}
        ]
       ],
       "align-content-block-008.html": [
-       "7d088d6ae634e0fb63081dd4b01a578a104dc0b5",
+       "2325933fb34ebf1838656f8b66927dad1ac4352b",
        [
         null,
         {}
        ]
       ],
       "align-content-block-009.html": [
-       "df45aa588f9ddf7a8b657885a817860d1ef0c022",
+       "312c3ff3a9f3577b674b760f30b9f0f45636e652",
        [
         null,
         {}
        ]
       ],
       "align-content-block-010.html": [
-       "f3ec7a4e9299d71c4fb26b928866cced2d437eed",
+       "d0808f0206e842f2b186eb3375edb18cc0d10263",
        [
         null,
         {}
        ]
       ],
       "align-content-block-011.html": [
-       "9210f5a83a7a5c95775c42d7a01d1f3ac6ab440e",
+       "ff5e24ad5f0fff201dcb3c3f255f126f373f4461",
        [
         null,
         {}
@@ -496610,6 +497132,13 @@
       ],
       "scroll-initial-target-rtl.tentative.html": [
        "7cb0f93c495825123be2fe5941421202f62deea0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-shadow-dom.tentative.html": [
+       "56053bc719e16e61559a422496b917f7ad9ea331",
        [
         null,
         {}
@@ -526301,6 +526830,15 @@
       ],
       [
        "editing/other/paste-multiline-text-as-plaintext.tentative.https.html?white-space=pre-wrap",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "paste-text-after-collapsible-white-space-whose-container-remove-non-first-children.html": [
+      "296c40c54b5cff40a32b9316066c314980661fb9",
+      [
+       null,
        {
         "testdriver": true
        }
@@ -678314,6 +678852,13 @@
        {}
       ]
      ],
+     "intermediate-transform.html": [
+      "8d332eaf264e67faacbe8a21630b820266308580",
+      [
+       null,
+       {}
+      ]
+     ],
      "sticky": {
       "view-timeline-sticky-offscreen-1.html": [
        "d8756769c5179cdb7458958b81151baa17b17d6a",
@@ -707484,21 +708029,21 @@
      ]
     ],
     "trusted-types-eval-reporting-no-unsafe-eval.html": [
-     "afdd0018cd1479eecb7b0fa31dc2221e678c0704",
+     "92604c96718a01abef60e1186e68334c8537b0f7",
      [
       null,
       {}
      ]
     ],
     "trusted-types-eval-reporting-report-only.html": [
-     "39dba61730ea72e02f3e42406df52f3b5992c5d0",
+     "a81f5a45789389e9d08ec16262ec878e51682179",
      [
       null,
       {}
      ]
     ],
     "trusted-types-eval-reporting.html": [
-     "0f4d406980b24ba977e5ee5917e60137d0bcf701",
+     "e7c7245f9e415e08a0d327a4b7b17effebdfd555",
      [
       null,
       {}
@@ -707540,7 +708085,7 @@
      ]
     ],
     "trusted-types-reporting.html": [
-     "9dbb2141b62f96e0b6ee1f1e5b3f01e0879f08b1",
+     "96c9dd72813a7b480e65374144f63e6ad487ea4e",
      [
       null,
       {
@@ -707952,6 +708497,15 @@
        {
         "testdriver": true,
         "timeout": "long"
+       }
+      ]
+     ],
+     "offset_and_page_after_dispatch.tentative.html": [
+      "132431e50b35fac7a77a5d130fe4f96eb2d0ed1d",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ],

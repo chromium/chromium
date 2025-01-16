@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] View timeline delay
+  assert_approx_equals: Unexpected value for startOffset expected 654 +/- 0.0001 but got 604
+Harness: the test ran to completion.
+
