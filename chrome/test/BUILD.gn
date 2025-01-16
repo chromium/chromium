@@ -3268,6 +3268,8 @@ if (!is_android) {
       "../browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
+      "../browser/ui/views/bookmarks/bookmark_test_utils.cc",
+      "../browser/ui/views/bookmarks/bookmark_test_utils.h",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_browsertest.cc",
       "../browser/ui/views/confirm_bubble_views_browsertest.cc",
       "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",
