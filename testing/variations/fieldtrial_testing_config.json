@@ -9560,6 +9560,21 @@
             ]
         }
     ],
+    "ExternalRateControlForMediaFoundationVideoEncoder": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationUseSWBRCForH264Camera"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtremeLightweightUAFDetector": [
         {
             "platforms": [
