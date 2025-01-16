@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 գաղտնաբառ}one{{COUNT} գաղտնաբառ}other{{COUNT} գաղտնաբառ}}</translation>
 <translation id="1102759278139578486">Չհաջողվեց ներբեռնել հիմնական հանգույցի ծանոթագրության ֆայլերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
+<translation id="1104098698795583187">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների այս խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="1106350001632362876">Ավելացնել շեմը</translation>
 <translation id="1107482171728500359">Հասանելի դարձնել խոսափողը</translation>
 <translation id="110850812463801904">Ձեռքով միանալ OneDrive-ին</translation>
@@ -1694,6 +1695,7 @@
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2173801458090845390">Ավելացնել սարքին հայտի ID-ն</translation>
 <translation id="2175384018164129879">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
+<translation id="2175526076681939329">Օգտագործել հիմնական ստեղները</translation>
 <translation id="217576141146192373">Չհաջողվեց ավելացնել տպիչը: Ստուգեք դրա կարգավորումները և նորից փորձեք:</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="217631816678106981">Չտեղադրել</translation>
@@ -2888,7 +2890,6 @@
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է այսօր միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}one{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է մինչև վերջնաժամկետը միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}other{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է մինչև վերջնաժամկետը միանաք Wi-Fi-ին և ներբեռնեք թարմացումը կամ օգտվեք վճարովի կապից (կարող է գումար գանձվել)։}}</translation>
 <translation id="3009178788565917040">Ելք</translation>
-<translation id="3009300415590184725">Չեղարկե՞լ տվյալների բջջային փոխանցման կարգավորումը:</translation>
 <translation id="3009352964623081324">Search + O, այնուհետև S։ Օգտագործեք այս դյուրանցումը՝ ձայներ տեղադրելու, ինչպես նաև դրանք կառավարելու և անհատականացնելու համար։</translation>
 <translation id="3009779501245596802">Ցուցակավորված տվյալների շտեմարաններ</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Ձեր գաղտնաբառերը հուսալի են}=1{{COUNT} թույլ գաղտնաբառ}one{{COUNT} թույլ գաղտնաբառ}other{{COUNT} թույլ գաղտնաբառ}}</translation>
@@ -3395,7 +3396,6 @@
 <translation id="3396442984945202128">Հաստատել ինքնությունը</translation>
 <translation id="3396800784455899911">Սեղմելով «Ընդունել և շարունակել» կոճակը՝ դուք ընդունում եք Google-ի վերոնշյալ ծառայությունների մշակման պայմանները։</translation>
 <translation id="339722927132407568">Կախում է</translation>
-<translation id="3398899528308712018">Ներդիրների խմբավորման առաջարկ</translation>
 <translation id="3399432415385675819">Ծանուցումները կանջատվեն</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Հց), միահյուսված</translation>
 <translation id="3401484564516348917">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի, գրանցամատյանի արժեքների և ֆայլերի մասին</translation>
@@ -3411,6 +3411,7 @@
 <translation id="3407392651057365886">Նախաբեռնվում են ավելի շատ էջեր։ Նախաբեռնումը կարող է կատարվել Google-ի սերվերների կողմից այլ կայքերի հարցումով։</translation>
 <translation id="3407967630066378878">Մատնահետքը կարգավորելու համար ձեր երեխան պետք է հպի մատնահետքերի սկաներին, որն այս <ph name="DEVICE_TYPE" /> սարքի ձախ կողմում է։ Երեխայի մատնահետքի տվյալները ապահով պահվում են այս <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="3408555740610481810">Տեսախցիկն ու խոսափողը օգտագործվում են</translation>
+<translation id="3409157109901479672">Ձախ կողմի</translation>
 <translation id="3409513286451883969">&amp;Ընտրությունը թարգմանել <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Jump to Selection</translation>
 <translation id="3413122095806433232">Հավաստագրման կենտրոնի թողարկողներ՝ <ph name="LOCATION" /></translation>
@@ -4696,6 +4697,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> անդամ</translation>
 <translation id="4290898381118933198">Մատը սահեցնել՝ մի էջից մյուսին անցնելու համար</translation>
 <translation id="4291265871880246274">Մուտքի պատուհան</translation>
+<translation id="4292613336957320546">Արագացում</translation>
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> ֆայլը հեռացվեց ներբեռնումների պատմությունից, բայց այն դեռ ձեր սարքում է</translation>
 <translation id="4295072614469448764">Հավելվածը հասանելի է ձեր տերմինալում: Հնարավոր է նաև պատկերակ լինի ձեր գործարկիչում:</translation>
@@ -4823,7 +4825,6 @@
 <translation id="4386604394450371010">ընդհանուր տեղեկություններ</translation>
 <translation id="4387890294700445764">Բացահայտված գաղտնաբառեր</translation>
 <translation id="4388650384344483842">Օգտագործեք առնվազն 8 նիշ</translation>
-<translation id="4389091756366370506">Օգտատեր <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս <ph name="NUMBER_OF_OTHER_SWITCHES" /> փոխանջատիչ</translation>
 <translation id="439266289085815679">Bluetooth-ի կազմաձևումը վերահսկում է <ph name="USER_EMAIL" /> հաշվի օգտատերը:</translation>
 <translation id="4392896746540753732">Կարգավորման ֆայլի փոփոխում</translation>
@@ -5558,7 +5559,6 @@
 <translation id="4906679076183257864">Ըստ կանխադրման</translation>
 <translation id="4907129260985716018">Ընտրեք, թե երբ կարող է այս ընդլայնումը կարդալ և փոխել ձեր կայքի տվյալները</translation>
 <translation id="4908811072292128752">Բացեք նոր ներդիր՝ միաժամանակ երկու կայքում աշխատելու համար</translation>
-<translation id="4909038193460299775">Քանի որ այս հաշիվը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից, ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումները կջնջվեն այս սարքից։ Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
 <translation id="4910241725741323970">Հավելվածն արդեն տեղադրված է</translation>
 <translation id="4912643508233590958">Անցումներ ակտիվ ռեժիմ</translation>
 <translation id="4913209098186576320">Այս ֆայլը կարող է վտանգավոր լինել<ph name="LINE_BREAK" />Ստուգումը սովորականից ավելի երկար է տևում...</translation>
@@ -5864,6 +5864,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, որոնում <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-ում</translation>
 <translation id="5139823398361067371">Մուտքագրեք անվտանգության բանալու PIN կոդը: Եթե չգիտեք PIN կոդը, զրոյացրեք անվտանգության բանալու կարգավորումները:</translation>
 <translation id="5139955368427980650">&amp;Բացել</translation>
+<translation id="5140742218917419811">Որ ստեղծներն օգտագործել</translation>
 <translation id="5141421572306659464">Հիմնական հաշիվ</translation>
 <translation id="5141957579434225843">Օրինակ՝ òa, òe, ùy վանկերի փոխարեն օգտագործեք oà, oè, uỳ</translation>
 <translation id="5143374789336132547">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Սկիզբ կոճակի սեղմումով ցուցադրվող էջը:</translation>
@@ -5882,6 +5883,7 @@
 <translation id="5149602533174716626">Պատճենել տեսանյութի կադրը</translation>
 <translation id="5150254825601720210">Netscape-ի SSL վկայագրերի սերվերի անունը</translation>
 <translation id="5151354047782775295">Ազատեք սկավառակի տարածքը, այլապես որոշ տվյալներ կարող են ավտոմատ ջնջվել</translation>
+<translation id="5153074793829217329">Օգտագործել ստեղնաշարը կամ թվաշար՝ մկնիկի նշորդը կառավարելու համար</translation>
 <translation id="5153234146675181447">Հեռախոսի հեռացում</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Լրացուցիչ կարգավորումներ <ph name="PRINTING_DESTINATION" />-ի համար</translation>
@@ -7972,6 +7974,7 @@
 <translation id="6689714331348768690">Խնդրեք <ph name="SUPERVISED_USER_NAME" />-ին մոտենալ համակարգչին։ Իր ձայնի նմուշը ստեղծելու համար երեխան պետք է կարդա էկրանին ցուցադրված մի քանի արտահայտություն։
     <ph name="BR" />
     Եթե <ph name="SUPERVISED_USER_NAME" />-ին օգնելու կարիք լինի, առաջարկեք նրան կրկնել ձեր հետևից։ Ասեք բառերը շշուկով՝ շրջվելով խոսափողից, որպեսզի Օգնականը հիշի երեխայի, այլ ոչ թե ձեր ձայնը։</translation>
+<translation id="6689948774466767379">Մկնիկի ստեղներ</translation>
 <translation id="6690659332373509948">Հնարավոր չէ վերլուծել ֆայլը՝ <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Առաջ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 էջ}one{{COUNT} էջ}other{{COUNT} էջ}}</translation>
@@ -10056,6 +10059,7 @@
 <translation id="8168435359814927499">Բովանդակություն</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ավելացնել ներդիր ընթերցանության ցանկում}one{Ավելացնել ներդիրներ ընթերցանության ցանկում}other{Ավելացնել ներդիրներ ընթերցանության ցանկում}}</translation>
 <translation id="8169177848833352618">Այս մեքենան չի համապատասխանում Bruschetta-ի տեղադրման պահանջներին։ Սխալի կոդը՝ <ph name="ERROR" />։</translation>
+<translation id="8172303073969862496">Աջ կողմի</translation>
 <translation id="8174047975335711832">Սարքի մասին տեղեկություններ</translation>
 <translation id="8176332201990304395">Վարդագույն և սպիտակ</translation>
 <translation id="8176529144855282213">Խոսափողի հասանելիությունը միացնելու համար միացրեք ձեր սարքի խոսափողի ֆիզիկական անջատիչը</translation>

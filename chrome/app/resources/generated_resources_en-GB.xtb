@@ -160,6 +160,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1101254380285078812">{COUNT,plural, =1{1 password}other{{COUNT} passwords}}</translation>
 <translation id="1102759278139578486">Can't download main node annotation files. Please try again later.</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">You'll immediately lose access to this tab group, and it will be deleted from all your devices</translation>
 <translation id="1106350001632362876">Increase threshold</translation>
 <translation id="1107482171728500359">Share microphone</translation>
 <translation id="110850812463801904">Manually connect to OneDrive</translation>
@@ -1702,6 +1703,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
 <translation id="2175384018164129879">&amp;Manage Search Engines and Site Search</translation>
+<translation id="2175526076681939329">Use primary keys</translation>
 <translation id="217576141146192373">Unable to add printer. Please check your printer's configuration and try again.</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="217631816678106981">Don't paste</translation>
@@ -2901,7 +2903,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="3009178788565917040">Output</translation>
-<translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009352964623081324">Search + O, then S. Use to install, manage and customise voices.</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Your passwords look strong}=1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
@@ -3410,7 +3411,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3396442984945202128">Verify that it’s you</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="339722927132407568">Freezes</translation>
-<translation id="3398899528308712018">Tab group suggestion</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – interlaced</translation>
 <translation id="3401484564516348917">Read information about your browser, OS, device, installed software, registry values and files</translation>
@@ -3426,6 +3426,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
 <translation id="3407967630066378878">To set up fingerprint, have your child touch the fingerprint sensor at the left hand side of this <ph name="DEVICE_TYPE" />. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Camera and microphone in use</translation>
+<translation id="3409157109901479672">Left side</translation>
 <translation id="3409513286451883969">&amp;Translate Selection to <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Jump to Selection</translation>
 <translation id="3413122095806433232">CA Issuers: <ph name="LOCATION" /></translation>
@@ -4711,6 +4712,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4290826901752066702"><ph name="NUM" /> member</translation>
 <translation id="4290898381118933198">Swipe to navigate between pages</translation>
 <translation id="4291265871880246274">Login dialogue</translation>
+<translation id="4292613336957320546">Acceleration</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="4294392694389031609">Deleted <ph name="FILE_NAME" /> from download history, but it's still on your device</translation>
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
@@ -4838,7 +4840,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4386604394450371010">overview</translation>
 <translation id="4387890294700445764">Compromised passwords</translation>
 <translation id="4388650384344483842">Use at least eight characters</translation>
-<translation id="4389091756366370506">User <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and <ph name="NUMBER_OF_OTHER_SWITCHES" /> more switches</translation>
 <translation id="439266289085815679">Bluetooth configuration is controlled by <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edit the configuration file</translation>
@@ -5573,7 +5574,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4906679076183257864">Reset to Default</translation>
 <translation id="4907129260985716018">Choose when this extension can read and change your site data</translation>
 <translation id="4908811072292128752">Open a new tab to browse two sites at once</translation>
-<translation id="4909038193460299775">Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device. However, your data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">App is already installed</translation>
 <translation id="4912643508233590958">Idle Wake Ups</translation>
 <translation id="4913209098186576320">This file may be dangerous<ph name="LINE_BREAK" />This check is taking longer than usual...</translation>
@@ -5879,6 +5879,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> search</translation>
 <translation id="5139823398361067371">Enter the PIN for your security key. If you don’t know the PIN, you’ll need to reset the security key.</translation>
 <translation id="5139955368427980650">&amp;Open</translation>
+<translation id="5140742218917419811">Keys to use</translation>
 <translation id="5141421572306659464">Primary account</translation>
 <translation id="5141957579434225843">For example, use oà, oè, uỳ instead of òa, òe, ùy</translation>
 <translation id="5143374789336132547">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you click the Home button.</translation>
@@ -5897,6 +5898,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5149602533174716626">Copy video frame</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">Free up disk space or select data may be automatically deleted</translation>
+<translation id="5153074793829217329">Use your keyboard or a numeric keypad to control your mouse cursor</translation>
 <translation id="5153234146675181447">Forget phone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Advanced settings for <ph name="PRINTING_DESTINATION" /></translation>
@@ -7989,6 +7991,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6689714331348768690">Ask <ph name="SUPERVISED_USER_NAME" /> to come to the computer. Your child will be reading a few phrases on this screen to create their voice model.
     <ph name="BR" />
     If <ph name="SUPERVISED_USER_NAME" /> needs help with reading, have your child repeat after you. Whisper away from the mic so that the Assistant learns your child’s voice instead of yours.</translation>
+<translation id="6689948774466767379">Mouse keys</translation>
 <translation id="6690659332373509948">Unable to parse file: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Forward</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}other{{COUNT} pages}}</translation>
@@ -10076,6 +10079,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Add Tab to Reading List}other{Add Tabs to Reading List}}</translation>
 <translation id="8169177848833352618">Unfortunately, this machine does not meet requirements for installing Bruschetta. The error code is <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Right side</translation>
 <translation id="8174047975335711832">Device information</translation>
 <translation id="8176332201990304395">Pink and white</translation>
 <translation id="8176529144855282213">To turn on microphone access, turn on the physical microphone switch on your device</translation>

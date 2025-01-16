@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{১টি পাসওয়ার্ড}one{{COUNT}টি পাসওয়ার্ড}other{{COUNT}টি পাসওয়ার্ড}}</translation>
 <translation id="1102759278139578486">মূল নোড অ্যানোটেশন ফাইল ডাউনলোড করা যাচ্ছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">আপনি অবিলম্বে এই ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং আপনার সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>
 <translation id="1106350001632362876">থ্রেশহোল্ড বাড়ান</translation>
 <translation id="1107482171728500359">মাইক্রোফোন শেয়ার করুন</translation>
 <translation id="110850812463801904">OneDrive-এ ম্যানুয়ালি কানেক্ট করা আছে</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2173302385160625112">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="2173801458090845390">এই ডিভাইসে অনুরোধ করার আইডি যোগ করুন</translation>
 <translation id="2175384018164129879">সার্চ ইঞ্জিন এবং সাইট সার্চ ম্যানেজ করুন</translation>
+<translation id="2175526076681939329">প্রাথমিক কী ব্যবহার করুন</translation>
 <translation id="217576141146192373">প্রিন্টার যোগ করা যায়নি। প্রিন্টারের কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="217631816678106981">পেস্ট করবেন না</translation>
@@ -2902,7 +2904,6 @@
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে আজই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে বলছে। অথবা, মিটারযুক্ত ইন্টারনেট কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}one{<ph name="MANAGER" /> আপনাকে নির্ধারিত সময়সীমা শেষ হওয়ার আগেই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে বলছে। অথবা, মিটারযুক্ত ইন্টারনেট কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}other{<ph name="MANAGER" /> আপনাকে নির্ধারিত সময়সীমা শেষ হওয়ার আগেই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করে আপডেট ডাউনলোড করতে বলছে। অথবা, মিটারযুক্ত ইন্টারনেট কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।}}</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
-<translation id="3009300415590184725">আপনি কি মোবাইল ডেটা পরিষেবা সেট-আপ প্রক্রিয়া বাতিল করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="3009352964623081324">'Search' ও 'O' বোতাম একসাথে প্রেস করুন, তারপরে 'S' বোতাম প্রেস করুন। ইনস্টল, ম্যানেজ ও ভয়েস কাস্টমাইজ করতে ব্যবহার করুন।</translation>
 <translation id="3009779501245596802">সূচিবদ্ধ ডেটাবেস</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{আপনার ব্যবহার করা পাসওয়ার্ড শক্তিশালী বলে মনে হচ্ছ}=1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
@@ -3411,7 +3412,6 @@
 <translation id="3396442984945202128">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="3396800784455899911">'স্বীকার করে চালিয়ে যান' বোতামে ক্লিক করার অর্থ এই Google পরিষেবাগুলির জন্য উপরোক্ত বর্ণিত প্রক্রিয়াগুলিতে আপনি সম্মতি দেন।</translation>
 <translation id="339722927132407568">আটকে যায়</translation>
-<translation id="3398899528308712018">ট্যাব গ্রুপ সংক্রান্ত সাজেশন</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
 <translation id="3401484564516348917">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার, রেজিস্ট্রি ভ্যালু এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
@@ -3427,6 +3427,7 @@
 <translation id="3407392651057365886">আরও পৃষ্ঠা প্রিলোড করা হয়। অন্য সাইট অনুরোধ করলে Google সার্ভারের মাধ্যমে পৃষ্ঠা প্রিলোড করা হতে পারে।</translation>
 <translation id="3407967630066378878">ফিঙ্গারপ্রিন্ট সেট-আপ করতে, আপনার সন্তানকে <ph name="DEVICE_TYPE" />-এর বাঁদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="3408555740610481810">ক্যামেরা ও মাইক্রোফোন ব্যবহার করা হচ্ছে</translation>
+<translation id="3409157109901479672">বাঁদিক</translation>
 <translation id="3409513286451883969">&amp;বেছে নেওয়া টেক্সট <ph name="LANGUAGE" />-এ অনুবাদ করুন</translation>
 <translation id="3412265149091626468">নির্বাচনে যান</translation>
 <translation id="3413122095806433232">CA ইস্যুকারীগণ: <ph name="LOCATION" /></translation>
@@ -4712,6 +4713,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> জন মেম্বার</translation>
 <translation id="4290898381118933198">একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে সোয়াইপ করুন</translation>
 <translation id="4291265871880246274">লগ-ইন ডায়ালগ</translation>
+<translation id="4292613336957320546">অ্যাক্সিলারেশন</translation>
 <translation id="429312253194641664">একটি সাইট মিডিয়া চালাচ্ছে</translation>
 <translation id="4294392694389031609">ডাউনলোড ইতিহাস থেকে <ph name="FILE_NAME" /> মুছে ফেলা হয়েছে, তবে এটি এখনও আপনার ডিভাইসে রয়েছে</translation>
 <translation id="4295072614469448764">অ্যাপ আপনার টার্মিনালে পাওয়া যায়। আপনার লঞ্চারে একটি আইকনও থাকতে পারে।</translation>
@@ -4839,7 +4841,6 @@
 <translation id="4386604394450371010">এক নজরে</translation>
 <translation id="4387890294700445764">যে পাসওয়ার্ডগুলি চুরি হয়েছে</translation>
 <translation id="4388650384344483842">কমপক্ষে ৮টি অক্ষর ব্যবহার করুন</translation>
-<translation id="4389091756366370506">ব্যবহারকারী<ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও <ph name="NUMBER_OF_OTHER_SWITCHES" />টি সুইচ</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> এর মাধ্যমে ব্লুটুথ কনফিগারেশন নিয়ন্ত্রিত হয়।</translation>
 <translation id="4392896746540753732">কনফিগারেশন ফাইল এডিট করুন</translation>
@@ -5574,7 +5575,6 @@
 <translation id="4906679076183257864">ডিফল্টে আবার সেট করুন</translation>
 <translation id="4907129260985716018">এই এক্সটেনশন কখন সাইট ডেটা পড়তে ও পরিবর্তন করতে পারবে সেটি বেছে নিন</translation>
 <translation id="4908811072292128752">একসাথে দুটি সাইট ব্রাউজ করতে নতুন ট্যাব খুলুন</translation>
-<translation id="4909038193460299775">এই অ্যাকাউন্টটি <ph name="DOMAIN" /> দ্বারা পরিচালিত হওয়ার কারণে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস এই ডিভাইস থেকে সাফ করা হবে। অবশ্য, আপনার ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে তা পরিচালনা করা যাবে।</translation>
 <translation id="4910241725741323970">অ্যাপ আগে থেকেই ইনস্টল করা রয়েছে</translation>
 <translation id="4912643508233590958">নিষ্ক্রিয়তা সময়ের সমাপ্তি</translation>
 <translation id="4913209098186576320">এই ফাইল বিপজ্জনক হতে পারে<ph name="LINE_BREAK" />এটি চেক করতে সাধারণের থেকে বেশি সময় লাগতে পারে...</translation>
@@ -5880,6 +5880,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> সার্চ</translation>
 <translation id="5139823398361067371">আপনার 'নিরাপত্তা কী'-এর পিন লিখুন। পিন না জানা থাকলে, আপনাকে নিরাপত্তা কী রিসেট করতে হবে।</translation>
 <translation id="5139955368427980650">&amp;খুলুন</translation>
+<translation id="5140742218917419811">ব্যবহার করার জন্য বোতাম</translation>
 <translation id="5141421572306659464">প্রাথমিক অ্যাকাউন্ট</translation>
 <translation id="5141957579434225843">যেমন, òa, òe, ùy লেখার পরিবর্তে oà, oè, uỳ ব্যবহার করুন</translation>
 <translation id="5143374789336132547">আপনি হোম বোতাম ক্লিক করলে কোন পৃষ্ঠা দেখানো হবে তা <ph name="EXTENSION_NAME" /> এক্সটেনশনটি পরিবর্তন করেছে।</translation>
@@ -5898,6 +5899,7 @@
 <translation id="5149602533174716626">ভিডিও ফ্রেম কপি করুন</translation>
 <translation id="5150254825601720210">Netscape সার্টিফিকেট SSL সার্ভার নাম</translation>
 <translation id="5151354047782775295">ডিস্কের জায়গা খালি করুন, নাহলে নির্বাচিত তথ্য স্বয়ংক্রিয়ভাবে মুছে ফেলা হতে পারে</translation>
+<translation id="5153074793829217329">আপনার মাউস কার্সার নিয়ন্ত্রণ করতে কীবোর্ড বা নিউমেরিক কীপ্যাড ব্যবহার করুন</translation>
 <translation id="5153234146675181447">ফোন ভুলে যান</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> এর উন্নত সেটিংস</translation>
@@ -7993,6 +7995,7 @@
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />-কে কম্পিউটারের কাছে আসতে বলুন। ভয়েস মডেল তৈরি করতে আপনার সন্তান স্ক্রিনে দেখতে পাওয়া কয়েকটি বাক্যাংশ পড়বে।
     <ph name="BR" />
     পড়ার সময় <ph name="SUPERVISED_USER_NAME" />-এর সাহায্যের প্রয়োজন হলে, আপনি প্রথমে রিডিং পড়ুন এবং সেটি শুনে তারপর তাকে বলতে বলুন। আপনি মাইকের সামনে পড়বেন না, যাতে Assistant আপনার সন্তানের ভয়েস শুনে সেভ করে রাখতে পারে, আপনারটা নয়।</translation>
+<translation id="6689948774466767379">মাউস কী</translation>
 <translation id="6690659332373509948">ফাইল বিশ্লেষণ করতে বন্ধ: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ফরওয়ার্ড</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১টি পৃষ্ঠা}one{{COUNT}টি পৃষ্ঠা}other{{COUNT}টি পৃষ্ঠা}}</translation>
@@ -10079,6 +10082,7 @@
 <translation id="8168435359814927499">কন্টেন্ট</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{রিডিং তালিকাতে ট্যাব যোগ করুন}one{রিডিং তালিকাতে ট্যাব যোগ করুন}other{রিডিং তালিকাতে ট্যাব যোগ করুন}}</translation>
 <translation id="8169177848833352618">এই মেশিনে Bruschetta ইনস্টল করা যাবে না। সমস্যার কোড হল <ph name="ERROR" />।</translation>
+<translation id="8172303073969862496">ডানদিক</translation>
 <translation id="8174047975335711832">ডিভাইস সংক্রান্ত তথ্য</translation>
 <translation id="8176332201990304395">গোলাপি ও সাদা</translation>
 <translation id="8176529144855282213">মাইক্রোফোন অ্যাক্সেস চালু করতে, আপনার ডিভাইসে ফিজিক্যাল মাইক্রোফোন সুইচ চালু করুন</translation>

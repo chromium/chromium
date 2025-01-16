@@ -7,3 +7,10 @@ include_rules = [
   "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/toolbar/ui_bundled",
 ]
+
+specific_include_rules = {
+  ".*_app_interface.mm" : [
+    "+components/data_sharing/test_support",
+    "+ios/chrome/browser/data_sharing/model",
+  ]
+}

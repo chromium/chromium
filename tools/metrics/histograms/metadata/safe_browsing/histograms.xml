@@ -2042,28 +2042,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded"
-    enum="BooleanAccepted" expires_after="2024-09-01">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the number of times we have added Push notification-intiated navigation
-    events.
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.NavigationObserver.NotificationOriginAddedToReferrerChain"
-    enum="BooleanAccepted" expires_after="2024-09-01">
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the number of times a notification's service worker's URL is added as a
-    referrer in a referrer chain.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.NavigationObserver.RedirectForTelScheme"
     enum="BooleanAccepted" expires_after="2025-07-06">
   <owner>nwokedi@chromium.org</owner>

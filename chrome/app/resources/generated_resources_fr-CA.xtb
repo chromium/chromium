@@ -2893,7 +2893,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi aujourd'hui et que vous téléchargiez une mise à jour. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).}one{<ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi et que vous téléchargiez une mise à jour avant l'échéance. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).}other{<ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi et que vous téléchargiez une mise à jour avant l'échéance. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).}}</translation>
 <translation id="3009178788565917040">Sortie</translation>
-<translation id="3009300415590184725">Voulez-vous vraiment annuler la configuration du service de données mobiles?</translation>
 <translation id="3009352964623081324">Rechercher+O, puis S. Ce raccourci permet d'installer, de gérer et de personnaliser les voix.</translation>
 <translation id="3009779501245596802">Bases de données indexées</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Vos mots de passe semblent forts}=1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
@@ -3402,7 +3401,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3396442984945202128">Confirmer votre identité</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton « Accepter et continuer », vous acceptez le traitement décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Fige</translation>
-<translation id="3398899528308712018">Suggestion de groupe d'onglets</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
 <translation id="3401484564516348917">Lire de l'information à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés, des valeurs de registre et des fichiers</translation>
@@ -4832,7 +4830,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4386604394450371010">aperçu</translation>
 <translation id="4387890294700445764">Mots de passe compromis</translation>
 <translation id="4388650384344483842">Utiliser au moins huit caractères</translation>
-<translation id="4389091756366370506">Utilisateur <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et <ph name="NUMBER_OF_OTHER_SWITCHES" /> autres commutateurs</translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
@@ -5566,7 +5563,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4906679076183257864">Rétablir les paramètres par défaut</translation>
 <translation id="4907129260985716018">Choisir quand cette extension peut lire et modifier vos données relatives aux sites</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites en même temps</translation>
-<translation id="4909038193460299775">Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et autres paramètres seront supprimés de cet appareil. Cependant, vos données resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">L'application est déjà installée</translation>
 <translation id="4912643508233590958">Sorties de veille</translation>
 <translation id="4913209098186576320">Ce fichier peut être dangereux<ph name="LINE_BREAK" />Cette vérification prend plus de temps que d'habitude…</translation>

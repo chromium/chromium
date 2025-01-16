@@ -133,7 +133,7 @@ base::Value GetActiveFieldTrialList() {
 
 }  // namespace
 
-base::Value::Dict GetNetConstants() {
+base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
   base::Value::Dict constants_dict;
 
   // Version of the file format.
@@ -308,6 +308,10 @@ base::Value::Dict GetNetConstants() {
       dict.Set(mode.second, static_cast<int>(mode.first));
     }
     constants_dict.Set("secureDnsMode", std::move(dict));
+  }
+
+  if (request_mode == NetConstantsRequestMode::kTracing) {
+    return constants_dict;
   }
 
   // Information about how the "time ticks" values we have given it relate to

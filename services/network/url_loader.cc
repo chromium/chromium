@@ -1738,12 +1738,14 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
       factory_params_->client_security_state
           ? factory_params_->client_security_state->document_isolation_policy
           : kEmptyDip;
+  // TODO(crbug.com/333029815): Pass a DocumentIsolationPolicyReporter to this
+  // call instead of nullptr.
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
               request_destination_, cross_origin_embedder_policy,
-              coep_reporter_, document_isolation_policy)) {
+              coep_reporter_, document_isolation_policy, nullptr)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // TODO(crbug.com/40054032):  Close the socket here.
@@ -2165,12 +2167,14 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
       factory_params_->client_security_state
           ? factory_params_->client_security_state->document_isolation_policy
           : kEmptyDip;
+  // TODO(crbug.com/333029815): Pass a DocumentIsolationPolicyReporter to this
+  // call instead of nullptr.
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
               request_destination_, cross_origin_embedder_policy,
-              coep_reporter_, document_isolation_policy)) {
+              coep_reporter_, document_isolation_policy, nullptr)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking

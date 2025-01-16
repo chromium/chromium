@@ -703,6 +703,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2215539479425228550">Szikla- és hegymászás</translation>
 <translation id="2215727959747642672">Fájlszerkesztés</translation>
 <translation id="2215963164070968490">Kutyák</translation>
+<translation id="2219376942605837404">Lap hozzáadása összehasonlító táblázathoz</translation>
 <translation id="2219658597883514593">Útmutató újraindítása</translation>
 <translation id="2219735899272417925">Az eszköz visszaállítására van szükség</translation>
 <translation id="2221227930294879156">Étellel és itallal kapcsolatos rendezvények</translation>
@@ -1153,6 +1154,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="306573536155379004">A játék elindult.</translation>
 <translation id="3067505415088964188">Alacsony ár</translation>
 <translation id="3068118691172921711">A fájlok feltöltése a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba 1 perc múlva kezdődik</translation>
+<translation id="3068976060094139647">Ennek a kártyának az adatait automatikusan kitöltheti, mert fiókja össze van kapcsolva a Google Pay szolgáltatással.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elem}other{{ITEMS} elem}}</translation>
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -1786,6 +1788,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4151403195736952345">Globális alapértelmezés használata (Észlelés)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. oldal}other{{COUNT}. oldal}}</translation>
 <translation id="4154277373259957087">A Chrome most ellenőrzi a személyazonosságát, mielőtt kitöltené a fizetési módokat. Ezt bármikor módosíthatja itt: <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Lap hozzáadása összehasonlító táblázathoz</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165422751765527461">Súgócikket nyit meg egy új lapon</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
@@ -2150,6 +2153,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új Google-táblázat gyors létrehozásához</translation>
 <translation id="4826588772550366629">kamera és mikrofon</translation>
 <translation id="4827283332383516812">Kártya törlése</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> kijelölve</translation>
 <translation id="4831993743164297314">Képszedőpapír</translation>
 <translation id="483241715238664915">Figyelmeztetések bekapcsolása</translation>
 <translation id="4832961164064927107">Barbecue és grillezés</translation>
@@ -3392,6 +3396,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="706960991003274248">A összehasonlító táblázatok mentésre kerülnek az Ön fiókjába (<ph name="EMAIL" />)</translation>
 <translation id="7070144569727915108">rendszerbeállítások</translation>
 <translation id="70705239631109039">Kapcsolata nem teljesen biztonságos</translation>
+<translation id="7071122206197538392">Új összehasonlító táblázat</translation>
 <translation id="7075452647191940183">A kérés túl nagy</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4104,6 +4109,7 @@ További részletek:
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
 <translation id="8301894345671534559">Kód megadása</translation>
 <translation id="8303854710873047864">A(z) „<ph name="SECTION" />” szakasz megjelenítve</translation>
+<translation id="8304912090860925649">Új összehasonlító táblázat</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
 <translation id="8308653357438598313">Élő videóstreamelés</translation>
 <translation id="8311895354659782580">Ingatlanhirdetések</translation>

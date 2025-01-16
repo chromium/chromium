@@ -32,9 +32,11 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
   void SetActivationCallback(base::OnceClosure activation_callback) override;
+  void SetErrorCallback(base::OnceClosure error_callback) override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
+  void OnFailed(PrerenderFinalStatus status) override;
 
   FrameTreeNodeId frame_tree_node_id_for_testing() const {
     return frame_tree_node_id_;
@@ -52,6 +54,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
 
   bool was_activated_ = false;
   base::OnceClosure activation_callback_;
+  base::OnceClosure error_callback_;
 
   base::WeakPtrFactory<PrerenderHandle> weak_factory_{this};
 };

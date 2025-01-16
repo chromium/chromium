@@ -2890,7 +2890,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag verbinding maakt met wifi om een update te downloaden. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}other{<ph name="MANAGER" /> vereist dat je vóór de deadline verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}}</translation>
 <translation id="3009178788565917040">Uitgang</translation>
-<translation id="3009300415590184725">Weet je zeker dat je het instellen van een mobiele dataservice wilt annuleren?</translation>
 <translation id="3009352964623081324">Zoeken + O, dan S. Gebruik dit om stemmen te installeren, te beheren en aan te passen.</translation>
 <translation id="3009779501245596802">Geïndexeerde databases</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Je wachtwoorden lijken sterk}=1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
@@ -3397,7 +3396,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3396442984945202128">Laten verifiëren dat jij het bent</translation>
 <translation id="3396800784455899911">Door op de knop 'Accepteren en doorgaan' te klikken, ga je akkoord met de bovengenoemde verwerking voor deze Google-services.</translation>
 <translation id="339722927132407568">Loopt vast</translation>
-<translation id="3398899528308712018">Suggestie voor tabbladgroep</translation>
 <translation id="3399432415385675819">Meldingen worden uitgezet</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - geïnterlinieerd</translation>
 <translation id="3401484564516348917">Informatie over je browser, OS, apparaat, geïnstalleerde software, registerwaarden en bestanden lezen</translation>
@@ -4826,7 +4824,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4386604394450371010">overzicht</translation>
 <translation id="4387890294700445764">Gehackte wachtwoorden</translation>
 <translation id="4388650384344483842">Gebruik minstens 8 tekens</translation>
-<translation id="4389091756366370506">Gebruiker <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog <ph name="NUMBER_OF_OTHER_SWITCHES" /> andere schakelaars</translation>
 <translation id="439266289085815679">Bluetooth-configuratie wordt beheerd door <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Het configuratiebestand bewerken</translation>
@@ -5560,7 +5557,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4906679076183257864">Standaardinstelling herstellen</translation>
 <translation id="4907129260985716018">Kiezen wanneer deze extensie je sitegegevens kan lezen en wijzigen</translation>
 <translation id="4908811072292128752">Een nieuw tabblad openen om op twee sites tegelijk te browsen</translation>
-<translation id="4909038193460299775">Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist van dit apparaat. Je gegevens blijven opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">App is al geïnstalleerd</translation>
 <translation id="4912643508233590958">Activeringen vanuit inactief</translation>
 <translation id="4913209098186576320">Dit bestand kan gevaarlijk zijn<ph name="LINE_BREAK" />Deze controle duurt langer dan normaal...</translation>

@@ -285,6 +285,8 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseAtCounterStyleDescriptor(id, stream, context);
     case StyleRule::kViewTransition:
       return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
+    case StyleRule::kFunction:
+      return Parser::ParseAtFunctionDescriptor(id, stream, context);
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -303,7 +305,6 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kScope:
     case StyleRule::kSupports:
     case StyleRule::kStartingStyle:
-    case StyleRule::kFunction:
     case StyleRule::kMixin:
     case StyleRule::kApplyMixin:
     case StyleRule::kPositionTry:
@@ -513,6 +514,30 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
   }
 
   return parsed_value;
+}
+
+CSSValue* AtRuleDescriptorParser::ParseAtFunctionDescriptor(
+    AtRuleDescriptorID id,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  // TODO(crbug.com/325504770): Handle local variables.
+
+  if (id != AtRuleDescriptorID::Result) {
+    return nullptr;
+  }
+
+  bool important_ignored;
+  CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
+          /*comma_ends_declaration=*/false, important_ignored, context);
+  if (!variable_data) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data,
+                                                           &context);
 }
 
 bool AtRuleDescriptorParser::ParseDescriptorValue(

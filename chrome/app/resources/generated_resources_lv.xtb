@@ -160,6 +160,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1101254380285078812">{COUNT,plural, =1{1 parole}zero{{COUNT} paroļu}one{{COUNT} parole}other{{COUNT} paroles}}</translation>
 <translation id="1102759278139578486">Nevar lejupielādēt galvenā mezgla anotāciju failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
+<translation id="1104098698795583187">Jūs uzreiz zaudēsiet piekļuvi šai ciļņu grupai, un tā tiks izdzēsta no visām jūsu ierīcēm.</translation>
 <translation id="1106350001632362876">Paaugstināt slieksni</translation>
 <translation id="1107482171728500359">Mikrofona kopīgošana</translation>
 <translation id="110850812463801904">Manuāli saistīt ar OneDrive</translation>
@@ -1694,6 +1695,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2173801458090845390">Pievienot pieprasījuma ID šai ierīcei</translation>
 <translation id="2175384018164129879">&amp;Pārvaldīt meklētājprogrammas un meklēšanu vietnē</translation>
+<translation id="2175526076681939329">Izmantot galvenos taustiņus</translation>
 <translation id="217576141146192373">Nevar pievienot printeri. Lūdzu, pārbaudiet printera konfigurāciju un mēģiniet vēlreiz.</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
 <translation id="217631816678106981">Neielīmēt</translation>
@@ -2890,7 +2892,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
 <translation id="3009178788565917040">Izvade</translation>
-<translation id="3009300415590184725">Vai tiešām vēlaties atcelt mobilo datu pakalpojumu iestatīšanas procesu?</translation>
 <translation id="3009352964623081324">Search+O, pēc tam S. Izmantojiet, lai instalētu, pārvaldītu un pielāgotu balsis.</translation>
 <translation id="3009779501245596802">Rādītājā iekļautās datu bāzes</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Šķiet, jūsu paroles ir drošas}=1{{COUNT} nedroša parole}zero{{COUNT} nedrošu paroļu}one{{COUNT} nedroša parole}other{{COUNT} nedrošas paroles}}</translation>
@@ -3397,7 +3398,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3396442984945202128">Apstiprināt identitāti</translation>
 <translation id="3396800784455899911">Noklikšķinot uz pogas “Piekrist un turpināt”, jūs piekrītat iepriekš aprakstītajai apstrādei šajos Google pakalpojumos.</translation>
 <translation id="339722927132407568">Attēla sastingšana</translation>
-<translation id="3398899528308712018">Ciļņu grupas ieteikums</translation>
 <translation id="3399432415385675819">Paziņojumi tiks atspējoti</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herci) — rindpārlēces izvērse</translation>
 <translation id="3401484564516348917">Lasīt informāciju par jūsu pārlūku, OS, ierīci, instalēto programmatūru, reģistra vērtībām un failiem</translation>
@@ -3413,6 +3413,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3407392651057365886">Iepriekš ielādēto lapu skaits ir lielāks. Lapas var ielādēt iepriekš, izmantojot Google serverus, ja to ir pieprasījušas citas vietnes.</translation>
 <translation id="3407967630066378878">Lai iestatītu pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram ierīces <ph name="DEVICE_TYPE" /> kreisajā pusē. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3408555740610481810">Tiek izmantota kamera un mikrofons</translation>
+<translation id="3409157109901479672">Kreisā puse</translation>
 <translation id="3409513286451883969">&amp;Tulkot atlasīto tekstu šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Pāriet uz atlasi</translation>
 <translation id="3413122095806433232">CA izsniedzēji: <ph name="LOCATION" /></translation>
@@ -4698,6 +4699,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4290826901752066702"><ph name="NUM" /> dalībnieks</translation>
 <translation id="4290898381118933198">Vilkšana, lai pārietu uz citām lapām</translation>
 <translation id="4291265871880246274">Pieteikšanās dialoglodziņš</translation>
+<translation id="4292613336957320546">Paātrinājums</translation>
 <translation id="429312253194641664">Vietne atskaņo multivides saturu</translation>
 <translation id="4294392694389031609">Fails “<ph name="FILE_NAME" />” tika dzēsts no lejupielāžu vēstures, taču tas joprojām ir jūsu ierīcē.</translation>
 <translation id="4295072614469448764">Lietotne ir pieejama jūsu terminālī. Programmā Palaidējs var būt redzama arī ikona.</translation>
@@ -4825,7 +4827,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4386604394450371010">kopsavilkums</translation>
 <translation id="4387890294700445764">Uzlauztas paroles</translation>
 <translation id="4388650384344483842">Izmantojiet vismaz 8 rakstzīmes.</translation>
-<translation id="4389091756366370506">Lietotājs <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> un vēl <ph name="NUMBER_OF_OTHER_SWITCHES" /> slēdža taustiņi</translation>
 <translation id="439266289085815679">Bluetooth konfigurāciju kontrolē <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediģēt konfigurācijas failu</translation>
@@ -5560,7 +5561,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4906679076183257864">Atiestatīt noklusējumu</translation>
 <translation id="4907129260985716018">Izvēlieties, kad šis paplašinājums var lasīt un mainīt jūsu vietņu datus</translation>
 <translation id="4908811072292128752">Atveriet jaunu cilni, lai pārlūkotu divas vietnes vienlaikus.</translation>
-<translation id="4909038193460299775">Tā kā šo kontu pārvalda <ph name="DOMAIN" />, jūsu grāmatzīmes, vēsture, paroles un citi iestatījumi tiks dzēsti no šīs ierīces. Tomēr jūsu dati joprojām tiks glabāti jūsu Google kontā un tos var pārvaldīt <ph name="BEGIN_LINK" />Google informācijas panelī<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Lietotne jau ir instalēta</translation>
 <translation id="4912643508233590958">Aktivizēšanas reižu skaits pēc gaidstāves režīma</translation>
 <translation id="4913209098186576320">Šis fails var būt bīstams.<ph name="LINE_BREAK" />Šī pārbaude notiek ilgāk nekā parasti...</translation>
@@ -5866,6 +5866,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5139112070765735680">Meklēšana: <ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Ievadiet drošības atslēgas PIN. Ja nezināt PIN, būs jāatiestata drošības atslēga.</translation>
 <translation id="5139955368427980650">Atvērt</translation>
+<translation id="5140742218917419811">Izmantojamie taustiņi</translation>
 <translation id="5141421572306659464">Primārais konts</translation>
 <translation id="5141957579434225843">Piemēram, “òa”, “òe”, “ùy” vietā varat izmantot “oà”, “oè”, “uỳ”.</translation>
 <translation id="5143374789336132547">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja iestatījumu, kura lapa tiek parādīta, noklikšķinot uz pogas Sākums.</translation>
@@ -5884,6 +5885,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5149602533174716626">Kop&amp;ēt video kadru</translation>
 <translation id="5150254825601720210">Netscape sertifikāta SSL servera nosaukums</translation>
 <translation id="5151354047782775295">Atbrīvojiet diskā vietu; pretējā gadījumā atlasītie dati var tikt automātiski dzēsti.</translation>
+<translation id="5153074793829217329">Izmantojiet tastatūru vai cipartastatūru, lai kontrolētu peles kursoru.</translation>
 <translation id="5153234146675181447">Tālruņa aizmiršana</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />: papildu iestatījumi</translation>
@@ -7976,6 +7978,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6689714331348768690">Pieaiciniet lietotāju <ph name="SUPERVISED_USER_NAME" /> pie datora. Lai izveidotu balss modeli, bērnam būs jānolasa dažas ekrānā redzamās frāzes.
     <ph name="BR" />
     Ja lietotājs <ph name="SUPERVISED_USER_NAME" /> nevar patstāvīgi nolasīt frāzes, nolasiet katru frāzi un lieciet bērnam atkārtot. Nolasiet frāzes čukstus, novēršoties no mikrofona, lai Asistents uztvertu bērna balsi, nevis jūsu.</translation>
+<translation id="6689948774466767379">Peles taustiņi</translation>
 <translation id="6690659332373509948">Nevar parsēt failu: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">Pārsūtīt</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 lapa}zero{{COUNT} lapu}one{{COUNT} lapa}other{{COUNT} lapas}}</translation>
@@ -10062,6 +10065,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
 <translation id="8169177848833352618">Diemžēl šis dators neatbilst prasībām, kas jāizpilda, lai varētu instalēt Bruschetta. Kļūdas kods ir <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Labā puse</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8176332201990304395">Rozā un balta</translation>
 <translation id="8176529144855282213">Lai ieslēgtu piekļuvi mikrofonam, ieslēdziet fizisko mikrofona slēdzi ierīcē.</translation>

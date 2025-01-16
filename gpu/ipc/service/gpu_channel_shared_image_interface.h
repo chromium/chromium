@@ -69,8 +69,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) override;
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
   void UpdateSharedImage(const SyncToken& sync_token,

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1066101356081285416">Chrome은 사용자가 방문한 사이트에서 운송장 번호를 감지하여 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 모든 사용자를 위해 Google 쇼핑 기능을 개선하기 위해 운송장 번호와 웹사이트 이름이 Google로 전송됩니다. <ph name="BEGIN_LINK" />배송 추적 설정<ph name="END_LINK" />에서 언제든지 업데이트할 수 있습니다.</translation>
+<translation id="1076643793026027628">Chrome에서 시크릿 모드로 YouTube 시크릿 모드 링크를 자동으로 엽니다</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1146503048444965320">Chrome에서 새 탭 열기</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">이 사이트 및 Chrome에 로그인하세요.</translation>
 <translation id="4646014602299206846">Chrome은 사용자가 방문하는 사이트에서 운송장 번호를 감지하고 새 탭 페이지에 배송 현황을 표시합니다. 이 기능을 제공하고 Google 쇼핑을 개선하기 위해 내 데이터가 Google과 공유됩니다.</translation>
 <translation id="4647910807533196601">Chrome에서 최신 내 탭을 엽니다.</translation>
+<translation id="4693084815234024320">Chrome 시크릿 모드 사용 중</translation>
 <translation id="4724297637870447613">어디서나 Chrome 사용</translation>
 <translation id="4738647308035481133">Chrome 페이지</translation>
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>

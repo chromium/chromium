@@ -436,6 +436,11 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED();
 }
 
+- (void)deleteSharedTabGroup:(base::WeakPtr<const TabGroup>)group
+                  sourceView:(UIView*)sourceView {
+  NOTREACHED();
+}
+
 #pragma mark - GridToolbarsConfigurationProvider
 
 - (TabGridToolbarsConfiguration*)toolbarsConfiguration {

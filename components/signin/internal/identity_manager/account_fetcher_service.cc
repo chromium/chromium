@@ -170,6 +170,12 @@ void AccountFetcherService::RefreshAccountInfoIfStale(
 
 void AccountFetcherService::UpdateChildInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do not override child account information derived from capabilities if the
+  // experiment is enabled.
+  if (base::FeatureList::IsEnabled(
+          switches::kForceSupervisedSigninWithCapabilities)) {
+    return;
+  }
   std::vector<CoreAccountId> accounts = token_service_->GetAccounts();
   if (accounts.size() >= 1) {
     // If a child account is present then there can be only one child account,

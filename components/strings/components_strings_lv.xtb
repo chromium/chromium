@@ -387,6 +387,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Lai izmantotu paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chromium un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="1652887625750064647">MI ģenerētā precīzākā atbilstība</translation>
+<translation id="1653465303147789530">Maksājiet ar <ph name="PAYMENT_METHOD" />, nepārslēdzot lietotnes</translation>
 <translation id="1656024727720460136">Chrome vienkāršoja šo lapu, lai atvieglotu lasīšanu. Chrome izguva sākotnējo lapu, izmantojot drošu savienojumu.</translation>
 <translation id="1656489000284462475">Informācija par saņemšanu</translation>
 <translation id="1658111267661135323">TV un video</translation>
@@ -557,6 +558,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1959001866257244765">Palīdzēt uzlabot drošību tīmeklī visiem, nosūtot Google serveriem <ph name="BEGIN_WHITEPAPER_LINK" />dažu apmeklēto lapu vietrāžus URL, ierobežotu sistēmas informāciju un daļu lapu satura<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Konfidencialitātes politika<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Jūsu teksts un lapas saturs tiek nosūtīts uzņēmumam Google un var tikt izmantots šīs funkcijas uzlabošanai.
   <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="196146181975453736">Veiciet vienreizēju drošības pārbaudi, lai varētu maksāt ātrāk.</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="1973335181906896915">Radās serializēšanas kļūda.</translation>
 <translation id="1973785048533660168">Darba piedāvājumi ierēdniecībā un administrācijā</translation>
@@ -701,6 +703,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2215539479425228550">Kāpšana kalnos un alpīnisms</translation>
 <translation id="2215727959747642672">Faila rediģēšana</translation>
 <translation id="2215963164070968490">Suņi</translation>
+<translation id="2219376942605837404">Pievienot cilni salīdzinājuma tabulai</translation>
 <translation id="2219658597883514593">Atsākt pamācību</translation>
 <translation id="2219735899272417925">jāveic ierīces atiestatīšana</translation>
 <translation id="2221227930294879156">Ar pārtiku un dzērieniem saistīti pasākumi</translation>
@@ -1151,6 +1154,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="306573536155379004">Spēle sākta.</translation>
 <translation id="3067505415088964188">Cena ir zema</translation>
 <translation id="3068118691172921711">Failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /> sāksies pēc vienas minūtes</translation>
+<translation id="3068976060094139647">Varat automātiski aizpildīt šīs kartes informāciju, jo jūsu konts ir saistīts ar Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} vienums}zero{{ITEMS} vienumu}one{{ITEMS} vienums}other{{ITEMS} vienumi}}</translation>
 <translation id="3076865167425975822">Operētājsistēmas</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -1585,6 +1589,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="378611282717571199">Precīzākās atbilstības vaicājumam “<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">16. izmērs</translation>
 <translation id="3789841737615482174">Instalēt</translation>
+<translation id="3791118028061680614">Maksājiet, nepārslēdzot lietotnes</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> collas)</translation>
 <translation id="3792826587784915501">Kulta un neatkarīgās (indie) filmas</translation>
 <translation id="3793574014653384240">Nesen notikušo avāriju skaits un cēloņi</translation>
@@ -1784,6 +1789,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4151403195736952345">Izmantot globālo noklusējuma vērtību (noteikt)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. lapa}zero{{COUNT}. lapa}one{{COUNT}. lapa}other{{COUNT}. lapa}}</translation>
 <translation id="4154277373259957087">Turpmāk pārlūkā Chrome pirms maksājuma veida informācijas aizpildīšanas tiks pārbaudīta jūsu identitāte. To varat jebkurā laikā atspējot sadaļā <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Pievienot cilni salīdzinājuma tabulai</translation>
 <translation id="4159784952369912983">Violets</translation>
 <translation id="4165422751765527461">Atvērt palīdzības centra rakstu jaunā cilnē</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
@@ -3390,6 +3396,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="706960991003274248">Salīdzinājumu tabulas tiek saglabātas jūsu kontā <ph name="EMAIL" />.</translation>
 <translation id="7070144569727915108">sistēmas iestatījumos</translation>
 <translation id="70705239631109039">Jūsu savienojums nav pilnīgi drošs</translation>
+<translation id="7071122206197538392">Jauna salīdzinājuma tabula</translation>
 <translation id="7075452647191940183">Pieprasījums ir pārāk liels</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4101,6 +4108,7 @@ Papildu informācija:
 <translation id="8298115750975731693">Iespējams, izmantotajā Wi-Fi tīklā (<ph name="WIFI_NAME" />) tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Ievadīt kodu</translation>
 <translation id="8303854710873047864">Tiek rādīta sadaļa “<ph name="SECTION" />”</translation>
+<translation id="8304912090860925649">Jauna salīdzinājuma tabula</translation>
 <translation id="830498451218851433">Locījums uz pusēm</translation>
 <translation id="8308653357438598313">Video straumēšana tiešraidē</translation>
 <translation id="8311895354659782580">Nekustamā īpašuma sludinājumi</translation>

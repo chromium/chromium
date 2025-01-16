@@ -2899,7 +2899,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi днес и да изтеглите актуализация. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}other{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi и да изтеглите актуализация преди крайния срок. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}}</translation>
 <translation id="3009178788565917040">Изход</translation>
-<translation id="3009300415590184725">Наистина ли искате да анулирате процеса на настройка на мобилната услуга за данни?</translation>
 <translation id="3009352964623081324">Клавиш „търсене“ + O, след това S. Използвайте за инсталиране, управление и персонализиране на гласове.</translation>
 <translation id="3009779501245596802">Индексирани бази от данни</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Паролите ви изглеждат надеждни}=1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
@@ -3408,7 +3407,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3396442984945202128">Потвърдете, че сте вие</translation>
 <translation id="3396800784455899911">С кликването си върху бутона „Приемам и продължавам“ приемате описаното по-горе обработване за тези услуги на Google.</translation>
 <translation id="339722927132407568">Блокира</translation>
-<translation id="3398899528308712018">Предложение за група раздели</translation>
 <translation id="3399432415385675819">Известията ще бъдат деактивирани</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> херца) – презредова развивка</translation>
 <translation id="3401484564516348917">Четене на информация за вашите браузър, операционна система, устройство, инсталиран софтуер, стойности в системния регистър и файлове</translation>
@@ -4839,7 +4837,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4386604394450371010">общ преглед</translation>
 <translation id="4387890294700445764">Компрометирани пароли</translation>
 <translation id="4388650384344483842">Използвайте поне 8 знака</translation>
-<translation id="4389091756366370506">Потребител <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и още <ph name="NUMBER_OF_OTHER_SWITCHES" /> превключвателя</translation>
 <translation id="439266289085815679">Конфигурацията на Bluetooth се управлява от <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Редактиране на конфигурационния файл</translation>
@@ -5574,7 +5571,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4906679076183257864">Възстановяване на настройката по подразбиране</translation>
 <translation id="4907129260985716018">Изберете кога това разширение да може да чете и променя данните от сайтовете</translation>
 <translation id="4908811072292128752">Отворете нов раздел, за да сърфирате в два сайта едновременно</translation>
-<translation id="4909038193460299775">Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството. Данните ви обаче ще продължат да се съхраняват в профила ви в Google. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Приложението вече е инсталирано</translation>
 <translation id="4912643508233590958">Събуждания при неактивност</translation>
 <translation id="4913209098186576320">Възможно е този файл да е опасен<ph name="LINE_BREAK" />Проверката отнема повече време от обикновено…</translation>

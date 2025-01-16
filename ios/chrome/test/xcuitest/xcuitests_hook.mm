@@ -76,6 +76,9 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   return nullptr;
 }
 
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service) {}
+
 std::unique_ptr<ShareKitService> CreateShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
     collaboration::CollaborationService* collaboration_service,

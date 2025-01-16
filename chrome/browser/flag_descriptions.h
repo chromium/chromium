@@ -4706,6 +4706,9 @@ extern const char kProfilesReorderingName[];
 extern const char kProfilesReorderingDescription[];
 #endif
 
+extern const char kProfilePickerGlicTesting[];
+extern const char kProfilePickerGlicTestingDescription[];
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kBatchUploadDesktopName[];
 extern const char kBatchUploadDesktopDescription[];
@@ -4775,6 +4778,9 @@ extern const char kSupervisedProfileSignInIphDescription[];
 
 extern const char kSupervisedProfileShowKiteBadgeName[];
 extern const char kSupervisedProfileShowKiteBadgeDescription[];
+
+extern const char kSupervisedUserLocalWebApprovalsName[];
+extern const char kSupervisedUserLocalWebApprovalsDescription[];
 
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

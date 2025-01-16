@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">Σφάλμα απορρήτου</translation>
 <translation id="1414134146594747368">Νηπιαγωγείο</translation>
 <translation id="1419305130220238697">Κουμπί Διαχείριση λήψεων στο Chrome, ενεργοποιήστε το για να διαχειριστείτε τα αρχεία που έχετε κατεβάσει στο Chrome</translation>
+<translation id="1420345875188552368">Ο αποθηκευμένος τρόπος αυτόματης πληρωμής μπορεί να χρησιμοποιηθεί για αυτή την πληρωμή. Για να απενεργοποιήσετε τα Ηλεκτρονικά πορτοφόλια στο Chrome, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις πληρωμής<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> για να επιτρέψετε τη σύζευξη</translation>
 <translation id="14222610277930434">Επισκέπτεστε συχνά</translation>
 <translation id="1422930527989633628">Μπορεί να ζητά να εντοπίζει κοντινές συσκευές Bluetooth (συνιστάται).</translation>
@@ -703,6 +704,7 @@
 <translation id="2215539479425228550">Αναρρίχηση και ορειβασία</translation>
 <translation id="2215727959747642672">Επεξεργασία αρχείου</translation>
 <translation id="2215963164070968490">Σκυλιά</translation>
+<translation id="2219376942605837404">Προσθήκη καρτέλας στον πίνακα σύγκρισης</translation>
 <translation id="2219658597883514593">Επανεκκίνηση οδηγού</translation>
 <translation id="2219735899272417925">Απαιτείται επαναφορά της συσκευής</translation>
 <translation id="2221227930294879156">Εκδηλώσεις για τρόφιμα και ποτά</translation>
@@ -1153,6 +1155,7 @@
 <translation id="306573536155379004">Το παιχνίδι ξεκίνησε.</translation>
 <translation id="3067505415088964188">Η τιμή είναι χαμηλή</translation>
 <translation id="3068118691172921711">Η μεταφόρτωση του αρχείου σας στο <ph name="CLOUD_PROVIDER" /> θα ξεκινήσει σε 1 λεπτό</translation>
+<translation id="3068976060094139647">Μπορείτε να συμπληρώσετε αυτόματα αυτή την κάρτα, επειδή ο λογαριασμός σας είναι συνδεδεμένος με το Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} στοιχείο}other{{ITEMS} στοιχεία}}</translation>
 <translation id="3076865167425975822">Λειτουργικά συστήματα</translation>
 <translation id="3080254622891793721">Γραφικά</translation>
@@ -1789,6 +1792,7 @@
 <translation id="4151403195736952345">Χρήση καθολικής προεπιλογής (Εντοπισμός)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Σελίδα 1}other{Σελίδα {COUNT}}}</translation>
 <translation id="4154277373259957087">Το Chrome θα επαληθεύσει τώρα την ταυτότητά σας πριν τη συμπλήρωση των τρόπων πληρωμής. Μπορείτε να ενημερώσετε αυτήν τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Προσθήκη καρτέλας στον πίνακα σύγκρισης</translation>
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4165422751765527461">Ανοίγει ένα άρθρο Κέντρου βοήθειας σε νέα καρτέλα</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
@@ -2154,6 +2158,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="4827283332383516812">Διαγραφή κάρτας</translation>
+<translation id="4830443836091007686">Επιλέχθηκαν <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Χαρτί φωτοστοιχειοθετικής μηχανής</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4832961164064927107">Μπάρμπεκιου και ψητά</translation>
@@ -3397,6 +3402,7 @@
 <translation id="706960991003274248">Οι πίνακες σύγκρισης αποθηκεύονται στον λογαριασμό σας <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">ρυθμίσεις συστήματος</translation>
 <translation id="70705239631109039">Η σύνδεσή σας δεν είναι πλήρως ασφαλής</translation>
+<translation id="7071122206197538392">Νέος πίνακας σύγκρισης</translation>
 <translation id="7075452647191940183">Το αίτημα είναι πολύ μεγάλο</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4108,6 +4114,7 @@
 <translation id="8298115750975731693">Το Wi-Fi που χρησιμοποιείτε (<ph name="WIFI_NAME" />) ενδέχεται να σας ζητήσει να επισκεφτείτε τη διεύθυνση <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Εισαγωγή κωδικού</translation>
 <translation id="8303854710873047864">Εμφανίζεται η ενότητα <ph name="SECTION" /></translation>
+<translation id="8304912090860925649">Νέος πίνακας σύγκρισης</translation>
 <translation id="830498451218851433">Δίπλωση στη μέση</translation>
 <translation id="8308653357438598313">Βίντεο ζωντανής ροής</translation>
 <translation id="8311895354659782580">Κτηματομεσιτικές καταχωρίσεις</translation>

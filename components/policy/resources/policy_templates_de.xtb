@@ -182,6 +182,17 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
       Ist die Richtlinie deaktiviert, ist die Funktion „Einkaufsliste“ nicht verfügbar.
       </translation>
 <translation id="1144147113722324623">Automatisches Upgrade auf HTTPS für Audio und Video aktivieren und Warnhinweis „Nicht sicher“ für Bilder anzeigen.</translation>
+<translation id="1146804230175611166">Die KI‑basierte Verlaufssuche ist eine Funktion, mit der Nutzer auch anhand von Seiteninhalten statt nur anhand von Seitentitel und URL ihren Browserverlauf durchsuchen und generierte Antworten erhalten können.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1147732569915511430">SHA-256-Hash des Avatarbilds.</translation>
 <translation id="1148415065145333943">Modus „Intelligente Akkuladung“ deaktivieren</translation>
 <translation id="1149203480502386713">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS aktivieren</translation>
@@ -202,6 +213,19 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
       Ist die Richtlinie deaktiviert, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.
       Bei einer Deaktivierung wird trotzdem ein Dialogfeld angezeigt, wenn durch „<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />“ eine Profiltrennung für verwaltete Konten erzwungen wird.</translation>
 <translation id="1158844608156732189">Kerberos-Konfiguration (eine Zeile pro Array-Element), siehe https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
+<translation id="1159241725763211010">Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem über den eigentlichen Webinhalten eingeblendeten Screenshot der aktuellen Seite interagieren. Außerdem können sie damit Google-Suchanfragen ausführen, die den Kontext der aktuellen Seite berücksichtigen. Um kontextsensitive Antworten liefern zu können, sendet „Lens Overlay“ die Inhalte der Seite an Google. Die Google Suche kann die Anfragen der Nutzer dann ausgehend vom Kontext der Seite beantworten, auf der sich die Nutzer gerade befinden.
+
+Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sofern die Funktion nicht durch diese Richtlinie deaktiviert wird, ist sie standardmäßig für alle Nutzer verfügbar, die Google als Standardsuchmaschine verwenden.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="1160479894929412407">QUIC-Protokoll zulassen</translation>
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
 <translation id="1161685818042751282">Keine vom Nutzer hinzugefügten TLS-Serverzertifikate aus Plattform-Trust Stores importieren.</translation>
@@ -308,7 +332,6 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 
       Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
 <translation id="1248955696540150266">Peer-to-Peer-Downloads von automatischen Updates zulassen</translation>
-<translation id="1249640740800891502">Einstellungen für SkyVault (alle Daten in der Cloud)</translation>
 <translation id="1250597158212586309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, haben Nutzer die Möglichkeit, Warnungen zu kompromittierten Passwörtern zu schließen und wiederherzustellen.
 
       Wird die Richtlinie deaktiviert, können Nutzer Warnungen zu kompromittierten Passwörtern nicht schließen. Ist sie aktiv, können Nutzer Warnungen zu kompromittierten Passwörtern schließen.</translation>
@@ -2146,6 +2169,17 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können die Protoko
       * Als Standardaktion bei Inaktivität wird das Gerät bei Netzanschluss heruntergefahren.
 
       Wenn die Richtlinie oder deren Einstellungen nicht konfiguriert wird, gelten für alle Einstellungen für die Ein-/Aus-Taste Standardwerte.</translation>
+<translation id="2589944745979739478">Mit dieser Richtlinie werden für <ph name="PRODUCT_OS_NAME" /> die Einstellungen der auf generativer KI basierenden Bearbeitungsfunktionen für Google Fotos festgelegt.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2591775699187375408">Audioprozess immer in einer Sandbox ausführen</translation>
 <translation id="2592091433672667839">Dauer der Inaktivität, bevor im Händlermodus der Bildschirmschoner auf der Anmeldeseite erscheint</translation>
 <translation id="259289618675490104">Wenn die Richtlinie auf „All“ (Alle) gesetzt (Wert 0) oder nicht konfiguriert ist, können Nutzer Zertifikate verwalten. Ist sie auf „None“ (Keine) (Wert 2) gesetzt, können Nutzer Zertifikate nur ansehen und nicht verwalten.
@@ -2305,6 +2339,17 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="2727844239611930002"><ph name="PRODUCT_NAME" /> darf prüfen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann.</translation>
+<translation id="2729889068935597630">Diese Richtlinie definiert die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Wenn diese Richtlinie beispielsweise auf den Wert „1“ gesetzt ist, ist dies die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Manuell festgelegte Richtlinienwerte sind davon nicht betroffen. Unter https://support.google.com/chrome/a?p=generative_ai_settings findest du eine Liste der abgedeckten Funktionen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn für eine abgedeckte Funktion kein entsprechender Richtlinienwert vorhanden ist, wird der nächsthöhere Wert verwendet. Weitere Informationen zur Interaktion mit Werten in dieser Richtlinie findest du in der Dokumentation der jeweiligen Funktion.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2730200383593984228">Nicht zugehörige Nutzer dürfen Android-Apps verwenden</translation>
 <translation id="2730419309754848345">Standardeinstellung „PDF als Bild drucken“</translation>
 <translation id="2730644640965800157">Wenn die Richtlinie aktiviert ist, wird die Synchronisierung zwischen <ph name="GOOGLE_DRIVE_NAME" /> und der App „Dateien“ von <ph name="PRODUCT_OS_NAME" /> deaktiviert. Es werden dann keine Daten in Google Drive hochgeladen.
@@ -4267,7 +4312,6 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 
           Ist die Richtlinie nicht konfiguriert, ist "Automatisch klicken" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4212181786686887763">URL, über die das Hintergrundbild heruntergeladen werden kann.</translation>
-<translation id="4221677608399717135">SkyVault aktivieren oder deaktivieren</translation>
 <translation id="4224610387358583899">Verzögerungen für die Bildschirmsperre</translation>
 <translation id="42267415200641481">Wenn diese Richtlinie auf „true“ gesetzt ist, kann die System-DNS-Auflösung (getaddrinfo()) je nach Systemkonfiguration und Funktions-Flags möglicherweise außerhalb des Netzwerkprozesses ausgeführt werden.
 
@@ -4598,6 +4642,7 @@ Sie hindert Unternehmensadministratoren daran, eine Verbindung zu verwalteten <p
 Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="449423975179525290">Richtlinien für <ph name="PLUGIN_VM_NAME" /> konfigurieren.</translation>
 <translation id="449561952193478261">Tastaturbeleuchtungsfarbe „Blau“</translation>
+<translation id="4497491764379007385">Blob-URLs werden beim Abrufen und Navigieren partitioniert.</translation>
 <translation id="449784980858429908">Websites automatisch die Berechtigung erteilen, eine Verbindung zu allen seriellen Ports herzustellen.</translation>
 <translation id="4498626728750662965">Der PDF-Viewer verwendet den Skia-Renderer.</translation>
 <translation id="4499376951770369935">ChromeOS-Updates werden auf die Version gesetzt, die im Manifest der Kiosk-App definiert ist</translation>
@@ -5045,6 +5090,17 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
 <translation id="4857223512478723171">Vollbildmodus nicht zulassen</translation>
 <translation id="4857888176748302062">Ursprüngen erlauben, Geräteattribute abzufragen</translation>
 <translation id="4858735034935305895">Vollbildmodus zulassen</translation>
+<translation id="4858882153530729282">Mit dieser Richtlinie wird festgelegt, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Blob-URLs partitioniert.
+Ist die Richtlinie deaktiviert, werden Blob-URLs nicht partitioniert.
+
+Blob-URLs werden ebenfalls nicht partitioniert, wenn die Speicherpartitionierung für einen Ursprung der obersten Ebene deaktiviert ist (entweder durch „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ oder „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“).
+
+Falls du diese Richtlinie verwenden musst, melde auf crbug.com einen Fehler unter Angabe deines Anwendungsfalls und setze {janiceliu, awillia}@chromium.org in Cc. Die Richtlinie kann bis zum Ende von Version 138 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die alte Implementierung entfernt.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="4860900625632464759">Nutzern erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="486146220825734683">Nicht zulassen, dass Nutzer Kerberos-Passwörter speichern</translation>
 <translation id="4861767323695239729">In einer Nutzersitzung zulässige Eingabemethoden konfigurieren</translation>
@@ -5333,6 +5389,17 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="504689994545234073">Lokales Speichern von Nutzerdateien aktivieren</translation>
 <translation id="5048890362473520096">LPAC-Sandbox für Druckdienste aktivieren</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
+<translation id="5055513974503523022">Mit „VC‑Hintergrund basierend auf generativer KI“ können Nutzer mithilfe von auf generativer KI basierenden Funktion personalisierte Hintergründe für Videokonferenzen in <ph name="PRODUCT_OS_NAME" /> erstellen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
 <translation id="5061114193960158745">Mithilfe dieser Richtlinie wird die Liste der Websites verwaltet, die unter keinen Umständen einen Browserwechsel auslösen. Jedes Element wird als Regel angesehen. Wenn es eine Übereinstimmung mit der Regel gibt, wird kein alternativer Browser geöffnet. Im Gegensatz zur Richtlinie "<ph name="URL_LIST_POLICY_NAME" />" gelten die Regeln in beide Richtungen. Wenn das <ph name="IE_PRODUCT_NAME" />-Add-in aktiviert ist, wird damit auch gesteuert, ob <ph name="IE_PRODUCT_NAME" /> diese URLs in <ph name="PRODUCT_NAME" /> öffnen soll.
@@ -5352,6 +5419,17 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />“ gesetzt ist, werden die meisten Nutzerdaten entfernt. Es werden dann nur browserunabhängige Dateien gespeichert, z. B. Downloads.
 
       Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />“ gesetzt ist, bleiben alle Nutzerdaten erhalten. Diese Option ist sehr fehleranfällig. Zur Wiederherstellung ist dann ein Zurücksetzen auf die Werkseinstellungen per Powerwash erforderlich.</translation>
+<translation id="507032775281485106">Mit von generativer KI erstellten Hintergründen können Nutzer mithilfe von auf generativer KI basierenden Funktionen personalisierte Hintergründe in <ph name="PRODUCT_OS_NAME" /> kreieren.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 
@@ -6151,6 +6229,17 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie "<ph name="USER_PRINTERS_ALLOWED" />".
       </translation>
+<translation id="5582570632838248297">„Tab Compare“ ist ein KI‑basiertes Tool, mit dem Informationen auf Tabs verglichen werden können. Beispielsweise kann diese Funktion dem Nutzer angeboten werden, wenn mehrere Tabs mit Produkten einer ähnlichen Kategorie geöffnet sind.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5583806683960333345">Wenn diese Einstellung aktiviert ist, können Nutzer Instant Tethering verwenden, wodurch ihr Gerät die mobile Datenverbindung ihres Google-Smartphones nutzen kann.
 
       Ist die Einstellung deaktiviert, können Nutzer Instant Tethering nicht verwenden.
@@ -6930,6 +7019,17 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 <translation id="6203715554101884845">Wenn diese Richtlinie konfiguriert ist, kann eine Liste mit Website-URLs erstellt werden, denen automatisch die Berechtigung für den Zugriff auf ein HID-Gerät mit den angegebenen Anbieter- und Produkt-IDs auf dem Anmeldebildschirm gewährt wird. Für jeden Eintrag sind die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ erforderlich, damit er gültig ist. Sonst wird er ignoriert. Für jeden Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ ist das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ erforderlich. „<ph name="PRODUCT_ID_FIELD_NAME" />“ ist optional. Wird das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ weggelassen, wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Einträge, für die das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ angegeben ist, „<ph name="VENDOR_ID_FIELD_NAME" />“ aber fehlt, sind ungültig und werden ignoriert.
 
 Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet (kein automatischer Zugriff).</translation>
+<translation id="6205472215607025971">„Tabs organisieren“ ist ein KI‑basiertes Tool, das auf Grundlage der geöffneten Tabs eines Nutzers automatisch Tabgruppen erstellt. Die Vorschläge basieren auf geöffneten Tabs, aber nicht auf Seiteninhalten.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6207607210601267301">Authentifizierung ohne PIN für den Host für den Remote-Zugriff deaktivieren</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
@@ -7263,6 +7363,23 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
 <translation id="6383774771168138899">Konfiguration des <ph name="CLOUD_UPLOAD_NAME" />-Ablaufs für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="6389858262577493180">Verwendung von <ph name="GLIC" /> aktivieren</translation>
+<translation id="6390338862225976270">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden generative KI-Modelle eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein generatives KI‑Modell ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören folgende:
+
+– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.
+
+– KI‑Unterstützung: bietet Hilfe beim Verständnis von CSS-Stilen (ab Version 131), Netzwerkanfragen, Leistung und Dateien (alles ab Version 132).
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6394350458541421998">Diese Richtlinie ist ab <ph name="PRODUCT_OS_NAME" />-Version 29 nicht mehr vorhanden. Verwende stattdessen die Richtlinie "PresentationScreenDimDelayScale".</translation>
 <translation id="6397588391180665797">Mit dieser Richtlinie wird festgelegt, ob die Netzwerkkonfiguration von Nutzern auf angemeldeten Geräten ausgegeben wird.
 
@@ -8016,6 +8133,7 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 <translation id="692096803256767290">Rollback des Betriebssystems auf die Zielversion durchführen</translation>
 <translation id="6921241119085515674"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> zulassen</translation>
 <translation id="6921544339867564740">Geräten die Ausführung von virtuellen Maschinen unter Chrome OS erlauben</translation>
+<translation id="6922265559343919728">Legt fest, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>
 <translation id="6924223708804692571">Damit wird die Deaktivierung von Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in dieser Liste, die nicht erkannt werden, werden ignoriert.
 
@@ -10069,6 +10187,17 @@ Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nich
 
       Diese Richtlinie überschreibt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> und die Nutzereinstellungen.</translation>
 <translation id="8528951285051082869">Webanwendungen den Zugriff auf Dateitypen über die File Handling API nicht erlauben</translation>
+<translation id="8529958869261780079">Mit dieser Richtlinie werden für <ph name="PRODUCT_OS_NAME" /> die Einstellungen der Funktion „Erstelle einen Überblick für mich“ festgelegt.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8533145294731270627">Schädliche Downloads und gefährliche Dateitypen blockieren.</translation>
 <translation id="8543108307976719751">Verbindungen per Remote-Zugriff verhindern</translation>
 <translation id="8543639085146778837">Erfassen von WebRTC-Textprotokollen aus Google-Diensten zulassen</translation>
@@ -10101,6 +10230,17 @@ Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRI
 Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> deaktiviert sein.</translation>
 <translation id="8559221882677768248">„Vorlesen“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="8561512522781085002">In den Einstellungen von „Bild-auf“ und „Bild-ab“ wird die Tastenkombination verwendet, die den Suchmodifikator enthält</translation>
+<translation id="8562398722263115493">„Formuliere für mich“ ist ein KI‑basierter Schreibassistent für Kurzinhalte im Web. Vorgeschlagene Inhalte basieren auf den vom Nutzer eingegebenen Prompts und dem Inhalt auf der Webseite.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8571119890730528225">Drittanbieter-Speicherpartitionierung deaktivieren.</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
@@ -10670,6 +10810,17 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="8983537551095611459">Die Liste der Erweiterungs-IDs konfigurieren, die von der Bereinigung eingeschränkter verwalteter Gastsitzungen ausgenommen sind</translation>
 <translation id="8983539044126123594">Anmeldung mit zusätzlichen Google-Konten aktivieren</translation>
 <translation id="8985219286836584291">Melden der Systeminformationen auf Geräten aktivieren</translation>
+<translation id="8986457452582123237">Mit „Designs mit KI erstellen“ können Nutzer individuelle Designs und Hintergründe erstellen, indem sie aus einer Liste von Optionen eine Vorauswahl treffen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8986738188516411168">Wenn du noch produktiver sein möchtest, kannst du erlauben, dass Informationen aus Google-Apps und -Diensten auf <ph name="PRODUCT_OS_NAME" />-Systemoberflächen angezeigt werden.
 
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind die in „<ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" />“ ausgewählten Integrationen aktiviert.
@@ -10864,7 +11015,19 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
 <translation id="9107635531763682565">Wenn die Richtlinie auf „1“ gesetzt ist, können Websites Desktop-Benachrichtigungen anzeigen. Ist die Richtlinie auf „2“ gesetzt, werden Desktop-Benachrichtigungen blockiert.
 
 Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="910929592571075861">Blob-URLs werden beim Abrufen und Navigieren nicht partitioniert.</translation>
 <translation id="9110194749335632373">Verbindungen zu diesem Computer per Remote-Zugriff von Unternehmensadministratoren verhindern</translation>
+<translation id="9110198768621013941">Mit dieser Richtlinie werden die Einstellungen für Autofill-Vorschläge aktiviert.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, außer in den unten angegebenen Fällen.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="9110251436602897914">Daten zu Peripheriegeräten melden, die an das Gerät angeschlossen sind</translation>
 <translation id="9110485853581788150">Eine Liste von Zertifikaten, die in <ph name="PRODUCT_NAME" /> als nicht vertrauenswürdig eingestuft werden sollen, jedoch als Hinweise für die Pfaderstellung verwendet werden können. Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="9111850884577810507">Dieses Feld muss mit einem der Strings übereinstimmen, die einen von <ph name="PRODUCT_NAME" /> unterstützten Drucker angeben. Der String wird zur Ermittlung und Installation der korrekten PPD für den Drucker verwendet. Weitere Informationen findest du unter https://support.google.com/chrome?p=noncloudprint.</translation>

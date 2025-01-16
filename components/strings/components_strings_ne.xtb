@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">पर्वतारोहण तथा चढाइ</translation>
 <translation id="2215727959747642672">फाइल सम्पादन गर्दै</translation>
 <translation id="2215963164070968490">कुकुरहरू</translation>
+<translation id="2219376942605837404">तुलनात्मक जानकारी भएको तालिकामा ट्याब हाल्नुहोस्</translation>
 <translation id="2219658597883514593">ट्यूटोरियल रिस्टार्ट गर्नुहोस्</translation>
 <translation id="2219735899272417925">डिभाइस रिसेट गर्नु पर्ने हुन्छ</translation>
 <translation id="2221227930294879156">खाद्य तथा पेय पदार्थ पाइने कार्यक्रम</translation>
@@ -1153,6 +1154,7 @@
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3068118691172921711">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया १ मिनेटमा सुरु हुने छ</translation>
+<translation id="3068976060094139647">तपाईंको खाता Google Pay सँग लिंक गरिएको हुनाले तपाईं यो कार्ड अटोफिल गर्न सक्नुहुन्छ।</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} सामग्री}other{{ITEMS} वटा सामग्री}}</translation>
 <translation id="3076865167425975822">आपरेटिङ सिस्टमहरू</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4151403195736952345">विश्वव्यापी डिफल्ट (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पृष्ठ १}other{पृष्ठ {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ले अब भुक्तानी विधिसम्बन्धी जानकारी भर्नुअघि भुक्तानी गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने छ। तपाईं <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मा गई जुनसुकै बेला यो कुरा बदल्न सक्नुहुन्छ।</translation>
+<translation id="415440494507469262">तुलनात्मक जानकारी भएको तालिकामा ट्याब हाल्नुहोस्</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4165422751765527461">नयाँ ट्याबमा मद्दत केन्द्रको लेख खोल्छ</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
@@ -3393,6 +3396,7 @@
 <translation id="706960991003274248">तुलनात्मक जानकारी भएका तालिकाहरू तपाईंको खाता (<ph name="EMAIL" />) मा सेभ गरिन्छन्</translation>
 <translation id="7070144569727915108">सिस्टम सेटिङ</translation>
 <translation id="70705239631109039">तपाईंको इन्टरनेट पूर्ण रूपमा सुरक्षित छैन</translation>
+<translation id="7071122206197538392">तुलनात्मक जानकारी भएको नयाँ तालिका</translation>
 <translation id="7075452647191940183">अनुरोध गरिएको सामग्री धेरै ठुलो छ</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4107,7 @@
 <translation id="8298115750975731693">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
 <translation id="8301894345671534559">कोड हाल्नुहोस्</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" नामक खण्ड देखाइएको छ</translation>
+<translation id="8304912090860925649">तुलनात्मक जानकारी भएको नयाँ तालिका</translation>
 <translation id="830498451218851433">आधा फोल्ड</translation>
 <translation id="8308653357438598313">लाइभ भिडियो स्ट्रिमिङ</translation>
 <translation id="8311895354659782580">घरजग्गाको सूची</translation>

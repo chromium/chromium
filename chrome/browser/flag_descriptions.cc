@@ -7975,6 +7975,10 @@ const char kProfilesReorderingDescription[] =
     "persisted.";
 #endif
 
+const char kProfilePickerGlicTesting[] = "Profile Picker Glic Testing";
+const char kProfilePickerGlicTestingDescription[] =
+    "Allows testing the Glic version of the Profile Picker.";
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kBatchUploadDesktopName[] = "Batch Upload Desktop";
 const char kBatchUploadDesktopDescription[] =
@@ -8102,6 +8106,11 @@ const char kSupervisedProfileShowKiteBadgeName[] =
     "Supervised Profile show kite badge";
 const char kSupervisedProfileShowKiteBadgeDescription[] =
     "Shows a kite badge on the profile avatar for supervised users.";
+
+const char kSupervisedUserLocalWebApprovalsName[] =
+    "Enable local web approvals feature";
+const char kSupervisedUserLocalWebApprovalsDescription[] =
+    "Enables parents to approve blocked websites on a child's device.";
 
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

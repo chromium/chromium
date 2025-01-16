@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{‫1 پاس ورڈ}other{{COUNT} پاس ورڈز}}</translation>
 <translation id="1102759278139578486">اصل نوڈ تشریح والی فائلوں کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
+<translation id="1104098698795583187">آپ فوری طور پر اس ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="1106350001632362876">حد بڑھائیں</translation>
 <translation id="1107482171728500359">مائیکروفون کا اشتراک کریں</translation>
 <translation id="110850812463801904">‏دستی طور پر OneDrive سے منسلک کریں</translation>
@@ -1693,6 +1694,7 @@
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2173801458090845390">‏اس آلہ میں درخواست ID شامل کریں</translation>
 <translation id="2175384018164129879">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
+<translation id="2175526076681939329">بنیادی کلیدیں استعمال کریں</translation>
 <translation id="217576141146192373">پرنٹر شامل کرنے سے قاصر۔ براہ کرم اپنے پرنٹر کی کنفیگریشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="217631816678106981">پیسٹ نہ کریں</translation>
@@ -2890,7 +2892,6 @@
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آج آپ Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}other{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}}</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
-<translation id="3009300415590184725">کیا آپ واقعی موبائل ڈیٹا سروس سیٹ اپ کارروائی کو منسوخ کرنا چاہتے ہیں؟</translation>
 <translation id="3009352964623081324">‏Search + O، پھر S۔ آوازوں کو انسٹال، ان کا نظم کرنے اور حسب ضرورت بنانے کے لیے استعمال کریں</translation>
 <translation id="3009779501245596802">انڈیکس کردہ ڈیٹا بیسز</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{آپ کے پاس ورڈ مضبوط لگ رہا ہے}=1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
@@ -3397,7 +3398,6 @@
 <translation id="3396442984945202128">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="3396800784455899911">‏"قبول کریں اور جاری رکھیں" بٹن پر کلک کر کے، آپ ان Google سروسز کیلئے اوپر وضاحت کردہ کارروائی سے اتفاق کرتے ہیں۔</translation>
 <translation id="339722927132407568">منجمد ہو جاتی ہے</translation>
-<translation id="3398899528308712018">ٹیب گروپ کی تجویز</translation>
 <translation id="3399432415385675819">معلومات غیر فعال ہو جائیں گي</translation>
 <translation id="3400390787768057815">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ہرٹز) - باہم پیچاں</translation>
 <translation id="3401484564516348917">‏اپنے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر، رجسٹری ویلیوز اور فائلز سے متعلق معلومات پڑھیں</translation>
@@ -3413,6 +3413,7 @@
 <translation id="3407392651057365886">‏مزید صفحات پیشگی لوڈ کردہ ہیں۔ دیگر سائٹس کے ذریعے درخواست کیے جانے پر صفحات کو Google سرورز کے ذریعے پیشگی لوڈ کیا جا سکتا ہے۔</translation>
 <translation id="3407967630066378878">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے اس <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="3408555740610481810">کیمرا اور مائیکروفون استعمال میں ہے</translation>
+<translation id="3409157109901479672">بایاں حصہ</translation>
 <translation id="3409513286451883969"><ph name="LANGUAGE" /> میں انتخاب کا &amp;ترجمہ کریں</translation>
 <translation id="3412265149091626468">انتخاب پر جائیں</translation>
 <translation id="3413122095806433232">‏CA جاری کنندگان: <ph name="LOCATION" /></translation>
@@ -4698,6 +4699,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> رکن</translation>
 <translation id="4290898381118933198">صفحات کے درمیان نیویگیٹ کیلئے سوائپ کریں</translation>
 <translation id="4291265871880246274">لاگ ان ڈائیلاگ</translation>
+<translation id="4292613336957320546">ایکسیلریشن</translation>
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="4294392694389031609">ڈاؤن لوڈ کی سرگزشت سے <ph name="FILE_NAME" /> کو حذف کر دیا گیا، لیکن یہ اب بھی آپ کے آلے پر ہے</translation>
 <translation id="4295072614469448764">آپ کے ٹرمنل میں ایپ دستیاب ہے۔ آپ کے لانچر میں ایک آئیکن بھی ہو سکتا ہے۔</translation>
@@ -4825,7 +4827,6 @@
 <translation id="4386604394450371010">عمومی جائزہ</translation>
 <translation id="4387890294700445764">متاثرہ پاس ورڈز</translation>
 <translation id="4388650384344483842">کم از کم 8 حروف استعمال کریں</translation>
-<translation id="4389091756366370506">صارف <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور <ph name="NUMBER_OF_OTHER_SWITCHES" /> مزید سوئچز</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> بلوٹوتھ کنفیگریشن کو کنٹرول کرتا ہے۔</translation>
 <translation id="4392896746540753732">کنفیگریشن فائل میں ترمیم کریں</translation>
@@ -5559,7 +5560,6 @@
 <translation id="4906679076183257864">ڈیفالٹ پر دوبارہ ترتیب دیں</translation>
 <translation id="4907129260985716018">منتخب کریں کہ یہ ایکسٹینشن آپ کی سائٹ کا ڈیٹا کب پڑھ اور اسے تبدیل کر سکتی ہے</translation>
 <translation id="4908811072292128752">ایک بار میں دو سائٹس کو براؤز کرنے کے لئے ایک نیا ٹیب کھولیں</translation>
-<translation id="4909038193460299775">‏چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے،  لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔ البتہ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا اور اس کا <ph name="BEGIN_LINK" />Google ڈیش بورڈ<ph name="END_LINK" /> پر نظم کیا جا سکتا ہے۔</translation>
 <translation id="4910241725741323970">ایپ پہلے ہی انسٹال ہے</translation>
 <translation id="4912643508233590958">معطل ویک اپس</translation>
 <translation id="4913209098186576320">یہ فائل خطرناک ہو سکتی ہے<ph name="LINE_BREAK" />اس چیک میں معمول سے زیادہ وقت لگ رہا ہے...</translation>
@@ -5865,6 +5865,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> تلاش</translation>
 <translation id="5139823398361067371">‏اپنی سیکورٹی کلید کے لیے PIN درج کریں۔ اگر آپ کو PIN معلوم نہیں ہے، تو آپ کو سیکیورٹی کلید کو دوبارہ ترتیب دینا ہوگا۔</translation>
 <translation id="5139955368427980650">&amp;کھولیں</translation>
+<translation id="5140742218917419811">استعمال کرنے کی کلیدیں</translation>
 <translation id="5141421572306659464">بنیادی اکاؤنٹ</translation>
 <translation id="5141957579434225843">‏مثال کے طور پر، òa, òe, ùy کی بجائے oà, oè, uỳ کا استعمال کریں</translation>
 <translation id="5143374789336132547">آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے تبدیل کر دیا ہے۔</translation>
@@ -5883,6 +5884,7 @@
 <translation id="5149602533174716626">ویڈیو فریم کاپی کریں</translation>
 <translation id="5150254825601720210">‏Netscape سرٹیفکیٹ SSL سرور کا نام</translation>
 <translation id="5151354047782775295">ڈسک کی جگہ خالی کریں یا منتخب کردہ ڈیٹا خودکار طور پر حذف ہوسکتا ہے</translation>
+<translation id="5153074793829217329">اپنے ماؤس کرسر کو کنٹرول کرنے کے لیے اپنا کی بورڈ یا عددی کی پیڈ استعمال کریں</translation>
 <translation id="5153234146675181447">فون کو بھول جائیں</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> کیلئے جدید ترین ترتیبات</translation>
@@ -7973,6 +7975,7 @@
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> کو کمپیوٹر پر آنے کیلئے کہیں۔ آپ کا بچہ اپنا صوتی ماڈل تخلیق کرنے کیلئے اس اسکرین پر کچھ فقرے پڑھے گا۔
     <ph name="BR" />
     اگر <ph name="SUPERVISED_USER_NAME" /> کو پڑھنے میں مدد کی ضرورت ہو تو بچے کو اپنے بعد فقرے دہرانے کو کہیں۔ مائیک سے دور آہستہ سے بولیں، تاکہ اسسٹنٹ آپ کے بجائے آپ کے بچے کی آواز سن سکے۔</translation>
+<translation id="6689948774466767379">ماؤس کنٹرول کرنے کی کلیدیں</translation>
 <translation id="6690659332373509948">فائل کو پارس کرنے سے قاصر: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;فارورڈ کریں</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 صفحہ}other{{COUNT} صفحات}}</translation>
@@ -10058,6 +10061,7 @@
 <translation id="8168435359814927499">مواد</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{پڑھنے کی فہرست میں ٹیب شامل کریں}other{پڑھنے کی فہرست میں ٹیبز شامل کریں}}</translation>
 <translation id="8169177848833352618">‏بدقسمتی سے، یہ مشین Bruschetta کو انسٹال کرنے سے تقاضوں کو پورا نہیں کرتی ہے۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
+<translation id="8172303073969862496">دایاں حصہ</translation>
 <translation id="8174047975335711832">آلہ کی معلومات</translation>
 <translation id="8176332201990304395">گلابی اور سفید</translation>
 <translation id="8176529144855282213">مائیکروفون تک رسائی کو آن کرنے کے لیے، اپنے آلے پر فزیکل مائیکروفون سوئچ کو آن کریں</translation>

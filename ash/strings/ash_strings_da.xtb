@@ -282,6 +282,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1948405482892809935">Skift til næste bruger</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skærmoptagelsen er fuldført</translation>
+<translation id="1956087014741188812">Sæt brugen af musetaster på pause</translation>
 <translation id="1957958912175573503">Angiv dit sprog</translation>
 <translation id="1961239773406905488">Forhåndsvisning af kamera er skjult</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="225680501294068881">Søger efter enheder...</translation>
 <translation id="2257486738914982088">Noget gik galt under download af <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Foreslåede filer</translation>
+<translation id="2266607665880926261">Brugen af musetaster er sat på pause</translation>
 <translation id="2268130516524549846">Bluetooth er deaktiveret</translation>
 <translation id="2268731132310444948">Se trin <ph name="STEP" /> af <ph name="TOTAL_STEPS" />. Når Appliste er aktiveret, får du et forbedret søgefelt. Du kan søge efter dine filer, apps og meget mere. Du kan også få svar på spørgsmål om din <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Log alle ud</translation>
@@ -540,6 +542,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="2876338922445400217">Zoom ind på skærmen</translation>
 <translation id="2878884018241093801">Der er ingen nye elementer</translation>
 <translation id="2880541185262491188">For mange pinkodeforsøg. Vent <ph name="TIME_LEFT" />, og prøv igen</translation>
+<translation id="2883271196820422439">Genaktiver musetaster</translation>
 <translation id="2885950158625301909">Få flere oplysninger</translation>
 <translation id="2891209721153296020">"Fravælg"</translation>
 <translation id="2894949423239620203">Kablet kan påvirke ydeevnen</translation>
@@ -727,6 +730,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3539957339480430241">Hotspot på <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Afvis konfiguration af visning af din telefons seneste billeder og medier</translation>
 <translation id="3542066395059568317">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at højreklikke.</translation>
+<translation id="3545224667633138205">Musetasterne er genaktiveret</translation>
 <translation id="3552189655002856821">Wi-Fi er deaktiveret</translation>
 <translation id="3554215588514239132">Vis eller skjul panelet i Udviklerværktøjer</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
@@ -801,6 +805,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3727231512028252576">Elementerne kunne ikke indlæses. Prøv igen, når du er online.</translation>
 <translation id="3735740477244556633">Sortér efter</translation>
 <translation id="3738664582935948253">Du kan nu vise klik og tastaturgenveje i skærmoptagelser</translation>
+<translation id="3741482431277446954">Højre museknap</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3743775386021959186">Fokus er aktiveret, <ph name="REMAINING_TIME" /> tilbage</translation>
 <translation id="3750403286520637847">Skjul vejrforslag</translation>
@@ -1152,7 +1157,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4902797682482387055">Foreslået opgave, der skal fokuseres på</translation>
 <translation id="490375751687810070">Lodret</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
-<translation id="4911191962826748981">Dette er en eksperimentel AI-funktion, som ikke altid rammer plet.</translation>
 <translation id="491504982845934899">Aktivér <ph name="NETWORK_NAME" /> efter konfiguration af enheden</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -1828,6 +1832,7 @@ Installeret for nylig</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7118597077555700347">Åbn <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Vælg næste ord eller bogstav</translation>
+<translation id="7124556000457919678">Når funktionen er aktiveret, kan du sætte brugen af musetasterne på pause og genoptage den</translation>
 <translation id="7126996685418858413">Åbnet inden for den seneste uge</translation>
 <translation id="7130207228079676353">HØJST SANDSYNLIGT</translation>
 <translation id="7131634465328662194">Du logges automatisk ud.</translation>
@@ -1849,6 +1854,7 @@ Installeret for nylig</translation>
 <translation id="7198435252016571249">Kameraet er fastgjort til hjørnet nederst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="7219573373513695352">Ingen enheder er forbundet</translation>
 <translation id="7229029500464092426">Hukommelse <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> i alt</translation>
+<translation id="7239814253344511868">Begge museknapper</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri tilbage. Slut din enhed til en strømkilde.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denne Chromebook skal genstartes, før opdateringen kan anvendes. Dette kan tage op til 1 minut.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7807067443225230855">Søgning og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Hvis du giver et like, indsendes der feedback om, at du kan lide dette forslag</translation>
 <translation id="7825412704590278437">Fra en kommende kalenderbegivenhed</translation>
 <translation id="7829386189513694949">Stærkt signal</translation>
 <translation id="7830453190047749513">Du kan tilpasse knaphandlinger, markørhastighed m.m. personligt for din <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
+<translation id="8076492880354921740">Faner</translation>
 <translation id="8079538659226626406">Skærmdeling</translation>
 <translation id="8083540854303889870">Gemt til senere</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8203224998425013577">Vis flere emojis og giffer</translation>
 <translation id="8203795194971602413">Højreklik</translation>
 <translation id="8205469348819768313">Forsøger du at bruge tasten Page Down? Brug</translation>
+<translation id="8213376797713070611">Venstre museknap</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Din Chromebook skal være tændt og tilsluttet strøm i dette tidsrum. Sørg for, at opladeren eller adapterkablerne er sat korrekt i, både i din Chromebook og i stikkontakten. Sluk ikke for din Chromebook.</translation>
 <translation id="8220076512072059941">Tilføj <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock er slået til</translation>
 <translation id="8315514906653279104">Aktiverer…</translation>
-<translation id="8319634750346253957">Hvis du giver et dislike, indsendes der feedback om, at du ikke kan lide dette forslag</translation>
 <translation id="8331351032546853669">Download afventer</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åbn indstillingerne for <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth er ikke tilgængelig</translation>
+<translation id="9050999376345823055">Tryk på "." for at slippe</translation>
 <translation id="906458777597946297">Maksimér vinduet</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9070640332319875144">Indstillinger for Assistent</translation>

@@ -1135,6 +1135,11 @@ const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "
     "the spotlight default index";
 
+const char kSupervisedUserLocalWebApprovalsName[] =
+    "Enable local web approvals feature";
+const char kSupervisedUserLocalWebApprovalsDescription[] =
+    "Enables parents to approve blocked websites on a child's device.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

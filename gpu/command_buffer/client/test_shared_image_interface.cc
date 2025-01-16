@@ -293,24 +293,6 @@ TestSharedImageInterface::CreateSharedImage(
       mailbox, si_info.meta, sync_token, holder_, buffer_handle.type);
 }
 
-SharedImageInterface::SharedImageMapping
-TestSharedImageInterface::CreateSharedImage(
-    const SharedImageInfo& si_info) {
-  base::WritableSharedMemoryMapping mapping;
-  gfx::GpuMemoryBufferHandle handle;
-  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
-
-  auto mailbox = Mailbox::Generate();
-  shared_images_.insert(mailbox);
-  most_recent_size_ = si_info.meta.size;
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  shared_image_mapping.mapping = std::move(mapping);
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, handle.type);
-  return shared_image_mapping;
-}
-
 scoped_refptr<ClientSharedImage>
 TestSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {

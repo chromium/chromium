@@ -244,6 +244,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Se questo criterio viene impostato su False, la casella di controllo "Consenti sempre" non viene visualizzata e l'utente riceverà un messaggio ogni volta che viene richiamato un protocollo esterno.</translation>
 <translation id="1181598794547737681">Attiva l'UI del fumetto dei download</translation>
+<translation id="1182701225491473405">Impostazioni di Controlled Frame</translation>
 <translation id="1184531093651606913">Impedisci il caricamento delle estensioni dalla riga di comando</translation>
 <translation id="1184562656144537588">Il file manifest v2 è abilitato solo per le estensioni forzate</translation>
 <translation id="11903325225202653">Se il criterio è impostato su True, la modalità ad alto contrasto rimane attivata. Se il criterio è impostato su False, la modalità ad alto contrasto rimane disattivata.
@@ -332,7 +333,6 @@ I pattern corrispondenti alle origini di questo criterio non possono però conte
 
       Avviso: Wipe e MinimalMigrate comportano la rimozione dei dati locali.</translation>
 <translation id="1248955696540150266">Consenti i download di aggiornamento automatico peer-to-peer</translation>
-<translation id="1249640740800891502">Impostazioni di SkyVault (tutti i dati nel cloud)</translation>
 <translation id="1250597158212586309">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente ha la possibilità di ignorare/ripristinare gli avvisi relativi alle password compromesse.
 
       Se disattivi questa impostazione, gli utenti non potranno ignorare gli avvisi relativi alle password compromesse. Se la attivi, gli utenti potranno ignorare gli avvisi relativi alle password compromesse.</translation>
@@ -1068,6 +1068,7 @@ criterio era la versione 121. È stato rimosso nella versione 122.</translation>
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, al feedback degli utenti non vengono associati dati di debug di basso livello.
       Leggi la descrizione di ogni tipo di dispositivo per conoscere il tipo specifico di dati di debug di basso livello.</translation>
 <translation id="1744340218280697033">Non consentire ai genitori di aggiungere account supervisionati</translation>
+<translation id="1745981653910662565">Consenti l'API Controlled Frame su questi siti</translation>
 <translation id="1751429117283165017">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che non possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -1287,6 +1288,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
       Se il criterio non viene configurato, l'autenticazione <ph name="HTTP_NEGOTIATE" /> su Android viene disattivata.</translation>
 <translation id="1923704782248889851">Attiva la dettatura</translation>
 <translation id="1924085079572112898">Le impostazioni di F11 sono disattivate</translation>
+<translation id="1924393228810864764">Non consentire alle origini delle app web isolate di utilizzare Controlled Frame</translation>
 <translation id="1925529914257504750">Aggiornamento automatico P2P attivo</translation>
 <translation id="1928355425032308464">Attiva l'input video</translation>
 <translation id="1930094135927166199">Disattiva USB PowerShare</translation>
@@ -1359,6 +1361,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità Fast Transition non viene utilizzata.</translation>
 <translation id="1972134432340252414">Vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
+<translation id="1973804850652157024">Controlla l'utilizzo dell'API Controlled Frame</translation>
 <translation id="1977581177449752640">Se il criterio viene configurato, l'host di accesso remoto usa un certificato client con il nome comune dell'autorità di certificazione indicato per eseguire l'autenticazione per <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Per usare qualsiasi certificato client disponibile, imposta il criterio su <ph name="WILDCARD_VALUE" />. Questa funzionalità viene disattivata se il criterio viene lasciato vuoto o se non viene configurato.</translation>
 <translation id="1984934843478301531">Automazione del lancio di app</translation>
 <translation id="1985545260037812875">Visualizza la schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
@@ -4266,6 +4269,17 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4146319954420095470">(Avviso! A breve questa dipendenza verrà eliminata, inizia a usare invece il criterio <ph name="GLS_POLICY_NAME" />. Se questo criterio viene impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, i servizi di sistema <ph name="PRODUCT_OS_NAME" /> e le app per Android non possono accedere ai dati sulla posizione. Se imposti il criterio su qualsiasi altro valore o se lo lasci non selezionato, all'utente verrà chiesto il consenso quando un'app Android richiede l'accesso ai dati sulla posizione.</translation>
 <translation id="4147818922357566987">Attiva solo le varianti relative alle correzioni critiche</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4150646872548223241">L'API Controlled Frame, disponibile per determinati contesti isolati come le app web isolate (IWA), consente a un'app di incorporare e manipolare contenuti arbitrari.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/controlled-frame.
+
+La configurazione della policy consente di elencare i pattern URL che specificano i siti autorizzati a utilizzare l'API Controlled Frame.
+I pattern validi sono limitati alle app web isolate.
+
+Se la policy non viene configurata, <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata.
+
+I pattern URL non devono essere in conflitto con <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4154221011709068799">Non consentire dispositivi di archiviazione esterni</translation>
 <translation id="415445772247959702">Web Store (supportato dalla versione 89)</translation>
 <translation id="4157003184375321727">Indica versione sistema operativo e firmware</translation>
@@ -4381,7 +4395,6 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
 
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
-<translation id="4221677608399717135">Attiva o disattiva SkyVault</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
 <translation id="42267415200641481">Se questo criterio viene impostato su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
 
@@ -7013,6 +7026,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       In caso contrario, il criterio potrebbe essere impostato su uno dei seguenti valori: "tls1.2" o "tls1.3". Se viene impostato, <ph name="PRODUCT_NAME" /> non utilizzerà versioni di SSL/TLS successive alla versione specificata. Un valore non riconosciuto verrà ignorato.</translation>
 <translation id="6120909112796019291">Consenti l'editing di foto con AI generativa e migliora i modelli di AI.</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
+<translation id="6128539430475678271">Blocca l'API Controlled Frame su questi siti</translation>
 <translation id="6130360423841559818">Gestisci il nuovo comportamento della finestra di dialogo di annullamento generata dall'evento beforeunload</translation>
 <translation id="6131803221304830537">Disattiva l'integrità del codice del renderer</translation>
 <translation id="6132506775968708399">Blocca cookie di terze parti</translation>
@@ -7481,6 +7495,7 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
       Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.</translation>
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
+<translation id="6389240462871677239">Consenti alle origini delle app web isolate di utilizzare Controlled Frame</translation>
 <translation id="6389858262577493180">Attiva l'uso di <ph name="GLIC" /></translation>
 <translation id="6390338862225976270">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
 
@@ -8269,6 +8284,17 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="692096803256767290">Esegui il rollback del sistema operativo alla versione target</translation>
 <translation id="6921241119085515674">Consenti il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Consenti ai dispositivi di eseguire macchine virtuali su ChromeOS</translation>
+<translation id="692161853658983957">L'API Controlled Frame, disponibile per determinati contesti isolati come le app web isolate (IWA), consente a un'app di incorporare e manipolare contenuti arbitrari.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/controlled-frame.
+
+La configurazione della policy consente di elencare i pattern URL che specificano i siti non autorizzati a utilizzare l'API Controlled Frame.
+I pattern validi sono limitati alle app web isolate.
+
+Se la policy non viene configurata, <ph name="DEFAULT_CONTROLLED_FRAME_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata.
+
+I pattern URL non devono essere in conflitto con <ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="6922265559343919728">Scegli se gli URL dei blob devono essere partizionati durante il recupero e la navigazione</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.
@@ -8286,6 +8312,12 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="6929639826067341257">Suggerisci agli utenti di importare i loro dati esistenti nel profilo gestito e dai la possibilità di scegliere di non farlo</translation>
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
+<translation id="6931967294677760242">L'API Controlled Frame, disponibile per determinati contesti isolati come le app web isolate (IWA), consente a un'app di incorporare e manipolare contenuti arbitrari.
+Per informazioni dettagliate, visita la pagina https://github.com/WICG/controlled-frame.
+
+Se la policy viene impostata su 1 o se non viene configurata, le origini delle app web isolate possono usare Controlled Frame.
+
+Se la policy viene impostata su 2, le origini delle app web isolate non possono usare Controlled Frame.</translation>
 <translation id="6932282102911647185">Colore della retroilluminazione della tastiera viola</translation>
 <translation id="6938424179790370595">Se il criterio è impostato su None, la lente d'ingrandimento è disattivata.
 

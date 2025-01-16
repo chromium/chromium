@@ -178,14 +178,14 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   InvalidatePaintAndMarkForLayoutIfNeeded(defer);
 }
 
-void LayoutImage::UpdateIntrinsicSizeIfNeeded(const PhysicalSize& new_size) {
+void LayoutImage::UpdateNaturalSizeIfNeeded(const PhysicalSize& new_size) {
   NOT_DESTROYED();
   if (image_resource_->ErrorOccurred())
     return;
-  SetIntrinsicSize(new_size);
+  SetNaturalSize(new_size);
 }
 
-bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
+bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   NOT_DESTROYED();
   // Flex layout algorithm uses the intrinsic image width/height even if
   // width/height are specified.
@@ -205,23 +205,23 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  PhysicalSize old_intrinsic_size = IntrinsicSize();
+  PhysicalSize old_natural_size = NaturalSize();
 
-  PhysicalSize new_intrinsic_size = PhysicalSize::FromSizeFRound(
+  PhysicalSize new_natural_size = PhysicalSize::FromSizeFRound(
       image_resource_->ImageSize(StyleRef().EffectiveZoom()));
-  UpdateIntrinsicSizeIfNeeded(new_intrinsic_size);
+  UpdateNaturalSizeIfNeeded(new_natural_size);
 
   // In the case of generated image content using :before/:after/content, we
   // might not be in the layout tree yet. In that case, we just need to update
-  // our intrinsic size. layout() will be called after we are inserted in the
+  // our natural size. layout() will be called after we are inserted in the
   // tree which will take care of what we are doing here.
   if (!ContainingBlock())
     return;
 
-  if (old_intrinsic_size != new_intrinsic_size) {
+  if (old_natural_size != new_natural_size) {
     SetIntrinsicLogicalWidthsDirty();
 
-    if (NeedsLayoutOnIntrinsicSizeChange()) {
+    if (NeedsLayoutOnNaturalSizeChange()) {
       SetNeedsLayoutAndFullPaintInvalidation(
           layout_invalidation_reason::kSizeChanged);
       return;
@@ -358,7 +358,7 @@ IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
       sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
   } else {
-    sizing_info = IntrinsicSizingInfo::MakeFixed(gfx::SizeF(IntrinsicSize()));
+    sizing_info = IntrinsicSizingInfo::MakeFixed(gfx::SizeF(NaturalSize()));
 
     // Don't compute an intrinsic ratio to preserve historical WebKit behavior
     // if we're painting alt text and/or a broken image.

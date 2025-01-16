@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Перейти в наступний профіль користувача</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954252331066828794">Запис екрана завершено</translation>
+<translation id="1956087014741188812">Призупинити використання клавіш керування мишею</translation>
 <translation id="1957958912175573503">Вибрати мову</translation>
 <translation id="1961239773406905488">Попередній перегляд зображення з камери приховано</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Пошук пристроїв...</translation>
 <translation id="2257486738914982088">Під час завантаження файлу "<ph name="FILENAME" />" сталася помилка</translation>
 <translation id="2258734398699965611">Пропоновані файли</translation>
+<translation id="2266607665880926261">Використання клавіш керування мишею призупинено</translation>
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268731132310444948">Огляд: крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Коли Панель запуску активується, ви побачите рядок розширеного пошуку. Почніть вводити текст, щоб знайти файли, додатки тощо, а також отримати відповіді на запитання про <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Вийти з усіх</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Наблизити екран</translation>
 <translation id="2878884018241093801">Нічого немає</translation>
 <translation id="2880541185262491188">Забагато спроб ввести PIN-код. Зачекайте <ph name="TIME_LEFT" /> і повторіть спробу.</translation>
+<translation id="2883271196820422439">Відновити використання клавіш керування мишею</translation>
 <translation id="2885950158625301909">Докладніше</translation>
 <translation id="2891209721153296020">"Скасувати вибір"</translation>
 <translation id="2894949423239620203">Через кабель може знизитися продуктивність</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">Точка доступу <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Відхиліть налаштування перегляду нещодавніх фотографій і медіафайлів на телефоні</translation>
 <translation id="3542066395059568317">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисніть правою кнопкою миші, щоб видалити їх.</translation>
+<translation id="3545224667633138205">Використання клавіш керування мишею відновлено</translation>
 <translation id="3552189655002856821">Wi-Fi вимкнено</translation>
 <translation id="3554215588514239132">Показати або сховати панель Інструментів розробника</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />: закріплено</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Не вдалося завантажити об’єкти. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3738664582935948253">Тепер на записі відео з екрана можна показувати кліки мишею та комбінації клавіш</translation>
+<translation id="3741482431277446954">Права кнопка миші</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
 <translation id="3743775386021959186">Режим концентрації уваги ввімкнено, залишилося: <ph name="REMAINING_TIME" />.</translation>
 <translation id="3750403286520637847">Сховати пропозицію прогнозу погоди</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">Рекомендоване завдання для режиму зосередження</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Це експериментальна функція на основі ШІ, тому вона не завжди працює правильно.</translation>
 <translation id="491504982845934899">Щоб активувати мережу <ph name="NETWORK_NAME" />, потрібно налаштувати пристрій</translation>
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4918086044614829423">Прийняти</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">знімок</translation>
 <translation id="7118597077555700347">Відкрити: <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Виділити наступне слово або літеру</translation>
+<translation id="7124556000457919678">Коли цей перемикач увімкнено, можна призупиняти й відновлювати використання клавіш керування мишею</translation>
 <translation id="7126996685418858413">Відкрито минулого тижня</translation>
 <translation id="7130207228079676353">НАЙІМОВІРНІШЕ</translation>
 <translation id="7131634465328662194">Ви вийдете автоматично.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
 <translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Обидві кнопки миші</translation>
 <translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256057185598509352">Клавіша ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">За допомогою позначки "Подобається" можна надіслати схвальний відгук про цю пропозицію</translation>
 <translation id="7825412704590278437">З майбутньої події в календарі</translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
 <translation id="7830453190047749513">Ви можете персоналізувати дії для кнопок, швидкість курсора тощо на пристрої <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
+<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079538659226626406">Показ екрана</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@
 <translation id="8203224998425013577">Показати більше смайлів і зображень GIF</translation>
 <translation id="8203795194971602413">Натиснути правою кнопкою</translation>
 <translation id="8205469348819768313">Щоб натиснути клавішу Page Down, скористайтеся такою комбінацією:</translation>
+<translation id="8213376797713070611">Ліва кнопка миші</translation>
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
 <translation id="8220076512072059941">Додати <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@
 <translation id="830868413617744215">Бета-версія</translation>
 <translation id="8314772463905284467">Режим Caps Lock увімкнено</translation>
 <translation id="8315514906653279104">Увімкнення…</translation>
-<translation id="8319634750346253957">За допомогою позначки "Не подобається" можна надіслати негативний відгук про цю пропозицію</translation>
 <translation id="8331351032546853669">Очікує на завантаження</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Функція Bluetooth недоступна</translation>
+<translation id="9050999376345823055">Щоб відпустити, натисніть клавішу "."</translation>
 <translation id="906458777597946297">Розгорнути вікно</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9070640332319875144">Налаштування Асистента</translation>

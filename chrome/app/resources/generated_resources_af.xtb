@@ -160,6 +160,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1101254380285078812">{COUNT,plural, =1{1 wagwoord}other{{COUNT} wagwoorde}}</translation>
 <translation id="1102759278139578486">Kan nie die hoofnodus se annotasielêers aflaai nie. Probeer later weer.</translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
+<translation id="1104098698795583187">Jy sal onmiddellik toegang tot die hierdie oortjiegroep verloor, en dit sal van al jou toestelle af uitgevee word</translation>
 <translation id="1106350001632362876">Verhoog drempel</translation>
 <translation id="1107482171728500359">Deel mikrofoon</translation>
 <translation id="110850812463801904">Koppel handmatig aan OneDrive</translation>
@@ -1702,6 +1703,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2173302385160625112">Gaan jou internetverbinding na</translation>
 <translation id="2173801458090845390">Voeg rekwisisie-ID by hierdie toestel</translation>
 <translation id="2175384018164129879">&amp;Bestuur soekenjins en werfsoektog</translation>
+<translation id="2175526076681939329">Gebruik primêre sleutels</translation>
 <translation id="217576141146192373">Kan nie drukker byvoeg nie. Gaan asseblief jou drukker se opstelling na en probeer weer.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="217631816678106981">Moenie plak nie</translation>
@@ -2901,7 +2903,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag aan wi-fi koppel om 'n opdatering af te laai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}}</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
-<translation id="3009300415590184725">Is jy seker jy wil die mobieledatadiens se opstelproses kanselleer?</translation>
 <translation id="3009352964623081324">Soek + O, dan S. Gebruik om stemme te installeer, te bestuur en te pasmaak.</translation>
 <translation id="3009779501245596802">Geïndekseerde databasisse</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Jou wagwoorde lyk sterk}=1{{COUNT} swak wagwoord}other{{COUNT} swak wagwoorde}}</translation>
@@ -3410,7 +3411,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3396442984945202128">Verifieer dat dit jy is</translation>
 <translation id="3396800784455899911">Deur die "Aanvaar en gaan voort"-knoppie te klik, stem jy in tot die verwerking wat hierbo vir hierdie Google-dienste beskryf word.</translation>
 <translation id="339722927132407568">Vries</translation>
-<translation id="3398899528308712018">Oortjiegroepvoorstel</translation>
 <translation id="3399432415385675819">Kennisgewings sal gedeaktiveer word</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – deurweef</translation>
 <translation id="3401484564516348917">Lees inligting oor jou blaaier, bedryfstelsel, toestel, geïnstalleerde sagteware, registerwaardes en lêers</translation>
@@ -3426,6 +3426,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3407392651057365886">Meer bladsye word vooraf gelaai. Bladsye kan vooraf deur Google-bedieners gelaai word wanneer hulle deur ander werwe versoek word.</translation>
 <translation id="3407967630066378878">Laat jou kind aan die vingerafdruksensor aan die linkerkant van hierdie <ph name="DEVICE_TYPE" /> raak om hul vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="3408555740610481810">Kamera en mikrofoon word tans gebruik</translation>
+<translation id="3409157109901479672">Linkerkant</translation>
 <translation id="3409513286451883969">&amp;Vertaal keuse in <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Spring na keuse</translation>
 <translation id="3413122095806433232">CA-uitreikers: <ph name="LOCATION" /></translation>
@@ -4711,6 +4712,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4290826901752066702"><ph name="NUM" /> lid</translation>
 <translation id="4290898381118933198">Swiep om tussen bladsye te navigeer</translation>
 <translation id="4291265871880246274">Aanmelddialoog</translation>
+<translation id="4292613336957320546">Versnelling</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="4294392694389031609">Het <ph name="FILE_NAME" /> uit die aflaaigeskiedenis gevee, maar dit is steeds op jou toestel</translation>
 <translation id="4295072614469448764">Program is in jou terminaal beskikbaar. Daar is dalk ook 'n ikoon in jou Lanseerder.</translation>
@@ -4838,7 +4840,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4386604394450371010">oorsig</translation>
 <translation id="4387890294700445764">Gekompromitteerde wagwoorde</translation>
 <translation id="4388650384344483842">Gebruik minstens 8 karakters</translation>
-<translation id="4389091756366370506">Gebruiker <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog <ph name="NUMBER_OF_OTHER_SWITCHES" /> skakelaars</translation>
 <translation id="439266289085815679">Bluetooth-opstelling word beheer deur <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Wysig die opstellinglêer</translation>
@@ -5573,7 +5574,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4906679076183257864">Stel terug na verstek</translation>
 <translation id="4907129260985716018">Kies wanneer hierdie uitbreiding jou werfdata kan lees en verander</translation>
 <translation id="4908811072292128752">Maak 'n nuwe oortjie oop om gelyk op twee werwe te blaai</translation>
-<translation id="4909038193460299775">Omdat hierdie rekening deur <ph name="DOMAIN" /> bestuur word, sal jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel uitgevee word. Jou data sal egter steeds in jou Google-rekening geberg word en kan op <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> bestuur word.</translation>
 <translation id="4910241725741323970">App is reeds geïnstalleer</translation>
 <translation id="4912643508233590958">Word wakker uit rus</translation>
 <translation id="4913209098186576320">Hierdie lêer kan gevaarlik wees<ph name="LINE_BREAK" />Hierdie kontrole neem langer as gewoonlik …</translation>
@@ -5879,6 +5879,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, soek met <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Voer die PIN vir jou sekuriteitsleutel in. As jy nie die PIN ken nie, sal jy die sekuriteitsleutel moet terugstel.</translation>
 <translation id="5139955368427980650">Maak oop</translation>
+<translation id="5140742218917419811">Sleutels om te gebruik</translation>
 <translation id="5141421572306659464">Primêre rekening</translation>
 <translation id="5141957579434225843">Gebruik byvoorbeeld oà, oè, uỳ in plaas van òa, òe, ùy</translation>
 <translation id="5143374789336132547">Die uitbreiding "<ph name="EXTENSION_NAME" />" het verander watter bladsy gewys word wanneer jy die Tuis-knoppie klik.</translation>
@@ -5897,6 +5898,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5149602533174716626">Kopieer videoraam</translation>
 <translation id="5150254825601720210">Netscape-sertifikaat se SSL-bedienernaam</translation>
 <translation id="5151354047782775295">Maak skyfspasie beskikbaar, anders kan sekere data outomaties uitgevee word</translation>
+<translation id="5153074793829217329">Gebruik jou sleutelbord of ’n numeriese syferbord om jou muisskermpyltjie te beheer</translation>
 <translation id="5153234146675181447">Vergeet foon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Gevorderde instellings vir <ph name="PRINTING_DESTINATION" /></translation>
@@ -7990,6 +7992,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6689714331348768690">Vra <ph name="SUPERVISED_USER_NAME" /> om na die rekenaar toe te kom. Jou kind sal 'n paar frases op hierdie skerm lees om hul stemmodel te skep.
     <ph name="BR" />
     As <ph name="SUPERVISED_USER_NAME" /> hulp nodig het om te lees, laat jou kind agter jou aan sê. Fluister weg van die mikrofoon af sodat die Assistent jou kind se stem en nie joune leer nie.</translation>
+<translation id="6689948774466767379">Muissleutels</translation>
 <translation id="6690659332373509948">Kan nie lêer ontleed nie: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">Vorentoe</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 bladsy}other{{COUNT} bladsye}}</translation>
@@ -10075,6 +10078,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Voeg oortjie by leeslys}other{Voeg oortjies by leeslys}}</translation>
 <translation id="8169177848833352618">Hierdie toestel voldoen ongelukkig nie aan die vereistes om Bruschetta te installeer nie. Foutkode is <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Regterkant</translation>
 <translation id="8174047975335711832">Toestelinligting</translation>
 <translation id="8176332201990304395">Pienk en wit</translation>
 <translation id="8176529144855282213">Skakel die fisieke mikrofoonskakelaar op jou toestel aan as jy mikrofoontoegang wil aanskakel</translation>

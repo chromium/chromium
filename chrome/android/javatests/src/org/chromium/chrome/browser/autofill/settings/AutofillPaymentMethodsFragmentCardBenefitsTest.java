@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -117,10 +119,10 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
-        Assert.assertEquals(
+        assertEquals(
                 cardBenefitsPref.getTitle(),
                 activity.getString(R.string.autofill_settings_page_card_benefits_label));
-        Assert.assertEquals(
+        assertEquals(
                 cardBenefitsPref.getSummary(),
                 activity.getString(
                         R.string.autofill_settings_page_card_benefits_preference_summary));
@@ -139,7 +141,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         ThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
         mRule.waitForFragmentToBeShown();
 
-        Assert.assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
+        assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
     }
 
     private static void setCardBenefitsFlags(boolean isAmexFlagEnabled) {

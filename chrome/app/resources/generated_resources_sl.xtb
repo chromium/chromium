@@ -2906,7 +2906,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva, da se še danes povežete z omrežjem Wi-Fi in prenesete posodobitev. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}one{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}two{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}few{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}other{<ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev pred rokom. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).}}</translation>
 <translation id="3009178788565917040">Izhod</translation>
-<translation id="3009300415590184725">Ali ste prepričani, da želite preklicati postopek nastavitve mobilne podatkovne storitve?</translation>
 <translation id="3009352964623081324">Tipka za iskanje + O, nato S. Uporabite za nameščanje, upravljanje in prilagajanje glasov.</translation>
 <translation id="3009779501245596802">Indeksirane zbirke podatkov</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Vaša gesla so videti zapletena}=1{{COUNT} šibko geslo}one{{COUNT} šibko geslo}two{{COUNT} šibki gesli}few{{COUNT} šibka gesla}other{{COUNT} šibkih gesel}}</translation>
@@ -3415,7 +3414,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3396442984945202128">Potrdite, da ste to vi</translation>
 <translation id="3396800784455899911">Če kliknete gumb »Sprejmi in nadaljuj«, se strinjate z obdelavo, ki je opisana zgoraj za te Googlove storitve.</translation>
 <translation id="339722927132407568">Zmrzne</translation>
-<translation id="3398899528308712018">Predlog za skupino zavihkov</translation>
 <translation id="3399432415385675819">Obvestila bodo onemogočena</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prepleteno</translation>
 <translation id="3401484564516348917">Branje podatkov o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi, vrednostih registra in datotekah</translation>
@@ -4845,7 +4843,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4386604394450371010">pregled</translation>
 <translation id="4387890294700445764">Ogrožena gesla</translation>
 <translation id="4388650384344483842">Uporabite vsaj 8 znakov.</translation>
-<translation id="4389091756366370506">Uporabnik <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še toliko stikal: <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracijo Bluetootha nadzira <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Urejanje konfiguracijske datoteke</translation>
@@ -5580,7 +5577,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4906679076183257864">Ponastavi na privzeto</translation>
 <translation id="4907129260985716018">Izberite, kdaj lahko ta razširitev bere in spreminja podatke spletnega mesta</translation>
 <translation id="4908811072292128752">Odprite nov zavihek, če želite brskati na dveh spletnih mestih hkrati</translation>
-<translation id="4909038193460299775">Ta račun upravlja domena <ph name="DOMAIN" />, zato bodo vaši zaznamki, zgodovina, gesla in druge nastavitve izbrisani iz te naprave. Vaši podatki bodo kljub temu še naprej shranjeni v Google Računu in jih bo mogoče upravljati na <ph name="BEGIN_LINK" />Google Nadzorni plošči<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Aplikacija je že nameščena</translation>
 <translation id="4912643508233590958">Prekinitve nedejavnosti</translation>
 <translation id="4913209098186576320">Ta datoteka je morda nevarna.<ph name="LINE_BREAK" />To preverjanje traja dlje kot običajno …</translation>

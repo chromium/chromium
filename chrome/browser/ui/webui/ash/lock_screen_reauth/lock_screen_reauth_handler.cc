@@ -284,9 +284,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   // TODO(crbug.com/377862442) Add autoreload url param.
 
   CallJavascript("loadAuthenticator", params);
-  if (features::IsNewLockScreenReauthLayoutEnabled()) {
-    UpdateOrientationAndWidth();
-  }
+  UpdateOrientationAndWidth();
 }
 
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {

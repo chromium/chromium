@@ -1053,7 +1053,7 @@ void StyleResolver::MatchUARules(const Element& element,
   MatchRequest match_request;
   auto func = [&match_request](RuleSet* rules) {
     rules->AssertCompacted();
-    match_request.AddRuleset(rules);
+    match_request.AddRuleSet(rules);
   };
   ForEachUARulesForElement(element, &collector, func);
 

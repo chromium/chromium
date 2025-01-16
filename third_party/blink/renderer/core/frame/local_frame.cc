@@ -873,6 +873,11 @@ BoxShadowPaintImageGenerator* LocalFrame::GetBoxShadowPaintImageGenerator() {
 ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
   LocalFrame& local_root = LocalFrameRoot();
   // One clip path paint worklet per root frame.
+  // TODO(kevers|clchambers): Like other native paint worklets, we should not
+  // have a generator in test environments that lack a compositor thread since
+  // we obviously can't composite the animation. Presently, some tests rely on
+  // the generator even in a non-threaded environment. These tests should be
+  // fixed.
   if (!local_root.clip_path_paint_image_generator_) {
     local_root.clip_path_paint_image_generator_ =
         ClipPathPaintImageGenerator::Create(local_root);

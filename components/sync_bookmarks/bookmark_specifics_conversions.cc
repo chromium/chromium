@@ -478,7 +478,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
 
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
-  if (specifics.ByteSize() == 0) {
+  if (specifics.ByteSizeLong() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;

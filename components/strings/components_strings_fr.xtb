@@ -387,6 +387,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Pour utiliser le Gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="1652887625750064647">Meilleur résultat de l'IA</translation>
+<translation id="1653465303147789530">Payez avec <ph name="PAYMENT_METHOD" /> sans changer d'appli</translation>
 <translation id="1656024727720460136">Chrome a simplifié cette page pour qu'elle soit plus facile à lire. La page d'origine a été récupérée au moyen d'une connexion sécurisée.</translation>
 <translation id="1656489000284462475">Enlèvement</translation>
 <translation id="1658111267661135323">TV et vidéo</translation>
@@ -557,6 +558,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1959001866257244765">Contribuez à renforcer la sécurité sur le Web pour tous en envoyant à Google les <ph name="BEGIN_WHITEPAPER_LINK" />URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Règles de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Votre texte et le contenu de vos pages sont envoyés à Google, et peuvent être utilisés pour améliorer cette fonctionnalité.
   <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Effectuez un contrôle de sécurité ponctuel pour payer plus rapidement</translation>
 <translation id="1962204205936693436">Favoris du domaine <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
 <translation id="1973785048533660168">Emplois de bureau et administratifs</translation>
@@ -701,6 +703,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2215539479425228550">Escalade et alpinisme</translation>
 <translation id="2215727959747642672">Modification de fichier</translation>
 <translation id="2215963164070968490">Chiens</translation>
+<translation id="2219376942605837404">Ajouter un onglet au tableau comparatif</translation>
 <translation id="2219658597883514593">Relancer le tutoriel</translation>
 <translation id="2219735899272417925">Réinitialisation de l'appareil requise</translation>
 <translation id="2221227930294879156">Événements culinaires et œnologiques</translation>
@@ -1151,6 +1154,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="306573536155379004">Le jeu a commencé.</translation>
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3068118691172921711">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans 1 minute</translation>
+<translation id="3068976060094139647">Vous pouvez utiliser la saisie automatique pour cette carte, car votre compte est associé à Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} élément}one{{ITEMS} élément}other{{ITEMS} éléments}}</translation>
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Image</translation>
@@ -1519,7 +1523,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3678914302246317895">Saisissez le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
-<translation id="3681421644246505351">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent.</translation>
+<translation id="3681421644246505351">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation.</translation>
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
 <translation id="3687493962714153124">Gérer la saisie automatique avec l'IA</translation>
 <translation id="3687920599421452763">Fourgons et fourgonnettes</translation>
@@ -1586,6 +1590,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="378611282717571199">Meilleurs résultats pour "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
+<translation id="3791118028061680614">Payez sans changer d'appli</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
@@ -1786,6 +1791,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4151403195736952345">Utiliser la valeur par défaut globale (Détection)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome va maintenant valider votre identité avant de renseigner les modes de paiement. Vous pouvez modifier cela à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Ajouter un onglet au tableau comparatif</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
@@ -3392,6 +3398,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="706960991003274248">Les tableaux comparatifs sont enregistrés dans votre compte <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">réglages système</translation>
 <translation id="70705239631109039">Votre connexion n'est pas totalement sécurisée</translation>
+<translation id="7071122206197538392">Nouveau tableau comparatif</translation>
 <translation id="7075452647191940183">Requête trop volumineuse</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -3828,7 +3835,7 @@ Informations supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Règle ignorée, car non configurée par une source cloud.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt. Par la suite, les sites peuvent demander ces informations pour vous montrer des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous montrer des annonces.</translation>
+<translation id="7800977246388195491">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation. Les sites que vous visitez peuvent aussi déterminer ce qui vous intéresse. Les sites peuvent ensuite demander ces informations pour vous montrer des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous montrer des annonces.</translation>
 <translation id="7802523362929240268">Ce site est légitime</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres indiqué à l'<ph name="SIDE_OF_CARD" /> pour que votre banque puisse vérifier votre identité</translation>
 <translation id="780301667611848630">Non, merci</translation>
@@ -4104,6 +4111,7 @@ Informations supplémentaires :
 <translation id="8298115750975731693">Pour utiliser ce réseau Wi-Fi (<ph name="WIFI_NAME" />), il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Saisir le code</translation>
 <translation id="8303854710873047864">Section "<ph name="SECTION" />" affichée</translation>
+<translation id="8304912090860925649">Nouveau tableau comparatif</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Flux vidéo en direct</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>
@@ -4557,7 +4565,7 @@ Informations supplémentaires :
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut inclure du contenu sensible}one{<ph name="FILE_COUNT" /> fichier peut inclure du contenu sensible}other{<ph name="FILE_COUNT" /> fichiers peuvent inclure du contenu sensible}}</translation>
-<translation id="9165305804774426672">Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
+<translation id="9165305804774426672">Les sites que vous visitez peuvent aussi déterminer ce qui vous intéresse en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et la mesure des annonces</translation>
 <translation id="9167054383925257837">Informations sur le navigateur et l'OS de l'appareil (versions du navigateur et de l'OS, par exemple)</translation>
 <translation id="9167594211215946097">Accéder directement à vos imprimantes</translation>

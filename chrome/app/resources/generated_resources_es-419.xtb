@@ -160,6 +160,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1101254380285078812">{COUNT,plural, =1{1 contraseña}other{{COUNT} contraseñas}}</translation>
 <translation id="1102759278139578486">No se pueden descargar los archivos de anotaciones de nodos principales. Vuelve a intentarlo más tarde.</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Perderás de inmediato el acceso a este grupo de pestañas y se borrará de todos tus dispositivos</translation>
 <translation id="1106350001632362876">Aumentar el umbral</translation>
 <translation id="1107482171728500359">Compartir micrófono</translation>
 <translation id="110850812463801904">Conectarse a OneDrive de forma manual</translation>
@@ -1689,6 +1690,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2173801458090845390">Agregar la ID de la solicitud a este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Administrar búsqueda en sitios y motores de búsqueda</translation>
+<translation id="2175526076681939329">Usar teclas primarias</translation>
 <translation id="217576141146192373">No se puede agregar la impresora. Revisa la configuración de la impresora y vuelve a intentarlo.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="217631816678106981">No pegar</translation>
@@ -2885,7 +2887,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización hoy. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
 <translation id="3009178788565917040">Salida</translation>
-<translation id="3009300415590184725">¿Estás seguro de que deseas cancelar el proceso de configuración del servicio de datos para celulares?</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, luego, S. Se usa para instalar, administrar y personalizar voces.</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Tus contraseñas parecen seguras}=1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
@@ -3394,7 +3395,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3396442984945202128">Verificar tu identidad</translation>
 <translation id="3396800784455899911">Al hacer clic en el botón "Aceptar y continuar", confirmas el procesamiento descrito anteriormente para estos servicios de Google.</translation>
 <translation id="339722927132407568">Intermitente</translation>
-<translation id="3398899528308712018">Sugerencia de grupo de pestañas</translation>
 <translation id="3399432415385675819">Se inhabilitarán las notificaciones</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - entrelazado</translation>
 <translation id="3401484564516348917">Obtener información sobre tu navegador, SO, dispositivo, software instalado, valores de registro y archivos</translation>
@@ -3410,6 +3410,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3407392651057365886">Se precargan más páginas. Las páginas pueden precargarse mediante servidores de Google cuando las solicitan otros sitios.</translation>
 <translation id="3407967630066378878">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en el lado izquierdo del dispositivo <ph name="DEVICE_TYPE" />. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Cámara y micrófono en uso</translation>
+<translation id="3409157109901479672">Lado izquierdo</translation>
 <translation id="3409513286451883969">&amp;Traducir selección al <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Saltar a selección</translation>
 <translation id="3413122095806433232">Emisores de certificados: <ph name="LOCATION" /></translation>
@@ -4695,6 +4696,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4290826901752066702"><ph name="NUM" /> miembro</translation>
 <translation id="4290898381118933198">Deslizar para navegar entre páginas</translation>
 <translation id="4291265871880246274">Diálogo de acceso</translation>
+<translation id="4292613336957320546">Aceleración</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="4294392694389031609">Se borró <ph name="FILE_NAME" /> del historial de descargas, pero aún está en tu dispositivo</translation>
 <translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
@@ -4822,7 +4824,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4386604394450371010">descripción general</translation>
 <translation id="4387890294700445764">Contraseñas hackeadas</translation>
 <translation id="4388650384344483842">Usa al menos 8 caracteres</translation>
-<translation id="4389091756366370506">Usuario <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptores más</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuración de Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración</translation>
@@ -5557,7 +5558,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4906679076183257864">Restablecer valores predeterminados</translation>
 <translation id="4907129260985716018">Elige cuándo esta extensión puede leer y cambiar los datos de sitios.</translation>
 <translation id="4908811072292128752">Abre una pestaña nueva para navegar en dos sitios al mismo tiempo</translation>
-<translation id="4909038193460299775">Debido a que esta cuenta la administra <ph name="DOMAIN" />, tus favoritos, historial, contraseñas y otras opciones de configuración se borrarán de este dispositivo. Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google y se podrán administrar en el <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Ya se instaló la app</translation>
 <translation id="4912643508233590958">Reactivaciones</translation>
 <translation id="4913209098186576320">Es posible que este archivo sea peligroso<ph name="LINE_BREAK" />La revisión está tardando más de lo habitual…</translation>
@@ -5863,6 +5863,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, búsqueda de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Ingresa el PIN para tu llave de seguridad. Si no lo conoces, restablece la llave.</translation>
 <translation id="5139955368427980650">&amp;Abrir</translation>
+<translation id="5140742218917419811">Teclas para usar</translation>
 <translation id="5141421572306659464">Cuenta principal</translation>
 <translation id="5141957579434225843">Por ejemplo, usa oà, oè, uỳ en lugar de òa, òe, ùy</translation>
 <translation id="5143374789336132547">La extensión "<ph name="EXTENSION_NAME" />" cambió la página que se muestra al hacer clic en el botón Página prinicpal.</translation>
@@ -5881,6 +5882,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma</translation>
 <translation id="5150254825601720210">Nombre del servidor SSL para el certificado de Microsoft</translation>
 <translation id="5151354047782775295">Libera espacio en el disco o selecciona los datos que se pueden borrar de forma automática.</translation>
+<translation id="5153074793829217329">Usa el teclado o un teclado numérico para controlar el cursor del mouse</translation>
 <translation id="5153234146675181447">Olvidar el teléfono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Configuración avanzada para <ph name="PRINTING_DESTINATION" /></translation>
@@ -7973,6 +7975,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo de voz.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, dile a tu hijo que repita después de ti. Susúrrale lejos del micrófono para que Asistente aprenda la voz de tu hijo en lugar de la tuya.</translation>
+<translation id="6689948774466767379">Teclas del mouse</translation>
 <translation id="6690659332373509948">Error al analizar el archivo: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Reenviar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}other{{COUNT} páginas}}</translation>
@@ -10060,6 +10063,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Agregar la pestaña a la lista de lectura}other{Agregar las pestañas a la lista de lectura}}</translation>
 <translation id="8169177848833352618">Lamentablemente, esta máquina no cumple con los requisitos para instalar Bruschetta. El código de error es <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Lado derecho</translation>
 <translation id="8174047975335711832">Información del dispositivo</translation>
 <translation id="8176332201990304395">Rosa y blanco</translation>
 <translation id="8176529144855282213">Para activar el acceso al micrófono, activa el interruptor físico correspondiente en tu dispositivo</translation>

@@ -7656,6 +7656,12 @@
       runtime_flag: "ViewTransitionOnNavigation",
     },
     {
+      name: "result",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSFunctions",
+    },
+    {
       name: "position-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value", "inherit"],

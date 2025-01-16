@@ -1158,7 +1158,6 @@
 <translation id="4902797682482387055">Төвлөрөхийг санал болгосон ажил</translation>
 <translation id="490375751687810070">Босоо</translation>
 <translation id="490788395437447240">Батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Энэ нь туршилтын ХОУ-ы онцлог бөгөөд үүнийг үргэлж зөв хийхгүй.</translation>
 <translation id="491504982845934899">Төхөөрөмжийг тохируулсны дараа <ph name="NETWORK_NAME" />-г идэвхжүүлэх</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
@@ -2026,7 +2025,6 @@
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7807067443225230855">Хайлт болон Туслах</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ба <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Сайн тэмдэглэгээ нь танд энэ зөвлөмж таалагдсан гэсэн санал хүсэлт илгээнэ</translation>
 <translation id="7825412704590278437">Календарийн удахгүй болох үйл явдлаас</translation>
 <translation id="7829386189513694949">Сайн дохио</translation>
 <translation id="7830453190047749513">Та өөрийн <ph name="PERIPHERAL_NAME" />-д зориулж товчлуурын үйлдлүүд, курсорын хурд болон бусад зүйлийг хувийн болгох боломжтой</translation>
@@ -2118,6 +2116,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> нэртэй загвар аль хэдийн байна</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8054466585765276473">Цэнэгний хугацааг тооцож байна.</translation>
+<translation id="8076492880354921740">Таб</translation>
 <translation id="8079538659226626406">Дэлгэц хуваалцах</translation>
 <translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2183,7 +2182,6 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock асаалттай байна</translation>
 <translation id="8315514906653279104">Асааж байна...</translation>
-<translation id="8319634750346253957">Сайн тэмдэглэгээ нь танд энэ зөвлөмж таалагдаагүй гэсэн санал хүсэлт илгээнэ</translation>
 <translation id="8331351032546853669">Таталт хүлээгдэж байна</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

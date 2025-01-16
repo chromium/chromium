@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Artinya, Chromium akan selalu meminta situs desktop.</translation>
 <translation id="2270466829363945454">Belanja</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
+<translation id="2314220608288760290">Chromium otomatis membuka link Samaran YouTube dalam mode Samaran.</translation>
 <translation id="231828342043114302">Untuk menerima konten yang dipersonalisasi berdasarkan minat Anda, login ke Chromium.</translation>
 <translation id="2326738825692478496">Beberapa data Chromium Anda belum disimpan di Akun Google Anda.
 
@@ -284,6 +285,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8240981428553046115">Chromium tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="8254729934443216898">Pelajari beragam fitur baru yang membantu Anda mengoptimalkan penggunaan Chromium.</translation>
 <translation id="829047622686389424">Feed kustom yang dibuat untuk Anda.</translation>
+<translation id="8293572045658095405">Anda sedang dalam mode Samaran Chromium</translation>
 <translation id="830951810931292870">Membuka URL yang dimasukkan di Chromium dalam mode Samaran.</translation>
 <translation id="8409374867500149834">Anda memiliki keamanan terkuat Chromium terhadap situs berbahaya</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>

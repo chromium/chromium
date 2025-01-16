@@ -23,7 +23,8 @@ class PrerenderHandle {
   virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
   virtual void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) = 0;
-  virtual void SetActivationCallback(base::OnceClosure) = 0;
+  virtual void SetActivationCallback(base::OnceClosure activation_callback) = 0;
+  virtual void SetErrorCallback(base::OnceClosure error_callback) = 0;
 };
 
 }  // namespace content

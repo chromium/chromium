@@ -272,7 +272,13 @@ TEST_F(WebNNTensorImplBackendTest, CreateTensorImplManyTest) {
 }
 
 // Test creating a WebNNTensor larger than tensor byte length limit.
-TEST_F(WebNNTensorImplBackendTest, CreateTooLargeTensorTest) {
+// The test is failing on android x86 builds: https://crbug.com/390358145.
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_CreateTooLargeTensorTest DISABLED_CreateTooLargeTensorTest
+#else
+#define MAYBE_CreateTooLargeTensorTest CreateTooLargeTensorTest
+#endif  // #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
+TEST_F(WebNNTensorImplBackendTest, MAYBE_CreateTooLargeTensorTest) {
   const std::array<uint32_t, 3> large_shape{std::numeric_limits<int32_t>::max(),
                                             2, 2};
 

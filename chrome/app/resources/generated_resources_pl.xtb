@@ -2878,7 +2878,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji dzisiaj. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}few{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}many{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}other{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}}</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
-<translation id="3009300415590184725">Czy na pewno chcesz anulować konfigurowanie komórkowej usługi transmisji danych?</translation>
 <translation id="3009352964623081324">Wyszukaj + O, a następnie S. Służy do instalowania i dostosowywania głosów oraz do zarządzania nimi.</translation>
 <translation id="3009779501245596802">Zindeksowane bazy danych</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Twoje hasła wyglądają na silne}=1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
@@ -3383,7 +3382,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3396442984945202128">Potwierdź swoją tożsamość</translation>
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
 <translation id="339722927132407568">Zatrzymuje się</translation>
-<translation id="3398899528308712018">Sugestia dotycząca grupy kart</translation>
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – z przeplotem</translation>
 <translation id="3401484564516348917">Odczytywanie informacji o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu, wartościach rejestru i plikach</translation>
@@ -4813,7 +4811,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4386604394450371010">podsumowanie</translation>
 <translation id="4387890294700445764">Przejęte hasła</translation>
 <translation id="4388650384344483842">Użyj co najmniej 8 znaków</translation>
-<translation id="4389091756366370506">Użytkownik <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i jeszcze <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracją Bluetooth zarządza <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edytuj plik konfiguracji</translation>
@@ -5547,7 +5544,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4906679076183257864">Przywróć domyślne</translation>
 <translation id="4907129260985716018">Wybierz, kiedy to rozszerzenie może odczytywać i zmieniać dane witryny</translation>
 <translation id="4908811072292128752">Otwórz nową kartę, by przeglądać dwie strony naraz</translation>
-<translation id="4909038193460299775">Ponieważ to konto jest zarządzane przez <ph name="DOMAIN" />, Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia. Twoje dane pozostaną zapisane na koncie Google. Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Panelu Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Aplikacja jest już zainstalowana</translation>
 <translation id="4912643508233590958">Wyjścia z nieaktywności</translation>
 <translation id="4913209098186576320">Ten plik może być niebezpieczny<ph name="LINE_BREAK" />Sprawdzanie trwa dłużej niż zwykle…</translation>

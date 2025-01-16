@@ -335,6 +335,7 @@
 <translation id="1219219114431716687">ທາດໝາກໄມ້</translation>
 <translation id="122082903575839559">ຂັ້ນຕອນການ​ລົງລາຍເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
+<translation id="1221266967850882682">ສະຫຼຸບຕ້ອນຮັບກັບ</translation>
 <translation id="1221825588892235038">ການເລືອກເທົ່ານັ້ນ</translation>
 <translation id="1222835797152767346">ຕັ້ງຄ່າ PIN ເພື່ອໃຫ້ເຂົ້າສູ່ລະບົບໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ຈຳເປັນຕ້ອງມີໃບອະນຸຍາດ</translation>
@@ -2902,7 +2903,6 @@
 <translation id="3008272652534848354">ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi ມື້ນີ້ເພື່ອດາວໂຫຼດການອັບເດດ. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).}other{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi ແລະ ດາວໂຫຼດການອັບເດດກ່ອນເວລາທີ່ກຳນົດໄວ້. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).}}</translation>
 <translation id="3009178788565917040">ຜົນອອກມາ</translation>
-<translation id="3009300415590184725">ທ່ານແນ່ໃຈບໍ່ວ່າ ທ່ານຕ້ອງການຍົກເລີກຂະບວນການຕັ້ງການບໍລິການຂໍ້ມູນມືຖື?</translation>
 <translation id="3009352964623081324">ຊອກຫາ + O, ຈາກນັ້ນ S. ໃຊ້ເພື່ອຕິດຕັ້ງ, ຈັດການ ແລະ ປັບແຕ່ງສຽງ.</translation>
 <translation id="3009779501245596802">ຖານ​ຂໍ້​ມູນ​ເຂົ້າດັດ​ຊະ​ນີແລ້ວ</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{ລະຫັດຜ່ານຂອງທ່ານຄາດເດົາໄດ້ຍາກ}=1{ລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}other{ລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}}</translation>
@@ -3411,7 +3411,6 @@
 <translation id="3396442984945202128">ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="3396800784455899911">ໂດຍການຄລິກປຸ່ມ "ຍອມຮັບ ແລະ ສືບຕໍ່", ແມ່ນຖືວ່າທ່ານເຫັນດີນຳການປະມວນຜົນຂໍ້ມູນທີ່ອະທິບາຍຢູ່ຂ້າງເທິງສຳລັບການບໍລິການ Google ເຫຼົ່ານີ້.</translation>
 <translation id="339722927132407568">ຄ້າງ</translation>
-<translation id="3398899528308712018">ຄຳແນະນຳກຸ່ມແຖບ</translation>
 <translation id="3399432415385675819">ການແຈ້ງເຕືອນຈະຖືກປິດ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ເຮີດຊ) - ອິນເຕີເລດ</translation>
 <translation id="3401484564516348917">ອ່ານຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບ, OS, ອຸປະກອນ, ຊອບແວທີ່ໄດ້ຕິດຕັ້ງ, ຄ່າໃນທະບຽນ ແລະ ໄຟລ໌ຂອງທ່ານ.</translation>
@@ -4841,7 +4840,6 @@
 <translation id="4386604394450371010">ພາບຮວມ</translation>
 <translation id="4387890294700445764">ລະຫັດຜ່ານທີ່ຖືກລະເມີດ</translation>
 <translation id="4388650384344483842">ໃຊ້ຕົວອັກສອນຢ່າງໜ້ອຍ 8 ຕົວ</translation>
-<translation id="4389091756366370506">ຜູ້​ໃຊ້ <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ <ph name="NUMBER_OF_OTHER_SWITCHES" /> ປຸ່ມ</translation>
 <translation id="439266289085815679">ການກຳນົດຄ່າ Bluetooth ຖືກຄວບຄຸມໂດຍ <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">ແກ້ໄຂໄຟລ໌ກຳນົດຄ່າ</translation>
@@ -5576,7 +5574,6 @@
 <translation id="4906679076183257864">ຕັ້ງຄ່າເປັນມາດຕະຖານຄືນໃໝ່</translation>
 <translation id="4907129260985716018">ເລືອກວ່າສ່ວນຂະຫຍາຍນີ້ຈະສາມາດອ່ານ ແລະ ປ່ຽນຂໍ້ມູນເວັບໄຊຂອງທ່ານໄດ້ຕອນໃດ</translation>
 <translation id="4908811072292128752">ເປີດແຖບໃໝ່ເພື່ອເລື່ອນເບິ່ງສອງເວັບໄຊພ້ອມກັນ</translation>
-<translation id="4909038193460299775">ເພາະວ່າບັນຊີນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" />, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະຖືກລຶບລ້າງອອກຈາກອຸປະກອນນີ້. ແນວໃດກໍຕາມ, ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">ຕິດຕັ້ງແອັບແລ້ວ</translation>
 <translation id="4912643508233590958">ການປຸກຢູ່ຊື່ໆ</translation>
 <translation id="4913209098186576320">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍ<ph name="LINE_BREAK" />ການກວດສອບນີ້ໃຊ້ເວລາດົນກວ່າປົກກະຕິ...</translation>

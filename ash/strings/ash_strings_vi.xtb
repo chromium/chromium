@@ -282,6 +282,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1948405482892809935">Chuyển sang người dùng tiếp theo</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1954252331066828794">Đã ghi màn hình xong</translation>
+<translation id="1956087014741188812">Tạm dừng phím điều khiển chuột</translation>
 <translation id="1957958912175573503">Đặt ngôn ngữ</translation>
 <translation id="1961239773406905488">Đang ẩn chế độ xem trước máy ảnh</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="225680501294068881">Đang quét tìm thiết bị...</translation>
 <translation id="2257486738914982088">Đã xảy ra lỗi trong khi tải <ph name="FILENAME" /> xuống</translation>
 <translation id="2258734398699965611">Các tệp được đề xuất</translation>
+<translation id="2266607665880926261">Đã tạm dừng phím điều khiển chuột</translation>
 <translation id="2268130516524549846">Đã tắt bluetooth</translation>
 <translation id="2268731132310444948">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Sau khi kích hoạt Trình chạy, bạn sẽ thấy thanh tìm kiếm nâng cao. Bạn có thể nhập thông tin vào đó để tìm tệp, ứng dụng, v.v. Bạn cũng có thể tìm được câu trả lời cho các câu hỏi về <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
@@ -540,6 +542,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="2876338922445400217">Phóng to trên màn hình</translation>
 <translation id="2878884018241093801">Không có mục nào gần đây</translation>
 <translation id="2880541185262491188">Quá nhiều lần nhập mã PIN. Hãy đợi <ph name="TIME_LEFT" /> và thử lại</translation>
+<translation id="2883271196820422439">Tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="2885950158625301909">Tìm hiểu thêm</translation>
 <translation id="2891209721153296020">"Bỏ chọn"</translation>
 <translation id="2894949423239620203">Cáp có thể ảnh hưởng đến hiệu suất</translation>
@@ -727,6 +730,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Loại bỏ việc thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
+<translation id="3545224667633138205">Đã tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3727231512028252576">Không tải được mục. Hãy thử lại khi có kết nối mạng.</translation>
 <translation id="3735740477244556633">Sắp xếp theo</translation>
 <translation id="3738664582935948253">Giờ đây, bạn có thể hiện các lượt nhấp và phím tắt trong bản ghi màn hình</translation>
+<translation id="3741482431277446954">Nút chuột phải</translation>
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
 <translation id="3743775386021959186">Chế độ Tập trung đang bật, còn <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Ẩn đề xuất về thời tiết</translation>
@@ -1152,7 +1157,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4902797682482387055">Đề xuất về nhiệm vụ cần tập trung</translation>
 <translation id="490375751687810070">Dọc</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% pin</translation>
-<translation id="4911191962826748981">Đây là tính năng AI thử nghiệm và không phải lúc nào cũng chính xác.</translation>
 <translation id="491504982845934899">Kích hoạt sau khi thiết lập thiết bị <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
@@ -1828,6 +1832,7 @@ Mới cài đặt</translation>
 <translation id="7118268675952955085">ảnh chụp màn hình</translation>
 <translation id="7118597077555700347">Mở <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Chọn từ hoặc chữ cái tiếp theo</translation>
+<translation id="7124556000457919678">Khi được bật, tạm dừng và tiếp tục sử dụng phím điều khiển chuột</translation>
 <translation id="7126996685418858413">Mở tuần trước</translation>
 <translation id="7130207228079676353">RẤT CÓ THỂ</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
@@ -1849,6 +1854,7 @@ Mới cài đặt</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
 <translation id="7219573373513695352">Chưa kết nối thiết bị nào</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Cả hai nút trên chuột</translation>
 <translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ Mới cài đặt</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7807067443225230855">Tìm kiếm và Trợ lý</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> và <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Nút Thích sẽ gửi phản hồi cho biết bạn thích đề xuất này</translation>
 <translation id="7825412704590278437">Từ sự kiện sắp tới trên lịch</translation>
 <translation id="7829386189513694949">Tín hiệu mạnh</translation>
 <translation id="7830453190047749513">Bạn có thể tuỳ ý chọn chức năng của nút, tốc độ con trỏ và nhiều khía cạnh khác cho <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ Mới cài đặt</translation>
 <translation id="8051716679295756675">Mẫu có tên <ph name="DESK_TEMPLATE_NAME" /> đã tồn tại</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
+<translation id="8076492880354921740">Thẻ</translation>
 <translation id="8079538659226626406">Chia sẻ màn hình</translation>
 <translation id="8083540854303889870">Lưu để dùng sau</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ Mới cài đặt</translation>
 <translation id="8203224998425013577">Hiện thêm biểu tượng cảm xúc và ảnh GIF khác</translation>
 <translation id="8203795194971602413">Nhấp chuột phải</translation>
 <translation id="8205469348819768313">Bạn đang tìm cách dùng phím Page Down? Hãy sử dụng</translation>
+<translation id="8213376797713070611">Nút chuột trái</translation>
 <translation id="8214996719228530800">Kênh Canary</translation>
 <translation id="8219451629189078428">Bạn cần phải luôn bật và kết nối Chromebook với nguồn điện trong thời gian này. Hãy đảm bảo bạn đã cắm chắc chắn cáp bộ sạc hoặc bộ đổi nguồn vào cả Chromebook lẫn ổ cắm điện. Không tắt Chromebook.</translation>
 <translation id="8220076512072059941">Thêm <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ Mới cài đặt</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Đang bật Caps Lock</translation>
 <translation id="8315514906653279104">Đang bật...</translation>
-<translation id="8319634750346253957">Nút Không thích sẽ gửi phản hồi cho biết bạn không thích đề xuất này</translation>
 <translation id="8331351032546853669">Đang chờ tải xuống</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ Mới cài đặt</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Không có Bluetooth</translation>
+<translation id="9050999376345823055">Nhấn "." để nhả chuột</translation>
 <translation id="906458777597946297">Phóng to cửa sổ</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9070640332319875144">Cài đặt Trợ lý</translation>

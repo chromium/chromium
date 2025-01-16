@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Váltás a következő felhasználóra</translation>
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1954252331066828794">A képernyőfelvétel elkészült</translation>
+<translation id="1956087014741188812">Egérgombok használatának szüneteltetése</translation>
 <translation id="1957958912175573503">Nyelv beállítása</translation>
 <translation id="1961239773406905488">Kamera-előnézet elrejtve</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Eszközök keresése...</translation>
 <translation id="2257486738914982088">Hiba történt a következő fájl letöltésekor: <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Javasolt fájlok</translation>
+<translation id="2266607665880926261">Egérgombok használata szüneteltetve</translation>
 <translation id="2268130516524549846">Bluetooth letiltva</translation>
 <translation id="2268731132310444948">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. Az Indító aktiválása után bővített keresősáv jelenik meg. Fájlok, alkalmazások és egyebek kereséséhez elkezdhet gépelni. Ugyanitt <ph name="PRODUCT_NAME" /> eszközével kapcsolatos kérdéseire is választ kaphat.</translation>
 <translation id="2268813581635650749">Összes kiléptetése</translation>
@@ -540,6 +542,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2876338922445400217">A képernyő nagyítása</translation>
 <translation id="2878884018241093801">Nincsenek mostanában használt elemek</translation>
 <translation id="2880541185262491188">Túl sokszor próbálkozott a PIN-kód megadásával. <ph name="TIME_LEFT" /> várakozást követően próbálja meg újra.</translation>
+<translation id="2883271196820422439">Egérgombok használatának folytatása</translation>
 <translation id="2885950158625301909">További információ</translation>
 <translation id="2891209721153296020">„Kijelölés megszüntetése“</translation>
 <translation id="2894949423239620203">A kábel befolyásolhatja a teljesítményt</translation>
@@ -727,6 +730,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">A telefon legutóbbi fotóinak és médiatartalmainak megtekintésére vonatkozó beállítások elvetése</translation>
 <translation id="3542066395059568317">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Jobb gombbal való kattintással eltávolíthatja az ajánlásokat.</translation>
+<translation id="3545224667633138205">Egérgombok használata folytatva</translation>
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
 <translation id="3554215588514239132">A Fejlesztői eszközök panel megjelenítése vagy elrejtése</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> rögzítve</translation>
@@ -801,6 +805,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3727231512028252576">Nem sikerült betölteni az elemeket. Próbálja újra, amikor online lesz.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
+<translation id="3741482431277446954">Jobb egérgomb</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3743775386021959186">Összpontosítási üzemmód bekapcsolva, <ph name="REMAINING_TIME" /> van hátra</translation>
 <translation id="3750403286520637847">Időjárási javaslat elrejtése</translation>
@@ -1153,7 +1158,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4902797682482387055">Javasolt feladat a következőre fókuszálva:</translation>
 <translation id="490375751687810070">Függőleges</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />%-os töltöttség</translation>
-<translation id="4911191962826748981">Ez egy kísérleti AI-funkció, amely nem mindig működik megfelelően.</translation>
 <translation id="491504982845934899">A(z) <ph name="NETWORK_NAME" /> hálózat aktiválása csak az eszköz beállítása után lehetséges</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
@@ -1829,6 +1833,7 @@ Frissen telepítve</translation>
 <translation id="7118268675952955085">képernyőkép</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> megnyitása</translation>
 <translation id="7119327711295338600">A következő szó vagy betű kijelölése</translation>
+<translation id="7124556000457919678">Ha be van kapcsolva, szünetelteti és folytatja az egérgombok használatát</translation>
 <translation id="7126996685418858413">Az elmúlt héten nyitotta meg</translation>
 <translation id="7130207228079676353">NAGY VALÓSZÍNŰSÉGGEL</translation>
 <translation id="7131634465328662194">A rendszer automatikusan kijelentkezteti.</translation>
@@ -1850,6 +1855,7 @@ Frissen telepítve</translation>
 <translation id="7198435252016571249">Kamera a jobb alsó sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="7219573373513695352">Nincsenek csatlakoztatott eszközök</translation>
 <translation id="7229029500464092426">Memória <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> összesen</translation>
+<translation id="7239814253344511868">Mindkét egérgomb</translation>
 <translation id="7244725679040769470">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />%. Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. A Chromebookot újra kell indítani a frissítés alkalmazásához. Ez akár egy percig is eltarthat.</translation>
 <translation id="7256057185598509352">2. ExpressKey</translation>
@@ -2019,7 +2025,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> és <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">A „Tetszik” gombbal azt a visszajelzést küldi, hogy tetszik Önnek ez a javaslat</translation>
 <translation id="7825412704590278437">Közelgő naptáreseményből</translation>
 <translation id="7829386189513694949">Erős jel</translation>
 <translation id="7830453190047749513">Személyre szabhatja <ph name="PERIPHERAL_NAME" /> eszközén a gombműveleteket, a kurzor sebességét és egyebeket</translation>
@@ -2111,6 +2116,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8051716679295756675">A(z) <ph name="DESK_TEMPLATE_NAME" /> nevű sablon már létezik.</translation>
 <translation id="8052898407431791827">Vágólapra másolva</translation>
 <translation id="8054466585765276473">Akkumulátor-időtartam kiszámítása.</translation>
+<translation id="8076492880354921740">Lapok</translation>
 <translation id="8079538659226626406">Képernyőmegosztás</translation>
 <translation id="8083540854303889870">Későbbre mentett</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2151,6 +2157,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8203224998425013577">További emojik és GIF-ek megjelenítése</translation>
 <translation id="8203795194971602413">Kattintás jobb egérgombbal</translation>
 <translation id="8205469348819768313">A Page Down billentyűt próbálja használni? Használja a következőt:</translation>
+<translation id="8213376797713070611">Bal egérgomb</translation>
 <translation id="8214996719228530800">Canary csatorna</translation>
 <translation id="8219451629189078428">Ez idő alatt Chromebookjának bekapcsolva kell maradnia, és csatlakoztatva kell lennie áramforráshoz. Gondoskodjon arról, hogy a töltő-, illetve adapterkábelek teljes mértékben csatlakoztatva legyenek mind a Chromebookhoz, mind a konnektorhoz. Ne kapcsolja ki a Chromebookot.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hozzáadása</translation>
@@ -2175,7 +2182,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="830868413617744215">Béta</translation>
 <translation id="8314772463905284467">A Caps Lock be van kapcsolva</translation>
 <translation id="8315514906653279104">Bekapcsolás…</translation>
-<translation id="8319634750346253957">A „Nem tetszik” gombbal azt a visszajelzést küldi, hogy nem tetszik Önnek ez a javaslat</translation>
 <translation id="8331351032546853669">Letöltés függőben</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2376,6 +2382,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
 <translation id="9050012935252397793">A Bluetooth nem áll rendelkezésre</translation>
+<translation id="9050999376345823055">A feloldáshoz nyomja meg a „.” billentyűt</translation>
 <translation id="906458777597946297">Ablak teljes méretre állítása</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9070640332319875144">A Segéd beállításai</translation>

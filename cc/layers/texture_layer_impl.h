@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/hdr_metadata.h"

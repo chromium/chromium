@@ -282,6 +282,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1948405482892809935">Mudar para o próximo usuário</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954252331066828794">Gravação de tela concluída</translation>
+<translation id="1956087014741188812">Pausar teclas do mouse</translation>
 <translation id="1957958912175573503">Configurar idioma</translation>
 <translation id="1961239773406905488">Visualização da câmera oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="225680501294068881">Procurando dispositivos...</translation>
 <translation id="2257486738914982088">Algo deu errado no download do arquivo <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Arquivos sugeridos</translation>
+<translation id="2266607665880926261">Teclas do mouse pausadas</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268731132310444948">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Depois que o acesso rápido for ativado, uma barra de pesquisa aprimorada vai aparecer. Comece a digitar para pesquisar arquivos, apps e muito mais. Você também pode receber respostas para perguntas sobre o <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Desconectar todos</translation>
@@ -540,6 +542,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="2876338922445400217">Aumentar o zoom na tela</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2880541185262491188">Excesso de tentativas de PIN. Espere <ph name="TIME_LEFT" /> e tente de novo</translation>
+<translation id="2883271196820422439">Retomar teclas do mouse</translation>
 <translation id="2885950158625301909">Saiba mais</translation>
 <translation id="2891209721153296020">"Desmarcar"</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
@@ -727,6 +730,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="3539957339480430241">Ponto de acesso do <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Dispense a configuração de visualização de mídia e fotos recentes do smartphone</translation>
 <translation id="3542066395059568317">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, clique com o botão direito do mouse.</translation>
+<translation id="3545224667633138205">Teclas do mouse retomadas</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel "Ferramentas para desenvolvedores"</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
@@ -801,6 +805,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3727231512028252576">Não foi possível carregar os itens. Tente de novo quando estiver on-line.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738664582935948253">Agora é possível mostrar cliques e atalhos do teclado em gravações de tela</translation>
+<translation id="3741482431277446954">Botão direito do mouse</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3743775386021959186">Foco ativado, faltam <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Ocultar sugestão de clima</translation>
@@ -1152,7 +1157,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4902797682482387055">Tarefa sugerida para se concentrar em</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
-<translation id="4911191962826748981">Esse é um recurso de IA experimental, e o resultado nem sempre é o esperado.</translation>
 <translation id="491504982845934899">Ativar <ph name="NETWORK_NAME" /> após a configuração do dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -1828,6 +1832,7 @@ Nova instalação</translation>
 <translation id="7118268675952955085">captura de tela</translation>
 <translation id="7118597077555700347">Abrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Selecionar a próxima palavra ou letra</translation>
+<translation id="7124556000457919678">Quando ativado, pausa e retoma as teclas do mouse</translation>
 <translation id="7126996685418858413">Aberto na última semana</translation>
 <translation id="7130207228079676353">MUITO PROVAVELMENTE</translation>
 <translation id="7131634465328662194">Você será automaticamente desconectado.</translation>
@@ -1849,6 +1854,7 @@ Nova instalação</translation>
 <translation id="7198435252016571249">Câmera alinhada ao canto direito de baixo. Conflito com a superfície do sistema.</translation>
 <translation id="7219573373513695352">Nenhum dispositivo conectado</translation>
 <translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Os dois botões do mouse</translation>
 <translation id="7244725679040769470">Tempo restante: cerca de <ph name="PERCENTAGE" /> (%). Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este Chromebook precisa ser reiniciado para que uma atualização seja aplicada. Isso pode demorar até um minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">O botão "Gostei" envia feedback informando que você gostou da sugestão</translation>
 <translation id="7825412704590278437">Do próximo evento da agenda</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Você pode personalizar as ações dos botões, a velocidade do cursor e muito mais do seu <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
+<translation id="8076492880354921740">Guias</translation>
 <translation id="8079538659226626406">Compartilhamento de tela</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8203224998425013577">Mostrar mais emojis e GIFs</translation>
 <translation id="8203795194971602413">Clicar com o botão direito</translation>
 <translation id="8205469348819768313">Quer usar a tecla Page Down? Use</translation>
+<translation id="8213376797713070611">Botão esquerdo do mouse</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook precisa ficar ligado e conectado à energia durante esse período. Verifique se os cabos do carregador ou adaptador estão completamente conectados, tanto ao Chromebook quanto à tomada. Não desligue o Chromebook.</translation>
 <translation id="8220076512072059941">Adicionar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
 <translation id="8315514906653279104">Ativando…</translation>
-<translation id="8319634750346253957">O botão "Não gostei" envia feedback informando que você não gostou da sugestão</translation>
 <translation id="8331351032546853669">Download pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9034924485347205037">Arquivos do Linux</translation>
 <translation id="9047624247355796468">Abrir configurações de <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">O Bluetooth está indisponível</translation>
+<translation id="9050999376345823055">Pressione "." para soltar</translation>
 <translation id="906458777597946297">Maximizar janela</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configurações do Google Assistente</translation>

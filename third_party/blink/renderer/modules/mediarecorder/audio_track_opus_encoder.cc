@@ -187,8 +187,9 @@ void AudioTrackOpusEncoder::EncodeAudio(
 
   // Wait to have enough |input_bus|s to guarantee a satisfactory conversion,
   // accounting for multiple calls to ProvideInput().
-  while (fifo_->frames() >= converter_->GetMaxInputFramesRequested(
-                                kOpusPreferredFramesPerBuffer)) {
+  while (fifo_->frames() >=
+         static_cast<size_t>(converter_->GetMaxInputFramesRequested(
+             kOpusPreferredFramesPerBuffer))) {
     std::unique_ptr<media::AudioBus> audio_bus = media::AudioBus::Create(
         converted_params_.channels(), kOpusPreferredFramesPerBuffer);
     converter_->Convert(audio_bus.get());

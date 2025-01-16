@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
 <translation id="2270466829363945454">Vásárlás</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
+<translation id="2314220608288760290">A Chromium automatikusan inkognitó módban nyitja meg a YouTube inkognitó linkjeit.</translation>
 <translation id="231828342043114302">Ha személyre szabott tartalmakat szeretne kapni az érdeklődési körei alapján, jelentkezzen be a Chromiumba.</translation>
 <translation id="2326738825692478496">Az Ön bizonyos Chromium-adatait még nem mentette a rendszer a Google-fiókjába.
 
@@ -284,6 +285,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>
 <translation id="8254729934443216898">Fedezze fel az új funkciókat, amelyek segítségével a legtöbbet hozhatja ki a Chromiumból.</translation>
 <translation id="829047622686389424">Önnek készült egyéni feed.</translation>
+<translation id="8293572045658095405">A Chromium inkognitó módjában van</translation>
 <translation id="830951810931292870">Inkognitó módban nyitja meg a bevitt URL-eket a Chromiumban.</translation>
 <translation id="8409374867500149834">A Chromium a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Törlődni fognak azok az adatok, amelyek csak erre az eszközre lettek mentve, miközben be volt jelentkezve. Ezek közé tartozhatnak az előzmények és a jelszavak is.}}</translation>

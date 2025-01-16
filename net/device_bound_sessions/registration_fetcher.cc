@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/debug/stack_trace.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"

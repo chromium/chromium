@@ -337,6 +337,7 @@
 <translation id="1219219114431716687">טארט פירות</translation>
 <translation id="122082903575839559">אלגוריתם חתימה של אישור </translation>
 <translation id="1221024147024329929">‏PKCS #1 MD2 עם הצפנת RSA</translation>
+<translation id="1221266967850882682">איפה היינו?</translation>
 <translation id="1221825588892235038">בחירה בלבד</translation>
 <translation id="1222835797152767346">אפשר להגדיר קוד אימות כדי שיהיה יותר קל להיכנס לחשבון</translation>
 <translation id="1223484782328004593">נדרש רישיון כדי להשתמש ב-<ph name="APP_NAME" /></translation>
@@ -2902,7 +2903,6 @@
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏לפי הדרישה של <ph name="MANAGER" />, עליך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}one{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}two{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}other{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}}</translation>
 <translation id="3009178788565917040">פלט</translation>
-<translation id="3009300415590184725">בטוח שברצונך לבטל את תהליך ההתקנה של שירות הנתונים לנייד?</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
 <translation id="3009779501245596802">מסדי נתונים שנוספו לאינדקס</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{הסיסמאות נראות חזקות}=1{יש סיסמה חלשה אחת ({COUNT})}one{יש {COUNT} סיסמאות חלשות}two{יש {COUNT} סיסמאות חלשות}other{יש {COUNT} סיסמאות חלשות}}</translation>
@@ -3411,7 +3411,6 @@
 <translation id="3396442984945202128">אימות הזהות שלך</translation>
 <translation id="3396800784455899911">‏לחיצה על הכפתור "קבלה והמשך" מבטאת את הסכמתך לעיבוד שתואר קודם לכן לגבי השירותים האלה של Google.</translation>
 <translation id="339722927132407568">קופא</translation>
-<translation id="3398899528308712018">הצעה לקבוצת כרטיסיות</translation>
 <translation id="3399432415385675819">הודעות יושבתו</translation>
 <translation id="3400390787768057815">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> הרץ) – סריקה שזורה (Interlaced)</translation>
 <translation id="3401484564516348917">‏קריאת מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו, הקבצים והערכים ב-registry</translation>
@@ -4841,7 +4840,6 @@
 <translation id="4386604394450371010">סקירה כללית</translation>
 <translation id="4387890294700445764">סיסמאות שנחשפו</translation>
 <translation id="4388650384344483842">עליך להזין לפחות 8 תווים</translation>
-<translation id="4389091756366370506"><ph name="VALUE" /> משתמש</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ועוד <ph name="NUMBER_OF_OTHER_SWITCHES" /> מתגים</translation>
 <translation id="439266289085815679">‏הגדרת ה-Bluetooth היא בשליטת <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">עריכת קובץ התצורה</translation>
@@ -5577,7 +5575,6 @@
 <translation id="4906679076183257864">אפס לברירת המחדל</translation>
 <translation id="4907129260985716018">עליך לבחור מתי התוסף הזה יוכל לקרוא את נתוני האתר שלך ולשנות אותם</translation>
 <translation id="4908811072292128752">פתיחת כרטיסייה חדשה כדי לגלוש בשני אתרים בו-זמנית</translation>
-<translation id="4909038193460299775">‏החשבון הזה מנוהל על-ידי <ph name="DOMAIN" />, ולכן הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות יימחקו מהמכשיר הזה. עם זאת, הנתונים עדיין יישארו בחשבון Google שלך ואפשר לנהל אותם ב<ph name="BEGIN_LINK" />מרכז השליטה של Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">האפליקציה כבר מותקנת</translation>
 <translation id="4912643508233590958">הוצאות לא פעילות ממצב שינה</translation>
 <translation id="4913209098186576320">הקובץ הזה עלול להיות מסוכן<ph name="LINE_BREAK" />הבדיקה הזו נמשכת יותר זמן מהרגיל…</translation>

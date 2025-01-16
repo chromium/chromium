@@ -391,6 +391,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Google գաղտնաբառերի կառավարիչը macOS Keychain-ի միջոցով օգտագործելու համար վերագործարկեք Chromium-ը և թույլատրեք Keychain-ի օգտագործումը։ Ձեր ներդիրները կբացվեն վերագործարկումից հետո։</translation>
 <translation id="1652887625750064647">Լավագույն ԱԲ համընկնում</translation>
+<translation id="1653465303147789530">Վճարեք <ph name="PAYMENT_METHOD" />-ի միջոցով՝ առանց այլ հավելված բացելու</translation>
 <translation id="1656024727720460136">Chrome-ը պարզեցրել է այս էջը՝ այն ավելի ընթեռնելի դարձնելու համար։ Chrome-ը բեռնել է սկզբնական էջը ապահով կապի միջոցով։</translation>
 <translation id="1656489000284462475">Ստացում</translation>
 <translation id="1658111267661135323">Հեռուստատեսություն և տեսանյութեր</translation>
@@ -561,6 +562,7 @@
 <translation id="1959001866257244765">Օգնեք բարձրացնել անվտանգության մակարդակը համացանցում՝ Google-ին ուղարկելով <ph name="BEGIN_WHITEPAPER_LINK" />ձեր այցելած որոշ էջերի հասցեներն ու բովանդակությունը և որոշակի տեղեկություններ համակարգի մասին<ph name="END_WHITEPAPER_LINK" />։ <ph name="BEGIN_PRIVACY_PAGE_LINK" />Գաղտնիության քաղաքականություն<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Ձեր տեքստը և էջի բովանդակությունը ուղարկվում են Google-ին և կարող են օգտագործվել այս գործառույթը բարելավելու համար։
   <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Անցեք անվտանգության մեկանգամյա ստուգում՝ ավելի արագ վճարելու համար</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> տիրույթի էջանիշներ</translation>
 <translation id="1973335181906896915">Serialization error</translation>
 <translation id="1973785048533660168">Աշխատանք սպասարկման և վարչական ոլորտում</translation>
@@ -705,6 +707,7 @@
 <translation id="2215539479425228550">Ժայռամագլցում և լեռնագնացություն</translation>
 <translation id="2215727959747642672">Ֆայլի փոփոխում</translation>
 <translation id="2215963164070968490">Շներ</translation>
+<translation id="2219376942605837404">Ավելացնել ներդիր համեմատման աղյուսակում</translation>
 <translation id="2219658597883514593">Նորից բացել ուղեցույցը</translation>
 <translation id="2219735899272417925">Պահանջվում է վերակայել սարքը</translation>
 <translation id="2221227930294879156">Սննդի և խմիչքի հետ կապված միջոցառումներ</translation>
@@ -1157,6 +1160,7 @@
 <translation id="306573536155379004">Խաղը սկսված է։</translation>
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3068118691172921711">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի 1 րոպեից</translation>
+<translation id="3068976060094139647">Դուք կարող եք ավտոմատ լրացնել այս քարտը, քանի որ ձեր հաշիվը կապված է Google Pay-ի հետ։</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} տարր}one{{ITEMS} տարր}other{{ITEMS} տարր}}</translation>
 <translation id="3076865167425975822">Օպերացիոն համակարգեր</translation>
 <translation id="3080254622891793721">Գրաֆիկա</translation>
@@ -1592,6 +1596,7 @@
 <translation id="378611282717571199">Լավագույն համընկնումները «<ph name="SEARCH_QUERY" />» հարցման համար</translation>
 <translation id="3789155188480882154">Չափ 16</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
+<translation id="3791118028061680614">Վճարեք՝ առանց այլ հավելված բացելու</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> դյույմ)</translation>
 <translation id="3792826587784915501">Կուլտային և հեղինակային ֆիլմեր</translation>
 <translation id="3793574014653384240">Վերջերս գրանցված խափանումների թիվն ու պատճառները</translation>
@@ -1792,6 +1797,7 @@
 <translation id="4151403195736952345">Օգտագործել համընդհանուր կանխադրվածը (Հատկորոշել)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Էջ 1}one{Էջ {COUNT}}other{Էջ {COUNT}}}</translation>
 <translation id="4154277373259957087">Նախքան վճարման եղանակները լրացնելը Chrome-ն այժմ պետք է հաստատի ձեր ինքնությունը։ Դուք ցանկացած ժամանակ կարող եք փոխել այս կարգավորումը <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> էջում։</translation>
+<translation id="415440494507469262">Ավելացնել ներդիր համեմատման աղյուսակում</translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4165422751765527461">Բացում է Օգնության կենտրոնի հոդվածը նոր ներդիրում</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
@@ -3401,6 +3407,7 @@
 <translation id="706960991003274248">Համեմատման աղյուսակները պահվում են ձեր <ph name="EMAIL" /> հաշվում</translation>
 <translation id="7070144569727915108">համակարգային կարգավորումներ</translation>
 <translation id="70705239631109039">Ձեր կապը լիարժեք պաշտպանված չէ</translation>
+<translation id="7071122206197538392">Համեմատման նոր աղյուսակ</translation>
 <translation id="7075452647191940183">Հարցումը չափազանց մեծ է</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4111,6 +4118,7 @@
 <translation id="8298115750975731693">Անլար կապը (<ph name="WIFI_NAME" />), որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />-ը:</translation>
 <translation id="8301894345671534559">Մուտքագրել կոդը</translation>
 <translation id="8303854710873047864">«<ph name="SECTION" />» բաժինը ցուցադրվում է</translation>
+<translation id="8304912090860925649">Համեմատման նոր աղյուսակ</translation>
 <translation id="830498451218851433">Ծալում կիսով չափ</translation>
 <translation id="8308653357438598313">Ուղիղ հեռարձակումներ</translation>
 <translation id="8311895354659782580">Անշարժ գույքի կատալոգներ</translation>

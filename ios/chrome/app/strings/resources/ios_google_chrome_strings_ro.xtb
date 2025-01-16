@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome deschide automat linkurile YouTube incognito în modul incognito.</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
 <translation id="1143896152279775643">Parola se va salva în Managerul de parole Google pentru <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Deschide o filă nouă în Chrome</translation>
@@ -126,6 +127,7 @@ Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum
 <translation id="4636900170638246267">Conectează-te la acest site și la Chrome.</translation>
 <translation id="4646014602299206846">Chrome va detecta numerele de urmărire a coletelor pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Datele tale se vor trimite la Google pentru a oferi această funcție și a îmbunătăți serviciul Cumpărături pentru toată lumea.</translation>
 <translation id="4647910807533196601">Deschide cea mai recentă filă în Chrome.</translation>
+<translation id="4693084815234024320">Ești în modul incognito în Chrome</translation>
 <translation id="4724297637870447613">Folosește Chrome oriunde</translation>
 <translation id="4738647308035481133">Pagină Google Chrome</translation>
 <translation id="4742795653798179840">Datele Chrome au fost șterse</translation>

@@ -22,6 +22,9 @@
 // Returns the number of saved tab groups.
 + (int)countOfSavedTabGroups;
 
+// Sets the mock response for getting the shared entities preview of a group.
++ (void)mockSharedEntitiesPreview;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUP_SYNC_EARL_GREY_APP_INTERFACE_H_

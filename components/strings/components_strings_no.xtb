@@ -248,6 +248,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1413809658975081374">Personvernfeil</translation>
 <translation id="1414134146594747368">Førskole</translation>
 <translation id="1419305130220238697">Knappen «Administrer nedlastinger i Chrome» – aktiver for å administrere filer du har lastet ned i Chrome</translation>
+<translation id="1420345875188552368">Den lagrede betalingsmåten din for automatisk betaling kan brukes for denne betalingen. For å slå av e-lommebøker i Chrome, gå til <ph name="BEGIN_LINK1" />betalingsinnstillingene<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> for å tillate sammenkobling.</translation>
 <translation id="14222610277930434">Du besøker nettstedet ofte</translation>
 <translation id="1422930527989633628">Kan be om å få oppdage Bluetooth-enheter i nærheten</translation>
@@ -703,6 +704,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2215539479425228550">Klatring og fjellklatring</translation>
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2215963164070968490">Hunder</translation>
+<translation id="2219376942605837404">Legg til fanen i sammenligningstabellen</translation>
 <translation id="2219658597883514593">Start veiledningen på nytt</translation>
 <translation id="2219735899272417925">Enheten må tilbakestilles</translation>
 <translation id="2221227930294879156">Mat- og drikkearrangementer</translation>
@@ -1153,6 +1155,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Opplastingen av filen din til <ph name="CLOUD_PROVIDER" /> starter om 1 minutt</translation>
+<translation id="3068976060094139647">Du kan autofylle dette kortet fordi kontoen din er knyttet til Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} vare}other{{ITEMS} varer}}</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
 <translation id="3080254622891793721">Grafikk</translation>
@@ -1789,6 +1792,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4151403195736952345">Bruk global standard (oppdag)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Side 1}other{Side {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome kommer nå til å bekrefte at det er deg, før betalingsmåter fylles ut. Du kan oppdatere dette når som helst i <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Legg til fanen i sammenligningstabellen</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4165422751765527461">Åpner en brukerstøtteartikkel på en ny fane</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
@@ -2153,6 +2157,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
 <translation id="4827283332383516812">Slett kortet</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> er valgt</translation>
 <translation id="4831993743164297314">Bildepapir</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4832961164064927107">Grilling</translation>
@@ -3395,6 +3400,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="706960991003274248">Sammenligningstabeller lagres i kontoen din, <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">systeminnstillingene</translation>
 <translation id="70705239631109039">Tilkoblingen er ikke helt sikker</translation>
+<translation id="7071122206197538392">Ny sammenligningstabell</translation>
 <translation id="7075452647191940183">Forespørselen er for stor</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4105,6 +4111,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8298115750975731693">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Skriv inn koden</translation>
 <translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
+<translation id="8304912090860925649">Ny sammenligningstabell</translation>
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8308653357438598313">Direktesendt videostrøm</translation>
 <translation id="8311895354659782580">Eiendomsannonser</translation>

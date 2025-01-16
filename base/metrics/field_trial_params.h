@@ -76,7 +76,7 @@ typedef std::string (*FieldTrialParamsDecodeStringFunc)(const std::string& str);
 //
 // Getting a param value from a FeatureParam<T> will have the same semantics as
 // GetFieldTrialParamValueByFeature(), see that function's comments for details.
-// `cache_getter` is used to provide a dedicated getter tbat is used to give a
+// `cache_getter` is used to provide a dedicated getter that is used to give a
 // local cache to the FeatureParam. Usually, this is automatically generated and
 // provided via BASE_FEATURE_PARAM() or BASE_FEATURE_ENUM_PARAM() macro.
 //

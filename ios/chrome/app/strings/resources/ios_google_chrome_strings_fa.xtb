@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1066101356081285416">‏‫Chrome شماره‌های رهگیری را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه «برگه جدید» نشان می‌دهد. برای ارائه این ویژگی و بهبود ویژگی‌های Google Shopping برای همه، شماره رهگیری بسته و نام وب‌سایت به Google ارسال می‌شود. هرزمان خواستید می‌توانید این مورد را در <ph name="BEGIN_LINK" />تنظیمات رهگیری بسته<ph name="END_LINK" /> به‌روزرسانی کنید.</translation>
+<translation id="1076643793026027628">‏‫Chrome پیوندهای «ناشناس» YouTube را به‌طور خودکار در حالت «ناشناس» باز می‌کند.</translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
 <translation id="1143896152279775643">‏گذرواژه‌تان در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="1146503048444965320">‏باز کردن برگه جدید در Chrome</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">‏به سیستم این سایت و Chrome وارد شوید.</translation>
 <translation id="4646014602299206846">‏‫Chrome شماره‌های رهگیری بسته را در سایت‌هایی که از آن‌ها بازدید می‌کنید شناسایی می‌کند و به‌روزرسانی‌های بسته را در صفحه برگه جدید نشان می‌دهد. برای ارائه این ویژگی و بهبود Shopping برای همه، داده‌هایتان با Google هم‌رسانی خواهد شد.</translation>
 <translation id="4647910807533196601">‏باز کردن آخرین برگه من در Chrome.</translation>
+<translation id="4693084815234024320">‏در حالت «ناشناس» Chrome هستید</translation>
 <translation id="4724297637870447613">‏استفاده از Chrome در همه‌جا</translation>
 <translation id="4738647308035481133">‏صفحه Google Chrome</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>

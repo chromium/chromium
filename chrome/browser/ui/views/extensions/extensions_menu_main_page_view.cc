@@ -389,6 +389,7 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
+                                   views::LayoutOrientation::kHorizontal,
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)),
               views::Builder<views::MdTextButton>()

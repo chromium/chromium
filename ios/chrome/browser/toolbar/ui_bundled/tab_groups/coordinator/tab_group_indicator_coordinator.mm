@@ -137,6 +137,7 @@
         [weakMediator deleteGroupWithConfirmation:NO];
         break;
       case TabGroupActionType::kLeaveSharedTabGroup:
+      case TabGroupActionType::kDeleteSharedTabGroup:
         // TODO(crbug.com/375587197): Implement this.
         break;
     }

@@ -1546,7 +1546,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
-      {"signOutOfChrome", IDS_PROFILE_MENU_SIGN_OUT},
+      {"signOutOfChrome", IDS_SETTINGS_SIGN_OUT},
       {"accountAwareSigninButtonLabel",
        IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL},
       {"accountAwareRowTitle",

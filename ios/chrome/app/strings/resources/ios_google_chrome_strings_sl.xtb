@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1066101356081285416">Chrome zazna številke za sledenje na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikaže obvestila o paketu. Številka za sledenje paketu in ime spletnega mesta se pošljeta Googlu zaradi zagotavljanja te funkcije in izboljšanja funkcij nakupovanja v Googlu za vse. To lahko kadar koli posodobite v <ph name="BEGIN_LINK" />nastavitvah sledenja paketu<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome samodejno odpre povezave v anonimnem načinu v YouTubu v anonimnem načinu.</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
 <translation id="1143896152279775643">Geslo bo shranjeno v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Odpiranje novega zavihka v Chromu</translation>
@@ -126,6 +127,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="4636900170638246267">Prijavite se na tem spletnem mestu in v Chrome.</translation>
 <translation id="4646014602299206846">Chrome bo zaznal številke za sledenje paketu na spletnih mestih, ki jih obiščete, in vam na novem zavihku s povezavami prikazal obvestila o paketu. Vaši podatki bodo deljeni z Googlom zaradi zagotavljanja te funkcije in izboljšanja Nakupovanja za vse.</translation>
 <translation id="4647910807533196601">Odpiranje zadnjega zavihka v Chromu.</translation>
+<translation id="4693084815234024320">Ste v anonimnem načinu v Chromu</translation>
 <translation id="4724297637870447613">Uporabljajte Chrome kjer koli</translation>
 <translation id="4738647308035481133">Stran Google Chroma</translation>
 <translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>

@@ -238,6 +238,20 @@ BookmarkParentFolderChildren BookmarkMergedSurfaceService::GetChildren(
       &GetPermanentFolderOrderingTracker(*folder.as_permanent_folder()));
 }
 
+const bookmarks::BookmarkNode*
+BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
+    const BookmarkParentFolder& folder) const {
+  CHECK(model_->loaded());
+  if (folder.HoldsNonPermanentFolder()) {
+    return folder.as_non_permanent_folder();
+  }
+
+  // Managed nodes can't be edited.
+  CHECK(!IsPermanentManagedFolder(folder));
+  return GetPermanentFolderOrderingTracker(*folder.as_permanent_folder())
+      .GetDefaultParentForNewNodes();
+}
+
 void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         const BookmarkParentFolder& new_parent,
                                         size_t index) {

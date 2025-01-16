@@ -703,6 +703,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2215539479425228550">Kukwea na Kupanda Milima</translation>
 <translation id="2215727959747642672">Kubadilisha faili</translation>
 <translation id="2215963164070968490">Mbwa</translation>
+<translation id="2219376942605837404">Weka kichupo kwenye jedwali la ulinganishaji</translation>
 <translation id="2219658597883514593">Anzisha upya mafunzo</translation>
 <translation id="2219735899272417925">Lazima kifaa kirejeshwe katika mipangilio kiliyotoka nayo kiwandani</translation>
 <translation id="2221227930294879156">Hafla za Vyakula na Vinywaji</translation>
@@ -1153,6 +1154,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="306573536155379004">Mchezo umeanza.</translation>
 <translation id="3067505415088964188">Bei ni nafuu</translation>
 <translation id="3068118691172921711">Upakiaji wa faili yako kwenye <ph name="CLOUD_PROVIDER" /> utaanza baada ya dakika 1</translation>
+<translation id="3068976060094139647">Unaweza kujaza kadi hii kiotomatiki kwa sababu akaunti yako imeunganishwa na Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{Bidhaa {ITEMS}}other{Bidhaa {ITEMS}}}</translation>
 <translation id="3076865167425975822">Mifumo ya Uendeshaji</translation>
 <translation id="3080254622891793721">Picha</translation>
@@ -1789,6 +1791,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4151403195736952345">Tumia chaguomsingi la kimataifa (Gundua)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Ukurasa wa kwanza}other{Ukurasa wa {COUNT}}}</translation>
 <translation id="4154277373259957087">Sasa Chrome itathibitisha kuwa ni wewe kabla ya kujaza njia za kulipa. Sasa unaweza kusasisha ruhusa hii wakati wowote kwenye <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Weka Kichupo kwenye Jedwali la Ulinganishaji</translation>
 <translation id="4159784952369912983">Zambarau</translation>
 <translation id="4165422751765527461">Hufungua makala ya Kituo cha Usaidizi katika kichupo kipya</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>
@@ -2153,6 +2156,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uunde Jedwali jipya la Google kwa haraka</translation>
 <translation id="4826588772550366629">kamera na maikrofoni</translation>
 <translation id="4827283332383516812">Futa kadi</translation>
+<translation id="4830443836091007686">Umechagua vipengee <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Karatasi ya Kiweka Picha</translation>
 <translation id="483241715238664915">Washa maonyo</translation>
 <translation id="4832961164064927107">Kubanika na Kuchoma Nyama</translation>
@@ -3395,6 +3399,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="706960991003274248">Majedwali ya ulinganishaji huhifadhiwa kwenye akaunti yako ya <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">mipangilio ya mfumo</translation>
 <translation id="70705239631109039">Muunganisho wako si salama kabisa</translation>
+<translation id="7071122206197538392">Jedwali jipya la ulinganishaji</translation>
 <translation id="7075452647191940183">Ombi ni kubwa mno</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4104,6 +4109,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8298115750975731693">Wi-Fi unayotumia (<ph name="WIFI_NAME" />) inaweza kukuhitaji kutembelea <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Weka namba ya kuthibitisha</translation>
 <translation id="8303854710873047864">Sehemu ya "<ph name="SECTION" />" imeonyeshwa</translation>
+<translation id="8304912090860925649">Jedwali Jipya la Ulinganishaji</translation>
 <translation id="830498451218851433">Kunja nusu</translation>
 <translation id="8308653357438598313">Utiririshaji wa Video wa Moja kwa Moja</translation>
 <translation id="8311895354659782580">Matangazo ya Mali Zisizohamishika</translation>

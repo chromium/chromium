@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Esto significa que Chromium solicitará la versión de escritorio del sitio cada vez.</translation>
 <translation id="2270466829363945454">Haz compras</translation>
 <translation id="2313870531055795960">Revisa las URL con una lista de sitios no seguros almacenados en Chromium. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chromium también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
+<translation id="2314220608288760290">Chromium abre automáticamente los vínculos de Incógnito de YouTube en modo Incógnito.</translation>
 <translation id="231828342043114302">Para recibir contenido personalizado en función de tus intereses, accede a Chromium.</translation>
 <translation id="2326738825692478496">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
 
@@ -284,6 +285,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8240981428553046115">Chromium no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="8254729934443216898">Explora nuevas funciones que te ayudarán a aprovechar Chromium al máximo.</translation>
 <translation id="829047622686389424">Un feed personalizado creado para ti.</translation>
+<translation id="8293572045658095405">Estás en el modo Incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre las URLs ingresadas en Chromium en modo Incógnito.</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>

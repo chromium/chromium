@@ -39,12 +39,6 @@ gpu::SyncToken TestClientSharedImageInterface::GenVerifiedSyncToken() {
   return shared_image_interface_->GenVerifiedSyncToken();
 }
 
-gpu::SharedImageInterface::SharedImageMapping
-TestClientSharedImageInterface::CreateSharedImage(
-    const gpu::SharedImageInfo& si_info) {
-  return shared_image_interface_->CreateSharedImage(si_info);
-}
-
 scoped_refptr<gpu::ClientSharedImage>
 TestClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const gpu::SharedImageInfo& si_info) {

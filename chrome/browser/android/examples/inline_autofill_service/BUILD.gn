@@ -1,0 +1,87 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_resources("inline_autofill_service_example_apk_resources") {
+  sources = [
+    "src/res/drawable/cr_fill.xml",
+    "src/res/layout/activity_main.xml",
+    "src/res/layout/activity_settings.xml",
+    "src/res/layout/fragment_browser_communication.xml",
+    "src/res/layout/fragment_instructions.xml",
+    "src/res/layout/list_item.xml",
+    "src/res/menu/menu_main.xml",
+    "src/res/mipmap-anydpi/ic_launcher.xml",
+    "src/res/mipmap-anydpi/ic_launcher_round.xml",
+    "src/res/mipmap-hdpi/ic_launcher.png",
+    "src/res/mipmap-hdpi/ic_launcher_foreground.png",
+    "src/res/mipmap-hdpi/ic_launcher_round.png",
+    "src/res/mipmap-ldpi/ic_launcher.png",
+    "src/res/mipmap-mdpi/ic_launcher.png",
+    "src/res/mipmap-mdpi/ic_launcher_foreground.png",
+    "src/res/mipmap-mdpi/ic_launcher_round.png",
+    "src/res/mipmap-xhdpi/ic_launcher.png",
+    "src/res/mipmap-xhdpi/ic_launcher_foreground.png",
+    "src/res/mipmap-xhdpi/ic_launcher_round.png",
+    "src/res/mipmap-xxhdpi/ic_launcher.png",
+    "src/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+    "src/res/mipmap-xxhdpi/ic_launcher_round.png",
+    "src/res/mipmap-xxxhdpi/ic_launcher.png",
+    "src/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+    "src/res/mipmap-xxxhdpi/ic_launcher_round.png",
+    "src/res/values-land/dimens.xml",
+    "src/res/values-night/themes.xml",
+    "src/res/values-v23/themes.xml",
+    "src/res/values-w1240dp/dimens.xml",
+    "src/res/values-w600dp/dimens.xml",
+    "src/res/values/colors.xml",
+    "src/res/values/dimens.xml",
+    "src/res/values/strings.xml",
+    "src/res/values/themes.xml",
+    "src/res/xml/autofill_service_config.xml",
+  ]
+  android_manifest = "src/AndroidManifest.xml"
+  deps = [ "//third_party/android_deps:material_design_java" ]
+}
+
+android_apk("inline_autofill_service_example_apk") {
+  sources = [
+    "src/java/org/chromium/example/autofill_service/MainActivity.java",
+    "src/java/org/chromium/example/autofill_service/SettingsActivity.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/InlineFillService.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/helpers/AttributionDialogActivity.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/helpers/InlineRequestHelper.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/helpers/ResponseHelper.java",
+    "src/java/org/chromium/example/autofill_service/fill_service/helpers/ViewStructureParser.java",
+    "src/java/org/chromium/example/autofill_service/fragments/BrowserCommunicationFragment.java",
+    "src/java/org/chromium/example/autofill_service/fragments/InstructionsFragment.java",
+  ]
+
+  android_manifest = "src/AndroidManifest.xml"
+  apk_name = "ChromiumExampleAutofillService"
+
+  deps = [
+    ":inline_autofill_service_example_apk_resources",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_autofill_autofill_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+
+    # implementation "androidx.autofill:autofill:1.1.0"
+    # implementation libs.appcompat
+    # implementation libs.material
+    # implementation libs.constraintlayout
+    # implementation libs.navigation.fragment
+    # implementation libs.navigation.ui
+  ]
+  chromium_code = false
+  never_incremental = true
+
+  #min_sdk_version = 33
+  #target_sdk_version = 34
+}

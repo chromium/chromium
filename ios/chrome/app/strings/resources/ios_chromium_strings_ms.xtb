@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Ini bermakna Chromium akan meminta laman desktop setiap masa.</translation>
 <translation id="2270466829363945454">Kedai</translation>
 <translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
+<translation id="2314220608288760290">Chromium membuka pautan Inkognito YouTube secara automatik dalam Inkognito.</translation>
 <translation id="231828342043114302">Untuk menerima kandungan diperibadikan berdasarkan minat anda, log masuk ke Chromium.</translation>
 <translation id="2326738825692478496">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
 
@@ -284,6 +285,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
 <translation id="8254729934443216898">Terokai ciri baharu yang membantu anda memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="829047622686389424">Suapan tersuai yang dibuat untuk anda.</translation>
+<translation id="8293572045658095405">Anda dalam Inkognito Chromium</translation>
 <translation id="830951810931292870">Buka URL yang dimasukkan pada Chromium dalam Inkognito.</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}}</translation>

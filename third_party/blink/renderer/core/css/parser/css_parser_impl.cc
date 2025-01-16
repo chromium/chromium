@@ -1272,7 +1272,15 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      NOTREACHED();
+      // We reach here when parsing the body of an @function rule. The selector
+      // is not use in this case; we just need a place to store the descriptors
+      // within the rule.
+      //
+      // TODO(crbug.com/325504770): Using CSSNestedDeclarations for
+      // the @function body is per spec at the time of writing,
+      // but isn't a perfect match due to the unnecessary inner style rule.
+      selectors.push_back(CSSSelector());
+      break;
     case CSSNestingType::kNesting:
       // For regular nesting, the nested declarations rule should match
       // exactly what the parent rule matches, with top-level specificity
@@ -1299,16 +1307,14 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 }
 
 void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
+    StyleRule::RuleType rule_type,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     wtf_size_t start_index,
     HeapVector<Member<StyleRuleBase>, 4>& child_rules) {
-  if (!parent_rule_for_nesting && nesting_type != CSSNestingType::kScope) {
-    // This can happen for @page, which behaves similarly to CSS Nesting
-    // (and cares about child rules), but doesn't have a parent style rule.
-    //
-    // Note that CSSNestedDeclarations emitted under CSSNestingType::kScope
-    // do not reference the parent selector (see CreateNestedDeclarationsRule).
+  if (rule_type == StyleRule::kPage) {
+    // @page does not keep interleaved declarations "in place" by means of
+    // CSSNestedDeclarations; they are effectively shifted to the top instead.
     return;
   }
   wtf_size_t end_index = parsed_properties_.size();
@@ -2324,39 +2330,16 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
 
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
-  stream.ConsumeWhitespace();
 
-  // TODO: Parse local variables.
-
-  // Parse @return.
-  if (stream.Peek().GetType() != kAtKeywordToken) {
-    return nullptr;
-  }
-  const CSSParserToken return_token = stream.ConsumeIncludingWhitespace();
-  if (return_token.Value() != "return") {
-    return nullptr;
-  }
-
-  // Parse the actual returned value.
-  CSSVariableData* return_value = nullptr;
-  {
-    CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-    bool important_ignored;
-    return_value = CSSVariableParser::ConsumeUnparsedDeclaration(
-        stream, /*allow_important_annotation=*/false,
-        /*is_animation_tainted=*/false,
-        /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
-        /*comma_ends_declaration=*/false, important_ignored, *context_);
-  }
-
-  while (!stream.AtEnd()) {
-    const CSSParserToken token = stream.ConsumeIncludingWhitespace();
-    StringBuilder sb;
-    token.Serialize(sb);
-  }
+  HeapVector<Member<StyleRuleBase>, 4> child_rules;
+  ConsumeBlockContents(stream, StyleRule::kFunction, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/0, &child_rules,
+                       /*has_visited_pseudo=*/false);
 
   return MakeGarbageCollected<StyleRuleFunction>(
-      name, std::move(*parameters), return_value, std::move(*return_type));
+      name, std::move(*parameters),
+      HeapVector<Member<StyleRuleBase>>(child_rules), std::move(*return_type));
 }
 
 StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
@@ -2687,7 +2670,7 @@ void CSSParserImpl::ConsumeBlockContents(
         DCHECK(!invalid_rule_error_ignored);
         if (child && child_rules) {
           EmitNestedDeclarationsRuleIfNeeded(
-              nesting_type, parent_rule_for_nesting,
+              rule_type, nesting_type, parent_rule_for_nesting,
               nested_declarations_start_index, *child_rules);
           nested_declarations_start_index = parsed_properties_.size();
           child_rules->push_back(child);
@@ -2728,7 +2711,7 @@ void CSSParserImpl::ConsumeBlockContents(
           if (child) {
             if (child_rules) {
               EmitNestedDeclarationsRuleIfNeeded(
-                  nesting_type, parent_rule_for_nesting,
+                  rule_type, nesting_type, parent_rule_for_nesting,
                   nested_declarations_start_index, *child_rules);
               nested_declarations_start_index = parsed_properties_.size();
               child_rules->push_back(child);
@@ -2766,9 +2749,9 @@ void CSSParserImpl::ConsumeBlockContents(
   // nested_declarations_start_index is still kNotFound (UINT_MAX),
   // which causes EmitNestedDeclarationsRuleIfNeeded to have no effect.
   if (child_rules) {
-    EmitNestedDeclarationsRuleIfNeeded(nesting_type, parent_rule_for_nesting,
-                                       nested_declarations_start_index,
-                                       *child_rules);
+    EmitNestedDeclarationsRuleIfNeeded(
+        rule_type, nesting_type, parent_rule_for_nesting,
+        nested_declarations_start_index, *child_rules);
   }
 }
 
@@ -2864,7 +2847,8 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
   }
   parsed_properties_ = std::move(outer_parsed_properties);
   if (child && parent_rule_type != StyleRule::kPage &&
-      parent_rule_type != StyleRule::kScope) {
+      parent_rule_type != StyleRule::kScope &&
+      parent_rule_type != StyleRule::kFunction) {
     context_->Count(WebFeature::kCSSNesting);
   }
   return child;
@@ -2904,7 +2888,8 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                             rule_type == StyleRule::kFontPaletteValues ||
                             rule_type == StyleRule::kProperty ||
                             rule_type == StyleRule::kCounterStyle ||
-                            rule_type == StyleRule::kViewTransition;
+                            rule_type == StyleRule::kViewTransition ||
+                            rule_type == StyleRule::kFunction;
 
   uint64_t id = parsing_descriptor
                     ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())

@@ -41,6 +41,13 @@ targets without `chromium_code = false`.
 [modeled directly]: https://github.com/uber/NullAway/blob/HEAD/nullaway/src/main/java/com/uber/nullaway/handlers/LibraryModelsHandler.java
 [`assumeNonNull(foo)`]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/build/android/java/src/org/chromium/build/NullUtil.java
 
+## Nullness Migration
+
+We are actively opting classes into enforcement and hope to be complete by
+March 2025. See details in [crbug.com/389129271].
+
+[crbug.com/389129271]: https://crbug.com/389129271
+
 ## Nullness Primer
 
 ### Type Annotations
@@ -133,15 +140,18 @@ otherwise be non-null, you can either:
 
 [crbug/389192501]: https://crbug.com/389192501
 
-### NullAway Shortcomings
+## NullAway Shortcomings
 
-It does not understand when local variables contain non-null information
+It does not understand when local variables contain non-null information.
 * Feature request: https://github.com/uber/NullAway/issues/98
 
-It does not infer nullness of inferred generics
+It does not infer nullness of inferred generics.
 * Feature request: https://github.com/uber/NullAway/issues/1075
 
-### FAQ
+Validation of `@Contract` within methods that use it is broken.
+* Bug: https://github.com/uber/NullAway/issues/1104
+
+## FAQ
 
 **Q: Why not use Checker Framework?**
 

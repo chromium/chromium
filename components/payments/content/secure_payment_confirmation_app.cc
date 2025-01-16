@@ -174,10 +174,6 @@ bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
   return true;
 }
 
-void SecurePaymentConfirmationApp::RecordUse() {
-  NOTIMPLEMENTED();
-}
-
 bool SecurePaymentConfirmationApp::NeedsInstallation() const {
   return false;
 }

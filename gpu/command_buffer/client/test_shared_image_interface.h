@@ -59,9 +59,6 @@ class TestSharedImageInterface : public SharedImageInterface {
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) override;
-
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
 

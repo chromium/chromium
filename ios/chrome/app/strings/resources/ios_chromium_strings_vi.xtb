@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Tức là lần nào Chromium cũng yêu cầu trang web dành cho máy tính.</translation>
 <translation id="2270466829363945454">Mua sắm</translation>
 <translation id="2313870531055795960">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang.</translation>
+<translation id="2314220608288760290">Chromium tự động mở các đường liên kết ẩn danh của YouTube ở chế độ ẩn danh.</translation>
 <translation id="231828342043114302">Để nhận nội dung được cá nhân hoá dựa trên sở thích của bạn, hãy đăng nhập vào Chromium.</translation>
 <translation id="2326738825692478496">Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google.
 
@@ -284,6 +285,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8240981428553046115">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="8254729934443216898">Khám phá các tính năng mới giúp bạn khai thác tối đa Chromium.</translation>
 <translation id="829047622686389424">Nguồn cấp dữ liệu thiết kế riêng cho bạn.</translation>
+<translation id="8293572045658095405">Bạn đang ở trong chế độ ẩn danh của Chromium</translation>
 <translation id="830951810931292870">Mở các URL đã nhập bằng chế độ Ẩn danh trong Chromium.</translation>
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>

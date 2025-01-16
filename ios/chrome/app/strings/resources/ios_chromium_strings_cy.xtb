@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Mae hyn yn golygu y bydd Chromium yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 <translation id="2270466829363945454">Siopa</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
+<translation id="2314220608288760290">Mae Chromium yn agor dolenni Anhysbys YouTube yn y modd Anhysbys yn awtomatig.</translation>
 <translation id="231828342043114302">I dderbyn cynnwys personol yn seiliedig ar eich diddordebau, mewngofnodwch i Chromium.</translation>
 <translation id="2326738825692478496">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto.
 
@@ -284,6 +285,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8240981428553046115">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="8254729934443216898">Archwiliwch nodweddion newydd sy'n eich helpu i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="829047622686389424">Ffrwd wedi'i theilwra ar eich cyfer chi.</translation>
+<translation id="8293572045658095405">Rydych yn y modd Anhysbys Chromium</translation>
 <translation id="830951810931292870">Yn agor y cyfeiriadau URL sydd wedi'u mewnbynnu yn Chromium yn y modd Anhysbys.</translation>
 <translation id="8409374867500149834">Mae gennych ddiogelwch cryfaf Chromium yn erbyn gwefannau niweidiol</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}zero{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}two{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} funud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}few{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}many{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}other{Mae hyn yn digwydd pan nad yw Chromium yn cael ei ddefnyddio am {THRESHOLD} munud. Bydd data a gadwyd i'r ddyfais hon yn unig tra roeddech wedi mewngofnodi yn cael eu dileu. Gallai hyn gynnwys hanes a chyfrineiriau.}}</translation>

@@ -5,8 +5,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_earl_grey_app_interface.h"
 
 #import "base/strings/string_number_conversions.h"
+#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/group_data.h"
+#import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -30,15 +35,33 @@ ProfileIOS* GetRegularProfile() {
 }
 
 // Returns the tab group sync service from the first regular profile.
-tab_groups::TabGroupSyncService* GetFakeTabGroupSyncService() {
+tab_groups::TabGroupSyncService* GetTabGroupSyncService() {
   CHECK(IsTabGroupSyncEnabled());
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
       GetRegularProfile());
 }
 
+// Returns the data sharing service from the first regular profile.
+data_sharing::DataSharingService* GetDataSharingService() {
+  ProfileIOS* profile = GetRegularProfile();
+  CHECK(IsSharedTabGroupsJoinEnabled(profile));
+  return data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+}
+
 // Returns the sync service from the first regular profile.
 syncer::SyncService* GetSyncService() {
   return SyncServiceFactory::GetForProfile(GetRegularProfile());
+}
+
+// Returns a new SharedTabGroupPreview.
+data_sharing::SharedTabGroupPreview CreateTabGroupPreview() {
+  data_sharing::SharedTabGroupPreview preview;
+  preview.title = "my group title";
+  for (int i = 0; i < 3; i++) {
+    preview.tabs.push_back(data_sharing::TabPreview(
+        GURL("https://google.com/" + base::NumberToString(i))));
+  }
+  return preview;
 }
 
 // Creates a saved tab belonging `saved_tab_group_id` group.
@@ -59,6 +82,15 @@ tab_groups::SavedTabGroup CreateGroup(
       title, tab_groups::TabGroupColorId::kOrange, saved_tabs,
       /*position=*/std::nullopt, group_id);
   return saved_group;
+}
+
+// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
+// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
+// and `T` is the callback's type.
+ACTION_TEMPLATE(InvokeCallbackArgument,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_1_VALUE_PARAMS(p0)) {
+  std::move(const_cast<T&>(std::get<k>(args))).Run(p0);
 }
 
 }  // namespace
@@ -83,7 +115,7 @@ tab_groups::SavedTabGroup CreateGroup(
 + (void)removeAtIndex:(unsigned int)index {
   CHECK(IsTabGroupSyncEnabled());
   std::vector<tab_groups::SavedTabGroup> groups =
-      GetFakeTabGroupSyncService()->GetAllGroups();
+      GetTabGroupSyncService()->GetAllGroups();
   tab_groups::SavedTabGroup groupToRemove = groups[index];
   chrome_test_util::DeleteTabOrGroupFromFakeServer(groupToRemove.saved_guid());
 
@@ -94,7 +126,7 @@ tab_groups::SavedTabGroup CreateGroup(
   CHECK(IsTabGroupSyncEnabled());
 
   std::vector<tab_groups::SavedTabGroup> groups =
-      GetFakeTabGroupSyncService()->GetAllGroups();
+      GetTabGroupSyncService()->GetAllGroups();
   for (const tab_groups::SavedTabGroup& group : groups) {
     chrome_test_util::DeleteTabOrGroupFromFakeServer(group.saved_guid());
   }
@@ -105,8 +137,29 @@ tab_groups::SavedTabGroup CreateGroup(
 + (int)countOfSavedTabGroups {
   CHECK(IsTabGroupSyncEnabled());
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      GetFakeTabGroupSyncService();
+      GetTabGroupSyncService();
   return tabGroupSyncService->GetAllGroups().size();
+}
+
++ (void)mockSharedEntitiesPreview {
+  data_sharing::DataSharingService* dataSharingService =
+      GetDataSharingService();
+  data_sharing::MockPreviewServerProxy* mockPreviewProxy =
+      static_cast<data_sharing::MockPreviewServerProxy*>(
+          dataSharingService->GetPreviewServerProxyForTesting());
+
+  data_sharing::SharedDataPreview sharedDataPreview;
+  sharedDataPreview.shared_tab_group_preview = CreateTabGroupPreview();
+  data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome outcome =
+      sharedDataPreview;
+  ON_CALL(*mockPreviewProxy,
+          GetSharedDataPreview(testing::_, testing::_, testing::_))
+      .WillByDefault(
+          InvokeCallbackArgument<
+              2,
+              base::OnceCallback<void(const data_sharing::DataSharingService::
+                                          SharedDataPreviewOrFailureOutcome&)>>(
+              outcome));
 }
 
 @end

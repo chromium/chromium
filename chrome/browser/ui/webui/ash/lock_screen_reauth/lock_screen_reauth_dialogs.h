@@ -58,8 +58,6 @@ class LockScreenStartReauthDialog
   void DismissLockScreenCaptivePortalDialog();
   void ShowLockScreenNetworkDialog();
   void ShowLockScreenCaptivePortalDialog();
-  static gfx::Size CalculateLockScreenReauthDialogSize(
-      bool is_new_layout_enabled);
 
   // Forces network state update because webview reported frame loading error.
   void OnWebviewLoadAborted();

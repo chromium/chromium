@@ -38,12 +38,16 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
       const PermanentFolderOrderingTracker&) = delete;
 
   // Returns underlying permanent nodes.
-  // The order of the returned nodes:
-  // - first the account node if one exists
-  // - then the local or syncable node.
   // If the bookmark model is not loaded, it returns empty.
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingPermanentNodes()
       const;
+
+  // Returns default parent node for new nodes created as a child of
+  // `tracked_type_`.
+  // This will return the account node if one exists, otherwise it returns the
+  // local/syncable node.
+  // `BookmarkModel` must be loaded.
+  const bookmarks::BookmarkNode* GetDefaultParentForNewNodes() const;
 
   // Returns index of `node`.
   // `node` must be a direct child of one of the tracked permanent

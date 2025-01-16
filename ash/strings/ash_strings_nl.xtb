@@ -1157,7 +1157,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4902797682482387055">Voorgestelde taak om je op te focussen</translation>
 <translation id="490375751687810070">Verticaal</translation>
 <translation id="490788395437447240">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Dit is een experimentele AI-functie die het niet altijd juist heeft.</translation>
 <translation id="491504982845934899">Activeren na apparaatinstelling <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
@@ -2025,7 +2024,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Met Leuk stuur je feedback dat je deze suggestie leuk vindt</translation>
 <translation id="7825412704590278437">Vanuit aankomende agenda-afspraak</translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7830453190047749513">Je kunt onder meer knopacties en cursorsnelheid personaliseren voor je <ph name="PERIPHERAL_NAME" /></translation>
@@ -2117,6 +2115,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
+<translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8079538659226626406">Scherm delen</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="830868413617744215">Bèta</translation>
 <translation id="8314772463905284467">Caps Lock staat aan</translation>
 <translation id="8315514906653279104">Aanzetten…</translation>
-<translation id="8319634750346253957">Met Niet leuk stuur je feedback dat je deze suggestie niet leuk vindt</translation>
 <translation id="8331351032546853669">Download in behandeling</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

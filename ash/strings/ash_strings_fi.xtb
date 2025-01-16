@@ -282,6 +282,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1948405482892809935">Vaihda seuraavaan käyttäjään</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Näytön tallennus valmis</translation>
+<translation id="1956087014741188812">Keskeytä hiiren painikkeet</translation>
 <translation id="1957958912175573503">Määritä kieli</translation>
 <translation id="1961239773406905488">Kameran esikatselu piilotettu</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="225680501294068881">Etsitään laitteita...</translation>
 <translation id="2257486738914982088">Jotain meni pieleen, eikä <ph name="FILENAME" /> latautunut</translation>
 <translation id="2258734398699965611">Ehdotetut tiedostot</translation>
+<translation id="2266607665880926261">Hiiren painikkeet keskeytetty</translation>
 <translation id="2268130516524549846">Bluetooth pois käytöstä</translation>
 <translation id="2268731132310444948">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Kun käynnistysohjelma on aktivoitu, näet parannetun hakukentän. Voit hakea esimerkiksi tiedostoja ja sovelluksia kirjoittamalla. Voit myös saada vastauksia kysymyksiin aiheesta <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Kirjaa kaikki ulos</translation>
@@ -540,6 +542,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2876338922445400217">Lähennä näkymää</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
 <translation id="2880541185262491188">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä uudelleen</translation>
+<translation id="2883271196820422439">Jatka hiiren painikkeiden käyttöä</translation>
 <translation id="2885950158625301909">Lue lisää</translation>
 <translation id="2891209721153296020">"Poista valinta"</translation>
 <translation id="2894949423239620203">Johto voi vaikuttaa suorituskykyyn</translation>
@@ -727,6 +730,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3540893133818942399">Hylkää puhelimen viimeaikaisten kuvien ja median katselun käyttöönotto</translation>
 <translation id="3542066395059568317">Näet suosituksia, joiden avulla voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa, kun niitä klikkaa kakkospainikkeella.</translation>
+<translation id="3545224667633138205">Hiiren painikkeiden käyttöä jatkettu</translation>
 <translation id="3552189655002856821">Wi-Fi on poissa päältä</translation>
 <translation id="3554215588514239132">Näytä tai piilota Kehittäjätyökalut-paneeli</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kiinnitettiin</translation>
@@ -801,6 +805,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3727231512028252576">Kohteiden lataaminen epäonnistui. Yritä uudelleen, kun olet yhteydessä verkkoon.</translation>
 <translation id="3735740477244556633">Lajitteluperuste</translation>
 <translation id="3738664582935948253">Voit nyt nähdä klikkaukset ja pikanäppäimet näyttötallenteissa</translation>
+<translation id="3741482431277446954">Hiiren oikea painike</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3743775386021959186">Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="3750403286520637847">Piilota sääehdotus</translation>
@@ -1152,7 +1157,6 @@ Yksi laite yhdistetty.</translation>
 <translation id="4902797682482387055">Ehdotettu tehtävä</translation>
 <translation id="490375751687810070">Pystysuora</translation>
 <translation id="490788395437447240">Akku: <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="4911191962826748981">Tämä on kokeellinen tekoälyominaisuus, joka ei välttämättä osu aina oikeaan.</translation>
 <translation id="491504982845934899">Aktivoi <ph name="NETWORK_NAME" /> laitteen käyttöönoton jälkeen</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
@@ -1828,6 +1832,7 @@ Uusi asennus</translation>
 <translation id="7118268675952955085">kuvakaappaus</translation>
 <translation id="7118597077555700347">Avaa <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Valitse seuraava sana tai kirjain</translation>
+<translation id="7124556000457919678">Kun tämä on päällä, hiiren painikkeiden käyttö keskeytyy ja jatkuu</translation>
 <translation id="7126996685418858413">Avattu kuluneen viikon aikana</translation>
 <translation id="7130207228079676353">TODENNÄKÖISIMMÄT</translation>
 <translation id="7131634465328662194">Sinut kirjataan automaattisesti ulos.</translation>
@@ -1849,6 +1854,7 @@ Uusi asennus</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
+<translation id="7239814253344511868">Molemmat hiiren painikkeet</translation>
 <translation id="7244725679040769470">Akkua jäljellä <ph name="PERCENTAGE" /> %. Yhdistä laite virtalähteeseen.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7807067443225230855">Haku ja Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Tykkään-painike kertoo, että pidät tästä ehdotuksesta</translation>
 <translation id="7825412704590278437">Tulevasta kalenteritapahtumasta</translation>
 <translation id="7829386189513694949">Vahva signaali</translation>
 <translation id="7830453190047749513">Voit personoida esimerkiksi laitteen (<ph name="PERIPHERAL_NAME" />) painiketoimintoja ja kohdistimen nopeutta</translation>
@@ -2110,6 +2115,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8051716679295756675">Malli nimeltään <ph name="DESK_TEMPLATE_NAME" /> on jo olemassa</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
+<translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8079538659226626406">Näytön jakaminen</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8203224998425013577">Näytä lisää emojeita ja GIFejä</translation>
 <translation id="8203795194971602413">Klikkaus kakkospainikkeella</translation>
 <translation id="8205469348819768313">Yritätkö käyttää Page Down ‑näppäintä? Käytä yhdistelmää</translation>
+<translation id="8213376797713070611">Hiiren vasen painike</translation>
 <translation id="8214996719228530800">Canary-versio</translation>
 <translation id="8219451629189078428">Chromebookin täytyy pysyä päällä ja yhdistettynä virtalähteeseen tänä aikana. Varmista, että laturin tai virtalähteen johdot on liitetty kunnolla sekä Chromebookiin että pistorasiaan. Älä sammuta Chromebookia.</translation>
 <translation id="8220076512072059941">Lisää <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps lock on päällä</translation>
 <translation id="8315514906653279104">Laitetaan päälle…</translation>
-<translation id="8319634750346253957">En tykkää ‑painike kertoo, että et pidä tästä ehdotuksesta</translation>
 <translation id="8331351032546853669">Lataus odottaa</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -2374,6 +2380,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9047624247355796468">Avaa asetukset: <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth ei ole käytettävissä</translation>
+<translation id="9050999376345823055">Vapauta painamalla "."</translation>
 <translation id="906458777597946297">Suurenna ikkuna</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9070640332319875144">Assistantin asetukset</translation>

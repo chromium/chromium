@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Þetta þýðir að Chromium biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 <translation id="2270466829363945454">Verslun</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
+<translation id="2314220608288760290">Chromium opnar YouTube-huliðstengla sjálfkrafa í huliðsstillingu.</translation>
 <translation id="231828342043114302">Til að fá sérsniðið innihald byggt á þínum áhugamálum skaltu skrá þig inn á Chromium.</translation>
 <translation id="2326738825692478496">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum.
 
@@ -284,6 +285,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="8254729934443216898">Kannaðu nýja eiginleika sem hjálpa þér að fá sem mest út úr Chromium.</translation>
 <translation id="829047622686389424">Sérsniðinn straumur fyrir þig.</translation>
+<translation id="8293572045658095405">Þú ert að nota Chromium í huliðsstillingu</translation>
 <translation id="830951810931292870">Opnar vefslóðir sem eru slegnar inn í Chromium í huliðsstillingu</translation>
 <translation id="8409374867500149834">Þú ert með öflugustu öryggisráðstafanir Chromium gegn skaðlegum vefsvæðum</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútur. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}}</translation>

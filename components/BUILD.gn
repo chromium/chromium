@@ -371,6 +371,7 @@ test("components_unittests") {
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
     "//components/web_resource:unit_tests",
+    "//components/webauthn/core/browser:unit_tests",
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
   ]
@@ -525,7 +526,6 @@ test("components_unittests") {
       "//components/web_package/test_support:unit_tests",
       "//components/webapps/browser:unit_tests",
       "//components/webapps/services/web_app_origin_association:unit_tests",
-      "//components/webauthn/core/browser:unit_tests",
       "//components/webauthn/json:unit_tests",
       "//components/webcrypto:unit_tests",
       "//components/webrtc:unit_tests",

@@ -395,12 +395,31 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                                             incognito:incognito];
         }]];
     if (!incognito) {
-      if (isTabGroupShared && userRole == data_sharing::MemberRole::kMember) {
-        [destructiveActions
-            addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-              [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
-                                                     sourceView:cell];
-            }]];
+      if (isTabGroupShared) {
+        switch (userRole) {
+          case data_sharing::MemberRole::kMember: {
+            [destructiveActions
+                addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                  [weakSelf.contextMenuDelegate leaveSharedTabGroup:weakGroup
+                                                         sourceView:cell];
+                }]];
+            break;
+          }
+          case data_sharing::MemberRole::kOwner: {
+            [destructiveActions
+                addObject:[actionFactory
+                              actionToDeleteSharedTabGroupWithBlock:^{
+                                [weakSelf.contextMenuDelegate
+                                    deleteSharedTabGroup:weakGroup
+                                              sourceView:cell];
+                              }]];
+            break;
+          }
+          case data_sharing::MemberRole::kUnknown:
+          case data_sharing::MemberRole::kInvitee:
+            // TODO(crbug.com/375587197): Add a NOTREACHED.
+            break;
+        }
       } else {
         [destructiveActions
             addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{

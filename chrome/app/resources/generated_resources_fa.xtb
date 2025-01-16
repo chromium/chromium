@@ -2900,7 +2900,6 @@
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> از شما می‌خواهد امروز به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}one{‏<ph name="MANAGER" /> از شما می‌خواهد به Wi-Fi متصل شوید و به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}other{‏<ph name="MANAGER" /> از شما می‌خواهد به Wi-Fi متصل شوید و به‌روزرسانی را پیش‌از مهلت تعیین‌شده بارگیری کنید. یا آن را ازطریق اتصال محدود بارگیری کنید (ممکن است هزینه اعمال شود).}}</translation>
 <translation id="3009178788565917040">خروجی</translation>
-<translation id="3009300415590184725">آیا مطمئن هستید که می‌خواهید مرحله تنظیم سرویس داده تلفن همراه را لغو کنید؟</translation>
 <translation id="3009352964623081324">‏Search + O، سپس S برای نصب، مدیریت، و سفارشی‌سازی صداها استفاده کنید.</translation>
 <translation id="3009779501245596802">پایگاه‌های داده فهرست‌بندی شده</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{گذرواژه‌هایتان قوی به‌نظر می‌رسد}=1{{COUNT} گذرواژه ضعیف}one{{COUNT} گذرواژه ضعیف}other{{COUNT} گذرواژه ضعیف}}</translation>
@@ -3409,7 +3408,6 @@
 <translation id="3396442984945202128">تأیید هویت</translation>
 <translation id="3396800784455899911">‏با کلیک کردن روی دکمه «پذیرفتن و ادامه دادن»، با پردازش مربوط به این سرویس‌های Google که در بالا توضیح داده شد موافقت می‌کنید.</translation>
 <translation id="339722927132407568">ثابت می‌ماند</translation>
-<translation id="3398899528308712018">پیشنهاد گروه برگه</translation>
 <translation id="3399432415385675819">اعلان‌ها غیرفعال خواهند شد</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> هرتز) - درهم‌بافته</translation>
 <translation id="3401484564516348917">خواندن اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزار نصب‌شده، فایل‌ها و مقادیر رجیستری</translation>
@@ -4839,7 +4837,6 @@
 <translation id="4386604394450371010">نمای کلی</translation>
 <translation id="4387890294700445764">گذرواژه‌های لورفته</translation>
 <translation id="4388650384344483842">حداقل از ۸ نویسه استفاده کنید</translation>
-<translation id="4389091756366370506">کاربر <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" />، و <ph name="NUMBER_OF_OTHER_SWITCHES" /> کلید دیگر</translation>
 <translation id="439266289085815679">‏پیکربندی Bluetooth توسط <ph name="USER_EMAIL" /> کنترل می‌شود.</translation>
 <translation id="4392896746540753732">ویرایش فایل پیکربندی</translation>
@@ -5574,7 +5571,6 @@
 <translation id="4906679076183257864">بازنشانی روی موارد پیش‌فرض</translation>
 <translation id="4907129260985716018">انتخاب کنید این افزونه چه زمانی می‌توانید داده‌های سایتتان را بخواند و تغییر دهد</translation>
 <translation id="4908811072292128752">برای مرور دو سایت به‌طور هم‌زمان، برگه جدیدی را باز کنید</translation>
-<translation id="4909038193460299775">‏از آن‌جا که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، نشانک‌ها، سابقه، گذرواژه‌ها و دیگر تنظیماتتان از این دستگاه پاک می‌شوند. اما داده‌هایتان در حساب Google ذخیره می‌مانند و می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="4910241725741323970">برنامه قبلاً نصب شده است</translation>
 <translation id="4912643508233590958">خروج از حالت بیکار</translation>
 <translation id="4913209098186576320">این فایل ممکن است خطرناک باشد<ph name="LINE_BREAK" />این بررسی بیشتر از حد معمول طول کشیده است…</translation>

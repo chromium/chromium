@@ -1157,7 +1157,6 @@
 <translation id="4902797682482387055">Предложена задача, върху която да се концентрирате</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% батерия</translation>
-<translation id="4911191962826748981">Това е експериментална функция на AI и понякога греши.</translation>
 <translation id="491504982845934899">Активирайте <ph name="NETWORK_NAME" /> след настройването на устройството</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Приемам</translation>
@@ -2025,7 +2024,6 @@
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7807067443225230855">Търсене и Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Чрез бутона „Харесва ми“ ще изпратите отзиви, че харесвате това предложение</translation>
 <translation id="7825412704590278437">От предстоящо събитие от календара</translation>
 <translation id="7829386189513694949">силен сигнал</translation>
 <translation id="7830453190047749513">Можете да персонализирате действията за бутоните, скоростта на курсора и др. за <ph name="PERIPHERAL_NAME" /></translation>
@@ -2117,6 +2115,7 @@
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
+<translation id="8076492880354921740">Раздели</translation>
 <translation id="8079538659226626406">Споделяне на екрана</translation>
 <translation id="8083540854303889870">Запазено за по-късно</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">„Caps Lock“ е включен</translation>
 <translation id="8315514906653279104">Включва се...</translation>
-<translation id="8319634750346253957">Чрез бутона „Не ми харесва“ ще изпратите отзиви, че не харесвате това предложение</translation>
 <translation id="8331351032546853669">Предстои изтегляне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

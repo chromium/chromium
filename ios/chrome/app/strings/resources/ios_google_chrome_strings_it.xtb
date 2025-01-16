@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1066101356081285416">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero di tracciamento della spedizione e il nome del sito web verranno inviati a Google per fornire questa funzionalità e migliorare le funzionalità di Google Shopping per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di tracciamento della spedizione<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome apre automaticamente i link di YouTube in incognito in modalità di navigazione in incognito.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Apri nuova scheda in Chrome</translation>
@@ -126,6 +127,7 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="4636900170638246267">Accedi a questo sito e a Chrome.</translation>
 <translation id="4646014602299206846">Chrome rileverà i numeri di tracciamento della spedizione sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchi nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti.</translation>
 <translation id="4647910807533196601">Apri La mia scheda più recente in Chrome.</translation>
+<translation id="4693084815234024320">Stai usando la modalità di navigazione in incognito di Chrome</translation>
 <translation id="4724297637870447613">Utilizza Chrome ovunque</translation>
 <translation id="4738647308035481133">Pagina di Google Chrome</translation>
 <translation id="4742795653798179840">Dati di Chrome eliminati</translation>

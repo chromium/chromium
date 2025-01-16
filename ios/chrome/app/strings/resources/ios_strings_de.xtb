@@ -1153,6 +1153,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6160780110287872296">Datei herunterladen?</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6168647875670665004">Vorgeschlagene Artikel</translation>
+<translation id="6169031022444660352">Zum Löschen aller gespeicherten Anmeldedaten musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="6173499589275053515">Passwort in deinem Google-Konto <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
@@ -1204,6 +1205,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6355820205320395730">Schwache Passwörter sind einfach zu erraten. Erstelle deshalb am besten starke Passwörter. <ph name="BEGIN_LINK" />Weitere Sicherheitstipps ansehen.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> folgen</translation>
 <translation id="6368038301482806847">Wählen Sie die Suchmaschine aus der Liste.</translation>
+<translation id="6368102751067608420">So löschst du alle Daten im Passwortmanager</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6387994324662817823">Passwörter werden nur auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="6404422529625928907">In Google Drive öffnen</translation>

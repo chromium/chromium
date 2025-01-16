@@ -703,6 +703,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2215539479425228550">Eskalada eta mendizaletasuna</translation>
 <translation id="2215727959747642672">Fitxategiak editatzeko aukera</translation>
 <translation id="2215963164070968490">Txakurrak</translation>
+<translation id="2219376942605837404">Gehitu fitxa konparazio-taulan</translation>
 <translation id="2219658597883514593">Berrabiarazi tutoriala</translation>
 <translation id="2219735899272417925">Gailua berrabiarazi behar da</translation>
 <translation id="2221227930294879156">Jan-edanen inguruko gertaerak</translation>
@@ -1153,6 +1154,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="306573536155379004">Hasi da jokoa.</translation>
 <translation id="3067505415088964188">Prezioa baxua da</translation>
 <translation id="3068118691172921711">Fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzeko prozesua minutu bat barru hasiko da</translation>
+<translation id="3068976060094139647">Txartel hau automatikoki bete dezakezu, kontua Google Pay-rekin lotuta dagoelako.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elementu}other{{ITEMS} elementu}}</translation>
 <translation id="3076865167425975822">Sistema eragileak</translation>
 <translation id="3080254622891793721">Grafikoa</translation>
@@ -1785,6 +1787,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4151403195736952345">Erabili ezarpen lehenetsi orokorra (Hauteman)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. orria}other{{COUNT}. orria}}</translation>
 <translation id="4154277373259957087">Orain, Chrome-k zu zarela egiaztatuko du ordainketa-metodoak bete baino lehen. Hori eguneratzeko, joan <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> atalera.</translation>
+<translation id="415440494507469262">Gehitu fitxa konparazio-taulan</translation>
 <translation id="4159784952369912983">Morea</translation>
 <translation id="4165422751765527461">Laguntza-zentroko artikulu bat beste fitxa batean irekitzen du</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
@@ -3390,6 +3393,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="706960991003274248">Konparazio-taulak zure kontuan (<ph name="EMAIL" />) gordetzen dira.</translation>
 <translation id="7070144569727915108">sistemaren ezarpenak</translation>
 <translation id="70705239631109039">Konexioa ez da guztiz segurua</translation>
+<translation id="7071122206197538392">Konparazio-taula berria</translation>
 <translation id="7075452647191940183">Eskaera handiegia da</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4100,6 +4104,7 @@ Xehetasun gehiago:
 <translation id="8298115750975731693">Baliteke darabilzun Wi-Fi konexioaren (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
 <translation id="8301894345671534559">Idatzi kodea</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" atala ikusten ari zara</translation>
+<translation id="8304912090860925649">Konparazio-taula berria</translation>
 <translation id="830498451218851433">Erdibitzeko tolestura</translation>
 <translation id="8308653357438598313">Zuzeneko bideo-igorpenak</translation>
 <translation id="8311895354659782580">Higiezinen eskaintzak</translation>

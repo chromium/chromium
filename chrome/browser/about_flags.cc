@@ -10132,6 +10132,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kProfilesReordering)},
 #endif
 
+    {"profile-picker-glic-testing",
+     flag_descriptions::kProfilePickerGlicTesting,
+     flag_descriptions::kProfilePickerGlicTestingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kProfilePickerGlicTesting)},
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"batch-upload-desktop", flag_descriptions::kBatchUploadDesktopName,
      flag_descriptions::kBatchUploadDesktopDescription,
@@ -11058,6 +11063,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedProfileShowKiteBadgeDescription,
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(supervised_user::kShowKiteForSupervisedUsers)},
+
+    {"supervised-user-local-web-approvals",
+     flag_descriptions::kSupervisedUserLocalWebApprovalsName,
+     flag_descriptions::kSupervisedUserLocalWebApprovalsDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(supervised_user::kLocalWebApprovals)},
 
 #endif
 

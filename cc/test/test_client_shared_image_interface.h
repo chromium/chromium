@@ -27,8 +27,6 @@ class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   gpu::SyncToken GenVerifiedSyncToken() override;
 
-  gpu::SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const gpu::SharedImageInfo& si_info) override;
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const gpu::SharedImageInfo& si_info) override;
 

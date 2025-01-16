@@ -1839,7 +1839,8 @@ public class AwContents implements SmartClipProvider {
     public void startPrerendering(
             @NonNull String prerenderingUrl,
             @Nullable AwPrefetchParameters prefetchParameters,
-            @Nullable Callback<Void> activationCallback) {
+            @Nullable Callback<Void> activationCallback,
+            @Nullable Callback<Throwable> errorCallback) {
         if (isDestroyed(NO_WARN)) return;
         if (prefetchParameters != null) {
             Optional<IllegalArgumentException> exception =
@@ -1849,12 +1850,20 @@ public class AwContents implements SmartClipProvider {
                 throw exception.get();
             }
         }
+        // `errorCallback` support is still under development. Ideally, an error message should be
+        // propagated from the prerendering core, but for code simplification in the initial
+        // implementation, bind a tentative error message here. See also the comments in
+        // `PrerenderHandleImpl::OnHostDestroyed()`.
+        // TODO(crbug.com/41490450): Pass a more meaningful error message to the error callback.
         AwContentsJni.get()
                 .startPrerendering(
                         mNativeAwContents,
                         prerenderingUrl,
                         prefetchParameters,
-                        activationCallback != null ? activationCallback.bind(null) : null);
+                        activationCallback != null ? activationCallback.bind(null) : null,
+                        errorCallback != null
+                                ? errorCallback.bind(new Exception("Prerendering fails."))
+                                : null);
     }
 
     public void cancelAllPrerendering() {
@@ -4891,7 +4900,8 @@ public class AwContents implements SmartClipProvider {
                 long nativeAwContents,
                 @JniType("std::string") @NonNull String prerenderingUrl,
                 @Nullable AwPrefetchParameters prefetchParameters,
-                @Nullable Runnable activationCallback);
+                @Nullable Runnable activationCallback,
+                @Nullable Runnable errorCallback);
 
         void cancelAllPrerendering(long nativeAwContents);
     }

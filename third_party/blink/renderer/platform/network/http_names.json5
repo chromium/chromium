@@ -114,6 +114,7 @@
     {name: "pragma", Symbol: "kLowerPragma"},
     {name: "range", Symbol: "kLowerRange"},
     {name: "reduce", Symbol: "kReduce"},
+    {name: "request-otr", Symbol: "kRequestOTR"},
     {name: "rtt", Symbol: "kRtt_DEPRECATED"},
     {name: "sec-ch-device-memory", Symbol: "kDeviceMemory"},
     {name: "sec-ch-dpr", Symbol: "kDpr"},

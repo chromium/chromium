@@ -330,7 +330,6 @@
 
       警告：如果此政策设为 Wipe 和 MinimalMigrate，系统会移除本地数据。</translation>
 <translation id="1248955696540150266">允许点对点下载自动更新</translation>
-<translation id="1249640740800891502">SkyVault（云端的所有数据）设置</translation>
 <translation id="1250597158212586309">如果此政策已启用或未设置，系统会为用户提供选项，以便关闭/恢复密码泄露警示。
 
       如果此设置已停用，用户将无法关闭密码泄露警示。如果此设置已启用，用户将能够关闭密码泄露警示。</translation>
@@ -4290,7 +4289,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
           如果未设置此政策，则“自动点击”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4212181786686887763">可供下载相应壁纸图片的网址。</translation>
-<translation id="4221677608399717135">开启或关闭 SkyVault</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
 <translation id="42267415200641481">如果此政策设为 true，系统 DNS 解析（getaddrinfo()）可能在网络进程外运行，具体取决于系统配置和功能标志。
 

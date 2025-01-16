@@ -337,6 +337,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1219219114431716687">Voćna pita</translation>
 <translation id="122082903575839559">Algoritam potpisa certifikata</translation>
 <translation id="1221024147024329929">PKCS br. 1 MD2 s RSA enkripcijom</translation>
+<translation id="1221266967850882682">Recap dobrodošlice</translation>
 <translation id="1221825588892235038">Samo odabir</translation>
 <translation id="1222835797152767346">Postavite PIN da biste se lakše prijavili</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> zahtijeva licencu</translation>
@@ -2893,7 +2894,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da se danas povežete s Wi-Fijem da biste preuzeli ažuriranje. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}one{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}few{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}other{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}}</translation>
 <translation id="3009178788565917040">Izlaz</translation>
-<translation id="3009300415590184725">Jeste li sigurni da želite otkazati proces postavljanja podatkovne mobilne usluge?</translation>
 <translation id="3009352964623081324">Pretraživanje + O, a zatim S. Koristite za instaliranje, upravljanje i prilagođavanje glasova.</translation>
 <translation id="3009779501245596802">Indeksirane baze podataka</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Vaše zaporke izgledaju snažno}=1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
@@ -3401,7 +3401,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3396442984945202128">Potvrdite da ste to vi</translation>
 <translation id="3396800784455899911">Klikom na gumb "Prihvati i nastavi" prihvaćate prethodno opisanu obradu za ove Googleove usluge.</translation>
 <translation id="339722927132407568">Zamrzavanje</translation>
-<translation id="3398899528308712018">Prijedlog grupe kartica</translation>
 <translation id="3399432415385675819">Obavijesti će se onemogućiti</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herca) – isprepleteno</translation>
 <translation id="3401484564516348917">Čitati podatke o vašem pregledniku, OS-u, uređaju, instaliranom softveru, vrijednostima registra i datotekama</translation>
@@ -4831,7 +4830,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4386604394450371010">pregled</translation>
 <translation id="4387890294700445764">Ugrožene zaporke</translation>
 <translation id="4388650384344483842">Upotrijebite barem osam znakova</translation>
-<translation id="4389091756366370506">Korisnik <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još ovoliko prekidača: <ph name="NUMBER_OF_OTHER_SWITCHES" /></translation>
 <translation id="439266289085815679">Konfiguracijom Bluetootha upravlja <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Uredite konfiguracijsku datoteku</translation>
@@ -5565,7 +5563,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4906679076183257864">Vrati na zadano</translation>
 <translation id="4907129260985716018">Odaberite kad to proširenje može čitati i mijenjati vaše podatke web-lokacije</translation>
 <translation id="4908811072292128752">Otvorite novu karticu za istodobni pregled dvije stranice</translation>
-<translation id="4909038193460299775">Budući da ovim računom upravlja <ph name="DOMAIN" />, vaše oznake, povijest, zaporke i druge postavke izbrisat će se s ovog uređaja. No vaši podaci ostat će pohranjeni na vašem Google računu i možete upravljati njima na <ph name="BEGIN_LINK" />Google nadzornoj ploči<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Aplikacija je već instalirana</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
 <translation id="4913209098186576320">Datoteka je možda opasna<ph name="LINE_BREAK" />Provjera traje dulje nego inače...</translation>

@@ -7137,6 +7137,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "profile-picker-glic-testing",
+    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 136
@@ -8225,6 +8230,14 @@
       "chrome-kids-eng@google.com"
     ],
     "expiry_milestone": 133
+  },
+  {
+    "name": "supervised-user-local-web-approvals",
+    "owners": [
+      "fernandex@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 140
   },
   {
     "name": "support-f11-and-f12-shortcuts",

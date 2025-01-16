@@ -63,6 +63,8 @@ constexpr uint8_t kSignatureCounter[4] = {0};
 
 constexpr size_t kEncryptionSecretSize = 32;
 
+constexpr size_t kHmacSecretSize = 32;
+
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {
@@ -143,7 +145,8 @@ std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
 GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  const PasskeyModel::UserEntity& user_entity,
                                  base::span<const uint8_t> trusted_vault_key,
-                                 int32_t trusted_vault_key_version) {
+                                 int32_t trusted_vault_key_version,
+                                 bool generate_hmac_secret) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
   specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
@@ -159,6 +162,9 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   CHECK(ec_key->ExportPrivateKey(&private_key_pkcs8));
   encrypted.set_private_key(
       {private_key_pkcs8.begin(), private_key_pkcs8.end()});
+  if (generate_hmac_secret) {
+    encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
+  }
   CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
                                                &specifics));
   CHECK(specifics.has_encrypted());

@@ -1157,7 +1157,6 @@
 <translation id="4902797682482387055">ფოკუსირებისთვის შემოთავაზებული დავალება</translation>
 <translation id="490375751687810070">ვერტიკალური</translation>
 <translation id="490788395437447240">ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">ეს ხელოვნური ინტელექტის ექსპერიმენტული ფუნქციაა და ის ყოველთვის არ იქნება ზუსტი.</translation>
 <translation id="491504982845934899">გააქტიურება მოწყობილობის დაყენების შემდეგ <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4918086044614829423">მიღება</translation>
@@ -2025,7 +2024,6 @@
 <translation id="780301667611848630">არა, გმადლობთ</translation>
 <translation id="7807067443225230855">ძიება და ასისტენტი</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> და <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">ზევით აწეული ცერის ღილაკზე დაჭერით გაგზავნით გამოხმაურებას, რომ ეს შემოთავაზება მოგწონთ</translation>
 <translation id="7825412704590278437">კალენდრის მოახლოებული მოვლენიდან</translation>
 <translation id="7829386189513694949">სიგნალი ძლიერია</translation>
 <translation id="7830453190047749513">სურვილისამებრ, შეგიძლიათ თქვენი <ph name="PERIPHERAL_NAME" />-ის ღილაკების მოქმედებების, კურსორის სიჩქარისა და სხვა ფუნქციების პერსონალიზება</translation>
@@ -2117,6 +2115,7 @@
 <translation id="8051716679295756675">შაბლონი სახელად „<ph name="DESK_TEMPLATE_NAME" />“ უკვე არსებობს</translation>
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
+<translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8079538659226626406">ეკრანის გაზიარება</translation>
 <translation id="8083540854303889870">შენახულია სამომავლოდ</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@
 <translation id="830868413617744215">ბეტა</translation>
 <translation id="8314772463905284467">Caps Lock ჩართულია</translation>
 <translation id="8315514906653279104">მიმდინარეობს ჩართვა...</translation>
-<translation id="8319634750346253957">ქვევით დაწეული ცერის ღილაკზე დაჭერით გაგზავნით გამოხმაურებას, რომ ეს შემოთავაზება არ მოგწონთ</translation>
 <translation id="8331351032546853669">ჩამოტვირთვა მოლოდინის რეჟიმშია</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

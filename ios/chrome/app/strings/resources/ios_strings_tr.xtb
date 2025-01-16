@@ -1153,6 +1153,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6160780110287872296">Dosya indirilsin mi?</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6168647875670665004">Makale önerileri</translation>
+<translation id="6169031022444660352">Kayıtlı tüm kimlik bilgilerini silebilmek için önce cihazınızda şifre kodu oluşturmanız gerekir.</translation>
 <translation id="6173499589275053515">Şifre Google Hesabınıza (<ph name="EMAIL" />) kaydedildi</translation>
 <translation id="6187302354554850004">Son senkronizasyon tarihi: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Oluşturulma tarihi: <ph name="DATE" /></translation>
@@ -1204,6 +1205,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6355820205320395730">Zayıf şifrelerin tahmin edilmesi kolaydır. Güçlü şifreler oluşturduğunuzdan emin olun. <ph name="BEGIN_LINK" />Güvenlikle ilgili diğer ipuçlarına bakın.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> sitesini takip et</translation>
 <translation id="6368038301482806847">Listeden bir arama motoru seçin.</translation>
+<translation id="6368102751067608420">Şifre yöneticisindeki tüm verileri silmek için</translation>
 <translation id="6374469231428023295">Tekrar Dene</translation>
 <translation id="6387994324662817823">Şifreler yalnızca bu cihazda Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="6404422529625928907">Google Drive'da aç</translation>

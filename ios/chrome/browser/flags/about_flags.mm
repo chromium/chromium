@@ -1268,6 +1268,19 @@ const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
      kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
      nullptr}};
 
+const FeatureEntry::FeatureParam
+    kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial[] = {
+        {kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitialParam,
+         "true"},
+};
+
+const FeatureEntry::FeatureVariation kYoutubeIncognitoVariations[] = {
+    {"Error handling without Incognito Interstitial",
+     kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial,
+     std::size(kYoutubeIncognitoErrorHandlingWithoutIncognitoInterstitial),
+     nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2202,7 +2215,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kChromeStartupParametersAsync)},
     {"ios-youtube-incognito", flag_descriptions::kYoutubeIncognitoName,
      flag_descriptions::kYoutubeIncognitoDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kYoutubeIncognito)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kYoutubeIncognito,
+                                    kYoutubeIncognitoVariations,
+                                    "IOSYoutubeIncognito")},
     {"lens-overlay-enable-location-bar-entrypoint",
      flag_descriptions::kLensOverlayEnableLocationBarEntrypointName,
      flag_descriptions::kLensOverlayEnableLocationBarEntrypointDescription,
@@ -2328,6 +2343,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSManageAccountStorageName,
      flag_descriptions::kIOSManageAccountStorageDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSManageAccountStorage)},
+    {"supervised-user-local-web-approvals",
+     flag_descriptions::kSupervisedUserLocalWebApprovalsName,
+     flag_descriptions::kSupervisedUserLocalWebApprovalsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(supervised_user::kLocalWebApprovals)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

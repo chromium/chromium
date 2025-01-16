@@ -42,7 +42,7 @@ class UniquePositionTest : public ::testing::Test {
   // so you can see how well the algorithm performs in various insertion
   // scenarios.
   size_t GetLength(const UniquePosition& pos) {
-    return pos.ToProto().ByteSize();
+    return pos.ToProto().ByteSizeLong();
   }
 
   const size_t kMinLength = UniquePosition::kSuffixLength;

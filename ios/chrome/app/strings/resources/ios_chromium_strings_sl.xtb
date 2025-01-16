@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">To pomeni, da bo Chromium vsakič zahteval spletno mesto za namizne naprave.</translation>
 <translation id="2270466829363945454">Trgovina</translation>
 <translation id="2313870531055795960">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu. Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
+<translation id="2314220608288760290">Chromium samodejno odpre povezave v anonimnem načinu v YouTubu v anonimnem načinu.</translation>
 <translation id="231828342043114302">Če želite prejemati osebno prilagojeno vsebino glede na zanimanja, se prijavite v Chromium.</translation>
 <translation id="2326738825692478496">Nekateri podatki v Chromiumu še niso shranjeni v računu Google.
 
@@ -284,6 +285,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="8254729934443216898">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chromium.</translation>
 <translation id="829047622686389424">Vir po meri, ustvarjen za vas.</translation>
+<translation id="8293572045658095405">Ste v anonimnem načinu Chromiuma</translation>
 <translation id="830951810931292870">Odpre vnesene URL-je v Chromiumu v anonimnem načinu.</translation>
 <translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}one{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuto. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}two{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minuti. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}few{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minute. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}other{To se zgodi, če Chromiuma ne uporabljate {THRESHOLD} minut. Podatki, shranjeni samo v tej napravi, ko ste bili prijavljeni, bodo izbrisani. To lahko vključuje zgodovino in gesla.}}</translation>

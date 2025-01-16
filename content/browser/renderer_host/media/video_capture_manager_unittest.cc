@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
+#include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
@@ -386,15 +387,16 @@ class VideoCaptureManagerTest : public testing::Test {
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
         gfx::Size(320, 240), 30, media::PIXEL_FORMAT_I420);
-    vcm_->ResumeCaptureForClient(session_id, params, controllers_[client_id],
-                                 client_id, frame_observer_.get());
+    vcm_->ResumeCaptureForClient(session_id, params,
+                                 controllers_[client_id].get(), client_id,
+                                 frame_observer_.get());
     // Allow possible VideoCaptureDevice::Resume() task to run.
     base::RunLoop().RunUntilIdle();
   }
 
   void PauseClient(const VideoCaptureControllerID& client_id) {
     ASSERT_EQ(1u, controllers_.count(client_id));
-    vcm_->PauseCaptureForClient(controllers_[client_id], client_id,
+    vcm_->PauseCaptureForClient(controllers_[client_id].get(), client_id,
                                 frame_observer_.get());
     // Allow possible VideoCaptureDevice::MaybeSuspend() task to run.
     base::RunLoop().RunUntilIdle();
@@ -409,8 +411,7 @@ class VideoCaptureManagerTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
-  std::map<VideoCaptureControllerID,
-           raw_ptr<VideoCaptureController, CtnExperimental>>
+  std::map<VideoCaptureControllerID, scoped_refptr<VideoCaptureController>>
       controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;
@@ -502,6 +503,8 @@ TEST_F(VideoCaptureManagerTest, CreateAndAbort) {
   vcm_->DisconnectClient(
       controllers_[client_id], client_id, frame_observer_.get(),
       media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest);
+  controllers_.erase(client_id);
+  vcm_->Close(video_session_id);
 
   // Wait to check callbacks before removing the listener.
   base::RunLoop().RunUntilIdle();

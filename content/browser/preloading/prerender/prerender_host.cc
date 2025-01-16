@@ -313,14 +313,12 @@ bool PrerenderHost::IsActivationHeaderMatch(
 }
 
 PrerenderHost::~PrerenderHost() {
-  for (auto& observer : observers_) {
-    observer.OnHostDestroyed(
-        final_status_.value_or(PrerenderFinalStatus::kDestroyed));
-  }
-
-  if (!final_status_) {
+  if (!final_status_.has_value()) {
     RecordFailedFinalStatusImpl(
         PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
+  }
+  for (auto& observer : observers_) {
+    observer.OnHostDestroyed(final_status_.value());
   }
 
   // If we are still waiting on test loop, we can assume the page loading step
@@ -1080,6 +1078,10 @@ void PrerenderHost::RecordFailedFinalStatusImpl(
   // Set failure reason for this PreloadingAttempt specific to the
   // FinalStatus.
   SetFailureReason(reason);
+
+  for (auto& observer : observers_) {
+    observer.OnFailed(final_status_.value());
+  }
 }
 
 void PrerenderHost::RecordActivation(NavigationRequest& navigation_request) {

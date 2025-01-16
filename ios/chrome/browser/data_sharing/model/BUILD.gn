@@ -17,6 +17,7 @@ source_set("model") {
     ":context",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

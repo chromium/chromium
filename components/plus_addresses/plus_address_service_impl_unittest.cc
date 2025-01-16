@@ -1622,10 +1622,6 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
 // `plus_address_suggestion_generator_unittest`, since this should make it
 // easier to test.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kPlusAddressOfferCreationOnSingleUsernameForms);
-
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =
@@ -1645,7 +1641,8 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
   EXPECT_THAT(get_suggestions_for_form_type(kLoginForm), IsEmpty());
   EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm), IsEmpty());
   EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm), IsEmpty());
-  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm), IsEmpty());
+  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
+              IsSingleCreatePlusAddressSuggestion());
   EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
               IsSingleCreatePlusAddressSuggestion());
 
@@ -1665,10 +1662,8 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
 // Tests that creation is offered on all password forms if the focused field is
 // not the username field.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsNonUsernameField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPlusAddressOfferCreationOnAllNonUsernameFields},
-      {features::kPlusAddressOfferCreationOnSingleUsernameForms});
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressOfferCreationOnAllNonUsernameFields};
 
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
@@ -1701,13 +1696,9 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsNonUsernameField) {
 }
 
 // Tests that plus address creation is offered on signup forms and single
-// username forms even if the focused field is the username field if
-// `kPlusAddressOfferCreationOnSingleUsernameForms` is enabled.
+// username forms even if the focused field is the username field.
 TEST_F(PlusAddressSuggestionsTest,
        SuggestionsOnPasswordFormWithSingleUsernameCreationEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kPlusAddressOfferCreationOnSingleUsernameForms};
-
   const PlusProfile profile = test::CreatePlusProfile();
   const url::Origin origin = OriginFromFacet(profile.facet);
   auto get_suggestions_for_form_type =

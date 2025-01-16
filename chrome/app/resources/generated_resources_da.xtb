@@ -160,6 +160,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1101254380285078812">{COUNT,plural, =1{1 adgangskode}one{{COUNT} adgangskode}other{{COUNT} adgangskoder}}</translation>
 <translation id="1102759278139578486">Annoteringsfilerne for den primære node kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Du mister øjeblikkeligt adgang til denne fanegruppe, og den slettes fra alle dine enheder</translation>
 <translation id="1106350001632362876">Hæv grænsen</translation>
 <translation id="1107482171728500359">Del mikrofon</translation>
 <translation id="110850812463801904">Opret manuelt forbindelse til OneDrive</translation>
@@ -1703,6 +1704,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2173801458090845390">Føj rekvisitions-id til denne enhed</translation>
 <translation id="2175384018164129879">&amp;Administrer søgemaskiner og Site Search</translation>
+<translation id="2175526076681939329">Brug primære taster</translation>
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="217631816678106981">Undlad at indsætte</translation>
@@ -2902,7 +2904,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi i dag for at downloade en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}one{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}other{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}}</translation>
 <translation id="3009178788565917040">Output</translation>
-<translation id="3009300415590184725">Er du sikker på, at du vil annullere konfigurationen af en mobildatatjeneste?</translation>
 <translation id="3009352964623081324">Søgetasten+O efterfulgt af S. Brug til at installere, administrere og tilpasse stemmer.</translation>
 <translation id="3009779501245596802">Indekserede databaser</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Dine adgangskoder ser stærke ud}=1{{COUNT} svag adgangskode}one{{COUNT} svag adgangskode}other{{COUNT} svage adgangskoder}}</translation>
@@ -3411,7 +3412,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3396442984945202128">Verificer din identitet</translation>
 <translation id="3396800784455899911">Når du klikker på knappen "Acceptér og fortsæt", accepterer du den behandling, der er beskrevet ovenfor, for disse Google-tjenester.</translation>
 <translation id="339722927132407568">Fryser</translation>
-<translation id="3398899528308712018">Forslag til fanegruppe</translation>
 <translation id="3399432415385675819">Notifikationer deaktiveres</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – sammenflettet</translation>
 <translation id="3401484564516348917">Læs oplysninger om browseren, operativsystemet, enheden, installeret software, værdier i registreringsdatabasen og filer</translation>
@@ -3427,6 +3427,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3407392651057365886">Flere sider forudindlæses. Sider forudindlæses muligvis via Googles servere, når andre websites anmoder om siderne.</translation>
 <translation id="3407967630066378878">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren til venstre på denne <ph name="DEVICE_TYPE" />. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Kamera og mikrofon er i brug</translation>
+<translation id="3409157109901479672">Venstre side</translation>
 <translation id="3409513286451883969">&amp;Oversæt markeret tekst til <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Hop til valg</translation>
 <translation id="3413122095806433232">CA-udstedere: <ph name="LOCATION" /></translation>
@@ -4712,6 +4713,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Stryg for at navigere mellem sider</translation>
 <translation id="4291265871880246274">Dialogboks for login</translation>
+<translation id="4292613336957320546">Acceleration</translation>
 <translation id="429312253194641664">Et website afspiller medier</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> er blevet slettet fra downloadhistorikken, men filerne findes stadig på din enhed</translation>
 <translation id="4295072614469448764">Appen er tilgængelig i din terminal. Der vises muligvis også et ikon på din appliste.</translation>
@@ -4839,7 +4841,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4386604394450371010">oversigt</translation>
 <translation id="4387890294700445764">Kompromitterede adgangskoder</translation>
 <translation id="4388650384344483842">Brug mindst 8 tegn</translation>
-<translation id="4389091756366370506">Bruger <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og <ph name="NUMBER_OF_OTHER_SWITCHES" /> andre kontakter</translation>
 <translation id="439266289085815679">Bluetooth-konfiguration kontrolleres af <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediger konfigurationsfilen</translation>
@@ -5574,7 +5575,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4906679076183257864">Nulstil til standard</translation>
 <translation id="4907129260985716018">Vælg, hvornår denne udvidelse kan læse og ændre dine websitedata</translation>
 <translation id="4908811072292128752">Åbn en ny fane for at se to websites på én gang</translation>
-<translation id="4909038193460299775">Eftersom denne konto administreres af <ph name="DOMAIN" />, slettes dine bogmærker, din historik, dine adgangskoder og andre indstillinger på denne enhed. Dine data vil dog fortsat være gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Appen er allerede installeret</translation>
 <translation id="4912643508233590958">Aktivering efter dvale</translation>
 <translation id="4913209098186576320">Denne fil kan være skadelig<ph name="LINE_BREAK" />Dette tjek tager længere tid end normalt…</translation>
@@ -5880,6 +5880,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Søgning</translation>
 <translation id="5139823398361067371">Angiv pinkoden til din sikkerhedsnøgle. Hvis du ikke kender pinkoden, skal du nulstille sikkerhedsnøglen.</translation>
 <translation id="5139955368427980650">&amp;Åbn</translation>
+<translation id="5140742218917419811">Valg af taster</translation>
 <translation id="5141421572306659464">Primær konto</translation>
 <translation id="5141957579434225843">Brug f.eks. oà, oè, uỳ i stedet for òa, òe, ùy</translation>
 <translation id="5143374789336132547">Udvidelsen <ph name="EXTENSION_NAME" /> har ændret, hvilken side der vises, når du klikker på knappen Startside.</translation>
@@ -5898,6 +5899,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5149602533174716626">Kopiér videoramme</translation>
 <translation id="5150254825601720210">SSL-servernavn for Netscape-certifikat</translation>
 <translation id="5151354047782775295">Hvis du ikke frigør diskplads, slettes udvalgte data muligvis automatisk</translation>
+<translation id="5153074793829217329">Brug dit tastatur eller et numerisk tastatur til at styre din musemarkør</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerede indstillinger for <ph name="PRINTING_DESTINATION" /></translation>
@@ -7992,6 +7994,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6689714331348768690">Bed <ph name="SUPERVISED_USER_NAME" /> om at komme hen til computeren. Dit barn skal læse et par sætninger på skærmen højt for at oprette sin stemmemodel.
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> har brug for hjælp til at læse sætningerne, kan du bede dit barn om at gentage det, du siger. Hvisk sætningerne et stykke væk fra mikrofonen, så Google Assistent lærer dit barns stemme og ikke din.</translation>
+<translation id="6689948774466767379">Musetaster</translation>
 <translation id="6690659332373509948">Filen kan ikke parses: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Frem</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 side}one{{COUNT} side}other{{COUNT} sider}}</translation>
@@ -10078,6 +10081,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Føj fane til Læseliste}one{Føj fane til Læseliste}other{Føj faner til Læseliste}}</translation>
 <translation id="8169177848833352618">Denne maskine opfylder desværre ikke kravene til installation af Bruschetta. Fejlkoden er <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Højre side</translation>
 <translation id="8174047975335711832">Enhedsoplysninger</translation>
 <translation id="8176332201990304395">Lyserød og hvid</translation>
 <translation id="8176529144855282213">Aktivér mikrofonadgang ved at tænde mikrofonen på enhedens fysiske kontakt</translation>

@@ -1154,7 +1154,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4902797682482387055">Attività suggerita su cui concentrarti</translation>
 <translation id="490375751687810070">Verticale</translation>
 <translation id="490788395437447240">Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Si tratta di una funzionalità di AI sperimentale che potrebbe non essere sempre accurata.</translation>
 <translation id="491504982845934899">Attiva <ph name="NETWORK_NAME" /> dopo la configurazione del dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
@@ -1262,6 +1261,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5245201184978705914">Impossibile generare la trascrizione</translation>
 <translation id="5251174953851719648">Aggiorna contenuti</translation>
 <translation id="5253783950165989294">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" />; batteria <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">Testa il microfono</translation>
 <translation id="5258528442992323769">Nessuna scrivania salvata</translation>
 <translation id="5260676007519551770">Scrivania 4</translation>
 <translation id="5265391159779542051">Risultati caricati</translation>
@@ -1419,6 +1419,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
 <translation id="5750765938512549687">Bluetooth non attivo.</translation>
 <translation id="5758114525425072423">Avvia la modalità Niente distrazioni. Timer impostato su <ph name="FOCUS_DURATION" />.</translation>
+<translation id="5759522586053040964">Ascolta come ti sentiranno gli altri. Per interrompere, fai clic sull'icona del test o chiudi il riquadro della videochiamata.</translation>
 <translation id="5760866832697883462">Connetti <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /> Usa il trackpad, il touchscreen o lo stilo per disegnare sullo schermo.</translation>
 <translation id="576341972084747908">Download di <ph name="FILENAME" /> (pericoloso) in corso…</translation>
@@ -2022,7 +2023,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">L'opzione Mi piace invia un feedback che indica che ti piace questo suggerimento</translation>
 <translation id="7825412704590278437">Di un evento nel calendario in programma</translation>
 <translation id="7829386189513694949">Segnale forte</translation>
 <translation id="7830453190047749513">Puoi personalizzare le azioni dei pulsanti, la velocità del cursore e altro ancora per il tuo <ph name="PERIPHERAL_NAME" /></translation>
@@ -2114,6 +2114,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
+<translation id="8076492880354921740">Schede</translation>
 <translation id="8079538659226626406">Condivisione schermo</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2179,7 +2180,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
-<translation id="8319634750346253957">L'opzione Non mi piace invia un feedback che indica che non ti piace questo suggerimento</translation>
 <translation id="8331351032546853669">Download in attesa</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

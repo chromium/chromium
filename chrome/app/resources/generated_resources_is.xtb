@@ -2904,7 +2904,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi í dag til að sækja uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}one{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}other{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}}</translation>
 <translation id="3009178788565917040">Úttak</translation>
-<translation id="3009300415590184725">Ertu viss um að þú viljir hætta uppsetningarferli farsímagagnaþjónustu?</translation>
 <translation id="3009352964623081324">Leita + O og svo S. Notað til að setja upp, stjórna og sérstilla raddir.</translation>
 <translation id="3009779501245596802">Niðurskiptir gagnagrunnar</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Aðgangsorðin þín virðast traust}=1{{COUNT} lélegt aðgangsorð}one{{COUNT} lélegt aðgangsorð}other{{COUNT} léleg aðgangsorð}}</translation>
@@ -3413,7 +3412,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3396442984945202128">Staðfestu hver þú ert</translation>
 <translation id="3396800784455899911">Með því að smella á hnappinn „Samþykkja og halda áfram“ samþykkir þú þá úrvinnslu sem lýst er hér að ofan fyrir þessa Google þjónustu.</translation>
 <translation id="339722927132407568">Frýs</translation>
-<translation id="3398899528308712018">Flipahópatillögur</translation>
 <translation id="3399432415385675819">Tilkynningar verða gerðar óvirkar</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herts) – samfléttað</translation>
 <translation id="3401484564516348917">Lestu upplýsingar um vafrann, stýrikerfið, tækið, uppsettan hugbúnað, stýriskáargildi og skýrslur</translation>
@@ -4843,7 +4841,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4386604394450371010">yfirlit</translation>
 <translation id="4387890294700445764">Aðgangsorð í hættu</translation>
 <translation id="4388650384344483842">Notaðu að minnsta kosti 8 stafi</translation>
-<translation id="4389091756366370506">Notandi <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og <ph name="NUMBER_OF_OTHER_SWITCHES" /> rofar í viðbót</translation>
 <translation id="439266289085815679">Bluetooth-stillingu er stjórnað af <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Breyta stillingaskrá</translation>
@@ -5578,7 +5575,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4906679076183257864">Endurstilla á sjálfgefið</translation>
 <translation id="4907129260985716018">Veldu hvenær þessi viðbót getur lesið og breytt vefsvæðisgögnum</translation>
 <translation id="4908811072292128752">Opnaðu flipa til að vafra á tveimur vefsvæðum samtímis</translation>
-<translation id="4909038193460299775">Þar sem <ph name="DOMAIN" /> stýrir þessum reikningi verða bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð af tækinu. Gögnin þín verða þó áfram vistuð á Google reikningnum þínum og hægt er að hafa umsjón með þeim á <ph name="BEGIN_LINK" />stjórnborði Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Forrit hefur þegar verið sett upp</translation>
 <translation id="4912643508233590958">Vakningar í aðgerðaleysi</translation>
 <translation id="4913209098186576320">Þessi skrá kann að vera hættuleg<ph name="LINE_BREAK" />Þessi athugun tekur lengri tíma en venjulega …</translation>

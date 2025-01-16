@@ -387,6 +387,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chromium ja lubage juurdepääs Keychainile. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
 <translation id="1652887625750064647">AI parim vaste</translation>
+<translation id="1653465303147789530">Makske makseviisiga <ph name="PAYMENT_METHOD" /> ilma rakendusi vahetamata</translation>
 <translation id="1656024727720460136">Chrome lihtsustas seda lehte, et seda oleks lihtsam lugeda. Chrome hankis algse lehe turvalise ühenduse kaudu.</translation>
 <translation id="1656489000284462475">Kättesaamine</translation>
 <translation id="1658111267661135323">Televisioon ja video</translation>
@@ -557,6 +558,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1959001866257244765">Aidake turvalisust veebis kõigi jaoks suurendada, saates Google'ile <ph name="BEGIN_WHITEPAPER_LINK" />mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja lehe teatud sisu<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privaatsuseeskirjad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Teie tekst ja lehe sisu saadetakse Google'ile ning neid võidakse kasutada selle funktsiooni täiustamiseks.
   <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Kiiremaks maksmiseks täitke ühekordne turvakontroll</translation>
 <translation id="1962204205936693436">Domeeni <ph name="DOMAIN" /> järjehoidjad</translation>
 <translation id="1973335181906896915">Viga jadaks teisendamisel</translation>
 <translation id="1973785048533660168">Ametnike, sekretäride ja administratiivsed töökohad</translation>
@@ -701,6 +703,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2215539479425228550">Kalju- ja mägironimine</translation>
 <translation id="2215727959747642672">Failide muutmine</translation>
 <translation id="2215963164070968490">Koerad</translation>
+<translation id="2219376942605837404">Lisage võrdlustabelisse vaheleht</translation>
 <translation id="2219658597883514593">Alusta õpetusi uuesti</translation>
 <translation id="2219735899272417925">Nõutav on seadme lähtestamine</translation>
 <translation id="2221227930294879156">Toidu- ja joogiüritused</translation>
@@ -1151,6 +1154,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="306573536155379004">Mäng algas.</translation>
 <translation id="3067505415088964188">Hind on soodne</translation>
 <translation id="3068118691172921711">Failide üleslaadimine teenusesse <ph name="CLOUD_PROVIDER" /> algab 1 minuti pärast</translation>
+<translation id="3068976060094139647">Saate selle kaardi automaatselt täita, kuna teie konto on Google Payga lingitud.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} üksus}other{{ITEMS} üksust}}</translation>
 <translation id="3076865167425975822">Operatsioonisüsteemid</translation>
 <translation id="3080254622891793721">Graafika</translation>
@@ -1586,6 +1590,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="378611282717571199">Parimad vasted päringule „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Suurus 16</translation>
 <translation id="3789841737615482174">Installi</translation>
+<translation id="3791118028061680614">Makske ilma rakendusi vahetamata</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli)</translation>
 <translation id="3792826587784915501">Kultus- ja indie-filmid</translation>
 <translation id="3793574014653384240">Hiljutiste krahhide arv ja põhjused</translation>
@@ -1786,6 +1791,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4151403195736952345">Kasuta üldist vaikevalikut (tuvasta)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Leht 1}other{Leht {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome kinnitab nüüd teie isiku enne makseviiside sisestamist. Saate seda igal ajal jaotises <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> värskendada.</translation>
+<translation id="415440494507469262">Lisage võrdlustabelisse vaheleht</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4165422751765527461">Avab abikeskuse artikli uuel vahelehel</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
@@ -3392,6 +3398,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="706960991003274248">Võrdlustabelid salvestatakse teie kontole <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">süsteemiseaded</translation>
 <translation id="70705239631109039">Teie ühendus ei ole täielikult turvaline</translation>
+<translation id="7071122206197538392">Uus võrdlustabel</translation>
 <translation id="7075452647191940183">Taotlus on liiga suur</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4110,7 @@ Lisateave:
 <translation id="8298115750975731693">WiFi-võrk, mida kasutate (<ph name="WIFI_NAME" />), võib nõuda veebilehe <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> külastamist.</translation>
 <translation id="8301894345671534559">Sisesta kood</translation>
 <translation id="8303854710873047864">Jaotis „<ph name="SECTION" />” on kuvatud</translation>
+<translation id="8304912090860925649">Uus võrdlustabel</translation>
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="8308653357438598313">Reaalajas videote voogesitamine</translation>
 <translation id="8311895354659782580">Kinnisvaraloendid</translation>

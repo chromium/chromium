@@ -282,6 +282,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1948405482892809935">Passer à l'utilisateur suivant</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Enregistrement d'écran terminé</translation>
+<translation id="1956087014741188812">Suspendre les touches pour la souris</translation>
 <translation id="1957958912175573503">Définir la langue</translation>
 <translation id="1961239773406905488">Aperçu de la caméra masqué</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2257486738914982088">Une erreur s'est produite lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fichiers suggérés</translation>
+<translation id="2266607665880926261">Touches pour la souris suspendues</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
 <translation id="2268731132310444948">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Une fois le Lanceur d'applications activé, une barre de recherche améliorée s'affiche. Commencez à taper du texte pour rechercher vos fichiers, vos applis, etc. Vous pouvez aussi obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Déconnecter les util.</translation>
@@ -540,6 +542,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2876338922445400217">Faire un zoom avant sur l'écran</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
 <translation id="2880541185262491188">Trop de tentatives de saisie de code infructueuses. Patientez <ph name="TIME_LEFT" /> et réessayez.</translation>
+<translation id="2883271196820422439">Réactiver les touches pour la souris</translation>
 <translation id="2885950158625301909">En savoir plus</translation>
 <translation id="2891209721153296020">"Désélectionner"</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur les performances</translation>
@@ -727,6 +730,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3539957339480430241">Point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignorer la configuration concernant l'affichage des photos et contenus multimédias récents de votre téléphone</translation>
 <translation id="3542066395059568317">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez les supprimer en effectuant un clic droit.</translation>
+<translation id="3545224667633138205">Touches pour la souris réactivées</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554215588514239132">Afficher ou masquer le panneau des outils pour les développeurs</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
@@ -801,6 +805,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3727231512028252576">Impossible de charger les éléments. Réessayez une fois en ligne.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3738664582935948253">Vous pouvez désormais afficher les clics et les raccourcis clavier dans les enregistrements d'écran</translation>
+<translation id="3741482431277446954">Bouton droit de la souris</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3743775386021959186">Le mode Sans distractions est activé. Il reste <ph name="REMAINING_TIME" />.</translation>
 <translation id="3750403286520637847">Masquer la suggestion météo</translation>
@@ -1152,7 +1157,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4902797682482387055">Tâche suggérée sur laquelle se concentrer</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Niveau de la batterie : <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="4911191962826748981">Il s'agit d'une fonctionnalité d'IA expérimentale qui n'est pas infaillible.</translation>
 <translation id="491504982845934899">Activer <ph name="NETWORK_NAME" /> après la configuration de l'appareil</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -1828,6 +1832,7 @@ Nouvelle installation</translation>
 <translation id="7118268675952955085">capture d'écran</translation>
 <translation id="7118597077555700347">Ouvrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Sélectionner la lettre ou le mot suivant</translation>
+<translation id="7124556000457919678">Lorsque cette option est activée, suspendre et réactiver les touches pour la souris</translation>
 <translation id="7126996685418858413">Ouvert la semaine dernière</translation>
 <translation id="7130207228079676353">CLIC PROBABLE</translation>
 <translation id="7131634465328662194">Vous allez être déconnecté automatiquement.</translation>
@@ -1849,6 +1854,7 @@ Nouvelle installation</translation>
 <translation id="7198435252016571249">Appareil photo aligné sur l'angle inférieur droit. Conflit avec la surface du système.</translation>
 <translation id="7219573373513695352">Aucun appareil connecté</translation>
 <translation id="7229029500464092426">Mémoire : <ph name="AVAILABLE_MEMORY" /> | Total : <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Les deux boutons de la souris</translation>
 <translation id="7244725679040769470">Il reste <ph name="PERCENTAGE" /> % de batterie.
 Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Ceci peut prendre jusqu'à une minute.</translation>
@@ -2019,7 +2025,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7807067443225230855">Recherche et Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">"J'aime" indique que cette suggestion vous convient</translation>
 <translation id="7825412704590278437">Source : événement d'agenda à venir</translation>
 <translation id="7829386189513694949">Signal de forte intensité</translation>
 <translation id="7830453190047749513">Vous pouvez personnaliser les actions des boutons, la vitesse du curseur et plus encore pour votre <ph name="PERIPHERAL_NAME" /></translation>
@@ -2111,6 +2116,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8051716679295756675">Le modèle "<ph name="DESK_TEMPLATE_NAME" />" existe déjà</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
+<translation id="8076492880354921740">Onglets</translation>
 <translation id="8079538659226626406">Partage d'écran</translation>
 <translation id="8083540854303889870">Bureaux enregistrés</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2151,6 +2157,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8203224998425013577">Afficher plus d'emoji et de GIF</translation>
 <translation id="8203795194971602413">Clic droit</translation>
 <translation id="8205469348819768313">Vous essayez d'utiliser Page suivante ? Utilisez</translation>
+<translation id="8213376797713070611">Bouton gauche de la souris</translation>
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché à une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise électrique. N'éteignez pas votre Chromebook.</translation>
 <translation id="8220076512072059941">Ajouter <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2175,7 +2182,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
 <translation id="8315514906653279104">Activation…</translation>
-<translation id="8319634750346253957">"Je n'aime pas" indique que cette suggestion ne vous convient pas</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth indisponible</translation>
+<translation id="9050999376345823055">Appuyer sur "." pour relâcher</translation>
 <translation id="906458777597946297">Agrandir la fenêtre</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>

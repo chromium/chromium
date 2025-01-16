@@ -2902,7 +2902,6 @@
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही अपडेट डाउनलोड करण्यासाठी आजच वाय-फायशी कनेक्ट करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनपूर्वी वाय-फाय शी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}}</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
-<translation id="3009300415590184725">मोबाइल डेटा सेट अप प्रक्रिया ‍रद्द करु इच्‍छित आहात याबद्दल तुम्हाला खात्री आहे?</translation>
 <translation id="3009352964623081324">Search + O, त्यानंतर S. इंस्टॉल करण्यासाठी, व्यवस्थापित करण्यासाठी आणि व्हॉइस कस्टमाइझ करण्यासाठी वापरा.</translation>
 <translation id="3009779501245596802">अनुक्रमित डेटाबेस</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Your passwords look strong}=1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
@@ -3411,7 +3410,6 @@
 <translation id="3396442984945202128">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="3396800784455899911">"स्वीकारा आणि सुरू ठेवा" या बटणावर क्लिक करून तुम्ही या Google सेवांसाठी वर वर्णन केलेल्या प्रक्रियांना सहमती दर्शवता.</translation>
 <translation id="339722927132407568">थांबतो</translation>
-<translation id="3398899528308712018">टॅब गटासंबंधित सूचना</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - हस्तक्षेप केला</translation>
 <translation id="3401484564516348917">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, नोंदणी मूल्ये आणि फाइल याविषयीची माहिती वाचा</translation>
@@ -4839,7 +4837,6 @@
 <translation id="4386604394450371010">अवलोकन</translation>
 <translation id="4387890294700445764">धोक्यात असलेले पासवर्ड</translation>
 <translation id="4388650384344483842">किमान आठ वर्ण वापरा</translation>
-<translation id="4389091756366370506">वापरकर्ता <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉन्फिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
 <translation id="4392896746540753732">कॉन्फिगरेशन फाइल संपादित करा</translation>
@@ -5574,7 +5571,6 @@
 <translation id="4906679076183257864">डीफॉल्टवर रीसेट करा</translation>
 <translation id="4907129260985716018">हे एक्स्टेंशन तुमचा साइट डेटा केव्हा वाचू आणि बदलू शकेल ते निवडा</translation>
 <translation id="4908811072292128752">एकाच वेळी दोन साइट ब्राउझ करण्यासाठी एक नवीन टॅब उघडा</translation>
-<translation id="4909038193460299775">हे खाते <ph name="DOMAIN" /> ने व्यवस्थापित केले असल्याने, तुमचे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज या डिव्हाइस वरून साफ केल्या जातील. तथापि, तुमचा डेटा आपल्या Google खात्यामध्ये संचयित केलेला असेल आणि <ph name="BEGIN_LINK" />Google डॅशबोर्ड<ph name="END_LINK" /> वर व्यवस्थापित केला जाऊ शकतो.</translation>
 <translation id="4910241725741323970">अ‍ॅप आधीच इंस्टॉल केले आहे</translation>
 <translation id="4912643508233590958">निष्क्रियता समाप्त करणे</translation>
 <translation id="4913209098186576320">ही फाइल धोकादायक असू शकते<ph name="LINE_BREAK" />या तपासणीसाठी नेहमीपेक्षा जास्त वेळ लागत आहे...</translation>

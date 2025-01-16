@@ -2031,6 +2031,8 @@ source_set("browser") {
     "security/coop/cross_origin_opener_policy_reporter.h",
     "security/coop/cross_origin_opener_policy_status.cc",
     "security/coop/cross_origin_opener_policy_status.h",
+    "security/dip/document_isolation_policy_reporter.cc",
+    "security/dip/document_isolation_policy_reporter.h",
     "service_process_host_impl.cc",
     "service_worker/embedded_worker_instance.cc",
     "service_worker/embedded_worker_instance.h",

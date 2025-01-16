@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">This means that Chromium will request the desktop site every time.</translation>
 <translation id="2270466829363945454">Shop</translation>
 <translation id="2313870531055795960">Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.</translation>
+<translation id="2314220608288760290">Chromium automatically opens YouTube Incognito links in Incognito.</translation>
 <translation id="231828342043114302">To receive personalised content based on your interests, sign in to Chromium.</translation>
 <translation id="2326738825692478496">Some of your Chromium data hasn't been saved in your Google Account yet.
 
@@ -284,6 +285,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>
 <translation id="8254729934443216898">Explore new features that help you get the most out of Chromium.</translation>
 <translation id="829047622686389424">A custom feed made for you.</translation>
+<translation id="8293572045658095405">You're in Chromium Incognito</translation>
 <translation id="830951810931292870">Opens the inputted URLs in Chromium in Incognito.</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>

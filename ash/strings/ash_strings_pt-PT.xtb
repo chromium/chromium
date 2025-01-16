@@ -1157,7 +1157,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4902797682482387055">Tarefa sugerida em que se deve concentrar</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
-<translation id="4911191962826748981">Esta é uma funcionalidade de IA experimental e nem sempre acerta.</translation>
 <translation id="491504982845934899">Ativar <ph name="NETWORK_NAME" /> após a configuração do dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -2025,7 +2024,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">A opção Gosto envia feedback a indicar que gosta desta sugestão</translation>
 <translation id="7825412704590278437">De um evento de calendário futuro</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Pode personalizar as ações dos botões, a velocidade do cursor e muito mais para o seu <ph name="PERIPHERAL_NAME" /></translation>
@@ -2117,6 +2115,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8051716679295756675">O modelo denominado <ph name="DESK_TEMPLATE_NAME" /> já existe</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
+<translation id="8076492880354921740">Separadores</translation>
 <translation id="8079538659226626406">Partilha de ecrã</translation>
 <translation id="8083540854303889870">Guardados para mais tarde</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
 <translation id="8315514906653279104">A ativar…</translation>
-<translation id="8319634750346253957">A opção Não gosto envia feedback a indicar que não gosta desta sugestão</translation>
 <translation id="8331351032546853669">Transferência pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

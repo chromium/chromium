@@ -1153,6 +1153,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6160780110287872296">Télécharger le fichier?</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6168647875670665004">Articles suggérés</translation>
+<translation id="6169031022444660352">Pour supprimer tous les authentifiants enregistrés, vous devez d'abord configurer un mot de passe sur votre appareil.</translation>
 <translation id="6173499589275053515">Mot de passe enregistré dans votre compte Google, <ph name="EMAIL" /></translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
@@ -1204,6 +1205,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6355820205320395730">Les mots de passe faibles sont faciles à deviner. Assurez-vous de créer des mots de passe forts. <ph name="BEGIN_LINK" />Consultez plus d'astuces de sécurité.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Suivre <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Choisissez un moteur de recherche dans la liste.</translation>
+<translation id="6368102751067608420">Pour supprimer toutes les données du gestionnaire de mots de passe</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6387994324662817823">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil uniquement.</translation>
 <translation id="6404422529625928907">Ouvrir dans Google Disque</translation>

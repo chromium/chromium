@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">পরের ব্যবহারকারীতে সুইচ করুন</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">স্ক্রিন রেকর্ড করার কাজ সম্পূর্ণ হয়েছে</translation>
+<translation id="1956087014741188812">মাউস কী পজ করুন</translation>
 <translation id="1957958912175573503">আপনার ভাষা সেট করুন</translation>
 <translation id="1961239773406905488">ক্যামেরা প্রিভিউ লুকানো আছে</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">ডিভাইসগুলির জন্য স্ক্যান করা হচ্ছে...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ডাউনলোড করার সময় কিছু সমস্যা হয়েছে</translation>
 <translation id="2258734398699965611">সাজেস্ট করা ফাইল</translation>
+<translation id="2266607665880926261">মাউস কী পজ করা হয়েছে</translation>
 <translation id="2268130516524549846">ব্লুটুথ অক্ষমিত</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" />টি ধাপের মধ্যে <ph name="STEP" /> নম্বর ধাপ। একবার লঞ্চার চালু করা হলে, আপনি একটি উন্নত সার্চবার পাবেন। আপনার ফাইল, অ্যাপ ও আরও অনেক কিছুর জন্য সার্চ করতে টাইপ করা শুরু করে দেখতে পারেন। এছাড়াও আপনার <ph name="PRODUCT_NAME" /> সম্পর্কে প্রশ্নের উত্তর পেতে পারবেন।</translation>
 <translation id="2268813581635650749">সবগুলি থেকে সাইন-আউট</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">স্ক্রিনে জুম-ইন করুন</translation>
 <translation id="2878884018241093801">কোনও সাম্প্রতিক আইটেম নেই</translation>
 <translation id="2880541185262491188">অনেকবার ভুল পিন লিখেছেন। <ph name="TIME_LEFT" /> অপেক্ষা করে আবার চেষ্টা করুন</translation>
+<translation id="2883271196820422439">মাউস কী আবার চালু করুন</translation>
 <translation id="2885950158625301909">আরও জানুন</translation>
 <translation id="2891209721153296020">"বাদ দিন"</translation>
 <translation id="2894949423239620203">কেবেলের মাধ্যমে কানেক্ট করা থাকলে পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> হটস্পট</translation>
 <translation id="3540893133818942399">আপনার ফোনের সাম্প্রতিক ফটো ও মিডিয়া দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="3542066395059568317">আপনি সাজেশন দেখতে পাবেন যাতে যেখানে শেষ কাজ করেছিলেন সেখান থেকেই আবার শুরু করতে পারেন। সাজেশন সরিয়ে দেওয়ার জন্য আপনি ডানদিকের বোতামে ক্লিক করতে পারেন।</translation>
+<translation id="3545224667633138205">মাউস কী আবার চালু করা হয়েছে</translation>
 <translation id="3552189655002856821">ওয়াই-ফাই বন্ধ করা আছে</translation>
 <translation id="3554215588514239132">ডেভেলপার টুল প্যানেল দেখান বা লুকান</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> পিন করা হয়েছে</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">আইটেম লোড করা যায়নি। অনলাইন থাকাকালীন আবার চেষ্টা করে দেখুন।</translation>
 <translation id="3735740477244556633">এই অনুসারে সাজান</translation>
 <translation id="3738664582935948253">আপনি এখন স্ক্রিন রেকর্ডিংয়ে ক্লিক এবং কীবোর্ড শর্টকাট দেখাতে পারেন</translation>
+<translation id="3741482431277446954">মাউসের ডানদিকের বোতাম</translation>
 <translation id="3742055079367172538">স্ক্রিনশট নেওয়া হয়েছে</translation>
 <translation id="3743775386021959186">ফোকাস মোড চালু আছে, <ph name="REMAINING_TIME" /> বাকি রয়েছে</translation>
 <translation id="3750403286520637847">আবহাওয়া সম্পর্কিত সাজেশন লুকান</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">ফোকাস করতে হবে এমন সাজেস্ট করা টাস্ক</translation>
 <translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="490788395437447240">ব্যাটারিতে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>
-<translation id="4911191962826748981">এটি হল পরীক্ষামূলক AI ফিচার এবং সব সময় সঠিক তথ্য দেবে না।</translation>
 <translation id="491504982845934899">ডিভাইস সেট-আপ করার পরে চালু করুন<ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4918086044614829423">স্বীকার</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">স্ক্রিনশট</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> খুলুন</translation>
 <translation id="7119327711295338600">পরবর্তী শব্দ অথবা অক্ষর বেছে নিন</translation>
+<translation id="7124556000457919678">এটি চালু করলে মাউস কী পজ করুন এবং আবার চালু করুন</translation>
 <translation id="7126996685418858413">গত সপ্তাহে খোলা হয়েছে</translation>
 <translation id="7130207228079676353">সবথেকে বেশি সম্ভাবনা</translation>
 <translation id="7131634465328662194">আপনি নিজে থেকেই সাইন-আউট হয়ে যাবেন।</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="7219573373513695352">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">মাউসের দুদিকের বোতাম</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ব্যাটারির চার্জ রয়েছে।
 ডিভাইসটি চার্জে বসান।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। একটি আপডেট প্রয়োগ করতে Chromebook রিস্টার্ট করতে হবে। এতে ১ মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
@@ -2019,7 +2025,6 @@
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7807067443225230855">সার্চ এবং সহায়ক</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> এবং <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">'থাম্বস-আপ' আইকন বেছে নেওয়ার অর্থ হল, আপনি এই সাজেশন পছন্দ করেছেন</translation>
 <translation id="7825412704590278437">আসন্ন ক্যালেন্ডার ইভেন্ট থেকে</translation>
 <translation id="7829386189513694949">জোরালো সিগন্যাল</translation>
 <translation id="7830453190047749513">আপনি নিজের জন্য বোতামের অ্যাকশন, কার্সরের স্পিড ও আরও অনেক কিছু পছন্দমতো কাস্টমাইজ করতে পারবেন <ph name="PERIPHERAL_NAME" /></translation>
@@ -2111,6 +2116,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
+<translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8079538659226626406">স্ক্রিন শেয়ার করা</translation>
 <translation id="8083540854303889870">পরবর্তী সময়ের জন্য সেভ করুন</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2151,6 +2157,7 @@
 <translation id="8203224998425013577">আরও ইমোজি ও GIF দেখুন</translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="8205469348819768313">পেজ ডাউন কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
+<translation id="8213376797713070611">মাউসের বাঁদিকের বোতাম</translation>
 <translation id="8214996719228530800">ক্যানারি চ্যানেল</translation>
 <translation id="8219451629189078428">এই সময়ে আপনার Chromebook চালু অবস্থায় থাকতে হবে ও সেটি চার্জে বসিয়ে রাখতে হবে। আপনার Chromebook ও প্লাগ পয়েন্ট, উভয়ের সাথে চার্জার বা অ্যাডাপ্টার কেবল ঠিকমতো প্লাগ-ইন করা আছে কিনা তা দেখে নিন। আপনার Chromebook বন্ধ করবেন না।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> যোগ করুন</translation>
@@ -2175,7 +2182,6 @@
 <translation id="830868413617744215">বিটা</translation>
 <translation id="8314772463905284467">Caps Lock চালু</translation>
 <translation id="8315514906653279104">চালু করা হচ্ছে…</translation>
-<translation id="8319634750346253957">'থাম্বস-ডাউন' আইকন বেছে নেওয়ার অর্থ হল, আপনি এই সাজেশন পছন্দ করেননি</translation>
 <translation id="8331351032546853669">ডাউনলোড করা বাকি আছে</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2376,6 +2382,7 @@
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> নেটওয়ার্কের জন্য সেটিংস খুলুন</translation>
 <translation id="9050012935252397793">ব্লুটুথ উপলভ্য নেই</translation>
+<translation id="9050999376345823055">রিলিজ করতে "." প্রেস করুন</translation>
 <translation id="906458777597946297">উইন্ডো বৃহদায়ন করুন</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9070640332319875144">অ্যাসিস্ট্যান্ট সেটিংস</translation>

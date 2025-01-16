@@ -359,7 +359,7 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
 
 bool ReadingListSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  CHECK(entity_data.specifics.ByteSize() != 0);
+  CHECK(entity_data.specifics.ByteSizeLong() != 0);
 
   return ReadingListEntry::IsSpecificsValid(
       entity_data.specifics.reading_list());

@@ -335,6 +335,7 @@
 <translation id="1219219114431716687">ทาร์ตผลไม้</translation>
 <translation id="122082903575839559">อัลกอริธึมลายเซ็นใบรับรอง </translation>
 <translation id="1221024147024329929">PKCS #1 MD2 พร้อมการเข้ารหัส RSA</translation>
+<translation id="1221266967850882682">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="1221825588892235038">เนื้อหาที่เลือกเท่านั้น</translation>
 <translation id="1222835797152767346">ตั้ง PIN เพื่อให้ลงชื่อเข้าใช้ได้ง่ายขึ้น</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ต้องมีใบอนุญาต</translation>
@@ -2890,7 +2891,6 @@
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi วันนี้เพื่อดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}other{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi และดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}}</translation>
 <translation id="3009178788565917040">เอาต์พุต</translation>
-<translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009352964623081324">ค้นหา + O ตามด้วย S ใช้เพื่อติดตั้ง จัดการ และปรับแต่งเสียง</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{รหัสผ่านของคุณดูรัดกุมดี}=1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
@@ -3397,7 +3397,6 @@
 <translation id="3396442984945202128">ยืนยันว่าเป็นคุณ</translation>
 <translation id="3396800784455899911">การคลิกปุ่ม "ยอมรับและดำเนินการต่อ" แสดงว่าคุณยอมรับการดำเนินการของบริการต่างๆ ของ Google ตามที่ชี้แจ้งไว้ด้านบน</translation>
 <translation id="339722927132407568">ค้าง</translation>
-<translation id="3398899528308712018">คำแนะนำกลุ่มแท็บ</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> เฮิรตซ์) - อินเตอร์เลซ</translation>
 <translation id="3401484564516348917">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง ค่ารีจิสทรี และไฟล์</translation>
@@ -4827,7 +4826,6 @@
 <translation id="4386604394450371010">ภาพรวม</translation>
 <translation id="4387890294700445764">รหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="4388650384344483842">ใช้อักขระอย่างน้อย 8 ตัว</translation>
-<translation id="4389091756366370506">ผู้ใช้ <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อื่นๆ อีก <ph name="NUMBER_OF_OTHER_SWITCHES" /> รายการ</translation>
 <translation id="439266289085815679">การกำหนดค่าบลูทูธควบคุมโดย <ph name="USER_EMAIL" /></translation>
 <translation id="4392896746540753732">แก้ไขไฟล์การกำหนดค่า</translation>
@@ -5561,7 +5559,6 @@
 <translation id="4906679076183257864">รีเซ็ตเป็นค่าเริ่มต้น</translation>
 <translation id="4907129260985716018">เลือกว่าส่วนขยายนี้จะอ่านและเปลี่ยนแปลงข้อมูลเว็บไซต์ของคุณได้เมื่อใดบ้าง</translation>
 <translation id="4908811072292128752">เปิดแท็บใหม่เพื่อเรียกดูไซต์ 2 ไซต์พร้อมกัน</translation>
-<translation id="4909038193460299775">เนื่องจากบัญชีนี้มีการจัดการโดย <ph name="DOMAIN" /> บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะถูกล้างออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
 <translation id="4910241725741323970">ติดตั้งแอปแล้ว</translation>
 <translation id="4912643508233590958">ไม่ใช้งานการปลุก</translation>
 <translation id="4913209098186576320">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />การตรวจสอบนี้ใช้เวลานานกว่าปกติ...</translation>

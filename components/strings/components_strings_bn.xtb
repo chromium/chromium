@@ -704,6 +704,7 @@
 <translation id="2215539479425228550">আরোহণ এবং পর্বতারোহণ</translation>
 <translation id="2215727959747642672">ফাইল এডিট করা</translation>
 <translation id="2215963164070968490">কুকুর</translation>
+<translation id="2219376942605837404">তুলনা সম্পর্কিত সারণীতে ট্যাব যোগ করুন</translation>
 <translation id="2219658597883514593">আবার টিউটোরিয়াল শুরু করুন</translation>
 <translation id="2219735899272417925">ডিভাইস রিসেট করতে হবে</translation>
 <translation id="2221227930294879156">খাবার ও পানীয় সম্পর্কিত ইভেন্ট</translation>
@@ -1154,6 +1155,7 @@
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3067505415088964188">দাম কম</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ মিনিটে শুরু হবে</translation>
+<translation id="3068976060094139647">আপনার অ্যাকাউন্ট Google Pay-এর সাথে লিঙ্ক করা আছে তাই এই কার্ড অটোফিল করতে পারবেন।</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS}টি আইটেম}one{{ITEMS}টি আইটেম}other{{ITEMS}টি আইটেম}}</translation>
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
@@ -1790,6 +1792,7 @@
 <translation id="4151403195736952345">গ্লোবাল ডিফল্ট (শনাক্ত করুন) ব্যবহার করুন</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{১ নম্বর পৃষ্ঠা}one{{COUNT} নম্বর পৃষ্ঠা}other{{COUNT} নম্বর পৃষ্ঠা}}</translation>
 <translation id="4154277373259957087">Chrome এখন পেমেন্ট পদ্ধতি পূরণ করার আগে আপনার পরিচয় যাচাই করবে। আপনি যেকোনও সময় <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> থেকে এটি পরিবর্তন করতে পারেন।</translation>
+<translation id="415440494507469262">তুলনা সম্পর্কিত সারণীতে ট্যাব যোগ করুন</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4165422751765527461">নতুন ট্যাবে সহায়তা কেন্দ্র আর্টিকেল খোলে</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
@@ -3395,6 +3398,7 @@
 <translation id="706960991003274248">তুলনা করা টেবিল আপনার অ্যাকাউন্টের <ph name="EMAIL" /> আইডিতে সেভ করা হয়েছে</translation>
 <translation id="7070144569727915108">সিস্টেম সেটিংস</translation>
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
+<translation id="7071122206197538392">তুলনা সম্পর্কিত নতুন সারণী</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4106,6 +4110,7 @@
 <translation id="8298115750975731693">আপনি যে (<ph name="WIFI_NAME" />) Wi-Fiটি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> তে যেতে হতে পারে৷</translation>
 <translation id="8301894345671534559">কোড লিখুন</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" বিভাগ দেখানো হয়েছে</translation>
+<translation id="8304912090860925649">তুলনা সম্পর্কিত নতুন সারণী</translation>
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>
 <translation id="8308653357438598313">লাইভ ভিডিও স্ট্রিমিং</translation>
 <translation id="8311895354659782580">রিয়েল এস্টেটের তালিকা</translation>

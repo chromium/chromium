@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Префрлете на следниот корисник</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954252331066828794">Снимањето на екранот заврши</translation>
+<translation id="1956087014741188812">Паузирај ја „Копчиња за глувче“</translation>
 <translation id="1957958912175573503">Поставете го вашиот јазик</translation>
 <translation id="1961239773406905488">Скриен е преглед на камерата</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Скенирање за уреди...</translation>
 <translation id="2257486738914982088">Нешто тргна наопаку при преземањето на <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Предложени датотеки</translation>
+<translation id="2266607665880926261">„Копчиња за глувче“ е паузирана</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2268731132310444948">Чекор <ph name="STEP" /> од <ph name="TOTAL_STEPS" />. Штом ќе се активира „Стартерот“, ќе добиете подобрено поле за пребарување. Може да започнете со пишување за да ги пребарате вашите датотеки, апликации и друго. Може и да добиете одговори на прашањата за вашиот уред <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Одјави се од сите</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Зумирање на екранот</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
 <translation id="2880541185262491188">Премногу обиди за автентикација со PIN. Почекајте <ph name="TIME_LEFT" /> и обидете се повторно</translation>
+<translation id="2883271196820422439">Продолжи ја „Копчиња за глувче“</translation>
 <translation id="2885950158625301909">Дознајте повеќе</translation>
 <translation id="2891209721153296020">„Поништи избор“</translation>
 <translation id="2894949423239620203">Кабелот може да влијае врз изведбата</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">Точка на пристап на <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Отфрлете го поставувањето прегледување на неодамнешните фотографии и аудиовизуелни содржини на телефонот</translation>
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
+<translation id="3545224667633138205">„Копчиња за глувче“ е продолжена</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554215588514239132">Ја прикажува или ја сокрива таблата со „Програмерски алатки“</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Ставките не можеше да се вчитаат. Обидете се повторно кога ќе бидете онлајн.</translation>
 <translation id="3735740477244556633">Подреди по</translation>
 <translation id="3738664582935948253">Сега може да ги прикажувате кликнувањата и кратенките од тастатура во снимките од екранот</translation>
+<translation id="3741482431277446954">Десно копче на глувчето</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
 <translation id="3743775386021959186">„Режимот за концентрација“ е вклучен, преостанато време: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Скриј го предлогот за време</translation>
@@ -1153,7 +1158,6 @@
 <translation id="4902797682482387055">Предложена задача на којашто може да се фокусирате</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
-<translation id="4911191962826748981">Ова е експериментална AI-функција, па нема секогаш да прикажува точни информации.</translation>
 <translation id="491504982845934899">Активирајте <ph name="NETWORK_NAME" /> по поставувањето на уредот</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Прифати</translation>
@@ -1829,6 +1833,7 @@
 <translation id="7118268675952955085">слика од екранот</translation>
 <translation id="7118597077555700347">Отворете го резултатот <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Го избира следниот збор или буква</translation>
+<translation id="7124556000457919678">Кога е вклучена, паузирај или продолжи ја „Копчиња за глувче“</translation>
 <translation id="7126996685418858413">Отворено во изминатата седмица</translation>
 <translation id="7130207228079676353">ВЕРОЈАТНО ЌЕ ГИ КЛИКНЕТЕ</translation>
 <translation id="7131634465328662194">Автоматски ќе ве одјавиме.</translation>
@@ -1850,6 +1855,7 @@
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="7219573373513695352">Не се поврзани уреди</translation>
 <translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Двете копчиња на глувчето</translation>
 <translation id="7244725679040769470">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата. Приклучете го уредот во струја.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2019,7 +2025,6 @@
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">„Ми се допаѓа“ ќе ги испрати повратните информации дека ви се допаѓа предлогов</translation>
 <translation id="7825412704590278437">Од претстоен настан во календарот</translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7830453190047749513">Може да ги персонализирате дејствата за копчињата, брзината на курсорот и друго за вашиот уред <ph name="PERIPHERAL_NAME" /></translation>
@@ -2111,6 +2116,7 @@
 <translation id="8051716679295756675">Веќе постои шаблон со име <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Копирано во привремената меморија</translation>
 <translation id="8054466585765276473">пресметување време на батерија.</translation>
+<translation id="8076492880354921740">Картички</translation>
 <translation id="8079538659226626406">Споделување екран</translation>
 <translation id="8083540854303889870">Зачувани за подоцна</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2151,6 +2157,7 @@
 <translation id="8203224998425013577">Прикажи повеќе емоџија и GIF-датотеки</translation>
 <translation id="8203795194971602413">Десен клик</translation>
 <translation id="8205469348819768313">Се обидувате да го искористите копчето Page Down? Користете</translation>
+<translation id="8213376797713070611">Лево копче на глувчето</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8220076512072059941">Додај <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2175,7 +2182,6 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
-<translation id="8319634750346253957">„Не ми се допаѓа“ ќе ги испрати повратните информации дека не ви се допаѓа предлогов</translation>
 <translation id="8331351032546853669">Преземање на чекање</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -2376,6 +2382,7 @@
 <translation id="9034924485347205037">Датотеки на Linux</translation>
 <translation id="9047624247355796468">Отвори поставки за <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth е недостапен</translation>
+<translation id="9050999376345823055">Притиснете „.“ за да отпуштите</translation>
 <translation id="906458777597946297">Максимизирај прозорец</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9070640332319875144">Поставки за „Помошникот“</translation>

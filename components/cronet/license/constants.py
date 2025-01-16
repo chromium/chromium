@@ -84,8 +84,7 @@ POST_PROCESS_OPERATION = {
     "third_party/boringssl/src/pki/testdata/nist-pkits/README.chromium": create_license_post_processing(
         Mapper("License", [
             'Public Domain: United States Government Work under 17 U.S.C. 105'],
-               ["unencumbered"]),
-        Mapper("License File", "", "N/A")),
+               ["unencumbered"])),
 }
 
 # This is relative to the repo_directory passed in |update_license|

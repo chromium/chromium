@@ -66,6 +66,7 @@
 #include "content/browser/renderer_host/transient_focus_source_user_activation.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
+#include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -5107,6 +5108,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::TimeTicks last_xr_overlay_setup_time_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
   CrossOriginOpenerPolicyAccessReportManager coop_access_report_manager_;
 
   // https://github.com/camillelamy/explainers/blob/master/coop_reporting.md#virtual-browsing-context-group-id

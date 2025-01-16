@@ -160,6 +160,7 @@
 <translation id="1101254380285078812">{COUNT,plural, =1{1 የይለፍ ቃል}one{{COUNT} የይለፍ ቃል}other{{COUNT} የይለፍ ቃላት}}</translation>
 <translation id="1102759278139578486">የዋና አንጓ ማብራሪያ ፋይሎችን ማውረድ አልተቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
+<translation id="1104098698795583187">ለዚህ የትር ቡድን ያለዎትን መዳረሻ ወዲያውኑ ያጣሉ እና ከሁሉም መሣሪያዎችዎ ላይ ይሰረዛል</translation>
 <translation id="1106350001632362876">መባቻ ጨምር</translation>
 <translation id="1107482171728500359">ማይክሮፎንን ያጋሩ</translation>
 <translation id="110850812463801904">በእጅ ወደ OneDrive ይገናኙ</translation>
@@ -1700,6 +1701,7 @@
 <translation id="2173302385160625112">የበይነመረብ ግኑኝነትዎን ይፈትሹ</translation>
 <translation id="2173801458090845390">የማግኛ መታወቂያ ወደዚህ መሣሪያ ያክሉ</translation>
 <translation id="2175384018164129879">የ&amp;ፍለጋ ፕሮግራሞችን እና የጣቢያ ፍለጋን ያቀናብሩ</translation>
+<translation id="2175526076681939329">ዋና ቁልፎችን ይጠቀሙ</translation>
 <translation id="217576141146192373">አታሚን ማከል አልተቻለም። የእርስዎን አታሚ ውቅረት እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="2175927920773552910">የQR ኮድ</translation>
 <translation id="217631816678106981">አትለጥፍ</translation>
@@ -2897,7 +2899,6 @@
 <translation id="3008272652534848354">ፈቃዶችን ዳግም ያቀናብሩ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ዝማኔን ለማውረድ ዛሬ ከWi-Fi ጋር እንዲገናኙ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}one{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}other{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}}</translation>
 <translation id="3009178788565917040">ውጽዓት</translation>
-<translation id="3009300415590184725">እርግጠኛ ነዎት የተንቀሳቃሽ ስልክ ውሂብ አገልግሎት የማዋቀር ሂደቱን ይቅር ማለት ይፈልጋሉ?</translation>
 <translation id="3009352964623081324">+ O፣ ከዚያ Sን ይፈልጉ። ድምፆችን ለመጫን፣ ለማቀናበር እና ብጁ ለማድረግ ይጠቀሙ።</translation>
 <translation id="3009779501245596802">በመረጃ ጠቋሚ የተሰናዱ የውሂብ ጎታዎች</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{ሲታዩ የእርስዎ የይለፍ ቃላት ጠንካራ ይመስላሉ}=1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃላት}}</translation>
@@ -3406,7 +3407,6 @@
 <translation id="3396442984945202128">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="3396800784455899911">የ«እስማማለሁ እና ቀጥል» አዝራርን ጠቅ በማድረግ ለእነዚህ የGoogle አገልግሎቶች ከላይ በተብራራው ማስሄድ መስማማትዎን ያረጋግጣሉ።</translation>
 <translation id="339722927132407568">ይረጋል</translation>
-<translation id="3398899528308712018">የትር ቡድን ጥቆማ</translation>
 <translation id="3399432415385675819">ማሳወቂያዎች ይሰናከላሉ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - የተጠላለፈ</translation>
 <translation id="3401484564516348917">ስለ የእርስዎ አሳሽ፣ ስርዓተ ክወና፣ መሣሪያ፣ የተጫነ ሶፍትዌር፣ የምዝገባ እሴቶች እና ፋይሎች መረጃ ያንብቡ</translation>
@@ -3422,6 +3422,7 @@
 <translation id="3407392651057365886">ተጨማሪ ገጾች ቅድሚያ ይጫናሉ። ገጾች በሌሎች ጣቢያዎች ሲጠየቁ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="3407967630066378878">የጣት አሻራን ለማዋቀር ከዚህ <ph name="DEVICE_TYPE" /> በግራ-እጅ በኩል የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነኩት ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
 <translation id="3408555740610481810">ካሜራ እና ማይክሮፎን በጥቅም ላይ ናቸው</translation>
+<translation id="3409157109901479672">የግራ ጎን</translation>
 <translation id="3409513286451883969">&amp;ምርጫዎችን ወደ <ph name="LANGUAGE" /> ይተርጉሙ</translation>
 <translation id="3412265149091626468">ወደ ተመረጠው ዝለል</translation>
 <translation id="3413122095806433232">CA ሰጪዎች፦ <ph name="LOCATION" /></translation>
@@ -4705,6 +4706,7 @@
 <translation id="4290826901752066702"><ph name="NUM" /> አባል</translation>
 <translation id="4290898381118933198">በገጾች መካከል ለማሰስ ያንሸራትቱ</translation>
 <translation id="4291265871880246274">የመግቢያ መገናኛ</translation>
+<translation id="4292613336957320546">ማፍጠኛ</translation>
 <translation id="429312253194641664">አንድ ጣቢያ ሚዲያን በማጫወት ላይ ነው</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> ከአውርድ ታሪክ ተሰርዟል፣ ነገር ግን አሁንም በመሣሪያዎ ላይ ይገኛል</translation>
 <translation id="4295072614469448764">መተግበሪያ በእርስዎ መን There may also be an icon in your Launcher.</translation>
@@ -4832,7 +4834,6 @@
 <translation id="4386604394450371010">አጠቃላይ ዕይታ</translation>
 <translation id="4387890294700445764">የተጠለፉ የይለፍ ቃላት</translation>
 <translation id="4388650384344483842">ቢያንስ 8 ቁምፊዎችን ይጠቀሙ</translation>
-<translation id="4389091756366370506">ተጠቃሚ <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" />፣ <ph name="THIRD_SWITCH" /> እና <ph name="NUMBER_OF_OTHER_SWITCHES" /> ተጨማሪ ማብሪያ ማጥፊያዎች</translation>
 <translation id="439266289085815679">የብሉቱዝ ውቅረትን የሚቆጣጠሩት <ph name="USER_EMAIL" /> ናቸው።</translation>
 <translation id="4392896746540753732">የውቅረት ፋይሉን ያርትዑ</translation>
@@ -5567,7 +5568,6 @@
 <translation id="4906679076183257864">ወደ ነባሪ ዳግም አስጀምር</translation>
 <translation id="4907129260985716018">ይህ ቅጥያ የጣቢያዎን ውሂብ ማንበብ እና መለወጥ በሚችልበት ጊዜ ይምረጡ</translation>
 <translation id="4908811072292128752">በአንዴ ሁለት ጣቢያዎችን ለማሰስ አዲስ ትር ይክፈቱ</translation>
-<translation id="4909038193460299775">ይህ መለያ የሚቀናበረው በ<ph name="DOMAIN" /> ስለሆነ የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ከዚህ መሣሪያ ይጸዳሉ። ይሁንና፣ የእርስዎ ውሂብ በGoogle መለያ ላይ እንዳለ የሚቀር ሲሆን በ<ph name="BEGIN_LINK" />Google ዳሽቦርድ<ph name="END_LINK" /> ላይ መቀናበር ይችላል።</translation>
 <translation id="4910241725741323970">መተግበሪያው አስቀድሞ ተጭኗል</translation>
 <translation id="4912643508233590958">ከመቦዘን ማንቂያዎች</translation>
 <translation id="4913209098186576320">ይህ ፋይል አደገኛ ሊሆን ይችላል<ph name="LINE_BREAK" />ይህ ፍተሻ ከተለመደው በላይ ጊዜ እየወሰደ ነው...</translation>
@@ -5873,6 +5873,7 @@
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />፣ <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> ፍለጋ</translation>
 <translation id="5139823398361067371">የደህንነት ቁልፍዎን ፒን ያስገቡ። ፒኑን የማያውቁት ከሆነ የደህንነት ቁልፉን ዳግም ማቀናበር አለብዎት።</translation>
 <translation id="5139955368427980650">&amp;ክፈት</translation>
+<translation id="5140742218917419811">የሚጠቀሟቸው ቁልፎች</translation>
 <translation id="5141421572306659464">ዋና መለያ</translation>
 <translation id="5141957579434225843">ለምሳሌ፣ ከ òa, òe, ùy ይልቅ oà, oè, uỳ ይጠቀሙ</translation>
 <translation id="5143374789336132547">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የመነሻ አዝራሩን ጠቅ ሲያደርጉ የሚታየውን ገፅ ቀይሮታል።</translation>
@@ -5891,6 +5892,7 @@
 <translation id="5149602533174716626">የቪዲዮ ፍሬም ቅ&amp;ዳ</translation>
 <translation id="5150254825601720210">የNetscape ሰርቲፊኬት SSL አገልጋይ ስም</translation>
 <translation id="5151354047782775295">የዲስክ ቦታ ያስለቅቁ፣ አለበለዚያ የተመረጠ ውሂብ በራስ-ሰር ሊሰርዝ ይችላል</translation>
+<translation id="5153074793829217329">የመዳፊት ጠቋሚዎን ለመቆጣጠር የቁልፍ ሰሌዳ ወይም አሃዛዊ ቁልፍ ሰሌዳዎን ይጠቀሙ</translation>
 <translation id="5153234146675181447">ስልክን እርሳ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">የላቁ የ<ph name="PRINTING_DESTINATION" /> ቅንብሮች</translation>
@@ -7985,6 +7987,7 @@
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ወደ ኮምፒዩተሩ እንዲመጡ ይጠይቁ። የልጅዎን የድምጽ ሞዴል ለመፍጠር ልጅዎ በዚህ ማያ ገፅ ላይ ጥቂት ሐረጎችን ያነብባሉ።
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> በንባብ ላይ እገዛ ከፈለጉ ልጅዎ ከእርስዎ በኋላ እንዲደግሙት ያድርጉ። ረዳቱ ከእርስዎ ይልቅ የልጅዎን ድምፅ እንዲማር ከማይክሮፎኑ ራቅ ብለው ያንሾካሹኩ።</translation>
+<translation id="6689948774466767379">የመዳፊት ቁልፎች</translation>
 <translation id="6690659332373509948">ይህን ፋይል መተንተን አልተቻለም፦ <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ወደ ፊት</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ገፅ}one{{COUNT} ገጾች}other{{COUNT} ገጾች}}</translation>
@@ -10077,6 +10080,7 @@ nil</translation>
 <translation id="8168435359814927499">ይዘት</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ትርን ወደ ንባብ ዝርዝር ያክሉ}one{ትሮችን ወደ ንባብ ዝርዝር ያክሉ}other{ትሮችን ወደ ንባብ ዝርዝር ያክሉ}}</translation>
 <translation id="8169177848833352618">እንዳለመታደል ሆኖ ይህ ማሽን Bruschetta የመጫን መስፈርቶችን አያሟላም። የስሕተት ኮድ <ph name="ERROR" /> ነው።</translation>
+<translation id="8172303073969862496">የቀኝ ጎን</translation>
 <translation id="8174047975335711832">የመሣሪያ መረጃ</translation>
 <translation id="8176332201990304395">ሮዝ እና ነጭ</translation>
 <translation id="8176529144855282213">የማይክሮፎን መዳረሻን ለማብራት በመሣሪያዎ ላይ ያለውን አካላዊ የማይክሮፎን ማብሪያ/ማጥፊያ ያብሩ</translation>

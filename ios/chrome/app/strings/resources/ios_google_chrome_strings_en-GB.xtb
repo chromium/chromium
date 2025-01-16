@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1066101356081285416">Chrome will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Google to provide this feature and to improve Google Shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />Package tracking settings<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome automatically opens YouTube Incognito links in Incognito.</translation>
 <translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Open new tab in Chrome</translation>
@@ -126,6 +127,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="4636900170638246267">Sign in to this site and Chrome.</translation>
 <translation id="4646014602299206846">Chrome will detect parcel tracking numbers on sites that you visit and show you parcel updates on the new tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.</translation>
 <translation id="4647910807533196601">Open my latest tab in Chrome.</translation>
+<translation id="4693084815234024320">You're in Chrome Incognito</translation>
 <translation id="4724297637870447613">Use Chrome everywhere</translation>
 <translation id="4738647308035481133">Google Chrome page</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>

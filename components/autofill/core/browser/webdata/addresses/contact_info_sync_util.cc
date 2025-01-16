@@ -98,7 +98,7 @@ class EntryTokenDeleter {
     }
 
     token->clear_value();
-    return token->ByteSize() == 0;
+    return token->ByteSizeLong() == 0;
   }
 
  private:
@@ -106,7 +106,7 @@ class EntryTokenDeleter {
     metadata->clear_status();
     metadata->clear_observations();
     metadata->clear_value_hash();
-    return metadata->ByteSize() == 0;
+    return metadata->ByteSizeLong() == 0;
   }
 };
 

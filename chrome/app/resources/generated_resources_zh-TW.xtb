@@ -2611,7 +2611,7 @@
 <translation id="2801134910297796778">已登入 <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">螢幕大小</translation>
 <translation id="2802557211515765772">沒有受管理的印表機。</translation>
-<translation id="2802911274872454492">手勢設定：<ph name="SELECTED_GESTURE" /></translation>
+<translation id="2802911274872454492">表情設定：<ph name="SELECTED_GESTURE" /></translation>
 <translation id="2803313416453193357">開啟資料夾</translation>
 <translation id="2803719750464280163">請確認藍牙裝置「<ph name="DEVICE" />」上顯示的密碼金鑰為 <ph name="PASSKEY" />。</translation>
 <translation id="2804043232879091219">無法開啟替代瀏覽器</translation>
@@ -2890,7 +2890,6 @@
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}}</translation>
 <translation id="3009178788565917040">輸出</translation>
-<translation id="3009300415590184725">你確定要取消行動數據服務設定程序嗎？</translation>
 <translation id="3009352964623081324">搜尋鍵 + O 鍵，然後按下 S 鍵，用途是安裝、管理及自訂語音。</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{你的密碼強度夠高}=1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
@@ -3396,7 +3395,6 @@
 <translation id="3396442984945202128">驗證你的身分</translation>
 <translation id="3396800784455899911">點選 [接受並繼續] 按鈕即表示您同意上述的 Google 服務處理程序。</translation>
 <translation id="339722927132407568">畫面凍結</translation>
-<translation id="3398899528308712018">分頁群組建議</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
 <translation id="3401484564516348917">讀取瀏覽器、OS、裝置、已安裝的軟體、登錄值和檔案的相關資訊</translation>
@@ -3759,7 +3757,7 @@
 <translation id="3652181838577940678">點選觸控筆按鈕</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">網路檔案共用</translation>
-<translation id="3653227677390502622">回應式</translation>
+<translation id="3653227677390502622">靈敏</translation>
 <translation id="3653241190370117833">閒置分頁新外觀登場</translation>
 <translation id="3653887973853407813">你的家長或監護人已關閉 Chrome 的「網站、應用程式和擴充功能的權限」，因此你無法使用這個擴充功能。</translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取你的麥克風</translation>
@@ -4825,7 +4823,6 @@
 <translation id="4386604394450371010">總覽</translation>
 <translation id="4387890294700445764">遭外洩的密碼</translation>
 <translation id="4388650384344483842">請至少輸入 8 個半形字元</translation>
-<translation id="4389091756366370506">使用者 <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 <ph name="NUMBER_OF_OTHER_SWITCHES" /> 個按鍵</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔</translation>
@@ -4864,7 +4861,7 @@
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4413087696295876280">讀取 ChromeOS Flex 裝置資訊和資料</translation>
 <translation id="44137799675104237">聆聽以自然語音朗讀的文字</translation>
-<translation id="4414051792721275732">使用手勢點選時，滑鼠速度會降低，讓你更容易控制。請再次做出手勢來完成點擊動作。</translation>
+<translation id="4414051792721275732">使用表情點選時，滑鼠速度會降低，讓你更容易控制。請再次做出表情來完成點擊動作。</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="44141919652824029">要允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕視窗(&amp;I)</translation>
@@ -5559,7 +5556,6 @@
 <translation id="4906679076183257864">重設為預設值</translation>
 <translation id="4907129260985716018">選擇這項擴充功能何時可讀取及變更你的網站資料</translation>
 <translation id="4908811072292128752">開啟新分頁即可一次瀏覽兩個網站</translation>
-<translation id="4909038193460299775">這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將你的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。不過，你的資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="4910241725741323970">已安裝應用程式</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
 <translation id="4913209098186576320">這個檔案可能含有危險內容<ph name="LINE_BREAK" />這項檢查超出正常所需時間...</translation>
@@ -5671,7 +5667,7 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="4999804342505941663">開啟「零打擾」模式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
-<translation id="5003070249435823986">使用手勢進入捲動模式，然後將頭部轉向要捲動的方向。再次做出手勢即可退出捲動模式。</translation>
+<translation id="5003070249435823986">使用表情進入捲動模式，然後將頭部轉向要捲動的方向。再次做出表情即可退出捲動模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
@@ -6986,7 +6982,7 @@
 <translation id="5958836583172610505">同步功能已開啟</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="5959982036207776176">放大鏡跟隨「隨選朗讀」讀出的字詞</translation>
-<translation id="5961545272769624207">指派手勢</translation>
+<translation id="5961545272769624207">指派表情</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
@@ -7952,7 +7948,7 @@
 <translation id="6676212663108450937">訓練聲音時，建議你使用耳罩式耳機</translation>
 <translation id="6676291960742508499">你的分頁、網頁標題和網址會傳送給 Google</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 資訊...</translation>
-<translation id="6677527809400770913">已將「<ph name="GESTURE" />」手勢設為<ph name="ACTION" /></translation>
+<translation id="6677527809400770913">已將「<ph name="GESTURE" />」表情設為<ph name="ACTION" /></translation>
 <translation id="6678604587151240716">海上大浪噴濺，遠處背景可見陸地。在黑暗陰鬱的天空中，地平線上出現些微橘色光芒。</translation>
 <translation id="6678717876183468697">查詢網址</translation>
 <translation id="6679947539429331601">隱藏 12 小時</translation>
@@ -8349,7 +8345,7 @@
 <translation id="6955698182324067397">你即將啟用 Chrome OS 偵錯功能，這會一併設定 sshd Daemon，並允許從 USB 隨身碟執行啟動作業。</translation>
 <translation id="6955893174999506273">再指派 1 個切換工具</translation>
 <translation id="6957044667612803194">這個安全金鑰不支援 PIN 碼</translation>
-<translation id="695817292005698051">手勢偵測門檻</translation>
+<translation id="695817292005698051">表情偵測門檻</translation>
 <translation id="6960133692707095572">不使用票證造訪</translation>
 <translation id="6960408801933394526">選取分頁群組並啟用內容選單，即可編輯群組</translation>
 <translation id="6960507406838246615">必須更新 Linux</translation>
@@ -10934,7 +10930,7 @@
 <translation id="8785622406424941542">觸控筆</translation>
 <translation id="8786824282808281903">如果你的孩子看到這個圖示，就表示他們可以透過指紋進行身分認證或購買交易。</translation>
 <translation id="8787752878731558379">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome</translation>
-<translation id="8788008845761123079">選取「<ph name="SELECTED_ACTION" />」的手勢</translation>
+<translation id="8788008845761123079">選取「<ph name="SELECTED_ACTION" />」的表情</translation>
 <translation id="878862491037637275">這個分頁群組已額滿</translation>
 <translation id="8791157330927639737">進一步瞭解如何更新</translation>
 <translation id="8791534160414513928">將「Do Not Track」要求與瀏覽流量一併送出</translation>
@@ -10958,7 +10954,7 @@
 <translation id="8805255531353778052">節省量：極大</translation>
 <translation id="8805385115381080995">降低網站確認你是否為真人的機率，提供更快速的瀏覽體驗</translation>
 <translation id="8807588541160250261">沒有任何裝置連線時</translation>
-<translation id="8807632654848257479">穩定版</translation>
+<translation id="8807632654848257479">穩定</translation>
 <translation id="8808478386290700967">線上應用程式商店</translation>
 <translation id="8808686172382650546">貓咪</translation>
 <translation id="8809147117840417135">淺藍綠色</translation>

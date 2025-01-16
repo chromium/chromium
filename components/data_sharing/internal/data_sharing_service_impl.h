@@ -138,6 +138,9 @@ class DataSharingServiceImpl : public DataSharingService,
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;
   void AddGroupDataForTesting(GroupData group_data) override;
+  void SetPreviewServerProxyForTesting(
+      std::unique_ptr<PreviewServerProxy> preview_server_proxy) override;
+  PreviewServerProxy* GetPreviewServerProxyForTesting() override;
 
   // GroupDataModel::Observer implementation.
   void OnModelLoaded() override;

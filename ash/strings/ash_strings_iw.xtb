@@ -1157,7 +1157,6 @@
 <translation id="4902797682482387055">הצעה למשימה שכדאי להתמקד בה</translation>
 <translation id="490375751687810070">אנכי</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
-<translation id="4911191962826748981">‏זוהי תכונה ניסיונית שמבוססת על AI והתוצאות שלה לא תמיד מדויקות.</translation>
 <translation id="491504982845934899">הפעלת <ph name="NETWORK_NAME" /> לאחר הגדרת המכשיר</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אישור</translation>
@@ -2027,7 +2026,6 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">אם סימנת 'אהבתי', יישלח אלינו משוב שאהבת את ההצעה הזו</translation>
 <translation id="7825412704590278437">מאירוע קרוב ביומן</translation>
 <translation id="7829386189513694949">אות חזק</translation>
 <translation id="7830453190047749513">אפשר להתאים אישית את פעולות הכפתורים, מהירות הסמן ועוד במכשיר <ph name="PERIPHERAL_NAME" /></translation>
@@ -2119,6 +2117,7 @@
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
+<translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8079538659226626406">שיתוף המסך</translation>
 <translation id="8083540854303889870">שולחן העבודה נשמר למועד מאוחר יותר</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2184,7 +2183,6 @@
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
 <translation id="8315514906653279104">מתבצעת הפעלה…</translation>
-<translation id="8319634750346253957">אם סימנת 'לא אהבתי', יישלח אלינו משוב שלא אהבת את ההצעה הזו</translation>
 <translation id="8331351032546853669">ההורדה בהמתנה</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

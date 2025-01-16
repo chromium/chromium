@@ -144,15 +144,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void WillBeDestroyed() override;
 
-  PhysicalSize IntrinsicSize() const {
-    NOT_DESTROYED();
-    return intrinsic_size_;
-  }
-  void SetIntrinsicSize(const PhysicalSize& intrinsic_size) {
-    NOT_DESTROYED();
-    intrinsic_size_ = intrinsic_size;
-  }
-
   // This function calculates the placement of the replaced contents. It takes
   // natural dimensions of the replaced contents, stretch to fit CSS content
   // box according to object-fit, object-position and object-view-box.
@@ -188,10 +179,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
       const IntrinsicSizingInfo& sizing_info) const;
-
-  // The natural/intrinsic size for this replaced element based on the natural
-  // size for the element's contents.
-  PhysicalSize intrinsic_size_;
 };
 
 template <>

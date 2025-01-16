@@ -100,9 +100,7 @@ class BookmarkMergedSurfaceService : public KeyedService {
   // Returns underlying nodes in `folder`. This is either:
   // - a single bookmark folder node or
   // - two permanent folder nodes representing local and account bookmark nodes
-  //   of `*folder.as_permanent_folder()` in the following order:
-  //   (1) the account node if one exists
-  //   (2) then the local or syncable node.
+  //   of `*folder.as_permanent_folder()`.
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
       const BookmarkParentFolder& folder) const;
 
@@ -125,6 +123,15 @@ class BookmarkMergedSurfaceService : public KeyedService {
   // Note: In case of managed folder, if `managed_permanent_node()` is null,
   // this will return empty children.
   BookmarkParentFolderChildren GetChildren(
+      const BookmarkParentFolder& folder) const;
+
+  // Returns default parent node for new nodes created in `folder`.
+  // In case of permanent folder, this will return the account node if one
+  // exists, otherwise it returns the local/syncable node.
+  // The bookmark model must be loaded prior to calling this function.
+  // Note: `folder` must be not managed, as the user adding nodes to the managed
+  // folder is not allowed.
+  const bookmarks::BookmarkNode* GetDefaultParentForNewNodes(
       const BookmarkParentFolder& folder) const;
 
   // Moves `node` to `new_parent` at position `index`.

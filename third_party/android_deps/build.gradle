@@ -113,12 +113,6 @@ dependencies {
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
 
-    compile 'io.grpc:grpc-binder:1.49.0'
-    compile 'io.grpc:grpc-context:1.49.0'
-    compile 'io.grpc:grpc-protobuf-lite:1.49.0'
-    compile 'io.grpc:grpc-stub:1.49.0'
-    compile 'io.grpc:grpc-api:1.49.0'
-
     // Needed by androidx.room, but by default it selects a lower version that
     // does not exist in CIPD.
     compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'

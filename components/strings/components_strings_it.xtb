@@ -248,6 +248,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1413809658975081374">Errore di privacy</translation>
 <translation id="1414134146594747368">Scuole materne</translation>
 <translation id="1419305130220238697">Pulsante Gestisci i download in Chrome, attiva per gestire i file che hai scaricato in Chrome</translation>
+<translation id="1420345875188552368">Il metodo di pagamento automatico salvato potrebbe essere utilizzato per questo pagamento. Per disattivare gli e-wallet in Chrome, vai alle <ph name="BEGIN_LINK1" />impostazioni di pagamento<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> per consentire l'accoppiamento</translation>
 <translation id="14222610277930434">Visiti spesso questa pagina</translation>
 <translation id="1422930527989633628">Può chiedere di rilevare i dispositivi Bluetooth nelle vicinanze</translation>
@@ -2153,6 +2154,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="4827283332383516812">Elimina carta</translation>
+<translation id="4830443836091007686">Gruppo selezionato: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Carta per imagesetter</translation>
 <translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4832961164064927107">BBQ e grigliate</translation>

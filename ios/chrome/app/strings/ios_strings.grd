@@ -1048,6 +1048,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_DELETEGROUP" desc="The iOS context menu item for deleting a tab group. [iOS only]">
         Delete Group
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP" desc="The iOS context menu item for deleting a shared tab group. [iOS only]">
+        Delete Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP" desc="The iOS context menu item for leaving a shared tab group. [iOS only]">
         Leave Group
       </message>
@@ -5510,6 +5513,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARED_HIGHLIGHT_RESHARE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. Selecting this option allows the user to share a link directly to the passage on which they tapped. [Length: 25em]">
         Share highlight
+      </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE" desc="Message of the confirmation to delete a shared tab group in the action sheet.">
+        Everyone will immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all devices
+      </message>
+      <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_DELETE_TITLE" desc="Title of the confirmation to delete a shared tab group in the action sheet.">
+        Delete group?
       </message>
       <message name="IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_LEAVE_MESSAGE" desc="Message of the confirmation to leave a shared tab group in the action sheet.">
         You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group, and it will be deleted from all your devices

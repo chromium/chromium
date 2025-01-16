@@ -1157,7 +1157,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4902797682482387055">Vorschlag für eine Aufgabe, auf die du dich konzentrieren kannst</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Akku: <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="4911191962826748981">Dies ist eine experimentelle KI‑Funktion, die manchmal fehlerhaft sein kann.</translation>
 <translation id="491504982845934899">„<ph name="NETWORK_NAME" />“ nach der Geräteeinrichtung aktivieren</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Annehmen</translation>
@@ -2025,7 +2024,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="780301667611848630">Nein danke</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> und <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Mit „Mag ich“ gibst du an, dass dir dieser Vorschlag gefällt</translation>
 <translation id="7825412704590278437">Von einem anstehenden Termin</translation>
 <translation id="7829386189513694949">Starkes Signal</translation>
 <translation id="7830453190047749513">Du kannst unter anderem Tastenaktionen, die Cursorgeschwindigkeit und mehr für dein Gerät (<ph name="PERIPHERAL_NAME" />) personalisieren</translation>
@@ -2117,6 +2115,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8051716679295756675">Eine Vorlage namens „<ph name="DESK_TEMPLATE_NAME" />“ ist bereits vorhanden</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
+<translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Bildschirmfreigabe</translation>
 <translation id="8083540854303889870">Für später gespeichert</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Die Feststelltaste ist aktiviert.</translation>
 <translation id="8315514906653279104">Wird aktiviert…</translation>
-<translation id="8319634750346253957">Mit „Mag ich nicht“ gibst du an, dass dir dieser Vorschlag nicht gefällt</translation>
 <translation id="8331351032546853669">Download ausstehend</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" />   <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

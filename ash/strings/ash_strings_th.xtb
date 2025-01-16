@@ -1152,7 +1152,6 @@
 <translation id="4902797682482387055">งานที่แนะนำให้มุ่งเน้น</translation>
 <translation id="490375751687810070">แนวตั้ง</translation>
 <translation id="490788395437447240">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">ฟีเจอร์ AI นี้อยู่ในขั้นทดลองและอาจไม่ได้ทำงานถูกต้องเสมอไป</translation>
 <translation id="491504982845934899">เปิดใช้งานหลังจากตั้งค่าอุปกรณ์ <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
@@ -1956,7 +1955,7 @@
 <translation id="7599378375976398913">กำลังแทรกผลการค้นหาที่เลือก</translation>
 <translation id="7600875258240007829">ดูการแจ้งเตือนทั้งหมด</translation>
 <translation id="7601417191446344542">เปิดการเตือนปิดเสียงไมค์ไหม</translation>
-<translation id="7602187221150705972">ค้นหาอีโมจิ GIF และอื่นๆ</translation>
+<translation id="7602187221150705972">ค้นหาอีโมจิ, GIF และอื่นๆ</translation>
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7609951632080598826">มุมมองปฏิทิน <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">เชื่อมต่อกล้องอีกครั้งแล้ว</translation>
@@ -2020,7 +2019,6 @@
 <translation id="780301667611848630">ไม่เป็นไร</translation>
 <translation id="7807067443225230855">การค้นหาและผู้ช่วย</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> กับ <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">ปุ่ม "ชอบ" จะส่งความคิดเห็นว่าคุณชอบคำแนะนำนี้</translation>
 <translation id="7825412704590278437">จากกิจกรรมในปฏิทินที่กำลังจะจัดขึ้น</translation>
 <translation id="7829386189513694949">สัญญาณแรง</translation>
 <translation id="7830453190047749513">คุณปรับเปลี่ยนการทำงานของปุ่ม ความเร็วของเคอร์เซอร์ และอื่นๆ สำหรับ <ph name="PERIPHERAL_NAME" /> ในแบบของคุณได้</translation>
@@ -2112,6 +2110,7 @@
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8054466585765276473">กำลังคำนวณเวลาใช้งานแบตเตอรี่</translation>
+<translation id="8076492880354921740">แท็บ</translation>
 <translation id="8079538659226626406">การแชร์หน้าจอ</translation>
 <translation id="8083540854303889870">บันทึกไว้ใช้ภายหลัง</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2177,7 +2176,6 @@
 <translation id="830868413617744215">เบต้า</translation>
 <translation id="8314772463905284467">Caps Lock เปิดอยู่</translation>
 <translation id="8315514906653279104">กำลังเปิด...</translation>
-<translation id="8319634750346253957">ปุ่ม "ไม่ชอบ" จะส่งความคิดเห็นว่าคุณไม่ชอบคำแนะนำนี้</translation>
 <translation id="8331351032546853669">การดาวน์โหลดรอดำเนินการ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

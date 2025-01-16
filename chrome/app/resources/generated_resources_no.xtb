@@ -160,6 +160,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1101254380285078812">{COUNT,plural, =1{1 passord}other{{COUNT} passord}}</translation>
 <translation id="1102759278139578486">Kan ikke laste ned kommentarfiler for hovednoden. Prøv igjen senere.</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Du mister umiddelbart tilgangen til denne fanegruppen, og den blir slettet fra alle enhetene dine</translation>
 <translation id="1106350001632362876">Øk terskelen</translation>
 <translation id="1107482171728500359">Del mikrofonen</translation>
 <translation id="110850812463801904">Koble til OneDrive manuelt</translation>
@@ -334,6 +335,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1219219114431716687">Fruktterte</translation>
 <translation id="122082903575839559">Signaturalgoritme for sertifikat</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 med RSA-kryptering</translation>
+<translation id="1221266967850882682">Velkommen tilbake</translation>
 <translation id="1221825588892235038">Bare utvalg</translation>
 <translation id="1222835797152767346">Angi en PIN-kode for å gjøre det enklere å logge på</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> krever en lisens</translation>
@@ -1696,6 +1698,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2173801458090845390">Legg til en rekvisisjons-ID for denne enheten</translation>
 <translation id="2175384018164129879">&amp;Administrer søkemotorer og nettstedsøk</translation>
+<translation id="2175526076681939329">Bruk primærtaster</translation>
 <translation id="217576141146192373">Kunne ikke legge til skriveren. Kontroller skriverkonfigurasjonen, og prøv på nytt.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="217631816678106981">Ikke lim inn</translation>
@@ -2895,7 +2898,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til Wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til Wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
 <translation id="3009178788565917040">Utdata</translation>
-<translation id="3009300415590184725">Er du sikker på at du vil avbryte konfigurasjonsprosessen for mobildatatjenesten?</translation>
 <translation id="3009352964623081324">Søk + O og deretter S. Bruk for å installere, administrere og tilpasse stemmer.</translation>
 <translation id="3009779501245596802">Indekserte databaser</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Passordene dine ser sterke ut}=1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
@@ -3404,7 +3406,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3396442984945202128">Bekreft at det er deg</translation>
 <translation id="3396800784455899911">Ved å klikke på «Godta og fortsett»-knappen godtar du behandlingen som beskrives ovenfor, for disse Google-tjenestene.</translation>
 <translation id="339722927132407568">Fryser</translation>
-<translation id="3398899528308712018">Forslag til fanegruppe</translation>
 <translation id="3399432415385675819">Varsler slås av</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – linjefletting</translation>
 <translation id="3401484564516348917">lese informasjon om nettleseren, OS-et, enheten, installert programvare, registerverdier og filer</translation>
@@ -3420,6 +3421,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3407392651057365886">Flere sider forhåndslastes. Sider kan bli forhåndslastet via Googles tjenere når andre nettsteder ber om det.</translation>
 <translation id="3407967630066378878">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren på venstre side av <ph name="DEVICE_TYPE" />. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Kameraet og mikrofonen er i bruk</translation>
+<translation id="3409157109901479672">Venstre side</translation>
 <translation id="3409513286451883969">&amp;Oversett den markerte teksten til <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Gå til utvalg</translation>
 <translation id="3413122095806433232">Sertifiseringsinstanser: <ph name="LOCATION" /></translation>
@@ -4703,6 +4705,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Sveip for å navigere mellom sidene</translation>
 <translation id="4291265871880246274">Dialogboks for pålogging</translation>
+<translation id="4292613336957320546">Akselerasjon</translation>
 <translation id="429312253194641664">Et nettsted spiller av medier</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> er slettet fra nedlastingsloggen, men er fortsatt lagret på enheten din</translation>
 <translation id="4295072614469448764">Appen er tilgjengelig i terminalen din. Det kan også være et ikon i appoversikten.</translation>
@@ -4830,7 +4833,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4386604394450371010">oversikt</translation>
 <translation id="4387890294700445764">Passord utsatt for sikkerhetsbrudd</translation>
 <translation id="4388650384344483842">Bruk minst åtte tegn</translation>
-<translation id="4389091756366370506">Bruker <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, og <ph name="NUMBER_OF_OTHER_SWITCHES" /> brytere til</translation>
 <translation id="439266289085815679">Bluetooth-konfigurasjonen kontrolleres av <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediger konfigurasjonsfilen</translation>
@@ -5564,7 +5566,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4906679076183257864">Tilbakestill til standard</translation>
 <translation id="4907129260985716018">Velg når denne utvidelsen kan lese og endre nettstedsdataene dine</translation>
 <translation id="4908811072292128752">Åpne en ny fane for å surfe på to nettsteder samtidig</translation>
-<translation id="4909038193460299775">Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten. Data du har lagret i Google-kontoen din, blir imidlertid værende og kan administreres ved hjelp av <ph name="BEGIN_LINK" />Google Oversikt<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Appen er allerede installert</translation>
 <translation id="4912643508233590958">Inaktive oppvåkninger</translation>
 <translation id="4913209098186576320">Denne filen kan være farlig<ph name="LINE_BREAK" />Denne kontrollen tar lengre tid enn vanlig …</translation>
@@ -5870,6 +5871,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Søk</translation>
 <translation id="5139823398361067371">Skriv inn PIN-koden for sikkerhetsnøkkelen din. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen.</translation>
 <translation id="5139955368427980650">&amp;Åpne</translation>
+<translation id="5140742218917419811">Taster som skal brukes</translation>
 <translation id="5141421572306659464">Primærkonto</translation>
 <translation id="5141957579434225843">Bruk for eksempel oà, oè, uỳ i stedet for òa, òe, ùy</translation>
 <translation id="5143374789336132547">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du klikker på Startside-knappen.</translation>
@@ -5888,6 +5890,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5149602533174716626">Kop&amp;ier videorammen</translation>
 <translation id="5150254825601720210">Navn på Netscape SSL-tjenersertifikat</translation>
 <translation id="5151354047782775295">Frigjør lagringsplass eller velg data som kan slettes automatisk</translation>
+<translation id="5153074793829217329">Bruk tastaturet eller et talltastatur for å kontrollere musepekeren</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avanserte innstillinger for <ph name="PRINTING_DESTINATION" /></translation>
@@ -7978,6 +7981,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> om å komme til datamaskinen. Barnet ditt skal lese noen fraser på denne skjermen for å lage stemmemodellen sin.
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> trenger hjelp med å lese, kan du få barnet til å gjenta etter deg. Hvisk bort fra mikrofonen, slik at assistenten lærer seg barnets stemme og ikke din.</translation>
+<translation id="6689948774466767379">Musetaster</translation>
 <translation id="6690659332373509948">Kan ikke parse filen: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Frem</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 side}other{{COUNT} sider}}</translation>
@@ -10065,6 +10069,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8168435359814927499">Innhold</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Legg fanen til på leselisten}other{Legg fanene til på leselisten}}</translation>
 <translation id="8169177848833352618">Denne maskinen oppfyller dessverre ikke kravene for å installere Bruschetta. Feilkoden er <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Høyre side</translation>
 <translation id="8174047975335711832">Enhetsinformasjon</translation>
 <translation id="8176332201990304395">Rosa og hvit</translation>
 <translation id="8176529144855282213">For å slå på tilgang til mikrofonen, slå på den fysiske mikrofonbryteren på enheten</translation>

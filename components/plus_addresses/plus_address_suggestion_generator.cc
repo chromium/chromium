@@ -123,8 +123,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
     case PasswordFormClassification::Type::kResetPasswordForm:
       return false;
     case PasswordFormClassification::Type::kSingleUsernameForm:
-      return base::FeatureList::IsEnabled(
-          features::kPlusAddressOfferCreationOnSingleUsernameForms);
+      return true;
   }
   NOTREACHED();
 }

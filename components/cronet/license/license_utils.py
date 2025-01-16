@@ -145,8 +145,6 @@ def parse_chromium_readme_file(readme_path: str,
     if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
       raise InvalidMetadata(
           f"\"{readme_path}\" contains unidentified license \"{license}\"")
-  if not metadata.get_license_file_path():
-    raise InvalidMetadata(f"License file path not declared in {readme_path}")
   return metadata
 
 

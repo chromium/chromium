@@ -10,6 +10,8 @@
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
@@ -210,6 +212,14 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   sync_service->SetTabGroupSyncDelegate(std::move(delegate));
 
   return sync_service;
+}
+
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service) {
+  auto preview_server_proxy =
+      std::make_unique<data_sharing::MockPreviewServerProxy>();
+  data_sharing_service->SetPreviewServerProxyForTesting(
+      std::move(preview_server_proxy));
 }
 
 std::unique_ptr<ShareKitService> CreateShareKitService(

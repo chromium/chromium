@@ -94,10 +94,6 @@ bool AndroidPaymentApp::HasEnrolledInstrument() const {
   return true;
 }
 
-void AndroidPaymentApp::RecordUse() {
-  NOTIMPLEMENTED();
-}
-
 bool AndroidPaymentApp::NeedsInstallation() const {
   return false;
 }

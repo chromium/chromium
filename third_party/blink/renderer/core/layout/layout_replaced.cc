@@ -111,11 +111,6 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
 
 void LayoutReplaced::IntrinsicSizeChanged() {
   NOT_DESTROYED();
-  LayoutUnit scaled_width =
-      LayoutUnit(static_cast<int>(kDefaultWidth * StyleRef().EffectiveZoom()));
-  LayoutUnit scaled_height =
-      LayoutUnit(static_cast<int>(kDefaultHeight * StyleRef().EffectiveZoom()));
-  intrinsic_size_ = PhysicalSize(scaled_width, scaled_height);
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
 }

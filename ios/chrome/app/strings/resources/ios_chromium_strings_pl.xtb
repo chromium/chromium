@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Oznacza to, że Chromium będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 <translation id="2270466829363945454">Kup</translation>
 <translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
+<translation id="2314220608288760290">Chromium automatycznie otwiera linki incognito z YouTube w trybie incognito.</translation>
 <translation id="231828342043114302">Aby otrzymywać spersonalizowane treści na podstawie swoich zainteresowań, zaloguj się w Chromium.</translation>
 <translation id="2326738825692478496">Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google.
 
@@ -284,6 +285,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="8240981428553046115">Chromium nie udało się sprawdzić dostępności aktualizacji. Spróbuj ponownie później.</translation>
 <translation id="8254729934443216898">Poznaj nowe funkcje, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="829047622686389424">Spersonalizowane karty dla Ciebie.</translation>
+<translation id="8293572045658095405">Jesteś w trybie incognito w Chromium</translation>
 <translation id="830951810931292870">Otwiera wpisane adresy URL w Chromium w trybie incognito.</translation>
 <translation id="8409374867500149834">Korzystasz z najlepszych zabezpieczeń Chromium przed szkodliwymi stronami</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minutę. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}few{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}many{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minut. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}other{Dzieje się tak, gdy nie używasz Chromium przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}}</translation>

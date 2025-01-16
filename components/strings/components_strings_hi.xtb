@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain के साथ Password Manager का इस्तेमाल करने के लिए, Chromium को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="1652887625750064647">एआई के हिसाब से बेहतरीन सुझाव</translation>
+<translation id="1653465303147789530">ऐप्लिकेशन स्विच किए बिना, <ph name="PAYMENT_METHOD" /> से पेमेंट करें</translation>
 <translation id="1656024727720460136">Chrome इस पेज को रीडर मोड में दिखा रहा है, ताकि इसे आसानी से पढ़ा जा सके. Chrome ने सुरक्षित कनेक्शन का इस्तेमाल करके मूल पेज काे फिर से पा लिया है.</translation>
 <translation id="1656489000284462475">पिकअप</translation>
 <translation id="1658111267661135323">टीवी और वीडियो</translation>
@@ -558,6 +559,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />जिन पेजों को ब्राउज़ किया जाता है उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">आपका टेक्स्ट और पेज का कॉन्टेंट, Google को भेजा जाता है. इसका इस्तेमाल, इस सुविधा को बेहतर बनाने के लिए किया जा सकता है.
   <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">तेज़ी से पेमेंट करने के लिए, एक बार की जाने वाली सुरक्षा जांच की प्रोसेस पूरी करें</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
 <translation id="1973785048533660168">क्लर्क और प्रशासनिक सेक्टर की नौकरियां</translation>
@@ -1588,6 +1590,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" के हिसाब से सबसे सही नतीजे</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
+<translation id="3791118028061680614">ऐप्लिकेशन स्विच किए बिना पेमेंट करें</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इंच)</translation>
 <translation id="3792826587784915501">कल्ट और इंडी (आम फ़िल्मों से हटकर) फ़िल्में</translation>
 <translation id="3793574014653384240">हाल ही में बंद होने की संख्या और वजहें</translation>

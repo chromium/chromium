@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.autofill.settings;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -26,7 +28,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -726,11 +727,11 @@ public class AutofillLocalCardEditorTest {
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
         ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
 
         // Verify the dialog is closed
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+        assertNull(fakeModalDialogManager.getShownDialogModel());
 
         // Verify the card entry is not deleted
         verify(mPersonalDataManagerMock, never()).deleteCreditCard(guid);
@@ -755,11 +756,11 @@ public class AutofillLocalCardEditorTest {
                 autofillLocalCardEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
         ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
 
         // Verify the dialog is closed
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+        assertNull(fakeModalDialogManager.getShownDialogModel());
 
         // Verify the card entry is deleted
         verify(mPersonalDataManagerMock, times(1)).deleteCreditCard(guid);

@@ -1153,6 +1153,7 @@
 <translation id="6160780110287872296">Завантажити файл?</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6168647875670665004">Пропозиції статей</translation>
+<translation id="6169031022444660352">Щоб видалити всі збережені облікові дані, спершу налаштуйте код доступу на своєму пристрої.</translation>
 <translation id="6173499589275053515">Пароль збережено у вашому обліковому записі Google (<ph name="EMAIL" />)</translation>
 <translation id="6187302354554850004">Востаннє синхрон.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Створено <ph name="DATE" /></translation>
@@ -1204,6 +1205,7 @@
 <translation id="6355820205320395730">Ненадійні паролі можна легко вгадати, тому переконайтеся, що ваші є безпечними. <ph name="BEGIN_LINK" />Перегляньте інші поради щодо безпеки.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Підписатися на сайт <ph name="DOMAIN_NAME" /></translation>
 <translation id="6368038301482806847">Виберіть пошукову систему зі списку.</translation>
+<translation id="6368102751067608420">Щоб видалити всі дані Менеджера паролів</translation>
 <translation id="6374469231428023295">Повторити спробу</translation>
 <translation id="6387994324662817823">Паролі збережено в Менеджері паролів Google лише на цьому пристрої.</translation>
 <translation id="6404422529625928907">Відкрити на Google Диску</translation>

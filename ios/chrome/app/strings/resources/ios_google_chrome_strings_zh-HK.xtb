@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1066101356081285416">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。為提供此功能，系統會將包裹追蹤編號和網站名稱傳送給 Google，為所有人改善購物功能。你可隨時在「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」進行更新。</translation>
+<translation id="1076643793026027628">在無痕模式下，Chrome 會自動開啟 YouTube 無痕連結。</translation>
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1143896152279775643">系統會將密碼儲存在 <ph name="EMAIL" /> 的「Google 密碼管理工具」。</translation>
 <translation id="1146503048444965320">在 Chrome 中開啟新分頁</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">登入此網站和 Chrome。</translation>
 <translation id="4646014602299206846">當你瀏覽網站時，Chrome 會在網站上偵測是否有包裹追蹤編號，並在新分頁顯示包裹最新消息。系統將與 Google 分享你的資料，以提供此功能，並為所有使用者改善「購物」功能。</translation>
 <translation id="4647910807533196601">在 Chrome 中開啟我的最新分頁。</translation>
+<translation id="4693084815234024320">你正在使用 Chrome 無痕模式</translation>
 <translation id="4724297637870447613">隨時隨地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>

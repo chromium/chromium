@@ -331,7 +331,6 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 
       Waarschuwing: Met Wipe en MinimalMigrate worden lokale gegevens verwijderd.</translation>
 <translation id="1248955696540150266">Downloads van automatische peer-to-peer-updates toestaan</translation>
-<translation id="1249640740800891502">Instellingen voor SkyVault (alle gegevens in de cloud)</translation>
 <translation id="1250597158212586309">Als je het beleid toepast of niet instelt, krijgt de gebruiker de optie om meldingen voor gehackte wachtwoorden af te wijzen/te herstellen.
 
       Als je deze instelling uitzet, kunnen gebruikers meldingen over gehackte wachtwoorden niet afwijzen. Als je deze instelling aanzet, kunnen gebruikers meldingen over gehackte wachtwoorden afwijzen.</translation>
@@ -3044,7 +3043,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
 Als je het beleid niet toepast of niet instelt, krijgt het platformbeleid voorrang bij een conflict met het cloudbeleid.
 
-Dit verplichte beleid heeft gevolgen voor cloudbeleid op machineniveau.
+Dit verplichte beleid heeft gevolgen voor cloudbeleid op apparaatniveau.
 
 Dit beleid is specifiek voor <ph name="PRODUCT_NAME" /> en heeft geen invloed op <ph name="GOOGLE_UPDATE_NAME" />, omdat dit onafhankelijke apps zijn.
 <ph name="GOOGLE_UPDATE_NAME" /> heeft een afzonderlijk beleid met dezelfde naam.</translation>
@@ -4303,7 +4302,6 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
 
           Als dit beleid niet is ingesteld, staat de functie voor automatisch klikken in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="4212181786686887763">De URL waar de achtergrondafbeelding kan worden gedownload.</translation>
-<translation id="4221677608399717135">SkyVault aan- of uitzetten</translation>
 <translation id="4224610387358583899">Drempels voor schermvergrendeling</translation>
 <translation id="42267415200641481">Als je dit beleid instelt op True, wordt de DNS-omzetting van het systeem (getaddrinfo()) misschien uitgevoerd buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.
 
@@ -8980,7 +8978,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
-<translation id="7642740497103044368">Als je dit beleid toepast, kunnen beleidsregels die zijn gekoppeld aan een beheerd account worden samengevoegd in beleidsregels op machineniveau.
+<translation id="7642740497103044368">Als je dit beleid toepast, kunnen beleidsregels die zijn gekoppeld aan een beheerd account worden samengevoegd in beleidsregels op apparaatniveau.
 
 Als je het beleid niet toepast of niet instelt, kunnen cloudbeleidsregels op gebruikersniveau niet worden samengevoegd met beleidsregels van andere bronnen.
 
@@ -11170,7 +11168,7 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 
 Als je het beleid niet toepast of niet instelt, wordt <ph name="CHROME_ENTERPRISE_CORE_NAME" />-browserinschrijving optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
 
-Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</translation>
+Dit beleid wordt gebruikt bij inschrijving van het cloudbeleid op apparaatniveau voor desktops. Zie https://support.google.com/chrome/a/answer/9301891 voor meer informatie.</translation>
 <translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> aanzetten.</translation>
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>

@@ -64,7 +64,8 @@ ArchivableCredential* TestPasskeyCredential() {
               webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                                  user_name_str),
               trusted_vault_key,
-              /*trusted_vault_key_version=*/0);
+              /*trusted_vault_key_version=*/0,
+              /*generate_hmac_secret=*/false);
 
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                                   gaia:nil

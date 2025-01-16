@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -112,6 +113,18 @@ CSSPaintImageGenerator* ProvideOverrideGenerator(
     const Document&,
     CSSPaintImageGenerator::Observer*) {
   return g_override_generator;
+}
+
+Animation* GetAnimation(const Element* element,
+                        const PropertyHandle& property) {
+  for (auto entry : element->GetElementAnimations()->Animations()) {
+    Animation* animation = entry.key;
+    KeyframeEffect* keyframe_effect = To<KeyframeEffect>(animation->effect());
+    if (keyframe_effect->Affects(property)) {
+      return animation;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -2744,6 +2757,8 @@ class ScopedBackgroundColorPaintImageGenerator {
       : public BackgroundColorPaintImageGenerator {
     scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
                                const Node* node) override {
+      LayoutObject* layout_object = node->GetLayoutObject();
+      layout_object->GetMutableForPainting().FirstFragment().EnsureId();
       return BitmapImage::Create();
     }
 
@@ -2753,7 +2768,8 @@ class ScopedBackgroundColorPaintImageGenerator {
       // here. Instead, we assume that no paint definition specific constraints
       // are violated. These additional constraints should be tested in
       // *_paint_definitiion_test.cc.
-      return element->GetElementAnimations()->Animations().begin()->key;
+      return GetAnimation(element,
+                          PropertyHandle(GetCSSPropertyBackgroundColor()));
     }
 
     void Shutdown() override {}
@@ -2763,7 +2779,191 @@ class ScopedBackgroundColorPaintImageGenerator {
   Persistent<LocalFrame> frame_;
 };
 
+class ScopedClipPathPaintImageGenerator {
+ public:
+  explicit ScopedClipPathPaintImageGenerator(LocalFrame* frame)
+      : paint_image_generator_(
+            MakeGarbageCollected<FakeClipPathPaintImageGenerator>()),
+        frame_(frame) {
+    frame_->SetClipPathPaintImageGeneratorForTesting(paint_image_generator_);
+  }
+
+  ~ScopedClipPathPaintImageGenerator() {
+    frame_->SetClipPathPaintImageGeneratorForTesting(nullptr);
+  }
+
+ private:
+  class FakeClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
+    scoped_refptr<Image> Paint(float zoom,
+                               const gfx::RectF& reference_box,
+                               const gfx::SizeF& clip_area_size,
+                               const Node& node) override {
+      LayoutObject* layout_object = node.GetLayoutObject();
+      layout_object->GetMutableForPainting().FirstFragment().EnsureId();
+      return BitmapImage::Create();
+    }
+
+    Animation* GetAnimationIfCompositable(const Element* element) override {
+      // Note that the complete test for determining eligibility to run on the
+      // compositor is in modules code. It is a layering violation to include
+      // here. Instead, we assume that no paint definition specific constraints
+      // are violated. These additional constraints should be tested in
+      // *_paint_definitiion_test.cc.
+      return GetAnimation(element, PropertyHandle(GetCSSPropertyClipPath()));
+    }
+
+    void Shutdown() override {}
+  };
+
+  Persistent<FakeClipPathPaintImageGenerator> paint_image_generator_;
+  Persistent<LocalFrame> frame_;
+};
+
+TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation =
+          std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_bgcolor_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct fake ones to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedBackgroundColorPaintImageGenerator background_image_generator(
+      GetDocument().GetFrame());
+  ScopedClipPathPaintImageGenerator clip_path_image_generator(
+      GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim1 {
+        0% {
+          background-color: red;
+          clip-path: circle(50% at 50% 50%);
+        }
+        100% {
+          background-color: green;
+          clip-path: circle(30% at 30% 30%);
+        }
+      }
+      @keyframes anim2 {
+        0% {
+          background-color: red;
+        }
+        100% {
+          background-color: green;
+        }
+      }
+      @keyframes anim3 {
+        0% {
+          clip-path: circle(50% at 50% 50%);
+        }
+        100% {
+          clip-path: circle(30% at 30% 30%);
+        }
+      }
+
+      #target1, #target2, #target3, #target4 {
+        width: 20vw;
+        height: 20vw;
+        display: inline-block;
+      }
+      #target1 {
+        animation: anim1 1s linear;
+      }
+      #target2 {
+        animation: anim2 1s linear;
+      }
+      #target3 {
+        animation: anim3 1s linear;
+      }
+      #target4 {
+        animation: anim2 1s linear, anim3 1s linear;
+      }
+    }
+    </style>
+    <div id="target1"></div>
+    <div id="target2"></div>
+    <div id="target3"></div>
+    <div id="target4"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target1"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(
+      Animation::NativePaintWorkletProperties::kBackgroundColorPaintWorklet |
+          Animation::NativePaintWorkletProperties::kClipPathPaintWorklet,
+      animation->GetNativePaintWorkletReasons());
+  // Restricted to 1 native paint worklet property per animation.
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+
+  target = GetDocument().getElementById(AtomicString("target2"));
+  animation = target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(
+      Animation::NativePaintWorkletProperties::kBackgroundColorPaintWorklet,
+      animation->GetNativePaintWorkletReasons());
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+
+  target = GetDocument().getElementById(AtomicString("target3"));
+  animation = target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(Animation::NativePaintWorkletProperties::kClipPathPaintWorklet,
+            animation->GetNativePaintWorkletReasons());
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+
+  target = GetDocument().getElementById(AtomicString("target4"));
+
+  EXPECT_EQ(2U, target->GetElementAnimations()->Animations().size());
+  auto it = target->GetElementAnimations()->Animations().begin();
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            it->key->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_TRUE(it->key->HasActiveAnimationsOnCompositor());
+  // Intentionally flattening the traversal of the animations so that in the
+  // event of a failure, we know which animation was problematic.
+  it++;
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            it->key->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+}
+
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_bgcolor_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct a fake one to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedBackgroundColorPaintImageGenerator image_generator(
+      GetDocument().GetFrame());
+
   ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2780,27 +2980,9 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
     <div id="target"></div>
   )HTML");
 
-  // Normally, we don't get image generators set up in a testing environment.
-  // Construct a fake one to allow us to test that we are making the correct
-  // compositing decision.
-  ScopedBackgroundColorPaintImageGenerator image_generator(
-      GetDocument().GetFrame());
-
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
-
-  // The animation cannot be composited until the associated layout object
-  // has a UniqueObjectId.
-  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
-            animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
-
-  // Normally the ID would be set at paint time by the native paint worklet.
-  // Since running in a test environment, we don't actually create the deferred
-  // paint image. Thus, we set it manually.
-  LayoutObject* layout_object = target->GetLayoutObject();
-  layout_object->GetMutableForPainting().FirstFragment().EnsureId();
 
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(

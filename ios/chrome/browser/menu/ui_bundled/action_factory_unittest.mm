@@ -684,3 +684,23 @@ TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
+
+// Tests that the delete shared tab group action has the right title and image.
+TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
+  feature_list_.InitWithFeatures(
+      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
+
+  UIAction* action = [factory actionToDeleteSharedTabGroupWithBlock:^{
+  }];
+
+  EXPECT_NSEQ(expectedTitle, action.title);
+  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
+}

@@ -109,6 +109,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
   IntrinsicSizingInfo GetNaturalDimensions() const override;
 
   LayoutObjectChildList children_;
+  PhysicalSize natural_size_;
 };
 
 template <>

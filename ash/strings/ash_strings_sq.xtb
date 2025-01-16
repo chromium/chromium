@@ -282,6 +282,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1948405482892809935">Kalo te përdoruesi tjetër</translation>
 <translation id="1951012854035635156">Asistenti</translation>
 <translation id="1954252331066828794">Regjistrimi i ekranit përfundoi</translation>
+<translation id="1956087014741188812">Vendos në pauzë tastet e miut</translation>
 <translation id="1957958912175573503">Vendos gjuhën</translation>
 <translation id="1961239773406905488">Pamja paraprake e kamerës e fshehur</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="225680501294068881">Po skanon për pajisje...</translation>
 <translation id="2257486738914982088">Ndodhi një gabim gjatë shkarkimi të <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Skedarët e sugjeruar</translation>
+<translation id="2266607665880926261">Tastet e miut u vendosën në pauzë</translation>
 <translation id="2268130516524549846">Bluetooth-i u çaktivizua</translation>
 <translation id="2268731132310444948">Hapi <ph name="STEP" /> nga <ph name="TOTAL_STEPS" /> i turneut. Pasi të aktivizohet "Nisësi", do të marrësh një shirit të përmirësuar të kërkimit. Mund të fillosh të shkruash për të kërkuar për skedarët, aplikacionet etj. Mund të marrësh po ashtu përgjigje për pyetjet në lidhje me <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Dil nga të gjitha</translation>
@@ -540,6 +542,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2876338922445400217">Zmadho ekranin</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
 <translation id="2880541185262491188">Shumë përpjekje me kodin PIN. Prit <ph name="TIME_LEFT" /> dhe provo përsëri</translation>
+<translation id="2883271196820422439">Vazhdo përdorimin e tasteve të miut</translation>
 <translation id="2885950158625301909">Mëso më shumë</translation>
 <translation id="2891209721153296020">"Anulo zgjedhjen"</translation>
 <translation id="2894949423239620203">Kablloja mund të ndikojë te cilësia e funksionimit</translation>
@@ -727,6 +730,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3539957339480430241">Zona e qasjes për internet e <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Hiq konfigurimin e shikimit të medias dhe fotografive më të fundit të telefonit tënd</translation>
 <translation id="3542066395059568317">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të klikosh me butonin djathtas për të hequr rekomandimet.</translation>
+<translation id="3545224667633138205">Tastet e miut u vazhduan</translation>
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554215588514239132">Shfaq ose fshih panelin e "Veglave të zhvilluesit"</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
@@ -801,6 +805,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3727231512028252576">Artikujt nuk mund të ngarkoheshin. Provo përsëri kur të jesh online.</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3738664582935948253">Tani mund të shfaqësh klikimet dhe shkurtoret e tastierës në regjistrimet e ekranit</translation>
+<translation id="3741482431277446954">Butoni i djathtë i miut</translation>
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
 <translation id="3743775386021959186">"Fokusi" është aktiv. Koha e mbetur <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Fshih sugjerimin për motin</translation>
@@ -1152,7 +1157,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4902797682482387055">Detyra e sugjeruar për t'u fokusuar</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Kjo është një veçori eksperimentale nga IA dhe nuk do të jetë gjithmonë e saktë.</translation>
 <translation id="491504982845934899">Aktivizo <ph name="NETWORK_NAME" /> pas konfigurimit të pajisjes</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4918086044614829423">Prano</translation>
@@ -1828,6 +1832,7 @@ Instalim i ri</translation>
 <translation id="7118268675952955085">pamja e ekranit</translation>
 <translation id="7118597077555700347">Hap "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Zgjidh fjalën ose shkronjën tjetër</translation>
+<translation id="7124556000457919678">Kur është i aktivizuar, vendos në pauzë dhe vazhdo përdorimin e tasteve të miut</translation>
 <translation id="7126996685418858413">Hapur javën e kaluar</translation>
 <translation id="7130207228079676353">MË TË MUNDSHME</translation>
 <translation id="7131634465328662194">Do të dalësh automatikisht</translation>
@@ -1849,6 +1854,7 @@ Instalim i ri</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="7219573373513695352">Nuk ka pajisje të lidhura</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> në total</translation>
+<translation id="7239814253344511868">Të dy butonat e miut</translation>
 <translation id="7244725679040769470">Bateria e mbetur: <ph name="PERCENTAGE" />%. Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kjo pajisje Chromebook duhet të riniset për të zbatuar një përditësim. Kjo mund të zgjasë deri në 1 minutë.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7807067443225230855">Kërkimi dhe "Asistenti"</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dhe <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Opsioni i gishtave lart do të tregojë se të pëlqen ky sugjerim</translation>
 <translation id="7825412704590278437">Nga ngjarja e ardhshme e kalendarit</translation>
 <translation id="7829386189513694949">Sinjal i fortë</translation>
 <translation id="7830453190047749513">Mund të personalizosh veprimet e butonave, shpejtësinë e kursorit etj. për <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
+<translation id="8076492880354921740">Skedat</translation>
 <translation id="8079538659226626406">Ndarja e ekranit</translation>
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8203224998425013577">Shfaq më shumë emoji dhe imazhe GIF</translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>
 <translation id="8205469348819768313">Po përpiqesh të përdorësh tastin "Page Down"? Përdor</translation>
+<translation id="8213376797713070611">Butoni i majtë i miut</translation>
 <translation id="8214996719228530800">Kanali i versionit Canary</translation>
 <translation id="8219451629189078428">Pajisja jote Chromebook ka nevojë të qëndrojë aktive dhe e lidhur me energjinë gjatë kësaj kohe. Sigurohu që karikuesi ose kabllot e përshtatësit të jenë plotësisht të lidhura si me pajisjen tënde Chromebook, ashtu dhe me prizën elektrike. Mos e fik pajisjen tënde Chromebook.</translation>
 <translation id="8220076512072059941">Shto <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Kyçja e kapitaleve është aktive</translation>
 <translation id="8315514906653279104">Po aktivizohet...</translation>
-<translation id="8319634750346253957">Opsioni i gishtave poshtë do të tregojë se nuk të pëlqen ky sugjerim</translation>
 <translation id="8331351032546853669">Shkarkimi në pritje</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth-i nuk ofrohet</translation>
+<translation id="9050999376345823055">Shtyp "." për ta lëshuar</translation>
 <translation id="906458777597946297">Zmadho dritaren</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9070640332319875144">Cilësimet e "Asistentit"</translation>

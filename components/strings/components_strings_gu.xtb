@@ -387,6 +387,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS કીચેન સાથે Password Managerનો ઉપયોગ કરવા માટે, Chromiumને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="1652887625750064647">AI દ્વારા શ્રેષ્ઠ મેળ</translation>
+<translation id="1653465303147789530">ઍપ સ્વિચ કર્યા વિના <ph name="PAYMENT_METHOD" /> વડે ચુકવણી કરો</translation>
 <translation id="1656024727720460136">Chrome દ્વારા આ પેજને સરળ બનાવવામાં આવ્યું છે જેથી તેને વધુ સરળતાથી વાંચી શકાય. Chrome દ્વારા સુરક્ષિત કનેક્શન વડે ઑરિજિનલ પેજ પાછું મેળવવામાં આવ્યું.</translation>
 <translation id="1656489000284462475">પિકઅપ</translation>
 <translation id="1658111267661135323">ટીવી અને વીડિયો</translation>
@@ -557,6 +558,7 @@
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />તમે મુલાકાત લો તે કેટલાક પેજના URLs, સિસ્ટમ વિશેની સીમિત માહિતી અને પેજનું કેટલુંક કન્ટેન્ટ<ph name="END_WHITEPAPER_LINK" /> Googleને મોકલીને વેબ પર દરેક જણ માટે સુરક્ષા વધુ સારી બનાવવામાં સહાય કરો. <ph name="BEGIN_PRIVACY_PAGE_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">તમારી ટેક્સ્ટ અને પેજ પરનું કન્ટેન્ટ Googleને મોકલવામાં આવે છે અને તેનો ઉપયોગ આ સુવિધાને બહેતર કરવા માટે થઈ શકે છે.
   <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">ઝડપથી ચુકવણી કરવા માટે એક-વખતની સુરક્ષા તપાસ પૂર્ણ કરો</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> બુકમાર્ક</translation>
 <translation id="1973335181906896915">અનુક્રમાંકન ભૂલ</translation>
 <translation id="1973785048533660168">કારકુની અને વહીવટી નોકરીઓ</translation>
@@ -1588,6 +1590,7 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" માટે શ્રેષ્ઠ મેળ ખાતા પરિણામો</translation>
 <translation id="3789155188480882154">કદ 16</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
+<translation id="3791118028061680614">ઍપ સ્વિચ કર્યા વિના ચુકવણી કરો</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ઇંચ)</translation>
 <translation id="3792826587784915501">કલ્ટ અને ઇન્ડી મૂવી</translation>
 <translation id="3793574014653384240">તાજેતરના અકસ્માતોની સંખ્યા અને કારણો</translation>
@@ -2153,6 +2156,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheetsમાં ઝડપથી કોઈ નવી શીટ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="4827283332383516812">કાર્ડ ડિલીટ કરો</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> આઇટમ પસંદ કરી</translation>
 <translation id="4831993743164297314">ઇમેજ સેટર પેપર</translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4832961164064927107">BBQ અને ગ્રિલિંગ</translation>

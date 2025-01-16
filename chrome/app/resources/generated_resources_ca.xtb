@@ -2890,7 +2890,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi avui per baixar una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}other{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi i que baixis una actualització abans del termini establert. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}}</translation>
 <translation id="3009178788565917040">Sortida</translation>
-<translation id="3009300415590184725">Confirmeu que voleu cancel·lar el procés de configuració del servei de dades mòbils?</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
 <translation id="3009779501245596802">Bases de dades indexades</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Les teves contrasenyes semblen segures}=1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
@@ -3397,7 +3396,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3396442984945202128">Verifica la teva identitat</translation>
 <translation id="3396800784455899911">En fer clic al botó Accepta i continua, acceptes el processament descrit anteriorment per a aquests serveis de Google.</translation>
 <translation id="339722927132407568">Es bloqueja</translation>
-<translation id="3398899528308712018">Suggeriment de grup de pestanyes</translation>
 <translation id="3399432415385675819">Les notificacions es desactivaran</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertzs), entrellaçat</translation>
 <translation id="3401484564516348917">Llegir informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat, els valors del registre i els fitxers</translation>
@@ -4826,7 +4824,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4386604394450371010">informació general</translation>
 <translation id="4387890294700445764">Contrasenyes en perill</translation>
 <translation id="4388650384344483842">Utilitza 8 caràcters com a mínim</translation>
-<translation id="4389091756366370506">Usuari <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i <ph name="NUMBER_OF_OTHER_SWITCHES" /> interruptors més</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuració del Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el fitxer de configuració</translation>
@@ -5560,7 +5557,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4906679076183257864">Restableix els valors predeterminats</translation>
 <translation id="4907129260985716018">Tria quan aquesta extensió pot llegir i canviar les teves dades de llocs web</translation>
 <translation id="4908811072292128752">Obre una pestanya nova per navegar per dos llocs web a la vegada</translation>
-<translation id="4909038193460299775">Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. No obstant això, les dades continuaran emmagatzemades al teu compte de Google i es podran gestionar al <ph name="BEGIN_LINK" />Tauler de control de Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">L'aplicació ja està instal·lada</translation>
 <translation id="4912643508233590958">Activacions en estat de repòs</translation>
 <translation id="4913209098186576320">Aquest fitxer pot ser perillós<ph name="LINE_BREAK" />Aquesta comprovació està tardant més de l'habitual...</translation>

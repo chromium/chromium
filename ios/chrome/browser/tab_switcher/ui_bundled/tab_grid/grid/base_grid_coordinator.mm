@@ -450,6 +450,11 @@
         [self.mediator leaveSharedTabGroup:weakGroup.get()];
       }
       break;
+    case TabGroupActionType::kDeleteSharedTabGroup:
+      if (weakGroup) {
+        [self.mediator deleteSharedTabGroup:weakGroup.get()];
+      }
+      break;
   }
 
   if (_tabGroupCoordinator) {

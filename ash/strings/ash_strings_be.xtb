@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Пераключыцца на наступнага карыстальніка</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1954252331066828794">Запіс экрана завершаны</translation>
+<translation id="1956087014741188812">Прыпыніць працу клавіш кіравання мышшу</translation>
 <translation id="1957958912175573503">Задайце мову</translation>
 <translation id="1961239773406905488">Папярэдні прагляд для камеры схаваны</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Ідзе пошук прылад…</translation>
 <translation id="2257486738914982088">Не ўдалося спампаваць файл "<ph name="FILENAME" />"</translation>
 <translation id="2258734398699965611">Прапанаваныя файлы</translation>
+<translation id="2266607665880926261">Праца клавіш кіравання мышшу прыпынена</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268731132310444948">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Пасля актывацыі Панэлі запуску вам будзе даступны радок пашыранага пошуку. Пачніце ўводзіць запыт, каб знайсці патрэбны файл, праграму ці іншае змесціва або атрымаць адказ на пытанне аб сваёй прыладзе (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Павялічыць маштаб экрана</translation>
 <translation id="2878884018241093801">Няма нядаўніх элементаў</translation>
 <translation id="2880541185262491188">Занадта многа спроб уводу PIN-кода. Пачакайце <ph name="TIME_LEFT" /> і паўтарыце спробу.</translation>
+<translation id="2883271196820422439">Узнавіць працу клавіш кіравання мышшу</translation>
 <translation id="2885950158625301909">Даведацца больш</translation>
 <translation id="2891209721153296020">"Скасаваць выбар"</translation>
 <translation id="2894949423239620203">Падключэнне праз кабель можа ўплываць на прадукцыйнасць</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">Хот-спот "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не наладжваць прагляд нядаўніх фота і медыяфайлаў з тэлефона</translation>
 <translation id="3542066395059568317">Выкарыстоўвайце рэкамендацыі, каб працягваць работу з таго месца, на якім вы спыніліся. Каб выдаліць рэкамендацыю, націсніце на яе правай кнопкай мышы.</translation>
+<translation id="3545224667633138205">Праца клавіш кіравання мышшу ўзноўлена</translation>
 <translation id="3552189655002856821">Wi-Fi выключаны</translation>
 <translation id="3554215588514239132">Паказаць або схаваць панэль інструментаў распрацоўшчыка</translation>
 <translation id="3554637740840164787">Элемент "<ph name="ITEM_TITLE" />" замацаваны</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Не ўдалося загрузіць элементы. Паўтарыце спробу, калі падключэнне да інтэрнэту будзе адноўлена.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3738664582935948253">Цяпер у відэа, створаным пры запісе экрана, можна дэманстраваць выкарыстаныя спалучэнні клавіш і націсканні мышшу</translation>
+<translation id="3741482431277446954">Правая кнопка мышы</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
 <translation id="3743775386021959186">Канцэнтрацыя ўвагі ўключана, засталося часу: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Схаваць прапанову па надвор’і</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">Прапанаваная задача, на якой трэба сканцэнтраваць увагу</translation>
 <translation id="490375751687810070">Вертыкальна</translation>
 <translation id="490788395437447240">Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Гэта эксперыментальная функцыя на аснове AI, якая не заўсёды ўсё робіць правільна.</translation>
 <translation id="491504982845934899">Каб актываваць сетку "<ph name="NETWORK_NAME" />", спачатку наладзьце прыладу</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4918086044614829423">Прыняць</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">здымак экрана</translation>
 <translation id="7118597077555700347">Адкрыць спасылку "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Вылучыць наступнае слова або літару</translation>
+<translation id="7124556000457919678">Калі налада ўключана, можна прыпыняць і ўзнаўляць працу клавіш кіравання мышшу</translation>
 <translation id="7126996685418858413">Адкрывалася на мінулым тыдні</translation>
 <translation id="7130207228079676353">НАЙБОЛЬШ ІМАВЕРНЫЯ</translation>
 <translation id="7131634465328662194">Будзе выкананы аўтаматычны выхад.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7229029500464092426">Даступны аб’ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Абедзве кнопкі мышы</translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Націскам на кнопку "Падабаецца" вы адпраўляеце водгук пра тое, што вам спадабалася гэта прапанова</translation>
 <translation id="7825412704590278437">З падзеі ў календары, якая павінна адбыцца</translation>
 <translation id="7829386189513694949">Моцны сігнал</translation>
 <translation id="7830453190047749513">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />", а таксама хуткасць курсора</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
+<translation id="8076492880354921740">Укладкі</translation>
 <translation id="8079538659226626406">Абагуліць экран</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@
 <translation id="8203224998425013577">Паказаць больш эмодзі і файлаў GIF</translation>
 <translation id="8203795194971602413">Націсканне правай клавішай мышы</translation>
 <translation id="8205469348819768313">Хочаце выканаць дзеянне клавішы Page Down? Скарыстайце</translation>
+<translation id="8213376797713070611">Левая кнопка мышы</translation>
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">У гэты час Chromebook павінен заставацца ўключаным і падключаным да сеткі сілкавання. Упэўніцеся, што кабелі зараднай прылады або адаптара надзейна падключаны як да самога Chromebook, так і да электрычнай разеткі. Не выключайце Chromebook.</translation>
 <translation id="8220076512072059941">Дадаць <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@
 <translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8314772463905284467">CAPS LOCK уключаны</translation>
 <translation id="8315514906653279104">Ідзе ўключэнне…</translation>
-<translation id="8319634750346253957">Націскам на кнопку "Не падабаецца" вы адпраўляеце водгук пра тое, што вам не спадабалася гэта прапанова</translation>
 <translation id="8331351032546853669">Чакаецца спампоўванне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth недаступны</translation>
+<translation id="9050999376345823055">Каб адпусціць, націсніце "."</translation>
 <translation id="906458777597946297">Разгарнуць акно</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9070640332319875144">Налады Памочніка</translation>

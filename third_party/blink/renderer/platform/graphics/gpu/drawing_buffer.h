@@ -344,8 +344,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void SetSharedImageInterfaceProviderForBitmapTest(
       std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider);
 
-  struct RegisteredBitmap {
-    RegisteredBitmap(
+  struct SoftwareResource {
+    SoftwareResource(
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken sync_token,
         base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
@@ -353,19 +353,19 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
         : shared_image(std::move(shared_image)),
           sync_token(std::move(sync_token)),
           sii_provider(sii_provider) {}
-    RegisteredBitmap() = default;
+    SoftwareResource() = default;
 
     // Explicitly move-only.
-    RegisteredBitmap(RegisteredBitmap&&) = default;
-    RegisteredBitmap& operator=(RegisteredBitmap&&) = default;
+    SoftwareResource(SoftwareResource&&) = default;
+    SoftwareResource& operator=(SoftwareResource&&) = default;
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
-  // Shared memory bitmaps that were released by the compositor and can be used
-  // again by this DrawingBuffer.
-  Vector<RegisteredBitmap> recycled_bitmaps_;
+  // Resources that were released by the compositor and can be used again by
+  // this DrawingBuffer.
+  Vector<SoftwareResource> recycled_software_resources_;
 
  private:
   friend class ScopedRGBEmulationForBlitFramebuffer;
@@ -533,7 +533,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                                        const gpu::SyncToken&,
                                        bool lost_resource);
   void MailboxReleasedGpu(scoped_refptr<ColorBuffer>, bool lost_resource);
-  void MailboxReleasedSoftware(RegisteredBitmap,
+  void MailboxReleasedSoftware(SoftwareResource,
                                const gpu::SyncToken&,
                                bool lost_resource);
 
@@ -546,7 +546,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void ClearCcLayer();
 
-  RegisteredBitmap CreateOrRecycleBitmap();
+  SoftwareResource CreateOrRecycleSoftwareResource();
 
   // Updates the current size of the buffer, ensuring that
   // s_currentResourceUsePixels is updated.

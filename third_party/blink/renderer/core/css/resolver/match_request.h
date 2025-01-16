@@ -33,6 +33,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 
 namespace blink {
 
@@ -70,14 +72,14 @@ class CORE_EXPORT MatchRequest {
         scope_(scope),
         vtt_originating_element_(vtt_originating_element) {
     if (rule_set) {
-      AddRuleset(rule_set);
+      AddRuleSet(rule_set);
     }
   }
 
   const ContainerNode* Scope() const { return scope_; }
   Element* VTTOriginatingElement() const { return vtt_originating_element_; }
 
-  void AddRuleset(RuleSet* rule_set) {
+  void AddRuleSet(RuleSet* rule_set) {
     DCHECK(!IsFull());
     rule_sets_[num_rule_sets_] = rule_set;
     ++num_rule_sets_;

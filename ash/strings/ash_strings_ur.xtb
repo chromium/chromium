@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">اگلے صارف پر سوئچ کریں</translation>
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1954252331066828794">اسکرین ریکارڈنگ مکمل ہو گئی</translation>
+<translation id="1956087014741188812">ماؤس کنٹرول کرنے کی کلیدیں موقوف کریں</translation>
 <translation id="1957958912175573503">اپنی زبان سیٹ کریں</translation>
 <translation id="1961239773406905488">کیمرا کا پیش منظر پوشیدہ ہے</translation>
 <translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">آلات کیلئے سکیننگ کی جا رہی ہے…</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ڈاؤن لوڈ کرنے کے دوران کچھ غلط ہو گیا</translation>
 <translation id="2258734398699965611">تجویز کردہ فائلز</translation>
+<translation id="2266607665880926261">ماؤس کنٹرول کرنے کی کلیدیں موقوف ہو گئیں</translation>
 <translation id="2268130516524549846">بلوٹوتھ غیر فعال کر دیا گیا</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> میں سے <ph name="STEP" /> ٹؤر قدم۔ لانچر کے فعال ہو جانے کے بعد، آپ کو بہتر تلاش بار حاصل ہوگا۔ آپ اپنی فائلز، ایپس، وغیرہ کو تلاش کرنے کے لیے ٹائپ کرنا شروع کر سکتے ہیں۔ آپ اپنے <ph name="PRODUCT_NAME" /> کے بارے میں پوچھے گئے سوالات کے جوابات بھی حاصل کر سکتے ہیں۔</translation>
 <translation id="2268813581635650749">سب سے سائن آؤٹ کریں</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">اسکرین پر زوم ان کریں</translation>
 <translation id="2878884018241093801">کوئی حالیہ آئٹم نہیں</translation>
 <translation id="2880541185262491188">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ کوشش کریں</translation>
+<translation id="2883271196820422439">ماؤس کنٹرول کرنے کی کلیدیں دوبارہ شروع کریں</translation>
 <translation id="2885950158625301909">مزید جانیں</translation>
 <translation id="2891209721153296020">"غیر منتخب کریں"</translation>
 <translation id="2894949423239620203">کیبل کارکردگی پر اثرانداز ہو سکتی ہے</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ</translation>
 <translation id="3540893133818942399">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="3542066395059568317">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے دائیں طرف کلک کر سکتے ہیں۔</translation>
+<translation id="3545224667633138205">ماؤس کنٹرول کرنے کی کلیدیں دوبارہ شروع ہو گئیں</translation>
 <translation id="3552189655002856821">‏Wi-Fi آف ہے</translation>
 <translation id="3554215588514239132">ڈویلپر ٹولز پینل دکھائیں یا چھپائیں</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> کو پن کر دیا گیا</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">آئٹمز کو لوڈ نہیں کیا جا سکا۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3738664582935948253">اب آپ اسکرین ریکارڈنگز میں کلکس اور کی بورڈ شارٹ کٹس دکھا سکتے ہیں</translation>
+<translation id="3741482431277446954">ماؤس کا دایاں بٹن</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
 <translation id="3743775386021959186">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے</translation>
 <translation id="3750403286520637847">موسم کی تجویز چھپائیں</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">فوکس کرنے کے لیے تجویز کردہ ٹاسک</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
-<translation id="4911191962826748981">‏یہ تجرباتی AI خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
 <translation id="491504982845934899">آلہ سیٹ اپ کرنے کے بعد <ph name="NETWORK_NAME" /> کو فعال کریں</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
@@ -1827,6 +1831,7 @@
 <translation id="7118268675952955085">اسکرین شاٹ</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> کھولیں</translation>
 <translation id="7119327711295338600">اگلا لفظ یا حرف منتخب کریں</translation>
+<translation id="7124556000457919678">آن ہونے پر، ماؤس کنٹرول کرنے کی کلیدیں موقوف اور دوبارہ شروع کریں</translation>
 <translation id="7126996685418858413">پچھلے ہفتے میں کھولا گیا</translation>
 <translation id="7130207228079676353">غالبأ</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
@@ -1848,6 +1853,7 @@
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">ماؤس کے دونوں بٹنز</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2017,7 +2023,6 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7807067443225230855">تلاش اور اسسٹنٹ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> اور <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">اظہار پسندیدگی یہ تاثر جمع کرائے گا کہ آپ کو یہ تجویز پسند ہے</translation>
 <translation id="7825412704590278437">آئندہ کے کیلنڈر ایونٹ سے</translation>
 <translation id="7829386189513694949">مضبوط سگنل</translation>
 <translation id="7830453190047749513">آپ بٹن کی کارروائیوں، کرسر کی رفتار اور بہت کچھ کو اپنے <ph name="PERIPHERAL_NAME" /> لیے ذاتی نوعیت کا بنا سکتے ہیں</translation>
@@ -2109,6 +2114,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="8054466585765276473">بیٹری کے وقت کا حساب لگایا جا رہا ہے۔</translation>
+<translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8079538659226626406">اسکرین کا اشتراک</translation>
 <translation id="8083540854303889870">بعد کیلئے محفوظ کردہ</translation>
 <translation id="8085765914647468715">‫YouTube Music</translation>
@@ -2149,6 +2155,7 @@
 <translation id="8203224998425013577">‏مزید ایموجیز اور GIFs دکھائیں</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
 <translation id="8205469348819768313">‏‫Page Down استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
+<translation id="8213376797713070611">ماؤس کا بایاں بٹن</translation>
 <translation id="8214996719228530800">‏Canary چینل</translation>
 <translation id="8219451629189078428">‏اس دوران آپ کے Chromebook کو آن اور پاور سے منسلک رہنے کی ضرورت ہے۔ یقینی بنائیں کہ چارجر یا ایڈاپٹر کیبلز آپ کے Chromebook اور پاور آؤٹ لیٹ دونوں میں مکمل طور پر پلگ کی ہوئی ہیں۔ اپنے Chromebook کو آف نہ کریں۔</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> شامل کریں</translation>
@@ -2173,7 +2180,6 @@
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8314772463905284467">‏Caps Lock آن ہے</translation>
 <translation id="8315514906653279104">آن ہو رہا ہے…</translation>
-<translation id="8319634750346253957">اظہار ناپسندیدگی یہ تاثر جمع کرائے گا کہ آپ کو یہ تجویز پسند نہیں ہے</translation>
 <translation id="8331351032546853669">ڈاؤن لوڈ زير التوا ہے</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2374,6 +2380,7 @@
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
 <translation id="9050012935252397793">بلوٹوتھ دستیاب نہیں ہے</translation>
+<translation id="9050999376345823055">ریلیز کرنے کے لیے "." دبائیں</translation>
 <translation id="906458777597946297">ونڈو کو انتہا تک بڑا کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9070640332319875144">اسسٹنٹ کی ترتیبات</translation>

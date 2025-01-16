@@ -160,6 +160,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1101254380285078812">{COUNT,plural, =1{1 Password}one{{COUNT} Password}other{{COUNT} na Password}}</translation>
 <translation id="1102759278139578486">Hindi ma-download ang mga file ng annotation ng pangunahing node. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Mawawalan ka kaagad ng access sa grupo ng tab na ito, at ide-delete ito sa lahat ng device mo</translation>
 <translation id="1106350001632362876">Pataasin ang threshold</translation>
 <translation id="1107482171728500359">I-share ang mikropono</translation>
 <translation id="110850812463801904">Manual na kumonekta sa OneDrive</translation>
@@ -1703,6 +1704,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2173302385160625112">Suriin ang iyong koneksyon sa internet</translation>
 <translation id="2173801458090845390">Magdagdag ng requisition ID sa device na ito</translation>
 <translation id="2175384018164129879">Pamahalaan ang mga Search Engine at Site Search</translation>
+<translation id="2175526076681939329">Gumamit ng mga pangunahing key</translation>
 <translation id="217576141146192373">Hindi naidagdag ang printer. Pakitingnan ang configuration ng iyong printer at subukan ulit.</translation>
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="217631816678106981">Huwag i-paste</translation>
@@ -2902,7 +2904,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3008272652534848354">I-reset ang mga pahintulot</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi ngayong araw para mag-download ng update. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}}</translation>
 <translation id="3009178788565917040">Output</translation>
-<translation id="3009300415590184725">Sigurado ka bang gusto mong kanselahin ang proseso ng pag-setup ng serbisyo ng mobile data?</translation>
 <translation id="3009352964623081324">Search + O, pagkatapos ay S. Gamitin para mag-install, mamahala, at mag-customize ng mga boses.</translation>
 <translation id="3009779501245596802">Mga naka-index na database</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Mukhang malakas ang iyong password}=1{{COUNT} mahinang password}one{{COUNT} mahinang password}other{{COUNT} na mahinang password}}</translation>
@@ -3411,7 +3412,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3396442984945202128">I-verify na Ikaw Ito</translation>
 <translation id="3396800784455899911">Sa pamamagitan ng pag-click sa button na "Tanggapin at magpatuloy," sumasang-ayon ka sa pagpoproseso na inilarawan sa itaas para sa mga serbisyong ito ng Google.</translation>
 <translation id="339722927132407568">Nagfi-freeze</translation>
-<translation id="3398899528308712018">Suhestyon sa grupo ng tab</translation>
 <translation id="3399432415385675819">Madi-disable ang mga notification</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - naka-interlace</translation>
 <translation id="3401484564516348917">Basahin ang impormasyon tungkol sa iyong browser, OS, naka-install na software, mga value sa registry, at mga file</translation>
@@ -3427,6 +3427,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3407392651057365886">Higit pang page ang ipi-preload. Posibleng mag-preload ng mga page sa pamamagitan ng mga server ng Google kapag hiniling ng iba pang site.</translation>
 <translation id="3407967630066378878">Para i-set up ang fingerprint, ipapindot sa iyong anak ang sensor para sa fingerprint sa kaliwang bahagi ng <ph name="DEVICE_TYPE" /> na ito. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="3408555740610481810">Ginagamit ang camera at mikropono</translation>
+<translation id="3409157109901479672">Kaliwang bahagi</translation>
 <translation id="3409513286451883969">&amp;Isalin ang Pinili sa <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Jump to Selection</translation>
 <translation id="3413122095806433232">Mga Nagbigay ng CA: <ph name="LOCATION" /></translation>
@@ -4712,6 +4713,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4290826901752066702"><ph name="NUM" /> miyembro</translation>
 <translation id="4290898381118933198">Mag-swipe para mag-navigate sa mga page</translation>
 <translation id="4291265871880246274">Dialog ng Pag-log in</translation>
+<translation id="4292613336957320546">Acceleration</translation>
 <translation id="429312253194641664">May site na nagpe-play ng media</translation>
 <translation id="4294392694389031609">Na-delete ang <ph name="FILE_NAME" /> sa history ng pag-download, pero nasa device mo pa rin ito</translation>
 <translation id="4295072614469448764">Available ang app sa iyong terminal. Maaari ding magkaroon ng icon sa iyong Launcher.</translation>
@@ -4839,7 +4841,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4386604394450371010">pangkalahatang-ideya</translation>
 <translation id="4387890294700445764">Mga nakompromisong password</translation>
 <translation id="4388650384344483842">Gumamit ng hindi bababa sa 8 character</translation>
-<translation id="4389091756366370506">User <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at <ph name="NUMBER_OF_OTHER_SWITCHES" /> pang switch</translation>
 <translation id="439266289085815679">Ang configuration ng bluetooth ay kinokontrol ni <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">I-edit ang file ng configuration</translation>
@@ -5574,7 +5575,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4906679076183257864">I-reset sa Default</translation>
 <translation id="4907129260985716018">Piliin kung kailan mari-read at mababago ng extension na ito ang data ng iyong site</translation>
 <translation id="4908811072292128752">Magbukas ng bagong tab upang mag-browse ng dalawang site nang sabay</translation>
-<translation id="4909038193460299775">Dahil pinamamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear sa device na ito ang iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store ang data mo sa iyong Google Account at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Naka-install na ang app</translation>
 <translation id="4912643508233590958">Mga Idle na Pag-wake Up</translation>
 <translation id="4913209098186576320">Posibleng mapanganib ang file na ito<ph name="LINE_BREAK" />Mas natatagalan kaysa sa karaniwan ang pagsusuring ito...</translation>
@@ -5880,6 +5880,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, Paghahanap sa <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Ilagay ang PIN para sa iyong security key. Kung hindi mo alam ang PIN, kakailanganin mong i-reset ang security key.</translation>
 <translation id="5139955368427980650">&amp;Buksan</translation>
+<translation id="5140742218917419811">Mga gagamiting key</translation>
 <translation id="5141421572306659464">Pangunahing Account</translation>
 <translation id="5141957579434225843">Halimbawa, gamitin ang oà, oè, uỳ sa halip na òa, òe, ùy</translation>
 <translation id="5143374789336132547">Binago ng extension na "<ph name="EXTENSION_NAME" />" ang ipinapakitang page kapag na-click mo ang button ng Home.</translation>
@@ -5898,6 +5899,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5149602533174716626">Kop&amp;yahin ang Video Frame</translation>
 <translation id="5150254825601720210">Pangalan ng Server ng Netscape Certificate SSL</translation>
 <translation id="5151354047782775295">Magbakante ng espasyo sa disk o pumili ng data na maaaring awtomatikong i-delete</translation>
+<translation id="5153074793829217329">Gamitin ang iyong keyboard o numeric na keypad para kontrolin ang cursor ng mouse mo</translation>
 <translation id="5153234146675181447">Kalimutan ang telepono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Mga advanced na setting para sa <ph name="PRINTING_DESTINATION" /></translation>
@@ -7992,6 +7994,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6689714331348768690">Hilingin kay <ph name="SUPERVISED_USER_NAME" /> na lumapit sa computer. Magbabasa ang iyong anak ng ilang parirala sa screen na ito para gawin ang kanyang voice model.
     <ph name="BR" />
     Kung kailangan ni <ph name="SUPERVISED_USER_NAME" /> ng tulong sa pagbabasa, utusan ang iyong anak na gayahin ang sasabihin mo. Bumulong nang malayo sa mikropono para boses ng iyong anak sa halip na boses mo ang matutunan ng Assistant.</translation>
+<translation id="6689948774466767379">Mga Mouse Key</translation>
 <translation id="6690659332373509948">Hindi magawang i-parse ang file: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Sumulong</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}one{{COUNT} page}other{{COUNT} na page}}</translation>
@@ -10079,6 +10082,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Idagdag ang Tab sa Listahan ng Babasahin}one{Idagdag ang Mga Tab sa Listahan ng Babasahin}other{Idagdag ang Mga Tab sa Listahan ng Babasahin}}</translation>
 <translation id="8169177848833352618">Sa kasamaang-palad, hindi nakakatugon ang machine na ito sa mga requirement para sa pag-install ng Bruschetta. Ang code ng error ay <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Kanang bahagi</translation>
 <translation id="8174047975335711832">Impormasyon ng device</translation>
 <translation id="8176332201990304395">Pink at puti</translation>
 <translation id="8176529144855282213">Para i-on ang access sa mikropono, i-on ang pisikal na switch ng mikropono sa iyong device</translation>

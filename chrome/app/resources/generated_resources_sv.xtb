@@ -160,6 +160,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1101254380285078812">{COUNT,plural, =1{1 lösenord}other{{COUNT} lösenord}}</translation>
 <translation id="1102759278139578486">Det gick inte att ladda ned kommentarsfiler för huvudnoden. Försök igen senare.</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
+<translation id="1104098698795583187">Du förlorar omedelbart åtkomst till flikgruppen och den raderas från alla dina enheter</translation>
 <translation id="1106350001632362876">Höj gränsen</translation>
 <translation id="1107482171728500359">Dela mikrofon</translation>
 <translation id="110850812463801904">Anslut manuellt till OneDrive</translation>
@@ -1702,6 +1703,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2173801458090845390">Lägg till rekvirerings-id på enheten</translation>
 <translation id="2175384018164129879">&amp;Hantera sökmotorer och webbplatssökning</translation>
+<translation id="2175526076681939329">Använd primära tangenter</translation>
 <translation id="217576141146192373">Det gick inte att lägga till en skrivare. Kontrollera skrivarens konfiguration och försök igen.</translation>
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="217631816678106981">Klistra inte in</translation>
@@ -2901,7 +2903,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="3009178788565917040">Utgång</translation>
-<translation id="3009300415590184725">Är du säker på att du vill avbryta konfigurationen av den mobila datatjänsten?</translation>
 <translation id="3009352964623081324">Sök + O, sedan S. Använd till att installera, hantera och anpassa röster.</translation>
 <translation id="3009779501245596802">Indexerade databaser</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Lösenorden ser starka ut}=1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
@@ -3410,7 +3411,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3396442984945202128">Verifiera din identitet</translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
 <translation id="339722927132407568">Den låser sig</translation>
-<translation id="3398899528308712018">Förslag på flikgrupp</translation>
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – flätade</translation>
 <translation id="3401484564516348917">Läsa information om webbläsaren, operativsystemet, enheten, installerad mjukvara, registervärden och filer</translation>
@@ -3426,6 +3426,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3407392651057365886">Fler sidor läses in i förväg. Sidor kan läsas in i förväg via Googles servrar när de begärs av andra webbplatser.</translation>
 <translation id="3407967630066378878">Låt ditt barn trycka på fingeravtryckssensorn på väster sida av <ph name="DEVICE_TYPE" /> för att ställa in fingeravtryck. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3408555740610481810">Kameran och mikrofonen används</translation>
+<translation id="3409157109901479672">Vänster sida</translation>
 <translation id="3409513286451883969">&amp;Översätt markering till <ph name="LANGUAGE" /></translation>
 <translation id="3412265149091626468">Hoppa till markering</translation>
 <translation id="3413122095806433232">CA-utfärdare: <ph name="LOCATION" /></translation>
@@ -4711,6 +4712,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4290826901752066702"><ph name="NUM" /> medlem</translation>
 <translation id="4290898381118933198">Navigera mellan sidor genom att svepa</translation>
 <translation id="4291265871880246274">Dialogruta för inloggning</translation>
+<translation id="4292613336957320546">Acceleration</translation>
 <translation id="429312253194641664">Media spelas upp på en webbplats</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> har raderats från nedladdningshistoriken, men finns fortfarande kvar på enheten</translation>
 <translation id="4295072614469448764">Appen är tillgänglig via terminalen. Det kan också finnas en ikon för den i startprogrammet.</translation>
@@ -4838,7 +4840,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4386604394450371010">översikt</translation>
 <translation id="4387890294700445764">Utsatta lösenord</translation>
 <translation id="4388650384344483842">Använd minst 8 tecken</translation>
-<translation id="4389091756366370506">Användare <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> och <ph name="NUMBER_OF_OTHER_SWITCHES" /> brytare till</translation>
 <translation id="439266289085815679">Konfiguration av Bluetooth styrs av <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Redigera konfigurationsfilen</translation>
@@ -5573,7 +5574,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4906679076183257864">Återställ standardvärden</translation>
 <translation id="4907129260985716018">Välj när det här tillägget kan läsa och ändra webbplatsdata</translation>
 <translation id="4908811072292128752">Öppna en ny flik om du vill surfa på två webbplatser samtidigt</translation>
-<translation id="4909038193460299775">Eftersom kontot hanteras av <ph name="DOMAIN" /> raderas bokmärken, historik, lösenord och andra inställningar från enheten. Däremot finns uppgifterna kvar i Google-kontot och kan hanteras via <ph name="BEGIN_LINK" />Google Översikt<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Appen har redan installerats</translation>
 <translation id="4912643508233590958">Antal gånger som systemets vänteprocess har väckts</translation>
 <translation id="4913209098186576320">Den här filen kan vara farlig<ph name="LINE_BREAK" />Kontrollen tar längre tid än vanligt …</translation>
@@ -5879,6 +5879,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, sökning på <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Ange säkerhetsnyckelns pinkod. Om du inte kommer ihåg pinkoden måste du återställa säkerhetsnyckeln.</translation>
 <translation id="5139955368427980650">&amp;Öppna</translation>
+<translation id="5140742218917419811">Tangenter du vill använda</translation>
 <translation id="5141421572306659464">Primärt konto</translation>
 <translation id="5141957579434225843">Använd exempelvis oà, oè, uỳ istället för òa, òe, ùy</translation>
 <translation id="5143374789336132547">Tillägget <ph name="EXTENSION_NAME" /> har ändrat vilken sida som visas när du klickar på hemknappen.</translation>
@@ -5897,6 +5898,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5149602533174716626">Kopiera videobildrutan</translation>
 <translation id="5150254825601720210">SSL-servernamn för Netscape-certifikat</translation>
 <translation id="5151354047782775295">Frigör diskutrymme, annars tas en del data bort automatiskt.</translation>
+<translation id="5153074793829217329">Styr markören med tangentbordet eller en numerisk knappsats</translation>
 <translation id="5153234146675181447">Glöm mobil</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerade inställningar för <ph name="PRINTING_DESTINATION" /></translation>
@@ -7989,6 +7991,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> att komma till datorn. Röstmodellen skapas genom att barnet läser upp några fraser på skärmen.
     <ph name="BR" />
     Om <ph name="SUPERVISED_USER_NAME" /> behöver hjälp med att läsa låter du honom elle henne upprepa det du säger. Vänd dig bort från mikrofonen och viska så att Google Assistent lär sig barnets röst i stället för din.</translation>
+<translation id="6689948774466767379">Mustangenter</translation>
 <translation id="6690659332373509948">Det gick inte att analysera filen: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Framåt</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sida}other{{COUNT} sidor}}</translation>
@@ -10076,6 +10079,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lägg till fliken i läslistan}other{Lägg till flikarna i läslistan}}</translation>
 <translation id="8169177848833352618">Den här datorn uppfyller tyvärr inte kraven för att installera Bruschetta. Felkoden är <ph name="ERROR" />.</translation>
+<translation id="8172303073969862496">Höger sida</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8176332201990304395">Rosa och vit</translation>
 <translation id="8176529144855282213">Aktivera mikrofonåtkomst med hjälp av det fysiska mikrofonreglaget på enheten</translation>
