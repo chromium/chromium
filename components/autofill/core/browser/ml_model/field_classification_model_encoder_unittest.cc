@@ -216,6 +216,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kEmpty, kEmpty, kEmpty,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -227,6 +229,8 @@ TEST_F(FieldClassificationModelEncoderTest,
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
                               // FEATURE_AUTOCOMPLETE
                               kUnknown, kNumber, kUnknown, kUnknown, kUnknown,
+                              // FEATURE_NAME
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,
                               // FEATURE_TYPE
                               kNumber, kEmpty, kEmpty, kEmpty, kEmpty),
                           ElementsAre(
@@ -239,7 +243,9 @@ TEST_F(FieldClassificationModelEncoderTest,
                               // FEATURE_FORM_NAME
                               kNumber, kUnknown, kEmpty, kEmpty, kEmpty,
                               // FEATURE_FRAME_URL_PATH
-                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty)));
+                              kUnknown, kUnknown, kNumber, kEmpty, kEmpty,
+                              // PADDING
+                              kEmpty, kEmpty, kEmpty, kEmpty, kEmpty)));
 }
 
 struct StandardizeStringTestCase {
