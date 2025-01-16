@@ -1803,6 +1803,7 @@ if (is_android) {
         "../browser/extensions/content_security_policy_apitest.cc",
         "../browser/extensions/cross_origin_isolation_browsertest.cc",
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
+        "../browser/extensions/extension_incognito_apitest.cc",
         "../browser/extensions/extension_platform_browsertest_browsertest.cc",
         "../browser/extensions/system_cpu_apitest.cc",
         "../browser/extensions/system_memory_apitest.cc",

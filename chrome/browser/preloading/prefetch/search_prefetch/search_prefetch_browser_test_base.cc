@@ -296,6 +296,7 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
     return CreateDeferrableResponse(
         net::HTTP_OK,
         {{"cache-control", "private, max-age=0"},
+         {"No-Vary-Search", "params(\"pf\", \"gs_lcrp\")"},
          {"content-type", static_files_[request.relative_url].second}},
         static_files_[request.relative_url].first);
   }
@@ -312,22 +313,27 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
     return CreateDeferrableResponse(
         is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK,
         {{"cache-control", "private, max-age=0"},
-         {"content-type", "text/html"}},
+         {"content-type", "text/html"},
+         {"No-Vary-Search", "params(\"pf\", \"gs_lcrp\")"}},
         content);
   }
 
   if (request.GetURL().spec().find("502_on_prefetch") != std::string::npos &&
       is_prefetch) {
-    return CreateDeferrableResponse(net::HTTP_BAD_GATEWAY,
-                                    {{"content-type", "text/html"}},
-                                    "<html><body>prefetch</body></html>");
+    return CreateDeferrableResponse(
+        net::HTTP_BAD_GATEWAY,
+        {{"content-type", "text/html"},
+         {"No-Vary-Search", "params(\"pf\", \"gs_lcrp\")"}},
+        "<html><body>prefetch</body></html>");
   }
   std::string content = "<html><body> ";
   content.append(is_prefetch ? "prefetch" : "regular");
   content.append(" </body></html>");
   return CreateDeferrableResponse(
       net::HTTP_OK,
-      {{"content-type", "text/html"}, {"cache-control", "private, max-age=0"}},
+      {{"content-type", "text/html"},
+       {"cache-control", "private, max-age=0"},
+       {"No-Vary-Search", "params(\"pf\", \"gs_lcrp\")"}},
       content);
 }
 

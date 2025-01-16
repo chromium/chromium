@@ -170,9 +170,7 @@ Node* GetVisibleTextNode(Node& start_node) {
       continue;
     }
     if (style && style->Visibility() == EVisibility::kVisible &&
-        node->IsTextNode() &&
-        (!RuntimeEnabledFeatures::FindTextSkipCollapsedTextEnabled() ||
-         node->GetLayoutObject())) {
+        node->IsTextNode() && node->GetLayoutObject()) {
       return node;
     }
     // This element is hidden, but node might be visible,
@@ -392,10 +390,6 @@ FindResults FindBuffer::FindMatches(const String& search_text,
   // empty), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
   if (buffer_.empty() || !offset_mapping_) {
-    return FindResults();
-  }
-  if (!RuntimeEnabledFeatures::FindDecomposedInShortTextEnabled() &&
-      search_text.length() > buffer_.size()) {
     return FindResults();
   }
   String search_text_16_bit = search_text;

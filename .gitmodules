@@ -509,6 +509,9 @@
 [submodule "third_party/ruy/src"]
 	path = third_party/ruy/src
 	url = https://chromium.googlesource.com/external/github.com/google/ruy
+[submodule "third_party/search_engines_data/resources"]
+	path = third_party/search_engines_data/resources
+	url = https://chromium.googlesource.com/external/search_engines_data
 [submodule "third_party/skia"]
 	path = third_party/skia
 	url = https://skia.googlesource.com/skia

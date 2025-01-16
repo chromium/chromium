@@ -91,16 +91,24 @@ class PLATFORM_EXPORT TextRun final {
     }
   }
 
-  TextRun SubRun(unsigned start_offset, unsigned length) const {
+  // direction - An optional TextDirection of the new TextRun. If this is not
+  //             specified, the new TextRun inherits the TextDirection of
+  //             `this`.
+  TextRun SubRun(unsigned start_offset,
+                 unsigned length,
+                 std::optional<TextDirection> direction = std::nullopt) const {
     DCHECK_LT(start_offset, len_);
 
-    TextRun result = *this;
-
+    TextDirection new_direction = direction.value_or(Direction());
     if (Is8Bit()) {
-      result.SetText(Data8(start_offset), length);
+      TextRun result = TextRun(data_.characters8 + start_offset, length,
+                               new_direction, directional_override_);
+      result.SetNormalizeSpace(normalize_space_);
       return result;
     }
-    result.SetText(Data16(start_offset), length);
+    TextRun result = TextRun(data_.characters16 + start_offset, length,
+                             new_direction, directional_override_);
+    result.SetNormalizeSpace(normalize_space_);
     return result;
   }
 
@@ -111,16 +119,6 @@ class PLATFORM_EXPORT TextRun final {
   UChar operator[](unsigned i) const {
     SECURITY_DCHECK(i < len_);
     return Is8Bit() ? data_.characters8[i] : data_.characters16[i];
-  }
-  const LChar* Data8(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    DCHECK(Is8Bit());
-    return &data_.characters8[i];
-  }
-  const UChar* Data16(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    DCHECK(!Is8Bit());
-    return &data_.characters16[i];
   }
 
   // Prefer Span8() and Span16() to Characters8() and Characters16().
@@ -174,26 +172,12 @@ class PLATFORM_EXPORT TextRun final {
     normalize_space_ = normalize_space;
   }
 
-  void SetText(const LChar* c, unsigned len) {
-    data_.characters8 = c;
-    len_ = len;
-    is_8bit_ = true;
-  }
-  void SetText(const UChar* c, unsigned len) {
-    data_.characters16 = c;
-    len_ = len;
-    is_8bit_ = false;
-  }
-
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
   bool Rtl() const { return Direction() == TextDirection::kRtl; }
   bool Ltr() const { return Direction() == TextDirection::kLtr; }
   bool DirectionalOverride() const { return directional_override_; }
-  void SetDirection(TextDirection direction) {
-    direction_ = static_cast<unsigned>(direction);
-  }
 
   // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control
   // characters as per the CSS Text Module Level 3 specification.
@@ -207,10 +191,10 @@ class PLATFORM_EXPORT TextRun final {
     RAW_PTR_EXCLUSION const UChar* characters16;
     RAW_PTR_EXCLUSION const void* bytes_;
   } data_;
-  unsigned len_;
+  const unsigned len_;
 
   unsigned is_8bit_ : 1;
-  unsigned direction_ : 1;
+  const unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
   unsigned normalize_space_ : 1;

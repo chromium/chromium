@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '54719d07c9e41e06bd0215f4fe95b707fe98ae7f',
+  'chromium_variations_revision': '82d9481272451587da950c1f7ad5562960f68fdc',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'eea8bc9299f88a34bc08c706e5e281e4dbc9fd38',
+  'devtools_frontend_revision': '7a44ab7a2969caeba97d7f10b9a9fee2557a3229',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '303c79d4dd614d20c963f3547995dbc2ea0cbc6a',
+    'ca0420a95e026ded2aee0ff3d34184674235c6c0',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2657,6 +2657,9 @@ deps = {
 
   'src/third_party/ruy/src':
     Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '83fd40d730feb0804fafbc2d8814bcc19a17b2e5',
+
+  'src/third_party/search_engines_data/resources':
+    Var('chromium_git') + '/external/search_engines_data.git' + '@' + '797c94d72b29932c8095bd7885ae26b7ed267db9',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),

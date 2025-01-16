@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_av_1.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_avc.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_hevc.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_vp_9.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
@@ -1184,6 +1185,18 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
         break;
       }
       result.quantizer = request->encodeOpts->avc()->quantizer();
+      break;
+    case media::VideoCodec::kHEVC:
+      if (!active_config_->options.bitrate.has_value() ||
+          active_config_->options.bitrate->mode() !=
+              media::Bitrate::Mode::kExternal) {
+        break;
+      }
+      if (!request->encodeOpts->hasHevc() ||
+          !request->encodeOpts->hevc()->hasQuantizer()) {
+        break;
+      }
+      result.quantizer = request->encodeOpts->hevc()->quantizer();
       break;
     case media::VideoCodec::kVP8:
     default:

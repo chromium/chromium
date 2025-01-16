@@ -152,15 +152,15 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     }])
 
     source_type = 'offscreen'
-    codec = 'avc1.42001E'
     acc = 'prefer-hardware'
-    args = (source_type, codec, acc)
-    yield ('WebCodecs_PerFrameQpEncoding_%s_%s_%s' % args,
-           'frame-qp-encoding.html', [{
-               'source_type': source_type,
-               'codec': codec,
-               'acceleration': acc
-           }])
+    for codec in ['avc1.42001E', 'hvc1.1.6.L93.B0']:
+      args = (source_type, codec, acc)
+      yield ('WebCodecs_PerFrameQpEncoding_%s_%s_%s' % args,
+             'frame-qp-encoding.html', [{
+                 'source_type': source_type,
+                 'codec': codec,
+                 'acceleration': acc
+             }])
 
     codec = 'av01.0.04M.08'
     acc = 'prefer-software'
