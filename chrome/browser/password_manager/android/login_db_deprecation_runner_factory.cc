@@ -49,15 +49,29 @@ LoginDbDeprecationRunnerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  // If there are no passwords saved, there is nothing to export prior to
-  // deprecation.
-  if (prefs->GetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // Reset the pref if the flag is off, to ensure that if a client switches
+    // from the "Enabled" to the "Disabled" group, they redo the export once
+    // the feature is eventually enabled for them.
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      false);
     return nullptr;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kLoginDbDeprecationAndroid)) {
+  if (prefs->GetBoolean(
+          password_manager::prefs::kUpmUnmigratedPasswordsExported)) {
+    // Since saving new passwords is disabled, one export is enough to guarantee
+    // that all passwords have been preserved outside of the login database.
+    return nullptr;
+  }
+
+  // If there are no passwords saved, there is nothing to export prior to
+  // deprecation, so mark the export as done without instantiating the exporter.
+  if (prefs->GetBoolean(
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      true);
     return nullptr;
   }
 

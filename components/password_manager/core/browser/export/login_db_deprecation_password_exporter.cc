@@ -126,12 +126,18 @@ void LoginDbDeprecationPasswordExporter::OnExportComplete() {
 void LoginDbDeprecationPasswordExporter::OnExportCompleteWithResult(
     LoginDbDeprecationExportResult result) {
   LogExportResult(result);
+
   // If the export wasn't successful and there are passwords to export,
   // it will be re-attempted on the next startup.
   if (result == LoginDbDeprecationExportResult::kSuccess) {
     LogExportLatency(base::Time::Now() - start_time_);
     pref_service_->SetBoolean(prefs::kUpmUnmigratedPasswordsExported, true);
+  } else if (result == LoginDbDeprecationExportResult::kNoPasswords) {
+    // Nothing to export, so the export can be marked as done.
+    pref_service_->SetBoolean(
+        password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
   }
+
   std::move(export_cleanup_callback_).Run();
   // The callback above destroys `this`.
 }

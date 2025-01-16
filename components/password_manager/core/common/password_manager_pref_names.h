@@ -215,7 +215,9 @@ inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
 
 // Whether the passwords who couldn't be migrated to UPM have been
 // saved as a CSV. The user can then choose to export the CSV out of Chrome
-// via a separate flow.
+// via a separate flow. The pref is also set to true if there were no
+// saved passwords. The value is used as a signal that the login db
+// can stop being used.
 inline constexpr char kUpmUnmigratedPasswordsExported[] =
     "profile.upm_unmigrated_passwords_exported";
 #endif

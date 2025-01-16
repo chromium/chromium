@@ -109,7 +109,7 @@ class LoginDbDeprecationPasswordExporterTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(LoginDbDeprecationPasswordExporterTest, DoesntExportIfNoPasswords) {
+TEST_F(LoginDbDeprecationPasswordExporterTest, DoesntCreateFileIfNoPasswords) {
   base::HistogramTester histogram_tester;
   // No passwords in the backend.
   exporter()->Start(password_store(), task_env_.QuitClosure());
@@ -121,6 +121,8 @@ TEST_F(LoginDbDeprecationPasswordExporterTest, DoesntExportIfNoPasswords) {
   histogram_tester.ExpectUniqueSample(
       kExportResultHistogram, LoginDbDeprecationExportResult::kNoPasswords, 1);
   histogram_tester.ExpectTotalCount(kExportLatencyHistogram, 0);
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(prefs::kUpmUnmigratedPasswordsExported));
 }
 
 TEST_F(LoginDbDeprecationPasswordExporterTest, ExportFailedToFetchPasswords) {
