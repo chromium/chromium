@@ -1797,6 +1797,7 @@ if (is_android) {
         "../browser/extensions/api/offscreen/offscreen_document_manager_browsertest.cc",
         "../browser/extensions/api/power/power_apitest.cc",
         "../browser/extensions/api/runtime/runtime_apitest.cc",
+        "../browser/extensions/api/settings_overrides/settings_overrides_browsertest.cc",
         "../browser/extensions/api/web_request/web_request_apitest.cc",
         "../browser/extensions/background_script_executor_browsertest.cc",
         "../browser/extensions/content_security_policy_apitest.cc",
