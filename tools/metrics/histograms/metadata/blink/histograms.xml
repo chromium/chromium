@@ -3428,6 +3428,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.LCPP.PrefetchSubresource.DBBroken" enum="BooleanEnabled"
+    expires_after="2025-08-10">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records whether LCP DB misses the type of subresource to be prefeteched. We
+    expect this rarely happens except experiment starting, where the DB scheme
+    changes.
+
+    This metric is emitted when predicted subresources URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+</histogram>
+
 <histogram name="Blink.LCPP.PreloadedFontCount" units="count"
     expires_after="2025-06-22">
   <owner>yyanagisawa@chromium.org</owner>
