@@ -2360,6 +2360,91 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "2");
 }
 
+#if BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to read from the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_CANTOPEN);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to write to the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_READONLY);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kExclusive));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_IOERR_READ);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+// This test is simulating an common error code received on Windows when
+// the database file is being copied by a third-party. The common API used
+// is CopyFileEx(...) which is acquiring a shared lock on the file.
+TEST_P(SQLDatabaseTest, OpenFails_SharedLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kShared));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_BUSY);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   // The database file ends up empty if we don't create at least one table.
   ASSERT_TRUE(

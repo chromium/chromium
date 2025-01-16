@@ -1984,9 +1984,25 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     base::ElapsedTimer library_call_timer;
     sqlite_result_code = ToSqliteResultCode(sqlite3_open_v2(
         uri_file_path.c_str(), &db, open_flags, options_.vfs_name_discouraged));
+
+    // The database should not be opened in ReadOnly since the flag
+    // SQLITE_OPEN_READWRITE was specified. This condition is happening when the
+    // file can't be opened (already opened by an other process). This situation
+    // happens on a non-exclusive database when SQLite tries to re-open the file
+    // in read only after an initial failure. On Windows, the sqlite API
+    // fallback to open a database in read-only using flag SQLITE_OPEN_READONLY.
+    // The flag WINFILE_RDONLY will be added (see details within the sqlite
+    // function winOpen(...)). An error is reported here to avoid the following
+    // execute statements to fail to modify the database.
+    if (sqlite_result_code == SqliteResultCode::kOk && db &&
+        sqlite3_db_readonly(db, kSqliteMainDatabaseName) == 1) {
+      sqlite_result_code = SqliteResultCode::kReadOnly;
+    }
+
     RecordTimingHistogram("Sql.Database.Success.SqliteOpenTime.",
                           library_call_timer.Elapsed());
   }
+
   if (sqlite_result_code == SqliteResultCode::kOk) {
     db_ = db;
   } else {
