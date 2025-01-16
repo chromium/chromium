@@ -218,7 +218,7 @@ double WebAudioMediaStreamAudioSink::ProvideInput(
       media::AudioTimestampHelper::FramesToTime(
           frames_delayed + fifo_->frames(), source_params_.sample_rate())
           .InMillisecondsF());
-  if (fifo_->frames() >= audio_bus->frames()) {
+  if (fifo_->frames() >= static_cast<size_t>(audio_bus->frames())) {
     fifo_->Consume(audio_bus, 0, audio_bus->frames());
     TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                       "WebAudioMediaStreamAudioSink fifo space", this,

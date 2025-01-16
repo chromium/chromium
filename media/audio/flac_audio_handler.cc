@@ -84,7 +84,7 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   DCHECK(is_initialized());
 
   if (AtEnd()) {
-    DCHECK_EQ(fifo_->frames(), 0);
+    DCHECK_EQ(fifo_->frames(), 0u);
     bus->Zero();
     return true;
   }
@@ -93,7 +93,8 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
   DCHECK_EQ(bus->channels(), num_channels_);
 
   // Records the number of frames copied into `bus`.
-  int frames_copied = 0;
+  size_t frames_copied = 0;
+  size_t bus_size = static_cast<size_t>(bus->frames());
 
   do {
     if (fifo_->frames() == 0 && !AtEnd()) {
@@ -103,13 +104,12 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
       }
     }
 
-    if (fifo_->frames() > 0) {
-      const int frames =
-          std::min(bus->frames() - frames_copied, fifo_->frames());
+    if (fifo_->frames() > 0u) {
+      const size_t frames = std::min(bus_size - frames_copied, fifo_->frames());
       fifo_->Consume(bus, frames_copied, frames);
       frames_copied += frames;
     }
-  } while (!AtEnd() && frames_copied < bus->frames());
+  } while (!AtEnd() && frames_copied < bus_size);
 
   *frames_written = frames_copied;
   return true;

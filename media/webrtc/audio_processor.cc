@@ -178,7 +178,8 @@ class AudioProcessorCaptureFifo {
     }
 
     if (fifo_) {
-      CHECK_LT(fifo_->frames(), destination_->bus()->frames());
+      CHECK_LT(fifo_->frames(),
+               static_cast<size_t>(destination_->bus()->frames()));
       next_audio_delay_ =
           audio_delay + fifo_->frames() * base::Seconds(1) / sample_rate_;
       fifo_->Push(source_to_push);
@@ -195,8 +196,10 @@ class AudioProcessorCaptureFifo {
   bool Consume(AudioProcessorCaptureBus** destination,
                base::TimeDelta* audio_delay) {
     if (fifo_) {
-      if (fifo_->frames() < destination_->bus()->frames())
+      if (fifo_->frames() <
+          static_cast<size_t>(destination_->bus()->frames())) {
         return false;
+      }
 
       fifo_->Consume(destination_->bus(), 0, destination_->bus()->frames());
       *audio_delay = next_audio_delay_;
