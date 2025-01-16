@@ -110,6 +110,7 @@ class NoVarySearchHelperTester final {
             /*prefetch_document_manager=*/nullptr,
             base::MakeRefCounted<PreloadPipelineInfo>());
 
+    prefetch_container->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();

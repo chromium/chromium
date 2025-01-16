@@ -543,17 +543,26 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPreloadingAttempt() { return !!attempt_; }
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
-  // Simulates a prefetch container that has started its request. It sets the
-  //`attempt_` to the correct state: `PreloadingEligibility::kEligible`,
-  // `PreloadingHoldbackStatus::kAllowed` and
-  // `PreloadingTriggeringOutcome::kReady`.
-  void SimulateAttemptAtRequestStartForTest();
-  // Simulates a prefetch container that reaches the interceptor. Similar to
-  // |SimulateAttemptAtRequestStartForTest| but also marks the prefetch as
-  // completed.
-  void SimulateAttemptAtInterceptorForTest();
-  // Simulates a prefetch container that failed at the eligibility check.
-  void SimulateEligibilityCheckFailedForTest(PreloadingEligibility eligibility);
+  // Simulates state transitions for:
+  // - Passing eligibility check successfully (`LoadState::kEligible`),
+  // - About to start prefetching (`LoadState::kStarted`), and
+  // - Completion of prefetching.
+  // For correct transitions, the methods should be called in the following
+  // order (note that the `Simulate*()` methods here doesn't simulate the
+  // loader):
+  // - `SimulatePrefetchEligibleForTest()`
+  // - `SimulatePrefetchStartedForTest()`
+  // - `SetStreamingURLLoader()`
+  // - `SimulatePrefetchCompletedForTest()`
+  void SimulatePrefetchEligibleForTest();
+  void SimulatePrefetchStartedForTest();
+  void SimulatePrefetchCompletedForTest();
+
+  // Simulates a prefetch container that failed at the eligibility check
+  // (`LoadState::FailedIneligible`).
+  void SimulatePrefetchFailedIneligibleForTest(
+      PreloadingEligibility eligibility);
+
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {

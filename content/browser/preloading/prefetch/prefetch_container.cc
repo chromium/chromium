@@ -1572,28 +1572,25 @@ void PrefetchContainer::UpdateServingPageMetrics() {
   }
 }
 
-void PrefetchContainer::SimulateAttemptAtRequestStartForTest() {
+void PrefetchContainer::SimulatePrefetchEligibleForTest() {
   if (attempt_) {
     attempt_->SetEligibility(PreloadingEligibility::kEligible);
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
   SetLoadState(LoadState::kEligible);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
+}
+
+void PrefetchContainer::SimulatePrefetchStartedForTest() {
   SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
 
-void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
-  if (attempt_) {
-    attempt_->SetEligibility(PreloadingEligibility::kEligible);
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-  }
-  SetLoadState(LoadState::kEligible);
-  SetLoadState(LoadState::kStarted);
+void PrefetchContainer::SimulatePrefetchCompletedForTest() {
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
 
-void PrefetchContainer::SimulateEligibilityCheckFailedForTest(
+void PrefetchContainer::SimulatePrefetchFailedIneligibleForTest(
     PreloadingEligibility eligibility) {
   CHECK_NE(PreloadingEligibility::kEligible, eligibility);
 

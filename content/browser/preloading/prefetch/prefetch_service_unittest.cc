@@ -6817,7 +6817,8 @@ TEST_F(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrefetch);
-  prefetch_container1->SimulateAttemptAtRequestStartForTest();
+  prefetch_container1->SimulatePrefetchEligibleForTest();
+  prefetch_container1->SimulatePrefetchStartedForTest();
   base::WeakPtr<PreloadingAttempt> attempt1 =
       prefetch_container1->preloading_attempt();
   AddPrefetchContainerWithoutStartingPrefetchForTesting(
@@ -6880,7 +6881,7 @@ TEST_F(PrefetchServiceAddPrefetchContainerTest,
       CreateSpeculationRulesPrefetchContainer(document_token,
                                               GURL("https://example.com"),
                                               PreloadingType::kPrerender);
-  prefetch_container1->SimulateEligibilityCheckFailedForTest(
+  prefetch_container1->SimulatePrefetchFailedIneligibleForTest(
       PreloadingEligibility::kDataSaverEnabled);
   base::WeakPtr<PreloadingAttempt> attempt1 =
       prefetch_container1->preloading_attempt();
