@@ -32,8 +32,8 @@ class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
-class DIPSNavigationHandle;
-class DIPSServiceImpl;
+class BtmNavigationHandle;
+class BtmServiceImpl;
 class FedCmMetrics;
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
@@ -123,9 +123,9 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL
   // from the redirect chain. This method should only be called in the
-  // DIPSNavigationHandle class.
+  // BtmNavigationHandle class.
   static SourceId GetSourceIdForRedirectUrl(
-      base::PassKey<content::DIPSNavigationHandle>,
+      base::PassKey<content::BtmNavigationHandle>,
       const GURL& redirect_url);
 
   // Gets a new SourceId of EXTENSION_ID type and updates the source URL
@@ -139,11 +139,10 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
-  // given domain. This method should only be called in the DIPSServiceImpl
+  // given domain. This method should only be called in the BtmServiceImpl
   // class for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(
-      base::PassKey<content::DIPSServiceImpl>,
-      const std::string& site);
+  static SourceId GetSourceIdForDipsSite(base::PassKey<content::BtmServiceImpl>,
+                                         const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
   // used for recording ChromeOS website stats.

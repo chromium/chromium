@@ -31,7 +31,7 @@ class RenderFrameHost;
 
 namespace dips {
 
-// Should match DIPSDirectNavigationSource in tools/metrics/histograms/enums.xml
+// Should match BtmDirectNavigationSource in tools/metrics/histograms/enums.xml
 enum DirectNavigationSource {
   kUnknown = 0,
   kOmnibar = 1,
@@ -59,7 +59,7 @@ struct PageVisitInfo {
 
 struct EntrypointInfo {
   // Used when the entrypoint has a server redirect exit.
-  explicit EntrypointInfo(const DIPSRedirectInfo& server_redirect_info,
+  explicit EntrypointInfo(const BtmRedirectInfo& server_redirect_info,
                           const dips::PageVisitInfo& exit_page_info);
   // Used when the entrypoint has a client redirect exit.
   explicit EntrypointInfo(const dips::PageVisitInfo& client_redirector_info);
@@ -126,10 +126,10 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
   bool CanEmitNavFlowNodeUkmForPreviousPage() const;
 
   void MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-      const DIPSRedirectInfo* exit_info,
+      const BtmRedirectInfo* exit_info,
       int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-      const DIPSRedirectInfo* exit_info) const;
+      const BtmRedirectInfo* exit_info) const;
   void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
   bool CanEmitSuspectedTrackerFlowUkm(
@@ -151,7 +151,7 @@ class CONTENT_EXPORT DipsNavigationFlowDetector
   bool MaybeInitializeSuccessorInteractionTrackingState();
   void ResetSuccessorInteractionTrackingState();
 
-  const DIPSRedirectContext& GetRedirectContext() const;
+  const BtmRedirectContext& GetRedirectContext() const;
 
   // start WebContentsObserver overrides
   // For client-initiated cookie accesses, and late-reported cookie accesses in

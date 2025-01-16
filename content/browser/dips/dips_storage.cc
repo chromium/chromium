@@ -22,22 +22,22 @@
 
 namespace content {
 
-DIPSStorage::DIPSStorage(const std::optional<base::FilePath>& path)
-    : db_(std::make_unique<DIPSDatabase>(path)) {
+BtmStorage::BtmStorage(const std::optional<base::FilePath>& path)
+    : db_(std::make_unique<BtmDatabase>(path)) {
   base::AssertLongCPUWorkAllowed();
 }
 
-DIPSStorage::~DIPSStorage() {
+BtmStorage::~BtmStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// DIPSDatabase interaction functions ------------------------------------------
+// BtmDatabase interaction functions ------------------------------------------
 
-DIPSState DIPSStorage::Read(const GURL& url) {
-  return ReadSite(GetSiteForDIPS(url));
+BtmState BtmStorage::Read(const GURL& url) {
+  return ReadSite(GetSiteForBtm(url));
 }
 
-DIPSState DIPSStorage::ReadSite(std::string site) {
+BtmState BtmStorage::ReadSite(std::string site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -51,12 +51,12 @@ DIPSState DIPSStorage::ReadSite(std::string site) {
            state->bounce_times.has_value() ||
            state->web_authn_assertion_times.has_value());
 
-    return DIPSState(this, std::move(site), state.value());
+    return BtmState(this, std::move(site), state.value());
   }
-  return DIPSState(this, std::move(site));
+  return BtmState(this, std::move(site));
 }
 
-void DIPSStorage::Write(const DIPSState& state) {
+void BtmStorage::Write(const BtmState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -65,7 +65,7 @@ void DIPSStorage::Write(const DIPSState& state) {
              state.bounce_times(), state.web_authn_assertion_times());
 }
 
-std::optional<PopupsStateValue> DIPSStorage::ReadPopup(
+std::optional<PopupsStateValue> BtmStorage::ReadPopup(
     const std::string& first_party_site,
     const std::string& tracking_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -74,7 +74,7 @@ std::optional<PopupsStateValue> DIPSStorage::ReadPopup(
   return db_->ReadPopup(first_party_site, tracking_site);
 }
 
-std::vector<PopupWithTime> DIPSStorage::ReadRecentPopupsWithInteraction(
+std::vector<PopupWithTime> BtmStorage::ReadRecentPopupsWithInteraction(
     const base::TimeDelta& lookback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -82,12 +82,12 @@ std::vector<PopupWithTime> DIPSStorage::ReadRecentPopupsWithInteraction(
   return db_->ReadRecentPopupsWithInteraction(lookback);
 }
 
-bool DIPSStorage::WritePopup(const std::string& first_party_site,
-                             const std::string& tracking_site,
-                             const uint64_t access_id,
-                             const base::Time& popup_time,
-                             bool is_current_interaction,
-                             bool is_authentication_interaction) {
+bool BtmStorage::WritePopup(const std::string& first_party_site,
+                            const std::string& tracking_site,
+                            const uint64_t access_id,
+                            const base::Time& popup_time,
+                            bool is_current_interaction,
+                            bool is_authentication_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -95,10 +95,10 @@ bool DIPSStorage::WritePopup(const std::string& first_party_site,
                          is_current_interaction, is_authentication_interaction);
 }
 
-void DIPSStorage::RemoveEvents(base::Time delete_begin,
-                               base::Time delete_end,
-                               network::mojom::ClearDataFilterPtr filter,
-                               const DIPSEventRemovalType type) {
+void BtmStorage::RemoveEvents(base::Time delete_begin,
+                              base::Time delete_end,
+                              network::mojom::ClearDataFilterPtr filter,
+                              const BtmEventRemovalType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   DCHECK(delete_end.is_null() || delete_begin <= delete_end);
@@ -112,8 +112,7 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
 
   if (filter.is_null()) {
     db_->RemoveEventsByTime(delete_begin, delete_end, type);
-  } else if (type == DIPSEventRemovalType::kStorage &&
-             filter->origins.empty()) {
+  } else if (type == BtmEventRemovalType::kStorage && filter->origins.empty()) {
     // Site-filtered deletion is only supported for cookie-related
     // DIPS events, since only cookie deletion allows domains but not hosts.
     //
@@ -135,14 +134,14 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
   }
 }
 
-void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
+void BtmStorage::RemoveRows(const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  db_->RemoveRows(DIPSDatabaseTable::kBounces, sites);
+  db_->RemoveRows(BtmDatabaseTable::kBounces, sites);
 }
 
-void DIPSStorage::RemoveRowsWithoutProtectiveEvent(
+void BtmStorage::RemoveRowsWithoutProtectiveEvent(
     const std::set<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -154,51 +153,49 @@ void DIPSStorage::RemoveRowsWithoutProtectiveEvent(
       std::vector<std::string>(filtered_sites.begin(), filtered_sites.end()));
 }
 
-// DIPSTabHelper Function Impls ------------------------------------------------
+// BtmTabHelper Function Impls ------------------------------------------------
 
-void DIPSStorage::RecordStorage(const GURL& url,
-                                base::Time time,
-                                DIPSCookieMode mode) {
+void BtmStorage::RecordStorage(const GURL& url,
+                               base::Time time,
+                               BtmCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  DIPSState state = Read(url);
+  BtmState state = Read(url);
   state.update_site_storage_time(time);
 }
 
-void DIPSStorage::RecordInteraction(const GURL& url,
-                                    base::Time time,
-                                    DIPSCookieMode mode) {
+void BtmStorage::RecordInteraction(const GURL& url,
+                                   base::Time time,
+                                   BtmCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  DIPSState state = Read(url);
+  BtmState state = Read(url);
   state.update_user_interaction_time(time);
 }
 
-void DIPSStorage::RecordWebAuthnAssertion(const GURL& url,
-                                          base::Time time,
-                                          DIPSCookieMode mode) {
+void BtmStorage::RecordWebAuthnAssertion(const GURL& url,
+                                         base::Time time,
+                                         BtmCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
-  DIPSState state = Read(url);
+  BtmState state = Read(url);
   state.update_web_authn_assertion_time(time);
 }
 
-void DIPSStorage::RecordBounce(const GURL& url,
-                               base::Time time,
-                               bool stateful) {
+void BtmStorage::RecordBounce(const GURL& url, base::Time time, bool stateful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
-  DIPSState state = Read(url);
+  BtmState state = Read(url);
   state.update_bounce_time(time);
   if (stateful) {
     state.update_stateful_bounce_time(time);
   }
 }
 
-std::set<std::string> DIPSStorage::FilterSitesWithoutProtectiveEvent(
+std::set<std::string> BtmStorage::FilterSitesWithoutProtectiveEvent(
     std::set<std::string> sites) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
@@ -215,46 +212,46 @@ std::set<std::string> DIPSStorage::FilterSitesWithoutProtectiveEvent(
   return sites;
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatBounced(
+std::vector<std::string> BtmStorage::GetSitesThatBounced(
     base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatBounced(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState(
+std::vector<std::string> BtmStorage::GetSitesThatBouncedWithState(
     base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatBouncedWithState(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
+std::vector<std::string> BtmStorage::GetSitesThatUsedStorage(
     base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatUsedStorage(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesToClear(
+std::vector<std::string> BtmStorage::GetSitesToClear(
     std::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
   base::TimeDelta grace_period =
-      custom_period.value_or(features::kDIPSGracePeriod.Get());
+      custom_period.value_or(features::kBtmGracePeriod.Get());
 
-  switch (features::kDIPSTriggeringAction.Get()) {
-    case DIPSTriggeringAction::kNone: {
+  switch (features::kBtmTriggeringAction.Get()) {
+    case BtmTriggeringAction::kNone: {
       return {};
     }
-    case DIPSTriggeringAction::kStorage: {
+    case BtmTriggeringAction::kStorage: {
       sites_to_clear = GetSitesThatUsedStorage(grace_period);
       break;
     }
-    case DIPSTriggeringAction::kBounce: {
+    case BtmTriggeringAction::kBounce: {
       sites_to_clear = GetSitesThatBounced(grace_period);
       break;
     }
-    case DIPSTriggeringAction::kStatefulBounce: {
+    case BtmTriggeringAction::kStatefulBounce: {
       sites_to_clear = GetSitesThatBouncedWithState(grace_period);
       break;
     }
@@ -263,39 +260,39 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
   return sites_to_clear;
 }
 
-bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
-                                              base::Time bound) {
+bool BtmStorage::DidSiteHaveInteractionSince(const GURL& url,
+                                             base::Time bound) {
   auto last_user_interaction_time = LastUserActivationTime(url);
   return last_user_interaction_time.has_value() &&
          last_user_interaction_time >= bound;
 }
 
-std::optional<base::Time> DIPSStorage::LastUserActivationTime(const GURL& url) {
+std::optional<base::Time> BtmStorage::LastUserActivationTime(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const DIPSState state = Read(url);
+  const BtmState state = Read(url);
   if (!state.user_interaction_times().has_value()) {
     return std::nullopt;
   }
   return state.user_interaction_times()->second;
 }
 
-std::optional<base::Time> DIPSStorage::LastWebAuthnAssertionTime(
+std::optional<base::Time> BtmStorage::LastWebAuthnAssertionTime(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const DIPSState state = Read(url);
+  const BtmState state = Read(url);
   if (!state.web_authn_assertion_times().has_value()) {
     return std::nullopt;
   }
   return state.web_authn_assertion_times()->second;
 }
 
-std::optional<base::Time> DIPSStorage::LastUserActivationOrAuthnAssertionTime(
+std::optional<base::Time> BtmStorage::LastUserActivationOrAuthnAssertionTime(
     const GURL& url) {
   return LastInteractionTimeAndType(url).first;
 }
 
-std::pair<std::optional<base::Time>, DIPSInteractionType>
-DIPSStorage::LastInteractionTimeAndType(const GURL& url) {
+std::pair<std::optional<base::Time>, BtmInteractionType>
+BtmStorage::LastInteractionTimeAndType(const GURL& url) {
   base::Time last_user_activation_time =
       LastUserActivationTime(url).value_or(base::Time::Min());
   base::Time last_web_authn_assertion_time =
@@ -303,19 +300,19 @@ DIPSStorage::LastInteractionTimeAndType(const GURL& url) {
 
   if ((last_user_activation_time == last_web_authn_assertion_time) &&
       (last_user_activation_time == base::Time::Min())) {
-    return std::make_pair(std::nullopt, DIPSInteractionType::NoInteraction);
+    return std::make_pair(std::nullopt, BtmInteractionType::NoInteraction);
   }
   if (last_user_activation_time >= last_web_authn_assertion_time) {
     return std::make_pair(last_user_activation_time,
-                          DIPSInteractionType::UserActivation);
+                          BtmInteractionType::UserActivation);
   }
   return std::make_pair(last_web_authn_assertion_time,
-                        DIPSInteractionType::Authentication);
+                        BtmInteractionType::Authentication);
 }
 
 /* static */
-void DIPSStorage::DeleteDatabaseFiles(base::FilePath path,
-                                      base::OnceClosure on_complete) {
+void BtmStorage::DeleteDatabaseFiles(base::FilePath path,
+                                     base::OnceClosure on_complete) {
   // TODO (jdh): Decide how to handle the case of failing to delete db files.
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -323,12 +320,12 @@ void DIPSStorage::DeleteDatabaseFiles(base::FilePath path,
       std::move(on_complete));
 }
 
-std::optional<base::Time> DIPSStorage::GetTimerLastFired() {
+std::optional<base::Time> BtmStorage::GetTimerLastFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetTimerLastFired();
 }
 
-bool DIPSStorage::SetTimerLastFired(base::Time time) {
+bool BtmStorage::SetTimerLastFired(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->SetTimerLastFired(time);
 }

@@ -15,24 +15,24 @@ namespace dips {
 // This class exists just to call
 // PageSpecificContentSettings::IncrementStatefulBounceCount() whenever the user
 // is statefully bounced.
-class StatefulBounceCounter : public content::DIPSService::Observer,
+class StatefulBounceCounter : public content::BtmService::Observer,
                               public base::SupportsUserData::Data {
  public:
   using PassKey = base::PassKey<StatefulBounceCounter>;
 
   // The constructor takes a PassKey so only CreateFor() can call
   // std::make_unique<StatefulBounceCounter>().
-  StatefulBounceCounter(PassKey, content::DIPSService*);
+  StatefulBounceCounter(PassKey, content::BtmService*);
   ~StatefulBounceCounter() override;
 
   // Create a StatefulBounceCounter that observes `dips_service` and will be
   // destroyed automatically.
-  static void CreateFor(content::DIPSService* dips_service);
+  static void CreateFor(content::BtmService* dips_service);
 
   void OnStatefulBounce(content::WebContents*) override;
 
  private:
-  raw_ptr<content::DIPSService> dips_service_;
+  raw_ptr<content::BtmService> dips_service_;
 
   // For SupportsUserData:
   static const int kUserDataKey = 0;

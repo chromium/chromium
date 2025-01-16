@@ -84,22 +84,21 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeleteStaleSessionCookiesOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevToolsPrivacyUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
-// TODO(crbug.com/364900088): Refactor DIPS feature flags and parameters into
+// TODO(crbug.com/364900088): Refactor BTM feature flags and parameters into
 // their own features file.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPS);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDIPSTtl);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtm);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBtmTtl);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kDIPSPersistedDatabaseEnabled;
-CONTENT_EXPORT extern const base::FeatureParam<bool> kDIPSDeletionEnabled;
+    kBtmPersistedDatabaseEnabled;
+CONTENT_EXPORT extern const base::FeatureParam<bool> kBtmDeletionEnabled;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kBtmGracePeriod;
+CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kBtmTimerDelay;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kDIPSGracePeriod;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay;
+    kBtmInteractionTtl;
+CONTENT_EXPORT extern const base::FeatureParam<content::BtmTriggeringAction>
+    kBtmTriggeringAction;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kDIPSInteractionTtl;
-CONTENT_EXPORT extern const base::FeatureParam<content::DIPSTriggeringAction>
-    kDIPSTriggeringAction;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kDIPSClientBounceDetectionTimeout;
+    kBtmClientBounceDetectionTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebContentsDiscard);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentIsolationPolicyOriginTrial);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDrawCutoutEdgeToEdge);

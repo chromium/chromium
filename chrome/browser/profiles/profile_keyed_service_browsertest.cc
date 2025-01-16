@@ -439,9 +439,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "UsbDeviceResourceManager",
     "sct_reporting::Factory",
 
+    "BtmBrowserSigninDetector",
     "ClientHints",
     "ConnectorsService",
-    "DIPSBrowserSigninDetector",
     "DataControlsRulesService",
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/374351946): This is most likely unnesssary on CrOS because

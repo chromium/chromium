@@ -8,7 +8,7 @@
 #include "content/public/browser/dips_redirect_info.h"
 
 namespace content {
-DipsRedirectChainObserver::DipsRedirectChainObserver(DIPSService* service,
+DipsRedirectChainObserver::DipsRedirectChainObserver(BtmService* service,
                                                      GURL final_url)
     : final_url_(std::move(final_url)) {
   observation_.Observe(service);
@@ -17,13 +17,13 @@ DipsRedirectChainObserver::DipsRedirectChainObserver(DIPSService* service,
 DipsRedirectChainObserver::~DipsRedirectChainObserver() = default;
 
 void DipsRedirectChainObserver::OnChainHandled(
-    const std::vector<DIPSRedirectInfoPtr>& redirects,
-    const DIPSRedirectChainInfoPtr& chain) {
+    const std::vector<BtmRedirectInfoPtr>& redirects,
+    const BtmRedirectChainInfoPtr& chain) {
   if (chain->final_url.url == final_url_) {
     if (!redirects_.has_value()) {
       redirects_.emplace();
-      for (const DIPSRedirectInfoPtr& redirect : redirects) {
-        redirects_->push_back(std::make_unique<DIPSRedirectInfo>(*redirect));
+      for (const BtmRedirectInfoPtr& redirect : redirects) {
+        redirects_->push_back(std::make_unique<BtmRedirectInfo>(*redirect));
       }
     } else {
       LOG(WARNING)

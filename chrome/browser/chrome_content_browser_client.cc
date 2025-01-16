@@ -8565,9 +8565,9 @@ bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
 
 void ChromeContentBrowserClient::OnDipsServiceCreated(
     content::BrowserContext* browser_context,
-    content::DIPSService* dips_service) {
-  // Create DIPSBrowserSigninDetector.
-  CHECK(DIPSBrowserSigninDetector::Get(browser_context));
+    content::BtmService* dips_service) {
+  // Create BtmBrowserSigninDetector.
+  CHECK(BtmBrowserSigninDetector::Get(browser_context));
   dips::StatefulBounceCounter::CreateFor(dips_service);
 }
 
