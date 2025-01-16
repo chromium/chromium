@@ -46,6 +46,15 @@
 
 class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
  public:
+  WebUIWebViewBrowserTest() {
+#if BUILDFLAG(ENABLE_GLIC)
+    // Required to enable chrome://glic.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*disabled_features=*/{});
+#endif
+  }
+
   void SetUpOnMainThread() override {
     base::FilePath test_data_dir;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
@@ -118,10 +127,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
             false);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  // Required to enable chrome://glic.
-  base::test::ScopedFeatureList scoped_feature_list_{{ features::kGlic }};
-#endif
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
