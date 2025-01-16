@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/webauthn/authenticator_list_observer.h"
 

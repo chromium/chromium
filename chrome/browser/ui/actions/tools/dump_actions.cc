@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "ui/actions/action_id.h"
