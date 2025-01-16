@@ -11,12 +11,19 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /** A ServiceConnection that records a histogram for service connection delay. */
 public abstract class ServiceConnectionDelayRecorder implements ServiceConnection {
+        private static final String TAG = "ServiceConnDelay";
+
     private static final String SERVICE_CONNECTION_DELAY_HISTOGRAM_PREFIX =
             "Android.WebView.Startup.NonblockingServiceConnectionDelay.";
 
@@ -37,28 +44,37 @@ public abstract class ServiceConnectionDelayRecorder implements ServiceConnectio
     /** Bind to the given service. See {@link ServiceHelper#bindService} for details. */
     public final boolean bind(Context context, Intent intent, int flags) {
         mBindTime = getClock().uptimeMillis();
-        return ServiceHelper.bindService(context, intent, this, flags);
+        boolean success = ServiceHelper.bindService(context, intent, this, flags);
+
+        if (!success) {
+            Log.w(TAG, "Failed to bind to service with intent: " + intent);
+            mBindTime = -1; // Reset mBindTime as binding failed
+        }
+        return success;
+    
     }
 
     @Override
     public final void onServiceConnected(ComponentName className, IBinder service) {
-        assert mBindTime != -1 : "Should call bindService first";
-        // Only record the first connection.
-        if (!mRecorded) {
+         if (mBindTime == -1) {
+            Log.e(TAG, "Service connected before bind was called.");
+            return;
+        }
+
+        if (mRecorded.compareAndSet(false, true)) {
             long connectionTime = getClock().uptimeMillis();
-
-            String serviceName = className.getShortClassName();
-            serviceName = serviceName.substring(serviceName.lastIndexOf(".") + 1);
-
+            String serviceName = className != null
+ ? className.getShortClassName().substring(className.getShortClassName().lastIndexOf(".") + 1)
+                    : "Unknown";
             RecordHistogram.recordTimesHistogram(
                     SERVICE_CONNECTION_DELAY_HISTOGRAM_PREFIX + serviceName,
                     connectionTime - mBindTime);
-            mRecorded = true;
+
+            Log.d(TAG, "Service connected: " + serviceName + " in " + (connectionTime - mBindTime) + " ms");
         }
 
         onServiceConnectedImpl(className, service);
     }
-
     /** Overridden by tests. */
     @VisibleForTesting
     public Clock getClock() {
