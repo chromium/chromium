@@ -1408,6 +1408,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandAddToExistingGroup:
       return SupportsTabGroups();
 
+    case CommandAddToSplit:
+      return true;
+
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
@@ -1634,6 +1637,11 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAddToExistingGroup: {
       // Do nothing. The submenu's delegate will invoke
       // ExecuteAddToExistingGroupCommand with the correct group later.
+      break;
+    }
+
+    case CommandAddToSplit: {
+      // TODO(crbug.com/390426676): Implement this.
       break;
     }
 

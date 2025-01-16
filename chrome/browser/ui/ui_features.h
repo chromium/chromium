@@ -131,6 +131,8 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 #endif
 
+BASE_DECLARE_FEATURE(kSideBySide);
+
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
