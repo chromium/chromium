@@ -11,6 +11,7 @@ source_set("password_settings") {
     "password_settings_coordinator_delegate.h",
     "password_settings_mediator.h",
     "password_settings_mediator.mm",
+    "password_settings_metrics_utils.h",
   ]
   deps = [
     ":common",

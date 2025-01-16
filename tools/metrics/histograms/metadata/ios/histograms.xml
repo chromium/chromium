@@ -3491,6 +3491,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordManager.Settings.DeleteAllSavedCredentialsActions"
+    enum="IOSDeleteAllSavedCredentialsActions" expires_after="2025-12-01">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Record the user's decisions when the confirmation dialog of deleting all
+    saved credentials shows up.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.WidgetPromo.Action"
     enum="PromoWithInstructionsAction" expires_after="2025-07-06">
   <owner>noemies@google.com</owner>
