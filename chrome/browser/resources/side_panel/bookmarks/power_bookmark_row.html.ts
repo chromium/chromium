@@ -99,6 +99,7 @@ if (this.shouldExpand_()) {
           .bookmarksService="${this.bookmarksService}"
           .draggable="${this.canDrag}"
           .can-drag="${this.canDrag}"
+          .keyArrowNavigationService="${this.keyArrowNavigationService}"
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''
