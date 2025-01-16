@@ -1466,6 +1466,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
+    std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
     int http_response_code) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateForSynchronousRendererCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
@@ -1608,6 +1609,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           frame_tree_node, blink::mojom::SystemEntropy::kNormal);
   navigation_request->render_frame_host_ = render_frame_host->GetSafeRef();
   navigation_request->coep_reporter_ = std::move(coep_reporter);
+  navigation_request->dip_reporter_ = std::move(dip_reporter);
   navigation_request->isolation_info_for_subresources_ =
       isolation_info_for_subresources;
   navigation_request->associated_rfh_type_ =
@@ -3255,6 +3257,25 @@ void NavigationRequest::CreateCoepReporter(
 std::unique_ptr<CrossOriginEmbedderPolicyReporter>
 NavigationRequest::TakeCoepReporter() {
   return std::move(coep_reporter_);
+}
+
+void NavigationRequest::CreateDipReporter(StoragePartition* storage_partition) {
+  DCHECK(!isolation_info_for_subresources_.IsEmpty());
+
+  const PolicyContainerPolicies& policies =
+      policy_container_builder_->FinalPolicies();
+  dip_reporter_ = std::make_unique<DocumentIsolationPolicyReporter>(
+      static_cast<StoragePartitionImpl*>(storage_partition)->GetWeakPtr(),
+      common_params_->url,
+      policies.document_isolation_policy.reporting_endpoint,
+      policies.document_isolation_policy.report_only_reporting_endpoint,
+      GetRenderFrameHost()->GetFrameToken().value(),
+      isolation_info_for_subresources_.network_anonymization_key());
+}
+
+std::unique_ptr<DocumentIsolationPolicyReporter>
+NavigationRequest::TakeDipReporter() {
+  return std::move(dip_reporter_);
 }
 
 ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
@@ -6108,6 +6129,7 @@ void NavigationRequest::CommitNavigation() {
   CreateCoepReporter(GetRenderFrameHost()->GetProcess()->GetStoragePartition());
   coop_status_.UpdateReporterStoragePartition(
       GetRenderFrameHost()->GetProcess()->GetStoragePartition());
+  CreateDipReporter(GetRenderFrameHost()->GetProcess()->GetStoragePartition());
 
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
