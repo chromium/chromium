@@ -97,7 +97,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 
 #if BUILDFLAG(IS_CHROMEOS) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-#include "ash/components/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) && (BUILDFLAG(USE_VAAPI) ||
         // BUILDFLAG(USE_V4L2_CODEC))
 

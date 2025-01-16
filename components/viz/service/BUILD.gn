@@ -351,7 +351,7 @@ viz_component("service") {
     ]
 
     if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 

@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/experiences/arc/sensor/arc_iio_sensor_bridge.h"
 
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_iio_sensor_instance.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_iio_sensor_instance.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

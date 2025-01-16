@@ -18,11 +18,11 @@ static_library("error_notification") {
 
   deps = [
     "//ash/components/arc",
-    "//ash/components/arc/vector_icons",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc/vector_icons",
     "//ui/message_center",
   ]
 }

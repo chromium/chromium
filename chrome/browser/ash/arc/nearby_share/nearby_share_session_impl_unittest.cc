@@ -8,7 +8,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_util.h"

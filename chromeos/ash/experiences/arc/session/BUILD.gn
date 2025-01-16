@@ -116,7 +116,7 @@ static_library("arc_base_enums") {
 source_set("unit_tests") {
   testonly = true
 
-  data = [ "//ash/components/arc/test/data/mem_profile/" ]
+  data = [ "../test/data/mem_profile/" ]
 
   sources = [
     "arc_bridge_host_impl_unittest.cc",

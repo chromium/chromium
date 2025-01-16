@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/window/arc_window_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
@@ -108,6 +107,7 @@
 #include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/experiences/arc/window/arc_window_watcher.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"

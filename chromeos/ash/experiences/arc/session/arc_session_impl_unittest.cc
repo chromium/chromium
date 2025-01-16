@@ -13,8 +13,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_bridge_host.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -30,6 +28,8 @@
 #include "chromeos/ash/experiences/arc/session/arc_start_params.h"
 #include "chromeos/ash/experiences/arc/session/arc_upgrade_params.h"
 #include "chromeos/ash/experiences/arc/session/mojo_invitation_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_bridge_host.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/pill_button.h"
@@ -19,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/experiences/arc/compat_mode/overlay_dialog.h"
 #include "chromeos/ash/experiences/arc/compat_mode/style/arc_color_provider.h"
+#include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"

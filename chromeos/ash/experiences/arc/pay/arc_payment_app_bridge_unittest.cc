@@ -7,9 +7,9 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_payment_app_bridge_test_support.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

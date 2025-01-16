@@ -9,7 +9,7 @@
 
 #include "ash/components/arc/mojom/video_common.mojom-shared.h"
 #include "ash/components/arc/mojom/video_decoder.mojom-shared.h"
-#include "ash/components/arc/video_accelerator/video_frame_plane.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/decoder_status.h"
 #include "media/base/status.h"
