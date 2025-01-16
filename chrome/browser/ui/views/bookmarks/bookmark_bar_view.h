@@ -301,7 +301,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Creates the button for rendering the specified bookmark node.
   std::unique_ptr<views::View> CreateBookmarkButton(
-      const bookmarks::BookmarkNode* node);
+      const bookmarks::BookmarkNode* node,
+      size_t index);
 
   // Removes the bookmark button at the given index.
   void RemoveBookmarkButton(size_t index);
