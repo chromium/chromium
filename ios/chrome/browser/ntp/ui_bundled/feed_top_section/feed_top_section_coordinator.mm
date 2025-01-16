@@ -7,7 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
@@ -39,6 +38,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::RecordAction;

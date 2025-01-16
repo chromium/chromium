@@ -11,7 +11,6 @@
 #import "components/metrics/metrics_service.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 

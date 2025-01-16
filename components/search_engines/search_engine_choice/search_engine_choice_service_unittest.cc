@@ -31,7 +31,6 @@
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/eea_countries_ids.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -45,6 +44,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using search_engines::RepromptResult;
 using search_engines::WipeSearchEngineChoiceReason;

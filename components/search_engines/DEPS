@@ -34,6 +34,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/omnibox_proto",
   "+third_party/lens_server_proto",
+  "+third_party/search_engines_data",
   "+ui/base",
   "+ui/gfx",
 

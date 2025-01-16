@@ -21,7 +21,6 @@
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/search_engines/eea_countries_ids.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -36,6 +35,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using base::ASCIIToUTF16;
 

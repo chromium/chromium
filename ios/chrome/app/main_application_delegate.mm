@@ -14,7 +14,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/download/public/background_service/background_download_service.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -46,6 +45,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main

@@ -23,12 +23,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/eea_countries_ids.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/version_info/version_info.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace TemplateURLPrepopulateData {
 
