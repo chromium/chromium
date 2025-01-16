@@ -88,16 +88,6 @@ BLUEPRINTS_MAPPING = {
     "buildtools/third_party/libc++abi": "third_party/libc++abi",
 }
 
-# Usually, README.chromium lives next to the BUILD.gn. However, some cases are
-# different, this dictionary allows setting a specific README.chromium path
-# for a specific BUILD.gn
-README_MAPPING = {
-    # Moving is undergoing, see crbug/40273848
-    "buildtools/third_party/libc++": "third_party/libc++",
-    # Moving is undergoing, see crbug/40273848
-    "buildtools/third_party/libc++abi": "third_party/libc++abi",
-}
-
 # Include directories that will be removed from all targets.
 include_dirs_denylist = [
     'external/cronet/third_party/zlib/',
@@ -2862,9 +2852,9 @@ def _break_down_blueprint(top_level_blueprint: Blueprint):
       blueprints[""].add_module(module)
 
   for blueprint in blueprints.values():
-    if blueprint.get_buildgn_location() in README_MAPPING:
+    if blueprint.get_buildgn_location() in gn2bp_targets.README_MAPPING:
       blueprint.set_readme_location(
-          README_MAPPING[blueprint.get_buildgn_location()])
+          gn2bp_targets.README_MAPPING[blueprint.get_buildgn_location()])
   return blueprints
 
 
