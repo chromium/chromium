@@ -33,7 +33,7 @@
 namespace blink {
 
 LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {
-  SetIntrinsicSize(DefaultSize());
+  SetNaturalSize(DefaultSize());
 }
 
 LayoutVideo::~LayoutVideo() = default;
@@ -46,10 +46,10 @@ void LayoutVideo::IntrinsicSizeChanged() {
   NOT_DESTROYED();
   if (VideoElement()->IsShowPosterFlagSet())
     LayoutMedia::IntrinsicSizeChanged();
-  UpdateIntrinsicSize();
+  UpdateNaturalSize();
 }
 
-void LayoutVideo::UpdateIntrinsicSize() {
+void LayoutVideo::UpdateNaturalSize() {
   NOT_DESTROYED();
 
   const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
@@ -60,10 +60,11 @@ void LayoutVideo::UpdateIntrinsicSize() {
     return;
   }
 
-  if (size == IntrinsicSize())
+  if (size == NaturalSize()) {
     return;
+  }
 
-  SetIntrinsicSize(size);
+  SetNaturalSize(size);
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
@@ -126,7 +127,7 @@ void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
 
   // The intrinsic size is now that of the image, but in case we already had the
   // intrinsic size of the video we call this here to restore the video size.
-  UpdateIntrinsicSize();
+  UpdateNaturalSize();
 }
 
 LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
@@ -176,7 +177,7 @@ void LayoutVideo::UpdateFromElement() {
   NOT_DESTROYED();
   LayoutMedia::UpdateFromElement();
   InvalidateCompositing();
-  UpdateIntrinsicSize();
+  UpdateNaturalSize();
   SetShouldDoFullPaintInvalidation();
 }
 

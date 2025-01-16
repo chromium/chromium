@@ -73,7 +73,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   void InvalidateCompositing();
 
   IntrinsicSizingInfo GetNaturalDimensions() const override;
-  void UpdateIntrinsicSize();
+  void UpdateNaturalSize();
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
