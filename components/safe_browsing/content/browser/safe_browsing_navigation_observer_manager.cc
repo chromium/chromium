@@ -884,8 +884,6 @@ void SafeBrowsingNavigationObserverManager::RecordNotificationNavigationEvent(
   notification_navigation_events_
       [SafeBrowsingNavigationObserverManager::ClearURLRef(url)] =
           std::move(nav_event);
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.NavigationObserver.NotificationNavigationEventAdded", true);
 }
 
 void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
