@@ -228,9 +228,9 @@ public class PrivacySandboxSurveyController {
                         DEFAULT_ADS_CCT_DELAY_MS));
     }
 
-    // Schedules the launch of an Ads CCT Treatment survey.
+    // Attempts to schedule the launch of an Ads CCT Treatment survey.
     // Should only be invoked after the closure of either the EEA or ROW notice.
-    public void scheduleAdsCctTreatmentSurveyLaunch(String appId) {
+    public void maybeScheduleAdsCctTreatmentSurveyLaunch(String appId) {
         if (!shouldLaunchAdsCctSurvey(appId)) {
             return;
         }
@@ -264,9 +264,9 @@ public class PrivacySandboxSurveyController {
         showSurvey(surveyType);
     }
 
-    // Schedules the launch of an Ads CCT control survey.
+    // Attempts to schedule the launch of an Ads CCT control survey.
     // Clients expected to see a control survey will not see any Ads CCT dialogs.
-    public void scheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
+    public void maybeScheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
         if (!shouldLaunchAdsCctSurvey(appId)) {
             return;
         }

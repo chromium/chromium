@@ -398,7 +398,8 @@ public class PrivacySandboxSurveyControllerTest {
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
                 .thenReturn(true);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(true);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient)
                 .showSurvey(
                         mActivity,
@@ -431,7 +432,8 @@ public class PrivacySandboxSurveyControllerTest {
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
                 .thenReturn(true);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(true);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -457,7 +459,8 @@ public class PrivacySandboxSurveyControllerTest {
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
                 .thenReturn(true);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(false);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient)
                 .showSurvey(
                         mActivity,
@@ -490,7 +493,8 @@ public class PrivacySandboxSurveyControllerTest {
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE))
                 .thenReturn(true);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)).thenReturn(false);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -515,7 +519,8 @@ public class PrivacySandboxSurveyControllerTest {
                         mProfile);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED))
                 .thenReturn(true);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient)
                 .showSurvey(
                         mActivity,
@@ -547,7 +552,8 @@ public class PrivacySandboxSurveyControllerTest {
                         mProfile);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED))
                 .thenReturn(true);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -570,7 +576,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_CONSENT);
         verify(mSurveyClient)
                 .showSurvey(
@@ -601,7 +607,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_CONSENT);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
@@ -625,7 +631,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_ROW);
         verify(mSurveyClient)
                 .showSurvey(
@@ -656,7 +662,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_ROW);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
@@ -681,7 +687,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.NONE);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
@@ -706,7 +712,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_RESTRICTED);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
@@ -731,7 +737,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_NOTICE_EEA);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
@@ -756,7 +762,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mProfile);
         when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED))
                 .thenReturn(true);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("any-app-id");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch("any-app-id");
         verify(mSurveyClient)
                 .showSurvey(
                         mActivity,
@@ -784,7 +790,8 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -807,7 +814,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("mismatched-appid");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch("mismatched-appid");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -828,7 +835,8 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctTreatmentSurveyLaunch("com.google.android.googlequicksearchbox");
+        controller.maybeScheduleAdsCctTreatmentSurveyLaunch(
+                "com.google.android.googlequicksearchbox");
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -851,7 +859,8 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch("mismatched-appid", PromptType.M1_CONSENT);
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
+                "mismatched-appid", PromptType.M1_CONSENT);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
     }
@@ -872,7 +881,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mMessageDispatcher,
                         mActivityTabProvider,
                         mProfile);
-        controller.scheduleAdsCctControlSurveyLaunch(
+        controller.maybeScheduleAdsCctControlSurveyLaunch(
                 "com.google.android.googlequicksearchbox", PromptType.M1_CONSENT);
         verify(mSurveyClient, times(0)).showSurvey(any(), any(), any(), any());
         histogramWatcher.assertExpected();
