@@ -5941,7 +5941,6 @@ targets.bundle(
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",
         "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
         "telemetry_android_minidump_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts_android",
     ],
