@@ -896,7 +896,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
               loader->request_destination(), cross_origin_embedder_policy_,
-              coep_reporter_, DocumentIsolationPolicy())) {
+              coep_reporter_, DocumentIsolationPolicy(), nullptr)) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
     return;

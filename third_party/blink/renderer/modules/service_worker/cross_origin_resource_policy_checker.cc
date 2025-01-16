@@ -38,13 +38,15 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
     corp_header_value = wtf_corp_header_value.Utf8();
   }
 
+  // TODO(crbug.com/333029815): Pass a DocumentIsolationPolicyReporter to this
+  // call instead of nullptr.
   return network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              GURL(response.InternalURLList().back()),
              GURL(response.InternalURLList().front()), initiator_origin,
              corp_header_value, request_mode, request_destination,
              response.GetResponse()->RequestIncludeCredentials(), policy_,
              reporter_ ? reporter_.get() : nullptr,
-             network::DocumentIsolationPolicy())
+             network::DocumentIsolationPolicy(), nullptr)
       .has_value();
 }
 

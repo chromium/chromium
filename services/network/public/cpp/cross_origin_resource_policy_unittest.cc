@@ -56,6 +56,45 @@ class TestCoepReporter final : public mojom::CrossOriginEmbedderPolicyReporter {
   std::vector<Report> reports_;
 };
 
+class TestDipReporter final : public mojom::DocumentIsolationPolicyReporter {
+ public:
+  struct Report {
+    Report(const GURL& blocked_url,
+           mojom::RequestDestination destination,
+           bool report_only)
+        : blocked_url(blocked_url),
+          destination(destination),
+          report_only(report_only) {}
+
+    const GURL blocked_url;
+    const mojom::RequestDestination destination;
+    const bool report_only;
+  };
+
+  TestDipReporter() = default;
+  ~TestDipReporter() override = default;
+  TestDipReporter(const TestDipReporter&) = delete;
+  TestDipReporter& operator=(const TestDipReporter&) = delete;
+
+  // mojom::CrossOriginEmbedderPolicyReporter implementation.
+  void QueueCorpViolationReport(const GURL& blocked_url,
+                                mojom::RequestDestination destination,
+                                bool report_only) override {
+    reports_.emplace_back(blocked_url, destination, report_only);
+  }
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DocumentIsolationPolicyReporter>
+          receiver) override {
+    NOTREACHED();
+  }
+
+  const std::vector<Report>& reports() const { return reports_; }
+  void ClearReports() { reports_.clear(); }
+
+ private:
+  std::vector<Report> reports_;
+};
+
 }  // namespace
 
 CrossOriginResourcePolicy::ParsedHeader ParseHeader(
@@ -157,42 +196,87 @@ TEST(CrossOriginResourcePolicyTest, ShouldAllowSameSite) {
   EXPECT_FALSE(ShouldAllowSameSite("http://127.0.0.1", "http://127.0.0.1"));
 }
 
+// Tracks the reporting expectations for tests with COEP and
+// DocumentIsolationPolicy. By default, no report should be sent.
+struct ReportingExpectations {
+  bool expect_coep_report = false;
+  bool expect_coep_report_only = false;
+  bool expect_dip_report = false;
+  bool expect_dip_report_only = false;
+};
+
 void CheckCORP(mojom::RequestMode request_mode,
                const url::Origin& origin,
                mojom::URLResponseHeadPtr response_info,
                const CrossOriginEmbedderPolicy& coep,
                const DocumentIsolationPolicy& dip,
                std::optional<mojom::BlockedByResponseReason> expected_result,
-               bool expect_coep_report,
-               bool expect_coep_report_only) {
+               const ReportingExpectations& reporting) {
   using mojom::RequestDestination;
   const GURL original_url("https://original.example.com/x/y");
   const GURL final_url("https://www.example.com/z/u");
-  TestCoepReporter reporter;
+  TestCoepReporter coep_reporter;
+  TestDipReporter dip_reporter;
+
+  // Check that the result matches the expectations.
   EXPECT_EQ(expected_result,
             CrossOriginResourcePolicy::IsBlocked(
                 final_url, original_url, origin, *response_info, request_mode,
-                RequestDestination::kImage, coep, &reporter, dip));
-  if (expect_coep_report && expect_coep_report_only) {
-    ASSERT_EQ(2u, reporter.reports().size());
-    EXPECT_TRUE(reporter.reports()[0].report_only);
-    EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
-    EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kImage);
-    EXPECT_FALSE(reporter.reports()[1].report_only);
-    EXPECT_EQ(reporter.reports()[1].blocked_url, original_url);
-    EXPECT_EQ(reporter.reports()[1].destination, RequestDestination::kImage);
-  } else if (expect_coep_report) {
-    ASSERT_EQ(1u, reporter.reports().size());
-    EXPECT_FALSE(reporter.reports()[0].report_only);
-    EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
-    EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kImage);
-  } else if (expect_coep_report_only) {
-    ASSERT_EQ(1u, reporter.reports().size());
-    EXPECT_TRUE(reporter.reports()[0].report_only);
-    EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
-    EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kImage);
+                RequestDestination::kImage, coep, &coep_reporter, dip,
+                &dip_reporter));
+
+  // Check that the right COEP reports were emitted.
+  if (reporting.expect_coep_report && reporting.expect_coep_report_only) {
+    ASSERT_EQ(2u, coep_reporter.reports().size());
+    EXPECT_TRUE(coep_reporter.reports()[0].report_only);
+    EXPECT_EQ(coep_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(coep_reporter.reports()[0].destination,
+              RequestDestination::kImage);
+    EXPECT_FALSE(coep_reporter.reports()[1].report_only);
+    EXPECT_EQ(coep_reporter.reports()[1].blocked_url, original_url);
+    EXPECT_EQ(coep_reporter.reports()[1].destination,
+              RequestDestination::kImage);
+  } else if (reporting.expect_coep_report) {
+    ASSERT_EQ(1u, coep_reporter.reports().size());
+    EXPECT_FALSE(coep_reporter.reports()[0].report_only);
+    EXPECT_EQ(coep_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(coep_reporter.reports()[0].destination,
+              RequestDestination::kImage);
+  } else if (reporting.expect_coep_report_only) {
+    ASSERT_EQ(1u, coep_reporter.reports().size());
+    EXPECT_TRUE(coep_reporter.reports()[0].report_only);
+    EXPECT_EQ(coep_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(coep_reporter.reports()[0].destination,
+              RequestDestination::kImage);
   } else {
-    EXPECT_TRUE(reporter.reports().empty());
+    EXPECT_TRUE(coep_reporter.reports().empty());
+  }
+
+  // Check that the right DocumentIsolationPolicy reports were emitted.
+  if (reporting.expect_dip_report && reporting.expect_dip_report_only) {
+    ASSERT_EQ(2u, dip_reporter.reports().size());
+    EXPECT_TRUE(dip_reporter.reports()[0].report_only);
+    EXPECT_EQ(dip_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(dip_reporter.reports()[0].destination,
+              RequestDestination::kImage);
+    EXPECT_FALSE(dip_reporter.reports()[1].report_only);
+    EXPECT_EQ(dip_reporter.reports()[1].blocked_url, original_url);
+    EXPECT_EQ(dip_reporter.reports()[1].destination,
+              RequestDestination::kImage);
+  } else if (reporting.expect_dip_report) {
+    ASSERT_EQ(1u, dip_reporter.reports().size());
+    EXPECT_FALSE(dip_reporter.reports()[0].report_only);
+    EXPECT_EQ(dip_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(dip_reporter.reports()[0].destination,
+              RequestDestination::kImage);
+  } else if (reporting.expect_dip_report_only) {
+    ASSERT_EQ(1u, dip_reporter.reports().size());
+    EXPECT_TRUE(dip_reporter.reports()[0].report_only);
+    EXPECT_EQ(dip_reporter.reports()[0].blocked_url, original_url);
+    EXPECT_EQ(dip_reporter.reports()[0].destination,
+              RequestDestination::kImage);
+  } else {
+    EXPECT_TRUE(dip_reporter.reports().empty());
   }
 }
 
@@ -201,8 +285,7 @@ void RunCORPTestWithCOEPAndDIP(
     const DocumentIsolationPolicy& dip,
     std::optional<mojom::BlockedByResponseReason> expected_result,
     bool include_credentials,
-    bool expect_coep_report,
-    bool expect_coep_report_only) {
+    const ReportingExpectations& reporting_expectations) {
   mojom::URLResponseHead corp_none;
   mojom::URLResponseHead corp_same_origin;
   mojom::URLResponseHead corp_cross_origin;
@@ -232,417 +315,151 @@ void RunCORPTestWithCOEPAndDIP(
   // First check that COEP and DIP do not affect the following test cases.
 
   // 1. Responses with "cross-origin-resource-policy: same-origin" are always
-  // blocked when requested cross-origin.
+  // blocked when requested cross-origin. No report should be sent.
   CheckCORP(RequestMode::kNoCors, another_origin, corp_same_origin.Clone(),
             coep, dip, mojom::BlockedByResponseReason::kCorpNotSameOrigin,
-            false, false);
+            ReportingExpectations());
 
   // 2. Responses with "cross-origin-resource-policy: cross-origin" are always
-  // allowed.
+  // allowed. No report should be sent.
   CheckCORP(RequestMode::kNoCors, another_origin, corp_cross_origin.Clone(),
-            coep, dip, kAllow, false, false);
+            coep, dip, kAllow, ReportingExpectations());
 
-  // 3. Same-origin responses are always allowed.
+  // 3. Same-origin responses are always allowed. No report should be sent.
   CheckCORP(RequestMode::kNoCors, destination_origin, corp_same_origin.Clone(),
-            coep, dip, kAllow, false, false);
+            coep, dip, kAllow, ReportingExpectations());
 
-  // 4. Requests whose mode is "cors" are always allowed.
+  // 4. Requests whose mode is "cors" are always allowed. No report should be
+  // sent.
   CheckCORP(RequestMode::kCors, another_origin, corp_same_origin.Clone(), coep,
-            dip, kAllow, false, false);
+            dip, kAllow, ReportingExpectations());
 
   // Now check that a cross-origin request without a CORP header behaves as
-  // expected.
+  // expected. Report sent should match the expectations passed to the test.
   CheckCORP(RequestMode::kNoCors, another_origin, corp_none.Clone(), coep, dip,
-            expected_result, expect_coep_report, expect_coep_report_only);
-}
-
-TEST(CrossOriginResourcePolicyTest, WithCOEP) {
-  constexpr auto kAllow = std::nullopt;
-
-  struct TestCase {
-    mojom::CrossOriginEmbedderPolicyValue coep_value;
-    mojom::CrossOriginEmbedderPolicyValue coep_report_only_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-    bool expect_coep_report;
-    bool expect_coep_report_only;
-  } test_cases[] = {
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kNone, kAllow, false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp, kAllow, false,
-       true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless, kAllow, false,
-       false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-  };
-
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    coep.value = test_case.coep_value;
-    coep.report_only_value = test_case.coep_report_only_value;
-    DocumentIsolationPolicy dip;
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, true /*include_credentials*/,
-        test_case.expect_coep_report, test_case.expect_coep_report_only);
-  }
-}
-
-TEST(CrossOriginResourcePolicyTest, WithCOEPNoCredentials) {
-  constexpr auto kAllow = std::nullopt;
-
-  struct TestCase {
-    mojom::CrossOriginEmbedderPolicyValue coep_value;
-    mojom::CrossOriginEmbedderPolicyValue coep_report_only_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-    bool expect_coep_report;
-    bool expect_coep_report_only;
-  } test_cases[] = {
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kNone, kAllow, false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone, kAllow, false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp, kAllow, false,
-       true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp, kAllow, false,
-       true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless, kAllow, false,
-       false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless, kAllow, false,
-       false},
-  };
-
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    coep.value = test_case.coep_value;
-    coep.report_only_value = test_case.coep_report_only_value;
-    DocumentIsolationPolicy dip;
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, false /*include_credentials*/,
-        test_case.expect_coep_report, test_case.expect_coep_report_only);
-  }
-}
-
-TEST(CrossOriginResourcePolicyTest, WithDIP) {
-  constexpr auto kAllow = std::nullopt;
-
-  struct TestCase {
-    mojom::DocumentIsolationPolicyValue dip_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-  } test_cases[] = {
-      {mojom::DocumentIsolationPolicyValue::kNone, kAllow},
-      {mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip},
-      {mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip},
-  };
-
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    DocumentIsolationPolicy dip(test_case.dip_value);
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, true /*include_credentials*/,
-        false /*expect_coep_report*/, false /*expect_coep_report_only*/);
-  }
-}
-
-TEST(CrossOriginResourcePolicyTest, WithDIPNoCredentials) {
-  constexpr auto kAllow = std::nullopt;
-
-  struct TestCase {
-    mojom::DocumentIsolationPolicyValue dip_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-  } test_cases[] = {
-      {mojom::DocumentIsolationPolicyValue::kNone, kAllow},
-      {mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip},
-      {mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow},
-  };
-
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    DocumentIsolationPolicy dip(test_case.dip_value);
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, false /*include_credentials*/,
-        false /*expect_coep_report*/, false /*expect_coep_report_only*/);
-  }
+            expected_result, reporting_expectations);
 }
 
 TEST(CrossOriginResourcePolicyTest, WithCOEPAndDIP) {
-  struct TestCase {
-    mojom::CrossOriginEmbedderPolicyValue coep_value;
-    mojom::CrossOriginEmbedderPolicyValue coep_report_only_value;
-    mojom::DocumentIsolationPolicyValue dip_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-    bool expect_coep_report;
-    bool expect_coep_report_only;
-  } test_cases[] = {
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-  };
+  mojom::CrossOriginEmbedderPolicyValue coep_values[] = {
+      mojom::CrossOriginEmbedderPolicyValue::kNone,
+      mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+      mojom::CrossOriginEmbedderPolicyValue::kCredentialless};
+  mojom::DocumentIsolationPolicyValue dip_values[] = {
+      mojom::DocumentIsolationPolicyValue::kNone,
+      mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
+      mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless};
 
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    coep.value = test_case.coep_value;
-    coep.report_only_value = test_case.coep_report_only_value;
-    DocumentIsolationPolicy dip(test_case.dip_value);
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, true /*include_credentials*/,
-        test_case.expect_coep_report, test_case.expect_coep_report_only);
+  for (const auto& coep_value : coep_values) {
+    for (const auto& coep_report_only_value : coep_values) {
+      for (const auto& dip_value : dip_values) {
+        for (const auto& dip_report_only_value : dip_values) {
+          CrossOriginEmbedderPolicy coep;
+          coep.value = coep_value;
+          coep.report_only_value = coep_report_only_value;
+          DocumentIsolationPolicy dip;
+          dip.value = dip_value;
+          dip.report_only_value = dip_report_only_value;
+
+          // Set up the expected result. Non kNone values of COEP and DIP should
+          // result in cross-origin requests without CORP headers being blocked.
+          std::optional<mojom::BlockedByResponseReason> expected_result;
+          if (coep_value != mojom::CrossOriginEmbedderPolicyValue::kNone &&
+              dip_value != mojom::DocumentIsolationPolicyValue::kNone) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
+          } else if (coep_value !=
+                     mojom::CrossOriginEmbedderPolicyValue::kNone) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+          } else if (dip_value != mojom::DocumentIsolationPolicyValue::kNone) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByDip;
+          }
+
+          // Set up the expected reports. Non kNone vealues of COEP and DIP
+          // should result in a report being sent.
+          ReportingExpectations reporting;
+          reporting.expect_coep_report =
+              coep_value != mojom::CrossOriginEmbedderPolicyValue::kNone;
+          reporting.expect_coep_report_only =
+              coep_report_only_value !=
+              mojom::CrossOriginEmbedderPolicyValue::kNone;
+          reporting.expect_dip_report =
+              dip_value != mojom::DocumentIsolationPolicyValue::kNone;
+          reporting.expect_dip_report_only =
+              dip_report_only_value !=
+              mojom::DocumentIsolationPolicyValue::kNone;
+
+          RunCORPTestWithCOEPAndDIP(coep, dip, expected_result,
+                                    true /*include_credentials*/, reporting);
+        }
+      }
+    }
   }
 }
 
 TEST(CrossOriginResourcePolicyTest, WithCOEPAndDIPNoCredentials) {
-  constexpr auto kAllow = std::nullopt;
-  struct TestCase {
-    mojom::CrossOriginEmbedderPolicyValue coep_value;
-    mojom::CrossOriginEmbedderPolicyValue coep_report_only_value;
-    mojom::DocumentIsolationPolicyValue dip_value;
-    const std::optional<mojom::BlockedByResponseReason> expected_result;
-    bool expect_coep_report;
-    bool expect_coep_report_only;
-  } test_cases[] = {
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow,
-       false, true},
-      {mojom::CrossOriginEmbedderPolicyValue::kNone,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow,
-       false, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless,
-       mojom::BlockedByResponseReason::
-           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
-       true, false},
-      {mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
-       mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless, kAllow,
-       false, false},
-  };
+  mojom::CrossOriginEmbedderPolicyValue coep_values[] = {
+      mojom::CrossOriginEmbedderPolicyValue::kNone,
+      mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+      mojom::CrossOriginEmbedderPolicyValue::kCredentialless};
+  mojom::DocumentIsolationPolicyValue dip_values[] = {
+      mojom::DocumentIsolationPolicyValue::kNone,
+      mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp,
+      mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless};
 
-  for (const auto& test_case : test_cases) {
-    CrossOriginEmbedderPolicy coep;
-    coep.value = test_case.coep_value;
-    coep.report_only_value = test_case.coep_report_only_value;
-    DocumentIsolationPolicy dip(test_case.dip_value);
-    RunCORPTestWithCOEPAndDIP(
-        coep, dip, test_case.expected_result, false /*include_credentials*/,
-        test_case.expect_coep_report, test_case.expect_coep_report_only);
+  for (const auto& coep_value : coep_values) {
+    for (const auto& coep_report_only_value : coep_values) {
+      for (const auto& dip_value : dip_values) {
+        for (const auto& dip_report_only_value : dip_values) {
+          CrossOriginEmbedderPolicy coep;
+          coep.value = coep_value;
+          coep.report_only_value = coep_report_only_value;
+          DocumentIsolationPolicy dip;
+          dip.value = dip_value;
+          dip.report_only_value = dip_report_only_value;
+
+          // Set up the expected result. COEP require-corp and DIP
+          // isolate-and-require-corp should result in cross-origin requests
+          // without CORP headers being blocked.
+          std::optional<mojom::BlockedByResponseReason> expected_result;
+          if (coep_value ==
+                  mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
+              dip_value ==
+                  mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
+          } else if (coep_value ==
+                     mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+          } else if (dip_value == mojom::DocumentIsolationPolicyValue::
+                                      kIsolateAndRequireCorp) {
+            expected_result = mojom::BlockedByResponseReason::
+                kCorpNotSameOriginAfterDefaultedToSameOriginByDip;
+          }
+
+          // Set up the expected reports. COEP require-corp and DIP
+          // isolate-and-require-corp should result in a report being sent.
+          ReportingExpectations reporting;
+          reporting.expect_coep_report =
+              coep_value == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+          reporting.expect_coep_report_only =
+              coep_report_only_value ==
+              mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+          reporting.expect_dip_report =
+              dip_value ==
+              mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp;
+          reporting.expect_dip_report_only =
+              dip_report_only_value ==
+              mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp;
+
+          RunCORPTestWithCOEPAndDIP(coep, dip, expected_result,
+                                    false /*include_credentials*/, reporting);
+        }
+      }
+    }
   }
 }
 
