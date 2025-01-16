@@ -48,14 +48,14 @@ public class TabArchiverUnitTest {
     private @Mock TabCreator mArchivedTabCreator;
     private @Mock TabWindowManager mTabWindowManager;
     private @Mock TabArchiveSettings mTabArchiveSettings;
-    private @Mock TabArchiver.Clock mClock;
+    private @Mock TabArchiverImpl.Clock mClock;
     private @Mock Profile mProfile;
     private @Mock Profile mIncognitoProfile;
     private @Mock WebContentsState mWebContentsState;
 
     private MockTab mArchivedTab;
     private MockTabModelSelector mTabModelSelector;
-    private TabArchiver mTabArchiver;
+    private TabArchiverImpl mTabArchiver;
 
     @Before
     public void setUp() {
@@ -76,7 +76,7 @@ public class TabArchiverUnitTest {
         setupTabModels();
         setupTabsForArchive();
         mTabArchiver =
-                new TabArchiver(
+                new TabArchiverImpl(
                         mArchivedTabGroupModelFilter,
                         mArchivedTabCreator,
                         mTabWindowManager,

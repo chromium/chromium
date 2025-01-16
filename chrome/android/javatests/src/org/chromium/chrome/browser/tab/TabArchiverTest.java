@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tab.TabArchiver.Clock;
+import org.chromium.chrome.browser.tab.TabArchiverImpl.Clock;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -93,7 +93,7 @@ public class TabArchiverTest {
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
 
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
-    private TabArchiver mTabArchiver;
+    private TabArchiverImpl mTabArchiver;
     private TabModel mArchivedTabModel;
     private TabModel mRegularTabModel;
     private TabCreator mArchivedTabCreator;
@@ -145,7 +145,7 @@ public class TabArchiverTest {
         mTabArchiver =
                 runOnUiThreadBlocking(
                         () ->
-                                new TabArchiver(
+                                new TabArchiverImpl(
                                         archivedTabGroupModelFilter,
                                         mArchivedTabCreator,
                                         mTabWindowManager,
@@ -177,7 +177,7 @@ public class TabArchiverTest {
     public void testDestroy() throws Exception {
         runOnUiThreadBlocking(
                 () -> {
-                    mTabArchiver.initDeclutter();
+                    mTabArchiver.initialize();
                     mTabArchiver.destroy();
                     verify(mTabWindowManager).removeObserver(mTabArchiver);
                 });
@@ -681,7 +681,7 @@ public class TabArchiverTest {
                 () -> {
                     mTabArchiveSettings.setAutoDeleteEnabled(true);
                     mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
-                    mTabArchiver.deleteEligibleArchivedTabs();
+                    mTabArchiver.doAutodeletePass();
                 });
 
         CriteriaHelper.pollInstrumentationThread(() -> mArchivedTabModel.getCount() == 0);
@@ -862,9 +862,9 @@ public class TabArchiverTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mTabArchiver.initDeclutter();
+                    mTabArchiver.initialize();
                     assertEquals(0, mTabArchiver.getObserversForTesting().size());
-                    mTabArchiver.triggerScheduledDeclutter();
+                    mTabArchiver.doArchivePass();
                     assertEquals(1, mTabArchiver.getObserversForTesting().size());
                 });
 

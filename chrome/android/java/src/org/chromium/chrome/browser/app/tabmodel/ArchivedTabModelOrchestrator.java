@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
@@ -364,7 +365,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
         disableSaveTabList();
-        mTabArchiver.initDeclutter();
+        mTabArchiver.initialize();
 
         int archiveTimeHours = mTabArchiveSettings.getArchiveTimeDeltaHours();
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()) {
@@ -429,7 +430,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabArchiver =
-                new TabArchiver(
+                new TabArchiverImpl(
                         mTabModelSelector
                                 .getTabGroupModelFilterProvider()
                                 .getTabGroupModelFilter(/* isIncognito= */ false),
@@ -480,7 +481,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     private void runDeclutterAndScheduleNext() {
         ThreadUtils.assertOnUiThread();
-        mTabArchiver.triggerScheduledDeclutter();
+        mTabArchiver.doArchivePass();
         mTaskRunner.postDelayedTask(
                 mCallbackController.makeCancelable(this::postDeclutterTaskToUiThread),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
