@@ -339,7 +339,7 @@ def add_androidx_core_java_deps(module, arch):
   module.libs.add("androidx.core_core")
 
 def add_jsr305_java_deps(module, arch):
-  module.libs.add("jsr305")
+  module.static_libs.add("jsr305")
 
 def add_errorprone_annotation_java_deps(module, arch):
   module.libs.add("error_prone_annotations")
