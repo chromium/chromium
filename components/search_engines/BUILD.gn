@@ -59,7 +59,6 @@ static_library("search_engines") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -71,6 +70,7 @@ static_library("search_engines") {
     "//components/webdata/common",
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [
@@ -153,9 +153,9 @@ source_set("search_engine_utils") {
   ]
 
   public_deps = [
-    ":prepopulated_engines",
     ":search_engine_type",
     "//components/google/core/common",
+    "//third_party/search_engines_data:prepopulated_engines",
   ]
 
   deps = [ "//url" ]
@@ -211,7 +211,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":prepopulated_engines",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -236,6 +235,7 @@ source_set("unit_tests") {
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/search_engines_data:prepopulated_engines",
     "//ui/base",
     "//url",
   ]
@@ -262,18 +262,6 @@ source_set("unit_tests") {
     sources += [ "android/template_url_service_android_unittest.cc" ]
     deps += [ "//components/search_engines/android:jni_headers" ]
   }
-}
-
-json_to_struct("prepopulated_engines") {
-  visibility = [ ":*" ]
-
-  source = "//third_party/search_engines_data/resources/definitions/prepopulated_engines.json"
-  schema_file = "prepopulated_engines_schema.json"
-  namespace = "TemplateURLPrepopulateData"
-  deps = [
-    ":search_engine_type",
-    "//base",
-  ]
 }
 
 if (is_android) {
