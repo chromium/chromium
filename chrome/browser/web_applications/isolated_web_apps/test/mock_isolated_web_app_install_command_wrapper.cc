@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"

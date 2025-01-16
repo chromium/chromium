@@ -25,7 +25,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"

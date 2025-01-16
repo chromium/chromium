@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 
 #include <memory>
 #include <optional>
@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"

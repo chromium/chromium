@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
 
 #include <memory>
 #include <string_view>

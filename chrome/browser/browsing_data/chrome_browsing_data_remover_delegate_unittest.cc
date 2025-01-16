@@ -235,7 +235,7 @@
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"

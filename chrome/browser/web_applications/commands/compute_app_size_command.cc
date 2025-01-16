@@ -9,7 +9,7 @@
 
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 #include "chrome/browser/web_applications/jobs/get_progressive_web_app_size_job.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

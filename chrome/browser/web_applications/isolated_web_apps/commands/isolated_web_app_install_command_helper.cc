@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 
 #include <memory>
 #include <optional>
@@ -188,33 +188,32 @@ void UpdateBundlePathAndCreateStorageLocation(
         std::move(callback));
   };
 
-  absl::visit(
-      base::Overloaded{
-          [&](const IwaSourceBundleWithModeAndFileOp& bundle) {
-            switch (bundle.mode_and_file_op()) {
-              case IwaSourceBundleModeAndFileOp::kDevModeCopy:
-                copy_or_move(bundle.path(), /*dev_mode=*/true,
-                             Operation::kCopy);
-                break;
-              case IwaSourceBundleModeAndFileOp::kDevModeMove:
-                copy_or_move(bundle.path(), /*dev_mode=*/true,
-                             Operation::kMove);
-                break;
-              case IwaSourceBundleModeAndFileOp::kProdModeCopy:
-                copy_or_move(bundle.path(), /*dev_mode=*/false,
-                             Operation::kCopy);
-                break;
-              case IwaSourceBundleModeAndFileOp::kProdModeMove:
-                copy_or_move(bundle.path(), /*dev_mode=*/false,
-                             Operation::kMove);
-                break;
-            }
-          },
-          [&](const IwaSourceProxy& proxy) {
-            std::move(callback).Run(IwaStorageProxy(proxy.proxy_url()));
-          },
-      },
-      source.variant());
+  absl::visit(base::Overloaded{
+                  [&](const IwaSourceBundleWithModeAndFileOp& bundle) {
+                    switch (bundle.mode_and_file_op()) {
+                      case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+                        copy_or_move(bundle.path(), /*dev_mode=*/true,
+                                     Operation::kCopy);
+                        break;
+                      case IwaSourceBundleModeAndFileOp::kDevModeMove:
+                        copy_or_move(bundle.path(), /*dev_mode=*/true,
+                                     Operation::kMove);
+                        break;
+                      case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+                        copy_or_move(bundle.path(), /*dev_mode=*/false,
+                                     Operation::kCopy);
+                        break;
+                      case IwaSourceBundleModeAndFileOp::kProdModeMove:
+                        copy_or_move(bundle.path(), /*dev_mode=*/false,
+                                     Operation::kMove);
+                        break;
+                    }
+                  },
+                  [&](const IwaSourceProxy& proxy) {
+                    std::move(callback).Run(IwaStorageProxy(proxy.proxy_url()));
+                  },
+              },
+              source.variant());
 }
 
 base::expected<std::reference_wrapper<const WebApp>, std::string>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
 
 #include <iosfwd>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
@@ -143,4 +143,4 @@ class IsolatedWebAppApplyUpdateCommand
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_COMMANDS_ISOLATED_WEB_APP_APPLY_UPDATE_COMMAND_H_

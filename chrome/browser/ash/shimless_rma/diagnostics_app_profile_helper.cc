@@ -27,7 +27,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"

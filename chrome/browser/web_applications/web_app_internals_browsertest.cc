@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"

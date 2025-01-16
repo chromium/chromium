@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
 
 #include <memory>
 #include <optional>
@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

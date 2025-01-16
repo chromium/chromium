@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
 
 #include <memory>
 #include <string>

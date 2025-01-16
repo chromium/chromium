@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
 
 #include <utility>
 
