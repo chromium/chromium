@@ -962,6 +962,11 @@ const char kDocumentPictureInPictureAnimateResizeName[] =
 const char kDocumentPictureInPictureAnimateResizeDescription[] =
     "Use an animation when programmatically resizing a document"
     "picture-in-picture window";
+
+const char kAudioDuckingName[] = "Audio Ducking";
+const char kAudioDuckingDescription[] =
+    "Allows Chrome to duck (attenuate) "
+    "audio from other tabs.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

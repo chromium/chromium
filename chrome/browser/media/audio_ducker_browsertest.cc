@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
@@ -31,7 +33,9 @@ using media_session::mojom::MediaSessionInfo;
 
 class AudioDuckerBrowserTest : public InProcessBrowserTest {
  public:
-  AudioDuckerBrowserTest() = default;
+  AudioDuckerBrowserTest() {
+    feature_list_.InitAndEnableFeature(media::kAudioDucking);
+  }
   AudioDuckerBrowserTest(const AudioDuckerBrowserTest&) = delete;
   AudioDuckerBrowserTest& operator=(const AudioDuckerBrowserTest&) = delete;
   ~AudioDuckerBrowserTest() override = default;
@@ -99,6 +103,7 @@ class AudioDuckerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_session::test::TestAudioFocusObserver>
       audio_focus_observer_;
 };

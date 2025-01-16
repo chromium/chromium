@@ -545,12 +545,15 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   StartNewPlayer(player_observer.get());
   SystemStartDucking();
 
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(0));
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(1));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(0));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(1));
 
   StartNewPlayer(player_observer.get());
 
-  EXPECT_EQ(kDuckingVolumeMultiplier, player_observer->GetVolumeMultiplier(2));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(2));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
@@ -606,8 +609,8 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   EXPECT_FALSE(IsActive());
 
   SystemStartDucking();
-  EXPECT_EQ(kDuckingVolumeMultiplier,
-            player_observer->GetVolumeMultiplier(player_id));
+  EXPECT_FLOAT_EQ(kDuckingVolumeMultiplier,
+                  player_observer->GetVolumeMultiplier(player_id));
 
   // On resume, ducking should stop.
   UIResume();

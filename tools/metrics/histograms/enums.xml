@@ -15781,6 +15781,7 @@ from previous Chrome versions.
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
   <int value="-1874937563" label="cast-streaming-force-disable-hardware-vp9"/>
   <int value="-1874908826" label="enable-instant-search-clicks"/>
+  <int value="-1874883469" label="AudioDucking:enabled"/>
   <int value="-1874842483" label="FeedLoadingPlaceholder:disabled"/>
   <int value="-1874349308" label="PwaUniversalInstallUi:enabled"/>
   <int value="-1874141108" label="NewOmniboxAnswerTypes:enabled"/>
@@ -18584,6 +18585,7 @@ from previous Chrome versions.
   <int value="-754475378" label="FedCmSkipWellKnownForSameSite:disabled"/>
   <int value="-753988121" label="FlossIsAvailabilityCheckNeeded:enabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
+  <int value="-753747289" label="AudioDucking:disabled"/>
   <int value="-753170441" label="LocationProviderManager:disabled"/>
   <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>

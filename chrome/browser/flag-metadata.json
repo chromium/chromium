@@ -495,6 +495,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "audio-ducking",
+    "owners": ["steimel@chromium.org", "mfoltz@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "audio-hfp-mic-sr-toggle",
     "owners": [ "paulhsia@chromium.org", "cranelw@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 135

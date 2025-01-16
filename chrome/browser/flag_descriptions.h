@@ -729,6 +729,9 @@ extern const char kDevicePostureDescription[];
     BUILDFLAG(IS_CHROMEOS)
 extern const char kDocumentPictureInPictureAnimateResizeName[];
 extern const char kDocumentPictureInPictureAnimateResizeDescription[];
+
+extern const char kAudioDuckingName[];
+extern const char kAudioDuckingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
