@@ -911,8 +911,9 @@ TEST_F(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
-// Test that when the eWallet FOP selector is shown, its latency is logged.
-TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramLogged) {
+// Test that when the eWallet FOP selector is shown, the latency UMA and FOP
+// selector shown UKM metrics are logged.
+TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramAndShownUkmLogged) {
   base::HistogramTester histogram_tester;
   autofill::Ewallet supported_ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -950,6 +951,14 @@ TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramLogged) {
       "LatencyAfterDetectingPaymentLink.ShopeePay",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kEntryName,
+      {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kShownName,
+       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+           kSchemeName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
 class EwalletManagerTestForUiScreens
