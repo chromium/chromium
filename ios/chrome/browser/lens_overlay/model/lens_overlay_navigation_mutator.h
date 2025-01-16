@@ -30,6 +30,9 @@
 /// availability of navigating to previous entry.
 - (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack;
 
+/// Called when a related search URL is loaded from LRP.
+- (void)onRelatedSearchLoaded:(NSString*)omniboxText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_NAVIGATION_MUTATOR_H_
