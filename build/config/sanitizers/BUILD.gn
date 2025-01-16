@@ -465,7 +465,15 @@ config("coverage_flags") {
   if (use_centipede) {
     # Centipede intercepts calls such as memcmp and memcpy in order to improve
     # its testcase generation.
-    cflags += [ "-fno-builtin" ]
+    #
+    # We explicitly list the intercepted calls instead of opting out of all
+    # builtins to work around a miscompile (crbug.com/380508212).
+    cflags += [
+      "-fno-builtin-memcmp",
+      "-fno-builtin-pthread_create",
+      "-fno-builtin-strcmp",
+      "-fno-builtin-strncmp",
+    ]
   }
 }
 
