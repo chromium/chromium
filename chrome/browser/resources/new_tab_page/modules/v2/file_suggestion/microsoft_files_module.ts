@@ -12,23 +12,24 @@ import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import {getHtml} from './sharepoint_module.html.js';
+import {getHtml} from './microsoft_files_module.html.js';
 
-export interface SharepointModuleElement {
+export interface MicrosoftFilesModuleElement {
   $: {
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 
-const SharepointModuleElementBase = I18nMixinLit(CrLitElement);
+const MicrosoftFilesModuleElementBase = I18nMixinLit(CrLitElement);
 
 /**
- * The SharePoint module, which serves as an inside look to recent activity
- * within a user's Microsoft SharePoint.
+ * The SharePoint/OneDrive module, which serves as an inside look to recent
+ * activity within a user's Microsoft SharePoint and OneDrive.
  */
-export class SharepointModuleElement extends SharepointModuleElementBase {
+export class MicrosoftFilesModuleElement extends
+    MicrosoftFilesModuleElementBase {
   static get is() {
-    return 'ntp-sharepoint-module';
+    return 'ntp-microsoft-files-module';
   }
 
   override render() {
@@ -103,14 +104,16 @@ export class SharepointModuleElement extends SharepointModuleElementBase {
   }
 }
 
-customElements.define(SharepointModuleElement.is, SharepointModuleElement);
+customElements.define(
+    MicrosoftFilesModuleElement.is, MicrosoftFilesModuleElement);
 
-async function createSharepointElement(): Promise<SharepointModuleElement> {
+async function createMicrosoftFilesElement():
+    Promise<MicrosoftFilesModuleElement> {
   // TODO(crbug.com/329492316): Retrieve files from the backend, and return null
   // if there are no files.
-  return new SharepointModuleElement();
+  return new MicrosoftFilesModuleElement();
 }
 
-export const sharepointModuleDescriptor: ModuleDescriptor =
+export const microsoftFilesModuleDescriptor: ModuleDescriptor =
     new ModuleDescriptor(
-        /*id*/ 'sharepoint', createSharepointElement);
+        /*id*/ 'microsoft_files', createMicrosoftFilesElement);
