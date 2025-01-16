@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/lobster/lobster_client_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
@@ -38,12 +39,9 @@ void LobsterClientImpl::InflateCandidate(
   service_->InflateCandidate(seed, query, std::move(callback));
 }
 
-bool LobsterClientImpl::SubmitFeedback(const std::string& query,
-                                       const std::string& model_version,
-                                       const std::string& description,
+bool LobsterClientImpl::SubmitFeedback(std::string description,
                                        const std::string& image_bytes) {
-  return service_->SubmitFeedback(query, model_version, description,
-                                  image_bytes);
+  return service_->SubmitFeedback(std::move(description), image_bytes);
 }
 
 void LobsterClientImpl::LoadUI(std::optional<std::string> query,

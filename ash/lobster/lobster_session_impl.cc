@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
@@ -44,6 +45,14 @@ base::FilePath CreateDownloadFilePath(const base::FilePath& download_dir,
       base::FeatureList::IsEnabled(features::kLobsterFileNamingImprovement)
           ? file_name
           : "");
+}
+
+std::string BuildFeedbackDescription(std::string_view query,
+                                     std::string_view model_version,
+                                     std::string_view user_description) {
+  return base::StringPrintf(
+      "model_input: %s\nmodel_version: %s\nuser_description: %s", query,
+      model_version, user_description);
 }
 
 }  // namespace
@@ -248,10 +257,10 @@ bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
   }
   // Submit feedback along with the preview image.
   // TODO: b/362403784 - add the proper version.
-  return client_->SubmitFeedback(/*query=*/candidate->query,
-                                 /*model_version=*/"dummy_version",
-                                 /*description=*/description,
-                                 /*image_bytes=*/candidate->image_bytes);
+  std::string feedback_description = BuildFeedbackDescription(
+      candidate->query, /*model_version=*/"dummy_version", description);
+  return client_->SubmitFeedback(std::move(feedback_description),
+                                 candidate->image_bytes);
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,

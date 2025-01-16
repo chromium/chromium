@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/lobster/lobster_service.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
@@ -58,12 +59,9 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
       image_bytes, std::move(insert_status_callback));
 }
 
-bool LobsterService::SubmitFeedback(const std::string& query,
-                                    const std::string& model_version,
-                                    const std::string& description,
+bool LobsterService::SubmitFeedback(std::string description,
                                     const std::string& image_bytes) {
-  return SendLobsterFeedback(profile_, /*query=*/query, /*model_version=*/"",
-                             /*user_description=*/description,
+  return SendLobsterFeedback(profile_, std::move(description),
                              /*image_bytes=*/image_bytes);
 }
 

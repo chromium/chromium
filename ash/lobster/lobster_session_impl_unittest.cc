@@ -65,10 +65,7 @@ class MockLobsterClient : public LobsterClient {
               (override));
   MOCK_METHOD(bool,
               SubmitFeedback,
-              (const std::string& query,
-               const std::string& model_input,
-               const std::string& description,
-               const std::string& image_bytes),
+              (std::string description, const std::string& image_bytes),
               (override));
   MOCK_METHOD(void,
               QueueInsertion,
@@ -249,16 +246,18 @@ TEST_F(LobsterSessionImplTest,
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
 
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"a1b2c3"))
+  ON_CALL(*lobster_client,
+          SubmitFeedback(/*description=*/"model_input: a nice raspberry\n"
+                                         "model_version: dummy_version\n"
+                                         "user_description: Awesome raspberry",
+                         /*image_bytes=*/"a1b2c3"))
       .WillByDefault(testing::Return(true));
 
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"d4e5f6"))
+  ON_CALL(*lobster_client,
+          SubmitFeedback(/*description=*/"model_input: a nice raspberry\n"
+                                         "model_version: dummy_version\n"
+                                         "user_description: Awesome raspberry",
+                         /*image_bytes=*/"d4e5f6"))
       .WillByDefault(testing::Return(true));
 
   LobsterSessionImpl session(std::move(lobster_client), store,
@@ -272,10 +271,11 @@ TEST_F(LobsterSessionImplTest,
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
   auto lobster_client = std::make_unique<MockLobsterClient>();
 
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"a1b2c3"))
+  ON_CALL(*lobster_client,
+          SubmitFeedback(/*description=*/"model_input: a nice raspberry\n"
+                                         "model_version: dummy_version\n"
+                                         "user_description: Awesome raspberry",
+                         /*image_bytes=*/"a1b2c3"))
       .WillByDefault(testing::Return(false));
 
   LobsterSessionImpl session(std::move(lobster_client), store,
@@ -288,18 +288,20 @@ TEST_F(LobsterSessionImplTest, CanSubmitFeedbackForACandiateIfItIsInCache) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
 
-  EXPECT_CALL(*lobster_client,
-              SubmitFeedback(/*query=*/"a nice raspberry",
-                             /*model_input=*/"dummy_version",
-                             /*description=*/"Awesome raspberry",
-                             /*image_bytes=*/"a1b2c3"))
+  EXPECT_CALL(
+      *lobster_client,
+      SubmitFeedback(/*description=*/"model_input: a nice raspberry\n"
+                                     "model_version: dummy_version\n"
+                                     "user_description: Awesome raspberry",
+                     /*image_bytes=*/"a1b2c3"))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(*lobster_client,
-              SubmitFeedback(/*query=*/"a nice raspberry",
-                             /*model_input=*/"dummy_version",
-                             /*description=*/"Awesome raspberry",
-                             /*image_bytes=*/"d4e5f6"))
+  EXPECT_CALL(
+      *lobster_client,
+      SubmitFeedback(/*description=*/"model_input: a nice raspberry\n"
+                                     "model_version: dummy_version\n"
+                                     "user_description: Awesome raspberry",
+                     /*image_bytes=*/"d4e5f6"))
       .WillOnce(testing::Return(true));
 
   LobsterSessionImpl session(std::move(lobster_client), store,

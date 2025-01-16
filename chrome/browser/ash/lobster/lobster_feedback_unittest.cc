@@ -95,9 +95,7 @@ TEST(LobsterFeedback, SendFeedbackDoesNotSendEmail) {
 
   EXPECT_TRUE(
       SendLobsterFeedback(profile.get(),
-                          /*query=*/"",
-                          /*model_version=*/"",
-                          /*user_description=*/
+                          /*description=*/
                           "visit https://www.whatismyip.com/, log in using "
                           "test@email.com and try entering 111.222.333.444",
                           /*image_bytes=*/"a1b2c3"));
@@ -115,9 +113,7 @@ TEST(LobsterFeedback, SendFeedbackRedactsDescription) {
 
   EXPECT_TRUE(
       SendLobsterFeedback(profile.get(),
-                          /*query=*/"",
-                          /*model_version=*/"",
-                          /*user_description=*/
+                          /*description=*/
                           "visit https://www.whatismyip.com/ log in using "
                           "test@email.com and try entering 111.222.333.444",
                           /*image_bytes=*/"a1b2c3"));
@@ -125,8 +121,8 @@ TEST(LobsterFeedback, SendFeedbackRedactsDescription) {
   auto feedback_data =
       on_report_sent_future.Get<userfeedback::ExtensionSubmit>();
   EXPECT_EQ(feedback_data.common_data().description(),
-            "model_input: \nmodel_version: \nuser_description: visit (URL: 1) "
-            "log in using (email: 1) and try entering 111.222.333.444");
+            "visit (URL: 1) log in using "
+            "(email: 1) and try entering 111.222.333.444");
 }
 
 TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
@@ -137,10 +133,8 @@ TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@google.com", on_report_sent_future.GetRepeatingCallback());
 
-  EXPECT_TRUE(SendLobsterFeedback(profile.get(), /*query=*/"a dummy query",
-                                  /*model_version=*/"dummy_version",
-                                  /*user_description=*/
-                                  "some dummy description",
+  EXPECT_TRUE(SendLobsterFeedback(profile.get(),
+                                  /*description=*/"some dummy description",
                                   /*image_bytes=*/"a1b2c3"));
 
   auto feedback_data =
@@ -152,8 +146,7 @@ TEST(LobsterFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   expected_feedback_data.mutable_common_data()->set_gaia_id(0);
   expected_feedback_data.mutable_common_data()->set_user_email("");
   expected_feedback_data.mutable_common_data()->set_description(
-      "model_input: a dummy query\nmodel_version: "
-      "dummy_version\nuser_description: some dummy description");
+      "some dummy description");
   expected_feedback_data.mutable_common_data()->set_source_description_language(
       "");
   expected_feedback_data.mutable_web_data()
