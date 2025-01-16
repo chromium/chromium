@@ -93,9 +93,15 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
+  // The element count will not exceed `UINT_MAX / sizeof(DataType)` when the
+  // tensor byte length is `UINT_MAX` (DML element count limit).
+  static constexpr uint64_t kTensorByteLengthLimit =
+      std::numeric_limits<uint32_t>::max();
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
@@ -805,7 +811,7 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
 }
 
 void ContextImplDml::HandleRecordingError(std::string_view error_message,
-                                       HRESULT hr) {
+                                          HRESULT hr) {
   command_recorder_.reset();
   HandleContextLostOrCrash(error_message, hr);
 }

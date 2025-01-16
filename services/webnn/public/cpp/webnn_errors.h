@@ -150,10 +150,14 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedMLTensorTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedTensorSizeError(uint64_t byte_length, uint64_t size_limit);
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     GetErrorLabelPrefix(std::string_view label);
 
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    ErrorWithLabel(std::string_view label, std::string_view error_message);
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_PUBLIC_CPP_WEBNN_ERRORS_H_

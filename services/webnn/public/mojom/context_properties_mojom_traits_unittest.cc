@@ -4,6 +4,8 @@
 
 #include "services/webnn/public/mojom/context_properties_mojom_traits.h"
 
+#include <limits.h>
+
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -14,6 +16,7 @@
 TEST(ContextPropertiesMojomTraitsTest, Basic) {
   webnn::ContextProperties input(
       webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kChannelsFirst,
+      /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/webnn::SupportedDataTypes::All(),
        /*constant=*/
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
@@ -178,6 +181,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
 
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
+      /*tensor_byte_length_limit=*/0,
       {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},

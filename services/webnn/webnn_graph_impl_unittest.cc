@@ -165,8 +165,9 @@ CreateTensorSuccess CreateWebNNTensor(
     std::vector<uint32_t> shape) {
   base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
   webnn_context->CreateTensor(
-      mojom::TensorInfo::New(*OperandDescriptor::Create(data_type, shape),
-                             MLTensorUsage()),
+      mojom::TensorInfo::New(
+          OperandDescriptor::UnsafeCreateForTesting(data_type, shape),
+          MLTensorUsage()),
       create_tensor_future.GetCallback());
   mojom::CreateTensorResultPtr create_tensor_result =
       create_tensor_future.Take();

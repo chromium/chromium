@@ -221,6 +221,8 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   MLOpSupportLimits* op_support_limits = MLOpSupportLimits::Create();
   op_support_limits->setPreferredInputLayout(
       InputOperandLayoutToBlink(properties_.input_operand_layout));
+  op_support_limits->setMaxTensorByteLength(
+      properties_.tensor_byte_length_limit);
   op_support_limits->setInput(
       SupportedDataTypesToDataTypeLimits(data_type_limits.input));
   op_support_limits->setConstant(
@@ -994,14 +996,15 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     return EmptyPromise();
   }
 
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(descriptor->dataType().AsEnum()),
-                       descriptor->shape()),
-                   [&exception_state](std::string error) {
-                     exception_state.ThrowTypeError(String(error));
-                     return ScriptPromise<MLTensor>();
-                   });
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor validated_descriptor,
+      webnn::OperandDescriptor::Create(
+          properties_, FromBlinkDataType(descriptor->dataType().AsEnum()),
+          descriptor->shape(), "tensor"),
+      [&exception_state](std::string error) {
+        exception_state.ThrowTypeError(String(error));
+        return ScriptPromise<MLTensor>();
+      });
 
   RETURN_IF_ERROR(webnn::ValidateTensor(properties_, validated_descriptor),
                   [&exception_state](std::string error) {

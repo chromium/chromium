@@ -249,15 +249,18 @@ Vector<uint32_t> PermuteShape(base::span<const uint32_t> shape,
 
 // Insert a transpose operation after the given operand. Returns the ID of the
 // operand holding the transposed result.
-uint64_t InsertInputTranspose(const OperandToIdMap& operand_to_id_map,
-                              const MLOperand* operand,
-                              base::span<const uint32_t> permutation,
-                              blink_mojom::GraphInfo* graph_info,
-                              const String& label) {
+uint64_t InsertInputTranspose(
+    const webnn::ContextProperties& context_properties,
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperand* operand,
+    base::span<const uint32_t> permutation,
+    blink_mojom::GraphInfo* graph_info,
+    const String& label) {
   uint64_t operand_id = InsertTemporaryOperand(
       operand_to_id_map,
       *webnn::OperandDescriptor::Create(
-          operand->DataType(), PermuteShape(operand->Shape(), permutation)),
+          context_properties, operand->DataType(),
+          PermuteShape(operand->Shape(), permutation), label.Utf8()),
       graph_info);
 
   auto transpose = blink_mojom::Transpose::New();
@@ -678,15 +681,16 @@ std::optional<String> SerializeConv2dOperation(
       GetInputOperandPermutation(options->inputLayout().AsEnum(),
                                  context_properties);
   if (input_permutation.has_value()) {
-    conv2d_mojo->input_operand_id =
-        InsertInputTranspose(operand_to_id_map, input_operand,
-                             *input_permutation, graph_info, options->label());
+    conv2d_mojo->input_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, input_operand,
+        *input_permutation, graph_info, options->label());
 
     output_operand_id = InsertTemporaryOperand(
         operand_to_id_map,
         *webnn::OperandDescriptor::Create(
-            output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation)),
+            context_properties, output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation),
+            options->label().Utf8()),
         graph_info);
   } else {
     conv2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
@@ -714,9 +718,9 @@ std::optional<String> SerializeConv2dOperation(
   }
 
   if (filter_permutation) {
-    conv2d_mojo->filter_operand_id =
-        InsertInputTranspose(operand_to_id_map, filter_operand,
-                             *filter_permutation, graph_info, options->label());
+    conv2d_mojo->filter_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, filter_operand,
+        *filter_permutation, graph_info, options->label());
   } else {
     conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
   }
@@ -1268,15 +1272,16 @@ void SerializePool2dOperation(
       GetInputOperandPermutation(options->layout().AsEnum(),
                                  context_properties);
   if (input_permutation.has_value()) {
-    pool2d_mojo->input_operand_id =
-        InsertInputTranspose(operand_to_id_map, input_operand,
-                             *input_permutation, graph_info, options->label());
+    pool2d_mojo->input_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, input_operand,
+        *input_permutation, graph_info, options->label());
 
     output_operand_id = InsertTemporaryOperand(
         operand_to_id_map,
         *webnn::OperandDescriptor::Create(
-            output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation)),
+            context_properties, output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation),
+            options->label().Utf8()),
         graph_info);
   } else {
     pool2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
@@ -1449,15 +1454,16 @@ void SerializeResample2dOperation(
         NOTREACHED();
     }
 
-    input_operand_id =
-        InsertInputTranspose(operand_to_id_map, input_operand,
-                             *input_permutation, graph_info, options->label());
+    input_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, input_operand,
+        *input_permutation, graph_info, options->label());
 
     output_operand_id = InsertTemporaryOperand(
         operand_to_id_map,
         *webnn::OperandDescriptor::Create(
-            output_operand->DataType(),
-            PermuteShape(output_operand->Shape(), *input_permutation)),
+            context_properties, output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation),
+            options->label().Utf8()),
         graph_info);
   }
 

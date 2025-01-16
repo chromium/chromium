@@ -169,6 +169,7 @@ dictionary MLWhereSupportLimits {
 
 dictionary MLOpSupportLimits {
   MLInputOperandLayout preferredInputLayout;
+  [EnforceRange] unsigned long long maxTensorByteLength;
   MLDataTypeLimits input;
   MLDataTypeLimits constant;
   MLDataTypeLimits output;

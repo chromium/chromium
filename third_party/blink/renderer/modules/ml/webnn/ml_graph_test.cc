@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
+#include <limits.h>
+
 #include <array>
 #include <numeric>
 #include <optional>
@@ -109,7 +111,7 @@ struct OperandInfo {
 
 webnn::OperandDescriptor ToDescriptor(webnn::OperandDataType data_type,
                                       base::span<const uint32_t> shape) {
-  return *webnn::OperandDescriptor::Create(data_type, shape);
+  return webnn::OperandDescriptor::UnsafeCreateForTesting(data_type, shape);
 }
 
 template <typename T>
@@ -541,6 +543,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
 
     webnn::ContextProperties context_properties(
         webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
+        /*tensor_byte_length_limit=*/INT_MAX,
         {/*input=*/webnn::SupportedDataTypes::All(),
          /*constant=*/webnn::SupportedDataTypes::All(),
          /*arg_min_max_input=*/
