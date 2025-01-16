@@ -15,9 +15,6 @@ import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.ArraySet;
 
-import dagger.hilt.internal.GeneratedComponentManager;
-import dagger.hilt.internal.GeneratedComponentManagerHolder;
-
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.JavaUtils;
@@ -32,8 +29,7 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
  * split. In the browser process, the necessary logic is loaded from the chrome split using
  * reflection.
  */
-public class SplitChromeApplication extends SplitCompatApplication
-        implements GeneratedComponentManagerHolder {
+public class SplitChromeApplication extends SplitCompatApplication {
 
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
@@ -49,7 +45,6 @@ public class SplitChromeApplication extends SplitCompatApplication
 
     private String mChromeApplicationClassName;
     private Resources mResources;
-    private GeneratedComponentManager<?> mHiltComponentManager;
 
     public SplitChromeApplication() {
         this(sImplClassName);
@@ -264,23 +259,5 @@ public class SplitChromeApplication extends SplitCompatApplication
 
     protected Impl createNonBrowserApplication() {
         return new Impl();
-    }
-
-    /** Initializes Hilt. */
-    public void setHiltComponentManager(GeneratedComponentManager<?> componentManager) {
-        mHiltComponentManager = componentManager;
-    }
-
-    @Override
-    public GeneratedComponentManager<?> componentManager() {
-        if (mHiltComponentManager != null) {
-            return mHiltComponentManager;
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public Object generatedComponent() {
-        return componentManager().generatedComponent();
     }
 }
