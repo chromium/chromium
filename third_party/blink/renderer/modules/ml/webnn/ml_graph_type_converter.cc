@@ -206,8 +206,8 @@ using OperandToIdMap = HeapHashMap<Member<const MLOperand>, uint64_t>;
 uint64_t GetOperatorInputId(const MLOperator* op,
                             const OperandToIdMap& operand_to_id_map,
                             wtf_size_t index = 0) {
-  CHECK_NE(op, nullptr);
-  CHECK_LE(index, op->Inputs().size());
+  CHECK(op);
+  CHECK_LT(index, op->Inputs().size());
   const auto* input = op->Inputs()[index].Get();
   return operand_to_id_map.at(input);
 }
@@ -215,8 +215,8 @@ uint64_t GetOperatorInputId(const MLOperator* op,
 uint64_t GetOperatorOutputId(const MLOperator* op,
                              const OperandToIdMap& operand_to_id_map,
                              wtf_size_t index = 0) {
-  CHECK_NE(op, nullptr);
-  CHECK_LE(index, op->Outputs().size());
+  CHECK(op);
+  CHECK_LT(index, op->Outputs().size());
   const auto* output = op->Outputs()[index].Get();
   return operand_to_id_map.at(output);
 }

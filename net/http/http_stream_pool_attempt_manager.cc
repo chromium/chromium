@@ -752,6 +752,18 @@ void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
   }
 }
 
+void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
+  if (!should_block_stream_attempt_ ||
+      stream_attempt_delay_timer_.IsRunning()) {
+    return;
+  }
+  CHECK(!stream_attempt_delay_.is_zero());
+  stream_attempt_delay_timer_.Start(
+      FROM_HERE, stream_attempt_delay_,
+      base::BindOnce(&AttemptManager::OnStreamAttemptDelayPassed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     int rv,
     NetErrorDetails details) {
@@ -793,6 +805,10 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
 
   MaybeMarkQuicBroken();
 
+  // TODO(crbug.com/384759483): Tidy up the following logic. See the review
+  // comment at
+  // https://chromium-review.googlesource.com/c/chromium/src/+/6169787/comment/d1311bc2_045cddda/
+
   const bool has_jobs = !jobs_.empty() || !notified_jobs_.empty();
 
   if (rv == OK) {
@@ -811,8 +827,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   }
 
   if (has_jobs && (rv != OK || should_block_stream_attempt_)) {
-    should_block_stream_attempt_ = false;
-    stream_attempt_delay_timer_.Stop();
+    CancelStreamAttemptDelayTimer();
     MaybeAttemptConnection();
   } else {
     MaybeCompleteLater();
@@ -959,7 +974,6 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
     CHECK(in_flight_attempts_.empty()) << info;
     return;
   }
-  MaybeRunStreamAttemptDelayTimer();
   MaybeCalculateSSLConfig();
   MaybeAttemptQuic();
   MaybeAttemptConnection();
@@ -1032,18 +1046,6 @@ bool HttpStreamPool::AttemptManager::
   }
 
   return false;
-}
-
-void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
-  if (!should_block_stream_attempt_ ||
-      stream_attempt_delay_timer_.IsRunning()) {
-    return;
-  }
-  CHECK(!stream_attempt_delay_.is_zero());
-  stream_attempt_delay_timer_.Start(
-      FROM_HERE, stream_attempt_delay_,
-      base::BindOnce(&AttemptManager::OnStreamAttemptDelayPassed,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
@@ -1942,15 +1944,14 @@ base::TimeDelta HttpStreamPool::AttemptManager::GetStreamAttemptDelay() {
 }
 
 void HttpStreamPool::AttemptManager::UpdateStreamAttemptState() {
-  if (!should_block_stream_attempt_) {
-    return;
+  if (should_block_stream_attempt_ && !CanUseQuic()) {
+    CancelStreamAttemptDelayTimer();
   }
+}
 
-  if (!CanUseQuic()) {
-    should_block_stream_attempt_ = false;
-    stream_attempt_delay_timer_.Stop();
-    return;
-  }
+void HttpStreamPool::AttemptManager::CancelStreamAttemptDelayTimer() {
+  stream_attempt_delay_timer_.Stop();
+  should_block_stream_attempt_ = false;
 }
 
 void HttpStreamPool::AttemptManager::OnStreamAttemptDelayPassed() {

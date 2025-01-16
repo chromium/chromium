@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
@@ -159,12 +158,6 @@ void NetworkPortalNotificationController::PortalStateChanged(
     }
 
     CloseNotification();
-    return;
-  }
-
-  // Don't do anything if we're currently activating the device.
-  if (MobileActivator::GetInstance()->RunningActivation()) {
-    NET_LOG(EVENT) << "Captive Portal notification: Skip (mobile activation)";
     return;
   }
 

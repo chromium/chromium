@@ -209,7 +209,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigationFails) {
                           "webapps_integration/standalone/basic.html");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, RicherInstallModal) {
+// TODO(crbug.com/390224315) Fix the test flakiness on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RicherInstallModal DISABLED_RicherInstallModal
+#else
+#define MAYBE_RicherInstallModal RicherInstallModal
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_RicherInstallModal) {
   helper_.InstallOmniboxIcon(InstallableSite::kScreenshots);
   helper_.CheckAppInListWindowed(Site::kScreenshots);
 }

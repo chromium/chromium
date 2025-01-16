@@ -28,7 +28,6 @@ static_library("cellular_setup") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
-    "//chrome/browser/ash/mobile",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/network",

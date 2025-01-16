@@ -381,25 +381,26 @@ HeapVector<Member<ScrollMarkerPseudoElement>>
 ScrollMarkerChooser::ChooseGeneric(
     const HeapVector<Member<ScrollMarkerPseudoElement>>& candidates) {
   HeapVector<Member<ScrollMarkerPseudoElement>> selection;
-  std::optional<float> max_observed_position;
+  std::optional<float> smallest_distance;
   for (ScrollMarkerPseudoElement* scroll_marker : candidates) {
-    if (selection.empty()) {
-      selection.push_back(scroll_marker);
-      continue;
-    }
     ScrollTargetOffsetData target_data =
         GetScrollTargetOffsetData(scroll_marker);
     float candidate_position = target_data.aligned_scroll_offset;
+    float candidate_distance =
+        std::abs(candidate_position - intended_position_);
 
-    if (candidate_position <= intended_position_) {
-      if (!max_observed_position ||
-          (candidate_position > max_observed_position)) {
-        max_observed_position = candidate_position;
-        selection.clear();
-        selection.push_back(scroll_marker);
-      } else if (candidate_position == max_observed_position) {
-        selection.push_back(scroll_marker);
-      }
+    if (selection.empty()) {
+      selection.push_back(scroll_marker);
+      smallest_distance = candidate_distance;
+      continue;
+    }
+
+    if (candidate_distance < smallest_distance) {
+      smallest_distance = candidate_distance;
+      selection.clear();
+      selection.push_back(scroll_marker);
+    } else if (candidate_distance == smallest_distance) {
+      selection.push_back(scroll_marker);
     }
   }
   return selection;

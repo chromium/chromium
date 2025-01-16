@@ -27,7 +27,18 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~BitmapSoftwareBacking() override {
     DCHECK(shared_image);
+
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
+    mapping.reset();
+    shared_image.reset();
+    // |shared_image_interface| might be null when
+    // gpu::GpuChannel::~GpuChannel() during shutdown or when gpu is crashed.
+    // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
+    // itself. We need a flush here to trigger IPC. Without the flush, there
+    // will be memory regressions in tiles.
+    if (frame_sink->shared_image_interface()) {
+      frame_sink->shared_image_interface()->Flush();
+    }
   }
 
   void OnMemoryDump(
@@ -103,7 +114,7 @@ BitmapRasterBufferProvider::BitmapRasterBufferProvider(
     LayerTreeFrameSink* frame_sink)
     : frame_sink_(frame_sink) {
   auto sii = frame_sink_->shared_image_interface();
-  CHECK(sii) << "BitmapRasterBufferProvider() SharedImageInterface is null!";
+  CHECK(sii) << "::BitmapRasterBufferProvider() SharedImageInterface is null!";
 }
 
 BitmapRasterBufferProvider::~BitmapRasterBufferProvider() = default;

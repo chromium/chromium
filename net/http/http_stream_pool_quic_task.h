@@ -25,6 +25,8 @@ class QuicSessionAliasKey;
 
 // Handles QUIC session attempts for HttpStreamPool::AttemptManager. Owned by an
 // AttemptManager.
+// TODO(crbug.com/346835898): Make this inner class of AttemptManager so that we
+// don't have to expose AttemptManager's internal methods just for this class.
 class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
  public:
   // `manager` must outlive `this`.

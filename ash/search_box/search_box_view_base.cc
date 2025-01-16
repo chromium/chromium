@@ -307,7 +307,7 @@ class SearchIconImageView : public views::ImageView {
 
   void SetSearchIconImage(gfx::ImageSkia image) {
     if (GetImage().isNull() || !animation_enabled_) {
-      SetImage(image);
+      SetImage(ui::ImageModel::FromImageSkia(image));
       return;
     }
 
@@ -315,7 +315,7 @@ class SearchIconImageView : public views::ImageView {
       old_icon_layer_->GetAnimator()->StopAnimating();
 
     old_icon_layer_ = RecreateLayer();
-    SetImage(image);
+    SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Animate the old layer to fade out.
     views::AnimationBuilder()

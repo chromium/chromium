@@ -313,7 +313,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   constexpr static const int kSignalStrengthChangeThreshold = 5;
 
  private:
-  friend class MobileActivatorTest;
   friend class NetworkStateHandler;
   friend class NetworkStateTest;
 

@@ -152,7 +152,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/mahi:unit_tests",
     "//chrome/browser/ash/mahi/web_contents:unit_tests",
     "//chrome/browser/ash/mall:unit_tests",
-    "//chrome/browser/ash/mobile:unit_tests",
     "//chrome/browser/ash/nearby:unit_tests",
     "//chrome/browser/ash/net:unit_tests",
     "//chrome/browser/ash/network_change_manager:unit_tests",
