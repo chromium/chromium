@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -40,7 +41,6 @@ import androidx.test.runner.lifecycle.Stage;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1028,7 +1028,7 @@ public class AutofillServerCardEditorTest {
                             .withRootView(textView)
                             .build();
                 }
-                Assert.assertEquals("There should be only one clickable link", 1, spans.length);
+                assertEquals("There should be only one clickable link", 1, spans.length);
                 spans[0].onClick(view);
             }
         };

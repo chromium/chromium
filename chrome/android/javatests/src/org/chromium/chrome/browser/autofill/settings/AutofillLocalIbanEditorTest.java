@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -23,7 +25,6 @@ import android.widget.Button;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -251,10 +252,10 @@ public class AutofillLocalIbanEditorTest {
                 autofillLocalIbanEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open.
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
         ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
         // Verify the dialog is closed.
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+        assertNull(fakeModalDialogManager.getShownDialogModel());
         // Verify the IBAN entry is not deleted.
         verify(mPersonalDataManagerMock, never()).deleteIban(guid);
     }
@@ -277,10 +278,10 @@ public class AutofillLocalIbanEditorTest {
                 autofillLocalIbanEditorFragment, fakeModalDialogManager);
 
         // Verify the dialog is open.
-        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        assertNotNull(fakeModalDialogManager.getShownDialogModel());
         ThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
         // Verify the dialog is closed.
-        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+        assertNull(fakeModalDialogManager.getShownDialogModel());
         // Verify the IBAN entry is deleted.
         verify(mPersonalDataManagerMock, times(1)).deleteIban(guid);
     }
