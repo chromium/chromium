@@ -18,6 +18,7 @@
 #include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/span.h"
@@ -245,7 +246,8 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
   ASSERT_TRUE(scanner_controller);
   FakeScannerDelegate& fake_scanner_delegate =
       *GetFakeScannerDelegate(*scanner_controller);
-  base::test::TestFuture<ScannerFeedbackInfo> feedback_info_future;
+  base::test::TestFuture<const AccountId&, ScannerFeedbackInfo>
+      feedback_info_future;
   fake_scanner_delegate.SetOpenFeedbackDialogCallback(
       feedback_info_future.GetRepeatingCallback());
   manta::proto::ScannerAction action;
@@ -258,7 +260,9 @@ TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
 
   scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
 
-  ScannerFeedbackInfo feedback_dialog_info = feedback_info_future.Take();
+  auto [account_id, feedback_dialog_info] = feedback_info_future.Take();
+  EXPECT_EQ(account_id,
+            Shell::Get()->session_controller()->GetActiveAccountId());
   EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
     "new_event": {
       "title": "🌏",

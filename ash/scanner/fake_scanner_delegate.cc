@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -20,9 +21,10 @@ ScannerProfileScopedDelegate* FakeScannerDelegate::GetProfileScopedDelegate() {
 }
 
 void FakeScannerDelegate::OpenFeedbackDialog(
+    const AccountId& account_id,
     ScannerFeedbackInfo feedback_info) {
   if (!open_feedback_dialog_callback_.is_null()) {
-    open_feedback_dialog_callback_.Run(std::move(feedback_info));
+    open_feedback_dialog_callback_.Run(account_id, std::move(feedback_info));
   }
 }
 

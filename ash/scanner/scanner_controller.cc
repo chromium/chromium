@@ -22,6 +22,8 @@
 #include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_feedback.h"
 #include "ash/scanner/scanner_session.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -167,6 +169,11 @@ void ScannerController::ExecuteAction(
 void ScannerController::OpenFeedbackDialog(
     manta::proto::ScannerAction action,
     scoped_refptr<base::RefCountedMemory> screenshot) {
+  // TODO: b/367882164 - Pass in the account ID to this method to ensure that
+  // the feedback form is shown for the same account that performed the action.
+  const AccountId& account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+
   base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
   std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
       action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
@@ -174,8 +181,9 @@ void ScannerController::OpenFeedbackDialog(
   // and no binary values should appear in the Dict.
   CHECK(pretty_printed_action.has_value());
 
-  delegate_->OpenFeedbackDialog(ScannerFeedbackInfo(
-      std::move(*pretty_printed_action), std::move(screenshot)));
+  delegate_->OpenFeedbackDialog(
+      account_id, ScannerFeedbackInfo(std::move(*pretty_printed_action),
+                                      std::move(screenshot)));
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

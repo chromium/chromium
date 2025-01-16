@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+class AccountId;
+
 namespace ash {
 
 struct ScannerFeedbackInfo;
@@ -19,11 +21,9 @@ class ASH_PUBLIC_EXPORT ScannerDelegate {
 
   virtual ScannerProfileScopedDelegate* GetProfileScopedDelegate() = 0;
 
-  // Opens a feedback form system dialog for the active user profile.
-  //
-  // TODO: b/382562555 - Consider taking in a `context::BrowserContext*` here
-  // to ensure that the dialog is opened for the correct user.
-  virtual void OpenFeedbackDialog(ScannerFeedbackInfo feedback_info) = 0;
+  // Opens a feedback form system dialog for the given account.
+  virtual void OpenFeedbackDialog(const AccountId& account_id,
+                                  ScannerFeedbackInfo feedback_info) = 0;
 };
 
 }  // namespace ash
