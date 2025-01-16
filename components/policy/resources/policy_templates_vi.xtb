@@ -332,7 +332,6 @@ Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được
 
       Cảnh báo: Tùy chọn Wipe và MinimalMigrate sẽ xóa dữ liệu trên máy.</translation>
 <translation id="1248955696540150266">Cho phép tự động tải bản cập nhật xuống thông qua kết nối ngang hàng</translation>
-<translation id="1249640740800891502">Cài đặt SkyVault (tất cả dữ liệu trên đám mây)</translation>
 <translation id="1250597158212586309">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng sẽ có tuỳ chọn đóng/khôi phục cảnh báo mật khẩu bị lộ.
 
       Nếu bạn tắt chế độ cài đặt này, người dùng sẽ không đóng được cảnh báo mật khẩu bị lộ. Nếu chế độ này được bật, người dùng sẽ đóng được cảnh báo mật khẩu bị lộ.</translation>
@@ -4372,7 +4371,6 @@ Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* c
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng tự động nhấp sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="4212181786686887763">URL mà từ đó có thể tải hình nền xuống.</translation>
-<translation id="4221677608399717135">Bật hoặc tắt SkyVault</translation>
 <translation id="4224610387358583899">Độ trễ khóa màn hình</translation>
 <translation id="42267415200641481">Nếu bạn đặt chính sách này thành true (đúng), thì quá trình phân giải DNS của hệ thống (getaddrinfo()) có thể sẽ chạy ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.
 
@@ -10974,7 +10972,7 @@ Chính sách này chỉ kiểm soát <ph name="ARC_VM" /> trên <ph name="PRODUC
       Chính sách này sẽ ảnh hưởng đến những người dùng xác thực bằng GAIA nhưng không sử dụng SAML.
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
-<translation id="8931076230631115330">Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ cố gắng tự đăng ký thông qua trình quản lý trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Giá trị của chính sách này là mã đăng ký mà bạn có thể truy xuất từ <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+<translation id="8931076230631115330">Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ cố gắng tự đăng ký thông qua tính năng quản lý trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Giá trị của chính sách này là mã đăng ký mà bạn có thể truy xuất từ <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để biết thông tin chi tiết.</translation>
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.

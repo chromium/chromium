@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1066101356081285416">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Google untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja Google bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome otomatis membuka link Samaran YouTube dalam mode Samaran.</translation>
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
 <translation id="1143896152279775643">Sandi Anda akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Buka tab baru di Chrome</translation>
@@ -126,6 +127,7 @@ Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini a
 <translation id="4636900170638246267">Login ke situs ini dan Chrome.</translation>
 <translation id="4646014602299206846">Chrome akan mendeteksi nomor pelacakan paket di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman tab baru. Data Anda akan dibagikan kepada Google untuk menyediakan fitur ini dan meningkatkan layanan Shopping bagi semua orang.</translation>
 <translation id="4647910807533196601">Membuka tab terbaru saya di Chrome.</translation>
+<translation id="4693084815234024320">Anda sedang dalam mode Samaran Chrome</translation>
 <translation id="4724297637870447613">Gunakan Chrome di mana saja</translation>
 <translation id="4738647308035481133">Halaman Google Chrome</translation>
 <translation id="4742795653798179840">Data Chrome berhasil dihapus</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1066101356081285416">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。荷物追跡番号とウェブサイト名は、この機能の提供と Google ショッピング機能の改善を目的として、Google に送信されます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />でいつでも変更できます。</translation>
+<translation id="1076643793026027628">YouTube のシークレット リンクが Chrome のシークレット モードで自動的に開きます。</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1146503048444965320">Chrome で新しいタブを開く</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">このサイトと Chrome にログインしてください。</translation>
 <translation id="4646014602299206846">Chrome はアクセスしたサイトで荷物追跡番号を検出し、新しいタブページに最新情報を表示します。データは Google と共有され、この機能の提供と、すべてのユーザーに対するショッピングの利便性向上に役立てられます。</translation>
 <translation id="4647910807533196601">Chrome で最近使ったタブを開きます。</translation>
+<translation id="4693084815234024320">Chrome のシークレット モードです</translation>
 <translation id="4724297637870447613">Chrome をどこでも使用</translation>
 <translation id="4738647308035481133">Google Chrome ページ</translation>
 <translation id="4742795653798179840">Chrome データを削除しました</translation>

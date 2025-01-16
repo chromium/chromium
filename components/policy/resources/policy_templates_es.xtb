@@ -332,7 +332,6 @@ Sin embargo, los patrones de esta política que coinciden con el origen no puede
 
       Advertencia: "Wipe" y "MinimalMigrate" eliminan los datos locales.</translation>
 <translation id="1248955696540150266">Permitir las descargas de actualizaciones automáticas punto a punto</translation>
-<translation id="1249640740800891502">Configuración de SkyVault (todos los datos en la nube)</translation>
 <translation id="1250597158212586309">Si esta política se habilita o no se establece, el usuario tiene la opción de cerrar o restaurar las alertas de contraseñas vulneradas.
 
       Si se inhabilita este ajuste, los usuarios no podrán cerrar las alertas de contraseñas vulneradas. Si se habilita, los usuarios podrán cerrar las alertas de contraseñas vulneradas.</translation>
@@ -4322,7 +4321,6 @@ Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provo
 
           Si no le asignas ningún valor, el clic automático se inhabilitará al inicio, pero los usuarios podrán habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la que se puede descargar la imagen del fondo de pantalla.</translation>
-<translation id="4221677608399717135">Activar o desactivar SkyVault</translation>
 <translation id="4224610387358583899">Retrasos de bloqueo de pantalla</translation>
 <translation id="42267415200641481">Si asignas a esta política el valor true, es posible que la resolución de DNS del sistema (getaddrinfo()) se ejecute fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.
 

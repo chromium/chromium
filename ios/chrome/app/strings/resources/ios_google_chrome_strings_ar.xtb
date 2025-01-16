@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1066101356081285416">‏سيرصُد Chrome أرقام التتبُّع على المواقع الإلكترونية التي تزورها ويعرض لك آخر مستجدات الطرود في صفحة علامة تبويب جديدة. سيتم إرسال رقم تتبُّع الطرد واسم الموقع الإلكتروني إلى Google لتوفير هذه الميزة وتحسين ميزات التسوّق المقدّمة من Google للجميع. يمكنك تغيير ذلك في أي وقت في <ph name="BEGIN_LINK" />إعدادات تتبُّع الطرود<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">‏يفتح Chrome تلقائيًا روابط YouTube المخصصة للتصفُّح المتخفي في وضع التصفُّح المتخفي.</translation>
 <translation id="1086486568852410168">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">‏فتح علامة تبويب جديدة في Chrome</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">‏يُرجى تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome.</translation>
 <translation id="4646014602299206846">‏سيكتشف Chrome أرقام تتبُّع الطرود على المواقع الإلكترونية التي تزورها ويعرض لك إشعارات الطرود في صفحة "علامة تبويب جديدة". وستتم مشاركة بياناتك مع Google لتوفير هذه الميزة وتحسين ميزات Shopping للجميع.</translation>
 <translation id="4647910807533196601">‏يؤدي هذا الاختصار إلى فتح آخر علامة تبويب في Chrome.</translation>
+<translation id="4693084815234024320">‏أنت تستخدم وضع التصفُّح المتخفي في Chrome</translation>
 <translation id="4724297637870447613">‏استخدام Chrome في كل مكان</translation>
 <translation id="4738647308035481133">‏صفحة Google Chrome</translation>
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>

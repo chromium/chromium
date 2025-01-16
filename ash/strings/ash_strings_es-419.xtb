@@ -282,6 +282,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1948405482892809935">Cambiar al usuario siguiente</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1954252331066828794">Se completó la grabación de pantalla</translation>
+<translation id="1956087014741188812">Pausar las teclas del mouse</translation>
 <translation id="1957958912175573503">Establecer el idioma</translation>
 <translation id="1961239773406905488">La vista previa de la cámara esta oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">Ocurrió un error al descargar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Archivos sugeridos</translation>
+<translation id="2266607665880926261">Se pausaron las teclas del mouse</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268731132310444948">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> del recorrido. Una vez que se active el Selector, verás una barra de búsqueda mejorada. Puedes comenzar a escribir para buscar tus archivos, apps y mucho más. También puedes obtener respuestas a preguntas sobre tu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Salir de todo</translation>
@@ -540,6 +542,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="2876338922445400217">Acercar la pantalla</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
 <translation id="2880541185262491188">Demasiados intentos de ingresar PIN. Espera <ph name="TIME_LEFT" /> y vuelve a intentarlo</translation>
+<translation id="2883271196820422439">Reanudar teclas del mouse</translation>
 <translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">"Anular la selección"</translation>
 <translation id="2894949423239620203">El cable puede reducir el rendimiento</translation>
@@ -727,6 +730,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3539957339480430241">Hotspot de <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Descartar la configuración de la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
 <translation id="3542066395059568317">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, haz clic con el botón derecho.</translation>
+<translation id="3545224667633138205">Se reanudaron las teclas del mouse</translation>
 <translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
 <translation id="3554215588514239132">Ocultar o mostrar el panel Herramientas para desarrolladores</translation>
 <translation id="3554637740840164787">Se fijó <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3727231512028252576">No se pudieron cargar los elementos. Vuelve a intentarlo cuando estés en línea.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738664582935948253">Ahora puedes mostrar los clics y las combinaciones de teclas en las grabaciones de pantalla.</translation>
+<translation id="3741482431277446954">Botón derecho del mouse</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
 <translation id="3743775386021959186">El Modo sin distracciones está activado. Tiempo restante: <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">Ocultar sugerencia del clima</translation>
@@ -1153,7 +1158,6 @@ Se conectó un dispositivo.</translation>
 <translation id="4902797682482387055">Tarea sugerida en la que concentrarse</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Batería: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">Esta es una función experimental basada en IA y puede tener errores.</translation>
 <translation id="491504982845934899">Activar luego de configurar el dispositivo <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -1829,6 +1833,7 @@ Nueva instalación</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7118597077555700347">Abrir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Seleccionar la palabra o letra siguiente</translation>
+<translation id="7124556000457919678">Cuando se activa, pausa y reanuda las teclas del mouse</translation>
 <translation id="7126996685418858413">Se abrió la semana pasada</translation>
 <translation id="7130207228079676353">MUY PROBABLES</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
@@ -1850,6 +1855,7 @@ Nueva instalación</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
 <translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
+<translation id="7239814253344511868">Ambos botones del mouse</translation>
 <translation id="7244725679040769470">Queda <ph name="PERCENTAGE" />% de batería. Conecta tu dispositivo a la corriente.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Debes reiniciar esta Chromebook para aplicar una actualización. Este proceso puede tardar 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2019,7 +2025,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">La opción Me gusta enviará comentarios que indican que te gusta esta sugerencia</translation>
 <translation id="7825412704590278437">De un evento próximo del calendario</translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7830453190047749513">Puedes personalizar las acciones de los botones, la velocidad del cursor y mucho más para tu <ph name="PERIPHERAL_NAME" /></translation>
@@ -2111,6 +2116,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8051716679295756675">Ya existe una plantilla con el nombre <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
+<translation id="8076492880354921740">Pestañas</translation>
 <translation id="8079538659226626406">Compartir pantalla</translation>
 <translation id="8083540854303889870">Guardados para después</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2151,6 +2157,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8203224998425013577">Mostrar más emojis y GIFs</translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>
 <translation id="8205469348819768313">¿Quieres usar Av Pág? Usa</translation>
+<translation id="8213376797713070611">Botón izquierdo del mouse</translation>
 <translation id="8214996719228530800">Canal de Canary</translation>
 <translation id="8219451629189078428">Durante ese período, la Chromebook deberá estar encendida y enchufada a una fuente de alimentación. Asegúrate de que el cable del cargador o adaptador esté conectado correctamente tanto a la Chromebook como al enchufe. No apagues la Chromebook.</translation>
 <translation id="8220076512072059941">Agregar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2175,7 +2182,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloq Mayús está activado.</translation>
 <translation id="8315514906653279104">Activando…</translation>
-<translation id="8319634750346253957">La opción No me gusta enviará comentarios que indican que no te gusta esta sugerencia</translation>
 <translation id="8331351032546853669">Descarga pendiente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2376,6 +2382,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth no está disponible</translation>
+<translation id="9050999376345823055">Presiona "." para soltar</translation>
 <translation id="906458777597946297">Maximizar ventana</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>

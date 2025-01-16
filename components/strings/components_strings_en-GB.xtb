@@ -387,6 +387,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">To use Password Manager with macOS Keychain, relaunch Chromium and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="1652887625750064647">AI best match</translation>
+<translation id="1653465303147789530">Pay with <ph name="PAYMENT_METHOD" /> without switching apps</translation>
 <translation id="1656024727720460136">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over a secure connection.</translation>
 <translation id="1656489000284462475">Pick-up</translation>
 <translation id="1658111267661135323">TV and Video</translation>
@@ -557,6 +558,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1959001866257244765">Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK" />URLs of some pages that you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK" /> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacy policy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="196146181975453736">Complete one-time security check to pay faster</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1973785048533660168">Clerical and Administrative Jobs</translation>
@@ -701,6 +703,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2215539479425228550">Climbing and mountaineering</translation>
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2215963164070968490">Dogs</translation>
+<translation id="2219376942605837404">Add tab to comparison table</translation>
 <translation id="2219658597883514593">Restart tutorial</translation>
 <translation id="2219735899272417925">Device reset required</translation>
 <translation id="2221227930294879156">Food and Drink Events</translation>
@@ -1151,6 +1154,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
+<translation id="3068976060094139647">You can autofill this card because your account is linked to Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} item}other{{ITEMS} items}}</translation>
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
@@ -1586,6 +1590,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="378611282717571199">Best matches for '<ph name="SEARCH_QUERY" />'</translation>
 <translation id="3789155188480882154">Size 16</translation>
 <translation id="3789841737615482174">Install</translation>
+<translation id="3791118028061680614">Pay without switching apps</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult and indie films</translation>
 <translation id="3793574014653384240">Numbers and causes of the crashes that occurred recently</translation>
@@ -1786,6 +1791,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4151403195736952345">Use global default (Detect)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Add tab to comparison table</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165422751765527461">Opens a Help Centre article in a new tab</translation>
 <translation id="4165986682804962316">Site settings</translation>
@@ -2150,6 +2156,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="4827283332383516812">Delete card</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> selected</translation>
 <translation id="4831993743164297314">Image setter paper</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4832961164064927107">BBQ and grilling</translation>
@@ -3392,6 +3399,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="706960991003274248">Comparison tables are saved to your account <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">system settings</translation>
 <translation id="70705239631109039">Your connection is not fully secure</translation>
+<translation id="7071122206197538392">New comparison table</translation>
 <translation id="7075452647191940183">Request is too large</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4103,6 +4111,7 @@ Additional details:
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Enter code</translation>
 <translation id="8303854710873047864">'<ph name="SECTION" />' section shown</translation>
+<translation id="8304912090860925649">New comparison table</translation>
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8308653357438598313">Live Video Streaming</translation>
 <translation id="8311895354659782580">Real Property Listings</translation>

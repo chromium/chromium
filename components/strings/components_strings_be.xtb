@@ -703,6 +703,7 @@
 <translation id="2215539479425228550">Скалалажанне і горны турызм</translation>
 <translation id="2215727959747642672">Змяненне файлаў</translation>
 <translation id="2215963164070968490">Сабакі</translation>
+<translation id="2219376942605837404">Дадаць укладку ў табліцу параўнання</translation>
 <translation id="2219658597883514593">Перазапусціць дапаможнік</translation>
 <translation id="2219735899272417925">Патрабуецца скід прылады</translation>
 <translation id="2221227930294879156">Кулінарныя і дэгустацыйныя мерапрыемствы</translation>
@@ -1154,6 +1155,7 @@
 <translation id="306573536155379004">Гульня пачалася.</translation>
 <translation id="3067505415088964188">Нізкая цана</translation>
 <translation id="3068118691172921711">Запампоўванне файлаў у <ph name="CLOUD_PROVIDER" /> пачнецца праз 1 хвіліну</translation>
+<translation id="3068976060094139647">Вы можаце аўтаматычна запоўніць даныя гэтай карткі, бо ўліковы запіс карткі звязаны з Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} элемент}one{{ITEMS} элемент}few{{ITEMS} элементы}many{{ITEMS} элементаў}other{{ITEMS} элемента}}</translation>
 <translation id="3076865167425975822">Аперацыйныя сістэмы</translation>
 <translation id="3080254622891793721">Графіка</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4151403195736952345">Выкарыстоўваць глабальныя стандартныя налады (выяўляць)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Старонка 1}one{Старонка {COUNT}}few{Старонка {COUNT}}many{Старонка {COUNT}}other{Старонка {COUNT}}}</translation>
 <translation id="4154277373259957087">Цяпер Chrome уносіць даныя спосабаў аплаты толькі пасля спраўджання асобы. Калі вы хочаце змяніць гэтыя параметры, перайдзіце ў <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
+<translation id="415440494507469262">Дадаць укладку ў табліцу параўнання</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4165422751765527461">Адкрыць артыкул Даведачнага цэнтра ў новай укладцы</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
@@ -3394,6 +3397,7 @@
 <translation id="706960991003274248">Табліцы параўнання захаваны ва ўліковым запісе <ph name="EMAIL" /></translation>
 <translation id="7070144569727915108">наладах сістэмы</translation>
 <translation id="70705239631109039">Ваша падключэнне не цалкам бяспечнае</translation>
+<translation id="7071122206197538392">Новая табліца параўнання</translation>
 <translation id="7075452647191940183">Запыт занадта вялікі</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
@@ -4105,6 +4109,7 @@
 <translation id="8298115750975731693">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць старонку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8301894345671534559">Увядзіце код</translation>
 <translation id="8303854710873047864">Паказваецца раздзел "<ph name="SECTION" />"</translation>
+<translation id="8304912090860925649">Новая табліца параўнання</translation>
 <translation id="830498451218851433">Згіб напалову</translation>
 <translation id="8308653357438598313">Жывыя відэатрансляцыі</translation>
 <translation id="8311895354659782580">Нерухомая маёмасць і зямельныя ўчасткі</translation>

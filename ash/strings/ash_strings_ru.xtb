@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Переключиться на следующего пользователя</translation>
 <translation id="1951012854035635156">Ассистент</translation>
 <translation id="1954252331066828794">Запись видео с экрана завершена</translation>
+<translation id="1956087014741188812">Временно отключить клавиши управления указателем</translation>
 <translation id="1957958912175573503">Выберите язык</translation>
 <translation id="1961239773406905488">Предварительный просмотр для камеры выключен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Поиск устройств…</translation>
 <translation id="2257486738914982088">При скачивании файла <ph name="FILENAME" /> произошла ошибка.</translation>
 <translation id="2258734398699965611">Рекомендуемые файлы</translation>
+<translation id="2266607665880926261">Клавиши управления указателем временно отключены</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
 <translation id="2268731132310444948">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На открытой панели запуска вы найдете улучшенную строку поиска. Используйте ее, чтобы находить файлы, приложения и все остальное, а также задавать вопросы о своем компьютере (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="2268813581635650749">Выйти для всех</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Увеличить масштаб</translation>
 <translation id="2878884018241093801">Недавних окон нет.</translation>
 <translation id="2880541185262491188">Слишком много попыток ввода PIN-кода. Подождите <ph name="TIME_LEFT" /> и повторите попытку.</translation>
+<translation id="2883271196820422439">Снова включить клавиши управления указателем</translation>
 <translation id="2885950158625301909">Подробнее</translation>
 <translation id="2891209721153296020">"Отменить выбор"</translation>
 <translation id="2894949423239620203">Подключенный кабель может ограничивать производительность</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241">Точка доступа устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не настраивать просмотр недавних фотографий и медиафайлов с телефона</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
+<translation id="3545224667633138205">Клавиши управления указателем включены</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554215588514239132">Показать или скрыть панель инструментов разработчика</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Не удалось загрузить данные. Восстановите связь и повторите попытку.</translation>
 <translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3738664582935948253">Теперь в записи видео с экрана можно показывать сочетания клавиш и нажатия.</translation>
+<translation id="3741482431277446954">Правая кнопка мыши</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3743775386021959186">Режим концентрации внимания включен. Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
 <translation id="3750403286520637847">Скрыть погоду</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">Рекомендуемая задача</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="4911191962826748981">Это экспериментальная ИИ-функция. Она может показывать неточную информацию.</translation>
 <translation id="491504982845934899">Чтобы активировать сеть <ph name="NETWORK_NAME" />, сначала настройте устройство</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918086044614829423">Принять</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">скриншот</translation>
 <translation id="7118597077555700347">Открыть результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="7119327711295338600">Выбрать следующее слово или букву</translation>
+<translation id="7124556000457919678">Временно отключить или снова включить клавиши управления указателем</translation>
 <translation id="7126996685418858413">Открыто на прошлой неделе</translation>
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="7219573373513695352">Нет подключенных устройств.</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">Обе кнопки мыши</translation>
 <translation id="7244725679040769470">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Подключите устройство к источнику питания.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256057185598509352">Клавиша ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Поставить подсказке отметку "Нравится"</translation>
 <translation id="7825412704590278437">Из предстоящего мероприятия в календаре</translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7830453190047749513">Вы можете задать действия для кнопок, скорость передвижения указателя и настроить другие параметры устройства "<ph name="PERIPHERAL_NAME" />".</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8051716679295756675">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" уже существует.</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>
+<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079538659226626406">Демонстрация экрана</translation>
 <translation id="8083540854303889870">Сохранено</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@
 <translation id="8203224998425013577">Ещё эмодзи и GIF</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>
 <translation id="8205469348819768313">Хотите нажать клавишу Page Down? Используйте</translation>
+<translation id="8213376797713070611">Левая кнопка мыши</translation>
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
 <translation id="8220076512072059941">Плюс <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Включен режим Caps Lock</translation>
 <translation id="8315514906653279104">Включение…</translation>
-<translation id="8319634750346253957">Поставить подсказке отметку "Не нравится"</translation>
 <translation id="8331351032546853669">Ожидание скачивания</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9050012935252397793">Подключение по Bluetooth недоступно</translation>
+<translation id="9050999376345823055">Чтобы отпустить кнопку, нажмите "."</translation>
 <translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9070640332319875144">Настройки Ассистента</translation>

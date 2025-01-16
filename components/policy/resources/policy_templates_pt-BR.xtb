@@ -331,7 +331,6 @@ instalação.</translation>
 
       Cuidado: Wipe e MinimalMigrate removem dados locais.</translation>
 <translation id="1248955696540150266">Permitir downloads ponto a ponto de atualizações automáticas</translation>
-<translation id="1249640740800891502">Configurações do SkyVault (todos os dados na nuvem)</translation>
 <translation id="1250597158212586309">Se a política for definida como "Enabled" (ativada) ou deixada sem definição, o usuário tem a opção de dispensar/restaurar alertas de senha comprometida.
 
       Se você desativar esta configuração, os usuários não vão poder dispensar alertas de senha comprometida. Se ela estiver ativada, os usuários vão poder dispensar alertas sobre senhas comprometidas.</translation>
@@ -4498,7 +4497,6 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
 
           Se esta política não for definida, o clique automático ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4212181786686887763">O URL no qual o download da imagem do plano de fundo pode ser feito.</translation>
-<translation id="4221677608399717135">Ativar ou desativar o SkyVault</translation>
 <translation id="4224610387358583899">Tempo de espera para bloqueio de tela</translation>
 <translation id="42267415200641481">Se a política for definida como verdadeira, a resolução de DNS (getaddrinfo()) poderá ser executada fora do processo de rede, dependendo da configuração do sistema e das flags de recursos.
 

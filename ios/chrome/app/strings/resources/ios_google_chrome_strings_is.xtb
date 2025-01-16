@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome opnar YouTube-huliðstengla sjálfkrafa í huliðsstillingu.</translation>
 <translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Opna nýjan flipa í Chrome</translation>
@@ -126,6 +127,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="4636900170638246267">Skráðu þig inn á þetta vefsvæði og Chrome.</translation>
 <translation id="4646014602299206846">Chrome mun greina pakkarakningarnúmer á vefsvæðum sem þú skoðar og birta tilkynningar um stöðu pakka á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og bæta verslun fyrir alla.</translation>
 <translation id="4647910807533196601">Opna síðasta flipa í Chrome.</translation>
+<translation id="4693084815234024320">Þú ert að nota Chrome í huliðsstillingu</translation>
 <translation id="4724297637870447613">Notaðu Chrome hvar sem er</translation>
 <translation id="4738647308035481133">Google Chrome-síða</translation>
 <translation id="4742795653798179840">Chrome-gögnum var eytt</translation>

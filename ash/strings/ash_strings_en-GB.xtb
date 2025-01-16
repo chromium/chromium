@@ -282,6 +282,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1948405482892809935">Switch to next user</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Screen recording completed</translation>
+<translation id="1956087014741188812">Pause mouse keys</translation>
 <translation id="1957958912175573503">Set your language</translation>
 <translation id="1961239773406905488">Camera preview hidden</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
 <translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Suggested files</translation>
+<translation id="2266607665880926261">Mouse keys paused</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268731132310444948">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. Once Launcher is activated, you'll get an enhanced search bar. You can start typing to search for your files, apps and more. You can also get answers to questions about your <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Sign out all</translation>
@@ -540,6 +542,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2876338922445400217">Zoom in on screen</translation>
 <translation id="2878884018241093801">No recent items</translation>
 <translation id="2880541185262491188">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again</translation>
+<translation id="2883271196820422439">Resume mouse keys</translation>
 <translation id="2885950158625301909">Learn more</translation>
 <translation id="2891209721153296020">'Unselect'</translation>
 <translation id="2894949423239620203">Cable may impact performance</translation>
@@ -727,6 +730,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Dismiss setting up viewing your phone's recent photos and media</translation>
 <translation id="3542066395059568317">You’ll see recommendations so that you can continue where you left off. You can right-click to remove recommendations.</translation>
+<translation id="3545224667633138205">Mouse keys resumed</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554215588514239132">Show or hide Developer tools panel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
@@ -801,6 +805,7 @@ Connect your device to power.</translation>
 <translation id="3727231512028252576">Couldn't load items. Please try again when online.</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3738664582935948253">You can now show clicks and keyboard shortcuts in screen recordings</translation>
+<translation id="3741482431277446954">Right mouse button</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3743775386021959186">Focus is on, <ph name="REMAINING_TIME" /> left</translation>
 <translation id="3750403286520637847">Hide weather suggestion</translation>
@@ -1152,7 +1157,6 @@ One device connected.</translation>
 <translation id="4902797682482387055">Suggested task to focus on</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% battery</translation>
-<translation id="4911191962826748981">This is an experimental AI feature and won't always get it right.</translation>
 <translation id="491504982845934899">Activate after device setup <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
@@ -1828,6 +1832,7 @@ New install</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7118597077555700347">Open <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Select next word or letter</translation>
+<translation id="7124556000457919678">When turned on, pause and resume mouse keys</translation>
 <translation id="7126996685418858413">Opened in the past week</translation>
 <translation id="7130207228079676353">MOST LIKELY</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
@@ -1849,6 +1854,7 @@ New install</translation>
 <translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
 <translation id="7219573373513695352">No devices connected</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
+<translation id="7239814253344511868">Both mouse buttons</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Thumbs up would submit the feedback that you like this suggestion</translation>
 <translation id="7825412704590278437">From upcoming calendar event</translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7830453190047749513">You can personalise button actions, cursor speed and more for your <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
+<translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8203224998425013577">Show more emojis and GIFs</translation>
 <translation id="8203795194971602413">Right click</translation>
 <translation id="8205469348819768313">Trying to use Page down? Use</translation>
+<translation id="8213376797713070611">Left mouse button</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8220076512072059941">Add <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock is on</translation>
 <translation id="8315514906653279104">Turning on…</translation>
-<translation id="8319634750346253957">Thumbs down would submit the feedback that you dislike this suggestion</translation>
 <translation id="8331351032546853669">Download pending</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth is unavailable</translation>
+<translation id="9050999376345823055">Press '.' to release</translation>
 <translation id="906458777597946297">Maximise window</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9070640332319875144">Assistant settings</translation>

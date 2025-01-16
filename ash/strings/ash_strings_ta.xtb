@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">அடுத்த பயனருக்கு மாற்று</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ஸ்கிரீன் ரெக்கார்டிங் முடிந்தது</translation>
+<translation id="1956087014741188812">மவுஸ் பட்டன்கள் அம்சத்தை இடைநிறுத்தும்</translation>
 <translation id="1957958912175573503">எனது மொழியை அமை</translation>
 <translation id="1961239773406905488">கேமரா மாதிரிக்காட்சி மறைக்கப்பட்டுள்ளது</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">சாதனங்களைக் கண்டறிகிறது...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="2258734398699965611">பரிந்துரைக்கப்படும் ஃபைல்கள்</translation>
+<translation id="2266607665880926261">மவுஸ் பட்டன்கள் அம்சம் இடைநிறுத்தப்பட்டது</translation>
 <translation id="2268130516524549846">புளூடூத் முடக்கப்பட்டது</translation>
 <translation id="2268731132310444948">முன்னோட்டத்தின் <ph name="TOTAL_STEPS" /> படிகளில் <ph name="STEP" />வது. தொடக்கி இயக்கப்பட்டதும், மேம்படுத்தப்பட்ட தேடல் பட்டி காட்டப்படும். ஃபைல்கள், ஆப்ஸ் மற்றும் பலவற்றைத் தேட டைப் செய்யலாம். <ph name="PRODUCT_NAME" /> குறித்த கேள்விகளுக்கான பதில்களையும் பெறலாம்.</translation>
 <translation id="2268813581635650749">அனைவரையும் வெளியேற்று</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">திரையைப் பெரிதாக்கு</translation>
 <translation id="2878884018241093801">சமீபத்திய உருப்படிகள் எதுவுமில்லை</translation>
 <translation id="2880541185262491188">பின் (PIN) மூலம் பலமுறை முயன்றுவிட்டீர்கள். <ph name="TIME_LEFT" /> கழித்து மீண்டும் முயலவும்.</translation>
+<translation id="2883271196820422439">மவுஸ் பட்டன்கள் அம்சத்தை மீண்டும் தொடங்கும்</translation>
 <translation id="2885950158625301909">மேலும் அறிக</translation>
 <translation id="2891209721153296020">“தேர்வுநீக்கும்”</translation>
 <translation id="2894949423239620203">செயல்திறனை, கேபிள் பாதிக்கக்கூடும்</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ஹாட்ஸ்பாட்</translation>
 <translation id="3540893133818942399">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் பார்க்கும்படி அமைப்பதை நிராகரிக்கலாம்</translation>
 <translation id="3542066395059568317">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். வலது கிளிக் செய்து அவற்றை அகற்றலாம்.</translation>
+<translation id="3545224667633138205">மவுஸ் பட்டன்கள் அம்சம் மீண்டும் தொடங்கியது</translation>
 <translation id="3552189655002856821">வைஃபை முடக்கப்பட்டது</translation>
 <translation id="3554215588514239132">டெவெலப்பர் கருவிகள் பேனலைக் காட்டு அல்லது மறை</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ஷெல்ஃபில் நிலையாகப் பொருத்தப்பட்டது</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">இவற்றைக் காட்ட முடியவில்லை. ஆன்லைனில் இருக்கும்போது மீண்டும் முயலவும்.</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3738664582935948253">ஸ்கிரீன் ரெக்கார்டிங்குகளில் கிளிக்குகளையும் கீபோர்டு ஷார்ட்கட்களையும் இப்போது நீங்கள் காட்டலாம்</translation>
+<translation id="3741482431277446954">வலதுபுற மவுஸ் பட்டன்</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="3743775386021959186">ஃபோகஸ் பயன்முறை இயக்கப்பட்டுள்ளது, <ph name="REMAINING_TIME" /> மீதமுள்ளது</translation>
 <translation id="3750403286520637847">வானிலை குறித்த பரிந்துரையை மறை</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">கவனம் செலுத்தப் பரிந்துரைக்கப்படும் பணி</translation>
 <translation id="490375751687810070">செங்குத்து</translation>
 <translation id="490788395437447240">பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">இது பரிசோதனை நிலையில் உள்ள AI அம்சம் என்பதால் சில சமயங்களில் சரியாகச் செயல்படாமல் போகலாம்.</translation>
 <translation id="491504982845934899"><ph name="NETWORK_NAME" /> சாதன அமைவிற்குப் பிறகு இயக்கும்</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">ஸ்கிரீன்ஷாட்</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> முடிவைத் திறக்கும்</translation>
 <translation id="7119327711295338600">அடுத்த வார்த்தை அல்லது எழுத்தைத் தேர்ந்தெடுக்கும்</translation>
+<translation id="7124556000457919678">இயக்கப்பட்டிருக்கும்போது, மவுஸ் பட்டன்கள் அம்சத்தை இடைநிறுத்திவிட்டு மீண்டும் தொடங்கு</translation>
 <translation id="7126996685418858413">கடந்த வாரம் திறக்கப்பட்டது</translation>
 <translation id="7130207228079676353">அதிகச் சாத்தியமுள்ளவை</translation>
 <translation id="7131634465328662194">நீங்கள் தானாக வெளியேற்றப்படுவீர்கள்.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="7219573373513695352">எந்தச் சாதனமும் இணைக்கப்படவில்லை</translation>
 <translation id="7229029500464092426">நினைவக உபயோகம்: <ph name="AVAILABLE_MEMORY" /> | மொத்த நினைவகம்: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7239814253344511868">இரண்டு மவுஸ் பட்டன்களும்</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது. சாதனத்தைச் சார்ஜ் செய்யவும்.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. புதுப்பிப்பைப் பயன்படுத்த இந்த Chromebookகை மீண்டும் தொடங்க வேண்டும். இதற்கு 1 நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7807067443225230855">தேடல் மற்றும் அசிஸ்டண்ட்</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> மற்றும் <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">தம்ஸ்-அப் வழங்குவதால் இந்தப் பரிந்துரையை நீங்கள் விரும்புகிறீர்கள் என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="7825412704590278437">வரவிருக்கும் கேலெண்டர் நிகழ்வில் உள்ளது</translation>
 <translation id="7829386189513694949">வலுவான சிக்னல்</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" />க்கான பட்டன் செயல்கள், கர்சர் வேகம் மற்றும் பலவற்றைப் பிரத்தியேகமாக்கலாம்</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
+<translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8079538659226626406">திரையைக் காண்பி</translation>
 <translation id="8083540854303889870">பின்னர் பயன்படுத்தச் சேமிக்கப்பட்டவை</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@
 <translation id="8203224998425013577">கூடுதல் ஈமோஜிகளையும் GIFகளையும் காட்டும்</translation>
 <translation id="8203795194971602413">வலது கிளிக் செய்யும்</translation>
 <translation id="8205469348819768313">Page Down பட்டனைப் பயன்படுத்த வேண்டுமா? இதைப் பயன்படுத்துங்கள்</translation>
+<translation id="8213376797713070611">இடதுபுற மவுஸ் பட்டன்</translation>
 <translation id="8214996719228530800">Canary சேனல்</translation>
 <translation id="8219451629189078428">இந்தச் சமயத்தின்போது உங்கள் Chromebook ஆனில் இருப்பதுடன் பிளக் பாயிண்ட்டில் செருகப்பட்டிருக்கவும் வேண்டும். சார்ஜர், அடாப்டர் கேபிள்கள் போன்றவை உங்கள் Chromebook, பிளக் பாயிண்ட் ஆகிய இரண்டிலும் சரியாகச் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். Chromebookகை ஆஃப் செய்ய வேண்டாம்.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ஐச் சேர்க்கும்</translation>
@@ -2174,7 +2181,6 @@
 <translation id="830868413617744215">பீட்டா</translation>
 <translation id="8314772463905284467">CAPS LOCK இயக்கத்தில்</translation>
 <translation id="8315514906653279104">இயக்கப்படுகிறது...</translation>
-<translation id="8319634750346253957">தம்ஸ்-டவுன் வழங்குவதால் இந்தப் பரிந்துரையை நீங்கள் விரும்பவில்லை என்று கருத்து தெரிவிக்கப்படும்</translation>
 <translation id="8331351032546853669">பதிவிறக்கம் நிலுவையில் உள்ளது</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Linux ஃபைல்கள் </translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும்</translation>
 <translation id="9050012935252397793">புளூடூத் கிடைக்கவில்லை</translation>
+<translation id="9050999376345823055">விடுவிக்க "." பட்டனை அழுத்தவும்</translation>
 <translation id="906458777597946297">சாளரத்தை பெரிதாக்கு</translation>
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9070640332319875144">அசிஸ்டண்ட் அமைப்புகள்</translation>

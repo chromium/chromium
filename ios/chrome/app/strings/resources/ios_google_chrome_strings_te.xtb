@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1066101356081285416">మీరు చూసే సైట్‌లలోని ట్రాకింగ్ నంబర్‌లను Chrome గుర్తించి, కొత్త ట్యాబ్ పేజీలో మీ ప్యాకేజీ అప్‌డేట్‌లను చూపుతుంది. ఈ ఫీచర్‌ను అందించడానికి, అందరి కోసం షాపింగ్ ఫీచర్‌లను మెరుగుపరచడానికి ప్యాకేజీ ట్రాకింగ్ నంబర్, వెబ్‌సైట్ పేరు Googleకు పంపబడతాయి. మీరు దీనిని <ph name="BEGIN_LINK" />ప్యాకేజీ ట్రాకింగ్ సెట్టింగ్‌ల<ph name="END_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
+<translation id="1076643793026027628">Chrome ఆటోమేటిక్‌గా అజ్ఞాత విండోలో YouTube అజ్ఞాత లింక్‌లను తెరుస్తుంది.</translation>
 <translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
 <translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1146503048444965320">Chromeలో కొత్త ట్యాబ్‌ను తెరవండి</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">ఈ సైట్‌కు, అలాగే Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="4646014602299206846">మీరు చూసే సైట్‌లలోని ప్యాకేజీ ట్రాకింగ్ నంబర్‌లను Chrome గుర్తించి, కొత్త ట్యాబ్ పేజీలో మీ ప్యాకేజీ అప్‌డేట్‌లను చూపుతుంది. ఈ ఫీచర్‌ను అందించి, ప్రతి ఒక్కరి కోసం Shoppingను మెరుగుపరచడానికి మీ డేటాను Googleతో షేర్ చేయడం జరుగుతుంది.</translation>
 <translation id="4647910807533196601">Chromeలో నా ఇటీవలి ట్యాబ్‌ను తెరవండి.</translation>
+<translation id="4693084815234024320">మీరు Chrome అజ్ఞాత విండోలో ఉన్నారు</translation>
 <translation id="4724297637870447613">Chromeని ప్రతిచోటా ఉపయోగించండి</translation>
 <translation id="4738647308035481133">Google Chrome పేజీ</translation>
 <translation id="4742795653798179840">Chrome డేటాను తొలగించడం జరిగింది</translation>

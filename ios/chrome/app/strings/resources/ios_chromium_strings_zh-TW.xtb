@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">這代表 Chromium 每次都會對電腦版網站發出要求。</translation>
 <translation id="2270466829363945454">購物</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
+<translation id="2314220608288760290">在無痕模式下，Chromium 會自動開啟 YouTube 無痕模式連結。</translation>
 <translation id="231828342043114302">如要接收符合興趣的個人化內容，請登入 Chromium。</translation>
 <translation id="2326738825692478496">部分 Chromium 資料尚未儲存到 Google 帳戶，
 
@@ -284,6 +285,7 @@
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="8254729934443216898">瞭解新功能，充分發揮 Chromium 的效用。</translation>
 <translation id="829047622686389424">專為你打造的自訂動態消息。</translation>
+<translation id="8293572045658095405">目前使用 Chromium 無痕模式</translation>
 <translation id="830951810931292870">在 Chromium 中以無痕模式開啟輸入的網址。</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>

@@ -282,6 +282,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1948405482892809935">Bytt til neste bruker</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skjermopptaket er fullført</translation>
+<translation id="1956087014741188812">Sett musetaster på pause</translation>
 <translation id="1957958912175573503">Velg språk</translation>
 <translation id="1961239773406905488">Kameraforhåndsvisningen skjules</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="225680501294068881">Leter etter enheter ...</translation>
 <translation id="2257486738914982088">Noe gikk galt under nedlasting av <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Foreslåtte filer</translation>
+<translation id="2266607665880926261">Musetaster er satt på pause</translation>
 <translation id="2268130516524549846">Bluetooth er deaktivert</translation>
 <translation id="2268731132310444948">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Når appoversikten er aktivert, får du et forbedret søkefelt. Du kan begynne å skrive for å søke etter filer, apper med mer. Du kan også få svar på spørsmål om <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
@@ -540,6 +542,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="2876338922445400217">Zoom inn på skjermen</translation>
 <translation id="2878884018241093801">Ingen nylige elementer</translation>
 <translation id="2880541185262491188">For mange PIN-kodeforsøk. Vent <ph name="TIME_LEFT" />, og prøv på nytt</translation>
+<translation id="2883271196820422439">Gjenoppta musetaster</translation>
 <translation id="2885950158625301909">Finn ut mer</translation>
 <translation id="2891209721153296020">«Fjern merking»</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
@@ -727,6 +730,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-wifi-sone</translation>
 <translation id="3540893133818942399">Lukk konfigurering av visning av nylige bilder og medier fra telefonen din</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
+<translation id="3545224667633138205">Musetaster er gjenopptatt</translation>
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554215588514239132">Vis eller skjul utviklerverktøy-panelet</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
@@ -801,6 +805,7 @@ Koble enheten til strøm.</translation>
 <translation id="3727231512028252576">Kunne ikke laste inn elementene. Prøv på nytt når du er på nett.</translation>
 <translation id="3735740477244556633">Sorter etter</translation>
 <translation id="3738664582935948253">Nå kan du vise klikk og hurtigtaster i skjermopptak</translation>
+<translation id="3741482431277446954">Høyre museknapp</translation>
 <translation id="3742055079367172538">Skjermbilde tatt</translation>
 <translation id="3743775386021959186">Fokus er på. <ph name="REMAINING_TIME" /> gjenstår</translation>
 <translation id="3750403286520637847">Skjul værforslag</translation>
@@ -1152,7 +1157,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4902797682482387055">Forslag til gjøremål du kan fokusere på</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
-<translation id="4911191962826748981">Dette er en AI-funksjon på forsøksstadiet. Det kan hende at den gjør feil.</translation>
 <translation id="491504982845934899">Aktiver etter enhetsoppsett <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
@@ -1828,6 +1832,7 @@ Nylig installert</translation>
 <translation id="7118268675952955085">skjermbilde</translation>
 <translation id="7118597077555700347">Åpne <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Velg neste ord eller bokstav</translation>
+<translation id="7124556000457919678">Når innstillingen er på, kan du sette musetaster på pause og gjenoppta dem</translation>
 <translation id="7126996685418858413">Åpnet den siste uken</translation>
 <translation id="7130207228079676353">MEST SANNSYNLIG</translation>
 <translation id="7131634465328662194">Du logges av automatisk.</translation>
@@ -1849,6 +1854,7 @@ Nylig installert</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
+<translation id="7239814253344511868">Begge museknappene</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Tommel opp sender tilbakemelding om at du liker dette forslaget</translation>
 <translation id="7825412704590278437">Fra en kommende kalenderaktivitet</translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7830453190047749513">Du kan tilpasse knappehandlinger, markørhastigheten med mer for <ph name="PERIPHERAL_NAME" /></translation>
@@ -2110,6 +2115,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8051716679295756675">Det finnes allerede en mal med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
+<translation id="8076492880354921740">Faner</translation>
 <translation id="8079538659226626406">Skjermdeling</translation>
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8203224998425013577">Vis flere emojier og GIF-er</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>
 <translation id="8205469348819768313">Prøver du å bruke Page Down-tasten? Bruk</translation>
+<translation id="8213376797713070611">Venstre museknapp</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
 <translation id="8220076512072059941">Legg til <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2174,7 +2181,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock er på</translation>
 <translation id="8315514906653279104">Slår på …</translation>
-<translation id="8319634750346253957">Tommel ned sender tilbakemelding om at du ikke liker dette forslaget</translation>
 <translation id="8331351032546853669">Nedlasting venter</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth er utilgjengelig</translation>
+<translation id="9050999376345823055">Trykk på «.» for å slippe</translation>
 <translation id="906458777597946297">Maksimer vinduet</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9070640332319875144">Assistent-innstillinger</translation>

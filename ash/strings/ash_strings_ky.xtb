@@ -282,6 +282,7 @@
 <translation id="1948405482892809935">Кийинки колдонуучуга которуу</translation>
 <translation id="1951012854035635156">Жардамчы</translation>
 <translation id="1954252331066828794">Экрандан видео жаздырылып алынды</translation>
+<translation id="1956087014741188812">Чычкандын баскычтарын тындыруу</translation>
 <translation id="1957958912175573503">Тилди тандаңыз</translation>
 <translation id="1961239773406905488">Камерада алдын ала көрүү жашырылган</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -350,6 +351,7 @@
 <translation id="225680501294068881">Түзмөктөр изделүүдө…</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> файлын жүктөп алып жатканда бир жерден ката кетти</translation>
 <translation id="2258734398699965611">Сунушталган файлдар</translation>
+<translation id="2266607665880926261">Чычкандын баскычтары тындырылды</translation>
 <translation id="2268130516524549846">Bluetooth өчүрүлдү</translation>
 <translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> кадамдын ичинен <ph name="STEP" />-кадам. Жүргүзгүч иштетилгенден кийин, жакшыртылган издөө тилкеси көрүнөт. Файлдарыңызды, колдонмолоруңузду жана башкаларды издөө үчүн терип баштасаңыз болот. Ошондой эле, <ph name="PRODUCT_NAME" /> жөнүндө суроолоруңузга жоопторду алсаңыз болот.</translation>
 <translation id="2268813581635650749">Баарын чыгаруу</translation>
@@ -540,6 +542,7 @@
 <translation id="2876338922445400217">Экранды жакындатуу</translation>
 <translation id="2878884018241093801">Акыркы терезелер жок</translation>
 <translation id="2880541185262491188">PIN код өтө көп жолу киргизилди. <ph name="TIME_LEFT" /> күтүп, кайталап көрүңүз</translation>
+<translation id="2883271196820422439">Чычкандын баскычтарын иштетүү</translation>
 <translation id="2885950158625301909">Кеңири маалымат</translation>
 <translation id="2891209721153296020">"Тандоодон чыгаруу"</translation>
 <translation id="2894949423239620203">Кабель майнаптуулукка кедергисин тийгизиши мүмкүн</translation>
@@ -727,6 +730,7 @@
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> байланыш түйүнү</translation>
 <translation id="3540893133818942399">Телефонуңуздагы соңку сүрөттөрдү жана медиа файлдарды көрүү параметрин жабуу</translation>
 <translation id="3542066395059568317">Токтогон жериңизден улантуу үчүн сунуштарды көрөсүз. Сунуштарды өчүрүү үчүн чычкандын оң баскычын чыкылдатыңыз.</translation>
+<translation id="3545224667633138205">Чычкандын баскычтары иштетилди</translation>
 <translation id="3552189655002856821">Wi-Fi өчүрүлгөн</translation>
 <translation id="3554215588514239132">Иштеп чыгуучунун куралдарынын панелин көрсөтүү же жашыруу</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> кадалды</translation>
@@ -801,6 +805,7 @@
 <translation id="3727231512028252576">Нерселер жүктөлгөн жок. Интернетке туташканда кайталап көрүңүз.</translation>
 <translation id="3735740477244556633">Төмөнкү боюнча иргөө</translation>
 <translation id="3738664582935948253">Эми экрандан видео жаздырып алууда чыкылдатууларды жана ыкчам баскычтарды көрсөтүүгө болот</translation>
+<translation id="3741482431277446954">Чычкандын оң баскычы</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
 <translation id="3743775386021959186">Ынтаа коюу режими күйүк, <ph name="REMAINING_TIME" /> калды</translation>
 <translation id="3750403286520637847">Аба ырайы сунушун жашыруу</translation>
@@ -1152,7 +1157,6 @@
 <translation id="4902797682482387055">Ынтаа коюу үчүн сунушталган тапшырма</translation>
 <translation id="490375751687810070">Тигинен</translation>
 <translation id="490788395437447240">Батарея <ph name="BATTERY_PERCENTAGE" />% кубатталган</translation>
-<translation id="4911191962826748981">Бул сынамык ЖИ функциясы жана ал ар дайым туура иштебейт.</translation>
 <translation id="491504982845934899">Түзмөк тууралангандан кийин <ph name="NETWORK_NAME" /> иштетилсин</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4918086044614829423">Кабыл алуу</translation>
@@ -1828,6 +1832,7 @@
 <translation id="7118268675952955085">скриншот</translation>
 <translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ачуу</translation>
 <translation id="7119327711295338600">Кийинки сөздү же тамганы тандоо</translation>
+<translation id="7124556000457919678">Күйгүзүлсө, чычкандын баскычтарын тындырып же иштете аласыз</translation>
 <translation id="7126996685418858413">Өткөн аптада ачылган</translation>
 <translation id="7130207228079676353">ЭҢ ЫЛАЙЫКТУУ КОЛДОНМОЛОР</translation>
 <translation id="7131634465328662194">Андан кийин тутумдан автоматтык түрдө чыгарыласыз.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="7219573373513695352">Бир да түзмөк туташкан эмес</translation>
 <translation id="7229029500464092426"><ph name="TOTAL_MEMORY" /> ичинен <ph name="AVAILABLE_MEMORY" /> эстутум колдонулду</translation>
+<translation id="7239814253344511868">Чычкандын эки баскычы тең</translation>
 <translation id="7244725679040769470">Батареянын кубаты <ph name="PERCENTAGE" />% калды. Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2018,7 +2024,6 @@
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7807067443225230855">Издөө жана Жардамчы</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> жана <ph name="MINUTE" /></translation>
-<translation id="7823946889603375473">Жакты баскычы бул сунушту жактырганыңызды билдирет</translation>
 <translation id="7825412704590278437">Алдыда боло турган жылнаамадагы иш-чарадан</translation>
 <translation id="7829386189513694949">Күчтүү сигнал</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> үчүн баскычтардын аракеттерин, курсордун ылдамдыгын жана башка нерселерди жекелештире аласыз</translation>
@@ -2110,6 +2115,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> деп аталган үлгү бар</translation>
 <translation id="8052898407431791827">Буферге көчүрүлдү</translation>
 <translation id="8054466585765276473">Батареянын убакыты эсептелүүдө.</translation>
+<translation id="8076492880354921740">Өтмөктөр</translation>
 <translation id="8079538659226626406">Экранды бөлүшүү</translation>
 <translation id="8083540854303889870">Кийинкиге сакталды</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2150,6 +2156,7 @@
 <translation id="8203224998425013577">Көбүрөөк быйтыкчалар менен GIF'терди көрсөтүү</translation>
 <translation id="8203795194971602413">Оң баскычын чыкылдатуу</translation>
 <translation id="8205469348819768313">Page Down баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
+<translation id="8213376797713070611">Чычкандын сол баскычы</translation>
 <translation id="8214996719228530800">Canary каналы</translation>
 <translation id="8219451629189078428">Бул убакта Chromebook күйүп, электр кубатына туташып турушу керек. Кубаттагычтын же адаптердин кабелдери Chromebook'ка жана розеткага жакшы сайылып турганын текшериңиз. Chromebook'ту өчүрбөңүз.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> кошуу</translation>
@@ -2174,7 +2181,6 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock күйүк</translation>
 <translation id="8315514906653279104">Күйгүзүлүүдө…</translation>
-<translation id="8319634750346253957">Жаккан жок баскычы бул сунушту жактырбаганыңызды билдирет</translation>
 <translation id="8331351032546853669">Жүктөп алуу күтүлүүдө</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2375,6 +2381,7 @@
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> тармагынын параметрлерин ачуу</translation>
 <translation id="9050012935252397793">Bluetooth жеткиликсиз</translation>
+<translation id="9050999376345823055">Бошотуу үчүн "." басыңыз</translation>
 <translation id="906458777597946297">Терезени чоңойтуу</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9070640332319875144">Жардамчынын параметрлери</translation>

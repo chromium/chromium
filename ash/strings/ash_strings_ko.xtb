@@ -1157,7 +1157,6 @@
 <translation id="4902797682482387055">집중할 작업 추천</translation>
 <translation id="490375751687810070">세로</translation>
 <translation id="490788395437447240">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="4911191962826748981">실험용 AI 기능이므로 정확하지 않을 수 있습니다.</translation>
 <translation id="491504982845934899">기기 설정 후 <ph name="NETWORK_NAME" /> 활성화</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
@@ -2025,7 +2024,6 @@
 <translation id="780301667611848630">사용 안함</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />시간 <ph name="MINUTE" />분</translation>
-<translation id="7823946889603375473">좋아요를 누르면 이 추천이 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="7825412704590278437">예정된 캘린더 일정</translation>
 <translation id="7829386189513694949">신호 강함</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" />의 버튼 작업, 커서 속도 등을 맞춤설정할 수 있습니다.</translation>
@@ -2117,6 +2115,7 @@
 <translation id="8051716679295756675">이름이 <ph name="DESK_TEMPLATE_NAME" />인 템플릿이 이미 있습니다.</translation>
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
+<translation id="8076492880354921740">탭</translation>
 <translation id="8079538659226626406">화면 공유</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2182,7 +2181,6 @@
 <translation id="830868413617744215">베타</translation>
 <translation id="8314772463905284467">Caps Lock이 켜져 있습니다.</translation>
 <translation id="8315514906653279104">켜는 중...</translation>
-<translation id="8319634750346253957">싫어요를 누르면 이 추천이 마음에 들지 않는다는 의견이 제출됩니다.</translation>
 <translation id="8331351032546853669">다운로드 대기 중</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
