@@ -54,7 +54,9 @@ NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' "
-      "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js;");
+      "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js "
+      "chrome-untrusted://resources/mojo/mojo/public/mojom/base/"
+      "time.mojom-webui.js;");
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc,
       base::StringPrintf("default-src 'self' %s;",
@@ -75,6 +77,14 @@ void NtpMicrosoftAuthUntrustedUI::BindInterface(
   }
 
   untrusted_page_factory_.Bind(std::move(factory));
+}
+
+void NtpMicrosoftAuthUntrustedUI::CreatePageHandler(
+    mojo::PendingReceiver<
+        new_tab_page::mojom::MicrosoftAuthUntrustedPageHandler>
+        pending_page_handler) {
+  page_handler_ = std::make_unique<MicrosoftAuthUntrustedPageHandler>(
+      std::move(pending_page_handler));
 }
 
 void NtpMicrosoftAuthUntrustedUI::ConnectToParentDocument(
