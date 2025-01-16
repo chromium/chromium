@@ -72,11 +72,10 @@ static const std::vector<media::VideoEncodeAccelerator::SupportedProfile>
 using testing::_;
 using testing::AtLeast;
 
-void SaveOperationalStatus(OperationalStatus* out_status,
+void SaveOperationalStatus(std::vector<OperationalStatus>* statuses,
                            OperationalStatus in_status) {
-  DVLOG(1) << "OperationalStatus transitioning from " << *out_status << " to "
-           << in_status;
-  *out_status = in_status;
+  DVLOG(1) << "OperationalStatus transitioning to " << in_status;
+  statuses->push_back(in_status);
 }
 
 void IgnorePlayoutDelayChanges(base::TimeDelta unused_playout_delay) {}
@@ -164,7 +163,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
     openscreen::cast::SessionConfig openscreen_video_config =
         ToOpenscreenSessionConfig(video_config, /* is_pli_enabled= */ true);
 
-    ASSERT_EQ(operational_status_, STATUS_UNINITIALIZED);
+    ASSERT_TRUE(status_changes_.empty());
 
     if (external) {
       vea_factory_->SetInitializationWillSucceed(expect_init_success);
@@ -194,7 +193,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
 
     video_sender_ = std::make_unique<VideoSender>(
         cast_environment_, video_config,
-        base::BindRepeating(&SaveOperationalStatus, &operational_status_),
+        base::BindRepeating(&SaveOperationalStatus, &status_changes_),
         base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())),
@@ -237,7 +236,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
       mock_openscreen_environment_;
   std::unique_ptr<openscreen::cast::SenderPacketRouter>
       openscreen_packet_router_;
-  OperationalStatus operational_status_ = STATUS_UNINITIALIZED;
+  std::vector<OperationalStatus> status_changes_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
   int last_pixel_value_;
   base::TimeTicks first_frame_timestamp_;
@@ -253,7 +252,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool> {
 
 TEST_P(VideoSenderTest, BuiltInEncoder) {
   InitEncoder(false, true);
-  ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
 
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
   const base::TimeTicks reference_time = Now();
@@ -265,7 +264,7 @@ TEST_P(VideoSenderTest, BuiltInEncoder) {
 
 TEST_P(VideoSenderTest, ExternalEncoder) {
   InitEncoder(true, true);
-  ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
 
   // The SizeAdaptableExternalVideoEncoder initially reports STATUS_INITIALIZED
   // so that frames will be sent to it.  Therefore, no encoder activity should
@@ -275,7 +274,7 @@ TEST_P(VideoSenderTest, ExternalEncoder) {
     video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), Now());
     RunTasksAndAdvanceClock();
   }
-  ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
+  ASSERT_EQ(STATUS_INITIALIZED, status_changes_.front());
   RunTasksAndAdvanceClock(base::Milliseconds(33));
 
   // VideoSender created an encoder for 1280x720 frames, in order to provide the
@@ -303,16 +302,15 @@ TEST_P(VideoSenderTest, ExternalEncoder) {
 
 TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
   InitEncoder(true, false);
+  EXPECT_EQ(STATUS_INITIALIZED, status_changes_.front());
 
-  // The SizeAdaptableExternalVideoEncoder initially reports STATUS_INITIALIZED
-  // so that frames will be sent to it.  Send a frame to spurn creation of the
-  // underlying ExternalVideoEncoder instance, which should result in failure.
-  if (operational_status_ == STATUS_INITIALIZED ||
-      operational_status_ == STATUS_CODEC_REINIT_PENDING) {
-    video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), Now());
-    RunTasksAndAdvanceClock();
-  }
-  EXPECT_EQ(STATUS_CODEC_INIT_FAILED, operational_status_);
+  // Send a frame to spurn creation of the underlying ExternalVideoEncoder
+  // instance, which should result in failure.
+  video_sender_->InsertRawVideoFrame(GetNewVideoFrame(), Now());
+  RunTasksAndAdvanceClock();
+
+  EXPECT_NE(std::ranges::find(status_changes_, STATUS_CODEC_INIT_FAILED),
+            status_changes_.end());
 
   // NOTE: Must delete video_sender_ before test exits to avoid dangling pointer
   // issues; root cause is unclear
