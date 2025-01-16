@@ -440,14 +440,19 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   }
 
   optimization_guide::OptimizationGuideModelStreamingExecutionResult
-  CreateExecutionResult(const std::string& output, bool is_complete) {
+  CreateExecutionResult(const std::string& output,
+                        bool is_complete,
+                        uint32_t input_token_count,
+                        uint32_t output_token_count) {
     optimization_guide::proto::StringValue response;
     response.set_value(output);
+
     return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
         optimization_guide::StreamingResponse{
             .response = optimization_guide::AnyWrapProto(response),
             .is_complete = is_complete,
-        },
+            .input_token_count = input_token_count,
+            .output_token_count = output_token_count},
         /*provided_by_on_device=*/true);
   }
 
@@ -500,8 +505,9 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
                     EXPECT_THAT(ToString(request_metadata), "User: A\nModel: ");
-                    callback.Run(
-                        CreateExecutionResult("OK", /*is_complete=*/true));
+                    callback.Run(CreateExecutionResult(
+                        "OK", /*is_complete=*/true, /*input_token_count=*/1u,
+                        /*output_token_count=*/mock_size_in_tokens));
                   })
               .WillOnce(
                   [&](const google::protobuf::MessageLite& request_metadata,
@@ -509,8 +515,9 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
                     EXPECT_THAT(ToString(request_metadata), "User: B\nModel: ");
-                    callback.Run(
-                        CreateExecutionResult("OK", /*is_complete=*/true));
+                    callback.Run(CreateExecutionResult(
+                        "OK", /*is_complete=*/true, /*input_token_count=*/1u,
+                        /*output_token_count=*/mock_size_in_tokens));
                   });
           return session;
         });
@@ -620,11 +627,17 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
       responses[2] = kTestResponse;
     }
     callback.Run(CreateExecutionResult(responses[0],
-                                       /*is_complete=*/false));
+                                       /*is_complete=*/false,
+                                       /*input_token_count=*/1u,
+                                       /*output_token_count=*/1u));
     callback.Run(CreateExecutionResult(responses[1],
-                                       /*is_complete=*/false));
+                                       /*is_complete=*/false,
+                                       /*input_token_count=*/1u,
+                                       /*output_token_count=*/1u));
     callback.Run(CreateExecutionResult(responses[2],
-                                       /*is_complete=*/true));
+                                       /*is_complete=*/true,
+                                       /*input_token_count=*/1u,
+                                       /*output_token_count=*/1u));
   }
 
   void TestPromptCall(mojo::Remote<blink::mojom::AILanguageModel>& mock_session,
