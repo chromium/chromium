@@ -8,12 +8,15 @@ import static org.chromium.base.JavaExceptionReporter.shouldReportThrowable;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.
  *
  * <p>This happens before native is loaded, and will replace by JavaExceptionReporter after native
  * finishes loading.
  */
+@NullMarked
 public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler mParent;
     private boolean mHandlingException;

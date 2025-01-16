@@ -8,18 +8,21 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A Java-side bridge for notifying an observer when a child process has crashed.
  *
- * Crashpad writes a minidump for a child process in the time between the child receives a crash
- * signal and when it exits. After the child process exits, Crashpad should have completed writing
- * a minidump to its CrashReportDatabase and this class's childCrashed() is called, executing any
+ * <p>Crashpad writes a minidump for a child process in the time between the child receives a crash
+ * signal and when it exits. After the child process exits, Crashpad should have completed writing a
+ * minidump to its CrashReportDatabase and this class's childCrashed() is called, executing any
  * registered callback.
  *
- * It is expected that the callback will be used to handle the newly created dump by, e.g. attaching
- * a logcat and scheduling it for upload.
+ * <p>It is expected that the callback will be used to handle the newly created dump by, e.g.
+ * attaching a logcat and scheduling it for upload.
  */
+@NullMarked
 public class ChildProcessCrashObserver {
     private static final String TAG = "ChildCrashObserver";
 
@@ -32,7 +35,7 @@ public class ChildProcessCrashObserver {
      * The globally registered callback for responding to child process crashes, or null if no
      * callback has been registered yet.
      */
-    private static ChildCrashedCallback sCallback;
+    private static @Nullable ChildCrashedCallback sCallback;
 
     /**
      * Registers a callback for responding to child process crashes. May be called at most once, and

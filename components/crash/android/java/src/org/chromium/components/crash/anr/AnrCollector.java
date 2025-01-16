@@ -19,6 +19,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.crash.anr.AnrDataOuterClass.AnrData;
 
 import java.io.BufferedReader;
@@ -37,10 +39,11 @@ import java.util.regex.Pattern;
 /**
  * This class will retrieve ANRs from Android and write them to files.
  *
- * We also grab the version number associated with the ANR and pair that with the ANR so we have
+ * <p>We also grab the version number associated with the ANR and pair that with the ANR so we have
  * confidence knowing which version of Chrome actually caused this ANR.
  */
 @RequiresApi(Build.VERSION_CODES.R)
+@NullMarked
 public class AnrCollector {
     private static final String TAG = "AnrCollector";
 
@@ -103,7 +106,7 @@ public class AnrCollector {
         return anrData;
     }
 
-    private static Pair<AnrData, String> getAnrPair(ApplicationExitInfo reason) {
+    private static @Nullable Pair<AnrData, String> getAnrPair(ApplicationExitInfo reason) {
         AnrData anr = null;
         try (InputStream is = reason.getTraceInputStream()) {
             // This can be null - this was causing crashes in crbug.com/1298852.
@@ -197,7 +200,7 @@ public class AnrCollector {
         return anrFiles;
     }
 
-    private static String writeAnr(AnrData data, File outDir) {
+    private static @Nullable String writeAnr(AnrData data, File outDir) {
         try {
             // Writing with .tmp suffix to enable cleanup later - CrashFileManager looks for
             // files with a .tmp suffix and deletes them as soon as it no longer needs them.
