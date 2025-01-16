@@ -133,6 +133,10 @@ void PasswordChangeIconViews::SetTooltipForToolbarPinningEnabled(
 }
 
 void PasswordChangeIconViews::UpdateIconAndLabel() {
+  SkColor icon_color = GetColorProvider()->GetColor(kColorOmniboxActionIcon);
+  ui::ColorId background_color_id = GetUseTonalColorsWhenExpanded()
+                                        ? kColorOmniboxIconBackgroundTonal
+                                        : kColorOmniboxIconBackground;
   switch (controller_.GetCurrentState()) {
     case PasswordChangeDelegate::State::kWaitingForAgreement:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
@@ -141,15 +145,24 @@ void PasswordChangeIconViews::UpdateIconAndLabel() {
       SetText(u"");
       break;
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+      icon_color = GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer);
+      background_color_id = ui::kColorSysTonalContainer;
       SetText(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK));
       break;
     case PasswordChangeDelegate::State::kChangingPassword:
+      icon_color = GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer);
+      background_color_id = ui::kColorSysTonalContainer;
       SetText(l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD));
       break;
   }
+  SetIconColor(icon_color);
+  SetEnabledTextColors(icon_color);
+  SetCustomBackgroundColorId(background_color_id);
   UpdateIconImage();
+  UpdateLabelColors();
+  UpdateBackground();
 }
 
 BEGIN_METADATA(PasswordChangeIconViews)
