@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_ICON_VIEWS_H_
 
 #include "chrome/browser/ui/passwords/manage_passwords_icon_view.h"
+#include "chrome/browser/ui/passwords/password_change_icon_views_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -38,6 +39,9 @@ class PasswordChangeIconViews : public ManagePasswordsIconView,
 
  private:
   void SetTooltipForToolbarPinningEnabled(const std::u16string& tooltip);
+  void UpdateIconAndLabel();
+
+  PasswordChangeIconViewsController controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_ICON_VIEWS_H_

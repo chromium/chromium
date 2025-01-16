@@ -1089,6 +1089,8 @@ static_library("ui") {
       "passwords/manage_passwords_ui_controller.cc",
       "passwords/manage_passwords_ui_controller.h",
       "passwords/password_base_dialog_controller.h",
+      "passwords/password_change_icon_views_controller.cc",
+      "passwords/password_change_icon_views_controller.h",
       "passwords/password_dialog_prompts.h",
       "passwords/passwords_client_ui_delegate.cc",
       "passwords/passwords_client_ui_delegate.h",

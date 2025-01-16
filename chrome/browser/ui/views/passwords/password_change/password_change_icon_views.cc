@@ -6,15 +6,20 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -32,7 +37,12 @@ PasswordChangeIconViews::PasswordChangeIconViews(
                          page_action_icon_delegate,
                          "PasswordChange",
                          kActionShowPasswordsBubbleOrPage,
-                         browser) {
+                         browser),
+      controller_(
+          base::BindRepeating(&PasswordChangeIconViews::UpdateIconAndLabel,
+                              base::Unretained(this)),
+          base::BindRepeating(&PasswordChangeIconViews::UpdateImpl,
+                              base::Unretained(this))) {
   // Password icon should not be mirrored in RTL.
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
@@ -49,10 +59,16 @@ PasswordChangeIconViews::PasswordChangeIconViews(
 PasswordChangeIconViews::~PasswordChangeIconViews() = default;
 
 void PasswordChangeIconViews::SetState(password_manager::ui::State state) {
-  bool is_visible =
+  bool should_be_visible =
       state == password_manager::ui::State::PASSWORD_CHANGE_STATE &&
       !delegate()->ShouldHidePageActionIcon(this);
-  SetVisible(is_visible);
+  SetVisible(should_be_visible);
+
+  PasswordChangeDelegate* password_change_delegate =
+      GetWebContents() ? PasswordsModelDelegateFromWebContents(GetWebContents())
+                             ->GetPasswordChangeDelegate()
+                       : nullptr;
+  controller_.SetPasswordChangeDelegate(password_change_delegate);
 
   // We may be about to automatically pop up a passwords bubble.
   // Force layout of the icon's parent now; the bubble will be incorrectly
@@ -83,7 +99,17 @@ bool PasswordChangeIconViews::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 const gfx::VectorIcon& PasswordChangeIconViews::GetVectorIcon() const {
-  return views::kPasswordChangeIcon;
+  switch (controller_.GetCurrentState()) {
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+      return vector_icons::kPasswordManagerIcon;
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+    case PasswordChangeDelegate::State::kChangingPassword:
+      return views::kPasswordChangeIcon;
+  }
+  return vector_icons::kPasswordManagerIcon;
 }
 
 void PasswordChangeIconViews::AboutToRequestFocusFromTabTraversal(
@@ -104,6 +130,26 @@ void PasswordChangeIconViews::SetTooltipForToolbarPinningEnabled(
                     browser_actions->root_action_item())
         ->SetTooltipText(tooltip);
   }
+}
+
+void PasswordChangeIconViews::UpdateIconAndLabel() {
+  switch (controller_.GetCurrentState()) {
+    case PasswordChangeDelegate::State::kWaitingForAgreement:
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+    case PasswordChangeDelegate::State::kChangePasswordFormNotFound:
+      SetText(u"");
+      break;
+    case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
+      SetText(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_SIGN_IN_CHECK));
+      break;
+    case PasswordChangeDelegate::State::kChangingPassword:
+      SetText(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_OMNIBOX_CHANGING_PASSWORD));
+      break;
+  }
+  UpdateIconImage();
 }
 
 BEGIN_METADATA(PasswordChangeIconViews)

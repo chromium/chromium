@@ -146,7 +146,8 @@ void ManagePasswordsTest::SetupPasswordChange() {
 
   const GURL kUrl = GURL("https://example.com/");
   ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
-      .WillByDefault(testing::Return(GURL("https://example.com/password/")));
+      .WillByDefault(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
   static_cast<PasswordsLeakDialogDelegate*>(GetController())
       ->ChangePassword(kUrl, u"new_username", u"new_password");
 }
