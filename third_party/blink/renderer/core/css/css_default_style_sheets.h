@@ -84,12 +84,6 @@ class CSSDefaultStyleSheets final
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
-  StyleSheetContents* CustomizableSelectStyleSheet() {
-    return customizable_select_style_sheet_.Get();
-  }
-  StyleSheetContents* CustomizableSelectForcedColorsStyleSheet() {
-    return customizable_select_forced_colors_style_sheet_.Get();
-  }
   StyleSheetContents* SvgStyleSheet() { return svg_style_sheet_.Get(); }
   StyleSheetContents* MathmlStyleSheet() { return mathml_style_sheet_.Get(); }
   StyleSheetContents* MediaControlsStyleSheet() {
@@ -178,8 +172,6 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> permission_element_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
-  Member<StyleSheetContents> customizable_select_style_sheet_;
-  Member<StyleSheetContents> customizable_select_forced_colors_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> scroll_button_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
