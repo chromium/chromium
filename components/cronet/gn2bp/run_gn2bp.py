@@ -14,6 +14,7 @@ and pass Cronet tests in Android infra. The CL will not be submitted.
 """
 
 import argparse
+import contextlib
 import hashlib
 import os
 import pathlib
@@ -49,15 +50,35 @@ _JAVA_PATH = os.path.join(_JAVA_HOME, 'bin', 'java')
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, 'out')
 
 
+class _OptionalExit(contextlib.AbstractContextManager):
+  """A context manager wrapper that optionally skips the exit phase of its
+  inner context manager."""
+  _inner_context_manager: contextlib.AbstractContextManager
+  _exit: bool
+
+  def __init__(self, inner_context_manager: contextlib.AbstractContextManager,
+               exit: bool):
+    self._inner_context_manager = inner_context_manager
+    self._exit = exit
+
+  def __enter__(self):
+    return self._inner_context_manager.__enter__()
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    if self._exit:
+      return self._inner_context_manager.__exit__(exc_type, exc_val, exc_tb)
+
+
 def _run_license_generation() -> int:
   return cronet_utils.run(["python3", _GENERATE_LICENSE_SCRIPT_PATH])
 
 
 def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
-               skip_build_scripts: bool) -> int:
+               skip_build_scripts: bool, delete_temporary_files: bool) -> int:
   """Run gen_android_bp.py to generate Android.bp.gn2bp files."""
-  with tempfile.NamedTemporaryFile(mode='w+',
-                                   encoding='utf-8') as build_script_output:
+  with tempfile.NamedTemporaryFile(
+      mode='w+', encoding='utf-8',
+      delete=delete_temporary_files) as build_script_output:
 
     if skip_build_scripts:
       pathlib.Path(build_script_output.name).write_text('{}')
@@ -214,13 +235,21 @@ def main():
                             "for example: "
                             "file:////home/foo/aosp/external/cronet mybranch"),
                       nargs=2)
+  parser.add_argument('--keep-temporary-files',
+                      action='store_true',
+                      help=("Don't clean up temporary files. Useful for "
+                            "troubleshooting."))
   args = parser.parse_args()
   run_copybara = not args.skip_copybara
+  delete_temporary_files = not args.keep_temporary_files
 
   try:
     # Create empty temp file for each architecture.
     arch_to_temp_desc_file = {
-        arch: tempfile.NamedTemporaryFile(mode="w+", encoding='utf-8')
+        arch:
+        tempfile.NamedTemporaryFile(mode="w+",
+                                    encoding='utf-8',
+                                    delete=delete_temporary_files)
         for arch in cronet_utils.ARCHS
     }
 
@@ -234,7 +263,8 @@ def main():
       # This is why the temporary directory has to be generated
       # beneath the repository root until gn2bp is tweaked to
       # deal with this small differences.
-      with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
+      with _OptionalExit(tempfile.TemporaryDirectory(dir=_OUT_DIR),
+                         exit=delete_temporary_files) as gn_out_dir:
         cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
           # Exit if we failed to generate any of the desc.json files.
@@ -243,7 +273,8 @@ def main():
 
     res_license_generation = _run_license_generation()
     res_gn2bp = _run_gn2bp(desc_files=arch_to_temp_desc_file.values(),
-                           skip_build_scripts=args.skip_build_scripts)
+                           skip_build_scripts=args.skip_build_scripts,
+                           delete_temporary_files=delete_temporary_files)
     res_boringssl = _gen_boringssl()
 
     res_copybara = 1

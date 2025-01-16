@@ -225,10 +225,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
       });
 // Use server side for desktop but not for android
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE,
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_TFLITE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_ONDEVICE,
+  EXPECT_EQ(PredictionSource::USE_ONDEVICE_TFLITE,
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 #else

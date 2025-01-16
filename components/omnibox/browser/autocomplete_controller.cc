@@ -1207,7 +1207,8 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   }
   if (provider_types &
       AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR) {
-    providers_.push_back(new EnterpriseSearchAggregatorProvider());
+    providers_.push_back(
+        new EnterpriseSearchAggregatorProvider(provider_client_.get()));
   }
   if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
     on_device_head_provider_ =

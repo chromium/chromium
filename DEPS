@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '2bcbda004b92ff14f3e43586e216f72e2d45fa5e',
+  'chromium_variations_revision': 'ffae22ff3713a5aedbdd17f8b77bc965d775a222',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -1439,7 +1439,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'da53fadb828a420a98ef8841bf57abfe2b6c4e1c',
+    '873503d5a5ebfaf4d9424649c9c3b017cf16e2a2',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1598,7 +1598,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'MAduAYSc7tNrREw_0Qmolbry40guFe2yYrFJn4DsrUkC',
+          'version': '7BRl6QizIMyUj-QHo0dnjRmE9a6s1tfoMilwDXwvs5sC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2946,7 +2946,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '_42z7HRvU0MzjfNDN6nBdzUEN-301j0-_hQuNoHEePwC',
+        'version': 'rLhPt0SI0dlLTaBTVzDCrJ1DBRAKAE3Z4lDnlE4qN_MC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

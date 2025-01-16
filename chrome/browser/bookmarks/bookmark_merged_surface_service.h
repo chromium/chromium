@@ -82,8 +82,6 @@ struct BookmarkParentFolder {
 // It maintains the order between local and account bookmark children
 // nodes of permanent bookmark nodes.
 // Merged UI surfaces should use this class for bookmark operations.
-// TODO(crbug.com/364594278): This class is under development, it currently only
-// handles `NodeTypeForUuidLookup::kLocalOrSyncableNodes`.
 class BookmarkMergedSurfaceService : public KeyedService {
  public:
   // `model` must not be null and must outlive this object.
@@ -135,21 +133,24 @@ class BookmarkMergedSurfaceService : public KeyedService {
       const BookmarkParentFolder& folder) const;
 
   // Moves `node` to `new_parent` at position `index`.
-  // Note:
-  // - If `BookmarkParentFolder` is a permanent bookmark folder, `index` is
-  //   expected to be the position across storages. This can result in a move
-  //   operation within the local/account storage and within the
-  //   `BookmarkPermanentFolderOrderingTracker`.
-  // - There are two possible target indices (index) that result in a no-op.
+  // If `BookmarkParentFolder` is a permanent bookmark folder:
+  // - `index` is expected to be the position across storages.
+  // - The node is moved to the account node in `GetUnderlyingNodes()` if `node`
+  //   is an account node or to the local underlying node if the node is local.
+  // - This can result in a move operation within the local/account storage and
+  //   within the `BookmarkPermanentFolderOrderingTracker`.
+  // Note: There are two possible target indices (index) that result in a no-op.
   //   This is similar to what `BookmarkModel::Move()` does.
   void Move(const bookmarks::BookmarkNode* node,
             const BookmarkParentFolder& new_parent,
             size_t index);
 
-  // Copies nodes in `elements` to be child nodes of `new_parent` starting at
-  // `index`. If `BookmarkParentFolder` is a permanent bookmark folder, `index`
-  // is expected to be the position across storages.
-  void CopyBookmarkNodeData(
+  // Copies nodes in `elements` to be new child nodes of `new_parent` starting
+  // at `index`. If `BookmarkParentFolder` is a permanent bookmark folder,
+  // `index` is expected to be the position across storages. The new nodes will
+  // be child nodes of `GetDefaultParentForNewNodes()` for the given
+  // `new_parent` folder.
+  void AddNodesAsCopiesOfNodeData(
       const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
       const BookmarkParentFolder& new_parent,
       size_t index);
@@ -163,11 +164,6 @@ class BookmarkMergedSurfaceService : public KeyedService {
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
 
  private:
-  // TODO(crbug.com/364594278): This function will be replaced once this class
-  // supports account nodes.
-  const bookmarks::BookmarkNode* PermanentFolderToNode(
-      BookmarkParentFolder::PermanentFolderType folder) const;
-
   const bookmarks::BookmarkNode* managed_permanent_node() const;
 
   const PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(

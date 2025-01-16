@@ -914,7 +914,14 @@ struct AutocompleteMatch {
   // it!
   std::u16string keyword;
 
-  // Set in matches originating from keyword results.
+  // Set in matches originating in keyword mode. `from_keyword` can be true even
+  // if `keyword` is empty and vice versa. `from_keyword` basically means the
+  // user input is in keyword mode. `!keyword.empty()` basically means the match
+  // was generated using a template URL.
+  //
+  // CAUTION: Not consistently set by all providers. That's fine-ish since this
+  // field isn't used much. But code relying on this feature to be correctly set
+  // should take care.
   bool from_keyword = false;
 
   // The visible actions relevant to this match.

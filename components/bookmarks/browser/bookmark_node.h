@@ -27,7 +27,7 @@ class BookmarkModel;
 // BookmarkNode ---------------------------------------------------------------
 
 // BookmarkNode contains information about a starred entry: title, URL, favicon,
-// id and type. BookmarkNodes are returned from BookmarkModel.
+// ID and type. BookmarkNodes are returned from BookmarkModel.
 class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
  public:
   enum Type {
@@ -62,9 +62,11 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // BookmarkModel::SetTitle(..) should be used instead.
   void SetTitle(const std::u16string& title) override;
 
-  // Returns an unique id for this node.
+  // Returns an unique ID for this node.
   // For bookmark nodes that are managed by the bookmark model, the IDs are
   // persisted across sessions.
+  //
+  // IDs are unique across both local and account storages.
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
 
@@ -74,6 +76,9 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // bookmark, with the exception of rare cases where moving a bookmark would
   // otherwise produce a UUID collision (when moved from local to account or
   // the other way round).
+  //
+  // UUIDs are unique across each individual storage (local or account), but not
+  // across both. See `BookmarkModel::GetNodeByUuid()` for details.
   const base::Uuid& uuid() const { return uuid_; }
 
   const GURL& url() const { return url_; }

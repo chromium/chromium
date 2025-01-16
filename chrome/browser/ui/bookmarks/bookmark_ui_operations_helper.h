@@ -92,8 +92,9 @@ class BookmarkUIOperationsHelper {
   };
 
   virtual bookmarks::BookmarkModel* model() = 0;
-  virtual void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                                    size_t index_to_add_at) = 0;
+  virtual void AddNodesAsCopiesOfNodeData(
+      const bookmarks::BookmarkNodeData& data,
+      size_t index_to_add_at) = 0;
   virtual void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                                     const base::FilePath& profile_path,
                                     size_t index_to_add_at) = 0;
@@ -138,8 +139,8 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
 
  protected:
   bookmarks::BookmarkModel* model() override;
-  void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            size_t index_to_add_at) override;
+  void AddNodesAsCopiesOfNodeData(const bookmarks::BookmarkNodeData& data,
+                                  size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
                             size_t index_to_add_at) override;
@@ -204,8 +205,8 @@ class BookmarkUIOperationsHelperMergedSurfaces
 
  protected:
   bookmarks::BookmarkModel* model() override;
-  void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            size_t index_to_add_at) override;
+  void AddNodesAsCopiesOfNodeData(const bookmarks::BookmarkNodeData& data,
+                                  size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
                             size_t index_to_add_at) override;

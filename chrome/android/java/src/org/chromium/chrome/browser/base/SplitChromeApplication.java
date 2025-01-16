@@ -111,7 +111,7 @@ public class SplitChromeApplication extends SplitCompatApplication
                     if (preloadClass != null) {
                         long loadStartTime = SystemClock.uptimeMillis();
                         try {
-                            context.getClassLoader().loadClass(preloadClass).newInstance();
+                            context.getClassLoader().loadClass(preloadClass);
                         } catch (ReflectiveOperationException e) {
                             throw new RuntimeException(
                                     "Preload of "
