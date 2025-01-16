@@ -194,6 +194,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHLensOverlayFeature,
     &kIPHLensOverlayTranslateButtonFeature,
     &kIPHLiveCaptionFeature,
+    &kIPHMerchantTrustFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
