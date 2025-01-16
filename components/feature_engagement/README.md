@@ -74,7 +74,7 @@ In addition, since each feature might have preconditions that must be met within
 the time window configured for the experiment, the frontend needs to inform the
 backend whenever such events happen.
 
-To ensure that it is possible to use whether a feature has been used or not as
+To ensure that it is possible to know whether a feature has been used or not as
 input to the algorithm to decide whether to show IPH and for tracking purposes,
 the frontend needs to inform whenever the feature has been used.
 
