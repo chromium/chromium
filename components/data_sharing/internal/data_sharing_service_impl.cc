@@ -649,6 +649,15 @@ void DataSharingServiceImpl::AddGroupDataForTesting(GroupData group_data) {
   group_data_for_testing_.emplace(group_data.group_token.group_id, group_data);
 }
 
+void DataSharingServiceImpl::SetPreviewServerProxyForTesting(
+    std::unique_ptr<PreviewServerProxy> preview_server_proxy) {
+  preview_server_proxy_ = std::move(preview_server_proxy);
+}
+
+PreviewServerProxy* DataSharingServiceImpl::GetPreviewServerProxyForTesting() {
+  return preview_server_proxy_.get();
+}
+
 void DataSharingServiceImpl::OnAccessTokenAdded(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&

@@ -34,6 +34,7 @@ class ImageFetcher;
 namespace data_sharing {
 class DataSharingNetworkLoader;
 class DataSharingSDKDelegate;
+class PreviewServerProxy;
 
 // The core class for managing data sharing.
 class DataSharingService : public KeyedService, public base::SupportsUserData {
@@ -281,6 +282,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // of the group being added. Settings 2 groups with the same GroupId will
   // replace the existing GroupData.
   virtual void AddGroupDataForTesting(GroupData group_data) = 0;
+
+  // Getter/setter for the preview proxy to allow override in tests.
+  virtual void SetPreviewServerProxyForTesting(
+      std::unique_ptr<PreviewServerProxy> preview_server_proxy) = 0;
+  virtual PreviewServerProxy* GetPreviewServerProxyForTesting() = 0;
 };
 
 }  // namespace data_sharing

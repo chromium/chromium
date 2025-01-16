@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
@@ -95,6 +96,9 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
   MOCK_METHOD1(AddGroupDataForTesting, void(GroupData));
+  MOCK_METHOD1(SetPreviewServerProxyForTesting,
+               void(std::unique_ptr<PreviewServerProxy>));
+  MOCK_METHOD0(GetPreviewServerProxyForTesting, PreviewServerProxy*());
 };
 
 }  // namespace data_sharing

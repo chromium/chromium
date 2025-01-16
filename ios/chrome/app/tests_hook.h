@@ -125,6 +125,10 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
     ProfileIOS* profile);
 
+// Allows additional test setup for the DataSharingService.
+void DataSharingServiceHooks(
+    data_sharing::DataSharingService* data_sharing_service);
+
 // Allows overriding the ShareKitService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<ShareKitService> CreateShareKitService(

@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 
 namespace data_sharing {
@@ -140,5 +141,10 @@ DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
 }
 
 void EmptyDataSharingService::AddGroupDataForTesting(GroupData group_data) {}
+void EmptyDataSharingService::SetPreviewServerProxyForTesting(
+    std::unique_ptr<PreviewServerProxy> preview_server_proxy) {}
+PreviewServerProxy* EmptyDataSharingService::GetPreviewServerProxyForTesting() {
+  return nullptr;
+}
 
 }  // namespace data_sharing
