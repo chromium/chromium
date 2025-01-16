@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/accelerators/accelerator_prefs_delegate.h"
@@ -42,6 +44,8 @@
 #include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -78,6 +82,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/specialized_features/feedback.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
@@ -437,6 +442,36 @@ void ChromeShellDelegate::OpenFeedbackDialog(
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              ToChromeFeedbackSource(source),
                              description_template, category_tag);
+}
+
+bool ChromeShellDelegate::SendSpecializedFeatureFeedback(
+    const AccountId& account_id,
+    int product_id,
+    std::string description,
+    std::optional<std::string> image,
+    std::optional<std::string> image_mime_type) {
+  // NOTE: `FeedbackUploaderFactoryChrome` (in //chrome/browser/feedback/)
+  // returns different instances to `FeedbackUploaderFactory` (in
+  // //components/feedback/content). The correct instance should be obtained
+  // from `FeedbackUploaderFactoryChrome`.
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!browser_context) {
+    return false;
+  }
+
+  feedback::FeedbackUploaderChrome* uploader =
+      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+          browser_context);
+  if (!uploader) {
+    return false;
+  }
+
+  specialized_features::SendFeedback(*uploader, product_id,
+                                     std::move(description), std::move(image),
+                                     std::move(image_mime_type));
+  return true;
 }
 
 void ChromeShellDelegate::OpenProfileManager() {

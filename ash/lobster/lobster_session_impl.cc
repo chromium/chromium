@@ -17,12 +17,15 @@
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/feedback/feedback_constants.h"
 
 namespace ash {
 
@@ -259,8 +262,11 @@ bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
   // TODO: b/362403784 - add the proper version.
   std::string feedback_description = BuildFeedbackDescription(
       candidate->query, /*model_version=*/"dummy_version", description);
-  return client_->SubmitFeedback(std::move(feedback_description),
-                                 candidate->image_bytes);
+
+  return Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
+      client_->GetAccountId(), feedback::kLobsterFeedbackProductId,
+      std::move(feedback_description), std::move(candidate->image_bytes),
+      /*image_mime_type=*/std::nullopt);
 }
 
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,

@@ -9,18 +9,23 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
-#include "chrome/browser/ash/lobster/lobster_feedback.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/manta/snapper_provider.h"
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
     Profile* profile)
     : profile_(profile),
+      // `LobsterService` is only created for regular profiles as specified in
+      // the `LobsterServiceProvider` constructor, so the below call should
+      // always return a non-null pointer.
+      account_id_(CHECK_DEREF(ash::AnnotatedAccountId::Get(profile))),
       image_provider_(std::move(snapper_provider)),
       image_fetcher_(image_provider_.get(), &candidate_id_generator_),
       resizer_(&image_fetcher_),
@@ -57,12 +62,6 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
                                     StatusCallback insert_status_callback) {
   queued_insertion_ = std::make_unique<LobsterInsertion>(
       image_bytes, std::move(insert_status_callback));
-}
-
-bool LobsterService::SubmitFeedback(std::string description,
-                                    const std::string& image_bytes) {
-  return SendLobsterFeedback(profile_, std::move(description),
-                             /*image_bytes=*/image_bytes);
 }
 
 void LobsterService::LoadUI(std::optional<std::string> query,

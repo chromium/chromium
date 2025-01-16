@@ -33,8 +33,6 @@ class LobsterClientImpl : public ash::LobsterClient {
   void InflateCandidate(uint32_t seed,
                         const std::string& query,
                         ash::InflateCandidateCallback callback) override;
-  bool SubmitFeedback(std::string description,
-                      const std::string& image_bytes) override;
   void QueueInsertion(const std::string& image_bytes,
                       StatusCallback insert_status_callback) override;
   void LoadUI(std::optional<std::string> query,
@@ -42,6 +40,7 @@ class LobsterClientImpl : public ash::LobsterClient {
               const gfx::Rect& caret_bounds) override;
   void ShowUI() override;
   void CloseUI() override;
+  const AccountId& GetAccountId() override;
 
  private:
   // Not owned by this class
