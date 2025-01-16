@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.Collection;
+
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
  *
@@ -126,6 +128,9 @@ public interface TabWindowManager {
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     TabModelSelector getTabModelSelectorById(int index);
+
+    /** Gets a Collection of all TabModelSelectors. */
+    Collection<TabModelSelector> getAllTabModelSelectors();
 
     /** Returns whether the tab with the given id can safely be deleted. */
     boolean canTabStateBeDeleted(int tabId);
