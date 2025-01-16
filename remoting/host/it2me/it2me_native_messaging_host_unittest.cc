@@ -416,17 +416,17 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return std::nullopt;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
-    if (!message || !message->is_dict()) {
+    std::optional<base::Value::Dict> message =
+        base::JSONReader::ReadDict(message_json);
+    if (!message) {
       LOG(ERROR) << "Malformed message:" << message_json;
       return std::nullopt;
     }
 
-    base::Value::Dict result = std::move(*message).TakeDict();
     // If this is a debug message log, ignore it, otherwise return it.
-    const std::string* type = result.FindString(kMessageType);
+    const std::string* type = message->FindString(kMessageType);
     if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
-      return result;
+      return std::move(*message);
     }
   }
 }
