@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 
 namespace blink {
@@ -102,10 +104,19 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
       &exited_ancestors_common_parent_index,
       &entered_ancestors_common_parent_index);
 
-  bool exited_node_has_capturing_ancestor = false;
+  bool skip_exit_listener_check = false;
   for (wtf_size_t j = 0; j < exited_ancestors.size(); j++) {
-    if (exited_ancestors[j]->HasCapturingEventListeners(leave_event_)) {
-      exited_node_has_capturing_ancestor = true;
+    // HTMLOptionElement::DefaultEventHandler looks for mouseleave, so we need
+    // to fire mouseleave on option elements.
+    HTMLOptionElement* option =
+        DynamicTo<HTMLOptionElement>(*exited_ancestors[j]);
+    bool is_customizable_select_option =
+        option && option->OwnerSelectElement() &&
+        option->OwnerSelectElement()->IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle);
+    if (exited_ancestors[j]->HasCapturingEventListeners(leave_event_) ||
+        is_customizable_select_option) {
+      skip_exit_listener_check = true;
       break;
     }
   }
@@ -113,7 +124,7 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
   // Dispatch leave events, in child-to-parent order.
   for (wtf_size_t j = 0; j < exited_ancestors_common_parent_index; j++) {
     Dispatch(exited_ancestors[j], entered_target, leave_event_,
-             !exited_node_has_capturing_ancestor);
+             !skip_exit_listener_check);
   }
 
   // Dispatch over event
@@ -123,6 +134,8 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
 
   // Defer locating capturing enter listener until /after/ dispatching the leave
   // events because the leave handlers might set a capturing enter handler.
+  // HTMLOptionElement::DefaultEventHandler does not look for mouseenter like it
+  // does for mouseleave, so no need to add logic for option elements here.
   bool entered_node_has_capturing_ancestor = false;
   for (wtf_size_t i = 0; i < entered_ancestors.size(); i++) {
     if (entered_ancestors[i]->HasCapturingEventListeners(enter_event_)) {
