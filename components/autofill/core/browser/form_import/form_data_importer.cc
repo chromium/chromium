@@ -762,7 +762,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     return false;
   }
 
-  if (ShouldOfferVirtualCardEnrollment(extracted_credit_card,
+  if (client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager() &&
+      ShouldOfferVirtualCardEnrollment(extracted_credit_card,
                                        fetched_card_instrument_id_)) {
     client_->GetPaymentsAutofillClient()
         ->GetVirtualCardEnrollmentManager()
