@@ -1496,7 +1496,8 @@ void AwContents::StartPrerendering(
     JNIEnv* env,
     const std::string& prerendering_url,
     const base::android::JavaParamRef<jobject>& prefetch_params,
-    const base::android::JavaParamRef<jobject>& activation_callback) {
+    const base::android::JavaParamRef<jobject>& activation_callback,
+    const base::android::JavaParamRef<jobject>& error_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Cancel existing prerendering before starting a new one to avoid hitting the
@@ -1527,10 +1528,24 @@ void AwContents::StartPrerendering(
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
 
-  if (prerender_handle_ && activation_callback) {
-    prerender_handle_->SetActivationCallback(
-        base::BindOnce(&base::android::RunRunnableAndroid,
-                       ScopedJavaGlobalRef<jobject>(env, activation_callback)));
+  if (prerender_handle_) {
+    if (activation_callback) {
+      prerender_handle_->SetActivationCallback(base::BindOnce(
+          &base::android::RunRunnableAndroid,
+          ScopedJavaGlobalRef<jobject>(env, activation_callback)));
+    }
+    if (error_callback) {
+      prerender_handle_->SetErrorCallback(
+          base::BindOnce(&base::android::RunRunnableAndroid,
+                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
+    }
+  } else {
+    if (error_callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&base::android::RunRunnableAndroid,
+                         ScopedJavaGlobalRef<jobject>(env, error_callback)));
+    }
   }
 }
 

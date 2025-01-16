@@ -67,12 +67,37 @@ void PrerenderHandleImpl::SetActivationCallback(
   activation_callback_ = std::move(activation_callback);
 }
 
+void PrerenderHandleImpl::SetErrorCallback(base::OnceClosure error_callback) {
+  CHECK(error_callback);
+  CHECK(!error_callback_);
+  error_callback_ = std::move(error_callback);
+}
+
 void PrerenderHandleImpl::OnActivated() {
   CHECK(!was_activated_);
   was_activated_ = true;
+
+  // An error should not be reported after activation.
+  error_callback_.Reset();
+
   if (activation_callback_) {
     std::move(activation_callback_).Run();
   }
+}
+
+void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
+  if (!error_callback_) {
+    return;
+  }
+
+  // TODO(crbug.com/41490450): Don't fire the callback when prerendering is
+  // intentionally canceled by an app (e.g., calling the cancellation API).
+
+  // TODO(crbug.com/41490450): Pass a cancellation reason to the callback.
+  // Note that we should not expose detailed reasons to prevent embedders from
+  // depending on them. Such an implicit contract with embedders would impair
+  // flexibility of internal implementation.
+  std::move(error_callback_).Run();
 }
 
 PrerenderHost* PrerenderHandleImpl::GetPrerenderHost() {
