@@ -212,9 +212,6 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
       // right thing.
       task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
     }
-    // Since the queue is empty, now is a good time to consider reducing it's
-    // capacity if we're wasting memory.
-    tasks_.MaybeShrinkQueue();
   }
 
   DCHECK(work_queue_sets_);
@@ -268,9 +265,6 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
         // right thing.
         task_queue_->TakeImmediateIncomingQueueTasks(&tasks_);
       }
-      // Since the queue is empty, now is a good time to consider reducing it's
-      // capacity if we're wasting memory.
-      tasks_.MaybeShrinkQueue();
     }
     // If we have a valid |heap_handle_| (i.e. we're not blocked by a fence or
     // disabled) then |work_queue_sets_| needs to be told.
@@ -330,10 +324,6 @@ bool WorkQueue::RemoveFence() {
     return true;
   }
   return false;
-}
-
-void WorkQueue::MaybeShrinkQueue() {
-  tasks_.MaybeShrinkQueue();
 }
 
 void WorkQueue::PopTaskForTesting() {

@@ -604,10 +604,6 @@ void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
 
 void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue) {
   DCHECK(queue->empty());
-  // Now is a good time to consider reducing the empty queue's capacity if we're
-  // wasting memory, before we make it the `immediate_incoming_queue`.
-  queue->MaybeShrinkQueue();
-
   base::internal::CheckedAutoLock lock(any_thread_lock_);
   queue->swap(any_thread_.immediate_incoming_queue);
 
@@ -875,13 +871,6 @@ Value::Dict TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
             static_cast<int>(main_thread_only().immediate_work_queue->Size()));
   state.Set("delayed_work_queue_size",
             static_cast<int>(main_thread_only().delayed_work_queue->Size()));
-
-  state.Set("any_thread_.immediate_incoming_queuecapacity",
-            static_cast<int>(any_thread_.immediate_incoming_queue.capacity()));
-  state.Set("immediate_work_queue_capacity",
-            static_cast<int>(immediate_work_queue()->Capacity()));
-  state.Set("delayed_work_queue_capacity",
-            static_cast<int>(delayed_work_queue()->Capacity()));
 
   if (!main_thread_only().delayed_incoming_queue.empty()) {
     TimeDelta delay_to_next_task =
@@ -1273,15 +1262,6 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
 
   LazyNow lazy_now(now);
   UpdateWakeUp(&lazy_now);
-
-  // Also consider shrinking the work queue if it's wasting memory.
-  main_thread_only().delayed_work_queue->MaybeShrinkQueue();
-  main_thread_only().immediate_work_queue->MaybeShrinkQueue();
-
-  {
-    base::internal::CheckedAutoLock lock(any_thread_lock_);
-    any_thread_.immediate_incoming_queue.MaybeShrinkQueue();
-  }
 }
 
 void TaskQueueImpl::PushImmediateIncomingTaskForTest(Task task) {
