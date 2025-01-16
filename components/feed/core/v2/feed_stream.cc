@@ -634,7 +634,6 @@ bool FeedStream::IsFeedEnabledByDse() {
 
 bool FeedStream::IsWebFeedEnabled() {
   return feed::IsWebFeedEnabledForLocale(delegate_->GetCountry()) &&
-         !delegate_->IsSupervisedAccount() &&
          !base::FeatureList::IsEnabled(kWebFeedKillSwitch);
 }
 
@@ -1108,9 +1107,6 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     case StreamKind::kUnknown:
       DLOG(ERROR) << "Unknown stream kind";
       [[fallthrough]];
-    case StreamKind::kSupervisedUser:
-      request_type = NetworkRequestType::kSupervisedFeed;
-      break;
     case StreamKind::kForYou:
       request_type = (load_type != LoadType::kLoadMore)
                          ? NetworkRequestType::kFeedQuery

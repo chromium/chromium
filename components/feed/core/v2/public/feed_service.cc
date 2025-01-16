@@ -180,13 +180,6 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return AccountInfo(identity_manager_->GetPrimaryAccountInfo(
         GetConsentLevelNeededForPersonalizedFeed()));
   }
-  bool IsSupervisedAccount() override {
-    ::AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kSignin));
-    return account_info.capabilities.is_subject_to_parental_controls() ==
-           signin::Tribool::kTrue;
-  }
   // Returns if signin is allowed on Android. Return true on other platform so
   // behavior is unchanged there.
   bool IsSigninAllowed() override {

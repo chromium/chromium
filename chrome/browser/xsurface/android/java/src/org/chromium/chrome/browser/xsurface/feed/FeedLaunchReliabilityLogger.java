@@ -41,13 +41,13 @@ public interface FeedLaunchReliabilityLogger {
         int FOR_YOU = 1;
         int WEB_FEED = 2;
         int SINGLE_WEB_FEED = 3;
-        int SUPERVISED_USER_FEED = 4;
+        @Deprecated int SUPERVISED_USER_FEED = 4;
     }
 
     /**
      * Set details about the stream being launched and send any pending events.
      *
-     * @param streamType Feed type (e.g. "for you", "following" or "supervised user").
+     * @param streamType Feed type (e.g. "for you", or "following").
      * @param streamId Identifier for the stream used to disambiguate events from concurrent
      *     streams.
      */
