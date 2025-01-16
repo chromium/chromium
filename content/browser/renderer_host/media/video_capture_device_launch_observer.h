@@ -13,15 +13,12 @@ class VideoCaptureController;
 
 class VideoCaptureDeviceLaunchObserver {
  public:
-  virtual ~VideoCaptureDeviceLaunchObserver() = default;
-  virtual void OnDeviceLaunched(
-      scoped_refptr<VideoCaptureController> controller) = 0;
-  virtual void OnDeviceLaunchFailed(
-      scoped_refptr<VideoCaptureController> controller,
-      media::VideoCaptureError error) = 0;
+  virtual ~VideoCaptureDeviceLaunchObserver() {}
+  virtual void OnDeviceLaunched(VideoCaptureController* controller) = 0;
+  virtual void OnDeviceLaunchFailed(VideoCaptureController* controller,
+                                    media::VideoCaptureError error) = 0;
   virtual void OnDeviceLaunchAborted() = 0;
-  virtual void OnDeviceConnectionLost(
-      scoped_refptr<VideoCaptureController> controller) = 0;
+  virtual void OnDeviceConnectionLost(VideoCaptureController* controller) = 0;
 };
 
 }  // namespace content
