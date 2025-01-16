@@ -175,6 +175,7 @@ using signin_metrics::PromoAction;
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
+  _UIBlocker.reset();
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
