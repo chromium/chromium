@@ -1833,28 +1833,29 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   EXPECT_EQ(result, result_);
 }
 
-class GetDetailsForCreateBnplPaymentInstrumentTest
+class PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam
     : public PaymentsNetworkInterfaceTest,
       public ::testing::WithParamInterface<PaymentsRpcResult> {
  public:
-  GetDetailsForCreateBnplPaymentInstrumentTest() = default;
-  ~GetDetailsForCreateBnplPaymentInstrumentTest() override = default;
+  PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam() = default;
+  ~PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam() override = default;
 };
 
 // Initializes the parameterized test suite with all possible combinations of
 // PaymentsRpcResult.
 INSTANTIATE_TEST_SUITE_P(
     ,
-    GetDetailsForCreateBnplPaymentInstrumentTest,
+    PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
     testing::Values(PaymentsRpcResult::kSuccess,
                     PaymentsRpcResult::kTryAgainFailure,
                     PaymentsRpcResult::kPermanentFailure,
                     PaymentsRpcResult::kNetworkError,
                     PaymentsRpcResult::kClientSideTimeout));
 
-// Parameterized test that tests all combinations of server PaymentsRpcResult.
-TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
-       GetDetailsForCreateBnplPaymentInstrumentTest_TestAllFlows) {
+// Test GetDetailsForCreateBnplPaymentInstrument() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetDetailsForCreateBnplPaymentInstrument) {
   GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
   request_details.app_locale = "en-US";
   request_details.billing_customer_number = 555666777888;
@@ -1904,29 +1905,9 @@ TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
     EXPECT_NE(nullptr, legal_message_.get());
   }
 }
-
-class CreateBnplPaymentInstrumentTest
-    : public PaymentsNetworkInterfaceTest,
-      public ::testing::WithParamInterface<PaymentsRpcResult> {
- public:
-  CreateBnplPaymentInstrumentTest() = default;
-  ~CreateBnplPaymentInstrumentTest() override = default;
-};
-
-// Initializes the parameterized test suite with all possible combinations of
-// PaymentsRpcResult.
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    CreateBnplPaymentInstrumentTest,
-    testing::Values(PaymentsRpcResult::kSuccess,
-                    PaymentsRpcResult::kTryAgainFailure,
-                    PaymentsRpcResult::kPermanentFailure,
-                    PaymentsRpcResult::kNetworkError,
-                    PaymentsRpcResult::kClientSideTimeout));
-
-// Parameterized test that tests all combinations of server PaymentsRpcResult.
-TEST_P(CreateBnplPaymentInstrumentTest,
-       CreateBnplPaymentInstrumentTest_TestAllFlows) {
+// Test CreateBnplPaymentInstrument() with all the different PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       CreateBnplPaymentInstrument_TestAllFlows) {
   CreateBnplPaymentInstrumentRequestDetails request_details;
   request_details.app_locale = "en-US";
   request_details.billing_customer_number = 555666777888;
@@ -1976,28 +1957,10 @@ TEST_P(CreateBnplPaymentInstrumentTest,
   }
 }
 
-class GetBnplPaymentInstrumentForFetchingVcnTest
-    : public PaymentsNetworkInterfaceTest,
-      public ::testing::WithParamInterface<PaymentsRpcResult> {
- public:
-  GetBnplPaymentInstrumentForFetchingVcnTest() = default;
-  ~GetBnplPaymentInstrumentForFetchingVcnTest() override = default;
-};
-
-// Initializes the parameterized test suite with all possible combinations of
-// PaymentsRpcResult.
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    GetBnplPaymentInstrumentForFetchingVcnTest,
-    testing::Values(PaymentsRpcResult::kSuccess,
-                    PaymentsRpcResult::kTryAgainFailure,
-                    PaymentsRpcResult::kPermanentFailure,
-                    PaymentsRpcResult::kNetworkError,
-                    PaymentsRpcResult::kClientSideTimeout));
-
-// Parameterized test that tests all combinations of server PaymentsRpcResult.
-TEST_P(GetBnplPaymentInstrumentForFetchingVcnTest,
-       GetBnplPaymentInstrumentForFetchingVcnTest_TestAllFlows) {
+// Test GetBnplPaymentInstrumentForFetchingVcn() with all the different
+// PaymentsRpcResults.
+TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
+       GetBnplPaymentInstrumentForFetchingVcn) {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number = 555666777888;
   request_details.risk_data = "RISK_DATA";
