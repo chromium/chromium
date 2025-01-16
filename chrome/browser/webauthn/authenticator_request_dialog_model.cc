@@ -158,21 +158,15 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
 
   const StepUIType ui_type = step_ui_type(step_);
   auto* web_contents = GetWebContentsFromFrameHostId(frame_host_id);
-  if (previous_ui_type != ui_type && web_contents) {
-    // The UI observes `OnStepTransition` and updates automatically.
-    switch (ui_type) {
-      case StepUIType::NONE:
-        // Any UI will close itself.
-        break;
-
-      case StepUIType::DIALOG:
-        AuthenticatorRequestDialogViewController::Show(web_contents, this);
-        break;
-
-      case StepUIType::WINDOW:
-        ShowAuthenticatorRequestWindow(web_contents, this);
-        break;
+  if (ui_type != StepUIType::DIALOG) {
+    view_controller_.reset();
+    if (ui_type == StepUIType::WINDOW &&
+        previous_ui_type != StepUIType::WINDOW && web_contents) {
+      ShowAuthenticatorRequestWindow(web_contents, this);
     }
+  } else if (previous_ui_type != StepUIType::DIALOG && web_contents) {
+    view_controller_ =
+        AuthenticatorRequestDialogViewController::Create(web_contents, this);
   }
 
   for (auto& observer : observers) {

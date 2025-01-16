@@ -41,6 +41,7 @@ struct VectorIcon;
 }
 
 struct AccountInfo;
+class AuthenticatorRequestDialogViewController;
 class Profile;
 
 enum class EnclaveEnabledStatus {
@@ -517,6 +518,7 @@ struct AuthenticatorRequestDialogModel
 
   Step step_ = Step::kNotStarted;
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
+  std::unique_ptr<AuthenticatorRequestDialogViewController> view_controller_;
 };
 
 std::ostream& operator<<(std::ostream& os,
