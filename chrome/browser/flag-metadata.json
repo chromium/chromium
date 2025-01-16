@@ -7137,6 +7137,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "profile-picker-glic-testing",
+    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 136

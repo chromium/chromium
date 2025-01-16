@@ -171,6 +171,10 @@ bool IsBatchUploadDesktopEnabled() {
 #endif
 }
 
+BASE_FEATURE(kProfilePickerGlicTesting,
+             "ProfilePickerGlicTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS)
