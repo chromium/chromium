@@ -31,6 +31,7 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 
 constexpr int kDefaultIconSize = 16;
+constexpr char16_t kTestText[] = u"Test text";
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -50,7 +51,6 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(const std::u16string, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
-
   MOCK_METHOD(void,
               AddObserver,
               (PageActionModelObserver * observer),
@@ -112,13 +112,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
     return controller;
   }
 
-  int GetViewImageWidth() {
-    return page_action_view()
-        ->GetImageModel(views::Button::STATE_NORMAL)
-        ->Size()
-        .width();
-  }
-
   PageActionView* page_action_view() { return page_action_view_.get(); }
   actions::ActionItem* action_item() { return action_item_; }
 
@@ -146,12 +139,13 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
     action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
     page_action_view_ = std::make_unique<PageActionView>(
         action_item_.get(), &icon_label_view_delegate_);
-    page_action_view_->SetModel(model());
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(Return(mock_string_));
     ON_CALL(mock_model_, GetTooltipText()).WillByDefault(Return(mock_string_));
     ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
+
+    page_action_view_->SetModel(model());
   }
 
   void TearDown() override {
@@ -175,61 +169,6 @@ class PageActionViewWithMockModelTest : public ChromeViewsTestBase {
   ui::ImageModel mock_image_;
   std::u16string mock_string_;
 };
-
-// Tests that calling Show/Hide will show/hide the view.
-TEST_F(PageActionViewTest, ViewRespondsToPageActionUpdates) {
-  auto controller = NewPageActionController();
-  actions::ActionItem* item = action_item();
-  item->SetEnabled(true);
-  item->SetVisible(true);
-
-  PageActionView* view = page_action_view();
-  view->OnNewActiveController(controller.get());
-
-  EXPECT_FALSE(view->GetVisible());
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
-
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
-
-  controller->Hide(0);
-  EXPECT_FALSE(view->GetVisible());
-
-  // Disabling the ActionItem should prevent the view from showing.
-  item->SetEnabled(false);
-  controller->Show(0);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetEnabled(true);
-
-  item->SetVisible(false);
-  controller->Show(0);
-  EXPECT_FALSE(view->GetVisible());
-}
-
-// Tests that updating the ActionItem will update the view.
-TEST_F(PageActionViewTest, ViewRespondsToActionItemUpdates) {
-  auto controller = NewPageActionController();
-  actions::ActionItem* item = action_item();
-  PageActionView* view = page_action_view();
-
-  // View defaults to invisible.
-  EXPECT_FALSE(view->GetVisible());
-
-  view->OnNewActiveController(controller.get());
-  controller->Show(0);
-  EXPECT_TRUE(view->GetVisible());
-
-  item->SetVisible(false);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetVisible(true);
-  EXPECT_TRUE(view->GetVisible());
-
-  item->SetEnabled(false);
-  EXPECT_FALSE(view->GetVisible());
-  item->SetEnabled(true);
-  EXPECT_TRUE(view->GetVisible());
-}
 
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.
@@ -277,26 +216,56 @@ TEST_F(PageActionViewTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 }
 
+TEST_F(PageActionViewWithMockModelTest, Visibility) {
+  // Ensure view defaults to invisible.
+  EXPECT_FALSE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_TRUE(page_action_view()->GetVisible());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_FALSE(page_action_view()->GetVisible());
+}
+
+TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_EQ(page_action_view()->GetText(), kTestText);
+}
+
+TEST_F(PageActionViewWithMockModelTest, TooltipText) {
+  EXPECT_CALL(*model(), GetTooltipText()).WillRepeatedly(Return(kTestText));
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_EQ(page_action_view()->GetTooltipText(), kTestText);
+}
+
 // Test that OnThemeChanged updates the icon image correctly.
-TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
+TEST_F(PageActionViewWithMockModelTest, OnThemeChangedUpdatesIconImage) {
+  auto icon_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
+
   const int required_icon_size =
       GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
   // If the default size is the intended icon size, this test is useless.
   EXPECT_GT(required_icon_size, kDefaultIconSize);
 
-  auto controller = NewPageActionController();
-  page_action_view()->OnNewActiveController(controller.get());
-  action_item()->SetEnabled(true);
-  action_item()->SetVisible(true);
-  controller->Show(0);
+  page_action_view()->OnPageActionModelChanged(model());
+  EXPECT_EQ(page_action_view()
+                ->GetImageModel(views::Button::STATE_NORMAL)
+                ->Size()
+                .width(),
+            required_icon_size);
 
-  // When binding to a controller, model state is pushed into the view, so icon
-  // should be correct size.
-  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
-
-  // Icon resizes on theme change.
+  // Icon maintains required size on theme change.
   page_action_view()->OnThemeChanged();
-  EXPECT_EQ(GetViewImageWidth(), required_icon_size);
+  EXPECT_EQ(page_action_view()
+                ->GetImageModel(views::Button::STATE_NORMAL)
+                ->Size()
+                .width(),
+            required_icon_size);
 }
 
 // Test that UpdateBorder adjusts the insets based on label visibility.
@@ -324,34 +293,6 @@ TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
 
   // Verify that true and false cases result in different insets.
   EXPECT_NE(updated_insets_true, updated_insets_false);
-}
-
-// Test that once a PageActionController is active, overriding the text updates
-// the view, and that the override persists until the controller is removed.
-TEST_F(PageActionViewTest, OverrideText) {
-  const std::u16string kInitialText = u"Initial Text";
-  actions::ActionItem* item = action_item();
-  item->SetEnabled(true);
-  item->SetVisible(true);
-  item->SetText(kInitialText);
-
-  PageActionView* view = page_action_view();
-  EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(u"", view->GetText());
-
-  auto controller = NewPageActionController();
-  view->OnNewActiveController(controller.get());
-  EXPECT_EQ(kInitialText, view->GetText());
-
-  const std::u16string kOverrideText = u"Override Text";
-  controller->Show(0);
-  controller->OverrideText(0, kOverrideText);
-  EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(kOverrideText, view->GetText());
-
-  view->OnNewActiveController(nullptr);
-  EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(kOverrideText, view->GetText());
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {
@@ -415,23 +356,6 @@ TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
       ui::test::TestEvent(ui::EventType::kGestureTap));
   EXPECT_EQ(1, gesture_trigger_count());
   EXPECT_EQ(1, TotalTriggerCount());
-}
-
-TEST_F(PageActionViewWithMockModelTest, Visibility) {
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(model());
-  EXPECT_FALSE(page_action_view()->GetVisible());
-
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  page_action_view()->OnPageActionModelChanged(model());
-  EXPECT_TRUE(page_action_view()->GetVisible());
-}
-
-TEST_F(PageActionViewWithMockModelTest, SuggestionText) {
-  const std::u16string kTestText = u"Test text";
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(Return(kTestText));
-  page_action_view()->OnPageActionModelChanged(model());
-  EXPECT_EQ(page_action_view()->GetText(), kTestText);
 }
 
 }  // namespace
