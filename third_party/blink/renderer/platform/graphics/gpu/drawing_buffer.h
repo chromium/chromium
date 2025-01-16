@@ -38,7 +38,6 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/texture_layer_client.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -347,13 +346,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   struct RegisteredBitmap {
     RegisteredBitmap(
-        scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
         scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken sync_token,
         base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
             sii_provider)
-        : bitmap(std::move(bitmap)),
-          shared_image(std::move(shared_image)),
+        : shared_image(std::move(shared_image)),
           sync_token(std::move(sync_token)),
           sii_provider(sii_provider) {}
     RegisteredBitmap() = default;
@@ -362,7 +359,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     RegisteredBitmap(RegisteredBitmap&&) = default;
     RegisteredBitmap& operator=(RegisteredBitmap&&) = default;
 
-    scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
     base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;

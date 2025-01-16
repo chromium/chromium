@@ -89,7 +89,7 @@ BASE_FEATURE(kPlusAddressOfferCreationOnAllNonUsernameFields,
 // When enabled, we offer plus address creation on single username forms.
 BASE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms,
              "PlusAddressOfferCreationOnSingleUsernameForms",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, we check whether the server response to a Create call returned
 // information about existing profiles and return those as the parsing result.

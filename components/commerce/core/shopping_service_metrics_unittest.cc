@@ -69,10 +69,9 @@ class ShoppingServiceMetricsTest : public ShoppingServiceTestBase {
   OptimizationMetadata og_response_no_image_;
 };
 
-TEST_F(ShoppingServiceMetricsTest,
-       TestImageAvailabilityServerDisabledLocalEnabled) {
+TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityLocalEnabled) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
-                                  {kCommerceAllowServerImages});
+                                  {});
 
   auto result = base::Value::Dict();
   result.Set("image", std::string(kImageUrl2));
@@ -88,7 +87,7 @@ TEST_F(ShoppingServiceMetricsTest,
   // We should be able to access the cached data.
   std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_NE(kImageUrl, cached_info->image_url);
+  ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   DidFinishLoad(&web);
   SimulateProductInfoLocalExtractionTaskFinished();
@@ -97,7 +96,7 @@ TEST_F(ShoppingServiceMetricsTest,
   // on-page image.
   cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_EQ(kImageUrl2, cached_info->image_url.spec());
+  ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   histogram_tester_->ExpectBucketCount(kImageAvailabilityHistogramName,
                                        ProductImageAvailability::kBothAvailable,
@@ -106,45 +105,8 @@ TEST_F(ShoppingServiceMetricsTest,
 }
 
 TEST_F(ShoppingServiceMetricsTest,
-       TestImageAvailabilityServerEnabledLocalDisabled) {
-  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowServerImages},
-                                  {kCommerceAllowLocalImages});
-
-  auto result = base::Value::Dict();
-  result.Set("image", std::string(kImageUrl2));
-  base::Value js_result(std::move(result));
-  MockWebWrapper web(GURL(kProductUrl), false, &js_result);
-
-  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
-                          OptimizationGuideDecision::kTrue,
-                          og_response_with_image_);
-
-  DidNavigatePrimaryMainFrame(&web);
-
-  // We should be able to access the cached data.
-  std::optional<ProductInfo> cached_info =
-      shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
-
-  DidFinishLoad(&web);
-  SimulateProductInfoLocalExtractionTaskFinished();
-
-  // After the page has loaded and the on-page js has run, we should have the
-  // on-page image.
-  cached_info =
-      shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
-
-  histogram_tester_->ExpectBucketCount(kImageAvailabilityHistogramName,
-                                       ProductImageAvailability::kBothAvailable,
-                                       1);
-  histogram_tester_->ExpectTotalCount(kImageAvailabilityHistogramName, 1);
-}
-
-TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+       TestImageAvailabilityDisabledLocalNoServerImage) {
+  test_features_.InitWithFeatures({kShoppingList}, {kCommerceAllowLocalImages});
 
   auto result = base::Value::Dict();
   result.Set("image", std::string(kImageUrl2));
@@ -160,7 +122,41 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
   // We should be able to access the cached data.
   std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_NE(kImageUrl, cached_info->image_url);
+  ASSERT_NE(kImageUrl, cached_info->image_url.spec());
+
+  DidFinishLoad(&web);
+  SimulateProductInfoLocalExtractionTaskFinished();
+
+  // After the page has loaded and the on-page js has run, we should have the
+  // on-page image.
+  cached_info =
+      shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
+  ASSERT_NE(kImageUrl2, cached_info->image_url.spec());
+
+  histogram_tester_->ExpectBucketCount(kImageAvailabilityHistogramName,
+                                       ProductImageAvailability::kLocalOnly, 1);
+  histogram_tester_->ExpectTotalCount(kImageAvailabilityHistogramName, 1);
+}
+
+TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
+
+  auto result = base::Value::Dict();
+  result.Set("image", std::string(kImageUrl2));
+  base::Value js_result(std::move(result));
+  MockWebWrapper web(GURL(kProductUrl), false, &js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue,
+                          og_response_no_image_);
+
+  DidNavigatePrimaryMainFrame(&web);
+
+  // We should be able to access the cached data.
+  std::optional<ProductInfo> cached_info =
+      shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
+  ASSERT_NE(kImageUrl, cached_info->image_url.spec());
 
   DidFinishLoad(&web);
   SimulateProductInfoLocalExtractionTaskFinished();
@@ -177,9 +173,8 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
 }
 
 TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   auto result = base::Value::Dict();
   result.Set("irrelevant", std::string("value"));
@@ -195,7 +190,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
   // We should be able to access the cached data.
   std::optional<ProductInfo> cached_info =
       shopping_service_->GetAvailableProductInfoForUrl(GURL(kProductUrl));
-  ASSERT_EQ(kImageUrl, cached_info->image_url);
+  ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   DidFinishLoad(&web);
   SimulateProductInfoLocalExtractionTaskFinished();
@@ -212,9 +207,8 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
 // run, otherwise we don't record as accurate of data. This test ensures that
 // the metric isn't recorded if the javascript hasn't run.
 TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoRecordIfJSNotRun) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
+                                  {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
 

@@ -44,6 +44,7 @@ namespace {
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+using bookmarks::test::AddNodesFromModelString;
 
 template <class T>
 class BookmarkUIOperationsHelperTest : public testing::Test {
@@ -339,6 +340,37 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
   EXPECT_FALSE(helper->CanPasteFromClipboard());
 }
 
+TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMultipleNodes) {
+  BookmarkModel* model = this->model();
+  AddNodesFromModelString(model, model->bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  size_t bookmark_bar_children = model->bookmark_bar_node()->children().size();
+  const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, u"foo bar 1 ",
+                                         GURL("http://www.google.com"));
+  const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, u"foo bar 2 ",
+                                         GURL("http://www.google.com"));
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->bookmark_bar_node());
+
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  helper->PasteFromClipboard(1);
+  EXPECT_EQ(model->bookmark_bar_node()->children().size(),
+            bookmark_bar_children + 2u);
+  CHECK_EQ(model->bookmark_bar_node()->children()[1]->GetTitle(),
+           u"foo bar 1 ");
+  CHECK_EQ(model->bookmark_bar_node()->children()[2]->GetTitle(),
+           u"foo bar 2 ");
+}
+
 TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   BookmarkModel* model = this->model();
   bookmarks::MockBookmarkModelObserver observer;
@@ -346,13 +378,14 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
       model_observation{&observer};
   model_observation.Observe(model);
 
-  std::u16string title(u"foo");
   GURL url("http://foo.com");
-  const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, title, url);
-  const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
+  const BookmarkNode* n1 =
+      model->AddURL(model->other_node(), 0, u"foo bar 1 ", url);
+  const BookmarkNode* n2 =
+      model->AddURL(model->other_node(), 1, u"foo bar 2 ", url);
 
-  EXPECT_CALL(observer, GroupedBookmarkChangesBeginning());
-  EXPECT_CALL(observer, GroupedBookmarkChangesEnded());
+  EXPECT_CALL(observer, GroupedBookmarkChangesBeginning()).Times(2);
+  EXPECT_CALL(observer, GroupedBookmarkChangesEnded()).Times(2);
   // Cut the nodes to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
   internal::BookmarkUIOperationsHelper::CutToClipboard(
@@ -366,6 +399,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
       this->CreateHelper(model->other_node());
   // And make sure we can paste from the clipboard.
   EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  helper->PasteFromClipboard(0);
+  EXPECT_EQ(model->other_node()->children().size(), 2u);
+  CHECK_EQ(model->other_node()->children()[0]->GetTitle(), u"foo bar 1 ");
+  CHECK_EQ(model->other_node()->children()[1]->GetTitle(), u"foo bar 2 ");
 }
 
 TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {

@@ -194,6 +194,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface currentProfileName];
 }
 
+- (NSString*)personalProfileName {
+  return [ChromeEarlGreyAppInterface personalProfileName];
+}
+
 #pragma mark - History Utilities (EG2)
 
 - (void)clearBrowsingHistory {

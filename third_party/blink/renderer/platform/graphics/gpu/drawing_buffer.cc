@@ -405,15 +405,12 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
   if (!shared_image_interface) {
     return RegisteredBitmap();
   }
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {format, size_, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-       "DrawingBufferBitmap"});
-  auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
-      std::move(shared_image_mapping.mapping), size_, format);
+  auto shared_image =
+      shared_image_interface->CreateSharedImageForSoftwareCompositor(
+          {format, size_, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "DrawingBufferBitmap"});
 
-  RegisteredBitmap registered = {std::move(bitmap),
-                                 std::move(shared_image_mapping.shared_image),
+  RegisteredBitmap registered = {std::move(shared_image),
                                  shared_image_interface->GenVerifiedSyncToken(),
                                  sii_provider->GetWeakPtr()};
 
@@ -455,8 +452,9 @@ bool DrawingBuffer::PrepareTransferableResource(
       return false;
     }
 
+    auto mapping = registered.shared_image->Map();
     ReadFramebufferIntoBitmapPixels(
-        static_cast<uint8_t*>(registered.bitmap->memory()));
+        static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
 
     *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
         registered.shared_image, registered.sync_token, size_,

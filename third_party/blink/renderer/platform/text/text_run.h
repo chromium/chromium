@@ -131,26 +131,8 @@ class PLATFORM_EXPORT TextRun final {
     return {data_.characters16, len_};
   }
 
-  const LChar* Characters8() const {
-    DCHECK(Is8Bit());
-    return data_.characters8;
-  }
-  const UChar* Characters16() const {
-    DCHECK(!Is8Bit());
-    return data_.characters16;
-  }
-
   StringView ToStringView() const {
     return Is8Bit() ? StringView(Span8()) : StringView(Span16());
-  }
-
-  UChar32 CodepointAt(unsigned i) const {
-    SECURITY_DCHECK(i < len_);
-    if (Is8Bit())
-      return (*this)[i];
-    UChar32 codepoint;
-    U16_GET(Characters16(), 0, i, len_, codepoint);
-    return codepoint;
   }
 
   UChar32 CodepointAtAndNext(unsigned& i) const {
@@ -158,11 +140,9 @@ class PLATFORM_EXPORT TextRun final {
     if (Is8Bit())
       return (*this)[i++];
     UChar32 codepoint;
-    U16_NEXT(Characters16(), i, len_, codepoint);
+    U16_NEXT(data_.characters16, i, len_, codepoint);
     return codepoint;
   }
-
-  const void* Bytes() const { return data_.bytes_; }
 
   bool Is8Bit() const { return is_8bit_; }
   unsigned length() const { return len_; }

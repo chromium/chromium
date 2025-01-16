@@ -7,8 +7,6 @@
 #include <cstring>
 #include <tuple>
 
-#include "base/containers/span.h"
-
 // No rewrite expected.
 extern const int kPropertyVisitedIDs[];
 
@@ -100,33 +98,4 @@ void crbug_383424943() {
   int buf[]{1};
   // Using sizeof was causing buf to be rewritten.
   memset(buf, 'x', sizeof(buf));
-}
-
-// Expected rewrite:
-// void c_ptr_param(base::span<int> ptr)
-void c_ptr_param(base::span<int> ptr) {
-  ptr[0] = 0;
-}
-
-// Expected rewrite:
-// void c_array_param(base::span<int, 1 + 2> arr)
-void c_array_param(base::span<int, 1 + 2> arr) {
-  arr[0] = 0;
-}
-
-// Expected rewrite:
-// void c_array_nosize_param(base::span<int> arr)
-void c_array_nosize_param(base::span<int> arr) {
-  arr[0] = 0;
-}
-
-void test_func_params() {
-  // Expected rewrite:
-  // auto arr = std::to_array<int>({1, 2, 3});
-  auto arr = std::to_array<int>({1, 2, 3});
-  arr[0] = 0;
-
-  c_ptr_param(arr);
-  c_array_param(arr);
-  c_array_nosize_param(arr);
 }

@@ -101,6 +101,11 @@ enum class TipsNotificationType;
 // scene.
 + (NSString*)currentProfileName;
 
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
++ (NSString*)personalProfileName;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Selects tab with given index in current mode (incognito or main

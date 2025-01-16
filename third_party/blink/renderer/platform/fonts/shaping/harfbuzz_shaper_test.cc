@@ -850,7 +850,8 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
       u"\u2614"
       u"\ufe0f");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
+    EXPECT_EQ(MaybeStripFontationsSuffix(
+                  GetShapedFontFamilyNameForEmojiVS(mono_font, text)),
               kSystemColorEmojiFont);
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(color_font, text)),
@@ -927,11 +928,14 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
   result->GetRunFontData(&run_font_data);
   EXPECT_EQ(run_font_data.size(), 3u);
-  EXPECT_EQ(run_font_data[0].font_data_->PlatformData().FontFamilyName(),
+  EXPECT_EQ(MaybeStripFontationsSuffix(
+                run_font_data[0].font_data_->PlatformData().FontFamilyName()),
             kSystemColorEmojiFont);
-  EXPECT_EQ(run_font_data[1].font_data_->PlatformData().FontFamilyName(),
+  EXPECT_EQ(MaybeStripFontationsSuffix(
+                run_font_data[1].font_data_->PlatformData().FontFamilyName()),
             kSystemMonoEmojiFont);
-  EXPECT_EQ(run_font_data[2].font_data_->PlatformData().FontFamilyName(),
+  EXPECT_EQ(MaybeStripFontationsSuffix(
+                run_font_data[2].font_data_->PlatformData().FontFamilyName()),
             kSystemColorEmojiFont);
 }
 
@@ -950,7 +954,8 @@ TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
 #endif
   String text(u"\u26CE");
   Font color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
-  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+  EXPECT_EQ(MaybeStripFontationsSuffix(
+                GetShapedFontFamilyNameForEmojiVS(color_font, text)),
             mono_font_name);
 }
 

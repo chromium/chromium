@@ -19,8 +19,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources_map.h"
-#include "chromeos/ash/grit/ash_resources.h"
-#include "chromeos/ash/grit/ash_resources_map.h"
 #include "content/grit/content_resources.h"
 #include "content/grit/content_resources_map.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
@@ -36,14 +34,6 @@ const std::set<int> GetContentResourceIds() {
   return std::set<int>{
       IDR_UNGUESSABLE_TOKEN_MOJO_JS,
       IDR_URL_MOJO_JS,
-  };
-}
-
-const std::set<int> GetAshMojoResourceIds() {
-  return std::set<int>{
-      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
   };
 }
 
@@ -81,8 +71,6 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   source->AddResourcePaths(kMojoBindingsResources);
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
-  AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,
-               source);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

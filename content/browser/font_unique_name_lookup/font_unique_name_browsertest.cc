@@ -88,6 +88,17 @@ const auto kExpectedFontFamilyNames = std::to_array({
 });
 #endif
 
+#if !BUILDFLAG(IS_FUCHSIA)
+std::string_view MaybeStripFontationsSuffix(const std::string& font_name) {
+  std::string_view view = font_name;
+  std::size_t pos = view.rfind(" (Fontations)");
+  if (pos != std::string_view::npos) {
+    view.remove_suffix(view.size() - pos);
+  }
+  return view;
+}
+#endif
+
 }  // namespace
 
 class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
@@ -159,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
         first_font_info.GetDict().FindString("familyName");
     ASSERT_TRUE(first_font_name);
     ASSERT_GT(first_font_name->size(), 0u);
-    ASSERT_EQ(*first_font_name, kExpectedFontFamilyNames[i]);
+    ASSERT_EQ(MaybeStripFontationsSuffix(*first_font_name),
+              kExpectedFontFamilyNames[i]);
   }
 }
 #endif

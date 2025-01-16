@@ -60,6 +60,7 @@ consoles.console_view(
             "win11",
             "win32",
             "buildperf",
+            "compositor",
         ],
         "code_coverage": consoles.ordering(
             short_names = [
@@ -208,6 +209,45 @@ ci.builder(
         category = "site_isolation",
     ),
     notifies = ["Site Isolation Android"],
+)
+
+ci.builder(
+    name = "linux-trees-in-viz-rel",
+    description_html = "Runs tests with TreesInViz feature enabled",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "trees_in_viz_fyi_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "compositor",
+    ),
+    contact_team_email = "chrome-compositor@google.com",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(

@@ -102,6 +102,15 @@ const std::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
   return std::nullopt;
 }
 
+IntrinsicSizingInfo LayoutEmbeddedContent::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  // 300x150, no aspect ratio. (Should probably be none.)
+  IntrinsicSizingInfo sizing_info;
+  sizing_info.size = gfx::ScaleSize(gfx::SizeF(kDefaultWidth, kDefaultHeight),
+                                    StyleRef().EffectiveZoom());
+  return sizing_info;
+}
+
 AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   auto frozen_size = FrozenFrameSize();
   if (!frozen_size || frozen_size->IsEmpty()) {

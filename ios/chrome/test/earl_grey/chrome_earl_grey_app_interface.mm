@@ -53,7 +53,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -277,6 +279,13 @@ NSString* SerializedValue(const base::Value* value) {
 + (NSString*)currentProfileName {
   return base::SysUTF8ToNSString(
       chrome_test_util::GetOriginalProfile()->GetProfileName());
+}
+
++ (NSString*)personalProfileName {
+  return base::SysUTF8ToNSString(GetApplicationContext()
+                                     ->GetProfileManager()
+                                     ->GetProfileAttributesStorage()
+                                     ->GetPersonalProfileName());
 }
 
 #pragma mark - Tab Utilities (EG2)

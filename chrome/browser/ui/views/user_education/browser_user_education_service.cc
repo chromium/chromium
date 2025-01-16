@@ -1081,6 +1081,19 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(120, "yuezhanggg@chromium.org",
                        "Triggered when a price tracking is enabled.")));
 
+  // kIPHMerchantTrustFeature
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHMerchantTrustFeature,
+                    kMerchantTrustChipElementId, IDS_MERCHANT_TRUST_IPH_BODY,
+                    IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetBubbleTitleText(IDS_MERCHANT_TRUST_IPH_TITLE)
+                    .SetBubbleIcon(&vector_icons::kStorefrontIcon)
+                    .SetMetadata(134, "tommasin@chromium.org",
+                                 "Triggered when the merchant trust entry "
+                                 "point is shown and expanded.")));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // kIPHDownloadEsbPromoFeature:
   registry.RegisterFeature(std::move(

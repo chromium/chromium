@@ -493,9 +493,9 @@ bookmarks::BookmarkModel* BookmarkUIOperationsHelperMergedSurfaces::model() {
 void BookmarkUIOperationsHelperMergedSurfaces::CopyBookmarkNodeData(
     const bookmarks::BookmarkNodeData& data,
     size_t index_to_add_at) {
-  CHECK_EQ(data.size(), 1u);
-  merged_surface_service_->CopyBookmarkNodeDataElement(
-      data.elements[0], *parent_folder(), index_to_add_at);
+  bookmarks::ScopedGroupBookmarkActions group_drops(model());
+  merged_surface_service_->CopyBookmarkNodeData(data.elements, *parent_folder(),
+                                                index_to_add_at);
 }
 
 void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(

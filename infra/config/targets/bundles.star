@@ -6037,6 +6037,12 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_fyi_gtests",
+    targets = [
+        "trees_in_viz_cc_unittests",
+    ],
+)
+targets.bundle(
     name = "site_isolation_android_fyi_gtests",
     targets = [
         "site_per_process_android_browsertests",

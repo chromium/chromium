@@ -18717,6 +18717,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
   <message name="IDS_CHROME_NO_LONGER_SHOW_WARNINGS_NOTIFICATION_TITLE" desc="The title for the notification sent by Chrome informing the user that their decision to never show warnings for the url has been applied.">
     Chrome will stop flagging notifications from <ph name="URL">$1<ex>https://www.example-url.com/</ex></ph> as spam
   </message>
+
+     <!-- Merchant Trust IPH strings -->
+    <message name="IDS_MERCHANT_TRUST_IPH_TITLE" desc="Title of in product help to introduce merchant trust feature." translateable="false">
+      What customers say
+    </message>
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY" desc="Content of in product help to introduce merchant trust feature." translateable="false">
+      Chrome now offers ratings and reviews for the stores you visit
+    </message>
+    <message name="IDS_MERCHANT_TRUST_IPH_BODY_SCREEN_READER" desc="Announcement to screen reader users when the merchant trust IPH is shown." translateable="false" is_accessibility_with_no_ui="true">
+      Chrome now offers ratings and reviews for the stores you visit
+    </message>
   </messages>
 </release>
 </grit>

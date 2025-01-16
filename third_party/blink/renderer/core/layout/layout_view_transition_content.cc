@@ -65,6 +65,11 @@ LayoutViewTransitionContent::ReplacedContentRectForCapturedContent() const {
   return PhysicalRect::EnclosingRect(clipped_paint_rect);
 }
 
+IntrinsicSizingInfo LayoutViewTransitionContent::GetNaturalDimensions() const {
+  NOT_DESTROYED();
+  return IntrinsicSizingInfo::MakeFixed(gfx::SizeF(IntrinsicSize()));
+}
+
 void LayoutViewTransitionContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {

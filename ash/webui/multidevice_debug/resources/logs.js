@@ -3,6 +3,8 @@
  * found in the LICENSE file.
  */
 
+import {WebUI} from './webui.js';
+
 /**
  * @typedef {{
  *   text: string,
@@ -14,7 +16,7 @@
  */
 let Log;
 
-const Logs = {
+export const Logs = {
   controller_: null,
 
   /**
@@ -91,6 +93,7 @@ const LogBufferInterface = {
     }
   },
 };
+Object.assign(window, {LogBufferInterface});
 
 /**
  * Controller for the logs list element, updating it based on user input and

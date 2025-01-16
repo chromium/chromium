@@ -139,9 +139,11 @@ class BookmarkMergedSurfaceService : public KeyedService {
             const BookmarkParentFolder& new_parent,
             size_t index);
 
-  // Same as `Copy()` but copies `element`.
-  void CopyBookmarkNodeDataElement(
-      const bookmarks::BookmarkNodeData::Element& element,
+  // Copies nodes in `elements` to be child nodes of `new_parent` starting at
+  // `index`. If `BookmarkParentFolder` is a permanent bookmark folder, `index`
+  // is expected to be the position across storages.
+  void CopyBookmarkNodeData(
+      const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
       const BookmarkParentFolder& new_parent,
       size_t index);
 

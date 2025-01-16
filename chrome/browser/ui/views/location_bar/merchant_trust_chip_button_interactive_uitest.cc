@@ -115,7 +115,7 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
   }
 
   auto IsChipFullyCollapsed(bool value) {
-    return CheckView(MerchantTrustChipButtonController::kElementIdForTesting,
+    return CheckView(kMerchantTrustChipElementId,
                      base::BindOnce([](OmniboxChipButton* view) {
                        return view->is_fully_collapsed();
                      }),
@@ -142,85 +142,81 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      PressButton(MerchantTrustChipButtonController::kElementIdForTesting),
+      WaitForShow(kMerchantTrustChipElementId),
+      PressButton(kMerchantTrustChipElementId),
       WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                        MerchantTrustChipOmniboxEdit) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // The merchant chip is shown.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      // Start typing.
-      EnterText(kOmniboxElementId, u"query"),
-      // The chip is hidden while typing.
-      WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting),
-      // Note: SendAccelerator doesn't work here.
-      // Clear the input.
-      SendKeyPress(ui::VKEY_ESCAPE, false, false),
-      // Exit the editing mode.
-      SendKeyPress(ui::VKEY_ESCAPE, false, false),
-      // The merchant chip is shown again.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting));
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  // The merchant chip is shown.
+                  WaitForShow(kMerchantTrustChipElementId),
+                  // Start typing.
+                  EnterText(kOmniboxElementId, u"query"),
+                  // The chip is hidden while typing.
+                  WaitForHide(kMerchantTrustChipElementId),
+                  // Note: SendAccelerator doesn't work here.
+                  // Clear the input.
+                  SendKeyPress(ui::VKEY_ESCAPE, false, false),
+                  // Exit the editing mode.
+                  SendKeyPress(ui::VKEY_ESCAPE, false, false),
+                  // The merchant chip is shown again.
+                  WaitForShow(kMerchantTrustChipElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                        LocationBarIconClick) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      PressButton(kLocationIconElementId),
-      WaitForShow(PageInfoMainView::kMerchantTrustElementId),
-      EnsurePresent(MerchantTrustChipButtonController::kElementIdForTesting));
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  WaitForShow(kMerchantTrustChipElementId),
+                  PressButton(kLocationIconElementId),
+                  WaitForShow(PageInfoMainView::kMerchantTrustElementId),
+                  EnsurePresent(kMerchantTrustChipElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                        PermissionRequestOverridesChip) {
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // The merchant chip is shown.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      // ...and the permission indicator is not.
-      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
-      // Request notifications.
-      ExecuteJs(kWebContentsElementId, "requestNotification"),
-      // Make sure the request chip is visible.
-      WaitForShow(PermissionChipView::kElementIdForTesting),
-      // ...and the merchant chip is not.
-      WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting),
-      // Make sure the permission popup bubble is visible.
-      WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-      PressButton(PermissionChipView::kElementIdForTesting),
-      WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      // The permission chip is hidden since the permission request was
-      // dismissed...
-      WaitForHide(PermissionChipView::kElementIdForTesting),
-      // ...and the merchant chip is visible again.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting));
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  // The merchant chip is shown.
+                  WaitForShow(kMerchantTrustChipElementId),
+                  // ...and the permission indicator is not.
+                  EnsureNotPresent(PermissionChipView::kElementIdForTesting),
+                  // Request notifications.
+                  ExecuteJs(kWebContentsElementId, "requestNotification"),
+                  // Make sure the request chip is visible.
+                  WaitForShow(PermissionChipView::kElementIdForTesting),
+                  // ...and the merchant chip is not.
+                  WaitForHide(kMerchantTrustChipElementId),
+                  // Make sure the permission popup bubble is visible.
+                  WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+                  PressButton(PermissionChipView::kElementIdForTesting),
+                  WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
+                  // The permission chip is hidden since the permission request
+                  // was dismissed...
+                  WaitForHide(PermissionChipView::kElementIdForTesting),
+                  // ...and the merchant chip is visible again.
+                  WaitForShow(kMerchantTrustChipElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
                        PermissionInUseOverridesChip) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      // The merchant chip is shown...
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      // ...and the permission indicator is not.
-      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
-      // Requesting to use the camera (camera is in-use now).
-      ExecuteJs(kWebContentsElementId, "requestCamera"),
-      // Make sure the in-use indicator is visible...
-      WaitForShow(PermissionChipView::kElementIdForTesting),
-      // ...and the merchant chip is not.
-      WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting));
+  RunTestSequence(InstrumentTab(kWebContentsElementId),
+                  NavigateWebContents(kWebContentsElementId, GetURL()),
+                  // The merchant chip is shown...
+                  WaitForShow(kMerchantTrustChipElementId),
+                  // ...and the permission indicator is not.
+                  EnsureNotPresent(PermissionChipView::kElementIdForTesting),
+                  // Requesting to use the camera (camera is in-use now).
+                  ExecuteJs(kWebContentsElementId, "requestCamera"),
+                  // Make sure the in-use indicator is visible...
+                  WaitForShow(PermissionChipView::kElementIdForTesting),
+                  // ...and the merchant chip is not.
+                  WaitForHide(kMerchantTrustChipElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
@@ -229,23 +225,21 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // The merchant chip is shown and expanded.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      WaitForEvent(MerchantTrustChipButtonController::kElementIdForTesting,
-                   kOmniboxChipButtonExpanded),
+      WaitForShow(kMerchantTrustChipElementId),
+      WaitForEvent(kMerchantTrustChipElementId, kOmniboxChipButtonExpanded),
       // Animation was recorded.
       WasChipAnimatedForWebContents(kWebContentsElementId, true),
       // Switch to the second tab.
       AddInstrumentedTab(kSecondWebContentsElementId, GetAnotherURL()),
       // The merchant chip is hidden - no merchant trust data for the tab and no
       // animation.
-      WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting),
+      WaitForHide(kMerchantTrustChipElementId),
       WasChipAnimatedForWebContents(kSecondWebContentsElementId, false),
       // Switch to the first one, the chip was already animated.
       SelectTab(kTabStripElementId, 0),
       WasChipAnimatedForWebContents(kWebContentsElementId, true),
       // The merchant chip is shown again for the first tab but not expanded.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      IsChipFullyCollapsed(true));
+      WaitForShow(kMerchantTrustChipElementId), IsChipFullyCollapsed(true));
 }
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
@@ -254,8 +248,8 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Open the subpage directly.
-      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
-      PressButton(MerchantTrustChipButtonController::kElementIdForTesting),
+      WaitForShow(kMerchantTrustChipElementId),
+      PressButton(kMerchantTrustChipElementId),
       WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
       CheckView(
           PageInfoMerchantTrustContentView::kViewReviewsId,

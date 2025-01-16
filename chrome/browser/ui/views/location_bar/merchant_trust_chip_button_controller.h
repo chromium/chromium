@@ -22,8 +22,6 @@ class MerchantTrustService;
 // subpage.
 class MerchantTrustChipButtonController : public content::WebContentsObserver {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
-
   constexpr static const void* const kChipAnimated = &kChipAnimated;
 
   MerchantTrustChipButtonController(OmniboxChipButton* chip_button,
@@ -58,6 +56,8 @@ class MerchantTrustChipButtonController : public content::WebContentsObserver {
   void Collapse();
 
   void OpenPageInfoSubpage();
+
+  void MaybeShowMerchantTrustFeaturePromo();
 
   raw_ptr<OmniboxChipButton> chip_button_;
   raw_ptr<LocationIconView> location_icon_view_;

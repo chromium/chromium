@@ -108,6 +108,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // scene.
 - (NSString*)currentProfileName;
 
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
+- (NSString*)personalProfileName;
+
 #pragma mark - History Utilities (EG2)
 
 // Clears browsing history. Raises an EarlGrey exception if history is not
