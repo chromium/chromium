@@ -41,6 +41,11 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
     bool is_sync_promo = access_point ==
                          signin_metrics::AccessPoint::
                              ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO;
+    if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+      is_sync_promo =
+          is_sync_promo ||
+          access_point == signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+    }
     TurnSyncOnHelper::SigninAbortedMode abort_mode =
         is_sync_promo ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
                       : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
