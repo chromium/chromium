@@ -324,6 +324,12 @@ constexpr base::FeatureParam<bool> kHandleSidePanelTextDirectives{
     &kLensOverlayContextualSearchbox, "handle-side-panel-text-directives",
     true};
 
+constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
+    &kLensOverlayContextualSearchbox, "ztsd-compress-pdf-bytes", false};
+
+constexpr base::FeatureParam<int> kZstdCompressionLevel{
+    &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -787,4 +793,11 @@ bool HandleSidePanelTextDirectivesEnabled() {
   return kHandleSidePanelTextDirectives.Get();
 }
 
+bool ShouldZstdCompressPdfBytes() {
+  return kZstdCompressPdfBytes.Get();
+}
+
+int GetZstdCompressionLevel() {
+  return kZstdCompressionLevel.Get();
+}
 }  // namespace lens::features

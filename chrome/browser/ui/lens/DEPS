@@ -1,5 +1,6 @@
 include_rules = [
   "+pdf/mojom/pdf.mojom.h",
+  "+third_party/zstd",
   "+third_party/icu",
   "+third_party/lens_server_proto",
   "+third_party/omnibox_proto",

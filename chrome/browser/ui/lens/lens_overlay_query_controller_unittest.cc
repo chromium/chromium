@@ -42,6 +42,7 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
+#include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
 
@@ -330,6 +331,15 @@ class LensOverlayQueryControllerTest : public testing::Test {
           {{"enable-cluster-info-optimization", "true"}}},
          kDefaultLensOverlayContextualSearchboxParams},
         {});
+  }
+
+  void InitFeaturesWithPdfCompression() {
+    feature_list_.Reset();
+    base::FieldTrialParams params =
+        kDefaultLensOverlayContextualSearchboxParams.params;
+    params.insert({"ztsd-compress-pdf-bytes", "true"});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlayContextualSearchbox, params);
   }
 
  protected:
@@ -1893,6 +1903,9 @@ TEST_F(LensOverlayQueryControllerTest,
       kFakeContentBytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
 
   ASSERT_TRUE(full_image_response_future.Wait());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_page_content_update_requests_sent() == 1;
+  }));
 
   // The full image and page content requests should have the same request id.
   ASSERT_EQ(query_controller.sent_request_id().sequence_id(), 1);
@@ -1905,6 +1918,10 @@ TEST_F(LensOverlayQueryControllerTest,
   // Send a new page content update request.
   query_controller.SendPageContentUpdateRequest(
       kNewFakeContentBytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_page_content_update_requests_sent() == 2;
+  }));
 
   // The new page content request should have a different sequence ID.
   ASSERT_EQ(query_controller.sent_request_id().sequence_id(), 1);
@@ -2428,6 +2445,123 @@ TEST_F(LensOverlayQueryControllerTest,
   lens::LensOverlayRoutingInfo url_routing_info =
       GetRoutingInfoFromUrl(url_response_future.Get().url());
   ASSERT_EQ(kTestServerAddress, url_routing_info.server_address());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       PdfCompressionEnabled_WebpageBytes_DoesNotCompressBytes) {
+  InitFeaturesWithPdfCompression();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kHtml, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !query_controller.last_sent_underlying_content_bytes().empty();
+  }));
+
+  // Verify the page content request is as expected.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request();
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ(page_content_request.payload().content_type(), "text/html");
+  ASSERT_EQ(page_content_request.payload().page_url(), kTestPageUrl);
+
+  // Verify the bytes were included but not compressed.
+  ASSERT_EQ(page_content_request.payload().content_data().size(),
+            kFakeContentBytes.size());
+  ASSERT_EQ(page_content_request.payload().compression_type(),
+            lens::Payload::UNCOMPRESSED);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       CompressionEnabled_PdfBytes_CompressesBytes) {
+  InitFeaturesWithPdfCompression();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
+      lens::MimeType::kPdf, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !query_controller.last_sent_underlying_content_bytes().empty();
+  }));
+
+  // Verify the page content request is as expected.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request();
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ(page_content_request.payload().content_type(), "application/pdf");
+  ASSERT_EQ(page_content_request.payload().page_url(), kTestPageUrl);
+
+  // Compress the bytes here to compare the size.
+  std::vector<uint8_t> compressed_bytes_buffer(20);
+  const size_t expected_compressed_size = ZSTD_compress(
+      compressed_bytes_buffer.data(), compressed_bytes_buffer.size(),
+      kFakeContentBytes.data(), kFakeContentBytes.size(),
+      lens::features::GetZstdCompressionLevel());
+
+  // Verify the bytes were included and compressed.
+  ASSERT_EQ(page_content_request.payload().content_data().size(),
+            expected_compressed_size);
+  ASSERT_EQ(page_content_request.payload().compression_type(),
+            lens::Payload::ZSTD);
 }
 
 class LensOverlayQueryControllerMockTimeTest

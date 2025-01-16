@@ -611,6 +611,17 @@ extern bool IsLensOverlayRoutingInfoEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool HandleSidePanelTextDirectivesEnabled();
 
+// Whether to compress the PDF bytes using zstd before sending them to the
+// server.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldZstdCompressPdfBytes();
+
+// The compression level to use when compressing the PDF bytes using zstd.
+// Higher values mean better compression but also take longer to compress.
+// See the introduction section in third_party/zstd/src/lib/zstd.h for more
+// details.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetZstdCompressionLevel();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

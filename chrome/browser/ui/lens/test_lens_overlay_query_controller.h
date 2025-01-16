@@ -155,6 +155,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_full_page_objects_gen204_pings_sent_;
   }
 
+  const int& num_page_content_update_requests_sent() const {
+    return num_page_content_update_requests_sent_;
+  }
+
   const int& num_partial_page_content_requests_sent() const {
     return num_partial_page_content_requests_sent_;
   }
@@ -286,7 +290,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.
-  lens::MimeType last_sent_underlying_content_type_;
+  lens::MimeType last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
 
   // The last partial content sent by the query controller.
   lens::LensOverlayDocument last_sent_partial_content_;

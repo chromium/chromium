@@ -30,6 +30,7 @@
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -59,6 +60,7 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
+#include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace lens {
@@ -285,6 +287,58 @@ LenOverlayEntryPointFromInvocationSource(
   return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;
 }
 
+// Compresses the given bytes using Zstd and store them into `dst_bytes`.
+// Returns true if the compression is successful.
+bool ZstdCompressBytes(base::span<const uint8_t> src_bytes,
+                       std::string* dst_bytes) {
+  CHECK(dst_bytes);
+  size_t uncompressed_size = src_bytes.size();
+  size_t buffer_bounds = ZSTD_compressBound(uncompressed_size);
+
+  // Resize the output buffer to the upper bound of the compressed size.
+  dst_bytes->resize(buffer_bounds);
+
+  // Do the compression.
+  const size_t compressed_size = ZSTD_compress(
+      dst_bytes->data(), buffer_bounds, src_bytes.data(), uncompressed_size,
+      lens::features::GetZstdCompressionLevel());
+
+  if (ZSTD_isError(compressed_size)) {
+    return false;
+  }
+
+  // Resize the output vector to the actual compressed size.
+  dst_bytes->resize(compressed_size);
+  return true;
+}
+
+lens::Payload CreatePageContentPayload(base::span<const uint8_t> content_bytes,
+                                       lens::MimeType content_type,
+                                       GURL page_url) {
+  lens::Payload payload;
+  payload.set_content_type(ContentTypeToString(content_type));
+  if (!page_url.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
+    payload.set_page_url(page_url.spec());
+  }
+
+  // Compress the PDF bytes if the feature flag is enabled and the bytes are for
+  // a PDF.
+  if (content_type == lens::MimeType::kPdf &&
+      lens::features::ShouldZstdCompressPdfBytes()) {
+    // If compression is successful, set the compression type and return.
+    // Otherwise, fall back to the original bytes.
+    if (ZstdCompressBytes(content_bytes, payload.mutable_content_data())) {
+      payload.set_compression_type(lens::Payload::ZSTD);
+      return payload;
+    }
+  }
+
+  payload.mutable_content_data()->assign(content_bytes.begin(),
+                                         content_bytes.end());
+  return payload;
+}
+
 }  // namespace
 
 LensOverlayQueryController::LensOverlayQueryController(
@@ -313,7 +367,11 @@ LensOverlayQueryController::LensOverlayQueryController(
   encoding_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  compression_task_runner_ = base::ThreadPool::CreateTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   encoding_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+  compression_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
 }
 
 LensOverlayQueryController::~LensOverlayQueryController() {
@@ -368,6 +426,7 @@ void LensOverlayQueryController::EndQuery() {
   translate_options_.reset();
   cluster_info_.reset();
   encoding_task_tracker_->TryCancelAll();
+  compression_task_tracker_->TryCancelAll();
   query_controller_state_ = QueryControllerState::kOff;
 }
 
@@ -1006,9 +1065,23 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     return;
   }
 
+  compression_task_tracker_->TryCancelAll();
   page_contents_request_sent_ = true;
   page_contents_request_start_time_ = base::TimeTicks::Now();
 
+  // Post CreatePageContentPayload to a task off the main thread so compression
+  // does not throttle the main thread.
+  compression_task_tracker_->PostTaskAndReplyWithResult(
+      compression_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&CreatePageContentPayload, underlying_content_bytes_,
+                     underlying_content_type_, page_url_),
+      base::BindOnce(
+          &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2(
+    lens::Payload payload) {
   // Create the request.
   lens::LensOverlayServerRequest request;
   lens::LensOverlayRequestContext request_context;
@@ -1023,8 +1096,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
 
-  request.mutable_objects_request()->mutable_payload()->CopyFrom(
-      CreatePageContentPayload());
+  request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
 
   page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
       base::BindOnce(&LensOverlayQueryController::PerformPageContentRequest,
@@ -1730,18 +1802,6 @@ LensOverlayQueryController::CreateInteractionRequest(
       ->mutable_interaction_request_metadata()
       ->CopyFrom(interaction_request_metadata);
   return server_request;
-}
-
-lens::Payload LensOverlayQueryController::CreatePageContentPayload() {
-  lens::Payload payload;
-  payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
-                                         underlying_content_bytes_.end());
-  payload.set_content_type(ContentTypeToString(underlying_content_type_));
-  if (!page_url_.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
-    payload.set_page_url(page_url_.spec());
-  }
-  return payload;
 }
 
 void LensOverlayQueryController::ResetRequestClusterInfoState() {

@@ -76,10 +76,6 @@ void TestLensOverlayQueryController::StartQueryFlow(
     lens::MimeType underlying_content_type,
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
-  last_sent_underlying_content_bytes_ = underlying_content_bytes;
-  last_sent_underlying_content_type_ = underlying_content_type;
-  last_sent_page_url_ = page_url;
-
   // Deep copy significant_region_boxes to avoid lifetime issues after the
   // std::move call below.
   last_sent_significant_region_boxes_.clear();
