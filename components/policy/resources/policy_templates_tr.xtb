@@ -10757,11 +10757,11 @@ Bu politika, sanal klavye devre dışıysa (ör. <ph name="TOUCH_VIRTUAL_KEYBOAR
 <translation id="8827417642396462482">İlave DNS sorgu türlerine izin ver</translation>
 <translation id="8829335556009496455">Uyarlanabilir Şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin verilip verilmeyeceğini belirtir.
 
-      Uyarlanabilir Şarj modeli, cihaz AC gücünde çalışırken pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına gerek olup olmadığını değerlendirir. Uyarlanabilir şarj modeli ile şarj süreci geçici olarak durdurulursa pil belirli bir seviyede (ör. %80) tutulur, daha sonra kullanıcı ihtiyaç duyduğunda cihaz %100'e kadar şarj edilir.
+      Uyarlanabilir Şarj modeli, cihaz AC gücünde çalışırken pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına gerek olup olmadığını değerlendirir. Uyarlanabilir Şarj modeli ile şarj süreci geçici olarak durdurulursa pil belirli bir seviyede (ör. %80) tutulur, daha sonra kullanıcı ihtiyaç duyduğunda cihaz %100'e kadar şarj edilir.
 
-      Bu politika, Doğru değerine ayarlanırsa uyarlanabilir şarj modeli etkinleştirilir. Böylece pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına izin verilmiş olur.
+      Bu politika, Doğru değerine ayarlanırsa Uyarlanabilir Şarj modeli etkinleştirilir. Böylece pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına izin verilmiş olur.
 
-Bu politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir şarj modeli şarj sürecini etkilemez.
+Bu politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa Uyarlanabilir Şarj modeli şarj sürecini etkilemez.
 
 Not: DevicePowerBatteryChargingOptimization ayarlanmışsa bu politikanın hiçbir etkisi yoktur.</translation>
 <translation id="8830717323204407209">Kullanıcılara Kimlik Bilgisi Sağlayıcı uzantısı promosyonunun gösterilmesine izin verir</translation>

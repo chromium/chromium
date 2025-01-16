@@ -530,7 +530,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2847759467426165163">Proiectează pe</translation>
 <translation id="2848120746144143659">Apasă pe Enter pentru a realiza o captură de ecran completă</translation>
 <translation id="2849936225196189499">Critic</translation>
-<translation id="2850207700020959936">Aplicațiile pot accesa camera foto</translation>
+<translation id="2850207700020959936">Aplicațiile pot accesa camera</translation>
 <translation id="2860184359326882502">Cea mai bună potrivire</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> trecută</translation>
@@ -585,7 +585,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="304417730895741346">Aplicațiile fixate și deschise sunt pe raft. Pentru a fixa o aplicație pe raft, dă clic dreapta pe aplicație sau atinge touchpadul cu două degete.</translation>
 <translation id="3045488863354895414">Bună!</translation>
 <translation id="3047761520276763270">Încearcă să rostești:</translation>
-<translation id="3053407068093039599">Activează/dezactivează accesul la camera foto</translation>
+<translation id="3053407068093039599">Activează / dezactivează accesul la cameră</translation>
 <translation id="3055162170959710888">Ai folosit acest dispozitiv <ph name="USED_TIME" /> astăzi</translation>
 <translation id="3062298103034426069">Nu se acceptă</translation>
 <translation id="3068622547379332530">Versiunea <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -1802,7 +1802,7 @@ Instalare nouă</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vrea să folosească <ph name="DEVICE_NAME" />. Activează comutatorul fizic pentru <ph name="DEVICE_NAME" /> al dispozitivului.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
-<translation id="7042593542151411225">Aplicațiile nu pot accesa camera foto</translation>
+<translation id="7042593542151411225">Aplicațiile nu pot accesa camera</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
@@ -2378,7 +2378,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9074432941673450836">Folosește aplicațiile pentru a face toate activitățile necesare pe <ph name="PRODUCT_NAME" />. Aplicațiile se găsesc în Lansator. Poți și să apeși tasta Lansator (deasupra tastei Shift din stânga) de pe tastatură.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Comenzi media, se redă <ph name="MEDIA_TITLE" /></translation>
-<translation id="9079012373317704997">Nu se poate activa de la distanță accesul la camera foto</translation>
+<translation id="9079012373317704997">Nu se poate activa de la distanță accesul la cameră</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Camera foto este aliniată cu colțul din stânga sus</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>

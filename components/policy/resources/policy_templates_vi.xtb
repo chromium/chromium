@@ -10938,7 +10938,7 @@ Chính sách này chỉ kiểm soát <ph name="ARC_VM" /> trên <ph name="PRODUC
       Chính sách này sẽ ảnh hưởng đến những người dùng xác thực bằng GAIA nhưng không sử dụng SAML.
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
-<translation id="8931076230631115330">Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ cố gắng tự đăng ký thông qua trình quản lý trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Giá trị của chính sách này là mã đăng ký mà bạn có thể truy xuất từ <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+<translation id="8931076230631115330">Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ cố gắng tự đăng ký thông qua tính năng quản lý trình duyệt <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Giá trị của chính sách này là mã đăng ký mà bạn có thể truy xuất từ <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Vui lòng truy cập https://support.google.com/chrome/a/answer/9301891 để biết thông tin chi tiết.</translation>
 <translation id="8931555638815157255">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ định kỳ báo cáo phiên bản hệ điều hành và chương trình cơ sở của thiết bị đó.
