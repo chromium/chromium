@@ -207,7 +207,7 @@ class LoginLogoutReporterBrowserTest
 
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
+                                     FakeGaiaMixin::kFakeUserGaiaId)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
 

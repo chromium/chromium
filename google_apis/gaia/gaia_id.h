@@ -24,6 +24,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
     }
   };
 
+  // Constructs an empty instance.
   GaiaId() = default;
   // Temporarily allow implicit conversion on iOS to allow splitting code
   // changes.
@@ -63,6 +64,24 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   // Default comparisons.
   friend bool operator==(const GaiaId&, const GaiaId&) = default;
   friend auto operator<=>(const GaiaId&, const GaiaId&) = default;
+
+  // Convenience test-only class that allows defining constexpr or static
+  // values and can be implicitly converted to GaiaId.
+#if defined(UNIT_TEST)
+  class Literal {
+   public:
+    constexpr explicit Literal(std::string_view gaia_id) : gaia_id_(gaia_id) {}
+    ~Literal() = default;
+
+    // Allow implicit conversion to GaiaId.
+    operator GaiaId() const { return GaiaId(std::string(gaia_id_)); }
+
+    std::string ToString() const { return std::string(gaia_id_); }
+
+   private:
+    std::string_view gaia_id_;
+  };
+#endif  // defined(UNIT_TEST)
 
  private:
   std::string id_;

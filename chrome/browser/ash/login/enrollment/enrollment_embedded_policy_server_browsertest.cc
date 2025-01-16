@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = FakeGaiaMixin::kFakeUserEmail;
-  signin_artifacts.gaia_id = GaiaId(FakeGaiaMixin::kFakeUserGaiaId);
+  signin_artifacts.gaia_id = FakeGaiaMixin::kFakeUserGaiaId;
   signin_artifacts.password = FakeGaiaMixin::kFakeUserPassword;
   signin_artifacts.using_saml = false;
 

@@ -82,7 +82,7 @@ using ::testing::WithParamInterface;
 
 // Use a real domain to avoid policy loading problems.
 constexpr char kTestUserName[] = "owner@gmail.com";
-constexpr char kTestUserGaiaId[] = "9876543210";
+constexpr GaiaId::Literal kTestUserGaiaId("9876543210");
 constexpr char kSodaUnsupportedLocale[] = "af-ZA";
 
 // Dictation notification titles and descriptions. '*'s are used as placeholders

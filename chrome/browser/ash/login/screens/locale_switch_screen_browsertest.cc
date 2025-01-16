@@ -112,7 +112,7 @@ void LocaleSwitchScreenBrowserTest::SetPeopleAPIResponseLocale(
 
 void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   LoginManagerMixin::TestUserInfo user_{AccountId::FromUserEmailGaiaId(
-      FakeGaiaMixin::kFakeUserEmail, GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
+      FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserGaiaId)};
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   login_manager_mixin_.LoginAsNewRegularUser(user_context);
@@ -121,7 +121,7 @@ void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
-      GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+      FakeGaiaMixin::kFakeUserGaiaId);
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.SetAllSupportedCapabilities(false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);

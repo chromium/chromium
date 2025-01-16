@@ -123,7 +123,7 @@ class LoginOnlineCryptohomeError : public LoginManagerTest {
  protected:
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
+                                     FakeGaiaMixin::kFakeUserGaiaId),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_manager_{&mixin_host_, {reauth_user_}};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
