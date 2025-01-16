@@ -56,7 +56,7 @@ String TextRun::NormalizedUTF16() const {
     string_for8_bit_run = String::Make16BitFrom8BitSource(Span8());
     source = string_for8_bit_run.Characters16();
   } else {
-    source = Characters16();
+    source = data_.characters16;
   }
 
   StringBuffer<UChar> buffer(len_);
@@ -91,9 +91,10 @@ String TextRun::NormalizedUTF16() const {
 }
 
 unsigned TextRun::IndexOfSubRun(const TextRun& sub_run) const {
-  if (Is8Bit() == sub_run.Is8Bit() && sub_run.Bytes() >= Bytes()) {
-    size_t start_index = Is8Bit() ? sub_run.Characters8() - Characters8()
-                                  : sub_run.Characters16() - Characters16();
+  if (Is8Bit() == sub_run.Is8Bit() && sub_run.data_.bytes_ >= data_.bytes_) {
+    size_t start_index = Is8Bit()
+                             ? sub_run.data_.characters8 - data_.characters8
+                             : sub_run.data_.characters16 - data_.characters16;
     if (start_index + sub_run.length() <= length())
       return static_cast<unsigned>(start_index);
   }
