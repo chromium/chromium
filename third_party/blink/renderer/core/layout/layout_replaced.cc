@@ -60,17 +60,7 @@ namespace blink {
 const int LayoutReplaced::kDefaultWidth = 300;
 const int LayoutReplaced::kDefaultHeight = 150;
 
-LayoutReplaced::LayoutReplaced(Element* element)
-    : LayoutBox(element),
-      intrinsic_size_(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight)) {
-  // TODO(jchaffraix): We should not set this boolean for block-level
-  // replaced elements (crbug.com/567964).
-  SetIsAtomicInlineLevel(true);
-}
-
-LayoutReplaced::LayoutReplaced(Element* element,
-                               const PhysicalSize& intrinsic_size)
-    : LayoutBox(element), intrinsic_size_(intrinsic_size) {
+LayoutReplaced::LayoutReplaced(Element* element) : LayoutBox(element) {
   // TODO(jchaffraix): We should not set this boolean for block-level
   // replaced elements (crbug.com/567964).
   SetIsAtomicInlineLevel(true);
@@ -133,14 +123,6 @@ void LayoutReplaced::IntrinsicSizeChanged() {
 void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   ReplacedPainter(*this).Paint(paint_info);
-}
-
-static inline bool LayoutObjectHasIntrinsicAspectRatio(
-    const LayoutObject* layout_object) {
-  DCHECK(layout_object);
-  return layout_object->IsImage() || layout_object->IsCanvas() ||
-         IsA<LayoutVideo>(layout_object) ||
-         IsA<LayoutViewTransitionContent>(layout_object);
 }
 
 void LayoutReplaced::AddVisualEffectOverflow() {
@@ -374,18 +356,6 @@ PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
     const PhysicalRect& rect) {
   return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
-}
-
-IntrinsicSizingInfo LayoutReplaced::GetNaturalDimensions() const {
-  NOT_DESTROYED();
-  IntrinsicSizingInfo sizing_info;
-  sizing_info.size = gfx::SizeF(IntrinsicSize());
-
-  // Set a natural aspect ratio if the object should have one.
-  if (LayoutObjectHasIntrinsicAspectRatio(this)) {
-    sizing_info.aspect_ratio = sizing_info.size;
-  }
-  return sizing_info;
 }
 
 IntrinsicSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {

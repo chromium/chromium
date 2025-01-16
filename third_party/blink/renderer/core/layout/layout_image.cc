@@ -52,8 +52,7 @@
 
 namespace blink {
 
-LayoutImage::LayoutImage(Element* element)
-    : LayoutReplaced(element, PhysicalSize()) {}
+LayoutImage::LayoutImage(Element* element) : LayoutReplaced(element) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(Document& document) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
@@ -359,7 +358,7 @@ IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
       sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
   } else {
-    sizing_info = LayoutReplaced::GetNaturalDimensions();
+    sizing_info = IntrinsicSizingInfo::MakeFixed(gfx::SizeF(IntrinsicSize()));
 
     // Don't compute an intrinsic ratio to preserve historical WebKit behavior
     // if we're painting alt text and/or a broken image.

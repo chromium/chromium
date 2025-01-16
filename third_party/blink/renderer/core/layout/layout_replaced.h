@@ -55,8 +55,7 @@ struct IntrinsicSizingInfo;
 // the intrinsic value).
 class CORE_EXPORT LayoutReplaced : public LayoutBox {
  public:
-  LayoutReplaced(Element*);
-  LayoutReplaced(Element*, const PhysicalSize& intrinsic_size);
+  explicit LayoutReplaced(Element*);
   ~LayoutReplaced() override;
 
   // This function returns the local rect of the replaced content. The rectangle
@@ -104,7 +103,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // Compute the natural dimensions of the replaced content. Should not apply
   // any additional transformations (like 'object-view-box').
-  virtual IntrinsicSizingInfo GetNaturalDimensions() const;
+  virtual IntrinsicSizingInfo GetNaturalDimensions() const = 0;
 
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
