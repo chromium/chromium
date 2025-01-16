@@ -19,6 +19,8 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
   ]
 
+  cpp_only = true
+
   cpp_typemaps = [
     {
       types = [
