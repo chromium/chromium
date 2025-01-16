@@ -124,17 +124,35 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: String,
         value: 'Loading...',
       },
-      contextExpanded_: Boolean,
-      contextLength_: Number,
+      contextExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+      contextLength_: {
+        type: Number,
+        value: 0,
+      },
       contextText_: String,
-      enableImageInput_: Boolean,
-      topK_: Number,
-      temperature_: Number,
+      enableImageInput_: {
+        type: Boolean,
+        value: false,
+      },
+      topK_: {
+        type: Number,
+        value: 1,
+      },
+      temperature_: {
+        type: Number,
+        value: 0,
+      },
       imageFile_: {
         type: Object,
         value: null,
       },
-      performanceHint_: String,
+      performanceHint_: {
+        type: String,
+        value: 'kHighestQuality',
+      },
       loadedPerformanceHint_: Number,
     };
   }
@@ -145,8 +163,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     ];
   }
 
-  private contextExpanded_: boolean = false;
-  private contextLength_: number = 0;
+  private contextExpanded_: boolean;
+  private contextLength_: number;
   private contextText_: string;
   private currentResponse_: Response|null;
   private error_: string;
@@ -158,15 +176,15 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private model_: OnDeviceModelRemote|null;
   private performanceClassText_: string;
   private responses_: Response[];
-  private session_: SessionRemote|null = null;
-  private temperature_: number = 0;
+  private temperature_: number;
   private text_: string;
-  private topK_: number = 1;
-  private imageFile_: File|null = null;
-  private enableImageInput_: boolean = false;
-  private performanceHint_: string = 'kHighestQuality';
+  private topK_: number;
+  private imageFile_: File|null;
+  private enableImageInput_: boolean;
+  private performanceHint_: string;
   private loadedPerformanceHint_: ModelPerformanceHint|null;
 
+  private session_: SessionRemote|null = null;
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
       new StreamingResponderCallbackRouter();
@@ -175,8 +193,6 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     super.ready();
     this.getPerformanceClass_();
     this.$.temperatureInput.inputElement.step = '0.1';
-    this.$.imageInput.addEventListener(
-        'change', this.onImageChange_.bind(this));
   }
 
   private async getPerformanceClass_() {

@@ -186,7 +186,7 @@
       <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
       Add image
     </cr-button>
-    <input id="imageInput" type="file"></input>
+    <input id="imageInput" type="file" on-change="[[onImageChange_]]">
   </div>
   <cr-button class="floating-button" hidden$="[[!imageFile_]]"
       on-click="onRemoteImageClick_">
@@ -200,9 +200,7 @@
       on-click="onExecuteClick_">
     Execute
   </cr-button>
-  <cr-button
-      disabled="[[!currentResponse_]]"
-      on-click="onCancelClick_">
+  <cr-button disabled="[[!currentResponse_]]" on-click="onCancelClick_">
     Cancel
   </cr-button>
 </div>
@@ -210,8 +208,9 @@
 <div class="session" hidden="[[!currentResponse_]]">
   <div class="text">[[currentResponse_.text]]</div>
   <div hidden$="[[!currentResponse_.response.length]]"
-      class$="[[currentResponse_.responseClass]]"
-      >[[currentResponse_.response]]</div>
+      class$="[[currentResponse_.responseClass]]">
+    [[currentResponse_.response]]
+  </div>
   <div class="throbber"
       hidden$="[[currentResponse_.response.length]]"></div>
 </div>

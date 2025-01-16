@@ -26,7 +26,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   static override get properties() {
     return {
       pageData_: {type: Object},
-      may_restart_browser_: {type: Boolean},
+      mayRestartBrowser_: {type: Boolean},
     };
   }
 
@@ -43,20 +43,18 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     maxModelCrashCount: 0,
   };
 
-  protected may_restart_browser_: boolean = false;
+  protected mayRestartBrowser_: boolean = false;
+  private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
   protected async onResetModelCrashCountClick_() {
     await this.proxy_.handler.resetModelCrashCount();
     await this.getOnDeviceInternalsData_();
-    this.may_restart_browser_ = true;
+    this.mayRestartBrowser_ = true;
   }
-
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
   private async getOnDeviceInternalsData_() {
     this.pageData_ =
         (await this.proxy_.handler.getOnDeviceInternalsData()).pageData;
-    this.requestUpdate();
   }
 }
 

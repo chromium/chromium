@@ -21,15 +21,14 @@ export function getHtml(this: OnDeviceInternalsEventLogElement) {
       </tr>
     </thead>
     <tbody>
-    ${this.eventLogMessages_.map(item => html`
-      <tr>
-        <td class="time">${item.eventTime.toLocaleTimeString()}</td>
-        <td class="source-location">
-          <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
-        </td>
-        <td class="message">${item.message}</td>
-      </tr>
-    `)}
+      ${this.eventLogMessages_.map(item => html`
+        <tr>
+          <td class="time">${item.eventTime.toLocaleTimeString()}</td>
+          <td class="source-location">
+            <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
+          </td>
+          <td class="message">${item.message}</td>
+        </tr>`)}
     </tbody>
   </table>
 </div>
