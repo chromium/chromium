@@ -11,9 +11,12 @@
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_tab_data.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -25,8 +28,7 @@ GlicPageContextFetcher::~GlicPageContextFetcher() = default;
 
 void GlicPageContextFetcher::Fetch(
     content::WebContents* aweb_contents,
-    bool include_inner_text,
-    bool include_viewport_screenshot,
+    const mojom::GetTabContextOptions& options,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   // Fetch() should be called only once.
   CHECK_EQ(web_contents(), nullptr);
@@ -34,13 +36,13 @@ void GlicPageContextFetcher::Fetch(
 
   callback_ = std::move(callback);
 
-  if (include_viewport_screenshot) {
+  if (options.include_viewport_screenshot) {
     GetTabScreenshot(*web_contents());
   } else {
     screenshot_done_ = true;
   }
 
-  if (include_inner_text) {
+  if (options.include_inner_text) {
     content::RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
     // TODO(crbug.com/378937313): Finish this provisional implementation.
     content_extraction::GetInnerText(
@@ -52,6 +54,32 @@ void GlicPageContextFetcher::Fetch(
     inner_text_done_ = true;
   }
 
+  if (options.include_pdf) {
+    pdf::PDFDocumentHelper* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+    if (pdf_helper) {
+      pdf_origin_ = pdf_helper->render_frame_host().GetLastCommittedOrigin();
+      pdf_helper->GetPdfBytes(
+          options.pdf_size_limit,
+          base::BindOnce(&GlicPageContextFetcher::ReceivedPdfBytes,
+                         GetWeakPtr()));
+    } else {
+      pdf_done_ = true;
+    }
+  } else {
+    pdf_done_ = true;
+  }
+
+  RunCallbackIfComplete();
+}
+
+void GlicPageContextFetcher::ReceivedPdfBytes(
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
+    const std::vector<uint8_t>& pdf_bytes,
+    uint32_t page_count) {
+  pdf_done_ = true;
+  pdf_status_ = status;
+  pdf_bytes_ = pdf_bytes;
   RunCallbackIfComplete();
 }
 
@@ -115,8 +143,8 @@ void GlicPageContextFetcher::ReceivedInnerText(
 
 void GlicPageContextFetcher::RunCallbackIfComplete() {
   // Continue only if the primary page changed or work is complete.
-  bool work_complete =
-      (screenshot_done_ && inner_text_done_) || primary_page_changed_;
+  bool work_complete = (screenshot_done_ && inner_text_done_ && pdf_done_) ||
+                       primary_page_changed_;
   if (!work_complete) {
     return;
   }
@@ -136,6 +164,16 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
     }
     if (screenshot_) {
       tab_context->viewport_screenshot = std::move(screenshot_);
+    }
+
+    if (pdf_status_) {
+      auto pdf_document_data = mojom::PdfDocumentData::New();
+      pdf_document_data->origin = pdf_origin_;
+      pdf_document_data->pdf_data = std::move(pdf_bytes_);
+      pdf_document_data->size_limit_exceeded =
+          *pdf_status_ ==
+          pdf::mojom::PdfListener_GetPdfBytesStatus::kSizeLimitExceeded;
+      tab_context->pdf_document_data = std::move(pdf_document_data);
     }
     result = mojom::GetContextResult::NewTabContext(std::move(tab_context));
   } else {

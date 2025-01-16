@@ -63,6 +63,19 @@ struct WebClientInitialState {
   mojo_base.mojom.Version chrome_version;
 };
 
+// Options for getting tab context.
+struct GetTabContextOptions {
+  // Whether to include inner text in the response.
+  bool include_inner_text;
+  // Whether to include a viewport screenshot in the response.
+  bool include_viewport_screenshot;
+  // Whether to include PDF data in the response.
+  bool include_pdf;
+  // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
+  // data is returned.
+  uint32 pdf_size_limit;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -105,8 +118,7 @@ interface WebClientHandler {
   // `tab_context_result` is null if tab content could not be captured.
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
-  GetContextFromFocusedTab(
-      bool include_inner_text, bool include_viewport_screenshot)
+  GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
   // Set the bounds of the widget hosting the WebUI to the given size.
@@ -221,6 +233,11 @@ struct TabContext {
   // A screenshot of the user-visible portion of the tab. Provided only if
   // requested.
   Screenshot? viewport_screenshot;
+  // Information about a PDF document. Provided if the document is a PDF or
+  // contains a PDF, and PDF data was requested. Note that it is possible for
+  // a document to contain multiple PDFs using iframes. Only the first PDF
+  // document found while traversing the frame tree will be provided here.
+  PdfDocumentData? pdf_document_data;
 };
 
 // Information about a web page being rendered in a tab.
@@ -238,6 +255,17 @@ struct DocumentData {
   string inner_text;
 };
 
+// Information about a PDF document.
+struct PdfDocumentData {
+  // Origin of the PDF document. This may not match the origin of the tab.
+  url.mojom.Origin origin;
+  // Raw PDF bytes.
+  array<uint8>? pdf_data;
+  // Whether the the PDF size exceeds the requested limit. If true, pdf data is
+  // not returned.
+  bool size_limit_exceeded;
+};
+
 // Data about a browser tab.
 struct TabData {
   // Unique ID of the tab that owns the page.
@@ -251,6 +279,8 @@ struct TabData {
   string? title;
   // The favicon for the tab. Null when not available.
   skia.mojom.BitmapN32? favicon;
+  // MIME type of the main document in this tab.
+  string document_mime_type;
 };
 
 // Annotates an image, providing security relevant information about the origins

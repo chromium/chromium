@@ -105,8 +105,7 @@ class GlicKeyedService : public KeyedService {
   }
 
   void GetContextFromFocusedTab(
-      bool include_inner_text,
-      bool include_viewport_screenshot,
+      const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
   void SyncWebviewCookies(

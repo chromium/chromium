@@ -11,10 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/content_extraction/inner_text.h"
-#include "chrome/browser/glic/glic.mojom-forward.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "pdf/mojom/pdf.mojom-forward.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -33,8 +34,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   // function so that Fetch() can't be called multiple times.
   void Fetch(
       content::WebContents* web_contents,
-      bool inner_text,
-      bool viewport_screenshot,
+      const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
   // content::WebContentsObserver.
@@ -48,6 +48,9 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void ReceivedInnerText(
       std::unique_ptr<content_extraction::InnerTextResult> result);
   void RunCallbackIfComplete();
+  void ReceivedPdfBytes(pdf::mojom::PdfListener_GetPdfBytesStatus status,
+                        const std::vector<uint8_t>& pdf_bytes,
+                        uint32_t page_count);
 
   base::WeakPtr<GlicPageContextFetcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -60,12 +63,16 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   // Whether work is complete for each task, does not imply success.
   bool screenshot_done_ = false;
   bool inner_text_done_ = false;
+  bool pdf_done_ = false;
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
+  url::Origin pdf_origin_;
   std::optional<std::vector<uint8_t>> screenshot_jpeg_data_;
   SkISize screenshot_dimensions_;
   glic::mojom::ScreenshotPtr screenshot_;
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
+  std::vector<uint8_t> pdf_bytes_;
+  std::optional<pdf::mojom::PdfListener_GetPdfBytesStatus> pdf_status_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};
 };
