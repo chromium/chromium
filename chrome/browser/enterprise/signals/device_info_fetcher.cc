@@ -22,6 +22,10 @@ namespace {
 // instance. Used for testing.
 bool force_stub_for_testing = false;
 
+// When true, will force DeviceInfoFetcher to return duplicate mac addresses in
+// the signal.
+bool force_duplicate_mac_addresses = false;
+
 // Stub implementation of DeviceInfoFetcher.
 class StubDeviceFetcher : public DeviceInfoFetcher {
  public:
@@ -43,6 +47,9 @@ class StubDeviceFetcher : public DeviceInfoFetcher {
     device_info.screen_lock_secured = SettingValue::ENABLED;
     device_info.disk_encrypted = SettingValue::DISABLED;
     device_info.mac_addresses.push_back("00:00:00:00:00:00");
+    if (force_duplicate_mac_addresses) {
+      device_info.mac_addresses.push_back("00:00:00:00:00:00");
+    }
     device_info.windows_machine_domain = "MACHINE_DOMAIN";
     device_info.windows_user_domain = "USER_DOMAIN";
     return device_info;
@@ -84,6 +91,12 @@ DeviceInfoFetcher::CreateStubInstanceForTesting() {
 // static
 void DeviceInfoFetcher::SetForceStubForTesting(bool should_force) {
   force_stub_for_testing = should_force;
+}
+
+// static
+void DeviceInfoFetcher::SetForceDuplicateMacAddressesForTesting(
+    bool should_force) {
+  force_duplicate_mac_addresses = should_force;
 }
 
 }  // namespace enterprise_signals

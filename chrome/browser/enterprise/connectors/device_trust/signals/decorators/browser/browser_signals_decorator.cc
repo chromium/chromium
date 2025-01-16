@@ -45,6 +45,14 @@ std::optional<std::string> TryGetEnrollmentDomain(
   return std::nullopt;
 }
 
+std::vector<std::string> RemoveDuplicates(std::vector<std::string> addresses) {
+  std::sort(addresses.begin(), addresses.end());
+  addresses.erase(std::unique(addresses.begin(), addresses.end()),
+                  addresses.end());
+
+  return addresses;
+}
+
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
@@ -119,7 +127,7 @@ void BrowserSignalsDecorator::OnDeviceInfoFetched(
   signals.Set(device_signals::names::kDeviceHostName,
               device_info.device_host_name);
   signals.Set(device_signals::names::kMacAddresses,
-              ToListValue(device_info.mac_addresses));
+              ToListValue(RemoveDuplicates(device_info.mac_addresses)));
 
   if (device_info.windows_machine_domain) {
     signals.Set(device_signals::names::kWindowsMachineDomain,

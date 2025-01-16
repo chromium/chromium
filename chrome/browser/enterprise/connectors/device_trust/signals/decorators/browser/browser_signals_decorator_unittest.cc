@@ -143,6 +143,9 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   void SetUp() override {
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(
         /*should_force=*/true);
+    enterprise_signals::DeviceInfoFetcher::
+        SetForceDuplicateMacAddressesForTesting(
+            /*should_force=*/true);
 
     auto mock_browser_cloud_policy_store =
         std::make_unique<policy::MockCloudPolicyStore>();
@@ -164,6 +167,9 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   void TearDown() override {
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(
         /*should_force=*/false);
+    enterprise_signals::DeviceInfoFetcher::
+        SetForceDuplicateMacAddressesForTesting(
+            /*should_force=*/false);
   }
 
   void SetFakeBrowserPolicyData() {
