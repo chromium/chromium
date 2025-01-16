@@ -93,6 +93,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
                     tab_groups::TriggerSource source) override;
   void OnTabSelected(
       std::optional<tab_groups::SavedTabGroupTab> selected_tab) override;
+  void OnTabGroupOpened(const tab_groups::SavedTabGroup& tab_group) override;
+  void OnTabGroupClosed(const tab_groups::SavedTabGroup& tab_group) override;
 
   // DataSharingChangeNotifier::Observer.
   void OnDataSharingChangeNotifierInitialized() override;

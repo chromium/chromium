@@ -46,6 +46,14 @@ class TabGroupChangeNotifier
         const tab_groups::SavedTabGroup& updated_group,
         tab_groups::TriggerSource source) = 0;
 
+    // A saved tab group was opened, e.g. from tab group revisit surface.
+    virtual void OnTabGroupOpened(
+        const tab_groups::SavedTabGroup& tab_group) = 0;
+
+    // A saved tab group was closed.
+    virtual void OnTabGroupClosed(
+        const tab_groups::SavedTabGroup& tab_group) = 0;
+
     // A new tab was added to the given tab group.
     virtual void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab,
                             tab_groups::TriggerSource source) = 0;

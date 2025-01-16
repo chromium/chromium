@@ -816,6 +816,32 @@ void MessagingBackendServiceImpl::OnTabSelected(
                                            selected_tab->saved_group_guid());
 }
 
+void MessagingBackendServiceImpl::OnTabGroupOpened(
+    const tab_groups::SavedTabGroup& tab_group) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(tab_group);
+  if (!collaboration_group_id) {
+    return;
+  }
+
+  // Show all the persistent messages in the group.
+  std::vector<PersistentMessage> messages = GetMessagesForGroup(
+      tab_group.saved_guid(), PersistentNotificationType::DIRTY_TAB);
+  for (auto& message : messages) {
+    NotifyDisplayPersistentMessagesForTypes(
+        message, {PersistentNotificationType::CHIP,
+                  PersistentNotificationType::DIRTY_TAB});
+  }
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           tab_group.saved_guid());
+}
+
+void MessagingBackendServiceImpl::OnTabGroupClosed(
+    const tab_groups::SavedTabGroup& tab_group) {
+  // TODO(crbug.com/389948628): Handle hide persistence messages if needed.
+}
+
 void MessagingBackendServiceImpl::OnGroupAdded(
     const data_sharing::GroupId& group_id,
     const std::optional<data_sharing::GroupData>& group_data,
