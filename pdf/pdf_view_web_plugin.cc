@@ -2321,7 +2321,9 @@ void PdfViewWebPlugin::OnViewportChanged(
     } else {
       alpha_type = kPremul_SkAlphaType;
     }
-    image_data_.allocPixels(SkImageInfo::MakeN32(
+    // Ignore the result. If the allocation fails, the image data buffer will be
+    // empty and the code below will handle that.
+    (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
         new_image_size.width(), new_image_size.height(), alpha_type));
     first_paint_ = true;
   }
