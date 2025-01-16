@@ -1320,6 +1320,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPad:
     case CSSPropertyID::kPrefix:
     case CSSPropertyID::kRange:
+    case CSSPropertyID::kResult:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
     case CSSPropertyID::kSuffix:

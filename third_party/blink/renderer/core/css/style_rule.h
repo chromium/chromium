@@ -618,22 +618,42 @@ class StyleRuleCharset : public StyleRuleBase {
 };
 
 // An @function rule, representing a CSS function.
-class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
+class CORE_EXPORT StyleRuleFunction : public StyleRuleGroup {
  public:
   struct Parameter {
     String name;
     CSSSyntaxDefinition type;
   };
 
+  // The body of the function is represented by `child_rules`.
+  // Each child rule is either a CSSNestedDeclarations rule (holding
+  // descriptors, like 'result' and local variables), or a conditional rule,
+  // such as @media.
+  //
+  // The example below has three child rules: a CSSNestedDeclarations rule
+  // holding `--x`, an @media rule, and another CSSNestedDeclarations rule
+  // holding `results`.
+  //
+  //   @function --foo() {
+  //     --x: 10px;
+  //     @media (width > 100px) {
+  //       --x: 20x;
+  //     }
+  //     result: var(--x);
+  //   }
+  //
+  // Note: Although StyleRuleFunction itself can accommodate conditional rules,
+  // it's not yet supported by parsing/evaluation.
+  //
+  // TODO(crbug.com/325504770): Support parsing/evaluation of conditionals.
   StyleRuleFunction(AtomicString name,
                     Vector<Parameter> parameters,
-                    CSSVariableData* function_body,
+                    HeapVector<Member<StyleRuleBase>> child_rules,
                     CSSSyntaxDefinition return_type);
   StyleRuleFunction(const StyleRuleFunction&) = delete;
 
   const AtomicString& GetName() const { return name_; }
   const Vector<Parameter>& GetParameters() const { return parameters_; }
-  CSSVariableData& GetFunctionBody() const { return *function_body_; }
   const CSSSyntaxDefinition& GetReturnType() const { return return_type_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
@@ -641,7 +661,6 @@ class CORE_EXPORT StyleRuleFunction : public StyleRuleBase {
  private:
   AtomicString name_;
   Vector<Parameter> parameters_;
-  Member<CSSVariableData> function_body_;
   CSSSyntaxDefinition return_type_;
 };
 

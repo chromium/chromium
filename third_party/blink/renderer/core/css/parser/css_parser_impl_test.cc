@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
@@ -1155,7 +1156,7 @@ TEST(CSSParserImplTest, CSSFunction) {
 
   String sheet_text = R"CSS(
     @function --foo() returns <color> {
-      @return red;
+      result: red;
     }
   )CSS";
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -1166,9 +1167,23 @@ TEST(CSSParserImplTest, CSSFunction) {
 
   const StyleRuleFunction* rule =
       DynamicTo<StyleRuleFunction>(sheet->ChildRules()[0].Get());
-  EXPECT_TRUE(rule);
+  ASSERT_TRUE(rule);
 
-  EXPECT_EQ("red", rule->GetFunctionBody().OriginalText());
+  const HeapVector<Member<StyleRuleBase>>& child_rules = rule->ChildRules();
+  ASSERT_EQ(1u, child_rules.size());
+
+  const auto* nested_declarations =
+      DynamicTo<StyleRuleNestedDeclarations>(child_rules.front().Get());
+  ASSERT_TRUE(nested_declarations);
+
+  const CSSPropertyValueSet& properties = nested_declarations->Properties();
+  ASSERT_EQ(1u, properties.PropertyCount());
+
+  const auto* result = DynamicTo<CSSUnparsedDeclarationValue>(
+      properties.GetPropertyCSSValue(CSSPropertyID::kResult));
+  ASSERT_TRUE(result);
+
+  EXPECT_EQ("red", result->VariableDataValue()->OriginalText());
 }
 
 static String RoundTripProperty(Document& document, String property_text) {

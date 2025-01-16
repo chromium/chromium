@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -1549,10 +1550,34 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     function_arguments.insert(parameter.name, argument_value);
   }
 
+  // For now, we only support @function rules that contain a single
+  // CSSNestedDeclarations rule with a single 'result' descriptor.
+  //
+  // TODO(crbug.com/325504770): Support locals.
+  // TODO(crbug.com/325504770): Support conditional rules.
+  HeapVector<Member<StyleRuleBase>>& child_rules = function->ChildRules();
+  if (child_rules.size() != 1u) {
+    return false;
+  }
+  const auto* nested_declartions =
+      DynamicTo<StyleRuleNestedDeclarations>(child_rules.front().Get());
+  if (!nested_declartions) {
+    return false;
+  }
+  const CSSPropertyValueSet& properties = nested_declartions->Properties();
+  if (properties.PropertyCount() != 1u) {
+    return false;
+  }
+  const auto* unresolved_result = DynamicTo<CSSUnparsedDeclarationValue>(
+      properties.GetPropertyCSSValue(CSSPropertyID::kResult));
+  if (!unresolved_result) {
+    return false;
+  }
+
   FunctionContext local_function_context{function_arguments};
   const CSSValue* ret_value = ResolveFunctionExpression(
-      function->GetFunctionBody().OriginalText(), function->GetReturnType(),
-      resolver, context, &local_function_context);
+      unresolved_result->VariableDataValue()->OriginalText(),
+      function->GetReturnType(), resolver, context, &local_function_context);
   if (ret_value == nullptr) {
     return false;
   }
