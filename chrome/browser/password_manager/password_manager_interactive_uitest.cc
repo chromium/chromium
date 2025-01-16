@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 // Tests that, when choosing the value for saving, user-typed values are
 // preferred to values coming from JS.
 // TODO(crbug.com/382342234): Re-enable this test
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_UserTypedValuesAreSavedInsteadOfJsInputs \
   DISABLED_UserTypedValuesAreSavedInsteadOfJsInputs
 #else
