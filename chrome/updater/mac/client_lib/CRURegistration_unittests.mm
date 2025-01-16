@@ -409,4 +409,29 @@ TEST(CRURegistrationTest, WrapErrorUnchanged) {
   EXPECT_FALSE(wrapped_internal_error.userInfo[NSUnderlyingErrorKey]);
 }
 
+TEST(CRURegistrationTest, CannotInstallMissingArchive) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.NoArchive"
+      existenceCheckerPath:@"IGNORED"];
+
+  __block NSError* install_error = nil;
+  NSConditionLock* results_lock = [[NSConditionLock alloc] initWithCondition:0];
+
+  [registration installUpdaterWithReply:^(NSError* error) {
+    [results_lock lock];
+    install_error = error;
+    [results_lock unlockWithCondition:1];
+  }];
+
+  ASSERT_TRUE([results_lock
+      lockWhenCondition:1
+             beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+
+  EXPECT_NSEQ(install_error.domain, CRURegistrationErrorDomain);
+  EXPECT_EQ(install_error.code, CRURegistrationErrorUpdaterArchiveNotFound);
+
+  [results_lock unlock];
+}
+
 }  // namespace

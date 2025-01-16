@@ -623,6 +623,15 @@ artifact_zip("updater_zip") {
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
                         "$root_build_dir/Updater Packaging/signing")
+  if (is_asan) {
+    # ASan support libraries are required when using this as an updater archive
+    # in CRURegistration bundle installation tests.
+    inputs += [
+      "$root_out_dir/${updater_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+      "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/${keystone_app_name}.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+      "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/${keystone_app_name}.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+    ]
+  }
   deps = [
     ":updater_bundle",
     ":updater_bundle_test",

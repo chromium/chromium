@@ -1078,7 +1078,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
         "//chrome/updater/mac/client_lib:public_sources",
-        "//chrome/updater/mac/client_lib:test_sources",
+        "//chrome/updater/mac/client_lib:unit_test_sources",
         "//chrome/updater/net/mac/mojom",
         "//third_party/ocmock",
       ]
