@@ -55,6 +55,24 @@ def generate_cpp_enums(schema):
 
 # Generates the function implementations.
 def generate_cpp_functions(schema):
+  yield 'bool IsValidEntityTypeName(EntityTypeName t) {'
+  yield '  switch (t) {'
+  for entity in (entity['name'] for entity in schema):
+    yield f'    case {entity_name(entity)}:'
+  yield f'      return true;'
+  yield '  }'
+  yield '  return false;'
+  yield '}'
+  yield ''
+  yield 'bool IsValidAttributeTypeName(AttributeTypeName a) {'
+  yield '  switch (a) {'
+  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity, attribute)}:'
+  yield f'      return true;'
+  yield '  }'
+  yield '  return false;'
+  yield '}'
+  yield ''
   yield 'EntityTypeName AttributeTypeNameToEntityTypeName(AttributeTypeName a) {'
   yield '  switch (a) {'
   for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):

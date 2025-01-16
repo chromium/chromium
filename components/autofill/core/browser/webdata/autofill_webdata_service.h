@@ -88,6 +88,8 @@ class AutofillWebDataService : public WebDataServiceBase {
       WebDataServiceConsumer* consumer);
 
   // Asynchronously adds, updates, removes, or retrieves EntityInstances.
+  // See the identically named functions in `EntityTable`, especially on why
+  // RemoveEntityInstancesModifiedBetween() exists.
   void AddEntityInstance(const EntityInstance& entity);
   void UpdateEntityInstance(const EntityInstance& entity);
   void RemoveEntityInstance(const base::Uuid& guid);
