@@ -28,6 +28,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -4849,7 +4850,12 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
   if (!*readback_result) {
     return GL_FALSE;
   }
-  memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing into
+  // memory observed by JS at the same time.
+  auto dst = base::span(static_cast<uint8_t*>(pixels), dst_size);
+  auto src =
+      base::span(static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
   return GL_TRUE;
 }
 
