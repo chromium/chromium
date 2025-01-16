@@ -239,7 +239,6 @@ View::View() {
     SetProperty(kViewStackTraceKey,
                 std::make_unique<base::debug::StackTrace>());
   }
-  view_accessibility_ = ViewAccessibility::Create(this);
 }
 
 View::~View() {
@@ -2095,6 +2094,9 @@ bool View::ExceededDragThreshold(const gfx::Vector2d& delta) {
 // Accessibility----------------------------------------------------------------
 
 ViewAccessibility& View::GetViewAccessibility() const {
+  if (!view_accessibility_) {
+    view_accessibility_ = ViewAccessibility::Create(const_cast<View*>(this));
+  }
   return *view_accessibility_;
 }
 
