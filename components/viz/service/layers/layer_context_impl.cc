@@ -894,7 +894,7 @@ void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
   NOTREACHED();
 }
 
-void LayerContextImpl::SetNeedsCommitOnImplThread() {
+void LayerContextImpl::SetNeedsCommitOnImplThread(bool urgent) {
   NOTIMPLEMENTED();
 }
 

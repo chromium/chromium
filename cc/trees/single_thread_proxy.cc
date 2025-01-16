@@ -192,7 +192,7 @@ void SingleThreadProxy::SetLayerTreeFrameSink(
   }
 }
 
-void SingleThreadProxy::SetNeedsAnimate() {
+void SingleThreadProxy::SetNeedsAnimate(bool urgent) {
   TRACE_EVENT0("cc", "SingleThreadProxy::SetNeedsAnimate");
   DCHECK(task_runner_provider_->IsMainThread());
   if (animate_requested_)
@@ -200,7 +200,7 @@ void SingleThreadProxy::SetNeedsAnimate() {
   animate_requested_ = true;
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(urgent);
   layer_tree_host_->OnCommitRequested();
 }
 
@@ -210,7 +210,7 @@ void SingleThreadProxy::SetNeedsUpdateLayers() {
   if (!RequestedAnimatePending()) {
     DebugScopedSetImplThread impl(task_runner_provider_);
     if (scheduler_on_impl_thread_)
-      scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+      scheduler_on_impl_thread_->SetNeedsBeginMainFrame(/* urgent = */ false);
   }
   update_layers_requested_ = true;
 }
@@ -305,7 +305,7 @@ void SingleThreadProxy::SetNeedsCommit() {
   commit_requested_ = true;
   DebugScopedSetImplThread impl(task_runner_provider_);
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(/* urgent = */ false);
 }
 
 void SingleThreadProxy::SetNeedsRedraw(const gfx::Rect& damage_rect) {
@@ -537,12 +537,12 @@ void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
     scheduler_on_impl_thread_->SetNeedsPrepareTiles();
 }
 
-void SingleThreadProxy::SetNeedsCommitOnImplThread() {
+void SingleThreadProxy::SetNeedsCommitOnImplThread(bool urgent) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   single_thread_client_->ScheduleAnimationForWebTests();
   if (scheduler_on_impl_thread_)
-    scheduler_on_impl_thread_->SetNeedsBeginMainFrame();
+    scheduler_on_impl_thread_->SetNeedsBeginMainFrame(urgent);
   commit_requested_ = true;
 }
 
@@ -667,7 +667,7 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished(
       DebugScopedSetMainThread main_thread(task_runner_provider_);
       IssueImageDecodeFinishedCallbacks();
     } else {
-      SetNeedsCommitOnImplThread();
+      SetNeedsCommitOnImplThread(/* urgent = */ false);
     }
   }
 }

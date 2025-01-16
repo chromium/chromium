@@ -47,7 +47,7 @@ class CC_EXPORT Proxy {
   virtual void SetVisible(bool visible) = 0;
   virtual void SetShouldWarmUp() = 0;
 
-  virtual void SetNeedsAnimate() = 0;
+  virtual void SetNeedsAnimate(bool urgent = false) = 0;
   virtual void SetNeedsUpdateLayers() = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;

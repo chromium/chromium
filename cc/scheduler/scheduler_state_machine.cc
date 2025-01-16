@@ -1612,8 +1612,12 @@ bool SchedulerStateMachine::ImplLatencyTakesPriority() const {
   return false;
 }
 
-void SchedulerStateMachine::SetNeedsBeginMainFrame() {
+void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
   needs_begin_main_frame_ = true;
+
+  if (now) {
+    last_sent_begin_main_frame_time_ = base::TimeTicks();
+  }
 }
 
 void SchedulerStateMachine::SetNeedsOneBeginImplFrame() {
@@ -1647,7 +1651,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
         // the next BeginMainFrame after the deferred commit timeout will cause
         // a commit, but it might come later than optimal.
         begin_main_frame_state_ = BeginMainFrameState::IDLE;
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
@@ -1662,7 +1666,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kAbortedNotVisible:
       case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
       case CommitEarlyOutReason::kAbortedDeferredCommit:
-        SetNeedsBeginMainFrame();
+        SetNeedsBeginMainFrame(/* now = */ false);
         break;
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
