@@ -137,7 +137,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
 // Numbers) will be offered.
 BASE_FEATURE(kAutofillEnableLocalIban,
              "AutofillEnableLocalIban",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, a form event will log to all of the parsed forms of the same
@@ -197,7 +197,7 @@ BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
 // (International Bank Account Numbers) and autofill server-based IBANs.
 BASE_FEATURE(kAutofillEnableServerIban,
              "AutofillEnableServerIban",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Pix bank accounts are synced from Chrome Sync backend and
