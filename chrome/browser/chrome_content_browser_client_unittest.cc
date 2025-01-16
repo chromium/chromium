@@ -132,13 +132,10 @@
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -1055,58 +1052,6 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
   dest_url = help_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
-}
-
-namespace {
-constexpr char kEmail[] = "test@test.com";
-std::unique_ptr<KeyedService> CreateTestPolicyCertService(
-    content::BrowserContext* context) {
-  return policy::PolicyCertService::CreateForTesting(
-      Profile::FromBrowserContext(context));
-}
-}  // namespace
-
-// Test to verify that the PolicyCertService is correctly updated when a policy
-// provided trust anchor is used.
-class ChromeContentSettingsPolicyTrustAnchor
-    : public ChromeContentBrowserClientTest {
- public:
-  ChromeContentSettingsPolicyTrustAnchor()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
-
-  void SetUp() override {
-    // Add a profile
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("gaia_id"));
-    user_manager::User* user =
-        fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, false /*is_affiliated*/,
-            user_manager::UserType::kRegular, &profile_);
-    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
-                                    false /* browser_restart */,
-                                    false /* is_child */);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-    // Create a PolicyCertServiceFactory
-    ASSERT_TRUE(
-        policy::PolicyCertServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                &profile_, base::BindRepeating(&CreateTestPolicyCertService)));
-  }
-
-  void TearDown() override { scoped_user_manager_.reset(); }
-
- protected:
-  ScopedTestingLocalState testing_local_state_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-};
-
-TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
-  ChromeContentBrowserClient client;
-  EXPECT_FALSE(policy::PolicyCertService::UsedPolicyCertificates(&profile_));
-  client.OnTrustAnchorUsed(&profile_);
-  EXPECT_TRUE(policy::PolicyCertService::UsedPolicyCertificates(&profile_));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

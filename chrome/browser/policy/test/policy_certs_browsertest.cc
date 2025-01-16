@@ -19,8 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
@@ -437,12 +435,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, NoTrustAnchor) {
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
-
-  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
-      multi_profile_policy_helper_.profile_1()));
-
-  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
-      multi_profile_policy_helper_.profile_2()));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
@@ -452,9 +444,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest, TrustAnchorApplied) {
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_1(),
                                  user_policy_certs_helper_.server_cert()));
-
-  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
-      multi_profile_policy_helper_.profile_1()));
 }
 
 // Test that policy provided trust anchors are available in Incognito mode.
@@ -485,11 +474,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
             VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
                                  user_policy_certs_helper_.server_cert()));
-
-  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
-      multi_profile_policy_helper_.profile_1()));
-  EXPECT_FALSE(PolicyCertService::UsedPolicyCertificates(
-      multi_profile_policy_helper_.profile_2()));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
@@ -607,10 +591,6 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_EQ(net::OK,
             VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
                                  user_policy_certs_helper_.server_cert()));
-
-  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(browser()->profile()));
-  EXPECT_TRUE(PolicyCertService::UsedPolicyCertificates(
-      ash::ProfileHelper::GetLockScreenProfile()));
 }
 
 // Test that the lock screen profile doesn't use the policy provided custom

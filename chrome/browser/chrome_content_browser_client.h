@@ -423,9 +423,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                        const net::SchemefulSite& accessing_site,
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
-#endif
   bool CanSendSCTAuditingReport(
       content::BrowserContext* browser_context) override;
   void OnNewSCTAuditingReportSent(

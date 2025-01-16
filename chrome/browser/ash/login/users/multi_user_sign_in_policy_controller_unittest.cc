@@ -341,7 +341,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -365,7 +364,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[0].GetUserEmail()));
@@ -378,7 +376,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertService::SetUsedPolicyCertificates(profile(0));
   LoginUser(0);
 
   EXPECT_TRUE(
@@ -387,7 +384,6 @@ TEST_F(MultiUserSignInPolicyControllerTest,
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(1), base::BindRepeating(&TestPolicyCertServiceFactory)));
-  policy::PolicyCertService::SetUsedPolicyCertificates(profile(1));
 
   EXPECT_TRUE(
       controller()->IsUserAllowedInSession(test_users_[1].GetUserEmail()));

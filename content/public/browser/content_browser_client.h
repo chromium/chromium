@@ -1218,11 +1218,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::TimeDelta ttl,
       bool ignore_schemes);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Notification that a trust anchor was used by the given user.
-  virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}
-#endif
-
   // Allows the embedder to implement policy for whether an SCT auditing report
   // should be sent.
   virtual bool CanSendSCTAuditingReport(BrowserContext* browser_context);

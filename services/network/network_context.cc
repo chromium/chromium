@@ -168,10 +168,6 @@
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/network/cert_verifier_with_trust_anchors.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
 #include "services/network/websocket_factory.h"
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -2565,18 +2561,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     cert_verifier = std::make_unique<net::CachingCertVerifier>(
         std::make_unique<net::CoalescingCertVerifier>(
             std::move(cert_verifier)));
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40928765): The TrustAnchorUsed callback should
-    // work on all platforms. (Also consider whether this wrapper is the best
-    // way to handle this or if it should be refactored.)
-    auto cert_verifier_with_trust_anchors =
-        std::make_unique<CertVerifierWithTrustAnchors>(base::BindRepeating(
-            &NetworkContext::TrustAnchorUsed, base::Unretained(this)));
-    cert_verifier_with_trust_anchors->InitializeOnIOThread(
-        std::move(cert_verifier));
-    cert_verifier = std::move(cert_verifier_with_trust_anchors);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   builder.SetCertVerifier(IgnoreErrorsCertVerifier::MaybeWrapCertVerifier(
@@ -3162,12 +3146,6 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   std::move(pending_cert_verify->callback)
       .Run(result, *pending_cert_verify->result.get(), pkp_bypassed);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void NetworkContext::TrustAnchorUsed() {
-  client_->OnTrustAnchorUsed();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 void NetworkContext::EnsureMounted(network::TransferableDirectory* directory) {

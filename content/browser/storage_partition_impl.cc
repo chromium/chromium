@@ -2526,12 +2526,6 @@ void StoragePartitionImpl::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-void StoragePartitionImpl::OnTrustAnchorUsed() {
-  GetContentClient()->browser()->OnTrustAnchorUsed(browser_context_);
-}
-#endif
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void StoragePartitionImpl::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {

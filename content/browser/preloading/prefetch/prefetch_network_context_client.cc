@@ -48,10 +48,6 @@ void PrefetchNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-void PrefetchNetworkContextClient::OnTrustAnchorUsed() {}
-#endif
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void PrefetchNetworkContextClient::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
