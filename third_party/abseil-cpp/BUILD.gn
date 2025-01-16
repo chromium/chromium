@@ -96,6 +96,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/random",
+    "//third_party/abseil-cpp/absl/random:bit_gen_ref",
     "//third_party/abseil-cpp/absl/random:distributions",
     "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/status:statusor",
@@ -182,11 +183,6 @@ group("absl_full_deps") {
     # those macros.
     "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/log:check",
-
-    # TODO(danilchap): Investigate if these targets need to be banned in 3rd party library code.
-    "//third_party/abseil-cpp/absl/log:globals",
-    "//third_party/abseil-cpp/absl/log:initialize",
-    "//third_party/abseil-cpp/absl/random:bit_gen_ref",
   ]
 
   visibility = [
@@ -338,9 +334,9 @@ if (absl_build_tests) {
         "absl/numeric:int128_test",
         "absl/profiling:exponential_biased_test",
         "absl/profiling:periodic_sampler_test",
-        "absl/random/internal:nonsecure_base_test",
         "absl/random:distributions_test",
         "absl/random:mock_distributions_test",
+        "absl/random/internal:nonsecure_base_test",
         "absl/status:status_matchers_test",
         "absl/status:status_test",
         "absl/status:statusor_test",
