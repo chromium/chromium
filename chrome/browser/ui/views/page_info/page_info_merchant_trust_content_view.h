@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
+#include "components/page_info/page_info_ui.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 class StarRatingView;
@@ -15,7 +16,11 @@ class RichHoverButton;
 
 // The view that is used as a content view of the "Merchant trust" subpage
 // in page info.
-class PageInfoMerchantTrustContentView : public views::FlexLayoutView {
+// TODO(crbug.com/390370438): With current implementation, PageInfo requires an
+// active instance of PageInfoUI. `PageInfoMerchantTrustContentView` doesn't
+// actually implement any of the methods.
+class PageInfoMerchantTrustContentView : public views::FlexLayoutView,
+                                         public PageInfoUI {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewReviewsId);

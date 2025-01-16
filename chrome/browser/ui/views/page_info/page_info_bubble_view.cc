@@ -284,8 +284,13 @@ void PageInfoBubbleView::OpenMerchantTrustPage() {
   // TODO(crbug.com/378854730): Record open action.
   CHECK(merchant_trust_coordinator_);
   auto title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER);
-  auto page_view = view_factory_->CreatePageView(
-      title, merchant_trust_coordinator_->CreatePageContent());
+  auto page_content = merchant_trust_coordinator_->CreatePageContent();
+  // TODO(crbug.com/390370438): Remove this call after the presenter is
+  // refactored since merchant trust page doesn't implement any of the
+  // PageInfoUI methods.
+  presenter_->InitializeUiState(page_content.get(), base::DoNothing());
+  auto page_view =
+      view_factory_->CreatePageView(title, std::move(page_content));
   page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(page_view));
   AnnouncePageOpened(title);
