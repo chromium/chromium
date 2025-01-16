@@ -394,10 +394,6 @@ FindResults FindBuffer::FindMatches(const String& search_text,
   if (buffer_.empty() || !offset_mapping_) {
     return FindResults();
   }
-  if (!RuntimeEnabledFeatures::FindDecomposedInShortTextEnabled() &&
-      search_text.length() > buffer_.size()) {
-    return FindResults();
-  }
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);

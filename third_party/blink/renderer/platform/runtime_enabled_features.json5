@@ -2021,11 +2021,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/369237322
-      name: "FindDecomposedInShortText",
-      status: "stable",
-    },
-    {
       // crbug.com/40755728
       name: "FindRubyInPage",
       status: "stable",
@@ -2038,7 +2033,6 @@
       // crbug.com/40755728
       name: "FindTextSkipCollapsedText",
       status: "stable",
-      depends_on: ["FindDecomposedInShortText"],
     },
     {
       name: "Fledge",
