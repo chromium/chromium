@@ -3504,7 +3504,7 @@
     "args": [
       "--enable-features=DocumentPolicyExpectNoLinkedResources"
     ],
-    "expires": "Jan 14, 2025",
+    "expires": "Jan 14, 2026",
     "owners": [
       "alexnj@chromium.org"
     ]
