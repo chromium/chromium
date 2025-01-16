@@ -6929,6 +6929,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon)},
 
+    {"ntp-ogb-async-bar-parts",
+     flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName,
+     flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpOneGoogleBarAsyncBarParts)},
+
     {"ntp-outlook-calendar-module",
      flag_descriptions::kNtpOutlookCalendarModuleName,
      flag_descriptions::kNtpOutlookCalendarModuleDescription, kOsDesktop,

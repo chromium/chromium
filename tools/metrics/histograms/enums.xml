@@ -20232,6 +20232,7 @@ from previous Chrome versions.
   <int value="-95018838" label="BuiltInHlsPlayer:enabled"/>
   <int value="-94535722" label="TimeOfDayWallpaper:enabled"/>
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
+  <int value="-94191861" label="NtpOneGoogleBarAsyncBarParts:enabled"/>
   <int value="-94055083" label="RemoveUPMUnenrollment:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
   <int value="-92507010" label="AISummarizationAPI:disabled"/>
@@ -20704,6 +20705,7 @@ from previous Chrome versions.
   <int value="92466801" label="UploadOfficeToCloud:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
+  <int value="95043207" label="NtpOneGoogleBarAsyncBarParts:disabled"/>
   <int value="95820546" label="RubyShortHeuristics:disabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>

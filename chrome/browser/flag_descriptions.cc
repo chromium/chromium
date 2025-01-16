@@ -5192,6 +5192,11 @@ const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
 const char kNtpPhotosModuleSoftOptOutDescription[] =
     "Enables soft opt-out option in Photos opt-in card";
 
+const char kNtpOneGoogleBarAsyncBarPartsName[] =
+    "NTP OneGoogleBar Async Bar Parts";
+const char kNtpOneGoogleBarAsyncBarPartsDescription[] =
+    "Enables the OneGoogleBar async bar parts API on the New Tab Page.";
+
 const char kNtpOutlookCalendarModuleName[] = "NTP Outlook Calendar Module";
 const char kNtpOutlookCalendarModuleDescription[] =
     "Shows the Outlook Calendar module on the New Tab Page.";
