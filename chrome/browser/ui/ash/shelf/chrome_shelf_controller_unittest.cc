@@ -137,6 +137,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1278,18 +1279,20 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     apps::AppReadinessWaiter(profile(), web_app_id).Await();
   }
 
-  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
-    web_app::AddDummyIsolatedAppToRegistry(
-        profile(), url, "IWA",
-        web_app::IsolationData::Builder(
-            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0"))
-            .Build(),
-        webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
-    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        web_app::IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value());
-    apps::AppReadinessWaiter(profile(), url_info->app_id()).Await();
-    return *url_info;
+  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    app_bundle->FakeInstallPageState(profile());
+    app_bundle->TrustSigningKey();
+    const web_app::IsolatedWebAppUrlInfo url_info =
+        app_bundle
+            ->InstallWithSource(
+                profile(),
+                &web_app::IsolatedWebAppInstallSource::FromExternalPolicy)
+            .value();
+    apps::AppReadinessWaiter(profile(), url_info.app_id()).Await();
+    return url_info;
   }
 
   webapps::AppId InstallExternalWebApp(
@@ -1469,6 +1472,10 @@ class ChromeShelfControllerWithArcTest : public ChromeShelfControllerTestBase {
 
     ChromeShelfControllerTestBase::SetUp();
   }
+
+ private:
+  // isolated web app builder uses json parser from the decoder
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
@@ -4810,16 +4817,12 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
 
 TEST_F(ChromeShelfControllerWithArcTest, IwaPinPolicy) {
   InitShelfControllerWithBrowser();
+  const web_app::IsolatedWebAppUrlInfo url_info = AddIsolatedWebApp();
 
-  constexpr char kExampleIwaBundleId[] =
-      "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac";
-
-  const auto url_info = AddIsolatedWebApp(
-      GURL{base::StrCat({"isolated-app://", kExampleIwaBundleId})});
-  SetPinnedLauncherAppsPolicy(kExampleIwaBundleId);
+  SetPinnedLauncherAppsPolicy(url_info.web_bundle_id().id());
   EXPECT_TRUE(shelf_controller_->IsAppPinned(url_info.app_id()));
-  EXPECT_TRUE(AppListControllerDelegate::PIN_FIXED ==
-              GetPinnableForAppID(url_info.app_id(), profile()));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(url_info.app_id(), profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {

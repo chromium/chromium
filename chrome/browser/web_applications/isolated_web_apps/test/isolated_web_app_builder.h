@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/version.h"
@@ -157,14 +158,28 @@ class BundledIsolatedWebApp {
   web_app::FakeWebContentsManager::FakePageState& FakeInstallPageState(
       Profile* profile);
 
-  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
-
+  // uses GraphicalInstaller source
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
-  base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
-      Profile* profile);
+
   base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
       Profile* profile,
-      IsolatedWebAppInstallSource src_source);
+      IsolatedWebAppInstallSource source);
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
+          install_source_provider,
+      IwaSourceBundleDevFileOp file_op = IwaSourceBundleDevFileOp::kCopy);
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      base::FunctionRef<IsolatedWebAppInstallSource(
+          IwaSourceProdModeWithFileOp)> install_source_provider,
+      IwaSourceBundleProdFileOp file_op = IwaSourceBundleProdFileOp::kCopy);
+
+  IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
+  base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
+      Profile* profile);
 
  private:
   web_package::SignedWebBundleId web_bundle_id_;

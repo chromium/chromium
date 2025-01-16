@@ -262,7 +262,7 @@ class IwaInstallerTest
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_factory_)) {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kIsolatedWebApps};
+        features::kIsolatedWebApps, features::kIsolatedWebAppDevMode};
 #if BUILDFLAG(IS_CHROMEOS)
     if (GetParam().is_mgs_install_enabled) {
       enabled_features.push_back(
@@ -530,7 +530,7 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
       bool is_user_session,
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : IsolatedWebAppTest(time_source),
+      : IsolatedWebAppTest(time_source, WithDevMode{}),
         is_mgs_session_install_enabled_(is_mgs_session_install_enabled),
         is_user_session_(is_user_session) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -706,15 +706,13 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppNotInstalledIncorrectPinnedVersion) {
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
        AppInstalledWhenPreviouslyUserInstalled) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "iwa",
-      IsolationData::Builder(
-          IwaStorageOwnedBundle("some_folder", /*dev_mode=*/false),
-          base::Version("1.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
+  const std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  const IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
   {
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(url_info.app_id());
@@ -748,15 +746,15 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
        AppInstalledWhenPreviouslyDevInstalled) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "iwa",
-      IsolationData::Builder(
-          IwaStorageOwnedBundle("some_folder", /*dev_mode=*/true),
-          base::Version("1.0.0"))
-          .Build(),
-      webapps::WebappInstallSource::IWA_DEV_UI);
+  const std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(const IsolatedWebAppUrlInfo url_info,
+                       bundle->InstallWithSource(
+                           profile(), &IsolatedWebAppInstallSource::FromDevUi));
 
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListening({url_info.app_id()});
@@ -1101,19 +1099,15 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
 
 TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
        UserInstalledAppUninstalledAsWell) {
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1());
+  const std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
 
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  const IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
   // User-install the app.
   {
-    AddDummyIsolatedAppToRegistry(
-        profile(), url_info.origin().GetURL(), "iwa",
-        IsolationData::Builder(
-            IwaStorageOwnedBundle("some_folder", /*dev_mode=*/false),
-            base::Version("1.0.0"))
-            .Build(),
-        webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
-
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(url_info.app_id());
     ASSERT_THAT(web_app, NotNull());
