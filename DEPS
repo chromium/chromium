@@ -243,7 +243,7 @@ vars = {
   # reclient CIPD package
   'reclient_package': 'infra/rbe/client/',
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.172.0.3cf60ba5-gomaip',
+  'reclient_version': 're_client_version:0.174.0.d516e7c7-gomaip',
 
   # screen-ai CIPD packages
   'screen_ai_linux': 'version:127.9',
