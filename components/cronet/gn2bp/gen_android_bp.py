@@ -38,6 +38,7 @@ from pathlib import Path
 import hashlib
 
 import gn_utils
+import targets as gn2bp_targets
 PARENT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -51,33 +52,6 @@ REPOSITORY_ROOT = os.path.abspath(
 CRONET_LICENSE_NAME = "external_cronet_license"
 
 CPP_VERSION = 'c++17'
-
-# Default targets to translate to the blueprint file.
-DEFAULT_TARGETS = [
-    "//components/cronet/android:cronet_api_java",
-    '//components/cronet/android:cronet',
-    '//components/cronet/android:cronet_impl_native_java',
-    '//components/cronet/android:cronet_jni_registration_java',
-]
-
-DEFAULT_TESTS = [
-    '//components/cronet/android:cronet_unittests_android__library',
-    '//net:net_unittests__library',
-    '//components/cronet/android:cronet_tests',
-    '//components/cronet/android:cronet',
-    '//components/cronet/android:cronet_javatests',
-    '//components/cronet/android:cronet_jni_registration_java',
-    '//components/cronet/android:cronet_tests_jni_registration_java',
-    '//testing/android/native_test:native_test_java',
-    '//net/android:net_test_support_provider_java',
-    '//net/android:net_tests_java',
-    '//third_party/netty-tcnative:netty-tcnative-so',
-    '//third_party/netty4:netty_all_java',
-    "//build/rust/tests/test_rust_static_library:test_rust_static_library",  # Added to make sure that rust still compiles
-    "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient__library",  # Added to make sure that rust still compiles
-    "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
-    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test'  # Added to make sure that rust still compiles
-]
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
 
@@ -841,7 +815,7 @@ class Module(object):
       name_without_prefix = self.name[:self.name.find(gn_utils.TESTING_SUFFIX)]
       return any([
           name_without_prefix == label_to_module_name(target)
-          for target in DEFAULT_TESTS
+          for target in gn2bp_targets.DEFAULT_TESTS
       ])
     return False
 
@@ -2957,7 +2931,7 @@ def main():
     log.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
                     level=log.DEBUG)
 
-  targets = args.targets or DEFAULT_TARGETS
+  targets = args.targets or gn2bp_targets.DEFAULT_TARGETS
   build_scripts_output = None
   with open(args.build_script_output) as f:
     build_scripts_output = json.load(f)
@@ -2967,9 +2941,10 @@ def main():
       desc = json.load(f)
     for target in targets:
       gn.parse_gn_desc(desc, target)
-    for test_target in DEFAULT_TESTS:
+    for test_target in gn2bp_targets.DEFAULT_TESTS:
       gn.parse_gn_desc(desc, test_target, is_test_target=True)
-  top_level_blueprint = create_blueprint_for_targets(gn, targets, DEFAULT_TESTS)
+  top_level_blueprint = create_blueprint_for_targets(
+      gn, targets, gn2bp_targets.DEFAULT_TESTS)
   project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
   tool_name = os.path.relpath(os.path.abspath(__file__), project_root)
 

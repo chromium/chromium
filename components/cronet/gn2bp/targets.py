@@ -1,0 +1,25 @@
+DEFAULT_TARGETS = [
+    "//components/cronet/android:cronet_api_java",
+    '//components/cronet/android:cronet',
+    '//components/cronet/android:cronet_impl_native_java',
+    '//components/cronet/android:cronet_jni_registration_java',
+]
+
+DEFAULT_TESTS = [
+    '//components/cronet/android:cronet_unittests_android__library',
+    '//net:net_unittests__library',
+    '//components/cronet/android:cronet_tests',
+    '//components/cronet/android:cronet',
+    '//components/cronet/android:cronet_javatests',
+    '//components/cronet/android:cronet_jni_registration_java',
+    '//components/cronet/android:cronet_tests_jni_registration_java',
+    '//testing/android/native_test:native_test_java',
+    '//net/android:net_test_support_provider_java',
+    '//net/android:net_tests_java',
+    '//third_party/netty-tcnative:netty-tcnative-so',
+    '//third_party/netty4:netty_all_java',
+    "//build/rust/tests/test_rust_static_library:test_rust_static_library",  # Added to make sure that rust still compiles
+    "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient__library",  # Added to make sure that rust still compiles
+    "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
+    '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test'  # Added to make sure that rust still compiles
+]
