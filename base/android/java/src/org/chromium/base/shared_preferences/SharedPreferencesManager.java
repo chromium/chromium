@@ -197,7 +197,6 @@ public class SharedPreferencesManager {
      * @return unmodifiable Set with the values
      */
     @Contract("_, !null -> !null")
-    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1104
     public @Nullable Set<String> readStringSet(String key, @Nullable Set<String> defaultValue) {
         checkIsKeyInUse(key);
         Set<String> values = ContextUtils.getAppSharedPreferences().getStringSet(key, defaultValue);

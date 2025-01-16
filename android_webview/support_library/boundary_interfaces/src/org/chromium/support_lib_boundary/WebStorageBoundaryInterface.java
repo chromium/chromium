@@ -4,16 +4,15 @@
 
 package org.chromium.support_lib_boundary;
 
-import androidx.annotation.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.Executor;
 
+@NullMarked
 public interface WebStorageBoundaryInterface {
 
-    void deleteBrowsingData(@NonNull Executor callbackExecutor, @NonNull Runnable doneCallback);
+    void deleteBrowsingData(Executor callbackExecutor, Runnable doneCallback);
 
     String deleteBrowsingDataForSite(
-            @NonNull String domainOrUrl,
-            @NonNull Executor callbackExecutor,
-            @NonNull Runnable doneCallback);
+            String domainOrUrl, Executor callbackExecutor, Runnable doneCallback);
 }

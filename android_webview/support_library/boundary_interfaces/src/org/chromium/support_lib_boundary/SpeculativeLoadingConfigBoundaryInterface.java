@@ -4,7 +4,10 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 /** Boundary interface for SpeculativeLoadingConfig. */
+@NullMarked
 public interface SpeculativeLoadingConfigBoundaryInterface {
 
     int getMaxPrefetches();

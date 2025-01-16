@@ -49,6 +49,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebViewStartUpResultBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebkitToCompatConverterBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java",
+    "src/org/chromium/support_lib_boundary/util/Contract.java",
     "src/org/chromium/support_lib_boundary/util/Features.java",
   ]
 
@@ -59,9 +60,16 @@ android_library("boundary_interface_java") {
   # core Android classes and other AndroidX classes (must be in the androidx.*
   # package name).
   deps = [
+    "//third_party/android_deps:org_jspecify_jspecify_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
+
+  # Prevent automatic dep on build_java.
+  chromium_code = false
+
+  # Do not let chromium_code = false disable Error Prone.
+  enable_errorprone = true
 }
 
 android_apk("boundary_interface_example_apk") {

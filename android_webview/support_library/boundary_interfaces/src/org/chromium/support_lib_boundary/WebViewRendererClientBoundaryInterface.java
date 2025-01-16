@@ -6,9 +6,12 @@ package org.chromium.support_lib_boundary;
 
 import android.webkit.WebView;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebViewRendererClient. */
+@NullMarked
 public interface WebViewRendererClientBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     void onRendererUnresponsive(WebView view, /* WebViewRenderer */ InvocationHandler renderer);
 
