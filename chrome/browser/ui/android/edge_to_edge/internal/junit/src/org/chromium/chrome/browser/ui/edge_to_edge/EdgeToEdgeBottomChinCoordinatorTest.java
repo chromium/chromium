@@ -46,7 +46,6 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                         mKeyboardVisibilityDelegate,
                         mLayoutManager,
                         mEdgeToEdgeController,
-                        mNavigationBarColorProvider,
                         mBottomControlsStacker,
                         mEdgeToEdgeBottomChinSceneLayer,
                         mFullscreenManager);

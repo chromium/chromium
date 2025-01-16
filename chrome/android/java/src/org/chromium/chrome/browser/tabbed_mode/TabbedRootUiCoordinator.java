@@ -598,7 +598,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 .getAccessorySheetVisualStateProvider(),
                         mOverviewColorSupplier,
                         mInsetObserver,
-                        mEdgeToEdgeManager);
+                        mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
     }
 
     @Override
@@ -1250,7 +1250,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManager,
                         mLayoutManager::requestUpdate,
                         mEdgeToEdgeControllerSupplier.get(),
-                        mSystemUiCoordinator.getNavigationBarColorController(),
                         mBottomControlsStacker,
                         mFullscreenManager);
         mSystemBarColorHelperSupplier.set(bottomChinColorHelper);

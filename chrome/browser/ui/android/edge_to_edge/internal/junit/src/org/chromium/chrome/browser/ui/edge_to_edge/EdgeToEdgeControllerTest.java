@@ -979,7 +979,6 @@ public class EdgeToEdgeControllerTest {
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper, atLeastOnce())
                 .setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));
-        verify(mEdgeToEdgeManager, atLeastOnce()).setContentFitsWindowInsets(false);
     }
 
     void assertToNormalExpectations() {

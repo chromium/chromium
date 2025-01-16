@@ -42,7 +42,7 @@ public class EdgeToEdgeManager {
         mEdgeToEdgeSystemBarColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(
                         activity.getWindow(),
-                        mEdgeToEdgeStateProvider,
+                        getContentFitsWindowInsetsSupplier(),
                         systemBarColorHelperSupplier);
 
         if (shouldDrawEdgeToEdge) {
