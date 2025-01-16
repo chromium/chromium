@@ -34,9 +34,10 @@
 
 namespace os_crypt_async {
 
+#if BUILDFLAG(IS_WIN)
+
 namespace {
 
-#if BUILDFLAG(IS_WIN)
 // Utility function to encrypt data using the raw DPAPI interface.
 bool EncryptStringWithDPAPI(const std::string& plaintext,
                             std::string& ciphertext) {
@@ -65,28 +66,10 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 
   return true;
 }
-#endif  // BUILDFLAG(IS_WIN)
-
-// Helper function to verify that decryption using OSCrypt failed. This is
-// platform dependent, as Windows will fail, but other platforms will return the
-// ciphertext back.
-[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
-    const std::optional<std::string>& decrypted,
-    base::span<const uint8_t> ciphertext) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, decryption fails, and decrypted will have no valid value.
-  return !decrypted;
-#else
-  // On other platforms, OSCrypt does not recognise the data and it returns
-  // the data without decrypting.
-  if (!decrypted) {
-    return false;
-  }
-  return decrypted == std::string(ciphertext.begin(), ciphertext.end());
-#endif
-}
 
 }  // namespace
+
+#endif  // BUILDFLAG(IS_WIN)
 
 enum class TestType {
   // Test that all operations work with no keys.
@@ -426,7 +409,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
     key_ring_bar.emplace("BAR", bar_key.Clone());
     const Encryptor encryptor = GetEncryptor(std::move(key_ring_bar), "BAR");
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
+    EXPECT_FALSE(decrypted);
   }
 
   // Verify that order of keys in the keyring does not matter.
@@ -467,7 +450,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   {
     const Encryptor encryptor = GetEncryptor();
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
+    EXPECT_FALSE(decrypted);
   }
 }
 
@@ -500,8 +483,7 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
   for (size_t i = 0; i < kNonceLength * 2; i++) {
     bad_data += "a";
     auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(
-        decrypted, base::as_byte_span(bad_data)));
+    EXPECT_FALSE(decrypted);
   }
 }
 

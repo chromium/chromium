@@ -89,8 +89,7 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
                       : os_crypt::EncryptionPrefixVersion::kVersion10);
 
   if (no_prefix_found) {
-    *plaintext = ciphertext;
-    return true;
+    return false;
   }
 
   // Strip off the versioning prefix before decrypting.

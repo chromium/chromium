@@ -27,28 +27,6 @@
 
 namespace os_crypt_async {
 
-namespace {
-
-// Helper function to verify that decryption using OSCrypt failed. This is
-// platform dependent, as Windows will fail, but other platforms will return the
-// ciphertext back.
-[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
-    const std::optional<std::string>& decrypted,
-    base::span<const uint8_t> ciphertext) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, decryption fails, and decrypted will have no valid value.
-  return !decrypted;
-#else
-  // On other platforms, OSCrypt does not recognise the data and it returns
-  // the data without decrypting.
-  if (!decrypted) {
-    return false;
-  }
-  return decrypted == std::string(ciphertext.begin(), ciphertext.end());
-#endif
-}
-
-}  // namespace
 class OSCryptAsyncTest : public ::testing::Test {
  protected:
   using ProviderList =
@@ -315,8 +293,7 @@ TEST_F(OSCryptAsyncTest, EncryptorOption) {
 
     // The first data that was encrypted with v20 cannot be decrypted.
     auto failing_plaintext = encryptor.DecryptData(*test_ciphertext);
-    EXPECT_TRUE(
-        MaybeVerifyFailedDecryptOperation(failing_plaintext, *test_ciphertext));
+    EXPECT_FALSE(failing_plaintext);
   }
 }
 

@@ -39,7 +39,7 @@ INSERT INTO "logins" (origin_url,action_url,username_element,username_value,pass
 'Email', /* username_element */
 'theerikchen', /* username_value */
 'Passwd', /* password_element */
-X'33646263653933652d', /* password_value */
+X'', /* password_value */
 '', /* submit_element */
 'https://accounts.google.com/', /* signon_realm */
 13047429345000000, /* date_created */

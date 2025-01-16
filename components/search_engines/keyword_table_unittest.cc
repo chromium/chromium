@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/test_encryptor.h"
 #include "components/search_engines/template_url_data.h"
@@ -406,19 +405,8 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
       EXPECT_TRUE(keywords.empty());
     }
 
-    // OSCrypt on non-Windows platforms simply returns the encrypted data if
-    // called with invalid data. This is a quirk of these platforms and is in
-    // the process of being removed.
-    // TODO(crbug.com/365712505): Remove this fallback.
-#if BUILDFLAG(IS_WIN)
-    // HashValidationStatus::kDecryptFailed
-    constexpr base::HistogramBase::Sample32 kExpectedBucket = 1;
-#else
-    // HashValidationStatus::kInvalidHash
-    constexpr base::HistogramBase::Sample32 kExpectedBucket = 2;
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
-        // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
     histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
-                                  kExpectedBucket, 1);
+                                  /*HashValidationStatus::kDecryptFailed*/ 1,
+                                  1);
   }
 }

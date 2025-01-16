@@ -199,8 +199,7 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   os_crypt::LogEncryptionVersion(encryption_version);
 
   if (encryption_version == os_crypt::EncryptionPrefixVersion::kNoVersion) {
-    *plaintext = ciphertext;
-    return true;
+    return false;
   }
 
   // Strip off the versioning prefix before decrypting.
