@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
@@ -252,32 +253,36 @@ void ParentAccessUiHandlerImpl::OnParentAccessCallbackReceived(
   std::string decoded_parent_access_callback;
   parent_access_ui::mojom::ParentAccessServerMessagePtr message =
       parent_access_ui::mojom::ParentAccessServerMessage::New();
-  if (!base::Base64Decode(encoded_parent_access_callback_proto,
-                          &decoded_parent_access_callback)) {
-    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
-                  "parent_access_result from base64";
+
+  supervised_user::ParentAccessCallbackParsedResult callback_result =
+      supervised_user::ParentAccessCallbackParsedResult::
+          ParseParentAccessCallbackResult(encoded_parent_access_callback_proto);
+
+  if (callback_result.GetError().has_value() &&
+      callback_result.GetError().value() ==
+          supervised_user::ParentAccessWidgetError::kDecodingError) {
     RecordParentAccessWidgetError(
         supervised_user::ParentAccessWidgetError::kDecodingError);
-
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
     std::move(callback).Run(std::move(message));
     return;
   }
 
-  kids::platform::parentaccess::client::proto::ParentAccessCallback
-      parent_access_callback;
-  if (!parent_access_callback.ParseFromString(decoded_parent_access_callback)) {
-    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
-                  "decoded_parent_access_result to proto";
+  if (callback_result.GetError().has_value() &&
+      callback_result.GetError().value() ==
+          supervised_user::ParentAccessWidgetError::kParsingError) {
     RecordParentAccessWidgetError(
         supervised_user::ParentAccessWidgetError::kParsingError);
-
     message->type =
         parent_access_ui::mojom::ParentAccessServerMessageType::kError;
     std::move(callback).Run(std::move(message));
     return;
   }
+
+  CHECK(callback_result.GetCallback().has_value());
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback = callback_result.GetCallback().value();
 
   switch (parent_access_callback.callback_case()) {
     case kids::platform::parentaccess::client::proto::ParentAccessCallback::

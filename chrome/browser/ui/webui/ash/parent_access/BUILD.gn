@@ -59,6 +59,7 @@ static_library("parent_access") {
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//components/google/core/common",
     "//components/signin/public/base",
+    "//components/supervised_user/core/browser",
     "//google_apis",
     "//services/network/public/mojom:url_loader_base",
     "//ui/aura",

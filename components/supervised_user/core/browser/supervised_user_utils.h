@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_UTILS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class PrefService;
@@ -50,6 +54,37 @@ enum class FilteringBehavior : int {
 enum class LocallyParentApprovedExtensionsMigrationState : int {
   kNeedToRun = 0,
   kComplete = 1,
+};
+
+// Wrapper for the different outcomes: holds either an error or a valid
+// parsed PACP callback result that can be returned by the PACP widget.
+class ParentAccessCallbackParsedResult {
+ public:
+  explicit ParentAccessCallbackParsedResult(ParentAccessWidgetError error);
+  explicit ParentAccessCallbackParsedResult(
+      kids::platform::parentaccess::client::proto::ParentAccessCallback
+          callback);
+
+  ParentAccessCallbackParsedResult() = delete;
+  ParentAccessCallbackParsedResult(ParentAccessCallbackParsedResult&) = delete;
+  ParentAccessCallbackParsedResult& operator=(
+      const ParentAccessCallbackParsedResult&) = delete;
+  ~ParentAccessCallbackParsedResult();
+
+  std::optional<ParentAccessWidgetError> GetError() const;
+  std::optional<
+      kids::platform::parentaccess::client::proto::ParentAccessCallback>
+  GetCallback() const;
+
+  // Decodes and parses the the base64 result provided by the PACP widget.
+  static ParentAccessCallbackParsedResult ParseParentAccessCallbackResult(
+      const std::string& encoded_parent_access_callback_proto);
+
+ private:
+  absl::variant<
+      kids::platform::parentaccess::client::proto::ParentAccessCallback,
+      ParentAccessWidgetError>
+      result_;
 };
 
 // Converts FamilyRole enum to string format.
