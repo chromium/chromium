@@ -23,7 +23,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,13 +50,13 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Copy from Android code, all four sides of the ARC foreground and background
 // images are padded 25% of it's width and height.
@@ -120,7 +119,7 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
   }
   return subset_image;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using SizeToImageSkiaRep = std::map<int, gfx::ImageSkiaRep>;
 using ScaleToImageSkiaReps = std::map<float, SizeToImageSkiaRep>;
@@ -323,7 +322,7 @@ gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
       SK_ColorWHITE, image, LoadMaskImage(GetScaleToSize(image)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::ImageSkia CompositeImagesAndApplyMask(
     const gfx::ImageSkia& foreground_image,
     const gfx::ImageSkia& background_image) {
@@ -428,7 +427,7 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
   return image_skia;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 gfx::ImageSkia ConvertIconBitmapsToImageSkia(
     const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
@@ -601,9 +600,7 @@ void GetChromeAppCompressedIconData(Profile* profile,
           extension_id),
       scale_factor);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetArcAppCompressedIconData(Profile* profile,
                                  const std::string& app_id,
                                  int size_in_dip,
@@ -644,7 +641,7 @@ void GetGuestOSAppCompressedIconData(Profile* profile,
   icon_loader->GetGuestOSAppCompressedIconData(app_id, scale_factor);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LoadIconFromFileWithFallback(
     IconType icon_type,

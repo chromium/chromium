@@ -466,7 +466,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",

@@ -46,7 +46,7 @@ source_set("app_icon") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder.cc",
       "app_icon_decoder.h",
@@ -88,7 +88,7 @@ source_set("util") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/public/cpp" ]
   }
 }
@@ -134,7 +134,7 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/extensions" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder_unittest.cc",
       "arc_apps_icon_unittest.cc",

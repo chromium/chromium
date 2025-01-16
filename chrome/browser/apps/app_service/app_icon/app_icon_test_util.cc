@@ -15,10 +15,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/test/base/testing_profile.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -93,7 +93,7 @@ gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
   return image;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 FakeIconLoader::FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
 
 std::unique_ptr<apps::IconLoader::Releaser> FakeIconLoader::LoadIconFromIconKey(
@@ -125,6 +125,6 @@ void FakePublisherForIconTest::GetCompressedIconData(
   apps::GetWebAppCompressedIconData(proxy()->profile(), app_id, size_in_dip,
                                     scale_factor, std::move(callback));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

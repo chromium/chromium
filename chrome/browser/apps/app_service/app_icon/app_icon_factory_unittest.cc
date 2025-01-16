@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
@@ -38,7 +37,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
@@ -55,7 +54,7 @@
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/features.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 class AppIconFactoryTest : public testing::Test {
@@ -128,7 +127,7 @@ class AppIconFactoryTest : public testing::Test {
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::IconValuePtr RunLoadIconFromResource(apps::IconType icon_type,
                                              apps::IconEffects icon_effects) {
     base::test::TestFuture<apps::IconValuePtr> future;
@@ -167,7 +166,7 @@ class AppIconFactoryTest : public testing::Test {
         gfx::Size(kSizeInDip, kSizeInDip));
     EnsureRepresentationsLoaded(output_image_skia);
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   content::BrowserTaskEnvironment task_env_;
@@ -259,7 +258,7 @@ TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
       result->uncompressed.GetRepresentation(scale).GetBitmap()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AppIconFactoryTest, LoadCrostiniPenguinIcon) {
   auto icon_type = apps::IconType::kStandard;
   auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
@@ -493,6 +492,6 @@ TEST_F(AppServiceAppIconTest, GetPlayStoreIcon) {
   VerifyIcon(src_image_skia, iv->uncompressed);
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

@@ -51,9 +51,6 @@
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
@@ -63,7 +60,7 @@
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps_util {
 
@@ -119,7 +116,7 @@ const std::string URLPatternToFileSystemPattern(const URLPattern& pattern,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIntentExtraText[] = "S.android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "S.android.intent.extra.SUBJECT";
 constexpr char kIntentExtraStartType[] = "S.org.chromium.arc.start_type";
@@ -291,7 +288,7 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   return true;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -345,7 +342,7 @@ apps::IntentFilterPtr CreateFileFilter(
   return intent_filter;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 apps::IntentFilters CreateIntentFiltersFromArcBridge(
     const std::string& package_name,
     arc::ArcIntentHelperBridge* intent_helper_bridge) {
@@ -360,7 +357,7 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
   }
   return filters;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 apps::IntentFilters CreateIntentFiltersForChromeApp(
     const extensions::Extension* extension) {
@@ -470,7 +467,7 @@ apps::IntentFilterPtr CreateLockScreenFilter() {
   return intent_filter;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 apps::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
@@ -852,9 +849,7 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
 
   return intent_filter;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::IntentPtr& app_service_intent,
     Profile* profile) {
@@ -872,7 +867,6 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
   if (app_service_intent->share_title.has_value()) {
     crosapi_intent->share_title = app_service_intent->share_title.value();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!app_service_intent->files.empty() && profile) {
     std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
     for (const auto& file : app_service_intent->files) {
@@ -899,7 +893,6 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     }
     crosapi_intent->files = std::move(crosapi_files);
   }
-#endif
   if (app_service_intent->activity_name.has_value()) {
     crosapi_intent->activity_name = app_service_intent->activity_name.value();
   }
@@ -936,18 +929,11 @@ apps::IntentPtr CreateAppServiceIntentFromCrosapi(
   if (crosapi_intent->files.has_value() && profile) {
     std::vector<apps::IntentFilePtr> intent_files;
     for (const auto& file : crosapi_intent->files.value()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       auto file_url = apps::GetFileSystemUrl(profile, file->file_path);
       if (file_url.is_empty()) {
         continue;
       }
       auto intent_file = std::make_unique<apps::IntentFile>(file_url);
-#else
-      auto intent_file = std::make_unique<apps::IntentFile>(GURL());
-      // The directory is omitted from the human readable file name.
-      intent_file->file_name =
-          base::SafeBaseName::Create(file->file_path.BaseName());
-#endif
       intent_file->mime_type = file->mime_type;
 
       intent_files.push_back(std::move(intent_file));
@@ -986,6 +972,6 @@ crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
   return intent;
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps_util
