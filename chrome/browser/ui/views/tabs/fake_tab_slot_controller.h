@@ -96,6 +96,7 @@ class FakeTabSlotController : public TabSlotController {
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;

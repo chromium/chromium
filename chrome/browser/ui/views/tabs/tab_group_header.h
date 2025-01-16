@@ -55,7 +55,6 @@ class TabGroupHeader : public TabSlotView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnFocus() override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
@@ -77,6 +76,7 @@ class TabGroupHeader : public TabSlotView,
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   void VisualsChanged();
+  void UpdateAccessibleName();
 
   int GetCollapsedHeaderWidth() const;
 
