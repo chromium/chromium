@@ -260,9 +260,8 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
       continue;
     }
 
-    TextRun subrun = run.SubRun(bidi_run.start, bidi_run.Length());
-    subrun.SetDirection(bidi_run.Direction());
-
+    TextRun subrun =
+        run.SubRun(bidi_run.start, bidi_run.Length(), bidi_run.Direction());
     TextRunPaintInfo subrun_info(subrun);
     CharacterRange range(0, 0, 0, 0);
     if (is_sub_run) [[unlikely]] {
