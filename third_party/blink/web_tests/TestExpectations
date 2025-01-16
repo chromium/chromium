@@ -9112,3 +9112,6 @@ crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element
 crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]
 crbug.com/390162925 [ Win ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
 crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
+
+# Gardener 2025-01-16
+crbug.com/40839871 [ Mac ] http/tests/inspector-protocol/network/cookies-protocol-test.js [ Skip Timeout ]
