@@ -387,7 +387,16 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         ShimmerControlRequester.SEARCHBOX);
   }
 
-  private handleSearchboxBlurred() {
+  private handleSearchboxBlurred(event: FocusEvent) {
+    // Ignore the blurred event if focus left one child element to enter another
+    // child element.
+    if (event.relatedTarget instanceof Node &&
+        this.$.searchboxContainer.contains(event.relatedTarget)) {
+      // TODO(380467089): This workaround wouldn't be needed if the ghost loader
+      // was part of the searchbox element. Remove this workaround once they are
+      // combined.
+      return;
+    }
     this.isSearchboxFocused = false;
     this.autocompleteRequestStarted = false;
     this.showErrorState = false;
