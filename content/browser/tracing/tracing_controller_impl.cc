@@ -49,6 +49,7 @@
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/network_change_notifier.h"
+#include "net/log/net_log_util.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
@@ -372,6 +373,10 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
 #else
   metadata_dict.Set("command_line", command_line);
 #endif
+
+  metadata_dict.Set(
+      "net-constants",
+      net::GetNetConstants(net::NetConstantsRequestMode::kTracing));
 
   metadata_dict.Set(
       "trace-capture-datetime",
