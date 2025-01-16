@@ -1033,22 +1033,6 @@ void DesktopMediaPickerDialogView::Reject() {
 
 void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   PreferredSizeChanged();
-  // TODO(pbos): Ideally this would use shared logic similar to
-  // BubbleDialogDelegateView::SizeToContents() instead of implementing sizing
-  // logic in-place.
-  const gfx::Size new_size = GetWidget()->GetRootView()->GetPreferredSize();
-  if (GetModalType() == ui::mojom::ModalType::kChild) {
-    // For the web-modal dialog resize the dialog in place.
-    // TODO(pbos): This should ideally use UpdateWebContentsModalDialogPosition
-    // to keep the widget centered horizontally. As this dialog is fixed-width
-    // we're effectively only changing the height, so reusing the current
-    // widget origin should be equivalent.
-    GetWidget()->SetSize(new_size);
-    return;
-  }
-
-  // When not using the web-modal dialog, center the dialog with its new size.
-  GetWidget()->CenterWindow(new_size);
 }
 
 void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
