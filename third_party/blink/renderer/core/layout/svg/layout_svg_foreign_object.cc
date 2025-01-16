@@ -163,8 +163,13 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
     bounds_changed = true;
   }
 
+  const bool has_viewport_dependence =
+      To<SVGForeignObjectElement>(GetElement())->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
+
   DCHECK(!needs_transform_update_);
-  return SVGLayoutResult(bounds_changed);
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGForeignObject::UpdateAfterSVGLayout(

@@ -15,9 +15,11 @@ struct SVGLayoutInfo {
 
 struct SVGLayoutResult {
   SVGLayoutResult() = delete;
-  explicit SVGLayoutResult(bool bounds_changed)
-      : bounds_changed(bounds_changed) {}
+  SVGLayoutResult(bool bounds_changed, bool has_viewport_dependence)
+      : bounds_changed(bounds_changed),
+        has_viewport_dependence(has_viewport_dependence) {}
   bool bounds_changed;
+  bool has_viewport_dependence;
 };
 
 }  // namespace blink

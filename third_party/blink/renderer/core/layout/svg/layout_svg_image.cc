@@ -64,7 +64,9 @@ void LayoutSVGImage::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::UpdateReferenceBoxDependency(*this);
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(StyleRef())
+          : TransformHelper::UpdateReferenceBoxDependency(*this);
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 }
 
@@ -144,9 +146,14 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
     bounds_changed = true;
   }
 
+  const bool has_viewport_dependence =
+      To<SVGImageElement>(GetElement())->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
+
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return SVGLayoutResult(bounds_changed);
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

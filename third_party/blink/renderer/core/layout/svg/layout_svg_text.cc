@@ -255,7 +255,11 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
     bounds_changed = true;
   }
-  return SVGLayoutResult(bounds_changed);
+
+  // Any element of the <text> subtree is advertised as having a viewport
+  // dependence. On any viewport size change, we have to relayout the text
+  // subtree, as the effective 'on-screen' font size may change.
+  return SVGLayoutResult(bounds_changed, /*has_viewport_dependence=*/true);
 }
 
 bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

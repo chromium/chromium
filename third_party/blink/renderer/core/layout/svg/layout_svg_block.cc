@@ -56,10 +56,12 @@ void LayoutSVGBlock::WillBeDestroyed() {
 void LayoutSVGBlock::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
-  // Ensure that the viewport dependency flag gets set on the ancestor chain.
-  if (SVGSelfOrDescendantHasViewportDependency()) {
-    ClearSVGSelfOrDescendantHasViewportDependency();
-    SetSVGSelfOrDescendantHasViewportDependency();
+  if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    // Ensure that the viewport dependency flag gets set on the ancestor chain.
+    if (SVGSelfOrDescendantHasViewportDependency()) {
+      ClearSVGSelfOrDescendantHasViewportDependency();
+      SetSVGSelfOrDescendantHasViewportDependency();
+    }
   }
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
@@ -143,7 +145,9 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
 
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::UpdateReferenceBoxDependency(*this);
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(style)
+          : TransformHelper::UpdateReferenceBoxDependency(*this);
 
   if (diff.NeedsFullLayout()) {
     if (diff.TransformChanged())
