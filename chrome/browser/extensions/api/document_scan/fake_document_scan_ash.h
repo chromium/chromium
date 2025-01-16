@@ -25,8 +25,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
 
   // crosapi::mojom::DocumentScan overrides:
   void GetScannerNames(GetScannerNamesCallback callback) override;
-  void ScanFirstPage(const std::string& scanner_name,
-                     ScanFirstPageCallback callback) override;
   void GetScannerList(const std::string& client_id,
                       crosapi::mojom::ScannerEnumFilterPtr filter,
                       GetScannerListCallback callback) override;
