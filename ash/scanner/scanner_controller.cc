@@ -5,6 +5,8 @@
 #include "ash/scanner/scanner_controller.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -12,14 +14,19 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
+#include "ash/scanner/scanner_feedback.h"
 #include "ash/scanner/scanner_session.h"
+#include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "ui/message_center/message_center.h"
@@ -155,6 +162,20 @@ void ScannerController::ExecuteAction(
       scanner_action.GetActionCase();
   scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished, action_case));
   ShowActionProgressNotification(action_case);
+}
+
+void ScannerController::OpenFeedbackDialog(
+    manta::proto::ScannerAction action,
+    scoped_refptr<base::RefCountedMemory> screenshot) {
+  base::Value::Dict action_dict = ScannerActionToDict(std::move(action));
+  std::optional<std::string> pretty_printed_action = base::WriteJsonWithOptions(
+      action_dict, base::JsonOptions::OPTIONS_PRETTY_PRINT);
+  // JSON serialisation should always succeed as the depth of the Dict is fixed,
+  // and no binary values should appear in the Dict.
+  CHECK(pretty_printed_action.has_value());
+
+  delegate_->OpenFeedbackDialog(ScannerFeedbackInfo(
+      std::move(*pretty_printed_action), std::move(screenshot)));
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

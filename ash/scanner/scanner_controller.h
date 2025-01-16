@@ -14,6 +14,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
+namespace manta::proto {
+class ScannerAction;
+}
+
 namespace ash {
 
 class ScannerCommandDelegateImpl;
@@ -56,6 +60,11 @@ class ASH_EXPORT ScannerController : public SessionObserver {
 
   // Executes the action described by `scanner_action`.
   void ExecuteAction(const ScannerActionViewModel& scanner_action);
+
+  // Opens a feedback dialog for an action that has been performed, and the
+  // (resized) screenshot which initiated the action.
+  void OpenFeedbackDialog(manta::proto::ScannerAction action,
+                          scoped_refptr<base::RefCountedMemory> screenshot);
 
   bool HasActiveSessionForTesting() const;
 

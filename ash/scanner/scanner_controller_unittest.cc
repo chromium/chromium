@@ -6,20 +6,27 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
+#include "ash/public/cpp/scanner/scanner_feedback_info.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/span.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -34,6 +41,7 @@ namespace ash {
 namespace {
 
 using ::base::test::InvokeFuture;
+using ::base::test::IsJson;
 using ::base::test::RunOnceCallback;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -42,6 +50,12 @@ using ::testing::WithArg;
 
 constexpr char kScannerActionSuccessToastId[] = "scanner_action_success";
 constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
+
+FakeScannerDelegate* GetFakeScannerDelegate(
+    ScannerController& scanner_controller) {
+  return static_cast<FakeScannerDelegate*>(
+      scanner_controller.delegate_for_testing());
+}
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
@@ -224,6 +238,38 @@ TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
   scanner_controller->ExecuteAction(actions[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionFailureToastId));
+}
+
+TEST_F(ScannerControllerTest, OpenFeedbackDialogCallsDelegate) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  FakeScannerDelegate& fake_scanner_delegate =
+      *GetFakeScannerDelegate(*scanner_controller);
+  base::test::TestFuture<ScannerFeedbackInfo> feedback_info_future;
+  fake_scanner_delegate.SetOpenFeedbackDialogCallback(
+      feedback_info_future.GetRepeatingCallback());
+  manta::proto::ScannerAction action;
+  manta::proto::NewEventAction& new_event = *action.mutable_new_event();
+  new_event.set_title("🌏");
+  new_event.set_description("formerly \"Geo Sync\"");
+  new_event.set_dates("20241014T160000/20241014T161500");
+  new_event.set_location("Wonderland");
+  auto image = base::MakeRefCounted<base::RefCountedString>("testimage");
+
+  scanner_controller->OpenFeedbackDialog(std::move(action), std::move(image));
+
+  ScannerFeedbackInfo feedback_dialog_info = feedback_info_future.Take();
+  EXPECT_THAT(feedback_dialog_info.action_details, IsJson(R"json({
+    "new_event": {
+      "title": "🌏",
+      "description": "formerly \"Geo Sync\"",
+      "dates": "20241014T160000/20241014T161500",
+      "location": "Wonderland",
+    }
+  })json"));
+  ASSERT_TRUE(feedback_dialog_info.screenshot);
+  EXPECT_EQ(base::as_string_view(*feedback_dialog_info.screenshot),
+            "testimage");
 }
 
 }  // namespace
