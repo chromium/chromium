@@ -1874,6 +1874,42 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Metered"/>
 </enum>
 
+<!-- LINT.IfChange(NoVarySearchHeaderParseResult) -->
+
+<enum name="NoVarySearchHeaderParseResult">
+  <int value="0" label="Success">
+    The No-Vary-Search header was successfully parsed.
+  </int>
+  <int value="1" label="No header">
+    The No-Vary-Search header was not present in the response headers.
+  </int>
+  <int value="2" label="Default value">
+    The No-Vary-Search header value was equivalent to the default (vary on all
+    query parameters), and so was ignored.
+  </int>
+  <int value="3" label="Not dictionary">
+    The value of the No-Vary-Search header could not be parsed as a structured
+    headers dictionary.
+  </int>
+  <int value="4" label="Non-boolean key-order">
+    The &quot;key-order&quot; parameter does not have a boolean value.
+  </int>
+  <int value="5" label="Params not string list">
+    The &quot;params&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="6" label="Except not string list">
+    The &quot;except&quot; parameter is not an inner list, or contains a
+    non-string value.
+  </int>
+  <int value="7" label="Except without true params">
+    The &quot;except&quot; parameter was supplied, but the &quot;params&quot;
+    parameter did not have a boolean true value.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_no_vary_search_data.h:NoVarySearchHeaderParseResult) -->
+
 <enum name="NsswitchService">
   <int value="0" label="Unknown"/>
   <int value="1" label="&quot;files&quot;"/>

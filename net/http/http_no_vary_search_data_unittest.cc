@@ -9,11 +9,15 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
@@ -1176,6 +1180,42 @@ TEST(HttpNoVarySearchResponseHeadersParseHistogramTest, UnrecognizedKeys) {
   EXPECT_THAT(no_vary_search_data, base::test::HasValue());
   histogram_tester.ExpectUniqueSample(
       "Net.HttpNoVarySearch.HasUnrecognizedKeys", true, 1);
+}
+
+TEST(HttpNoVarySearchDataTest, ComparisonOperators) {
+  constexpr auto kValues = std::to_array<std::string_view>(
+      {"params", "key-order", "params, key-order", R"(params=("a"))",
+       R"(params=("b"))", R"(params, except=("a"))", R"(params, except=("b"))",
+       R"(params, except=("a"), key-order)"});
+  auto data_vector = base::ToVector(kValues, [](std::string_view value) {
+    auto headers = HttpResponseHeaders::Builder({1, 1}, "200 OK")
+                       .AddHeader("No-Vary-Search", value)
+                       .Build();
+    auto result = HttpNoVarySearchData::ParseFromHeaders(*headers);
+    CHECK(result.has_value());
+    return result.value();
+  });
+  // We don't actually care what the order is, just that it is consistent, so
+  // sort the vector.
+  std::ranges::sort(data_vector);
+
+  // Compare everything to itself.
+  for (const auto& data : data_vector) {
+    EXPECT_EQ(data, data);
+    EXPECT_EQ(data <=> data, std::strong_ordering::equal);
+  }
+  // Compare everything to everything else.
+  for (size_t i = 0; i < data_vector.size() - 1; ++i) {
+    for (size_t j = i + 1; j < data_vector.size(); ++j) {
+      // Commutativity of !=.
+      EXPECT_NE(data_vector[i], data_vector[j]);
+      EXPECT_NE(data_vector[j], data_vector[i]);
+
+      // Transitivity of <.
+      EXPECT_LT(data_vector[i], data_vector[j]);
+      EXPECT_GT(data_vector[j], data_vector[i]);
+    }
+  }
 }
 
 }  // namespace

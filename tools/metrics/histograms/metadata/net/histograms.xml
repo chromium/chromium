@@ -477,6 +477,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.HeaderParseResult"
+    enum="NoVarySearchHeaderParseResult" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The result of parsing the No-Vary-Search value in the HTTP response header.
+    This metric is emitted every time an HTTP response is written to the HTTP
+    disk cache.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.OpenDiskEntry" units="ms" expires_after="2025-07-13">
   <owner>yhirano@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
