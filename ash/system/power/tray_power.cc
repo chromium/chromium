@@ -103,8 +103,9 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
   PowerStatus::BatteryImageInfo info =
       PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
 
-  image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, GetColorProvider()));
+  image_view()->SetImage(
+      ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(
+          info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
 }
 
 void PowerTrayView::OnPowerStatusChanged() {

@@ -125,7 +125,8 @@ void PowerButtonMenuCurtainView::ScheduleShowHideAnimation(bool show) {
 void PowerButtonMenuCurtainView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const ui::ColorProvider& color_provider = CHECK_DEREF(GetColorProvider());
-  enterprise_icon().SetImage(EnterpriseIcon(color_provider));
+  enterprise_icon().SetImage(
+      ui::ImageModel::FromImageSkia(EnterpriseIcon(color_provider)));
   title_text().SetEnabledColor(
       color_provider.GetColor(kColorAshIconColorPrimary));
   description_text().SetEnabledColor(
