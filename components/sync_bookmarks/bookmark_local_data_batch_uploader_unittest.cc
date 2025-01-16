@@ -433,7 +433,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, FullMigrationUploadsLocalBookmarks) {
   EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
   EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
 
-  histogram_tester.ExpectTotalCount("Bookmarks.BatchUploadDuration", 1);
+  histogram_tester.ExpectTotalCount(kBatchUploadDurationHistogramName, 1);
   histogram_tester.ExpectUniqueSample(
       "Bookmarks.BatchUploadOutcomeAccountNodes",
       /*sample=*/2,
@@ -451,6 +451,8 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   // Partial migration is only supported with the new upload logic.
   base::test::ScopedFeatureList feature_list{
       switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload};
+
+  base::HistogramTester histogram_tester;
 
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
@@ -476,6 +478,8 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
                           MatchesTitleAndUrl(u"Local", "http://local1.com/")));
   EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
   EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(kBatchUploadDurationHistogramName, 1);
 }
 
 }  // namespace

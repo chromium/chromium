@@ -19,6 +19,9 @@ class BookmarkNode;
 
 namespace sync_bookmarks {
 
+constexpr char kBatchUploadDurationHistogramName[] =
+    "Bookmarks.BatchUploadDuration";
+
 class BookmarkModelViewUsingLocalOrSyncableNodes;
 
 class BookmarkLocalDataBatchUploader
