@@ -47,7 +47,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                              public content::WebContentsObserver,
                              public ProfileAttributesStorage::Observer {
  public:
-  ProfilePickerHandler();
+  explicit ProfilePickerHandler(bool is_glic_version);
 
   ProfilePickerHandler(const ProfilePickerHandler&) = delete;
   ProfilePickerHandler& operator=(const ProfilePickerHandler&) = delete;
@@ -166,6 +166,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Returns the list of profiles in the same order as when the picker
   // was first shown.
   std::vector<ProfileAttributesEntry*> GetProfileAttributes();
+
+  const bool is_glic_version_;
 
   // Observes changes to profile attributes, and notifies the WebUI.
   base::ScopedObservation<ProfileAttributesStorage,

@@ -201,7 +201,8 @@ void OpenSigninOnDesktopLearnMoreURL(Browser* browser) {
 
 }  // namespace
 
-ProfilePickerHandler::ProfilePickerHandler() = default;
+ProfilePickerHandler::ProfilePickerHandler(bool is_glic_version)
+    : is_glic_version_(is_glic_version) {}
 
 ProfilePickerHandler::~ProfilePickerHandler() {
   OnJavascriptDisallowed();
@@ -775,6 +776,16 @@ ProfilePickerHandler::GetProfileAttributes() {
 base::Value::List ProfilePickerHandler::GetProfilesList() {
   base::Value::List profiles_list;
   std::vector<ProfileAttributesEntry*> entries = GetProfileAttributes();
+
+  // In Glic version, only allow profile entries that are eligible. This may
+  // cause the returned profile list to be empty, and will display different
+  // strings in the Ui.
+  if (is_glic_version_) {
+    std::erase_if(entries, [](const ProfileAttributesEntry* entry) {
+      return !entry->IsGlicEligible();
+    });
+  }
+
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {
