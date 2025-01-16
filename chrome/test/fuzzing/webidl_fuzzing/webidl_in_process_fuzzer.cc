@@ -34,6 +34,12 @@ class WebIDLInProcessFuzzer
   WebIDLInProcessFuzzer();
 
   int Fuzz(const FuzzCase& fuzz_case) override;
+  base::CommandLine::StringVector GetChromiumCommandLineArguments() override {
+    return {
+        FILE_PATH_LITERAL("--enable-blink-test-features"),
+        FILE_PATH_LITERAL("--enable-experimental-web-platform-features"),
+    };
+  }
 };
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(WebIDLInProcessFuzzer)

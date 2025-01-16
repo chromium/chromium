@@ -265,7 +265,10 @@ def build_interface_rules(builder: DomatoGrammarBuilder, interface):
     builder.add_line(Rule(type, rhs))
     if attr.is_readonly:
       continue
-    # Can we handle write attributes?
+    # Handle writable attributes now.
+    rhs = [interface.identifier if attr.is_static else iface_type]
+    rhs += [f'.{attr.identifier}']
+    builder.add_line(Rule(DomatoType(''), rhs + [ ' = ', type, ';']))
   for constructor in interface.constructors:
     build_constructor_rules(builder, interface.identifier, constructor)
 
@@ -478,12 +481,19 @@ def main():
   for interface in database.callback_interfaces:
     build_callback_interface_rules(builder, interface)
 
+  for interface in database.interfaces:
+    ifc_type = DomatoType(interface.identifier)
+    for derived in interface.subclasses:
+      drv_type = DomatoType(derived.identifier)
+      builder.add_rule(Rule(ifc_type, [drv_type]))
+      builder.add_rule(Rule(drv_type, [ifc_type]))
+
   remove_cyclic_dependencies(builder)
   with action_helpers.atomic_output(args.outfile, mode="w") as f:
     if args.include_path:
       f.write(f'!include {args.include_path}\n')
     f.write('!lineguard try { <line> } catch(e) { }\n')
-    f.write('<root root=true> = <lines count=100>\n')
+    f.write('<root root=true> = <lines count=20>\n')
     for rule in builder.rules:
       line = f'<{rule.lhs.name}> = '
       rhs_line = ''
