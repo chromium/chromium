@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -93,17 +92,6 @@ class LockScreenStartReauthDialog::ModalDialogManagerCleanup
         ->SetDelegate(nullptr);
   }
 };
-
-// static
-gfx::Size LockScreenStartReauthDialog::CalculateLockScreenReauthDialogSize(
-    bool is_new_layout_enabled) {
-  if (!is_new_layout_enabled) {
-    return kBaseLockDialogSize;
-  }
-
-  // LockscreenReauth Dialog size should match OOBE Dialog size.
-  return CalculateOobeDialogSizeForPrimaryDisplay();
-}
 
 void LockScreenStartReauthDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
@@ -284,8 +272,7 @@ void LockScreenStartReauthDialog::OnCaptivePortalDialogReadyForTesting() {
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
     : BaseLockDialog(GURL(chrome::kChromeUILockScreenStartReauthURL),
-                     CalculateLockScreenReauthDialogSize(
-                         features::IsNewLockScreenReauthLayoutEnabled())),
+                     CalculateOobeDialogSizeForPrimaryDisplay()),
       network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
   network_state_informer_->Init();
   scoped_observation_.Observe(network_state_informer_.get());
