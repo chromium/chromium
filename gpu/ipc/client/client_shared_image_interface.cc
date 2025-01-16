@@ -205,23 +205,6 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       buffer_handle_type);
 }
 
-SharedImageInterface::SharedImageMapping
-ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
-  base::WritableSharedMemoryMapping mapping;
-  gfx::GpuMemoryBufferHandle handle;
-  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
-
-  auto mailbox = proxy_->CreateSharedImage(si_info, std::move(handle));
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  shared_image_mapping.mapping = std::move(mapping);
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(), holder_,
-      gfx::SHARED_MEMORY_BUFFER);
-
-  return shared_image_mapping;
-}
-
 scoped_refptr<ClientSharedImage>
 ClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {

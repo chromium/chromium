@@ -74,8 +74,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   // Used by the software compositor only. |usage| must be
   // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY. Call client_shared_image->Map()
   // later to get the shared memory mapping.
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) override;
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
