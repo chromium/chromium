@@ -263,8 +263,6 @@ cc_component("cc") {
     "raster/tile_task.h",
     "raster/zero_copy_raster_buffer_provider.cc",
     "raster/zero_copy_raster_buffer_provider.h",
-    "resources/cross_thread_shared_bitmap.cc",
-    "resources/cross_thread_shared_bitmap.h",
     "resources/memory_history.cc",
     "resources/memory_history.h",
     "resources/resource_pool.cc",
