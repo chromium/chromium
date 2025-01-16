@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -19,10 +20,11 @@ namespace autofill {
 
 class AutofillProgressDialogController;
 
-// The Desktop native views for AutofillProgressDialogView. This is owned by the
+// The Desktop native views for AutofillProgressDialogImpl. This is owned by the
 // view hierarchy.
-class AutofillProgressDialogViews : public AutofillProgressDialogView,
-                                    public views::DialogDelegateView {
+class AutofillProgressDialogViews : public views::DialogDelegateView {
+  METADATA_HEADER(AutofillProgressDialogViews, views::DialogDelegateView)
+
  public:
   explicit AutofillProgressDialogViews(
       base::WeakPtr<AutofillProgressDialogController> controller);
@@ -31,15 +33,15 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
       delete;
   ~AutofillProgressDialogViews() override;
 
-  // AutofillProgressDialogView:
-  void Dismiss(bool show_confirmation_before_closing,
-               bool is_canceled_by_user) override;
-  void InvalidateControllerForCallbacks() override;
-  base::WeakPtr<AutofillProgressDialogView> GetWeakPtr() override;
+  void Dismiss(bool show_confirmation_before_closing, bool is_canceled_by_user);
+  void InvalidateControllerForCallbacks();
 
   // DialogDelegate:
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
+
+  AutofillProgressDialogController* controller() { return controller_.get(); }
+  bool is_canceled_by_user() { return is_canceled_by_user_; }
 
  private:
   // Close the widget of this view, and notify controller.
@@ -55,8 +57,6 @@ class AutofillProgressDialogViews : public AutofillProgressDialogView,
   base::WeakPtr<AutofillProgressDialogController> controller_;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::Throbber> progress_throbber_ = nullptr;
-
-  base::WeakPtrFactory<AutofillProgressDialogViews> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
