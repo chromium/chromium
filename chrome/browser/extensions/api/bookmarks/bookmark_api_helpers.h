@@ -23,6 +23,7 @@ namespace extensions {
 namespace bookmark_api_helpers {
 
 api::bookmarks::BookmarkTreeNode GetBookmarkTreeNode(
+    bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed,
     const bookmarks::BookmarkNode* node,
     bool recurse,
@@ -30,6 +31,7 @@ api::bookmarks::BookmarkTreeNode GetBookmarkTreeNode(
 
 // Populates |out_bookmark_tree_node| with given |node|.
 void PopulateBookmarkTreeNode(
+    bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed,
     const bookmarks::BookmarkNode* node,
     bool recurse,
@@ -37,13 +39,15 @@ void PopulateBookmarkTreeNode(
     api::bookmarks::BookmarkTreeNode* out_bookmark_tree_node);
 
 // Adds a JSON representation of |node| to the JSON |nodes|.
-void AddNode(bookmarks::ManagedBookmarkService* managed,
+void AddNode(bookmarks::BookmarkModel* model,
+             bookmarks::ManagedBookmarkService* managed,
              const bookmarks::BookmarkNode* node,
              std::vector<api::bookmarks::BookmarkTreeNode>* nodes,
              bool recurse);
 
 // Adds a JSON representation of |node| of folder type to the JSON |nodes|.
-void AddNodeFoldersOnly(bookmarks::ManagedBookmarkService* managed,
+void AddNodeFoldersOnly(bookmarks::BookmarkModel* model,
+                        bookmarks::ManagedBookmarkService* managed,
                         const bookmarks::BookmarkNode* node,
                         std::vector<api::bookmarks::BookmarkTreeNode>* nodes,
                         bool recurse);

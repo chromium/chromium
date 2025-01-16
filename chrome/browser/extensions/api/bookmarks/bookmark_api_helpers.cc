@@ -30,28 +30,33 @@ namespace bookmark_api_helpers {
 
 namespace {
 
-void AddNodeHelper(bookmarks::ManagedBookmarkService* managed,
+void AddNodeHelper(bookmarks::BookmarkModel* model,
+                   bookmarks::ManagedBookmarkService* managed,
                    const BookmarkNode* node,
                    std::vector<BookmarkTreeNode>* nodes,
                    bool recurse,
                    bool only_folders) {
-  if (node->IsVisible())
-    nodes->push_back(GetBookmarkTreeNode(managed, node, recurse, only_folders));
+  if (node->IsVisible()) {
+    nodes->push_back(
+        GetBookmarkTreeNode(model, managed, node, recurse, only_folders));
+  }
 }
 
 }  // namespace
 
-BookmarkTreeNode GetBookmarkTreeNode(bookmarks::ManagedBookmarkService* managed,
+BookmarkTreeNode GetBookmarkTreeNode(bookmarks::BookmarkModel* model,
+                                     bookmarks::ManagedBookmarkService* managed,
                                      const BookmarkNode* node,
                                      bool recurse,
                                      bool only_folders) {
   BookmarkTreeNode bookmark_tree_node;
-  PopulateBookmarkTreeNode(managed, node, recurse, only_folders,
+  PopulateBookmarkTreeNode(model, managed, node, recurse, only_folders,
                            &bookmark_tree_node);
   return bookmark_tree_node;
 }
 
 void PopulateBookmarkTreeNode(
+    bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed,
     const bookmarks::BookmarkNode* node,
     bool recurse,
@@ -88,6 +93,8 @@ void PopulateBookmarkTreeNode(
         node->date_added().InMillisecondsSinceUnixEpoch();
   }
 
+  out_bookmark_tree_node->syncing = !model->IsLocalOnlyNode(*node);
+
   if (node->type() == BookmarkNode::Type::BOOKMARK_BAR) {
     out_bookmark_tree_node->folder_type =
         api::bookmarks::FolderType::kBookmarksBar;
@@ -111,26 +118,28 @@ void PopulateBookmarkTreeNode(
     std::vector<BookmarkTreeNode> children;
     for (const auto& child : node->children()) {
       if (child->IsVisible() && (!only_folders || child->is_folder())) {
-        children.push_back(
-            GetBookmarkTreeNode(managed, child.get(), true, only_folders));
+        children.push_back(GetBookmarkTreeNode(model, managed, child.get(),
+                                               true, only_folders));
       }
     }
     out_bookmark_tree_node->children = std::move(children);
   }
 }
 
-void AddNode(bookmarks::ManagedBookmarkService* managed,
+void AddNode(bookmarks::BookmarkModel* model,
+             bookmarks::ManagedBookmarkService* managed,
              const BookmarkNode* node,
              std::vector<BookmarkTreeNode>* nodes,
              bool recurse) {
-  return AddNodeHelper(managed, node, nodes, recurse, false);
+  return AddNodeHelper(model, managed, node, nodes, recurse, false);
 }
 
-void AddNodeFoldersOnly(bookmarks::ManagedBookmarkService* managed,
+void AddNodeFoldersOnly(bookmarks::BookmarkModel* model,
+                        bookmarks::ManagedBookmarkService* managed,
                         const BookmarkNode* node,
                         std::vector<BookmarkTreeNode>* nodes,
                         bool recurse) {
-  return AddNodeHelper(managed, node, nodes, recurse, true);
+  return AddNodeHelper(model, managed, node, nodes, recurse, true);
 }
 
 bool RemoveNode(BookmarkModel* model,
