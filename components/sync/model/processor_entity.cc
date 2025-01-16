@@ -27,7 +27,7 @@ namespace syncer {
 namespace {
 
 std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return base::Base64Encode(
       base::SHA1HashString(specifics.SerializeAsString()));
 }
@@ -400,13 +400,13 @@ size_t ProcessorEntity::EstimateMemoryUsage() const {
 bool ProcessorEntity::MatchesSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) const {
   DCHECK(!metadata_.is_deleted());
-  DCHECK_GT(specifics.ByteSize(), 0);
+  DCHECK_GT(specifics.ByteSizeLong(), 0u);
   return HashSpecifics(specifics) == metadata_.specifics_hash();
 }
 
 void ProcessorEntity::UpdateSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) {
-  if (specifics.ByteSize() > 0) {
+  if (specifics.ByteSizeLong() > 0) {
     *metadata_.mutable_specifics_hash() = HashSpecifics(specifics);
   } else {
     metadata_.clear_specifics_hash();

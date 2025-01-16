@@ -93,7 +93,7 @@ struct EntityData {
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its
   // specifics hasn't been set.
-  bool is_deleted() const { return specifics.ByteSize() == 0; }
+  bool is_deleted() const { return specifics.ByteSizeLong() == 0; }
 
   // Optionally populated for outgoing deletions. See corresponding field in
   // SyncEntity for details.
