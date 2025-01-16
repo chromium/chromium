@@ -274,8 +274,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     return;
   }
 
-  const std::string defaultGaiaId =
-      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
+  const GaiaId defaultGaiaId(
+      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
   id<SystemIdentity> defaultIdentity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(defaultGaiaId);
   bool skipAccountPicker =

@@ -115,7 +115,7 @@ void StorePreRestoreIdentity(PrefService* profile_pref,
                              bool history_sync_enabled) {
   ScopedDictPrefUpdate update(profile_pref, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
-  update->Set(kAccountInfoKeyGaia, account.gaia);
+  update->Set(kAccountInfoKeyGaia, account.gaia.ToString());
   update->Set(kAccountInfoKeyEmail, account.email);
   update->Set(kAccountInfoKeyFullName, account.full_name);
   update->Set(kAccountInfoKeyGivenName, account.given_name);

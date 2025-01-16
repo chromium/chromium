@@ -93,7 +93,7 @@
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
 
-  return base::SysUTF8ToNSString(info.gaia);
+  return info.gaia.ToNSString();
 }
 
 + (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {

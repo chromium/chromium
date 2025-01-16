@@ -249,7 +249,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    std::string_view gaia_id) const {
+    const GaiaId& gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
   if (gaia_id.empty()) {
@@ -257,7 +257,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
   }
 
   // Use the NSString* overload to avoid duplicating implementation.
-  return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
+  return GetIdentityWithGaiaID(gaia_id.ToNSString());
 }
 
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
@@ -305,8 +305,8 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    std::string_view gaia_id) const {
-  return GetIdentityOnDeviceWithGaiaID(base::SysUTF8ToNSString(gaia_id));
+    const GaiaId& gaia_id) const {
+  return GetIdentityOnDeviceWithGaiaID(gaia_id.ToNSString());
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
@@ -326,7 +326,7 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     const std::vector<AccountInfo>& account_infos) const {
   NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
   for (const AccountInfo& account_info : account_infos) {
-    NSString* gaia_id = base::SysUTF8ToNSString(account_info.gaia);
+    NSString* gaia_id = account_info.gaia.ToNSString();
     id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
     if (identity) {
       [identities addObject:identity];

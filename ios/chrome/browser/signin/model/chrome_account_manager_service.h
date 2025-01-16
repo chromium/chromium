@@ -99,7 +99,7 @@ class ChromeAccountManagerService : public KeyedService,
   // no matching identity is found. There are two overloads to reduce the
   // need to convert between NSString* and std::string.
   id<SystemIdentity> GetIdentityWithGaiaID(NSString* gaia_id) const;
-  id<SystemIdentity> GetIdentityWithGaiaID(std::string_view gaia_id) const;
+  id<SystemIdentity> GetIdentityWithGaiaID(const GaiaId& gaia_id) const;
 
   // Returns all SystemIdentity objects, sorted by the ordering used in the
   // SystemIdentityManager, which is typically based on the keychain ordering of
@@ -129,8 +129,7 @@ class ChromeAccountManagerService : public KeyedService,
   // identity exists on the device. Similar to GetIdentityWithGaiaID(), but as
   // opposed to that (and most other methods in this service), this also handles
   // accounts that are assigned to other profiles.
-  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(
-      std::string_view gaia_id) const;
+  id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(const GaiaId& gaia_id) const;
   id<SystemIdentity> GetIdentityOnDeviceWithGaiaID(NSString* gaia_id) const;
   // Converts a vector of AccountInfos, as returned by
   // IdentityManager::GetAccountsOnDevice(), to `SystemIdentities (by looking

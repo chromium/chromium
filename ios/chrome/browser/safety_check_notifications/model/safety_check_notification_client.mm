@@ -499,13 +499,13 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
         AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
     id<SystemIdentity> identity =
         authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    const GaiaId gaiaID(identity.gaiaID);
     if (!push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
                 PushNotificationClientId::kSafetyCheck, gaiaID)) {
       PushNotificationService* service =
           GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+      service->SetPreference(gaiaID.ToNSString(),
                              PushNotificationClientId::kSafetyCheck, true);
     }
   }

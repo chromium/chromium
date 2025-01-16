@@ -187,7 +187,7 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     // Only show the dialog once per account, when switching from the Account
     // Menu.
     signin::GaiaIdHash gaia_id_hash =
-        signin::GaiaIdHash::FromGaiaId(base::SysNSStringToUTF8(gaia_id));
+        signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id));
     const base::Value* already_seen = syncer::GetAccountKeyedPrefValue(
         prefs, prefs::kSigninHasAcceptedManagementDialog, gaia_id_hash);
     if (already_seen && already_seen->GetIfBool().value_or(false)) {

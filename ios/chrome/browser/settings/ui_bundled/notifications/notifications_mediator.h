@@ -17,6 +17,7 @@ namespace syncer {
 class DeviceInfoSyncService;
 }  // namespace syncer
 
+class GaiaId;
 class PrefService;
 enum class PushNotificationClientId;
 @protocol NotificationsAlertPresenter;
@@ -31,7 +32,7 @@ enum class PushNotificationClientId;
 // Initializes the mediator with the user's pref service and gaia ID to
 // manipulate their push notification permissions.
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID
+                             gaiaID:(const GaiaId&)gaiaID
               deviceInfoSyncService:
                   (syncer::DeviceInfoSyncService*)deviceInfoSyncService
     NS_DESIGNATED_INITIALIZER;

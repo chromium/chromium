@@ -170,9 +170,10 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
           base::BindOnce(
               [](const TestAccount& account, ProfileAttributesIOS attr) {
                 attr.SetLastActiveTime(account.last_active_time);
-                attr.SetAuthenticationInfo(account.gaia, account.email);
+                attr.SetAuthenticationInfo(GaiaId(std::string(account.gaia)),
+                                           account.email);
                 ProfileAttributesIOS::GaiaIdSet gaia_ids;
-                gaia_ids.insert(std::string(account.gaia));
+                gaia_ids.insert(GaiaId(std::string(account.gaia)));
                 attr.SetAttachedGaiaIds(gaia_ids);
                 return attr;
               },
@@ -187,12 +188,12 @@ TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
     ProfileAttributesIOS attr =
         storage.GetAttributesForProfileWithName(account.name);
     EXPECT_EQ(attr.GetProfileName(), account.name);
-    EXPECT_EQ(attr.GetGaiaId(), account.gaia);
+    EXPECT_EQ(attr.GetGaiaId(), GaiaId(std::string(account.gaia)));
     EXPECT_EQ(attr.GetUserName(), account.email);
     EXPECT_EQ(attr.IsAuthenticated(), account.authenticated);
     EXPECT_EQ(attr.GetLastActiveTime(), account.last_active_time);
     ProfileAttributesIOS::GaiaIdSet gaia_ids;
-    gaia_ids.insert(std::string(account.gaia));
+    gaia_ids.insert(GaiaId(std::string(account.gaia)));
     attr.SetAttachedGaiaIds(gaia_ids);
     EXPECT_EQ(attr.GetAttachedGaiaIds(), gaia_ids);
   }
@@ -209,7 +210,7 @@ TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
         storage.GetAttributesForProfileWithName(account.name);
 
     EXPECT_EQ(attr.GetProfileName(), account.name);
-    EXPECT_EQ(attr.GetGaiaId(), "");
+    EXPECT_EQ(attr.GetGaiaId(), GaiaId());
     EXPECT_EQ(attr.GetUserName(), "");
     EXPECT_EQ(attr.IsAuthenticated(), false);
     EXPECT_EQ(attr.GetAttachedGaiaIds().size(), 0ul);

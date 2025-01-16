@@ -68,7 +68,7 @@ NSSet<NSString*>* GaiaIdSetWithAccountInfos(
     const std::vector<AccountInfo>& account_infos) {
   NSMutableSet* gaia_id_set = [NSMutableSet set];
   for (const AccountInfo& account_info : account_infos) {
-    [gaia_id_set addObject:base::SysUTF8ToNSString(account_info.gaia)];
+    [gaia_id_set addObject:account_info.gaia.ToNSString()];
   }
   return [gaia_id_set copy];
 }

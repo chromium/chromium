@@ -13,8 +13,10 @@
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
+class GaiaId;
 class ProfileManagerIOS;
 @protocol SystemIdentity;
 
@@ -78,7 +80,7 @@ class AccountProfileMapper {
   // Returns the name of the profile to which `gaia_id` is assigned, or nullopt
   // if no such profile exists.
   std::optional<std::string> FindProfileNameForGaiaID(
-      std::string_view gaia_id) const;
+      const GaiaId& gaia_id) const;
 
   // Iterates over all known identities for `profile_name`, sorted by
   // the ordering used in system identity manager, which is typically based
@@ -96,7 +98,7 @@ class AccountProfileMapper {
 
   // Returns whether the profile assigned to `gaia_id` has been fully
   // initialized.
-  bool IsProfileForGaiaIDFullyInitialized(std::string_view gaia_id);
+  bool IsProfileForGaiaIDFullyInitialized(const GaiaId& gaia_id);
 
   // Marks the personal profile as managed, attaches the given `gaia_id`, and
   // moves all personal accounts to a new empty personal profile. Deletes the
@@ -112,14 +114,14 @@ class AccountProfileMapper {
   //    personal profile. In this case, the user *may* be offered to take
   //    existing local data along into the managed profile, which is implemented
   //    as converting the personal profile into a managed one.
-  void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id,
+  void MakePersonalProfileManagedWithGaiaID(const GaiaId& gaia_id,
                                             base::OnceClosure done_callback);
 
  private:
   class Assigner;
 
   using ProfileNameToGaiaIds =
-      std::map<std::string, std::set<std::string, std::less<>>, std::less<>>;
+      std::map<std::string, std::set<GaiaId, std::less<>>, std::less<>>;
 
   // Iterator callback for SystemIdentityManager. Calls `callback` when
   // receiving an identity assigned to the profile with `profile_name`.

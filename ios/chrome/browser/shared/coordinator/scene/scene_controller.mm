@@ -321,7 +321,7 @@ void InjectNTP(Browser* browser) {
 // Updates `data` with the Family Link member role associated to the primary
 // signed-in account, no-op if the account is not enrolled in Family Link.
 void OnListFamilyMembersResponse(
-    const std::string& primary_account_gaia,
+    const GaiaId& primary_account_gaia,
     UserFeedbackData* data,
     const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
@@ -329,7 +329,7 @@ void OnListFamilyMembersResponse(
     return;
   }
   for (const kidsmanagement::FamilyMember& member : response->members()) {
-    if (member.user_id() == primary_account_gaia) {
+    if (member.user_id() == primary_account_gaia.ToString()) {
       data.familyMemberRole = base::SysUTF8ToNSString(
           supervised_user::FamilyRoleToString(member.role()));
       break;

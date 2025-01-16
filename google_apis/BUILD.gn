@@ -203,6 +203,10 @@ component("google_apis") {
       "google_api_keys_mac.mm",
     ]
 
+    if (is_ios) {
+      sources += [ "gaia/gaia_id_ios.mm" ]
+    }
+
     frameworks = [ "Foundation.framework" ]
   }
 

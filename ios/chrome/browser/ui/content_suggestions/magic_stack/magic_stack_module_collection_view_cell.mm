@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_collection_view_cell.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -300,7 +301,7 @@ const float kCornerRadius = 24;
   // per-profile notification settings is being introduced, ensure a `gaia_id`
   // is passed to `GetMobileNotificationPermissionStatusForClient()` below.
   return push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(clientId, "");
+      GetMobileNotificationPermissionStatusForClient(clientId, GaiaId());
 }
 
 // Title string for the context menu of this container.

@@ -115,7 +115,7 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
     return [[CWVIdentity alloc]
         initWithEmail:base::SysUTF8ToNSString(accountInfo.email)
              fullName:nil
-               gaiaID:base::SysUTF8ToNSString(accountInfo.gaia)];
+               gaiaID:accountInfo.gaia.ToNSString()];
   }
 
   return nil;
@@ -144,8 +144,7 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
   const CoreAccountId accountId = _identityManager->PickAccountIdForAccount(
-      base::SysNSStringToUTF8(identity.gaiaID),
-      base::SysNSStringToUTF8(identity.email));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.email));
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(

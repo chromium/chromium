@@ -752,10 +752,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   // This implicitly covers the case when SyncDisabled policy is enabled, as
   // kGoogleServicesLastSyncingGaiaId will be empty.
   ProfileIOS* profile = [self originalProfile];
-  const std::string lastSyncingGaiaId =
-      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-  const std::string migratedGaiaId = profile->GetPrefs()->GetString(
-      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  const GaiaId lastSyncingGaiaId(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
+  const GaiaId migratedGaiaId(profile->GetPrefs()->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
   if (self.syncService->GetAccountInfo().gaia != lastSyncingGaiaId &&
       self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
     return NO;

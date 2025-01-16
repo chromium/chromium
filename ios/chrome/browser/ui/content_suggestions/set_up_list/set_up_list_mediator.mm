@@ -578,7 +578,7 @@ bool DefaultBrowserPromoCompleted() {
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   return push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
-      base::SysNSStringToUTF8(identity.gaiaID), _prefService);
+      GaiaId(identity.gaiaID), _prefService);
 }
 
 // Sets user's highest priority segment retrieved from the Segmentation

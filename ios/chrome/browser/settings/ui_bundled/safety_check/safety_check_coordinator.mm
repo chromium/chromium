@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -179,7 +180,7 @@ using password_manager::WarningType;
   // `GetMobileNotificationPermissionStatusForClient()`.
   if (push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kSafetyCheck, "")) {
+              PushNotificationClientId::kSafetyCheck, GaiaId())) {
     [self disableNotifications];
 
     return;

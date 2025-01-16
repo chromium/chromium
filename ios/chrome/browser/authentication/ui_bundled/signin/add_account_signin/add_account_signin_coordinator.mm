@@ -189,7 +189,7 @@ using signin_metrics::PromoAction;
   if (signinResult == SigninCoordinatorResultSuccess) {
     bool identityOnDeviceFound = false;
     if (AreSeparateProfilesForManagedAccountsEnabled()) {
-      const std::string gaia = base::SysNSStringToUTF8(identity.gaiaID);
+      const GaiaId gaia(identity.gaiaID);
       std::vector<AccountInfo> accountsOnDevice =
           _identityManager->GetAccountsOnDevice();
       for (const AccountInfo& accountInfo : accountsOnDevice) {

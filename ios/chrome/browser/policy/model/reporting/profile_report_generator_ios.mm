@@ -49,7 +49,7 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(account_info.email);
-  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia);
+  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia.ToString());
 }
 
 void ProfileReportGeneratorIOS::GetAffiliationInfo(
