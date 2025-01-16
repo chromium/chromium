@@ -1616,8 +1616,16 @@ void RenderViewContextMenu::AppendDeveloperItems() {
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_FRAME)) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE,
                                     IDS_CONTENT_CONTEXT_VIEWFRAMESOURCE);
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOADFRAME,
-                                    IDS_CONTENT_CONTEXT_RELOADFRAME);
+    bool should_add_reload_frame_item = true;
+#if BUILDFLAG(ENABLE_PDF)
+    // Do not add the "reload frame" item for OOPIF PDF frames.
+    should_add_reload_frame_item = !chrome_pdf::features::IsOopifPdfEnabled() ||
+                                   !IsFrameInPdfViewer(GetRenderFrameHost());
+#endif  // BUILDFLAG(ENABLE_PDF)
+    if (should_add_reload_frame_item) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOADFRAME,
+                                      IDS_CONTENT_CONTEXT_RELOADFRAME);
+    }
   }
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_INSPECTELEMENT,
                                   IDS_CONTENT_CONTEXT_INSPECTELEMENT);

@@ -862,7 +862,7 @@ void BookmarkBarView::Layout(PassKey) {
           break;
         }
         InsertBookmarkButtonAtIndex(
-            CreateBookmarkButton(bookmark_bar_children[i]), i);
+            CreateBookmarkButton(bookmark_bar_children[i], i), i);
         button_count = bookmark_buttons_.size();
       }
       views::View* child = bookmark_buttons_[i].first;
@@ -1279,7 +1279,7 @@ void BookmarkBarView::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
   BookmarkParentFolderChildren children = bookmark_service_->GetChildren(
       BookmarkParentFolder::FromFolderNode(node));
   for (size_t i = 0; i < children.size(); i++) {
-    InsertBookmarkButtonAtIndex(CreateBookmarkButton(children[i]), i);
+    InsertBookmarkButtonAtIndex(CreateBookmarkButton(children[i], i), i);
   }
 
   LayoutAndPaint();
@@ -1606,7 +1606,8 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
 }
 
 std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
-    const BookmarkNode* node) {
+    const BookmarkNode* node,
+    size_t index) {
   std::unique_ptr<views::LabelButton> button;
   if (node->is_url()) {
     button = std::make_unique<BookmarkButton>(
@@ -1625,7 +1626,6 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         node->GetTitle());
   }
   ConfigureButton(node, button.get());
-  size_t index = node->parent()->GetIndexOf(node).value();
   bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index,
                            {button.get(), node});
   button_visibility_changed_callbacks_[button.get()] =
@@ -1762,7 +1762,7 @@ bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* node) {
 
   size_t index = bookmark_service_->GetIndexOf(node);
   if (index < bookmark_buttons_.size()) {
-    InsertBookmarkButtonAtIndex(CreateBookmarkButton(node), index);
+    InsertBookmarkButtonAtIndex(CreateBookmarkButton(node, index), index);
     return true;
   }
   // If the new node was added after the last button we've created we may be

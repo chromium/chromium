@@ -53,6 +53,7 @@ include_rules = [
   "+rlz/buildflags",
   "+third_party/breakpad/breakpad/src/client/ios",
   "+third_party/crashpad/crashpad/client",
+  "+third_party/search_engines_data",
 
   # Strings and resources.
   "+components/grit",

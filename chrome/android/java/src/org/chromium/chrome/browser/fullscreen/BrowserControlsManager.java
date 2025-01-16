@@ -596,6 +596,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             mControlsPosition = controlsPosition;
             mTopControlsHeight = newTopControlsHeight;
             mTopControlsMinHeight = newTopControlsMinHeight;
+            mRendererTopContentOffset = newRendererTopControlsOffset + newTopControlsHeight;
             mBottomControlsHeight = newBottomControlsHeight;
             mBottomControlsMinHeight = newBottomControlsMinHeight;
             if (canAnimateNativeBrowserControls()) {

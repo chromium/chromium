@@ -7,10 +7,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 ReconcilingTemplateURLDataHolder::ReconcilingTemplateURLDataHolder(
     PrefService* pref_service,

@@ -134,22 +134,23 @@ class IntentPickerAppGridButton : public views::Button {
         AddChildView(std::make_unique<views::ImageView>(icon_model));
     icon_view->SetCanProcessEventsWithinSubtree(false);
 
-    auto* name_label = AddChildView(std::make_unique<views::Label>(
+    name_label_ = AddChildView(std::make_unique<views::Label>(
         base::UTF8ToUTF16(display_name), views::style::CONTEXT_BUTTON));
-    name_label->SetMultiLine(true);
-    name_label->SetMaxLines(2);
-    name_label->SetMaximumWidth(kGridItemPreferredSize);
-    name_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    name_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
+    name_label_->SetMultiLine(true);
+    name_label_->SetMaxLines(2);
+    name_label_->SetMaximumWidth(kGridItemPreferredSize);
+    name_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    name_label_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
     GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
     GetViewAccessibility().SetCheckedState(
         selected_ ? ax::mojom::CheckedState::kTrue
                   : ax::mojom::CheckedState::kFalse);
-    // TODO(crbug.com/325137417): `SetName` should be called whenever the
-    // `name_label` text changes, not just in the constructor.
-    GetViewAccessibility().SetName(name_label->GetText());
+    UpdateAccessibleName();
+    name_label_changed_subscription_ = name_label_->AddTextChangedCallback(
+        base::BindRepeating(&IntentPickerAppGridButton::UpdateAccessibleName,
+                            base::Unretained(this)));
     SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
 
     SetGroup(kGridItemGroupId);
@@ -221,9 +222,17 @@ class IntentPickerAppGridButton : public views::Button {
     selected_callback_.Run(should_open);
   }
 
+  // Updates the accessible name of the bubble in the ViewsAX cache.
+  void UpdateAccessibleName() {
+    CHECK(name_label_);
+    GetViewAccessibility().SetName(name_label_->GetText());
+  }
+
   bool selected_ = false;
   bool select_on_focus_ = true;
+  raw_ptr<views::Label> name_label_;
   ButtonSelectedCallback selected_callback_;
+  base::CallbackListSubscription name_label_changed_subscription_;
 };
 
 BEGIN_METADATA(IntentPickerAppGridButton)

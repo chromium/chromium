@@ -488,11 +488,6 @@ BASE_FEATURE(kLastVSyncArgsKillswitch,
              "LastVSyncArgsKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use BlitRequests for copy requests made by ViewTransition.
-BASE_FEATURE(kBlitRequestsForViewTransition,
-             "BlitRequestsForViewTransition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Null Hypothesis test for viz. This will be used in an meta experiment to
 // judge finch variation.
 BASE_FEATURE(kVizNullHypothesis,

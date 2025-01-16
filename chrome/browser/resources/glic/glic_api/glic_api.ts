@@ -63,11 +63,11 @@ export declare interface GlicWebClient {
   notifyPanelWasClosed?(): Promise<void>;
 
   // The user has requested activation of the web client.
-  // The dockedToWindowId identifies the browser window to which the
-  // panel is docked to. It is undefined if it is floating free.
+  // The attachedToWindowId identifies the browser window to which the
+  // panel is attached to. It is undefined if it is detached.
   // Note: The returned promise is currently not used in the browser.
   // @deprecated: Not supported anymore and will eventually be removed.
-  notifyPanelOpened?(dockedToWindowId: string|undefined): Promise<void>;
+  notifyPanelOpened?(attachedToWindowId: string|undefined): Promise<void>;
 
   // The user has closed the web client window. The window may be activated
   // again later.
@@ -94,17 +94,13 @@ export declare interface GlicBrowserHost {
   // a promise that resolves when the browser has updated the draggable area.
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
 
-  // Fetches page context for the currently focused tab, optionally including
-  // more expensive-to-generate data. Undefined optional arguments indicate that
-  // the respective data is not being requested.
-  // If innerText is true, an innerText representation of the page will be
-  // included in the response.
-  // If viewportScreenshot is true, a screenshot of the user visible viewport
-  // will be included in the response.
-  // Rejects the promise with a `GetTabContextError` on failure.
+  /**
+   * Fetches page context for the currently focused tab, optionally including
+   * more expensive-to-generate data.
+   * @throws {GetTabContextError} on failure.
+   */
   getContextFromFocusedTab?
-      (options: {innerText?: boolean, viewportScreenshot?: boolean}):
-          Promise<TabContextResult>;
+      (options: TabContextOptions): Promise<TabContextResult>;
 
   // Creates a tab and navigates to a url. It is made the active tab by default
   // but that can be changed using the openInBackground option.
@@ -125,11 +121,11 @@ export declare interface GlicBrowserHost {
   // Requests the closing of the panel containing the web client.
   closePanel?(): Promise<void>;
 
-  // Requests that the web client's panel be attached/docked to a browser
+  // Requests that the web client's panel be attached to a browser
   // window.
   attachPanel?(): void;
 
-  // Requests that the web client's panel be detached/undocked from a browser
+  // Requests that the web client's panel be detached from a browser
   // window (floats free).
   detachPanel?(): void;
 
@@ -197,30 +193,66 @@ export declare interface GlicBrowserHost {
 export enum PanelStateKind {
   // Not shown. This is the initial state.
   HIDDEN = 0,
-  // A floating window.
+  /** @deprecated */
   FLOATING = 1,
-  // Docked to a Chrome window.
+  // A floating window detached from any Chrome window.
+  DETACHED = 1,
+  /** @deprecated */
   DOCKED = 2,
+  // Attached to a Chrome window.
+  ATTACHED = 2,
 }
 
 export declare interface PanelState {
   kind: PanelStateKind;
-  // Present when docked, indicates to which window the panel is docked.
+  // Present when attached, indicates to which window the panel is attached.
   windowId?: string;
 }
 
+/** The default for TabContextOptions.pdfSizeLimit. */
+export const DEFAULT_PDF_SIZE_LIMIT = 64 * 1024 * 1024;
+
+/** Options for getting context from a tab. */
+export declare interface TabContextOptions {
+  /**
+   * If true, an innerText representation of the page will be included in the
+   * response.
+   */
+  innerText?: boolean;
+  /**
+   * If true, a screenshot of the user visible viewport will be included in the
+   * response.
+   */
+  viewportScreenshot?: boolean;
+  /** If true, and the tab contains a PDF, returns PdfDocumentData. */
+  pdfData?: boolean;
+  /**
+   * Maximum size in bytes for returned PDF data. If this size is exceeded,
+   * PdfDocumentData is still returned, but it will not contain PDF bytes.
+   * Defaults to DEFAULT_PDF_SIZE_LIMIT. If it is zero or negative, PDF bytes
+   * will never be returned.
+   */
+  pdfSizeLimit?: number;
+}
+
 /**
- * Data class holding information and contents extracted from a web page.
+ * Data class holding information and contents extracted from a tab.
  */
 export declare interface TabContextResult {
-  // Metadata about the tab that holds the page. Always provided.
+  /** Metadata about the tab that holds the page. Always provided. */
   tabData: TabData;
-  // Information about a web page rendered in the tab at its current state.
-  // Provided only if requested.
+  /**
+   * Information about a web page rendered in the tab at its current state.
+   * Provided only if requested.
+   */
   webPageData?: WebPageData;
-  // A screenshot of the user-visible portion of the page. Provided only if
-  // requested.
+  /**
+   * A screenshot of the user-visible portion of the page. Provided only if
+   * requested.
+   */
   viewportScreenshot?: Screenshot;
+  /** PDF document data. Provided if requested, and the document is a PDF. */
+  pdfDocumentData?: PdfDocumentData;
 }
 
 /**
@@ -230,9 +262,19 @@ export declare interface WebPageData {
   mainDocument: DocumentData;
 }
 
-/**
- * Text information about a web document.
- */
+/** Information about a PDF document. */
+export declare interface PdfDocumentData {
+  /** Origin of the document. */
+  origin: string;
+  /** Raw PDF data, if it could be obtained. */
+  pdfData?: ReadableStream;
+  /**
+   * Whether the PDF size limit was exceeded. If true, `pdfData` will be empty.
+   */
+  pdfSizeLimitExceeded: boolean;
+}
+
+/** Text information about a web document. */
 export declare interface DocumentData {
   // Origin of the document.
   origin: string;
@@ -245,17 +287,21 @@ export declare interface DocumentData {
  * Various bits of data about a browser tab.
  */
 export declare interface TabData {
-  // Unique ID of the tab that owns the page.
+  /** Unique ID of the tab that owns the page. */
   tabId: string;
-  // Unique ID of the browser window holding the tab.
+  /** Unique ID of the browser window holding the tab. */
   windowId: string;
-  // URL of the page.
+  /** URL of the page. */
   url: string;
-  // The title of the loaded page. Returned if the page is loaded enough for it
-  // to be available. It may be empty if the page did not define a title.
+  /**
+   * The title of the loaded page. Returned if the page is loaded enough for it
+   * to be available. It may be empty if the page did not define a title.
+   */
   title?: string;
-  // The favicon for the tab. Provided when available.
+  /** The favicon for the tab. Provided when available. */
   favicon?(): Promise<Blob|undefined>;
+  /** MIME type of the main document. */
+  documentMimeType?: string;
 }
 
 /**

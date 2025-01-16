@@ -37,6 +37,7 @@ external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
 external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
 external/wpt/client-hints/sandbox/iframe-same-origin.https.html
 external/wpt/cookies/attributes/max-age.html
+external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html
 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html

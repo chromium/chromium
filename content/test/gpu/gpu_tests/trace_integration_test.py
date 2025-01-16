@@ -489,11 +489,19 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return filepath
 
   def _GetTraceProcessorForTrace(self, trace: bytes) -> tp.TraceProcessor:
+    # The default 2 second load timeout works in almost all cases, but can
+    # cause flakes on rare occasions, particularly on Mac/Debug.
+    load_timeout = 2
+    if (self.browser.browser_type == 'debug'
+        and self.platform.GetOSName() == 'mac'):
+      load_timeout = 10
+
     processor_path = self._GetLocalPerfettoTraceProcessorPath()
     if processor_path:
-      processor_config = tp.TraceProcessorConfig(bin_path=processor_path)
+      processor_config = tp.TraceProcessorConfig(bin_path=processor_path,
+                                                 load_timeout=load_timeout)
     else:
-      processor_config = tp.TraceProcessorConfig()
+      processor_config = tp.TraceProcessorConfig(load_timeout=load_timeout)
     trace_processor = tp.TraceProcessor(io.BytesIO(trace),
                                         config=processor_config)
     return trace_processor

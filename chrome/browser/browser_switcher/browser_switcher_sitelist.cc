@@ -177,7 +177,7 @@ class DefaultModeRule : public Rule {
 
     // Compare hosts and ports, case-insensitive.
     auto result = StringFindInsensitiveASCII(url.host_and_port(), pattern);
-    return !result.empty();
+    return result.begin() != url.host_and_port().end();
   }
 
   bool IsValid() const override { return true; }

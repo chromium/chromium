@@ -790,6 +790,11 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
+  // V8 Configuration ---------------------------------------------
+
+  // Returns whether V8 feature flag overrides were disallowed by the embedder.
+  virtual bool DisallowV8FeatureFlagOverrides() const { return false; }
+
   // Content Security Policy --------------------------------------
 
   // Appends to `csp`, the default CSP which should be applied to the given

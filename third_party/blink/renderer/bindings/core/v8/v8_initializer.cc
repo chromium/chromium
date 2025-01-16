@@ -903,10 +903,11 @@ void V8Initializer::InitializeIsolateHolder(
     const intptr_t* reference_table,
     const std::string& js_command_line_flags) {
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
-  gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
-                                 &array_buffer_allocator, reference_table,
-                                 js_command_line_flags, ReportV8FatalError,
-                                 ReportV8OOMError);
+  gin::IsolateHolder::Initialize(
+      gin::IsolateHolder::kNonStrictMode, &array_buffer_allocator,
+      reference_table, js_command_line_flags,
+      Platform::Current()->DisallowV8FeatureFlagOverrides(), ReportV8FatalError,
+      ReportV8OOMError);
 }
 
 v8::Isolate* V8Initializer::InitializeMainThread() {

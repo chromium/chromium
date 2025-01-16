@@ -65,6 +65,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Migrate command failed"/>
 </enum>
 
+<enum name="EnrollSessionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed for unknown reason (runtime or starting error)"/>
+  <int value="2" label="Failed due to no primary user being active"/>
+  <int value="3" label="Failed to start enrollment session"/>
+  <int value="4" label="Failed due to receiving a DBus cancellation"/>
+  <int value="5" label="Failed due to the DBus owner dying"/>
+</enum>
+
 <enum name="FingerprintError">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Hardware unavailable"/>

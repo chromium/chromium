@@ -160,6 +160,8 @@ blink_core_sources("animation") {
     "css_scrollbar_color_interpolation_type.h",
     "css_shadow_list_interpolation_type.cc",
     "css_shadow_list_interpolation_type.h",
+    "css_shape_interpolation_type.cc",
+    "css_shape_interpolation_type.h",
     "css_size_list_interpolation_type.cc",
     "css_size_list_interpolation_type.h",
     "css_text_indent_interpolation_type.cc",

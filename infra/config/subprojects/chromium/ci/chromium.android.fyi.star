@@ -463,7 +463,13 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["android"],
+            apply_configs = [
+                "android",
+                # This is necessary due to this builder running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+                "enable_wpr_tests",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
@@ -536,6 +542,9 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 4,
                 ),
+            ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/1084353",
             ),
             "content_shell_test_apk": targets.mixin(
                 swarming = targets.swarming(

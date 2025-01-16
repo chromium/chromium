@@ -607,7 +607,9 @@ void SVGSVGElement::RemovedFrom(ContainerNode& root_parent) {
   if (root_parent.isConnected()) {
     SVGDocumentExtensions& svg_extensions = GetDocument().AccessSVGExtensions();
     svg_extensions.RemoveTimeContainer(this);
-    svg_extensions.RemoveSVGRootWithRelativeLengthDescendents(this);
+    if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+      svg_extensions.RemoveSVGRootWithRelativeLengthDescendents(this);
+    }
   }
 
   SVGGraphicsElement::RemovedFrom(root_parent);

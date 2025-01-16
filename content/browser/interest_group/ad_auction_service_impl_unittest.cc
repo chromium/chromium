@@ -4320,7 +4320,7 @@ TEST_F(AdAuctionServiceImplTest,
   // has not. Time order:
   // (*NOW*, group expiration, db maintenance).
   const base::TimeDelta kExpiryDelta =
-      InterestGroupStorage::kIdlePeriod - base::Seconds(2);
+      InterestGroupStorage::kDefaultIdlePeriod - base::Seconds(2);
   ASSERT_GT(kExpiryDelta, base::Seconds(0));
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.expiry = base::Time::Now() + kExpiryDelta;
@@ -4395,10 +4395,10 @@ TEST_F(AdAuctionServiceImplTest,
   // (*NOW*, group expiration, db maintenance).
   const base::Time now = base::Time::Now();
   const base::TimeDelta kExpiryDelta =
-      InterestGroupStorage::kIdlePeriod - base::Seconds(1);
+      InterestGroupStorage::kDefaultIdlePeriod - base::Seconds(1);
   ASSERT_GT(kExpiryDelta, base::Seconds(0));
   const base::Time next_maintenance_time =
-      now + InterestGroupStorage::kIdlePeriod;
+      now + InterestGroupStorage::kDefaultIdlePeriod;
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.expiry = now + kExpiryDelta;
   interest_group.update_url = kUpdateUrlA;
@@ -4418,7 +4418,7 @@ TEST_F(AdAuctionServiceImplTest,
   // group expires and then DB maintenance is performed, both before a response
   // is returned.
   UpdateInterestGroupNoFlush();
-  task_environment()->FastForwardBy(InterestGroupStorage::kIdlePeriod +
+  task_environment()->FastForwardBy(InterestGroupStorage::kDefaultIdlePeriod +
                                     base::Seconds(1));
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));

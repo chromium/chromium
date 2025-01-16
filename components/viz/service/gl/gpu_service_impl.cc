@@ -99,14 +99,14 @@
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_decoder.h"
 #endif
-#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
-#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

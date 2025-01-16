@@ -127,8 +127,7 @@ void GlicKeyedService::SetContextAccessIndicator(bool show) {
 }
 
 void GlicKeyedService::GetContextFromFocusedTab(
-    bool include_inner_text,
-    bool include_viewport_screenshot,
+    const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   content::WebContents* web_contents = GetFocusedTab();
   if (!web_contents) {
@@ -141,7 +140,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
 
   auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
   fetcher->Fetch(
-      web_contents, include_inner_text, include_viewport_screenshot,
+      web_contents, options,
       base::BindOnce(
           // Bind `fetcher` to the callback to keep it in scope until it
           // returns.

@@ -7,6 +7,7 @@ package org.chromium.components.crash;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.BufferedInputStream;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 /** Prepends a logcat file to a minidump file for upload. */
+@NullMarked
 public class MinidumpLogcatPrepender {
     private static final String TAG = "LogcatPrepender";
 

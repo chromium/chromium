@@ -58,6 +58,8 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
         IsAnnotatedPageContentOnCriticalPath();
     request->include_geometry = page_content_annotations::features::
         ShouldAnnotatedPageContentIncludeGeometry();
+    request->include_hidden_searchable_content = page_content_annotations::
+        features::ShouldIncludeHiddenButSearchableContent();
 
     return std::make_unique<AnnotatedPageContentRequest>(web_contents,
                                                          std::move(request));

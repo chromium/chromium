@@ -77,13 +77,7 @@ mojo::Remote<mojom::ContentLanguageDetectionDriver>&
 LanguageDetectionModelManager::GetLanguageDetectionDriver(
     const blink::BrowserInterfaceBrokerProxy& interface_broker) {
   if (language_detection_driver_) {
-    if (language_detection_driver_.is_connected()) {
-      return language_detection_driver_;
-    }
-    // The handler can become unbound or disconnected in testing so this
-    // catches that case and reconnects so `this` can connect to the
-    // driver in the browser.
-    language_detection_driver_.reset();
+    return language_detection_driver_;
   }
 
   interface_broker.GetInterface(

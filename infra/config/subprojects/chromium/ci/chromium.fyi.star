@@ -2041,7 +2041,7 @@ fyi_ios_builder(
         mixins = [
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
-            "mac_default_arm64",
+            "mac_beta_arm64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_16_main",

@@ -321,7 +321,7 @@ void PixManager::OnUiEvent(UiEvent ui_event_type) {
       if (ui_state_ == UiState::kFopSelector) {
         LogFopSelectorShownLatency(
             kPaymentsType, base::TimeTicks::Now() - pix_code_copied_timestamp_);
-        LogFopSelectorShownUkm(ukm_source_id_);
+        LogPixFopSelectorShownUkm(ukm_source_id_);
       }
       break;
     }

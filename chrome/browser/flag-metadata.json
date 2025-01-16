@@ -3513,7 +3513,7 @@
   {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 145
   },
   {
     "name": "enable-ongoing-processes",

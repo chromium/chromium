@@ -98,15 +98,21 @@ private boolean isThingEnabled() {
 
 // Also works with static fields and negated return values.
 @EnsuresNonNullIf(value={"sThing1", "sThing2"}, result=false)
-private static boolean isThingEnabled() {
+private static boolean isDestroyed() {
     return sThing1 == null || sThing2 == null;
 }
 
 // If foo is null, this method returns false.
 // Most other forms of contracts are not supported.
 @Contract("null -> false")
-private boolean isParamNull(@Nullable String foo) {
+private boolean isParamNonNull(@Nullable String foo) {
     return foo != null;
+}
+
+// Returns null only when defaultValue is null
+@Contract("_, !null -> !null")
+@Nullable String getOrDefault(String key, @Nullable String defaultValue) {
+  return defaultValue;
 }
 ```
 

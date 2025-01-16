@@ -283,6 +283,13 @@ class CORE_EXPORT HTMLSelectElement final
   void SelectedContentElementRemoved(
       HTMLSelectedContentElement* selectedcontent);
 
+  void SetMouseupShouldClosePicker(bool new_value) {
+    option_mouseup_should_close_picker_ = new_value;
+  }
+  bool MouseupShouldClosePicker() const {
+    return option_mouseup_should_close_picker_;
+  }
+
   // This will only return an element if IsAppearanceBaseButton(). The element
   // is a popover inside the UA shadowroot which is used to show the user a
   // preview of what is going to be autofilled.
@@ -403,6 +410,7 @@ class CORE_EXPORT HTMLSelectElement final
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;
+  bool option_mouseup_should_close_picker_ = false;
 
   Member<SelectType> select_type_;
   int index_to_select_on_cancel_;

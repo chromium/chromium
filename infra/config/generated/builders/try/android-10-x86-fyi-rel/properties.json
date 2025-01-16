@@ -27,7 +27,9 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "android",
+                  "chromium_with_telemetry_dependencies",
+                  "enable_wpr_tests"
                 ],
                 "config": "chromium"
               }

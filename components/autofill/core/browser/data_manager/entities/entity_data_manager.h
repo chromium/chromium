@@ -44,6 +44,8 @@ class EntityDataManager : public KeyedService, public WebDataServiceConsumer {
   // Retrieves the valid entity instances from the database and calls `cb`
   // asynchronously with the result.
   //
+  // See `EntityTable::GetEntityInstances()` for details on what "valid" means.
+  //
   // It is guaranteed that `cb` is called eventually; if the query is
   // unsuccessful, `cb` is called with an empty vector.
   virtual void LoadEntityInstances(LoadCallback cb);

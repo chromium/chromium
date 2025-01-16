@@ -127,11 +127,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void GetContextFromFocusedTab(
-      bool include_inner_text,
-      bool include_viewport_screenshot,
+      mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    glic_service_->GetContextFromFocusedTab(
-        include_inner_text, include_viewport_screenshot, std::move(callback));
+    glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
 
   void SetAudioDucking(bool enabled,

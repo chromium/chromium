@@ -17,6 +17,7 @@
 
 class Browser;
 class Tab;
+class TabGroup;
 class TabSlotView;
 
 enum class BrowserFrameActiveState;
@@ -206,6 +207,9 @@ class TabSlotController {
 
   // Returns opacity for use on tab hover radial highlight.
   virtual float GetHoverOpacityForRadialHighlight() const = 0;
+
+  // Returns TabGroup of the given |group|.
+  virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const = 0;
 
   // Returns the displayed title of the given |group|.
   virtual std::u16string GetGroupTitle(

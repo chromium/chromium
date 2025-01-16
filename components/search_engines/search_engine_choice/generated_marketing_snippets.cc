@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/strings/grit/search_engine_descriptions_strings.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 // This file is generated using
 // http://go/chrome-search-engines-marketing-snippets-script.

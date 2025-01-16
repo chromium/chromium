@@ -88,10 +88,6 @@ SVGElement::SVGElement(const QualifiedName& tag_name,
   SetHasCustomStyleCallbacks();
 }
 
-SVGElement::~SVGElement() {
-  DCHECK(isConnected() || !HasRelativeLengths());
-}
-
 void SVGElement::DetachLayoutTree(bool performing_reattach) {
   Element::DetachLayoutTree(performing_reattach);
   // To avoid a noncollectable Blink GC reference cycle, we must clear the
@@ -343,27 +339,31 @@ Node::InsertionNotificationRequest SVGElement::InsertedInto(
 
 void SVGElement::RemovedFrom(ContainerNode& root_parent) {
   bool was_in_document = root_parent.isConnected();
-  auto* root_parent_svg_element = DynamicTo<SVGElement>(
-      root_parent.IsShadowRoot() ? root_parent.ParentOrShadowHostElement()
-                                 : &root_parent);
 
-  if (was_in_document && HasRelativeLengths()) {
-    // The root of the subtree being removed should take itself out from its
-    // parent's relative length set. For the other nodes in the subtree we don't
-    // need to do anything: they will get their own removedFrom() notification
-    // and just clear their sets.
-    if (root_parent_svg_element && !ParentOrShadowHostElement()) {
-      DCHECK(root_parent_svg_element->elements_with_relative_lengths_.Contains(
-          this));
-      root_parent_svg_element->UpdateRelativeLengthsInformation(false, this);
+  if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    auto* root_parent_svg_element = DynamicTo<SVGElement>(
+        root_parent.IsShadowRoot() ? root_parent.ParentOrShadowHostElement()
+                                   : &root_parent);
+
+    if (was_in_document && HasRelativeLengths()) {
+      // The root of the subtree being removed should take itself out from its
+      // parent's relative length set. For the other nodes in the subtree we
+      // don't need to do anything: they will get their own removedFrom()
+      // notification and just clear their sets.
+      if (root_parent_svg_element && !ParentOrShadowHostElement()) {
+        DCHECK(
+            root_parent_svg_element->elements_with_relative_lengths_.Contains(
+                this));
+        root_parent_svg_element->UpdateRelativeLengthsInformation(false, this);
+      }
+
+      elements_with_relative_lengths_.clear();
     }
 
-    elements_with_relative_lengths_.clear();
+    DCHECK(!root_parent_svg_element ||
+           !root_parent_svg_element->elements_with_relative_lengths_.Contains(
+               this));
   }
-
-  DCHECK(
-      !root_parent_svg_element ||
-      !root_parent_svg_element->elements_with_relative_lengths_.Contains(this));
 
   Element::RemovedFrom(root_parent);
 
@@ -477,6 +477,10 @@ void SVGElement::UpdateRelativeLengthsInformation(
     SVGElement* client_element) {
   DCHECK(client_element);
 
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    return;
+  }
+
   // Through an unfortunate chain of events, we can end up calling this while a
   // subtree is being removed, and before the subtree has been properly
   // "disconnected". Hence check the entire ancestor chain to avoid propagating
@@ -530,6 +534,10 @@ void SVGElement::UpdateRelativeLengthsInformation(
 }
 
 void SVGElement::InvalidateRelativeLengthClients() {
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    return;
+  }
+
   if (!isConnected())
     return;
 

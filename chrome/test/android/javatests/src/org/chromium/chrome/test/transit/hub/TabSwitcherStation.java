@@ -48,6 +48,11 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                     allOf(
                             withId(R.id.toolbar_action_button),
                             isDescendantOfA(instanceOf(HubToolbarView.class))));
+    public static final ViewSpec TAB_GROUP_COLOR_ICON_VIEW =
+            viewSpec(
+                    allOf(
+                            withId(R.id.tab_group_color_view_container),
+                            withParent(withId(R.id.card_view))));
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
                     withId(R.id.action_button),

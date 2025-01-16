@@ -3333,6 +3333,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetSVGDescendantMayHaveTransformRelatedAnimation();
 
+  bool HasViewportDependence() const {
+    NOT_DESTROYED();
+    return bitfields_.HasViewportDependence();
+  }
+  void SetHasViewportDependence(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetHasViewportDependence(b);
+  }
+
   bool SVGSelfOrDescendantHasViewportDependency() const {
     NOT_DESTROYED();
     return bitfields_.SVGSelfOrDescendantHasViewportDependency();
@@ -4044,6 +4053,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // SVG container if the container doesn't have any animating descendants.
     ADD_BOOLEAN_BITFIELD(svg_descendant_may_have_transform_related_animation_,
                          SVGDescendantMayHaveTransformRelatedAnimation);
+
+    // For SVG objects, indicates if this object or any descendant depends on
+    // the dimensions of the viewport. Updated during layout.
+    ADD_BOOLEAN_BITFIELD(has_viewport_dependence_, HasViewportDependence);
 
     // For SVG objects, indicates if this object or any descendant depends on
     // the dimensions of the viewport.

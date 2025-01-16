@@ -14,14 +14,17 @@ found in the LICENSE file.
     android:layout_marginBottom="@dimen/facilitated_payments_header_bottom_margin"
     android:orientation="vertical">
 
-    <!-- FacilitatedPaymentsPaymentMethodsMediator sets the height for `branding_icon` -->
-    <!-- TODO (crbug.com/385968227) Add a11y accessibility strings for `branding_icon` -->
+    <!--
+    FacilitatedPaymentsPaymentMethodsMediator sets the height and content description
+    for `branding_icon`
+    -->
     <ImageView
         android:id="@+id/branding_icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/facilitated_payments_product_icon_margin_vertical"
-        android:importantForAccessibility="no"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@null"
         android:layout_gravity="center_horizontal" />
 
     <ImageView

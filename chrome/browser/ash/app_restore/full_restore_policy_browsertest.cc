@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/policy/policy_constants.h"

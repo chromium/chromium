@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, PdfDocumentData, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
+import type {PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 
@@ -49,10 +49,11 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
 
-  glicWebClientNotifyPanelOpened(payload: {dockedToWindowId: string|undefined}):
-      void {
+  glicWebClientNotifyPanelOpened(payload: {
+    attachedToWindowId: string|undefined,
+  }): void {
     if (this.webClient.notifyPanelOpened) {
-      this.webClient.notifyPanelOpened(payload.dockedToWindowId);
+      this.webClient.notifyPanelOpened(payload.attachedToWindowId);
     }
   }
 
@@ -146,8 +147,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const state = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', {});
     this.panelState = new ObservableValue<PanelState>(state.panelState);
-    this.focusedTabState =
-        new ObservableValue<TabData|undefined>(state.focusedTab);
+    this.focusedTabState = new ObservableValue<TabData|undefined>(
+        state.focusedTab ? convertTabDataFromPrivate(state.focusedTab) :
+                           undefined);
     this.permissionStateMicrophone =
         new ObservableValue(state.microphonePermissionEnabled);
     this.permissionStateLocation =
@@ -213,10 +215,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestNoResponse('glicBrowserDetachPanel', {});
   }
 
-  async getContextFromFocusedTab(options: {
-    innerText?: boolean|undefined,
-    viewportScreenshot?: boolean|undefined,
-  }): Promise<TabContextResult> {
+  async getContextFromFocusedTab(options: TabContextOptions):
+      Promise<TabContextResult> {
     const context = await this.sender.requestWithResponse(
         'glicBrowserGetContextFromFocusedTab', {options});
     if (!context.tabContextResult) {
@@ -290,12 +290,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!profileInfo) {
       throw new Error('getUserProfileInfo failed');
     }
-    const {displayName, email, avatarIconImage} = profileInfo;
+    const {displayName, email, avatarIcon} = profileInfo;
     return {
       displayName,
       email,
-      avatarIcon: async () =>
-          avatarIconImage && rgbaImageToBlob(avatarIconImage),
+      avatarIcon: async () => avatarIcon && rgbaImageToBlob(avatarIcon),
     };
   }
 
@@ -379,23 +378,43 @@ async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
   });
 }
 
+// Helper function to shallow-copy an object and replace some properties.
+// Useful to convert from these private types to public types. This will fail to
+// compile if a property is missed.
+function replaceProperties<O, R>(
+    original: O, replacements: R): Omit<O, keyof R>&R {
+  return Object.assign(Object.assign({}, original) as any, replacements);
+}
+
 function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
-  const result = Object.assign({}, data) as TabData;
-  if (data.rawFavicon) {
-    const rawFavicon = data.rawFavicon;
-    delete (result as any).rawFavicon;
-    result.favicon = () => rgbaImageToBlob(rawFavicon);
+  async function getFavicon() {
+    if (data.favicon) {
+      return rgbaImageToBlob(data.favicon);
+    }
+    return undefined;
   }
-  return result;
+
+  const favicon = data.favicon && getFavicon;
+  return replaceProperties(data, {favicon});
+}
+
+function convertPdfDocumentDataFromPrivate(data: PdfDocumentDataPrivate):
+    PdfDocumentData {
+  const pdfData = data.pdfData && new ReadableStream({
+                    start(controller) {
+                      controller.enqueue(data.pdfData);
+                      controller.close();
+                    },
+                  });
+  return replaceProperties(data, {pdfData});
 }
 
 function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
     TabContextResult {
-  const result = Object.assign({}, data) as TabContextResult;
-  if (data.tabData) {
-    result.tabData = convertTabDataFromPrivate(data.tabData);
-  }
-  return result;
+  const tabData = convertTabDataFromPrivate(data.tabData);
+  const pdfDocumentData = data.pdfDocumentData &&
+      convertPdfDocumentDataFromPrivate(data.pdfDocumentData);
+  return replaceProperties(data, {tabData, pdfDocumentData});
 }
 
 class ObservableSubscription<T> implements Subscriber {

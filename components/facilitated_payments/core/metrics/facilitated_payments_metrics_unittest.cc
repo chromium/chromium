@@ -331,8 +331,29 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {
   EXPECT_EQ(ukm_entries[0].metrics.at("PaymentLinkDetected"), true);
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShownUkm) {
-  LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletFopSelectorShownUkm) {
+  size_t index = 0;
+  for (PaymentLinkValidator::Scheme scheme :
+       {PaymentLinkValidator::Scheme::kDuitNow,
+        PaymentLinkValidator::Scheme::kShopeePay,
+        PaymentLinkValidator::Scheme::kTngd}) {
+    LogEwalletFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID(), scheme);
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::kEntryName,
+        {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+             kShownName,
+         ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+             kSchemeName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index].metrics.at("Shown"), true);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Scheme"),
+              static_cast<uint8_t>(scheme));
+  }
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixFopSelectorShownUkm) {
+  LogPixFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,

@@ -31,6 +31,10 @@ inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 
+// Boolean pref that tracks whether the Glic FRE was completed for this user
+// profile.
+inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
+
 }  // namespace glic::prefs
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_H_

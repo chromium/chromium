@@ -168,20 +168,21 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Returns the last policy fetch result.
   std::optional<int> LastFetchResult() const { return last_fetch_result_; }
 
+  void SetManagersForTesting(
+      std::vector<scoped_refptr<PolicyManagerInterface>> managers);
+
  protected:
   virtual ~PolicyService();
 
  private:
+  friend class base::RefCountedThreadSafe<PolicyService>;
+
   template <typename T>
   using PolicyQueryFunction =
       std::optional<T> (PolicyManagerInterface::*)() const;
   template <typename T>
   using AppPolicyQueryFunction =
       std::optional<T> (PolicyManagerInterface::*)(const std::string&) const;
-
-  friend class base::RefCountedThreadSafe<PolicyService>;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   void DoFetchPolicies(base::OnceCallback<void(int)> callback,
                        bool has_enrollment_token);
@@ -194,29 +195,17 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
 
-  // List of policy providers in descending order of priority. All managed
-  // providers should be ahead of non-managed providers.
-  // Also contains a named map indexed by `source()` for all the policy
-  // managers.
-  PolicyManagers policy_managers_;
-
-  // Holds the last policy fetch result.
-  std::optional<int> last_fetch_result_;
-
-  const scoped_refptr<ExternalConstants> external_constants_;
-
-  // Helper function to query the policy from the managed policy providers and
-  // determines the policy status. The provided `transform` can be used to
-  // modify the queried value to be a different type, or to nullify it when
-  // invalid.
+  // Queries the policy from the managed policy providers and determines the
+  // policy status. The provided `transform` can be used to modify the queried
+  // value to be a different type, or to nullify it when invalid.
   template <typename T, typename U = T>
   PolicyStatus<U> QueryPolicy(
       PolicyQueryFunction<T> policy_query_function,
       const base::RepeatingCallback<std::optional<U>(std::optional<T>)>&
           transform = base::NullCallback()) const;
 
-  // Helper function to query app policy from the managed policy providers and
-  // determines the policy status.
+  // Queries app policy from the managed policy providers and determines the
+  // policy status.
   template <typename T>
   PolicyStatus<T> QueryAppPolicy(
       AppPolicyQueryFunction<T> policy_query_function,
@@ -224,11 +213,20 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   std::set<std::string> GetAppsWithPolicy() const;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // List of policy providers in descending order of priority. All managed
+  // providers should be ahead of non-managed providers.
+  // Also contains a named map indexed by `source()` for all the policy
+  // managers.
+  PolicyManagers policy_managers_;
+  const scoped_refptr<ExternalConstants> external_constants_;
+
+  // Holds the last policy fetch result.
+  std::optional<int> last_fetch_result_;
   base::OnceCallback<void(int)> fetch_policies_callback_;
   scoped_refptr<PersistedData> persisted_data_;
   const bool is_ceca_experiment_enabled_;
-
-  friend class PolicyServiceTest;
 };
 
 // Decouples the proxy configuration from `PolicyService`.
@@ -240,12 +238,13 @@ struct PolicyServiceProxyConfiguration {
   PolicyServiceProxyConfiguration& operator=(
       const PolicyServiceProxyConfiguration&);
   PolicyServiceProxyConfiguration& operator=(PolicyServiceProxyConfiguration&&);
-  static std::optional<PolicyServiceProxyConfiguration> Get(
-      scoped_refptr<PolicyService> policy_service);
 
   // Note `Get()` returns a nullopt when there's no proxy policies. Otherwise
   // `proxy_auto_detect` must have a value, and is only set to true when the
   // policy chooses "auto-detect".
+  static std::optional<PolicyServiceProxyConfiguration> Get(
+      scoped_refptr<PolicyService> policy_service);
+
   bool proxy_auto_detect = false;
   std::optional<std::string> proxy_pac_url;
   std::optional<std::string> proxy_url;

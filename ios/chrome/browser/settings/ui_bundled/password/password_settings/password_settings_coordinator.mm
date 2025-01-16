@@ -8,6 +8,7 @@
 
 #import "base/debug/dump_without_crashing.h"
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
@@ -334,7 +336,13 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   UIAlertAction* cancelAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
                 style:UIAlertActionStyleCancel
-              handler:nil];
+              handler:^(UIAlertAction* action) {
+                base::UmaHistogramEnumeration(
+                    "IOS.PasswordManager.Settings."
+                    "DeleteAllSavedCredentialsActions",
+                    password_manager::IOSDeleteAllSavedCredentialsActions::
+                        kDeleteAllSavedCredentialsCancelled);
+              }];
   [deletionConfirmation addAction:cancelAction];
 
   __weak __typeof(self) weakSelf = self;
@@ -342,6 +350,11 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
                 style:UIAlertActionStyleDestructive
               handler:^(UIAlertAction* action) {
+                base::UmaHistogramEnumeration(
+                    "IOS.PasswordManager.Settings."
+                    "DeleteAllSavedCredentialsActions",
+                    password_manager::IOSDeleteAllSavedCredentialsActions::
+                        kDeleteAllSavedCredentialsConfirmed);
                 [weakSelf showReauthDialogForDeletion];
               }];
 

@@ -235,6 +235,16 @@ export class AppElement extends AppElementBase {
   // are stored in preferences. The latter are not.
   enabledLangs: string[] = [];
 
+  // These are languages that don't exist when restoreEnabledLanguagesFromPref()
+  // is first called when the engine is getting set up. We need to disable
+  // unavailable languages, but since it's possible that these languages may
+  // become available once the TTS engine finishes setting up after
+  // onTtsEngineInstalled() is called, we want to save them so they can be
+  // used as soon as they are available.
+  // This can happen when a natural voice is installed (e.g. Danish) when
+  // there isn't an equivalent system voice.
+  possiblyDisabledLangs: string[] = [];
+
   // All possible available voices for the current speech engine.
   protected availableVoices_: SpeechSynthesisVoice[] = [];
   // The set of languages found in availableVoices.
@@ -1017,6 +1027,26 @@ export class AppElement extends AppElementBase {
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
     this.getVoices_(/*refresh =*/ true);
+
+    // TODO(crbug.com/390435037): Simplify logic around loading voices and
+    // language availability, especially around the new TTS engine.
+
+    // If we disabled a language during startup because it wasn't yet available,
+    // we should re-enable it once it's available. This can happen if we enable
+    // a language with natural voices but no system voices. This only needs to
+    // happen on non-ChromeOS, since we're only installing the new engine
+    // outside of ChromeOS.
+    this.possiblyDisabledLangs.filter(disabledLang => {
+      const isNowAvailable = this.availableLangs_.some(
+          lang =>
+              lang.toLocaleLowerCase() === disabledLang.toLocaleLowerCase());
+      if (isNowAvailable && !chrome.readingMode.isChromeOsAsh) {
+        this.enabledLangs.push(disabledLang);
+        chrome.readingMode.onLanguagePrefChange(disabledLang, true);
+      }
+
+      return !isNowAvailable;
+    });
 
     if (!previousSize && this.availableVoices_.length) {
       // If we go from having no available voices to having voices available,
@@ -2318,6 +2348,12 @@ export class AppElement extends AppElementBase {
     languagesInPref.forEach(storedLanguage => {
       if (!this.enabledLangs.includes(storedLanguage)) {
         chrome.readingMode.onLanguagePrefChange(storedLanguage, false);
+
+        // Keep track of these languages in case they become available
+        // after the TTS engine extension is installed.
+        if (!chrome.readingMode.isChromeOsAsh) {
+          this.possiblyDisabledLangs.push(storedLanguage);
+        }
       }
     });
     this.enabledLangs.forEach(

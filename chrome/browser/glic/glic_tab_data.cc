@@ -28,7 +28,8 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
       sessions::SessionTabHelper::IdForTab(web_contents).id(),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
       web_contents->GetLastCommittedURL(),
-      base::UTF16ToUTF8(web_contents->GetTitle()), favicon);
+      base::UTF16ToUTF8(web_contents->GetTitle()), favicon,
+      web_contents->GetContentsMimeType());
 }
 
 }  // namespace glic

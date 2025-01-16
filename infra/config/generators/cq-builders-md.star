@@ -223,7 +223,7 @@ def _generate_cq_builders_md(ctx):
                 lines.append("")
                 lines.append("  This builder is only run when the CL owner is in the group:")
                 for g in b.owner_whitelist_group:
-                    lines.append("  * `[{group}](https://chrome-infra-auth.appspot.com/auth/lookup?p={group})`".format(group = g))
+                    lines.append("  * [`{group}`](https://chrome-infra-auth.appspot.com/auth/lookup?p={group})".format(group = g))
 
             if getattr(b, "equivalent_to") and b.equivalent_to.name:
                 eq_project, eq_bucket, eq_name = b.equivalent_to.name.split("/")

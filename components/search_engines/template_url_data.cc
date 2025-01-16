@@ -17,9 +17,9 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/regulatory_extension_type.h"
 #include "crypto/hash.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 namespace {
 

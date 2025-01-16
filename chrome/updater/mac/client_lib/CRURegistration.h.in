@@ -17,6 +17,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * The name of the `.zip` file, excluding the actual `.zip` extension, that
+ * CRURegistration must extract to find the updater. This must refer to a file
+ * that is packaged as a Resource in the bundle using CRURegistration.
+ */
+extern NSString* const CRUArchiveBasename;
+
+/**
+ * The name of the updater `.app` and binary itself (inside the `.app` in its
+ * ordinary location), without any extensions, which CRURegistration runs after
+ * extracting the updater to install it.
+ */
+extern NSString* const CRUInstallerAppBasename;
+
 /** The domain for user or system errors reported by CRURegistration. */
 extern NSString* const CRURegistrationErrorDomain;
 
@@ -98,6 +112,22 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
      * `CRURegistrationErrorTaskFailed` instead.
      */
     CRURegistrationErrorFilesystem = 5,
+
+    /**
+     * CRURegistration could not find an updater package inside the bundle's
+     * resources. Is the updater packaged correctly, under the expected name,
+     * and included as a resource in the bundle? The expected name is
+     * the value provided by CRUArchiveBasename with ".zip" appended to it.
+     * If you have different files providing different values of
+     * CRUArchiveBasename for different build scenarios, verify whether the
+     * build configuration is correctly matching updater archive flavors to
+     * CRURegistrationPaths (or similar) variations.
+     *
+     * NSFilePathErrorKey contains the value of CRUArchiveBasename, with
+     * ".zip" appended, matching the name of the expected resource file that
+     * CRURegistration could not find.
+     */
+    CRURegistrationErrorUpdaterArchiveNotFound = 6,
 };
 
 /**

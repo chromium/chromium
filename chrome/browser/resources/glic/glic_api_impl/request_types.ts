@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ChromeVersion, DraggableArea, GetTabContextErrorReason, PanelState, PdfDocumentData, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -67,11 +67,7 @@ export declare interface HostRequestTypes {
   };
   glicBrowserGetContextFromFocusedTab: {
     request: {
-      options: {
-        innerText?: boolean,
-        // Options for capturing screenshot, currently none supported.
-        viewportScreenshot?: boolean,
-      },
+      options: TabContextOptions,
     },
     response: {
       // Present on success.
@@ -158,7 +154,7 @@ export declare interface WebClientRequestTypes {
   };
   glicWebClientNotifyPanelOpened: {
     request: {
-      dockedToWindowId: string|undefined,
+      attachedToWindowId: string|undefined,
     },
     response: void,
   };
@@ -205,10 +201,18 @@ export declare interface WebClientInitialState {
 //
 // Types used in messages that are not exposed directly to the API.
 //
+// Some types cannot be directly transported over postMessage. The pattern we
+// use here is to define a new type with a 'Private' suffix, which replaces the
+// property types that cannot be structured cloned, with types that can.
+//
+// Note that it's a good idea to replace properties with new properties that
+// have the same name, but different type. This ensures that we don't
+// accidentally leave the private data on the returned object.
+//
 
 // TabData format for postMessage transport.
 export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {
-  rawFavicon?: RgbaImage;
+  favicon?: RgbaImage;
 }
 
 // A bitmap, used to store data from a BitmapN32 without conversion.
@@ -234,11 +238,17 @@ export enum ImageColorType {
 
 // TabContextResult data for postMessage transport.
 export declare interface TabContextResultPrivate extends
-    Omit<TabContextResult, 'tabData'> {
+    Omit<TabContextResult, 'tabData'|'pdfDocumentData'> {
   tabData: TabDataPrivate;
+  pdfDocumentData?: PdfDocumentDataPrivate;
 }
 
 export declare interface UserProfileInfoPrivate extends
     Omit<UserProfileInfo, 'avatarIcon'> {
-  avatarIconImage?: RgbaImage;
+  avatarIcon?: RgbaImage;
+}
+
+export declare interface PdfDocumentDataPrivate extends
+    Omit<PdfDocumentData, 'pdfData'> {
+  pdfData?: ArrayBuffer;
 }

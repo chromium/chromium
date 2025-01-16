@@ -226,9 +226,10 @@ mojom("mojom") {
           cpp = "::clockid_t"
         },
       ]
-      traits_headers = [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
+      traits_headers =
+          [ "//chromeos/ash/experiences/arc/timer/arc_timer_mojom_traits.h" ]
       traits_sources =
-          [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
+          [ "//chromeos/ash/experiences/arc/timer/arc_timer_mojom_traits.cc" ]
     },
     {
       types = [
@@ -241,12 +242,8 @@ mojom("mojom") {
           cpp = "::ash::disks::DiskMountManager::MountEvent"
         },
       ]
-      traits_headers = [
-        "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.h",
-      ]
-      traits_sources = [
-        "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.cc",
-      ]
+      traits_headers = [ "//chromeos/ash/experiences/arc/volume_mounter/volume_mounter_mojom_traits.h" ]
+      traits_sources = [ "//chromeos/ash/experiences/arc/volume_mounter/volume_mounter_mojom_traits.cc" ]
     },
     {
       types = [
@@ -342,7 +339,7 @@ mojom("media") {
       traits_headers = [ "video_accelerator_mojom_traits.h" ]
       traits_sources = [ "video_accelerator_mojom_traits.cc" ]
       traits_public_deps = [
-        "//ash/components/arc/video_accelerator:common",
+        "//chromeos/ash/experiences/arc/video_accelerator:common",
         "//media",
         "//ui/gfx/geometry",
       ]

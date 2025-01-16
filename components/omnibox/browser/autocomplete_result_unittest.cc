@@ -157,7 +157,7 @@ class AutocompleteResultTest : public testing::Test {
   AutocompleteResultTest() {
     variations::testing::ClearAllVariationParams();
 
-    // Create the list of mock providers. 5 is enough.
+    // Create the list of mock providers. 6 is enough.
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
@@ -168,6 +168,8 @@ class AutocompleteResultTest : public testing::Test {
         AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_FEATURED_SEARCH));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_UNSCOPED_EXTENSION));
 
     for (const auto& provider : mock_provider_list_)
       provider->done_ = false;
@@ -1989,6 +1991,51 @@ TEST_F(AutocompleteResultTest,
       {expected_data, expected_data + AutocompleteResult::GetMaxMatches()});
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteResultTest, GroupSuggestionsByExtension) {
+  const auto group1 = omnibox::GROUP_UNSCOPED_EXTENSION_1;
+  const auto group2 = omnibox::GROUP_UNSCOPED_EXTENSION_2;
+
+  TestData data[] = {
+      {0, 5, 400, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {3, 5, 600, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+      {4, 5, 1000, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {6, 5, 800, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+  };
+
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1].set_section(
+      omnibox::SECTION_UNSCOPED_EXTENSION_1);
+  suggestion_groups_map[group2].set_section(
+      omnibox::SECTION_UNSCOPED_EXTENSION_2);
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResultForTesting result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service());
+
+  TestData expected_data[] = {
+      {5, 2, 900, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {4, 5, 1000, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {0, 5, 400, false, {}, AutocompleteMatchType::HISTORY_TITLE, group1},
+      {6, 5, 800, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+      {3, 5, 600, false, {}, AutocompleteMatchType::HISTORY_TITLE, group2},
+  };
+
+  AssertResultMatches(result, expected_data);
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
@@ -2016,6 +2063,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
   ASSERT_EQ(result.size(), 1u);
   EXPECT_EQ(result.match_at(0)->type, AutocompleteMatchType::HISTORY_CLUSTER);
 }
+#endif
 
 TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;

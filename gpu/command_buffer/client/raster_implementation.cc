@@ -24,6 +24,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -525,8 +526,13 @@ struct RasterImplementation::AsyncYUVReadbackRequest {
                     uint8_t* out_buffer) {
     // RasterDecoder writes the pixels into |in_buffer| with the requested
     // stride so we can copy the whole block here.
-    memcpy(out_buffer, static_cast<uint8_t*>(in_buffer) + plane_offset,
-           plane_height * plane_stride);
+    // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
+    // into memory observed by JS at the same time.
+    size_t plane_size = plane_height * plane_stride;
+    auto dst = base::span(out_buffer, plane_size);
+    auto src =
+        base::span(static_cast<uint8_t*>(in_buffer) + plane_offset, plane_size);
+    base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
   }
 };
 
@@ -1554,9 +1560,12 @@ bool RasterImplementation::ReadbackImagePixelsINTERNAL(
     if (!*readback_result) {
       return false;
     }
-
-    memcpy(dst_pixels, static_cast<uint8_t*>(shm_address) + pixels_offset,
-           dst_size);
+    // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
+    // into memory observed by JS at the same time.
+    auto dst = base::span<uint8_t>(static_cast<uint8_t*>(dst_pixels), dst_size);
+    auto src = base::span<uint8_t>(
+        static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+    base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
   }
 
   return true;
@@ -1581,10 +1590,16 @@ void RasterImplementation::OnAsyncARGBReadbackDone(
         static_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
             request->shared_memory->address());
     if (*result) {
-      memcpy(request->dst_pixels,
-             static_cast<uint8_t*>(request->shared_memory->address()) +
-                 request->pixels_offset,
-             request->dst_size);
+      // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
+      // into memory observed by JS at the same time.
+      size_t plane_size = request->dst_size;
+      auto dst = base::span<uint8_t>(
+          static_cast<uint8_t*>(request->dst_pixels.get()), plane_size);
+      auto src = base::span<uint8_t>(
+          static_cast<uint8_t*>(request->shared_memory->address()) +
+              request->pixels_offset,
+          plane_size);
+      base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
       request->readback_successful = true;
     }
 

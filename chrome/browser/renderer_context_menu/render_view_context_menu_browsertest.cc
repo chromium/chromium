@@ -2692,6 +2692,45 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 #if BUILDFLAG(ENABLE_PDF)
+class OopifPdfExtensionContextMenuBrowserTest : public PDFExtensionTestBase {
+ public:
+  OopifPdfExtensionContextMenuBrowserTest() = default;
+
+  OopifPdfExtensionContextMenuBrowserTest(
+      const OopifPdfExtensionContextMenuBrowserTest&) = delete;
+  OopifPdfExtensionContextMenuBrowserTest& operator=(
+      const OopifPdfExtensionContextMenuBrowserTest&) = delete;
+
+  ~OopifPdfExtensionContextMenuBrowserTest() override = default;
+
+  bool UseOopif() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(OopifPdfExtensionContextMenuBrowserTest,
+                       DeveloperItems) {
+  GURL page_url =
+      ui_test_utils::GetTestUrl(base::FilePath(FILE_PATH_LITERAL("pdf")),
+                                base::FilePath(FILE_PATH_LITERAL("test.pdf")));
+  content::RenderFrameHost* pdf_extension = LoadPdfGetExtensionHost(page_url);
+  ASSERT_TRUE(pdf_extension);
+
+  content::ContextMenuParams params;
+  params.page_url = page_url;
+  params.frame_url = pdf_extension->GetLastCommittedURL();
+  params.is_subframe = true;
+  TestRenderViewContextMenu menu(*pdf_extension, params);
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_RELOADFRAME));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+
+  EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_VIEW_SOURCE));
+  EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        FullPagePdfHasPageItems) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();

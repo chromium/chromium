@@ -4,7 +4,10 @@
 
 package org.chromium.components.minidump_uploader.util;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for crash reporting permissions. */
+@NullMarked
 public interface CrashReportingPermissionManager {
     /**
      * Checks whether this client is in-sample for crash reporting. See {@link

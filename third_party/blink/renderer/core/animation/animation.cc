@@ -1243,6 +1243,23 @@ void Animation::setEffect(AnimationEffect* new_effect) {
   if (new_effect == old_effect)
     return;
 
+  if (old_effect) {
+    Element* old_target = nullptr;
+    Element* new_target = nullptr;
+    if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(new_effect)) {
+      new_target = keyframe_effect->target();
+    }
+    if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(old_effect)) {
+      old_target = keyframe_effect->target();
+    }
+    if (new_target != old_target &&
+        prior_native_paint_worklet_reasons_ != Animation::kNoPaintWorklet) {
+      // Next call to UpdateCompositedPaintStatus will update the start of the
+      // old target as well as the new.
+      prior_native_paint_worklet_target_ = old_target;
+    }
+  }
+
   // 3. If animation has a pending pause task, reschedule that task to run as
   //    soon as animation is ready.
   // 4. If animation has a pending play task, reschedule that task to run as
@@ -3427,6 +3444,21 @@ bool Animation::IsInDisplayLockedSubtree() {
 }
 
 void Animation::UpdateCompositedPaintStatus() {
+  // Calling Animation::setEffect can result in a change to the animation
+  // effect target. In such cases, we need to update the composited paint
+  // status on the old target.
+  if (prior_native_paint_worklet_target_) {
+    ElementAnimations* element_animations =
+        prior_native_paint_worklet_target_->GetElementAnimations();
+    if (element_animations) {
+      // Possible to not have element animations on the old target if the
+      // effect change introduced ahead of a style update.
+      element_animations->RecalcCompositedStatus(
+          prior_native_paint_worklet_target_);
+    }
+    prior_native_paint_worklet_target_ = nullptr;
+  }
+
   if (GetNativePaintWorkletReasons() == Animation::kNoPaintWorklet) {
     if (!prior_native_paint_worklet_reasons_ ||
         prior_native_paint_worklet_reasons_ == Animation::kNoPaintWorklet) {
@@ -3466,6 +3498,7 @@ void Animation::Trace(Visitor* visitor) const {
   visitor->Trace(compositor_animation_);
   visitor->Trace(style_dependent_range_start_);
   visitor->Trace(style_dependent_range_end_);
+  visitor->Trace(prior_native_paint_worklet_target_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

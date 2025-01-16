@@ -181,6 +181,12 @@ extern const base::FeatureParam<base::TimeDelta>
 // window.
 extern const base::FeatureParam<base::TimeDelta>
     kNtpCalendarModuleWindowStartDeltaParam;
+// Parameter determining the max number of events to display on the Outlook
+// Calendar module.
+extern const base::FeatureParam<int> kNtpOutlookCalendarModuleMaxEventsParam;
+// Parameter determining the time range of events.
+extern const base::FeatureParam<base::TimeDelta>
+    kNtpOutlookCalendarModuleRetrievalWindowParam;
 // Parameter determining the background color of the expanded state realbox.
 extern const base::FeatureParam<bool>
     kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;

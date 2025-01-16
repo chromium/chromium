@@ -3659,8 +3659,8 @@ No devices connected.
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO" desc="label used for the information of who is controlling mic input gain. [ICU Syntax]">
         {NUM_APPS, plural,
-         =1 {Mic input controlled by <ph name="app_name">$1<ex>App</ex></ph>}
-         other {Mic input controlled by # apps}}
+         =1 {Mic volume controlled by <ph name="app_name">$1<ex>App</ex></ph>}
+         other {Mic volume controlled by # apps}}
       </message>
 
       <!-- Status tray Live Caption strings. -->

@@ -13,6 +13,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -26,6 +27,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -200,6 +202,12 @@ IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(Profile* profile) {
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
+  TrustSigningKey();
+  return Install(profile);
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
 BundledIsolatedWebApp::Install(Profile* profile) {
   return ::web_app::Install(
       profile, web_bundle_id_,
@@ -209,16 +217,33 @@ BundledIsolatedWebApp::Install(Profile* profile) {
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::InstallWithSource(
-    Profile* profile,
-    IsolatedWebAppInstallSource src_source) {
-  return ::web_app::Install(profile, web_bundle_id_, src_source);
+BundledIsolatedWebApp::InstallWithSource(Profile* profile,
+                                         IsolatedWebAppInstallSource source) {
+  return ::web_app::Install(profile, web_bundle_id_, source);
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
-BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
-  TrustSigningKey();
-  return Install(profile);
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceDevModeWithFileOp)>
+        install_source_provider,
+    IwaSourceBundleDevFileOp file_op) {
+  return ::web_app::Install(
+      profile, web_bundle_id_,
+      install_source_provider(web_app::IwaSourceDevModeWithFileOp(
+          web_app::IwaSourceBundleDevModeWithFileOp(path(), file_op))));
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::InstallWithSource(
+    Profile* profile,
+    base::FunctionRef<IsolatedWebAppInstallSource(IwaSourceProdModeWithFileOp)>
+        install_source_provider,
+    IwaSourceBundleProdFileOp file_op) {
+  return ::web_app::Install(
+      profile, web_bundle_id_,
+      install_source_provider(web_app::IwaSourceProdModeWithFileOp(
+          web_app::IwaSourceBundleProdModeWithFileOp(path(), file_op))));
 }
 
 FakeWebContentsManager::FakePageState&

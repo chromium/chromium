@@ -96,7 +96,11 @@ AffineTransform FEImage::SourceToDestinationTransform(
     const LayoutObject& layout_object,
     const gfx::RectF& dest_rect) const {
   gfx::SizeF viewport_scale(GetFilter()->Scale(), GetFilter()->Scale());
-  if (element_->HasRelativeLengths()) {
+  const bool compute_adjustment =
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? layout_object.HasViewportDependence()
+          : element_->HasRelativeLengths();
+  if (compute_adjustment) {
     viewport_scale =
         ComputeViewportAdjustmentScale(layout_object, dest_rect.size());
   }

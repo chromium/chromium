@@ -76,9 +76,15 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
     bounds_changed = true;
   }
 
+  const bool has_viewport_dependence =
+      content_result.has_viewport_dependence ||
+      GetElement()->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
+
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return SVGLayoutResult(bounds_changed);
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGContainer::UpdateAfterSVGLayout(
@@ -102,9 +108,11 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
     needs_transform_update_ = false;
   }
 
-  // Reset the viewport dependency flag based on the state for this container.
-  TransformHelper::UpdateReferenceBoxDependency(*this,
-                                                transform_uses_reference_box_);
+  if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+    // Reset the viewport dependency flag based on the state for this container.
+    TransformHelper::UpdateReferenceBoxDependency(
+        *this, transform_uses_reference_box_);
+  }
 
   if (!IsSVGHiddenContainer()) {
     SetTransformAffectsVectorEffect(false);
@@ -116,11 +124,13 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
           child->SVGDescendantMayHaveTransformRelatedAnimation()) {
         SetSVGDescendantMayHaveTransformRelatedAnimation();
       }
-      if (child->SVGSelfOrDescendantHasViewportDependency()) {
-        SetSVGSelfOrDescendantHasViewportDependency();
+      if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
+        if (child->SVGSelfOrDescendantHasViewportDependency()) {
+          SetSVGSelfOrDescendantHasViewportDependency();
+        }
       }
     }
-  } else {
+  } else if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
     // Hidden containers can depend on the viewport as well.
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
       if (child->SVGSelfOrDescendantHasViewportDependency()) {

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +17,8 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,12 +28,14 @@ import java.util.List;
  * Wrapper to get the process exit reason of a dead process with same UID as current from
  * ActivityManager, and record to UMA.
  */
+@NullMarked
 public class ProcessExitReasonFromSystem {
-    private static ActivityManager sActivityManager;
+    private static @Nullable ActivityManager sActivityManager;
 
     /**
      * Get the exit reason of the most recent chrome process that died and had |pid| as the process
      * ID. Only available on R+ devices, returns -1 otherwise.
+     *
      * @return ApplicationExitInfo.Reason
      */
     @RequiresApi(Build.VERSION_CODES.R)

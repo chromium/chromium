@@ -18,9 +18,6 @@ mojom("mojom") {
   webui_module_path =
       "chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom"
 
-  # chromeos/ash/resources/BUILD.gn still uses the lite bindings.
-  generate_legacy_js_bindings = true
-
   cpp_typemaps = [
     {
       types = [

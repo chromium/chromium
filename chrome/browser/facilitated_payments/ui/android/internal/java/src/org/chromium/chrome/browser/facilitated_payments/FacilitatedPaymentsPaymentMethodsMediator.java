@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_HEIGHT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.SECURITY_CHECK_DRAWABLE_ID;
@@ -216,6 +217,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
                         .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.gpay_pix_logo)
                         .with(PRODUCT_ICON_HEIGHT, productIconHeight)
+                        .with(
+                                PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
+                                R.string.pix_payment_product_icon_content_description)
                         .with(TITLE, title)
                         .build());
     }
@@ -255,6 +259,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(PRODUCT_ICON_DRAWABLE_ID, R.drawable.google_pay)
                         .with(PRODUCT_ICON_HEIGHT, productIconHeight)
+                        .with(
+                                PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
+                                R.string.facilitated_payments_google_pay)
                         .with(TITLE, title);
 
         if (ewallets.size() == 1 && !ewallets.get(0).getIsFidoEnrolled()) {

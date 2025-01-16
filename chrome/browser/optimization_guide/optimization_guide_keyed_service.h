@@ -225,10 +225,8 @@ class OptimizationGuideKeyedService
     return model_quality_logs_uploader_service_.get();
   }
 
-  optimization_guide::ModelExecutionFeaturesController*
-  GetModelExecutionFeaturesController() {
-    return model_execution_features_controller_.get();
-  }
+  virtual optimization_guide::ModelExecutionFeaturesController*
+  GetModelExecutionFeaturesController();
 
  private:
   friend class BrowserView;

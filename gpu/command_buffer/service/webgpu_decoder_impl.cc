@@ -1365,21 +1365,6 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
     force_fallback_adapter = true;
   }
 
-#if BUILDFLAG(IS_LINUX)
-  if (!shared_context_state_->GrContextIsVulkan() &&
-      !shared_context_state_->IsGraphiteDawnVulkan() &&
-      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
-    callback_info.callback(
-        WGPURequestAdapterStatus_Unavailable, nullptr,
-        MakeStringView(
-            "WebGPU on Linux requires GLES compat, or command-line "
-            "flag --enable-features=Vulkan, or command-line flag "
-            "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)"),
-        callback_info.userdata1, callback_info.userdata2);
-    return {};
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-
   wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
   if (force_webgpu_compat_ ||
       (static_cast<wgpu::FeatureLevel>(options->featureLevel) ==
@@ -1827,6 +1812,13 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
       backend_types = {wgpu::BackendType::D3D12};
 #elif BUILDFLAG(IS_MAC)
       backend_types = {wgpu::BackendType::Metal};
+#elif BUILDFLAG(IS_LINUX)
+      if (shared_context_state_->GrContextIsVulkan() ||
+          shared_context_state_->IsGraphiteDawnVulkan()) {
+        backend_types = {wgpu::BackendType::Vulkan};
+      } else {
+        backend_types = {wgpu::BackendType::OpenGLES};
+      }
 #else
       backend_types = {wgpu::BackendType::Vulkan, wgpu::BackendType::OpenGLES};
 #endif

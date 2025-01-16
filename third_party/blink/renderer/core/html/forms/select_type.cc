@@ -529,6 +529,20 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     }
     return true;
   }
+
+  // In the case that the picker is not overlapping the select's invoker button,
+  // we want to make sure that dragging to the first option and releasing the
+  // mouse chooses that option and closes the picker. This code does this by
+  // looking for mousemove events on the select's button.
+  // event.target() is only compared to select_ because the author provided
+  // button is inert, so clicking in an author provided button will always make
+  // the target select_.
+  if (event.type() == event_type_names::kMousemove &&
+      event.target() == select_ && !select_->MouseupShouldClosePicker() &&
+      IsAppearanceBasePicker()) {
+    select_->SetMouseupShouldClosePicker(true);
+  }
+
   return false;
 }
 
@@ -760,6 +774,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   }
 
   if (IsAppearanceBasePicker()) {
+    select_->SetMouseupShouldClosePicker(false);
     popover_->ShowPopoverInternal(select_, /*exception_state=*/nullptr);
     if (!IsAppearanceBasePicker()) {
       // The picker, as the result of CSS, changed `appearance` values upon

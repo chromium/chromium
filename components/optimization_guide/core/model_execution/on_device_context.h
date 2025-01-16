@@ -78,33 +78,15 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   bool CanUse() { return opts_.ShouldUse(); }
 
  private:
-  void CancelOptionalContext();
-
-  void AddContext(uint32_t num_tokens);
+  void AddContext();
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override;
-
-  struct Progress final {
-    // Whether the required (first) chunk has finished processing.
-    bool can_cancel_ = false;
-    // Whether all input has been fully processed.
-    bool finished_processing_ = false;
-    // Number of tokens in the chunk currently being processed.
-    uint32_t expected_tokens_ = 0;
-    // Total number of tokens processed so far.
-    uint32_t tokens_processed_ = 0;
-    // When processing began.
-    base::Time start_;
-    // When processing was cancelled to begin the first execution.
-    base::Time cancelled_;
-  };
 
   OnDeviceOptions opts_;
   ModelBasedCapabilityKey feature_;
   mojo::Remote<on_device_model::mojom::Session> session_;
   on_device_model::mojom::InputPtr input_;
-  Progress progress_;
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 

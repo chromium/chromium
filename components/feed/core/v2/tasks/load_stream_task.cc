@@ -364,12 +364,8 @@ void LoadStreamTask::SendFeedQueryRequest() {
     }
   } else {
     // Other requests use GWS.
-    NetworkRequestType network_request_type =
-        options_.stream_type.IsForSupervisedUser()
-            ? NetworkRequestType::kSupervisedFeed
-            : NetworkRequestType::kFeedQuery;
     network.SendQueryRequest(
-        network_request_type, request, account_info,
+        NetworkRequestType::kFeedQuery, request, account_info,
         base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
 }

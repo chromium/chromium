@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"

@@ -16,13 +16,13 @@
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/search_engines/template_url.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 class DocumentSuggestionsService;
-class SearchAggregatorSuggestionsService;
+class EnterpriseSearchAggregatorSuggestionsService;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -139,7 +139,8 @@ class RemoteSuggestionsService : public KeyedService {
 
   RemoteSuggestionsService(
       DocumentSuggestionsService* document_suggestions_service,
-      SearchAggregatorSuggestionsService* search_aggregator_suggestions_service,
+      EnterpriseSearchAggregatorSuggestionsService*
+          enterprise_search_aggregator_suggestions_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~RemoteSuggestionsService() override;
   RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
@@ -200,7 +201,7 @@ class RemoteSuggestionsService : public KeyedService {
   // Creates and starts an enterprise search aggregator suggestion request using
   //  `suggest_url` and `response_body` asynchronously after obtaining an OAuth2
   //  token for signed-in enterprise users.
-  void CreateSearchAggregatorSuggestionsRequest(
+  void CreateEnterpriseSearchAggregatorSuggestionsRequest(
       const GURL& suggest_url,
       const std::string& request_body,
       StartCallback start_callback,
@@ -254,8 +255,8 @@ class RemoteSuggestionsService : public KeyedService {
   raw_ptr<DocumentSuggestionsService> document_suggestions_service_;
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.
-  raw_ptr<SearchAggregatorSuggestionsService>
-      search_aggregator_suggestions_service_;
+  raw_ptr<EnterpriseSearchAggregatorSuggestionsService>
+      enterprise_search_aggregator_suggestions_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Observers being notified of request start and completion events.
   base::ObserverList<Observer> observers_;

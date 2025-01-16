@@ -115,12 +115,12 @@ constexpr FilePath::CharType kArcExternalFilesRoot[] =
 constexpr char kArcStorageContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // A predefined removable media UUID for testing. Defined in
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/1274481): Move ash-wide constants to a common place.
 constexpr char kArcRemovableMediaUuidForTesting[] =
     "00000000000000000000000000000000DEADBEEF";
 // The dummy UUID of the MyFiles volume is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/"

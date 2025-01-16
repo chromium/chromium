@@ -125,8 +125,12 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id);
 // flow is detected.
 void LogPaymentLinkDetected(ukm::SourceId ukm_source_id);
 
-// Log when the FOP selector UI is shown.
-void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id);
+// Log when the eWallet FOP selector UI is shown.
+void LogEwalletFopSelectorShownUkm(ukm::SourceId ukm_source_id,
+                                   PaymentLinkValidator::Scheme scheme);
+
+// Log when the Pix FOP selector UI is shown.
+void LogPixFopSelectorShownUkm(ukm::SourceId ukm_source_id);
 
 // Log after user accepts / rejects the FOP UI. The `accepted` will be false
 // if the user rejects the UI, and it will be true if the user accepts the

@@ -26,11 +26,11 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

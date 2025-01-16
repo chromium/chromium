@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,10 +34,10 @@ const char kBaseAttachmentResourceUrl[] =
 
 const char kRequestUrl[] =
     "https://graph.microsoft.com/v1.0/me/calendar/"
-    "calendarview?startdatetime=2024-12-02T00:10:06.424Z&enddatetime=2024-12-"
-    "06T00:10:06.424Z&select=id,hasAttachments,subject,start,attendees,"
-    "webLink,onlineMeeting,location,isOrganizer,responseStatus,end,isCancelled&"
-    "expand=attachments(select=id,name,contentType)";
+    "calendarview?startdatetime=%s&enddatetime=%s&select=id,hasAttachments,"
+    "subject,start,attendees,webLink,onlineMeeting,location,isOrganizer,"
+    "responseStatus,end,isCancelled&expand=attachments(select=id,name,"
+    "contentType)";
 
 }  // namespace
 
@@ -54,6 +55,15 @@ class OutlookCalendarPageHandlerTest : public testing::Test {
         mojo::PendingReceiver<
             ntp::calendar::mojom::OutlookCalendarPageHandler>(),
         profile_.get());
+  }
+
+  std::string GetRequestUrl() {
+    std::string start_date_time = TimeFormatAsIso8601(base::Time::Now());
+    std::string end_date_time =
+        TimeFormatAsIso8601(base::Time::Now() + base::Hours(12));
+    std::string request_url =
+        base::StringPrintf(kRequestUrl, start_date_time, end_date_time);
+    return request_url;
   }
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
@@ -110,7 +120,8 @@ TEST_F(OutlookCalendarPageHandlerTest, GetEvents) {
   handler->GetEvents(future.GetCallback());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kRequestUrl, *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+      GetRequestUrl(),
+      *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
 
   EXPECT_EQ(future.Get().size(), 3u);
 }
@@ -122,7 +133,8 @@ TEST_F(OutlookCalendarPageHandlerTest, EmptyResponse) {
 
   handler->GetEvents(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl, "");
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
+                                                             "");
 
   EXPECT_EQ(future.Get().size(), 0u);
 }
@@ -134,7 +146,7 @@ TEST_F(OutlookCalendarPageHandlerTest, MalformedResponse) {
 
   handler->GetEvents(future.GetCallback());
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              "} {");
 
   EXPECT_EQ(future.Get().size(), 0u);
@@ -169,7 +181,7 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 0u);
@@ -205,7 +217,7 @@ TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 0u);
@@ -241,7 +253,7 @@ TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   EXPECT_EQ(future.Get().size(), 1u);
@@ -301,7 +313,7 @@ TEST_F(OutlookCalendarPageHandlerTest, HasOtherAttendeeWhenNotOrganizer) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
@@ -365,7 +377,7 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesAccepted) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
@@ -429,7 +441,7 @@ TEST_F(OutlookCalendarPageHandlerTest, AttendeesDeclined) {
         "attachments": []
       }]})";
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
@@ -492,7 +504,7 @@ TEST_F(OutlookCalendarPageHandlerTest, EventCanceled) {
         ],
         "attachments": []
       }]})";
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
@@ -593,7 +605,7 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
       }]})", event_id, attachment_id_1, attachment_id_2, attachment_id_3);
   // clang-format on
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(kRequestUrl,
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
                                                              response);
 
   const std::vector<ntp::calendar::mojom::CalendarEventPtr>& events =
@@ -641,7 +653,7 @@ TEST_F(OutlookCalendarPageHandlerTest, HandleThrottlingError) {
       "message": "Please retry again later."
     }})";
 
-  test_url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head),
+  test_url_loader_factory_.AddResponse(GURL(GetRequestUrl()), std::move(head),
                                        response, status);
 
   EXPECT_EQ(future.Get().size(), 0u);
@@ -675,7 +687,8 @@ TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kRequestUrl, *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+      GetRequestUrl(),
+      *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
 
   EXPECT_EQ(future.Get().size(), 3u);
 }
@@ -697,4 +710,61 @@ TEST_F(OutlookCalendarPageHandlerTest, DismissAndRestoreModule) {
   EXPECT_EQ(profile_->GetPrefs()->GetTime(
                 prefs::kNtpOutlookCalendarLastDismissedTime),
             base::Time());
+}
+
+// Verifies that an event isn't created if the event has been declined.
+TEST_F(OutlookCalendarPageHandlerTest, DeclinedEventNotCreated) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Event 1",
+        "isCancelled": false,
+        "isOrganizer": false,
+        "webLink": "https://outlook.com",
+        "responseStatus": {
+                "response": "declined",
+                "time": "0001-01-01T00:00:00Z"
+        },
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "none",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test1@outlook.com",
+                        "address": "test1@outlook.com"
+                  }
+              },
+              {
+                  "type": "required",
+                  "status": {
+                        "response": "declined",
+                        "time": "0001-01-01T00:00:00Z"
+                  },
+                  "emailAddress": {
+                        "name": "test2@outlook.com",
+                        "address": "test2@outlook.com"
+                  }
+              }
+        ],
+        "attachments": []
+      }]})";
+
+  handler->GetEvents(future.GetCallback());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(GetRequestUrl(),
+                                                             response);
+  EXPECT_EQ(future.Get().size(), 0u);
 }

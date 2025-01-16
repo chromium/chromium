@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -45,6 +44,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/drive/drive_pref_names.h"

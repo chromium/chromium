@@ -217,6 +217,24 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
   }
 }
 
+void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<tab_groups::LocalTabGroupID>& local_id) {
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(sync_id);
+  if (tab_group) {
+    if (local_id.has_value()) {
+      for (auto& observer : observers_) {
+        observer.OnTabGroupOpened(*tab_group);
+      }
+    } else {
+      for (auto& observer : observers_) {
+        observer.OnTabGroupClosed(*tab_group);
+      }
+    }
+  }
+}
+
 void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
       current_tab_groups =

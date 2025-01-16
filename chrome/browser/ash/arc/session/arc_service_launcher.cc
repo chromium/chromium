@@ -9,10 +9,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/timer/arc_timer_bridge.h"
-#include "ash/components/arc/usb/usb_host_bridge.h"
-#include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
-#include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -107,6 +103,10 @@
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
 #include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
+#include "chromeos/ash/experiences/arc/timer/arc_timer_bridge.h"
+#include "chromeos/ash/experiences/arc/usb/usb_host_bridge.h"
+#include "chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.h"
+#include "chromeos/ash/experiences/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

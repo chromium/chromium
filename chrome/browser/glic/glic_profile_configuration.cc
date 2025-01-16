@@ -40,6 +40,7 @@ void GlicProfileConfiguration::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicCompletedFre, false);
 }
 
 bool GlicProfileConfiguration::IsEnabledByPolicy() const {
@@ -59,6 +60,10 @@ void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
     }
   }
   GlicBackgroundModeManager::GetInstance()->OnPolicyChanged();
+}
+
+bool GlicProfileConfiguration::HasCompletedFre() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre);
 }
 
 }  // namespace glic

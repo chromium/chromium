@@ -616,14 +616,9 @@ external/wpt/fedcm/fedcm-not-observed-by-service-worker.https.html
 external/wpt/fedcm/fedcm-returning-account-auto-reauthn.https.html
 external/wpt/fedcm/lfedcm-identity.discovery.tentative.sub.https.html
 # https://github.com/web-platform-tests/wpt/issues/48078
-external/wpt/fetch/api/cors/cors-cookies*
-external/wpt/fetch/api/credentials/cookies.any.*
-external/wpt/fetch/fetch-later/activate-after.tentative.https.window.html
-external/wpt/fetch/fetch-later/iframe.tentative.https.window.html
-external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
-external/wpt/fetch/fetch-later/send-on-discard/not-send-after-abort.tentative.https.window.html
-external/wpt/fetch/metadata/generated/audioworklet.https.sub.html
-external/wpt/fetch/stale-while-revalidate/stale-*
+external/wpt/fetch/stale-while-revalidate/stale-css.html
+external/wpt/fetch/stale-while-revalidate/stale-image.html
+external/wpt/fetch/stale-while-revalidate/stale-script.html
 external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
 external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*

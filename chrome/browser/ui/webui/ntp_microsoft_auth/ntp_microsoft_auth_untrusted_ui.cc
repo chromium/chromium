@@ -56,7 +56,11 @@ NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
       "script-src 'self' "
       "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js "
       "chrome-untrusted://resources/mojo/mojo/public/mojom/base/"
-      "time.mojom-webui.js;");
+      "time.mojom-webui.js "
+      "chrome-untrusted://resources/mojo/mojo/public/mojom/base/"
+      "time_converters.js "
+      "chrome-untrusted://resources/mojo/mojo/public/mojom/base/"
+      "time.mojom-converters.js;");
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc,
       base::StringPrintf("default-src 'self' %s;",

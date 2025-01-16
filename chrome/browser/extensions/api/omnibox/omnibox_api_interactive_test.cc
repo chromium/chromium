@@ -1151,6 +1151,62 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnInputEntered) {
   EXPECT_TRUE(listener.had_user_gesture());
 }
 
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  constexpr char kBackground[] =
+      R"(
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: 'first', description: 'description'}
+           ]);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Prevent the stop timer from killing the hints fetch early, which might
+  // cause test flakiness due to timeout.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(20));
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if the suggestion is received (+1 for the default search entry).
+  ASSERT_EQ(2U, result.size()) << AutocompleteResultAsString(result);
+
+  // Second suggestion is given the first extension group and has a header of
+  // "alpha".
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(1).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result.match_at(1).suggestion_group_id);
+    EXPECT_EQ(u"alpha", result.GetHeaderForSuggestionGroup(
+                            *result.match_at(1).suggestion_group_id));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          UnscopedOmniboxApiTest,
                          testing::Values(ContextType::kServiceWorker));

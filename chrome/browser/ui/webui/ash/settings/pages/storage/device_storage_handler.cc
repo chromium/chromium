@@ -42,7 +42,7 @@ using disks::DiskMountManager;
 
 constexpr char kIsExternalStorageEnabled[] = "isExternalStorageEnabled";
 // Dummy UUID for testing. The UUID is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
 const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {

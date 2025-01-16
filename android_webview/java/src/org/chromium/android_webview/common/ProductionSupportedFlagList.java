@@ -551,10 +551,6 @@ public final class ProductionSupportedFlagList {
                 SafeBrowsingFeatures.HASH_PREFIX_REAL_TIME_LOOKUPS,
                 "When enabled, Safe Browsing checks will happen in real time"),
         Flag.baseFeature(
-                SafeBrowsingFeatures.SAFE_BROWSING_ASYNC_REAL_TIME_CHECK,
-                "When enabled, the real time Safe Browsing check will be called asynchronously,"
-                        + " along with an additional v4 check which will be synchronous."),
-        Flag.baseFeature(
                 "AddWarningShownTSToClientSafeBrowsingReport",
                 "When enabled, client reports will include a timestamp of when the warning was "
                         + "shown to the user"),
@@ -1043,6 +1039,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_AUTOFILL_HANDLE_FOCUS_CHANGE,
                 "When enabled it terminates autofill suggestion after window focus loss"),
+        Flag.baseFeature(
+                "LayoutNGShapeCache", "Enables the text shaping cache for the performance."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

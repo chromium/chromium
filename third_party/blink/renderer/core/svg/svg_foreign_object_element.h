@@ -38,14 +38,14 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   SVGAnimatedLength* width() const { return width_.Get(); }
   SVGAnimatedLength* height() const { return height_.Get(); }
 
+  bool SelfHasRelativeLengths() const override;
+
   void Trace(Visitor*) const override;
 
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-
-  bool SelfHasRelativeLengths() const override;
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;

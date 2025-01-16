@@ -807,7 +807,8 @@ class VideoEncoderTest : public ::testing::Test {
         }
       }
     }
-    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr));
+    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr,
+                               &std::unique_ptr<BitstreamProcessor>::get));
     return bitstream_processors;
   }
 

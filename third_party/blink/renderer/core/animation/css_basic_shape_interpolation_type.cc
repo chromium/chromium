@@ -62,6 +62,7 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       auto* shape = clip_path_operation->GetBasicShape();
 
       // Path shape is handled by PathInterpolationType.
+      // Shape is handled by ShapeInterpolationType
       if (shape->GetType() == BasicShape::kStylePathType ||
           shape->GetType() == BasicShape::kStyleShapeType) {
         return nullptr;
@@ -160,10 +161,10 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   }
 
   const auto& list = To<CSSValueList>(value);
-  // Path and Ray shapes are handled by PathInterpolationType and
-  // RayInterpolationType.
+  // Path, Shape and Ray shapes are handled by PathInterpolationType,
+  // ShapeInterpolationType and RayInterpolationType.
   if (!list.First().IsBasicShapeValue() || list.First().IsRayValue() ||
-      list.First().IsPathValue()) {
+      list.First().IsPathValue() || list.First().IsShapeValue()) {
     return nullptr;
   }
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(

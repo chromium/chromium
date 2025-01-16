@@ -5,8 +5,8 @@
 #include "components/search_engines/search_engine_utils.h"
 
 #include "components/google/core/common/google_util.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
 
 namespace search_engine_utils {

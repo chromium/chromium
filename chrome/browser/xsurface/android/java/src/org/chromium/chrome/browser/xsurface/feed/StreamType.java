@@ -11,10 +11,7 @@ import org.jspecify.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Type of stream being launched (the "For you","Following", "SingleWebFeed", or "Supervised User"
- * feed).
- */
+/** Type of stream being launched (the "For you","Following", or "SingleWebFeed" feed). */
 @IntDef({
     StreamType.UNSPECIFIED,
     StreamType.FOR_YOU,
@@ -29,5 +26,5 @@ public @interface StreamType {
     int FOR_YOU = 1;
     int WEB_FEED = 2;
     int SINGLE_WEB_FEED = 3;
-    int SUPERVISED_USER_FEED = 4;
+    @Deprecated int SUPERVISED_USER_FEED = 4;
 }

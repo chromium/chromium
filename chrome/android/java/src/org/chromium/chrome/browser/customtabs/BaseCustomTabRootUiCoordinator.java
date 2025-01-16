@@ -765,6 +765,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                             mActivityTabProvider,
                                             profile);
                             String appId = mIntentDataProvider.get().getClientPackageName();
+                            // TODO(crbug.com/390429345): Refactor Ads CCT Notice logic into the PS
+                            // dialog controller
                             if (ChromeFeatureList.isEnabled(
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
                                     && shouldShowPrivacySandboxDialog
@@ -782,6 +784,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck",
                                         shouldShowPrivacySandboxDialogAppIdCheck);
                                 if (shouldShowPrivacySandboxDialogAppIdCheck) {
+                                    if (surveyController != null) {
+                                        PrivacySandboxDialogController.setOnDialogDismissRunnable(
+                                                () ->
+                                                        surveyController
+                                                                .maybeScheduleAdsCctTreatmentSurveyLaunch(
+                                                                        appId));
+                                    }
                                     didShowPrompt =
                                             PrivacySandboxDialogController
                                                     .maybeLaunchPrivacySandboxDialog(
@@ -795,7 +804,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                             ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
-                                surveyController.scheduleAdsCctControlSurveyLaunch(
+                                surveyController.maybeScheduleAdsCctControlSurveyLaunch(
                                         appId,
                                         new PrivacySandboxBridge(currentModelProfile)
                                                 .getRequiredPromptType(SurfaceType.AGACCT));

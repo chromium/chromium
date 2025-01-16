@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/animation/css_scale_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_scrollbar_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_shadow_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_size_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_text_indent_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_time_interpolation_type.h"
@@ -392,6 +393,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSBasicShapeInterpolationType>(used_property));
         applicable_types->push_back(
             std::make_unique<CSSPathInterpolationType>(used_property));
+        applicable_types->push_back(
+            std::make_unique<CSSShapeInterpolationType>(used_property));
         break;
       case CSSPropertyID::kShapeOutside:
         applicable_types->push_back(

@@ -78,7 +78,19 @@ SVGLayoutResult LayoutSVGResourceContainer::UpdateSVGLayout(
   // we wouldn't need to override LayoutSVGHiddenContainer::UpdateSVGLayout().
   DCHECK(NeedsLayout());
   ClearInvalidationMask();
-  return LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
+
+  const SVGLayoutResult result =
+      LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
+
+  // Another object may reference this resource (e.g. a <rect> referencing a
+  // clip-path), ensure that these clients have paint-invalidation issued if we
+  // re-layout due to a viewport dependence.
+  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
+      layout_info.viewport_changed && result.has_viewport_dependence) {
+    RemoveAllClientsFromCache();
+  }
+
+  return result;
 }
 
 gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(

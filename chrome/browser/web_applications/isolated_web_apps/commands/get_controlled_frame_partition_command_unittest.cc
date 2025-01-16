@@ -13,12 +13,16 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
 
 using ::testing::UnorderedElementsAre;
@@ -28,12 +32,12 @@ namespace web_app {
 class GetControlledFramePartitionCommandTest : public WebAppTest {
  public:
   GetControlledFramePartitionCommandTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
   void SetUp() override {
     WebAppTest::SetUp();
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -53,12 +57,13 @@ class GetControlledFramePartitionCommandTest : public WebAppTest {
     return future.Get().value();
   }
 
-  IsolatedWebAppUrlInfo InstallIsolatedWebApp(const GURL& url) {
-    AddDummyIsolatedAppToRegistry(profile(), url, "IWA Name");
-    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-        IsolatedWebAppUrlInfo::Create(url);
-    CHECK(url_info.has_value());
-    return *url_info;
+  IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    bundle->TrustSigningKey();
+    bundle->FakeInstallPageState(profile());
+    return bundle->InstallChecked(profile());
   }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
@@ -67,13 +72,12 @@ class GetControlledFramePartitionCommandTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // isolated web app builder uses json parser from the decoder
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(GetControlledFramePartitionCommandTest, CanRegisterPartition) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(app_url);
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
 
   content::StoragePartitionConfig config = RunCommand(url_info, "name1");
 
@@ -90,10 +94,7 @@ TEST_F(GetControlledFramePartitionCommandTest, CanRegisterPartition) {
 }
 
 TEST_F(GetControlledFramePartitionCommandTest, CanRegisterMultiplePartitions) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(app_url);
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
 
   content::StoragePartitionConfig config1 = RunCommand(url_info, "name1");
   content::StoragePartitionConfig config2 = RunCommand(url_info, "name2");
@@ -115,10 +116,7 @@ TEST_F(GetControlledFramePartitionCommandTest, CanRegisterMultiplePartitions) {
 }
 
 TEST_F(GetControlledFramePartitionCommandTest, DuplicatePartitionsIgnored) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(app_url);
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
   content::StoragePartitionConfig config1 = RunCommand(url_info, "name1");
   content::StoragePartitionConfig config2 = RunCommand(url_info, "name1");
 
@@ -136,10 +134,7 @@ TEST_F(GetControlledFramePartitionCommandTest, DuplicatePartitionsIgnored) {
 }
 
 TEST_F(GetControlledFramePartitionCommandTest, InMemoryPartitionsIsSaved) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(app_url);
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
 
   content::StoragePartitionConfig config =
       RunCommand(url_info, "name1", /*in_memory=*/true);
@@ -161,12 +156,9 @@ TEST_F(GetControlledFramePartitionCommandTest, InMemoryPartitionsIsSaved) {
 
 TEST_F(GetControlledFramePartitionCommandTest, CorrectWithDifferentApps) {
   // Set up IWA 1.
-  const GURL iwa_1_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  IsolatedWebAppUrlInfo iwa_1_url_info = InstallIsolatedWebApp();
   const std::string expected_partition_domain_1 =
-      "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
-  IsolatedWebAppUrlInfo iwa_1_url_info = InstallIsolatedWebApp(iwa_1_url);
+      iwa_1_url_info.storage_partition_config(profile()).partition_domain();
 
   auto expected_iwa_1_sp_base = content::StoragePartitionConfig::Create(
       profile(), expected_partition_domain_1,
@@ -187,12 +179,9 @@ TEST_F(GetControlledFramePartitionCommandTest, CorrectWithDifferentApps) {
   ASSERT_EQ(expected_iwa_1_sp_2, output_iwa_1_sp_2);
 
   // Set up IWA 2.
-  const GURL iwa_2_url(
-      "isolated-app://"
-      "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic");
+  IsolatedWebAppUrlInfo iwa_2_url_info = InstallIsolatedWebApp();
   const std::string expected_partition_domain_2 =
-      "ixhWrMZlUCk1eUZYDqDyJy4DZzylqxRZWbMlA4WqsfTo=";
-  IsolatedWebAppUrlInfo iwa_2_url_info = InstallIsolatedWebApp(iwa_2_url);
+      iwa_2_url_info.storage_partition_config(profile()).partition_domain();
 
   auto expected_iwa_2_sp_base = content::StoragePartitionConfig::Create(
       profile(), expected_partition_domain_2,

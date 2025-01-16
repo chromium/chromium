@@ -38,12 +38,6 @@ constexpr float kGammaMultiplier = 1000;
 }  // namespace
 
 TEST_F(FontRenderParamsTest, SystemFontSettingsDisabled) {
-  // TODO(crbug.com/40037626)
-  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures({},
-                                   {features::kIncreaseWindowsTextContrast});
-
   // Ensure that without the feature enabled, the values of `FontRenderParams`
   // match Skia default values.
   FontRenderParams params =
@@ -56,11 +50,8 @@ TEST_F(FontRenderParamsTest, DefaultRegistryState) {
   // Ensure that with the feature enabled, the values of `FontRenderParams`
   // match the associated registry key values.
   base::test::ScopedFeatureList scoped_features;
-  // TODO(crbug.com/40037626)
-  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
   scoped_features.InitWithFeatures(
-      {features::kUseGammaContrastRegistrySettings},
-      {features::kIncreaseWindowsTextContrast});
+      {features::kUseGammaContrastRegistrySettings}, {});
 
   FontRenderParams params =
       GetFontRenderParams(FontRenderParamsQuery(), nullptr);
@@ -152,19 +143,6 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
     EXPECT_FLOAT_EQ(FontUtilWin::GetGammaFromRegistry() * kGammaMultiplier,
                     gamma);
   }
-}
-
-TEST_F(FontRenderParamsTest, TextGammaContrast) {
-  // TODO(crbug.com/40037626)
-  // Disable IncreaseWindowsTextContrast until SK_GAMMA_CONTRAST is set to 1.0f.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures({},
-                                   {features::kIncreaseWindowsTextContrast});
-  EXPECT_EQ(FontUtilWin::TextGammaContrast(), SK_GAMMA_CONTRAST);
-}
-
-TEST_F(FontRenderParamsTest, IncreasedContrast) {
-  EXPECT_EQ(FontUtilWin::TextGammaContrast(), 1.0f);
 }
 
 }  // namespace gfx

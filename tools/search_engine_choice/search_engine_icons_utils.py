@@ -9,7 +9,7 @@ import sys
 
 config_file_path = 'tools/search_engine_choice/generate_search_engine_icons_config.json'
 search_engines_countries_src_path = 'components/search_engines/search_engine_countries-inc.cc'
-prepopulated_engines_file_path = 'components/search_engines/prepopulated_engines.json'
+prepopulated_engines_file_path = 'third_party/search_engines_data/resources/definitions/prepopulated_engines.json'
 
 
 def keyword_to_identifer(keyword):

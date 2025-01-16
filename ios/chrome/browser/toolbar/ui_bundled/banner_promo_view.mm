@@ -18,11 +18,14 @@ namespace {
 // Size of the close button.
 const CGFloat kCloseButtonIconSize = 30;
 
-// Size of icon image.
-const CGFloat kImageSize = 30;
+// Size of logo view.
+const CGFloat kLogoSize = 30;
 
-// Corner radius for the icon image.
-const CGFloat kImageCornerRadius = 8;
+// Point size of the actual logo symbol within the overall logo view.
+const CGFloat kLogoPointSize = 18;
+
+// Corner radius for the logo image.
+const CGFloat kLogoCornerRadius = 8;
 
 // Spacing for the content stack view.
 const CGFloat kContentSpacing = 8;
@@ -95,8 +98,8 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 @implementation BannerPromoView {
   // Label for the banner text.
   UILabel* _text;
-  // Image for the app icon.
-  UIView* _image;
+  // View holding the app logo.
+  UIView* _logoView;
   // Button to close the banner.
   UIButton* _closeButton;
 
@@ -120,13 +123,31 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
 
-    _image = [[UIView alloc] init];
-    _image.translatesAutoresizingMaskIntoConstraints = NO;
-    _image.layer.cornerRadius = kImageCornerRadius;
-    // TODO(crbug.com/378142709): Add icon here.
+    _logoView = [[UIView alloc] init];
+    _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    _logoView.layer.cornerRadius = kLogoCornerRadius;
+    _logoView.backgroundColor = UIColor.whiteColor;
     [NSLayoutConstraint activateConstraints:@[
-      [_image.heightAnchor constraintEqualToConstant:kImageSize],
-      [_image.widthAnchor constraintEqualToAnchor:_image.heightAnchor],
+      [_logoView.heightAnchor constraintEqualToConstant:kLogoSize],
+      [_logoView.widthAnchor constraintEqualToAnchor:_logoView.heightAnchor],
+    ]];
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    UIImage* logo = MakeSymbolMulticolor(
+        CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoPointSize));
+#else
+    UIImage* logo =
+        CustomSymbolWithPointSize(kChromeProductSymbol, kLogoPointSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
+    logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_logoView addSubview:logoImageView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [logoImageView.centerXAnchor
+          constraintEqualToAnchor:_logoView.centerXAnchor],
+      [logoImageView.centerYAnchor
+          constraintEqualToAnchor:_logoView.centerYAnchor],
     ]];
 
     _closeButton = CloseButton(^(UIAction*){
@@ -134,7 +155,7 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
     });
 
     _contentsStackView = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _image, _text, _closeButton ]];
+        initWithArrangedSubviews:@[ _logoView, _text, _closeButton ]];
     _contentsStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _contentsStackView.spacing = kContentSpacing;
     _contentsStackView.alignment = UIStackViewAlignmentCenter;

@@ -38,6 +38,7 @@ include_rules = [
   "+services/metrics/public",
   "+third_party/blink/public/common/features.h",
   "+third_party/boringssl/src/include",
+  "+third_party/search_engines_data",
   "+ui/base",
   "+ui/gfx",
   "+ui/native_theme",

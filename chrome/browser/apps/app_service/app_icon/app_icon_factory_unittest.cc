@@ -87,8 +87,9 @@ class AppIconFactoryTest : public testing::Test {
     base::FilePath base_path;
     std::string png_data_as_string;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
-    base::FilePath icon_file_path = base_path.AppendASCII("ash")
-                                        .AppendASCII("components")
+    base::FilePath icon_file_path = base_path.AppendASCII("chromeos")
+                                        .AppendASCII("ash")
+                                        .AppendASCII("experiences")
                                         .AppendASCII("arc")
                                         .AppendASCII("test")
                                         .AppendASCII("data")

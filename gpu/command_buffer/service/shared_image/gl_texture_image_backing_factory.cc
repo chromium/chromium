@@ -241,13 +241,17 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
-  // Only supports WebGPU usages on Dawn's OpenGLES backend.
+  // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+    if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
       return false;
     }
+#else
+    return false;
+#endif
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);

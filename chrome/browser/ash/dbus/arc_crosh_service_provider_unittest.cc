@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "ash/components/arc/mojom/crosh.mojom.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -25,6 +23,8 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"

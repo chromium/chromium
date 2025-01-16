@@ -88,7 +88,9 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
 
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      TransformHelper::UpdateReferenceBoxDependency(*this);
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(style)
+          : TransformHelper::UpdateReferenceBoxDependency(*this);
   SVGResources::UpdatePaints(*this, old_style, style);
 
   if (old_style) {
@@ -360,11 +362,16 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     bounds_changed = true;
   }
 
+  const bool has_viewport_dependence =
+      GetElement()->SelfHasRelativeLengths() ||
+      (transform_uses_reference_box_ &&
+       StyleRef().TransformBox() == ETransformBox::kViewBox);
+
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
-  return SVGLayoutResult(bounds_changed);
+  return SVGLayoutResult(bounds_changed, has_viewport_dependence);
 }
 
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,

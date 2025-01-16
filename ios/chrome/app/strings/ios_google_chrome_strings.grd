@@ -932,6 +932,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
         You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS AutoFill from Chrome password manager [iOS only]">
+        Toggle Chrome
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE" desc="The subtitle of the view that teaches users to turn on iOS AutoFill from Chrome password manager [iOS Only]">
+        Sign in faster with Chrome autofill
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_MAGIC_STACK_PAGE_HEADER" desc="Informational header at the top of the safety check page when opened via the Magic Stack">
         Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.
       </message>

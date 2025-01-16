@@ -48,7 +48,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
   // `IsDriveModuleEnabledForProfile()` that limits who can see the sharepoint
   // module.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)) {
-    details.emplace_back(ntp_modules::kSharepointModuleId,
+    details.emplace_back(ntp_modules::kMicrosoftFilesModuleId,
                          IDS_NTP_MODULES_SHAREPOINT_NAME);
   }
 

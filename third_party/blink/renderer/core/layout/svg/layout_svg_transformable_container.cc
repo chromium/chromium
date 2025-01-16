@@ -126,7 +126,9 @@ void LayoutSVGTransformableContainer::StyleDidChange(
 
   TransformHelper::UpdateOffsetPath(element, old_style);
   SetTransformUsesReferenceBox(
-      TransformHelper::UpdateReferenceBoxDependency(*this));
+      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
+          ? TransformHelper::DependsOnReferenceBox(style)
+          : TransformHelper::UpdateReferenceBoxDependency(*this));
 }
 
 void LayoutSVGTransformableContainer::WillBeDestroyed() {

@@ -1053,6 +1053,11 @@ RendererBlinkPlatformImpl::CreateWebV8ValueConverter() {
   return std::make_unique<V8ValueConverterImpl>();
 }
 
+bool RendererBlinkPlatformImpl::DisallowV8FeatureFlagOverrides() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisallowV8FeatureFlagOverrides);
+}
+
 void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
     const blink::WebURL& url,
     blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {

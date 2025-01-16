@@ -267,6 +267,11 @@ the generic promo launch. -->
   <int value="3" label="Tertiary Action Button"/>
 </enum>
 
+<enum name="IOSDeleteAllSavedCredentialsActions">
+  <int value="0" label="User confirmed delete all saved credentials"/>
+  <int value="1" label="User cancelled delete all saved credentials"/>
+</enum>
+
 <enum name="IOSDockingPromoAction">
   <int value="0" label="Toggle appearance"/>
   <int value="1" label="Primary Action Button (Got It)"/>

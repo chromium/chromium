@@ -1291,8 +1291,6 @@ public class FeedStream implements Stream {
                 return StreamType.WEB_FEED;
             case StreamKind.SINGLE_WEB_FEED:
                 return StreamType.SINGLE_WEB_FEED;
-            case StreamKind.SUPERVISED_USER:
-                return StreamType.SUPERVISED_USER_FEED;
             default:
                 return StreamType.UNSPECIFIED;
         }

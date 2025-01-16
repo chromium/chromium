@@ -370,6 +370,15 @@ const base::FeatureParam<base::TimeDelta>
         &ntp_features::kNtpCalendarModule,
         "NtpCalendarModuleWindowStartDeltaParam",
         base::Minutes(-15));
+const base::FeatureParam<int> kNtpOutlookCalendarModuleMaxEventsParam(
+    &ntp_features::kNtpOutlookCalendarModule,
+    "NtpOutlookCalendarModuleMaxEventsParam",
+    5);
+const base::FeatureParam<base::TimeDelta>
+    kNtpOutlookCalendarModuleRetrievalWindowParam(
+        &ntp_features::kNtpOutlookCalendarModule,
+        "NtpOutlookCalendarModuleRetrievalWindowParam",
+        base::Hours(12));
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",

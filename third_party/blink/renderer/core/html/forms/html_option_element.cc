@@ -697,11 +697,20 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (mouse_event && event.type() == event_type_names::kMouseup &&
       mouse_event->button() ==
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
+      select->MouseupShouldClosePicker()) {
     select->SelectOptionByPopup(this);
     select->HidePopup(SelectPopupHideBehavior::kNormal);
     event.SetDefaultHandled();
     return;
+  } else if (event.type() == event_type_names::kMouseleave ||
+             event.type() == event_type_names::kMousedown) {
+    // In the case that the picker overlaps the invoker button and the user
+    // clicks and drags between options, releasing the pointer should choose an
+    // option and close the picker after the mouse has left an option or
+    // released the pointer and clicked down again.
+    // https://issues.chromium.org/issues/385300320
+    select->SetMouseupShouldClosePicker(true);
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);

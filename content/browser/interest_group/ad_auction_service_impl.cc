@@ -1127,7 +1127,7 @@ void AdAuctionServiceImpl::AddEmptyGetInterestGroupAdAuctionDataRequest(
           std::move(seller),
           blink::mojom::AdAuctionRequestOrError::NewError(std::move(msg))));
     }
-    if (state.num_pending_keys == 0) {
+    if (state.sellers.size() == state.requests.size()) {
       RunGetInterestGroupAdAuctionDataCallback(state.request_id);
     }
   }
@@ -1158,7 +1158,6 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
     return;
   }
 
-  state.num_pending_keys = state.sellers.size();
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
       /* generation_id=*/base::Uuid::GenerateRandomV4(), state.timestamp,
@@ -1200,8 +1199,6 @@ void AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey(
     return;
   }
   BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
-  DCHECK_GT(state.num_pending_keys, 0);
-  state.num_pending_keys -= 1;
   if (!maybe_key.has_value()) {
     AddEmptyGetInterestGroupAdAuctionDataRequest(seller,
                                                  std::move(maybe_key.error()));
@@ -1301,7 +1298,7 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
       blink::mojom::AdAuctionRequestOrError::NewRequest(std::move(buf))));
   RecordBaDataConstructionResultMetric(data.size(), state.start_time);
   state.has_valid_request = true;
-  if (state.num_pending_keys == 0) {
+  if (state.sellers.size() == state.requests.size()) {
     RunGetInterestGroupAdAuctionDataCallback(request_id);
   }
 }

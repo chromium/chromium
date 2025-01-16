@@ -20,11 +20,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
+import androidx.test.espresso.Espresso;
 
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
@@ -90,7 +92,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         mTitleInputSpec = viewSpec(allOf(TITLE_INPUT_MATCHER, withText(mTitle)));
         elements.declareView(mTitleInputSpec, ViewElement.elementIdOption(inputElementId));
 
-        // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
+        // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         elements.declareView(COLOR_PICKER_CONTAINER, ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         for (@TabGroupColorId Integer color : colors) {
@@ -127,6 +129,19 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Input a new tab group name. */
     public NewTabGroupDialogFacility inputName(String newTabGroupName) {
+        // An empty name causes warning text to show up which could push the color picker container
+        // out of view for small screen devices, so dismiss the keyboard.
+        if (newTabGroupName.isEmpty()) {
+            if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+                mSoftKeyboard.close();
+            } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+                // Do nothing as the soft keyboard has already been closed
+            } else {
+                throw new IllegalArgumentException(
+                        "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
+            }
+        }
+
         return mHostStation.swapFacilitySync(
                 this,
                 new NewTabGroupDialogFacility(
@@ -161,5 +176,47 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
                 this,
                 new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
                 DONE_BUTTON::click);
+    }
+
+    /** Press "Done" to confirm the tab group name and color, but no-op from an invalid title. */
+    public NewTabGroupDialogFacility pressDoneWithInvalidTitle() {
+        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+            mSoftKeyboard.close();
+        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+            // Do nothing as the soft keyboard has already been closed
+        } else {
+            throw new IllegalArgumentException(
+                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
+        }
+
+        return mHostStation.swapFacilitySync(
+                this,
+                new NewTabGroupDialogFacility(
+                        mTabIdsToGroup, mTitle, mSelectedColor, mSoftKeyboard),
+                Transition.newOptions().withPossiblyAlreadyFulfilled().build(),
+                DONE_BUTTON::click);
+    }
+
+    /** Press the system backpress to confirm the tab group name and color. */
+    public TabSwitcherGroupCardFacility pressBack() {
+        if (mSoftKeyboard.getPhase() == Phase.ACTIVE) {
+            mSoftKeyboard.close();
+        } else if (mSoftKeyboard.getPhase() == Phase.FINISHED) {
+            // Do nothing as the soft keyboard has already been closed
+        } else {
+            throw new IllegalArgumentException(
+                    "SoftKeyboardFacility is in phase " + mSoftKeyboard.getPhase());
+        }
+
+        // The reason we can pass an expected card index is because the tab group has already been
+        // created.
+        TabModel currentModel = mHostStation.getTabModelSelectorSupplier().get().getCurrentModel();
+        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
+        return mHostStation.swapFacilitySync(
+                this,
+                new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
+                () -> {
+                    Espresso.pressBack();
+                });
     }
 }

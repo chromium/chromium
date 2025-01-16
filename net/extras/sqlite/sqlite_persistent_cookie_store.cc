@@ -36,6 +36,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/unique_cookie_key.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "net/log/net_log.h"
@@ -488,8 +489,7 @@ class SQLitePersistentCookieStore::Backend
   }
 
   typedef std::list<std::unique_ptr<PendingOperation>> PendingOperationsForKey;
-  typedef std::map<CanonicalCookie::StrictlyUniqueCookieKey,
-                   PendingOperationsForKey>
+  typedef std::map<UniqueCookieKey, PendingOperationsForKey>
       PendingOperationsMap;
   PendingOperationsMap pending_ GUARDED_BY(lock_);
   PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_) = 0;

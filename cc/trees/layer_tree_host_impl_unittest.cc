@@ -90,6 +90,7 @@
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/base/media.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -10687,12 +10688,23 @@ class BlendStateCheckLayer : public LayerImpl {
         comparison_layer_(nullptr),
         quads_appended_(false),
         quad_rect_(5, 5, 5, 5),
-        quad_visible_rect_(5, 5, 5, 5) {
-    resource_id_ = resource_provider_->ImportResource(
-        viz::TransferableResource::MakeSoftwareSharedBitmap(
-            viz::SharedBitmap::GenerateId(), gpu::SyncToken(), gfx::Size(1, 1),
-            viz::SinglePlaneFormat::kRGBA_8888),
-        base::DoNothing());
+        quad_visible_rect_(5, 5, 5, 5),
+        shared_image_interface_(
+            base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
+    auto shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {viz::SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1),
+             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "BlendStateCheckLayerTest"});
+    auto sync_token = shared_image_interface_->GenVerifiedSyncToken();
+    viz::TransferableResource resource =
+        viz::TransferableResource::MakeSoftwareSharedImage(
+            shared_image, sync_token, gfx::Size(1, 1),
+            viz::SinglePlaneFormat::kBGRA_8888,
+            viz::TransferableResource::ResourceSource::kTileRasterTask);
+
+    resource_id_ = resource_provider_->ImportResource(std::move(resource),
+                                                      base::DoNothing());
     SetBounds(gfx::Size(10, 10));
     SetDrawsContent(true);
   }
@@ -10756,6 +10768,7 @@ class BlendStateCheckLayer : public LayerImpl {
   gfx::Rect opaque_content_rect_;
   gfx::Rect quad_visible_rect_;
   viz::ResourceId resource_id_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
 };
 
 TEST_P(LayerTreeHostImplTest, BlendingOffWhenDrawingOpaqueLayers) {

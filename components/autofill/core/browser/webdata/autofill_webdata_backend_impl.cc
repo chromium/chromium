@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -116,7 +117,15 @@ enum class Result {
   kUpdateServerIbanMetadata_Failure = 275,
   kClearAllCreditCardBenefits_Success = 276,
   kClearAllCreditCardBenefits_Failure = 277,
-  kMaxValue = kClearAllCreditCardBenefits_Failure,
+  kAddEntityInstance_Success = 280,
+  kAddEntityInstance_Failure = 281,
+  kUpdateEntityInstance_Success = 290,
+  kUpdateEntityInstance_Failure = 291,
+  kRemoveEntityInstance_Success = 300,
+  kRemoveEntityInstance_Failure = 301,
+  kRemoveEntityInstancesModifiedBetween_Success = 310,
+  kRemoveEntityInstancesModifiedBetween_Failure = 311,
+  kMaxValue = kRemoveEntityInstancesModifiedBetween_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -446,25 +455,40 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
 WebDatabase::State AutofillWebDataBackendImpl::AddEntityInstance(
     const EntityInstance& entity,
     WebDatabase* db) {
-  // TODO(crbug.com/388590912): Implement.
-  NOTIMPLEMENTED();
-  return WebDatabase::COMMIT_NOT_NEEDED;
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->AddEntityInstance(entity)) {
+    ReportResult(Result::kAddEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kAddEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateEntityInstance(
     const EntityInstance& entity,
     WebDatabase* db) {
-  // TODO(crbug.com/388590912): Implement.
-  NOTIMPLEMENTED();
-  return WebDatabase::COMMIT_NOT_NEEDED;
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->UpdateEntityInstance(entity)) {
+    ReportResult(Result::kUpdateEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kUpdateEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
     const base::Uuid& guid,
     WebDatabase* db) {
-  // TODO(crbug.com/388590912): Implement.
-  NOTIMPLEMENTED();
-  return WebDatabase::COMMIT_NOT_NEEDED;
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  EntityTable* table = EntityTable::FromWebDatabase(db);
+  if (!table->RemoveEntityInstance(guid)) {
+    ReportResult(Result::kRemoveEntityInstance_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kRemoveEntityInstance_Success);
+  return WebDatabase::COMMIT_NEEDED;
 }
 
 WebDatabase::State
@@ -472,35 +496,22 @@ AutofillWebDataBackendImpl::RemoveEntityInstancesModifiedBetween(
     base::Time delete_begin,
     base::Time delete_end,
     WebDatabase* db) {
-  // TODO(crbug.com/388590912): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (EntityTable::FromWebDatabase(db)->RemoveEntityInstancesModifiedBetween(
+          delete_begin, delete_end)) {
+    ReportResult(Result::kRemoveEntityInstancesModifiedBetween_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kRemoveEntityInstancesModifiedBetween_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetEntityInstances(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/388590912): Remove the fake data below and with actual
-  // database queries.
-  using enum AttributeTypeName;
-  std::vector<EntityInstance> entities = {
-      EntityInstance(
-          EntityType(EntityTypeName::kPassport),
-          {AttributeInstance(AttributeType(kPassportName), "Donald Duck", {}),
-           AttributeInstance(AttributeType(kPassportCountry), "USA", {}),
-           AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
-           AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
-          base::Uuid::GenerateRandomV4(), "Passie", base::Time::Now()),
-      EntityInstance(
-          EntityType(EntityTypeName::kLoyaltyCard),
-          {AttributeInstance(AttributeType(kLoyaltyCardProgram),
-                             "Asterisk Alliance", {}),
-           AttributeInstance(AttributeType(kLoyaltyCardProvider),
-                             "Duck Airways", {}),
-           AttributeInstance(AttributeType(kLoyaltyCardMemberId), "1", {})},
-          base::Uuid::GenerateRandomV4(), "Duckie", base::Time::Now())};
   return std::make_unique<WDResult<std::vector<EntityInstance>>>(
-      AUTOFILL_ENTITY_INSTANCE_RESULT, std::move(entities));
+      AUTOFILL_ENTITY_INSTANCE_RESULT,
+      EntityTable::FromWebDatabase(db)->GetEntityInstances());
 }
 
 std::unique_ptr<WDTypedResult>

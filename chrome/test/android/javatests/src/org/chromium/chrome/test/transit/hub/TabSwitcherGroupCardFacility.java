@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit.hub;
 
 import androidx.annotation.Nullable;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -38,7 +39,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
     public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup, String title) {
         super(
                 cardIndex,
-                title.equals(DEFAULT_N_TABS_TITLE)
+                title.equals(DEFAULT_N_TABS_TITLE) || title.isEmpty()
                         ? TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size())
                         : title);
         assert !tabIdsToGroup.isEmpty();

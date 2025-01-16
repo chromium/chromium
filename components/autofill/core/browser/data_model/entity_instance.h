@@ -52,6 +52,8 @@ class AttributeInstance final {
     Context& operator=(Context&&);
     ~Context();
 
+    friend bool operator==(const Context&, const Context&) = default;
+
     // Human-readable description of the format, e.g., "date in MM/YYYY".
     std::string format;
   };
@@ -74,6 +76,9 @@ class AttributeInstance final {
 
   // Metadata from the saving moment of the value.
   const Context& context() const { return context_; }
+
+  friend bool operator==(const AttributeInstance&,
+                         const AttributeInstance&) = default;
 
  private:
   AttributeType type_;
@@ -144,6 +149,9 @@ class EntityInstance final {
 
   // The latest time the instance, including any of its attributes, was edited.
   base::Time date_modified() const { return date_modified_; }
+
+  friend bool operator==(const EntityInstance&,
+                         const EntityInstance&) = default;
 
  private:
   EntityType type_;

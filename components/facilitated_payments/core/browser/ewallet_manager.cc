@@ -311,6 +311,7 @@ void EwalletManager::OnUiEvent(UiEvent ui_event_type) {
             kPaymentsType,
             base::TimeTicks::Now() - payment_flow_triggered_timestamp_,
             scheme_);
+        LogEwalletFopSelectorShownUkm(ukm_source_id_, scheme_);
       }
       break;
     }

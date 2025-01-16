@@ -103,6 +103,12 @@ class MockTabGroupChangeNotifierObserver
   MOCK_METHOD(void,
               OnTabSelected,
               (std::optional<tab_groups::SavedTabGroupTab>));
+  MOCK_METHOD(void,
+              OnTabGroupOpened,
+              (const tab_groups::SavedTabGroup& tab_group));
+  MOCK_METHOD(void,
+              OnTabGroupClosed,
+              (const tab_groups::SavedTabGroup& tab_group));
 };
 
 class TabGroupChangeNotifierImplTest : public testing::Test {
@@ -881,6 +887,22 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelectionReadsLiveData) {
       .WillOnce(SaveArg<0>(&tab_selection_received));
   tgss_observer_->OnTabSelected(tab_group.saved_guid(), tab.saved_tab_guid());
   EXPECT_EQ(42, tab_selection_received->local_tab_id());
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, OpenAndCloseTabGroup) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroup();
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  EXPECT_CALL(*notifier_observer_, OnTabGroupOpened(_));
+  tgss_observer_->OnTabGroupLocalIdChanged(
+      tab_group.saved_guid(), tab_groups::test::GenerateRandomTabGroupID());
+  EXPECT_CALL(*notifier_observer_, OnTabGroupClosed(_));
+  tgss_observer_->OnTabGroupLocalIdChanged(tab_group.saved_guid(),
+                                           std::nullopt);
 }
 
 }  // namespace collaboration::messaging

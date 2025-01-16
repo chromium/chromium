@@ -531,15 +531,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 // Tests that submission is detected when the new password field outside the
 // form tag is cleared not detected when other password fields are cleared.
 // TODO(crbug.com/382342234): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChangePwdFormRelevantFormlessFieldsCleared \
-  DISABLED_ChangePwdFormRelevantFormlessFieldsCleared
-#else
-#define MAYBE_ChangePwdFormRelevantFormlessFieldsCleared \
-  ChangePwdFormRelevantFormlessFieldsCleared
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       MAYBE_ChangePwdFormRelevantFormlessFieldsCleared) {
+                       DISABLED_ChangePwdFormRelevantFormlessFieldsCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =

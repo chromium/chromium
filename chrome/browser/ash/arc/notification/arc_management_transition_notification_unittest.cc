@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"

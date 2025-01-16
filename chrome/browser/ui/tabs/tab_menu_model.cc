@@ -128,6 +128,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    AddItemWithStringId(TabStripModel::CommandAddToSplit,
+                        IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
+    SetEnabledAt(GetItemCount() - 1,
+                 num_tabs == 1 && index != tab_strip->active_index());
+  }
 
   for (const auto& selection : indices) {
     if (tab_strip->GetTabGroupForTab(selection).has_value()) {

@@ -1408,6 +1408,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandAddToExistingGroup:
       return SupportsTabGroups();
 
+    case CommandAddToSplit:
+      return true;
+
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
@@ -1634,6 +1637,11 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAddToExistingGroup: {
       // Do nothing. The submenu's delegate will invoke
       // ExecuteAddToExistingGroupCommand with the correct group later.
+      break;
+    }
+
+    case CommandAddToSplit: {
+      // TODO(crbug.com/390426676): Implement this.
       break;
     }
 
@@ -2847,8 +2855,17 @@ void TabStripModel::MoveTabToIndexImpl(
     }
   }
 
-  if (group_model_ && (initial_group != tab->GetGroup())) {
-    TabGroupStateChanged(final_index, tab, initial_group, tab->GetGroup());
+  if (group_model_) {
+    if (initial_group != tab->GetGroup()) {
+      TabGroupStateChanged(final_index, tab, initial_group, tab->GetGroup());
+    } else if (initial_group.has_value()) {
+      const TabGroup* tab_group =
+          group_model_->GetTabGroup(initial_group.value());
+      if (tab_group->GetFirstTab().value() == initial_index ||
+          tab_group->GetFirstTab().value() == final_index) {
+        ChangeTabGroupContents(initial_group.value());
+      }
+    }
   }
 }
 
@@ -2890,9 +2907,18 @@ void TabStripModel::MoveTabsToIndexImpl(
                                  notification.selection_change);
     }
 
-    if (group_model_ && notification.intial_group != tab->GetGroup()) {
-      TabGroupStateChanged(final_index, tab, notification.intial_group,
-                           tab->GetGroup());
+    if (group_model_) {
+      if (notification.intial_group != tab->GetGroup()) {
+        TabGroupStateChanged(final_index, tab, notification.intial_group,
+                             tab->GetGroup());
+      } else if (notification.intial_group.has_value()) {
+        const TabGroup* tab_group =
+            group_model_->GetTabGroup(notification.intial_group.value());
+        if (tab_group->GetFirstTab().value() == notification.initial_index ||
+            tab_group->GetFirstTab().value() == final_index) {
+          ChangeTabGroupContents(notification.intial_group.value());
+        }
+      }
     }
   }
 }

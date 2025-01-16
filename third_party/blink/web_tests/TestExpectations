@@ -547,18 +547,20 @@ crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
 
-# CSS clip-path: shape() not implemented
-crbug.com/40829059 [ Win11 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
-crbug.com/384990511 [ Win11-arm64 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
-crbug.com/40829059 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-001.html [ Failure ]
-crbug.com/40829059 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-002.html [ Failure ]
-crbug.com/40829059 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
-crbug.com/40829059 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
-crbug.com/40829059 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
-crbug.com/40829059 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
-crbug.com/40829059 external/wpt/css/motion/offset-path-shape-shape-001.html [ Failure ]
-crbug.com/40829059 external/wpt/css/motion/offset-path-shape-shape-002.html [ Failure ]
-crbug.com/40829059 external/wpt/css/motion/offset-path-shape-shape-003.html [ Failure ]
+# CSS clip-path: shape()/path() interpolation
+crbug.com/389707045 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
+crbug.com/389707045 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
+crbug.com/389707045 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-003.html [ Failure ]
+crbug.com/389707045 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-004.html [ Failure ]
+
+# CSS shape() interpolation windows-specific issues
+crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
+crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape-control-points.tentative.html [ Failure ]
+
+# CSS offset-path: shape() not implemented
+crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-001.html [ Failure ]
+crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-002.html [ Failure ]
+crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-003.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
@@ -6230,6 +6232,8 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-text-only.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-click-drag-option.tentative.html [ Failure ]
+crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-click-drag-option.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
@@ -9108,5 +9112,7 @@ crbug.com/389559091 [ Mac ] external/wpt/html/semantics/forms/the-select-element
 
 # Gardener 2025-01-15
 crbug.com/389960979 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/locator.py [ Failure ]
-crbug.com/390162925 [ Win ] virtual/gpu-rasterization/images/png-suite/test.html [ Failure ]
 crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
+
+# Gardener 2025-01-16
+crbug.com/40839871 [ Mac ] http/tests/inspector-protocol/network/cookies-protocol-test.js [ Skip Timeout ]

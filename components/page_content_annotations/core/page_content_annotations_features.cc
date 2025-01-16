@@ -115,6 +115,10 @@ const base::FeatureParam<bool> kAnnotatedPageContentStudyIncludeInnerText{
 const base::FeatureParam<bool> kAnnotatedPageContentOnCriticalPath{
     &kAnnotatedPageContentExtraction, "on_critical_path", false};
 
+const base::FeatureParam<bool> kIncludeHiddenButSearchableContent{
+    &kAnnotatedPageContentExtraction, "include_hidden_but_searchable_content",
+    false};
+
 }  // namespace
 
 // Enables page content to be annotated.
@@ -285,6 +289,10 @@ bool ShouldAnnotatedPageContentIncludeGeometry() {
 
 bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
   return kAnnotatedPageContentStudyIncludeInnerText.Get();
+}
+
+bool ShouldIncludeHiddenButSearchableContent() {
+  return kIncludeHiddenButSearchableContent.Get();
 }
 
 }  // namespace page_content_annotations::features

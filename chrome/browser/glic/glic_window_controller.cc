@@ -155,15 +155,15 @@ class WindowEventObserver : public ui::EventObserver {
 };
 
 mojom::PanelState CreatePanelState(bool widget_visible,
-                                   Browser* pinned_browser) {
+                                   Browser* attached_browser) {
   mojom::PanelState panel_state;
   if (!widget_visible) {
     panel_state.kind = mojom::PanelState_Kind::kHidden;
-  } else if (pinned_browser) {
-    panel_state.kind = mojom::PanelState_Kind::kDocked;
-    panel_state.window_id = pinned_browser->session_id().id();
+  } else if (attached_browser) {
+    panel_state.kind = mojom::PanelState_Kind::kAttached;
+    panel_state.window_id = attached_browser->session_id().id();
   } else {
-    panel_state.kind = mojom::PanelState_Kind::kFloating;
+    panel_state.kind = mojom::PanelState_Kind::kDetached;
   }
   return panel_state;
 }
@@ -583,7 +583,6 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
     params.bounds = glic_window_widget_->GetWindowBoundsInScreen();
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
     holder_widget_->ShowInactive();
   }
@@ -640,10 +639,10 @@ mojom::PanelState GlicWindowController::ComputePanelState() const {
   if (!glic_window_widget_visible_) {
     panel_state.kind = mojom::PanelState_Kind::kHidden;
   } else if (attached_browser_) {
-    panel_state.kind = mojom::PanelState_Kind::kDocked;
+    panel_state.kind = mojom::PanelState_Kind::kAttached;
     panel_state.window_id = attached_browser_->session_id().id();
   } else {
-    panel_state.kind = mojom::PanelState_Kind::kFloating;
+    panel_state.kind = mojom::PanelState_Kind::kDetached;
   }
   return panel_state;
 }

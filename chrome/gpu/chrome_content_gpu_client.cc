@@ -28,7 +28,7 @@
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
+#include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "ui/ozone/public/ozone_platform.h"         // nogncheck
 #include "ui/ozone/public/surface_factory_ozone.h"  // nogncheck
 #endif

@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_system_ui_instance.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_system_ui_instance.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

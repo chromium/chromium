@@ -129,7 +129,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
     base::TimeTicks start_time;  // time used for metrics
     std::map<url::Origin, BiddingAndAuctionServerKey> keys;
-    int num_pending_keys = 0;
     std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
     base::flat_map<url::Origin, std::optional<url::Origin>> sellers;

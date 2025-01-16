@@ -5223,6 +5223,7 @@ void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
 
 void LayoutObject::SetSVGSelfOrDescendantHasViewportDependency() {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
   auto* object = this;
   do {
     DCHECK(object->IsSVGChild());

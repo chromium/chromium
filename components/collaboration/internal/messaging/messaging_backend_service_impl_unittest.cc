@@ -1851,4 +1851,70 @@ TEST_F(MessagingBackendServiceImplTest,
             last_persistent_message_chip.attribution.tab_metadata->sync_tab_id);
 }
 
+TEST_F(MessagingBackendServiceImplTest,
+       TestOpenTabGroupShowPersistentMessages) {
+  CreateAndInitializeService();
+  AddPersistentMessageObserver();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  // Create a tab group.
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+  EXPECT_CALL(*mock_tab_group_sync_service_,
+              GetGroup(tab_groups::EitherGroupID(tab_group.saved_guid())))
+      .WillRepeatedly(Return(tab_group));
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+
+  // Create a dirty tab db message.
+  base::Time now = base::Time::Now();
+  std::vector<collaboration_pb::Message> db_messages;
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now - base::Minutes(5));
+  message1.set_triggering_user_gaia_id("gaia_1");
+  message1.mutable_tab_data()->set_sync_tab_id(
+      tab1->saved_tab_guid().AsLowercaseString());
+  message1.mutable_tab_data()->set_sync_tab_group_id(
+      tab1->saved_group_guid().AsLowercaseString());
+  db_messages.emplace_back(message1);
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetDirtyMessagesForGroup(collaboration_group_id, DirtyType::kDot))
+      .WillRepeatedly(Return(db_messages));
+
+  // Expect to show 3 messages (dirty tab, chip and dirty tab group).
+  PersistentMessage expected_message_chip;
+  expected_message_chip.collaboration_event = CollaborationEvent::TAB_ADDED;
+  expected_message_chip.type = PersistentNotificationType::CHIP;
+  PersistentMessage expected_message_dot;
+  expected_message_dot.collaboration_event = CollaborationEvent::TAB_ADDED;
+  expected_message_dot.type = PersistentNotificationType::DIRTY_TAB;
+  PersistentMessage expected_message_dirty_tab_group;
+  expected_message_dirty_tab_group.collaboration_event =
+      CollaborationEvent::UNDEFINED;
+  expected_message_dirty_tab_group.type =
+      PersistentNotificationType::DIRTY_TAB_GROUP;
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_dot)))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(
+                  PersistentMessageTypeAndEventEq(expected_message_chip)))
+      .Times(1);
+  EXPECT_CALL(mock_persistent_message_observer_,
+              DisplayPersistentMessage(PersistentMessageTypeAndEventEq(
+                  expected_message_dirty_tab_group)))
+      .Times(1);
+
+  tg_notifier_observer_->OnTabGroupOpened(tab_group);
+}
+
 }  // namespace collaboration::messaging

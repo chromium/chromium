@@ -48,6 +48,13 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->
 
+<enum name="FacilitatedPayments.EwalletScheme">
+  <int value="0" label="Invalid merchant paymnet link"/>
+  <int value="1" label="DuitNow"/>
+  <int value="2" label="ShopeePay"/>
+  <int value="3" label="Tngd"/>
+</enum>
+
 <!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
 
 <enum name="FacilitatedPayments.FopSelectorAction">

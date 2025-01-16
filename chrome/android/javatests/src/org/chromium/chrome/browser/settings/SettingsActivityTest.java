@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -63,6 +64,7 @@ public class SettingsActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    @DisabledTest(message = "TODO(crbug.com/389790022)")
     public void testEdgeToEdgeEverywhere() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         final @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(activity);

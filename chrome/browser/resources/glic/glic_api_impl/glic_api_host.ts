@@ -18,12 +18,12 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import type {PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_api/glic_api.js';
-import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import type {DraggableArea, PanelState, Screenshot, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import {DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {HostRequestTypes, RgbaImage, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
+import type {HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
 import {ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
@@ -45,9 +45,9 @@ type HostMessageHandlerInterface = {
 class WebClientImpl implements WebClientInterface {
   constructor(private sender: PostMessageRequestSender) {}
 
-  notifyPanelOpened(dockedToWindowId: (number|null)): void {
+  notifyPanelOpened(attachedToWindowId: (number|null)): void {
     this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
-      dockedToWindowId: optionalWindowIdToClient(dockedToWindowId),
+      attachedToWindowId: optionalWindowIdToClient(attachedToWindowId),
     });
   }
 
@@ -188,17 +188,21 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   async glicBrowserGetContextFromFocusedTab(
-      request: {
-        options: {innerText?: boolean, viewportScreenshot?: boolean},
-      },
-      transfer: Transferable[]) {
-    const {result: {errorReason, tabContext}} =
-        await this.handler.getContextFromFocusedTab(
-            request.options.innerText || false,
-            // Note: viewportScreenshot was previously an empty object to imply
-            // true, this code works for either. Can be replaced with
-            // "request.options.viewportScreenshot || false" after 2025/01/05.
-            request.options.viewportScreenshot ? true : false);
+      request: {options: TabContextOptions},
+      transfer: Transferable[]): Promise<{
+    tabContextResult?: TabContextResultPrivate,
+    error?: GetTabContextErrorReason,
+  }> {
+    const {
+      result: {errorReason, tabContext},
+    } = await this.handler.getContextFromFocusedTab({
+      includeInnerText: request.options.innerText || false,
+      includeViewportScreenshot: request.options.viewportScreenshot || false,
+      includePdf: request.options.pdfData || false,
+      pdfSizeLimit: request.options.pdfSizeLimit === undefined ?
+          DEFAULT_PDF_SIZE_LIMIT :
+          Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
+    });
     if (!tabContext) {
       let error = GetTabContextErrorReason.UNKNOWN;
       if (errorReason === MojoGetTabContextErrorReason.kWebContentsChanged) {
@@ -207,20 +211,20 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       return {error};
     }
     const tabData = tabContext.tabData;
-    let rawFavicon: RgbaImage|undefined = undefined;
+    let favicon: RgbaImage|undefined = undefined;
     if (tabData.favicon) {
-      rawFavicon = bitmapN32ToRGBAImage(tabData.favicon);
-      if (rawFavicon) {
-        transfer.push(rawFavicon.dataRGBA);
+      favicon = bitmapN32ToRGBAImage(tabData.favicon);
+      if (favicon) {
+        transfer.push(favicon.dataRGBA);
       }
     }
 
-    const tabDataResult = {
+    const tabDataResult: TabDataPrivate = {
       tabId: tabIdToClient(tabData.tabId),
       windowId: windowIdToClient(tabData.windowId),
       url: urlToClient(tabData.url),
       title: optionalToClient(tabData.title),
-      rawFavicon,
+      favicon,
     };
     const webPageData = tabContext.webPageData;
     let webPageDataResult: WebPageData|undefined = undefined;
@@ -245,12 +249,27 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       };
       transfer.push(screenshotArray.buffer);
     }
+    let pdfDocumentData: PdfDocumentDataPrivate|undefined = undefined;
+    if (tabContext.pdfDocumentData) {
+      const pdfData = tabContext.pdfDocumentData.pdfData ?
+          new Uint8Array(tabContext.pdfDocumentData.pdfData).buffer :
+          undefined;
+      if (pdfData) {
+        transfer.push(pdfData);
+      }
+      pdfDocumentData = {
+        origin: originToClient(tabContext.pdfDocumentData.origin),
+        pdfSizeLimitExceeded: tabContext.pdfDocumentData.sizeLimitExceeded,
+        pdfData,
+      };
+    }
 
     return {
       tabContextResult: {
         tabData: tabDataResult,
         webPageData: webPageDataResult,
         viewportScreenshot: viewportScreenshotResult,
+        pdfDocumentData,
       },
     };
   }
@@ -291,9 +310,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const {displayName, email, avatarIcon} = mojoProfileInfo;
     const profileInfo: UserProfileInfoPrivate = {displayName, email};
     if (avatarIcon) {
-      profileInfo.avatarIconImage = bitmapN32ToRGBAImage(avatarIcon);
-      if (profileInfo.avatarIconImage) {
-        transfer.push(profileInfo.avatarIconImage.dataRGBA);
+      profileInfo.avatarIcon = bitmapN32ToRGBAImage(avatarIcon);
+      if (profileInfo.avatarIcon) {
+        transfer.push(profileInfo.avatarIcon.dataRGBA);
       }
     }
     return {profileInfo};
@@ -461,11 +480,11 @@ function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
     return undefined;
   }
 
-  let rawFavicon: RgbaImage|undefined = undefined;
+  let favicon: RgbaImage|undefined = undefined;
   if (tabData.favicon) {
-    rawFavicon = bitmapN32ToRGBAImage(tabData.favicon);
-    if (rawFavicon) {
-      transfer.push(rawFavicon.dataRGBA);
+    favicon = bitmapN32ToRGBAImage(tabData.favicon);
+    if (favicon) {
+      transfer.push(favicon.dataRGBA);
     }
   }
 
@@ -474,7 +493,8 @@ function tabDataToClient(tabData: TabDataMojo|null, transfer: Transferable[]):
     windowId: windowIdToClient(tabData.windowId),
     url: urlToClient(tabData.url),
     title: optionalToClient(tabData.title),
-    rawFavicon,
+    favicon,
+    documentMimeType: tabData.documentMimeType,
   };
 }
 

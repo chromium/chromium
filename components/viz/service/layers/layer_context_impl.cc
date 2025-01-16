@@ -839,21 +839,25 @@ LayerContextImpl::~LayerContextImpl() {
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
   // TODO(rockot): Manage these flags properly.
-  const bool has_damage = true;
-  compositor_sink_->SetLayerContextWantsBeginFrames(false);
-  if (!host_impl_->CanDraw()) {
-    return;
+  last_begin_frame_args_ = args;
+
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    const bool has_damage = true;
+    compositor_sink_->SetLayerContextWantsBeginFrames(false);
+    if (!host_impl_->CanDraw()) {
+      return;
+    }
+
+    host_impl_->WillBeginImplFrame(args);
+
+    cc::LayerTreeHostImpl::FrameData frame;
+    frame.begin_frame_ack = BeginFrameAck(args, has_damage);
+    frame.origin_begin_main_frame_args = args;
+    host_impl_->PrepareToDraw(&frame);
+    host_impl_->DrawLayers(&frame);
+    host_impl_->DidDrawAllLayers(frame);
+    host_impl_->DidFinishImplFrame(args);
   }
-
-  host_impl_->WillBeginImplFrame(args);
-
-  cc::LayerTreeHostImpl::FrameData frame;
-  frame.begin_frame_ack = BeginFrameAck(args, has_damage);
-  frame.origin_begin_main_frame_args = args;
-  host_impl_->PrepareToDraw(&frame);
-  host_impl_->DrawLayers(&frame);
-  host_impl_->DidDrawAllLayers(frame);
-  host_impl_->DidFinishImplFrame(args);
 }
 
 void LayerContextImpl::ReturnResources(
@@ -883,11 +887,15 @@ bool LayerContextImpl::IsReadyToActivate() {
 void LayerContextImpl::NotifyReadyToDraw() {}
 
 void LayerContextImpl::SetNeedsRedrawOnImplThread() {
-  compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  }
 }
 
 void LayerContextImpl::SetNeedsOneBeginImplFrameOnImplThread() {
-  compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  }
 }
 
 void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
@@ -1001,8 +1009,10 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
   compositor_sink_->SubmitCompositorFrame(host_impl_->target_local_surface_id(),
                                           std::move(frame));
 
-  constexpr bool start_ready_animations = true;
-  host_impl_->UpdateAnimationState(start_ready_animations);
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    constexpr bool start_ready_animations = true;
+    host_impl_->UpdateAnimationState(start_ready_animations);
+  }
 }
 
 void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
@@ -1149,7 +1159,22 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   RETURN_IF_ERROR(DeserializeAnimationUpdates(*update, *animation_host));
   host_impl_->ActivateAnimations();
 
-  compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
+    compositor_sink_->SetLayerContextWantsBeginFrames(true);
+  } else {
+    if (host_impl_->CanDraw()) {
+      host_impl_->WillBeginImplFrame(last_begin_frame_args_);
+
+      cc::LayerTreeHostImpl::FrameData frame;
+      const bool has_damage = true;
+      frame.begin_frame_ack = BeginFrameAck(last_begin_frame_args_, has_damage);
+      frame.origin_begin_main_frame_args = last_begin_frame_args_;
+      host_impl_->PrepareToDraw(&frame);
+      host_impl_->DrawLayers(&frame);
+      host_impl_->DidDrawAllLayers(frame);
+      host_impl_->DidFinishImplFrame(last_begin_frame_args_);
+    }
+  }
   return base::ok();
 }
 

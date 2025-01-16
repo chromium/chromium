@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -17,6 +18,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+
+namespace {
+constexpr auto kReservedSectionMap =
+    base::MakeFixedFlatMap<int, omnibox::GroupSection>(
+        {{0, omnibox::SECTION_UNSCOPED_EXTENSION_1},
+         {1, omnibox::SECTION_UNSCOPED_EXTENSION_2}});
+}  // namespace
 
 UnscopedExtensionProvider::UnscopedExtensionProvider(
     AutocompleteProviderClient* client,
@@ -54,6 +62,7 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
       (input.omit_asynchronous_matches()) || input.InKeywordMode();
 
   if (skip_unscoped_extensions_matches) {
+    ClearSuggestionGroupsMap();
     return;
   }
 
@@ -74,6 +83,24 @@ TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
   // the model is already loaded.
   template_url_service_->Load();
   return template_url_service_;
+}
+
+void UnscopedExtensionProvider::AddToSuggestionGroupsMap(
+    omnibox::GroupId groupId,
+    const std::string& header_text) {
+  // Should never be adding to suggestion groups map beyond max extension
+  // limit.
+  DCHECK_LT(next_available_section_index_, kReservedSectionMap.size());
+  omnibox::GroupConfig group;
+  group.set_section(kReservedSectionMap.at(next_available_section_index_++));
+  group.set_render_type(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL);
+  group.set_header_text(header_text);
+  suggestion_groups_map_[groupId].MergeFrom(group);
+}
+
+void UnscopedExtensionProvider::ClearSuggestionGroupsMap() {
+  suggestion_groups_map_.clear();
+  next_available_section_index_ = 0;
 }
 
 std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()

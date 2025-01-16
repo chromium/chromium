@@ -52,6 +52,7 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     protected void applyNavBarColor() {
         mWindow.setNavigationBarColor(mNavBarColor);
+        // TODO(crbug.com/380292043): Move icon color logic to the E2ESystemBarColorHelper.
         UiUtils.setNavigationBarIconColor(
                 mWindow.getDecorView(),
                 ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavBarColor)));

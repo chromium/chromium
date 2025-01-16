@@ -137,6 +137,11 @@ bool ShouldAnnotatedPageContentIncludeGeometry();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldAnnotatedPageContentStudyIncludeInnerText();
 
+// Whether the AnnotatedPageContent study should include content which is not
+// being currently rendered but is discoverable via find-in-page.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldIncludeHiddenButSearchableContent();
+
 }  // namespace page_content_annotations::features
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_

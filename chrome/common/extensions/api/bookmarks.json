@@ -90,6 +90,12 @@
             "optional": true,
             "description": "Indicates the reason why this node is unmodifiable. The <var>managed</var> value indicates that this node was configured by the system administrator or by the custodian of a supervised user. Omitted if the node can be modified by the user and the extension (default)."
           },
+          "syncing": {
+            "type": "boolean",
+            // TODO: crbug.com/384024391 - Remove once API naming is finalized.
+            "nodoc": true,
+            "description": "Whether this node is synced with the user's remote account storage by the browser. This can be used to distinguish between account and local-only versions of the same $(ref:FolderType). The value of this property may change for an existing node, for example as a result of user action.<p>Note: this reflects whether the node is saved to the browser's built-in account provider. It is possible that a node could be synced via a third-party, even if this value is false.</p><p>For managed nodes (nodes where <code>unmodifiable</code> is set to <code>true</code>), this property will always be <code>false</code>.</p>"
+          },
           "children": {
             "type": "array",
             "optional": true,

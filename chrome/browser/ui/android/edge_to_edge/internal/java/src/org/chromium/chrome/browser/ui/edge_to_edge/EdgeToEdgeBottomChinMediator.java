@@ -33,7 +33,6 @@ class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 EdgeToEdgeSupplier.ChangeObserver,
-                NavigationBarColorProvider.Observer,
                 FullscreenManager.Observer,
                 BottomControlsLayer {
     private static final String TAG = "E2EBottomChin";
@@ -66,7 +65,6 @@ class EdgeToEdgeBottomChinMediator
     private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
-    private final @NonNull NavigationBarColorProvider mNavigationBarColorProvider;
     private final @NonNull BottomControlsStacker mBottomControlsStacker;
     private final @NonNull FullscreenManager mFullscreenManager;
 
@@ -80,8 +78,6 @@ class EdgeToEdgeBottomChinMediator
      * @param layoutManager The {@link LayoutManager} for observing active layout type.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
-     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
-     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      * @param fullscreenManager The {@link FullscreenManager} for provide the fullscreen state.
@@ -91,14 +87,12 @@ class EdgeToEdgeBottomChinMediator
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull FullscreenManager fullscreenManager) {
         mModel = model;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mLayoutManager = layoutManager;
         mEdgeToEdgeController = edgeToEdgeController;
-        mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
         mFullscreenManager = fullscreenManager;
 
@@ -106,7 +100,6 @@ class EdgeToEdgeBottomChinMediator
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
-        mNavigationBarColorProvider.addObserver(this);
         mBottomControlsStacker.addLayer(this);
         mFullscreenManager.addObserver(this);
 
@@ -123,20 +116,36 @@ class EdgeToEdgeBottomChinMediator
         assert mKeyboardVisibilityDelegate != null;
         assert mLayoutManager != null;
         assert mEdgeToEdgeController != null;
-        assert mNavigationBarColorProvider != null;
         assert mBottomControlsStacker != null;
         assert mFullscreenManager != null;
 
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         mLayoutManager.removeObserver(this);
         mEdgeToEdgeController.unregisterObserver(this);
-        mNavigationBarColorProvider.removeObserver(this);
         mBottomControlsStacker.removeLayer(this);
         mFullscreenManager.removeObserver(this);
     }
 
     private boolean isVisible() {
         return mRendererOffset < mModel.get(HEIGHT);
+    }
+
+    /** Change the color of the bottom chin. */
+    void changeBottomChinColor(int color) {
+        mNavigationBarColor = color;
+        if (!isVisible()) {
+            return;
+        }
+        mModel.set(COLOR, color);
+    }
+
+    /** Change the color of the bottom chin. */
+    void changeBottomChinDividerColor(int dividerColor) {
+        mDividerColor = dividerColor;
+        if (!isVisible()) {
+            return;
+        }
+        mModel.set(DIVIDER_COLOR, dividerColor);
     }
 
     /**
@@ -203,27 +212,6 @@ class EdgeToEdgeBottomChinMediator
         mBottomControlsStacker.requestLayerUpdate(false);
     }
 
-    @Override
-    public void onNavigationBarColorChanged(int color) {
-        mNavigationBarColor = color;
-        if (!isVisible()) {
-            return;
-        }
-
-        // TODO(): Animate the color change.
-        mModel.set(COLOR, color);
-    }
-
-    @Override
-    public void onNavigationBarDividerChanged(int dividerColor) {
-        mDividerColor = dividerColor;
-        if (!isVisible()) {
-            return;
-        }
-
-        mModel.set(DIVIDER_COLOR, dividerColor);
-    }
-
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener
 
     @Override
@@ -281,8 +269,8 @@ class EdgeToEdgeBottomChinMediator
             // This is done to reduce the number of compositor frames submitted while scrolling.
             // The color is unnecessarily set to null when the chin gets scrolled off screen, and
             // gets set back to what it was before it was scrolled off.
-            onNavigationBarColorChanged(mNavigationBarColor);
-            onNavigationBarDividerChanged(mDividerColor);
+            changeBottomChinColor(mNavigationBarColor);
+            changeBottomChinDividerColor(mDividerColor);
         }
 
         if (!mBottomControlsStacker.isMoveableByViz()) {

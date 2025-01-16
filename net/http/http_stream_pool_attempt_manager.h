@@ -23,6 +23,7 @@
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_export.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -61,6 +62,8 @@ class HttpStreamKey;
 class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
+  class NET_EXPORT_PRIVATE QuicTask;
+
   // The state of an IPEndPoint. There is no success state. The absence of a
   // state for an endpoint means that we haven't yet attempted to connect to the
   // endpoint, or that a connection to the endpoint was successfully completed
@@ -92,17 +95,9 @@ class HttpStreamPool::AttemptManager
 
   Group* group() { return group_; }
 
-  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
-    return service_endpoint_request_.get();
-  }
-
   bool is_failing() const { return is_failing_; }
 
   int final_error_to_notify_jobs() const;
-
-  bool is_service_endpoint_request_finished() const {
-    return service_endpoint_request_finished_;
-  }
 
   base::TimeTicks dns_resolution_start_time() const {
     return dns_resolution_start_time_;
@@ -191,10 +186,6 @@ class HttpStreamPool::AttemptManager
   // if exists. Subsequent jobs will fail while `this` is alive.
   void OnRequiredHttp11();
 
-  // Runs the stream attempt delay timer if stream attempts are blocked and the
-  // timer is not running. Called by QuicTask.
-  void MaybeRunStreamAttemptDelayTimer();
-
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
@@ -271,6 +262,14 @@ class HttpStreamPool::AttemptManager
 
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
+
+  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
+    return service_endpoint_request_.get();
+  }
+
+  bool is_service_endpoint_request_finished() const {
+    return service_endpoint_request_finished_;
+  }
 
   int WaitForSSLConfigReady();
 
@@ -434,6 +433,10 @@ class HttpStreamPool::AttemptManager
   // Updates whether stream attempts should be blocked or not. May cancel
   // `stream_attempt_delay_timer_`.
   void UpdateStreamAttemptState();
+
+  // Runs the stream attempt delay timer if stream attempts are blocked and the
+  // timer is not running. Called by QuicTask.
+  void MaybeRunStreamAttemptDelayTimer();
 
   // Cancels `stream_attempt_delay_timer_`.
   void CancelStreamAttemptDelayTimer();

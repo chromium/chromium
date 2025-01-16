@@ -15,6 +15,8 @@ source_set("graph_config") {
 }
 
 source_set("blur") {
+  visibility = [ ":graph" ]
+
   sources = [
     "background_blur_calculator_webgpu.cc",
     "background_blur_calculator_webgpu.h",
@@ -29,6 +31,8 @@ source_set("blur") {
 }
 
 source_set("inference") {
+  visibility = [ ":graph" ]
+
   sources = [
     "inference_calculator_webgpu.cc",
     "inference_calculator_webgpu.h",
@@ -39,6 +43,21 @@ source_set("inference") {
     "//services/on_device_model/ml:ml_holder",
     "//third_party/abseil-cpp:absl",
     "//third_party/dawn/src/dawn:proc",
+    "//third_party/mediapipe",
+  ]
+}
+
+source_set("graph") {
+  sources = [
+    "video_effects_graph_webgpu.cc",
+    "video_effects_graph_webgpu.h",
+  ]
+
+  deps = [
+    ":blur",
+    ":graph_config",
+    ":inference",
+    "//base",
     "//third_party/mediapipe",
   ]
 }

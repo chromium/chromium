@@ -25,7 +25,6 @@ enum class NetworkRequestType : int {
   kQueryNextPage = 10,
   kSingleWebFeedListContents = 11,
   kQueryWebFeed = 12,
-  kSupervisedFeed = 13,
 };
 std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
 

@@ -1,0 +1,294 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/webdata/entities/entity_table.h"
+
+#include <map>
+#include <optional>
+#include <ranges>
+
+#include "base/feature_list.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
+#include "components/webdata/common/web_database.h"
+#include "sql/statement.h"
+#include "sql/transaction.h"
+
+namespace autofill {
+
+namespace {
+
+void* GetKey() {
+  static char key = 0;
+  return reinterpret_cast<void*>(&key);
+}
+
+namespace attributes {
+constexpr char kTableName[] = "attributes";
+constexpr char kEntityGuid[] = "entity_guid";
+constexpr char kType[] = "type";
+constexpr char kValue[] = "value";
+constexpr char kContext[] = "context";
+}  // namespace attributes
+
+namespace entities {
+constexpr char kTableName[] = "entities";
+constexpr char kGuid[] = "guid";
+constexpr char kType[] = "type";
+constexpr char kNickname[] = "nickname";
+constexpr char kDateModified[] = "date_modified";
+}  // namespace entities
+
+std::optional<AttributeInstance> ValidateAttributeInstance(
+    AttributeTypeName type_name,
+    std::string value,
+    AttributeInstance::Context context) {
+  if (!IsValidAttributeTypeName(type_name)) {
+    return std::nullopt;
+  }
+  return AttributeInstance(AttributeType(type_name), std::move(value),
+                           std::move(context));
+}
+
+std::optional<EntityInstance> ValidateEntityInstance(
+    EntityTypeName type_name,
+    std::vector<AttributeInstance> attributes,
+    base::Uuid guid,
+    std::string nickname,
+    base::Time date_modified) {
+  if (!IsValidEntityTypeName(type_name) || !guid.is_valid()) {
+    return std::nullopt;
+  }
+
+  // Remove attributes that don't belong to the entity according to the schema.
+  // (The schema may have changed and this attribute may be outdated.)
+  std::erase_if(attributes, [&type_name](const AttributeInstance& a) {
+    return EntityType(type_name) != a.type().entity_type();
+  });
+
+  EntityInstance entity =
+      EntityInstance(EntityType(type_name), std::move(attributes),
+                     std::move(guid), std::move(nickname), date_modified);
+
+  // Validate the "required attributes" constraint.
+  auto all_present = [&entity](DenseSet<AttributeType> as) {
+    return std::ranges::all_of(as, [&](const AttributeType& a) {
+      return entity.attribute(a).has_value();
+    });
+  };
+  if (std::ranges::none_of(entity.type().required_attributes(), all_present)) {
+    return std::nullopt;
+  }
+  return std::move(entity);
+}
+
+}  // namespace
+
+EntityTable::EntityTable() = default;
+EntityTable::~EntityTable() = default;
+
+// static
+EntityTable* EntityTable::FromWebDatabase(WebDatabase* db) {
+  return static_cast<EntityTable*>(db->GetTable(GetKey()));
+}
+
+WebDatabaseTable::TypeKey EntityTable::GetTypeKey() const {
+  return GetKey();
+}
+
+bool EntityTable::CreateTablesIfNecessary() {
+  auto create_attributes_table = [&] {
+    return CreateTableIfNotExists(
+        db(), /*table_name=*/attributes::kTableName,
+        /*column_names_and_types=*/
+        {{attributes::kEntityGuid, "TEXT NOT NULL"},
+         {attributes::kType, "INTEGER NOT NULL"},
+         {attributes::kValue, "TEXT NOT NULL"},
+         {attributes::kContext, "TEXT"}},
+        /*composite_primary_key=*/{attributes::kEntityGuid, attributes::kType});
+  };
+  auto create_entities_table = [&] {
+    return CreateTableIfNotExists(
+        db(), /*table_name=*/entities::kTableName,
+        /*column_names_and_types=*/
+        {{entities::kGuid, "TEXT NOT NULL PRIMARY KEY"},
+         {entities::kType, "INTEGER NOT NULL"},
+         {entities::kNickname, "TEXT NOT NULL"},
+         {entities::kDateModified, "INTEGER NOT NULL"}});
+  };
+  return create_attributes_table() && create_entities_table();
+}
+
+// There are two types of migration:
+// 1. When the database schema changes (e.g., a column is added or deleted).
+// 2. When the entity schema changes (e.g., an attribute is added or deleted).
+//
+// Type 1 migration can usually be handled with the functions from
+// autofill_table_utils.h (e.g., AddColumn() or DropColumn()).
+//
+// Type 2 migration may need to migrate the database's tuples. This can follow
+// the pattern
+//   for (const EntityInstance& old_e : GetEntityInstances()) {
+//     EntityInstance new_ = migrate(old_e);
+//     UpdateEntityInstance(new_e);
+//   }
+// where migrate() maps the old to a new EntityInstance. To delete attributes,
+// the identity function suffices because GetEntityInstances() skips unknown
+// attributes.
+bool EntityTable::MigrateToVersion(int version,
+                                   bool* update_compatible_version) {
+  switch (version) {
+    // No migrations exist at this point.
+  }
+  return true;
+}
+
+bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Add the attributes.
+  for (const AttributeInstance& attribute : entity.attributes()) {
+    sql::Statement s;
+    InsertBuilder(db(), s, attributes::kTableName,
+                  {attributes::kEntityGuid, attributes::kType,
+                   attributes::kValue, attributes::kContext});
+    s.BindString(0, entity.guid().AsLowercaseString());
+    s.BindInt(1, base::to_underlying(attribute.type().name()));
+    s.BindString(2, attribute.value());
+    s.BindString(3, attribute.context().format);
+    if (!s.Run()) {
+      return false;
+    }
+  }
+
+  // Add the entity.
+  sql::Statement s;
+  InsertBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kType, entities::kNickname,
+                 entities::kDateModified});
+  s.BindString(0, entity.guid().AsLowercaseString());
+  s.BindInt(1, base::to_underlying(entity.type().name()));
+  s.BindString(2, entity.nickname());
+  s.BindInt64(3, entity.date_modified().ToTimeT());
+  if (!s.Run()) {
+    return false;
+  }
+  return transaction.Commit();
+}
+
+bool EntityTable::UpdateEntityInstance(const EntityInstance& entity) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() && RemoveEntityInstance(entity.guid()) &&
+         AddEntityInstance(entity) && transaction.Commit();
+}
+
+bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         DeleteWhereColumnEq(db(), attributes::kTableName,
+                             attributes::kEntityGuid,
+                             guid.AsLowercaseString()) &&
+         DeleteWhereColumnEq(db(), entities::kTableName, entities::kGuid,
+                             guid.AsLowercaseString()) &&
+         transaction.Commit();
+}
+
+bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
+                                                       base::Time delete_end) {
+  if (delete_begin.is_null()) {
+    delete_begin = base::Time::Min();
+  }
+  if (delete_end.is_null()) {
+    delete_end = base::Time::Max();
+  }
+
+  sql::Statement s;
+  SelectBuilder(db(), s, entities::kTableName, {entities::kGuid},
+                "WHERE date_modified >= ? AND date_modified < ?");
+  s.BindInt64(0, delete_begin.ToTimeT());
+  s.BindInt64(1, delete_end.ToTimeT());
+  std::vector<base::Uuid> guids;
+  while (s.Step()) {
+    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    if (!guid.is_valid()) {
+      continue;
+    }
+    guids.push_back(std::move(guid));
+  }
+  if (!s.Succeeded()) {
+    return false;
+  }
+
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         std::ranges::all_of(guids,
+                             [this](const base::Uuid& guid) {
+                               return RemoveEntityInstance(guid);
+                             }) &&
+         transaction.Commit();
+}
+
+std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
+  // Collects all attributes, keyed by the owning entity's GUID.
+  std::map<base::Uuid, std::vector<AttributeInstance>> attributes;
+  {
+    sql::Statement s;
+    SelectBuilder(db(), s, attributes::kTableName,
+                  {attributes::kEntityGuid, attributes::kType,
+                   attributes::kValue, attributes::kContext});
+    while (s.Step()) {
+      base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+      auto type_name = static_cast<AttributeTypeName>(s.ColumnInt(1));
+      std::string value = s.ColumnString(2);
+      AttributeInstance::Context context;
+      context.format = s.ColumnString(3);
+      if (std::optional<AttributeInstance> a = ValidateAttributeInstance(
+              type_name, std::move(value), std::move(context))) {
+        attributes[entity_guid].push_back(*std::move(a));
+      }
+    }
+    if (!s.Succeeded()) {
+      return {};
+    }
+  }
+
+  // Collects all entities and populates them with the attributes from the
+  // previous query.
+  std::vector<EntityInstance> entities;
+  {
+    sql::Statement s;
+    SelectBuilder(db(), s, entities::kTableName,
+                  {entities::kGuid, entities::kType, entities::kNickname,
+                   entities::kDateModified});
+    while (s.Step()) {
+      base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+      auto type_name = static_cast<EntityTypeName>(s.ColumnInt(1));
+      std::string nickname = s.ColumnString(2);
+      base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+      auto nh = attributes.extract(guid);
+      if (std::optional<EntityInstance> e = ValidateEntityInstance(
+              type_name,
+              !nh.empty() ? std::move(nh.mapped())
+                          : std::vector<AttributeInstance>{},
+              std::move(guid), std::move(nickname), date_modified)) {
+        entities.push_back(*std::move(e));
+      }
+    }
+    if (!s.Succeeded()) {
+      return {};
+    }
+  }
+  return entities;
+}
+
+}  // namespace autofill

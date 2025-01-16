@@ -7044,6 +7044,70 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Conversions.ClientBounce">
+  <owner>linnan@google.com</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    We consider a non-user-initiated navigation to be a client bounce if it
+    navigates the page away within a short period of time without any user
+    activation/interaction. Recorded when client bounce occurs.
+  </summary>
+  <metric name="UserActivation.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user activation by a
+      non-user-initiated navigation.
+    </summary>
+  </metric>
+  <metric name="UserActivation.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user activation by a
+      non-user-initiated navigation.
+
+      Note that these data hosts are also counted in
+      &quot;UserActivation.5s&quot; and &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserActivation.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user activation by a
+      non-user-initiated navigation.
+
+      NNote that these data hosts are also counted in
+      &quot;UserActivation.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.10s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 10s without any user interaction by
+      a non-user-initiated navigation.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.1s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 1s without any user interaction by a
+      non-user-initiated navigation.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.5s&quot; and &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+  <metric name="UserInteraction.5s">
+    <summary>
+      Measures how many non-navigation data hosts where registered on the page
+      when a page was navigated away within 5s without any user interaction by a
+      non-user-initiated navigation.
+
+      Note that these data hosts are also counted in
+      &quot;UserInteraction.10s&quot;.
+    </summary>
+  </metric>
+</event>
+
 <event name="CookieHasNonAsciiCharacter">
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -8174,6 +8238,34 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.Ewallet.FopSelectorShown">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after the eWallet FoP selector UI is shown.
+  </summary>
+  <metric name="Scheme" enum="FacilitatedPayments.EwalletScheme">
+    <summary>
+      The scheme of the payment link.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Always set to true. So acts as a counter for the number of times a FoP
+      selector is shown for eWallet.
+    </summary>
   </metric>
 </event>
 

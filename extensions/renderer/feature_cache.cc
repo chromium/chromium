@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

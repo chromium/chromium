@@ -21,6 +21,7 @@ class Browser;
 class BrowserWindowInterface;
 class ScopedTabStripModalUI;
 class Tab;
+class TabGroup;
 class TabStrip;
 
 namespace gfx {
@@ -182,6 +183,8 @@ class TabStripController {
   virtual tab_groups::TabGroupColorId GetGroupColorId(
       const tab_groups::TabGroupId& group) const = 0;
 
+  // Returns the TabGroup of the given |group|.
+  virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& group) const = 0;
   // Returns the |group| collapsed state. Returns false if the group does not
   // exist or is not collapsed.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;

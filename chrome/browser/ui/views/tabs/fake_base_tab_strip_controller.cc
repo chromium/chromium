@@ -166,6 +166,11 @@ std::optional<int> FakeBaseTabStripController::GetFirstTabInGroup(
   return std::nullopt;
 }
 
+TabGroup* FakeBaseTabStripController::GetTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return nullptr;
+}
+
 gfx::Range FakeBaseTabStripController::ListTabsInGroup(
     const tab_groups::TabGroupId& group) const {
   int first_tab = -1;

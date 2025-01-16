@@ -46,11 +46,10 @@ class GlicStatusIcon : public StatusIconObserver,
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observer_{this};
 
-  // TODO(https://crbug.com/378139555): Figure out how to not dangle these
-  // pointers (and other instances of StatusTray/StatusIcon*).
-  raw_ptr<StatusTray, DanglingUntriaged> status_tray_;
+  raw_ptr<StatusTray> status_tray_;
+  // TODO(crbug.com/390463341): Figure out how to not dangle this pointer.
   raw_ptr<StatusIcon, DanglingUntriaged> status_icon_;
-  raw_ptr<StatusIconMenuModel, DanglingUntriaged> context_menu_;
+  raw_ptr<StatusIconMenuModel> context_menu_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_STATUS_ICON_H_

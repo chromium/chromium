@@ -8,7 +8,12 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #import <string>
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics_Encrypted;
+}  // namespace sync_pb
 
 @protocol Credential;
 
@@ -20,10 +25,13 @@ enum class UserVerificationPreference {
   kOther,
 };
 
-// Decrypts the credential's private key. Can be used to verify if any of the
-// security_domain_secrets from the provided array is valid.
-std::string DecryptPrivateKey(id<Credential> credential,
-                              NSArray<NSData*>* security_domain_secrets);
+// Decrypts the credential's secrets, like the private key and the hmac secret.
+// Can be used to verify if any of the security_domain_secrets from the provided
+// array is valid. If the decryption is successful, the results will be stored
+// in the provided `credential_secrets` structure.
+std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
+DecryptCredentialSecrets(id<Credential> credential,
+                         NSArray<NSData*>* security_domain_secrets);
 
 // On a success, returns a newly created passkey.
 // Returns nil otherwise.

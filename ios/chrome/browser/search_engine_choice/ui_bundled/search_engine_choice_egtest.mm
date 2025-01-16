@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -16,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 @interface SearchEngineTestCase : ChromeTestCase
 @end

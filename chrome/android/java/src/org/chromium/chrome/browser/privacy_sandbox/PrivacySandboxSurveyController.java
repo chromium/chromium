@@ -46,6 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
@@ -228,9 +229,9 @@ public class PrivacySandboxSurveyController {
                         DEFAULT_ADS_CCT_DELAY_MS));
     }
 
-    // Schedules the launch of an Ads CCT Treatment survey.
+    // Attempts to schedule the launch of an Ads CCT Treatment survey.
     // Should only be invoked after the closure of either the EEA or ROW notice.
-    public void scheduleAdsCctTreatmentSurveyLaunch(String appId) {
+    public void maybeScheduleAdsCctTreatmentSurveyLaunch(String appId) {
         if (!shouldLaunchAdsCctSurvey(appId)) {
             return;
         }
@@ -238,6 +239,27 @@ public class PrivacySandboxSurveyController {
                 TaskTraits.UI_DEFAULT,
                 () -> maybeLaunchAdsCctTreatmentSurvey(),
                 getAdsCctDelayMilliseconds());
+    }
+
+    // Does a local random roll to determine if a EEA survey should be shown based on the trigger
+    // rate
+    private boolean isSelectedForEeaSurvey(@PrivacySandboxSurveyType int surveyType) {
+        switch (surveyType) {
+            case PrivacySandboxSurveyType.CCT_EEA_ACCEPTED:
+                return new Random().nextFloat()
+                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
+                                "accepted-trigger-rate",
+                                0.0);
+            case PrivacySandboxSurveyType.CCT_EEA_DECLINED:
+                return new Random().nextFloat()
+                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
+                                "declined-trigger-rate",
+                                0.0);
+            default:
+                return false;
+        }
     }
 
     // Determines the appropriate survey to launch based on the user interaction with either the EEA
@@ -252,6 +274,9 @@ public class PrivacySandboxSurveyController {
             } else {
                 surveyType = PrivacySandboxSurveyType.CCT_EEA_DECLINED;
             }
+            if (!isSelectedForEeaSurvey(surveyType)) {
+                return;
+            }
             // Check if the ROW notice was acknowledged.
         } else if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED)) {
             surveyType = PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED;
@@ -264,9 +289,9 @@ public class PrivacySandboxSurveyController {
         showSurvey(surveyType);
     }
 
-    // Schedules the launch of an Ads CCT control survey.
+    // Attempts to schedule the launch of an Ads CCT control survey.
     // Clients expected to see a control survey will not see any Ads CCT dialogs.
-    public void scheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
+    public void maybeScheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
         if (!shouldLaunchAdsCctSurvey(appId)) {
             return;
         }

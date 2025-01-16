@@ -946,7 +946,8 @@ target, add the `java` target to the template in
 }
 ```
 
-You may also have to add `java` as a dependency of `chrome_test_java` if you want
-to call into Foo from test code.
+You may also have to add `java` as a dependency of
+`//chrome/android/javatests/chrome_test_java_org.chromium.chrome.browser.foo`
+if you want to call into Foo from test code.
 
 [play-core-local-testing]: https://developer.android.com/guide/playcore/feature-delivery/on-demand#local-testing

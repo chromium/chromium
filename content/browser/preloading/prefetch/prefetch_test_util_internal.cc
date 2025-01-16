@@ -59,6 +59,8 @@ void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,
     const std::string body) {
+  prefetch_container->SimulatePrefetchStartedForTest();
+
   const GURL kTestUrl = GURL("https://test.com");
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -117,6 +119,8 @@ void MakeServableStreamingURLLoaderForTest(
 network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container) {
+  prefetch_container->SimulatePrefetchStartedForTest();
+
   const GURL kTestUrl = GURL("https://test.com");
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -170,6 +174,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
     PrefetchContainer* prefetch_container,
     const GURL& original_url,
     const GURL& redirect_url) {
+  prefetch_container->SimulatePrefetchStartedForTest();
+
   network::TestURLLoaderFactory test_url_loader_factory;
   std::unique_ptr<network::ResourceRequest> request =
       std::make_unique<network::ResourceRequest>();
@@ -250,6 +256,8 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
     PrefetchContainer* prefetch_container,
     const GURL& original_url,
     const GURL& redirect_url) {
+  prefetch_container->SimulatePrefetchStartedForTest();
+
   network::TestURLLoaderFactory test_url_loader_factory;
   std::unique_ptr<network::ResourceRequest> original_request =
       std::make_unique<network::ResourceRequest>();

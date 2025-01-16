@@ -25,10 +25,6 @@
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "components/tracing/common/etw_system_data_source_win.h"
-#endif
-
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // As per 'gn help check':
 /*
@@ -297,10 +293,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   if (enable_consumer) {
     // Metadata only needs to be installed in the browser process.
     tracing::MetadataDataSource::Register();
-#if BUILDFLAG(IS_WIN)
-    // Etw Data Source only needs to be installed in the browser process.
-    tracing::EtwSystemDataSource::Register();
-#endif
   }
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();

@@ -1,7 +1,5 @@
 include_rules = [
   "+ash/components/arc/mojom/notifications.mojom.h",
-  "+ash/components/arc/test/connection_holder_util.h",
-  "+ash/components/arc/test/fake_notifications_instance.h",
   "+ash/system/message_center/message_center_constants.h",
   "+ash/system/message_center/message_view_factory.h",
   "+ash/system/notification_center/message_center_utils.h",
@@ -12,4 +10,6 @@ include_rules = [
   "+chromeos/ash/experiences/arc/session/connection_holder.h",
   "+chromeos/ash/experiences/arc/session/connection_observer.h",
   "+chromeos/ash/experiences/arc/session/mojo_channel.h",
+  "+chromeos/ash/experiences/arc/test/connection_holder_util.h",
+  "+chromeos/ash/experiences/arc/test/fake_notifications_instance.h",
 ]

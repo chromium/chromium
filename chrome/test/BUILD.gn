@@ -2535,6 +2535,7 @@ if (!is_android) {
     if (enable_glic) {
       deps += [
         "//chrome/browser/glic:browser_tests",
+        "//chrome/browser/glic:glic",
         "//chrome/browser/glic/launcher:browser_tests",
       ]
     }
@@ -2679,7 +2680,7 @@ if (!is_android) {
 
     data = [
       "data/",
-      "//ash/components/arc/test/data/icons",
+      "//chromeos/ash/experiences/arc/test/data/icons",
       "//chrome/browser/page_load_metrics/integration_tests/data/",
       "//chrome/renderer/resources/extensions/",
       "//chrome/test/data/cart/",
@@ -5867,6 +5868,7 @@ test("unit_tests") {
     "../browser/component_updater/subresource_filter_component_installer_unittest.cc",
     "../browser/component_updater/tpcd_metadata_component_installer_unittest.cc",
     "../browser/content_index/content_index_provider_unittest.cc",
+    "../browser/contextual_cueing/contextual_cueing_helper_unittest.cc",
     "../browser/custom_handlers/chrome_protocol_handler_registry_unittest.cc",
     "../browser/data_sharing/data_sharing_navigation_throttle_unittest.cc",
     "../browser/data_sharing/data_sharing_service_factory_unittest.cc",
@@ -6386,6 +6388,7 @@ test("unit_tests") {
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
@@ -8161,7 +8164,7 @@ test("unit_tests") {
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
 
-    data += [ "//ash/components/arc/test/data/icons/" ]
+    data += [ "//chromeos/ash/experiences/arc/test/data/icons/" ]
 
     if (include_js2gtest_tests && is_chromeos_ash) {
       data += js2gtest_js_libraries

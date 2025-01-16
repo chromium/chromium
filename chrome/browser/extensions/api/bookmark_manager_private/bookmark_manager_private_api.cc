@@ -575,11 +575,15 @@ BookmarkManagerPrivateGetSubtreeFunction::RunOnReady() {
   }
 
   std::vector<api::bookmarks::BookmarkTreeNode> nodes;
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(GetProfile());
   bookmarks::ManagedBookmarkService* managed = GetManagedBookmarkService();
-  if (params->folders_only)
-    bookmark_api_helpers::AddNodeFoldersOnly(managed, node, &nodes, true);
-  else
-    bookmark_api_helpers::AddNode(managed, node, &nodes, true);
+  if (params->folders_only) {
+    bookmark_api_helpers::AddNodeFoldersOnly(model, managed, node, &nodes,
+                                             true);
+  } else {
+    bookmark_api_helpers::AddNode(model, managed, node, &nodes, true);
+  }
   return ArgumentList(GetSubtree::Results::Create(nodes));
 }
 

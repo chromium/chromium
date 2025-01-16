@@ -164,6 +164,7 @@ include_rules = [
   "+third_party/libaddressinput",
   "+third_party/libxml/chromium/xml_writer.h",
   "+third_party/metrics_proto",
+  "+third_party/search_engines_data",
   "+ui",
 
   # Those depend on //content; exclude them.

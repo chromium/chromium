@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
@@ -29,13 +31,12 @@ const char kBaseIconUrl[] =
 const char kBaseAttachmentResourceUrl[] =
     "https://outlook.live.com/mail/0/deeplink/attachment/";
 
-// TODO(357700028): Construct URL with modifiable date.
 const char kRequestUrl[] =
     "https://graph.microsoft.com/v1.0/me/calendar/"
-    "calendarview?startdatetime=2024-12-02T00:10:06.424Z&enddatetime=2024-12-"
-    "06T00:10:06.424Z&select=id,hasAttachments,subject,start,attendees,"
-    "webLink,onlineMeeting,location,isOrganizer,responseStatus,end,isCancelled&"
-    "expand=attachments(select=id,name,contentType)";
+    "calendarview?startdatetime=%s&enddatetime=%s&select=id,hasAttachments,"
+    "subject,start,attendees,webLink,onlineMeeting,location,isOrganizer,"
+    "responseStatus,end,isCancelled&expand=attachments(select=id,name,"
+    "contentType)";
 
 constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("outlook_calendar_page_handler", R"(
@@ -117,6 +118,18 @@ std::string GetFileName(std::string full_name, std::string extension) {
   return full_name.substr(0, full_name.size() - extension.size() - 1);
 }
 
+// Returns the URL for retrieving calendar events.
+GURL GetRequestUrl() {
+  std::string start_date_time = TimeFormatAsIso8601(base::Time::Now());
+  const base::TimeDelta time_window =
+      ntp_features::kNtpOutlookCalendarModuleRetrievalWindowParam.Get();
+  std::string end_date_time =
+      TimeFormatAsIso8601(base::Time::Now() + time_window);
+  std::string request_url =
+      base::StringPrintf(kRequestUrl, start_date_time, end_date_time);
+  return GURL(request_url);
+}
+
 }  // namespace
 
 // static
@@ -183,7 +196,7 @@ void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = GURL(kRequestUrl);
+  resource_request->url = GetRequestUrl();
 
   // TODO(357700028): Pass in actual access token.
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
@@ -246,7 +259,12 @@ void OutlookCalendarPageHandler::OnJsonParsed(
   }
 
   std::vector<ntp::calendar::mojom::CalendarEventPtr> created_events;
+  const size_t max_events =
+      ntp_features::kNtpOutlookCalendarModuleMaxEventsParam.Get();
   for (const auto& event : *events) {
+    if (created_events.size() == max_events) {
+      break;
+    }
     const auto& event_dict = event.GetDict();
     const std::string* event_id = event_dict.FindString("id");
     std::optional<bool> has_attachments = event_dict.FindBool("hasAttachments");
@@ -281,6 +299,12 @@ void OutlookCalendarPageHandler::OnJsonParsed(
           std::vector<ntp::calendar::mojom::CalendarEventPtr>());
       return;
     }
+
+    // Do not create event when the user has declined.
+    if (*response_status == "declined") {
+      continue;
+    }
+
     ntp::calendar::mojom::CalendarEventPtr created_event =
         ntp::calendar::mojom::CalendarEvent::New();
     created_event->title = *title;

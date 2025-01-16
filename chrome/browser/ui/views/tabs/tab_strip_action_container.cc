@@ -35,6 +35,8 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -380,6 +382,17 @@ void TabStripActionContainer::OnTabDeclutterButtonDismissed() {
 }
 
 void TabStripActionContainer::OnGlicNudgeButtonClicked() {
+  tab_strip_controller_->GetBrowserWindowInterface()
+      ->GetUserEducationInterface()
+      ->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHGlicPromoFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_strip_controller_->GetProfile())
+      ->LaunchUI(glic_button_);
+#endif  // BUILDFLAG(ENABLE_GLIC)
   ExecuteHideTabStripNudge(glic_nudge_button_);
 }
 
