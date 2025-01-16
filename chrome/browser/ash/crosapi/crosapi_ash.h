@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
-#include "chrome/browser/ash/smart_reader/smart_reader_manager_ash.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
@@ -36,7 +35,6 @@ namespace ash {
 class DiagnosticsServiceAsh;
 class MagicBoostControllerAsh;
 class ProbeServiceAsh;
-class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
 class TelemetryManagementServiceAsh;
@@ -317,8 +315,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
-  void BindSmartReaderClient(
-      mojo::PendingRemote<mojom::SmartReaderClient> remote) override;
   void BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver receiver) override;
   void BindStructuredMetricsService(
@@ -517,10 +513,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return search_provider_ash_.get();
   }
 
-  ash::SmartReaderManagerAsh* smart_reader_manager_ash() {
-    return smart_reader_manager_ash_.get();
-  }
-
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
     return structured_metrics_service_ash_.get();
   }
@@ -630,7 +622,6 @@ class CrosapiAsh : public mojom::Crosapi {
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
-  std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;

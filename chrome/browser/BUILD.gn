@@ -5207,7 +5207,6 @@ static_library("browser") {
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/shimless_rma",
-      "//chrome/browser/ash/smart_reader",
       "//chrome/browser/ash/smb_client",
       "//chrome/browser/ash/smb_client/fileapi",
       "//chrome/browser/ash/sync",

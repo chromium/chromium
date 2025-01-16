@@ -258,7 +258,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
-      smart_reader_manager_ash_(std::make_unique<ash::SmartReaderManagerAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
@@ -751,11 +750,6 @@ void CrosapiAsh::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       std::move(remote));
-}
-
-void CrosapiAsh::BindSmartReaderClient(
-    mojo::PendingRemote<mojom::SmartReaderClient> remote) {
-  smart_reader_manager_ash_->BindRemote(std::move(remote));
 }
 
 void CrosapiAsh::BindStableVideoDecoderFactory(

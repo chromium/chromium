@@ -2428,9 +2428,6 @@ BASE_FEATURE(kReadaheadForLogin,
              "ReadaheadForLogin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the smart reader feature is enabled.
-BASE_FEATURE(kSmartReader, "SmartReader", base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSavedDeskUiRevamp,
              "SavedDeskUiRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -4402,10 +4399,6 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled() {
   return IsLauncherContinueSectionWithRecentsEnabled() &&
          base::FeatureList::IsEnabled(
              kShowSharingUserInLauncherContinueSection);
-}
-
-bool IsSmartReaderEnabled() {
-  return base::FeatureList::IsEnabled(kSmartReader);
 }
 
 bool IsSunfishFeatureEnabled() {
