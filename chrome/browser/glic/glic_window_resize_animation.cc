@@ -27,11 +27,13 @@ GlicWindowResizeAnimation::GlicWindowResizeAnimation(
       initial_size_(widget->GetWindowBoundsInScreen().size()),
       new_size_(new_size),
       finished_callback_(std::move(finished_callback)) {
+  // TODO(crbug.com/389238233): CompositorAnimationRunner does not appear to
+  // be fully functional.
   // Use a CompositorAnimationRunner for smoother vsync driven resize animation.
-  auto container = base::MakeRefCounted<gfx::AnimationContainer>();
-  container->SetAnimationRunner(
-      std::make_unique<views::CompositorAnimationRunner>(widget));
-  SetContainer(container.get());
+  // auto container = base::MakeRefCounted<gfx::AnimationContainer>();
+  // container->SetAnimationRunner(
+  //     std::make_unique<views::CompositorAnimationRunner>(widget));
+  // SetContainer(container.get());
 
   Start();
 }
@@ -39,12 +41,6 @@ GlicWindowResizeAnimation::GlicWindowResizeAnimation(
 GlicWindowResizeAnimation::~GlicWindowResizeAnimation() = default;
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-#if BUILDFLAG(IS_MAC)
-  // This ensures that the web contents resize occurs in sync with the window
-  // resize.
-  ui::CATransactionCoordinator::Get().Synchronize();
-#endif
-
   widget_->SetSize(gfx::Tween::SizeValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::EASE_IN_OUT_EMPHASIZED, state),
       initial_size_, new_size_));
