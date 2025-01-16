@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -95,12 +96,15 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
   bool allow_response_details = response->IsCorsSameOrigin();
 
   info->content_type = g_empty_string;
+  info->content_encoding = g_empty_string;
 
   if (allow_response_details) {
     info->response_status = response->HttpStatusCode();
     if (!response->HttpContentType().IsNull()) {
       info->content_type = MinimizedMIMEType(response->HttpContentType());
     }
+
+    info->content_encoding = response->GetFilteredHttpContentEncoding();
   }
 
   bool expose_body_sizes =

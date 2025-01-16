@@ -3588,6 +3588,10 @@
       status: "stable",
     },
     {
+      name: "ResourceTimingContentEncoding",
+      status: "experimental",
+    },
+    {
       name: "ResourceTimingContentType",
       status: "experimental",
     },

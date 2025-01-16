@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -158,6 +159,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool IsAttachment() const;
 
   AtomicString HttpContentType() const;
+  AtomicString GetFilteredHttpContentEncoding() const;
 
   // These functions return parsed values of the corresponding response headers.
   // NaN means that the header was not present or had invalid value.
