@@ -3115,9 +3115,6 @@
   <message name="IDS_MOBILE_SETUP_TITLE" desc="ChromeOS mobile device activation page title">
     Mobile data service management
   </message>
-  <message name="IDS_MOBILE_CANCEL_ACTIVATION" desc="Message when user attempts to cancel cellular data service activation proces">
-    Are you sure you want to cancel mobile data service setup process?
-  </message>
   <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE" desc="Error title shown when user failed to view mobile account">
     Can't access your mobile account
   </message>

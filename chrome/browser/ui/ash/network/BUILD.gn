@@ -34,7 +34,6 @@ static_library("network") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/lock",
-    "//chrome/browser/ash/mobile",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/chromeos/network",

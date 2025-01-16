@@ -2281,7 +2281,6 @@ static_library("ui") {
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mahi/media_app",
       "//chrome/browser/ash/mahi/web_contents",
-      "//chrome/browser/ash/mobile",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/nearby",
       "//chrome/browser/ash/nearby/presence",

@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -50,58 +49,10 @@ namespace {
 // Host page JS API function names.
 const char kJsGetDeviceInfo[] = "getDeviceInfo";
 
-const char kJsDeviceStatusChangedCallback[] =
-    "mobile.MobileSetup.deviceStateChanged";
 const char kJsGetDeviceInfoCallback[] =
     "mobile.MobileSetupPortal.onGotDeviceInfo";
 const char kJsConnectivityChangedCallback[] =
     "mobile.MobileSetupPortal.onConnectivityChanged";
-
-// TODO(tbarzic): Localize these strings.
-const char16_t kDefaultActivationError[] =
-    u"$1 is unable to connect to $2 at this time. Please try again later.";
-const char16_t kCellularDisabledError[] =
-    u"Mobile network connections are not currently enabled on this device.";
-const char16_t kNoCellularDeviceError[] =
-    u"Mobile network modem is not present.";
-const char16_t kNoCellularServiceError[] =
-    u"$1 is unable to connect at this time due to insufficient coverage.";
-
-bool ActivationErrorRequiresCarrier(MobileActivator::ActivationError error) {
-  return error == MobileActivator::ActivationError::kActivationFailed;
-}
-
-std::u16string GetActivationErrorMessage(MobileActivator::ActivationError error,
-                                         const std::string& carrier) {
-  // If the activation error message requires the carrier name, and none was
-  // provider, fallback to kNoCellularServiceError.
-  if (carrier.empty() && ActivationErrorRequiresCarrier(error)) {
-    CHECK(!ActivationErrorRequiresCarrier(
-        MobileActivator::ActivationError::kNoCellularService));
-    return GetActivationErrorMessage(
-        MobileActivator::ActivationError::kNoCellularService, carrier);
-  }
-
-  switch (error) {
-    case MobileActivator::ActivationError::kNone:
-      return std::u16string();
-    case MobileActivator::ActivationError::kActivationFailed: {
-      return base::ReplaceStringPlaceholders(
-          kDefaultActivationError,
-          std::vector<std::u16string>(
-              {ui::GetChromeOSDeviceName(), base::UTF8ToUTF16(carrier)}),
-          nullptr);
-    }
-    case MobileActivator::ActivationError::kCellularDisabled:
-      return kCellularDisabledError;
-    case MobileActivator::ActivationError::kNoCellularDevice:
-      return kNoCellularDeviceError;
-    case MobileActivator::ActivationError::kNoCellularService:
-      return base::ReplaceStringPlaceholders(
-          kNoCellularServiceError, ui::GetChromeOSDeviceName(), nullptr);
-  }
-  NOTREACHED() << "Unexpected activation error";
-}
 
 void DataRequestFailed(const std::string& service_path,
                        content::URLDataSource::GotDataCallback callback) {
@@ -114,10 +65,6 @@ void DataRequestFailed(const std::string& service_path,
 // Keys for the dictionary that is set to activation UI and that contains the
 // cellular network information.
 namespace keys {
-
-// The current activation state:
-constexpr char kActivationState[] = "state";
-constexpr char kActivationErrorMessage[] = "error";
 
 // The cellular service properties:
 constexpr char kCellularActivationType[] = "activation_type";
@@ -190,7 +137,6 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
 
 // The handler for Javascript messages related to the "register" view.
 class MobileSetupHandler : public content::WebUIMessageHandler,
-                           public MobileActivator::Observer,
                            public NetworkStateHandlerObserver {
  public:
   MobileSetupHandler();
@@ -204,17 +150,9 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  // MobileActivator::Observer.
-  void OnActivationStateChanged(
-      const NetworkState* network,
-      MobileActivator::PlanActivationState new_state,
-      MobileActivator::ActivationError error) override;
-
  private:
   enum Type {
     TYPE_UNDETERMINED,
-    // The network is not yet activated, and the webui is in activation flow.
-    TYPE_ACTIVATION,
     // The network is activated, the webui displays network portal.
     TYPE_PORTAL,
     // Same as TYPE_PORTAL, but the network technology is LTE. The webui is
@@ -345,34 +283,6 @@ MobileSetupHandler::~MobileSetupHandler() {
   Reset();
 }
 
-void MobileSetupHandler::OnActivationStateChanged(
-    const NetworkState* network,
-    MobileActivator::PlanActivationState state,
-    MobileActivator::ActivationError error) {
-  DCHECK_EQ(TYPE_ACTIVATION, type_);
-  if (!web_ui()) {
-    return;
-  }
-
-  NetworkStateHandler* network_state_handler =
-      NetworkHandler::Get()->network_state_handler();
-  const DeviceState* device =
-      network ? network_state_handler->GetDeviceState(network->device_path())
-              : nullptr;
-
-  // First generate cellular properties dictionary, if cellular service and
-  // device are available.
-  base::Value info = GetCellularNetworkInfoValue(network, device);
-
-  // Add the current activation flow state.
-  info.GetDict().Set(keys::kActivationState, static_cast<int>(state));
-  info.GetDict().Set(
-      keys::kActivationErrorMessage,
-      GetActivationErrorMessage(error, device ? device->operator_name() : ""));
-
-  CallJavascriptFunction(kJsDeviceStatusChangedCallback, info);
-}
-
 void MobileSetupHandler::OnJavascriptDisallowed() {
   Reset();
 }
@@ -383,10 +293,7 @@ void MobileSetupHandler::Reset() {
   }
   active_ = false;
 
-  if (type_ == TYPE_ACTIVATION) {
-    MobileActivator::GetInstance()->RemoveObserver(this);
-    MobileActivator::GetInstance()->TerminateActivation();
-  } else if (type_ == TYPE_PORTAL_LTE) {
+  if (type_ == TYPE_PORTAL_LTE) {
     network_state_handler_observer_.Reset();
   }
 }
@@ -399,7 +306,6 @@ void MobileSetupHandler::RegisterMessages() {
 }
 
 void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
-  DCHECK_NE(TYPE_ACTIVATION, type_);
   if (!web_ui()) {
     return;
   }
