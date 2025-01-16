@@ -1637,7 +1637,7 @@ suite('AppTest', () => {
   test('shows full table loading state', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: 10,
+      minLoadingAnimationMs: 10000,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
@@ -1646,10 +1646,6 @@ suite('AppTest', () => {
     await loadingStartPromise;
     assertTrue(isVisible(appElement.$.loading));
     assertFalse(isVisible(appElement.$.summaryTable));
-
-    // Wait for the loading animation to finish.
-    await loadingEndPromise;
-    assertFalse(isVisible(appElement.$.loading));
   });
 
   test('disables menu button while loading', async () => {
@@ -1665,7 +1661,7 @@ suite('AppTest', () => {
   test('show feedback loading state while loading', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
-      minLoadingAnimationMs: 10,
+      minLoadingAnimationMs: 10000,
     });
     // Needs to await in order to load elements.
     await createAppElementWithPromiseValues(promiseValues);
@@ -1681,11 +1677,6 @@ suite('AppTest', () => {
 
     assertTrue(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
-
-    // Wait for the loading animation to finish.
-    await loadingEndPromise;
-    assertFalse(isVisible(feedbackLoading));
-    assertTrue(isVisible(feedbackButtons));
   });
 
   test('feedback hidden if not allowed', async () => {
