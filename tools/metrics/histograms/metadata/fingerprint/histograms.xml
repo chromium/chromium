@@ -73,6 +73,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Enroll.SessionResult" enum="EnrollSessionResult"
+    expires_after="2026-01-08">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the result/outcome of an enrollment session. This allows for
+    calculating the enrollment session success rate and for spotting abnormal
+    enrollment session failures/aborts.
+
+    This metric is emitted from the DBus wrapper class,
+    BiometricsManagerWrapper, of biod when one of the various completion/failure
+    event hooks are called. This metric is strategically inserted in parts of
+    the callback routines such that it is only emitted once, at the end of an
+    enrollment sesssion, regardless of the exit condition.
+
+    That being said, this metric is imperfect. It has been observed that Chrome
+    shows slightly different callback behavior upon forced crashes.
+    Additionally, Chrome does not provide biod a precise &quot;user abort
+    session&quot; signal, but rather provides a generic DBus session
+    cancellation signal, that could be confused with other actions. However, if
+    we ignore less likely situations, like Chrome crashing, we can use this DBus
+    cancellation failure as a proxy to detect when the user manually aborted the
+    session. The unknown failure and the enrollment start failure errors are
+    indicative of a core fingerprint system issue. The DBus owner dying error
+    and the no primary user error are both indicative of a ChromeOS system
+    issue.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.FingerprintPowerButtonRace" units="units"
     expires_after="2025-05-29">
   <owner>emaamari@google.com</owner>
