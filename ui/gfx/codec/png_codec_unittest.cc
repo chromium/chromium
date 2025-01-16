@@ -1057,12 +1057,9 @@ TEST_P(PNGCodecTest, EncodeWithComment) {
   const uint8_t kExpected3[] =
       "\x00\x00\x00\x18tEXthave some\x00spaces in both\x8d\x69\x34\x2d";
 
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected1),
-            encoded.value().end());
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected2),
-            encoded.value().end());
-  EXPECT_NE(base::ranges::search(encoded.value(), kExpected3),
-            encoded.value().end());
+  EXPECT_FALSE(std::ranges::search(encoded.value(), kExpected1).empty());
+  EXPECT_FALSE(std::ranges::search(encoded.value(), kExpected2).empty());
+  EXPECT_FALSE(std::ranges::search(encoded.value(), kExpected3).empty());
 }
 
 TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
