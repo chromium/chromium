@@ -20,18 +20,18 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_info.h"
 #include "url/gurl.h"
 
 namespace net {
 
 class HttpResponseHeaders;
 
-// An in-memory cache that permits looking up a {NIK, URL} pair and seeing if it
-// matches a previous response according to the rules of the No-Vary-Search
-// header (see
+// An in-memory cache that permits looking up a URL and seeing if it matches a
+// previous response according to the rules of the No-Vary-Search header (see
 // https://httpwg.org/http-extensions/draft-ietf-httpbis-no-vary-search.html).
 // See also the design doc at
 // https://docs.google.com/document/d/1RS3q6qZ7-k9CvZsDYseGOXzcdQ9fGZ6YYnaW7fTPu7A/edit
@@ -39,8 +39,12 @@ class HttpResponseHeaders;
 // Owned by net::HttpCache.
 //
 // Ignoring eviction, the data structure is approximately equivalent to
-// std::map<std::tuple<NetworkIsolationKey, GURL, HttpNoVarySearchData>,
-// QueryString>.
+// std::map<std::pair<BaseURLCacheKey, HttpNoVarySearchData>,
+//          std::list<QueryString>>.
+//
+// BaseURLCacheKey is the output of the HttpCache key algorithm run on the base
+// URL (everything before the "?"). So it incorporates the NetworkIsolationKey
+// when split cache is enabled.
 class NET_EXPORT_PRIVATE NoVarySearchCache {
  private:
   // Declared here so that it can be mentioned in the definition of EraseHandle.
@@ -90,22 +94,27 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   ~NoVarySearchCache();
 
-  // Finds an entry in the cache equivalent to `url`. If a result is returned,
-  // then `original_url` can be used to find a disk cache entry. `erase_handle`
-  // can be used to remove the entry from this cache if it was not in the disk
-  // cache. Not const because it updates the LRU linked list to mark the entry
-  // as recently used.
-  std::optional<LookupResult> Lookup(const NetworkIsolationKey& nik,
-                                     const GURL& url);
+  // Finds an entry in the cache equivalent to `request.url` and in the same
+  // cache partition. If a result is returned, then `original_url` can be used
+  // to find a disk cache entry. `erase_handle` can be used to remove the entry
+  // from this cache if it was not in the disk cache. Not const because it
+  // updates the LRU linked list to mark the entry as recently used.
+  std::optional<LookupResult> Lookup(const HttpRequestInfo& request);
 
   // Inserts `url` into the cache if a non-default "No-Vary-Search" header was
   // found in `headers`. On insertion, will remove any existing matching entry
   // with the same No-Vary-Search header, as the older entry would never be
   // returned by Lookup() anyway. May evict the oldest entry in the cache to
   // avoid the size exceeding `max_size_`.
-  void MaybeInsert(const NetworkIsolationKey& nik,
-                   const GURL& url,
+  void MaybeInsert(const HttpRequestInfo& request,
                    const HttpResponseHeaders& headers);
+
+  // TODO(https://crbug.com/382394774): Implement ClearData() so that entries
+  // removed via the UI or Clear-Site-Data from the disk cache are also
+  // removed from this cache. This is needed before persistence is implemented.
+  // void ClearData(base::RepeatingCallback<bool(const GURL&)> url_matcher,
+  //                base::Time delete_begin,
+  //                base::Time delete_end);
 
   // Erases the entry referenced by `erase_handle` from the cache. Does nothing
   // if the entry no longer exists.
@@ -122,39 +131,22 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   class LruNode;
   class QueryStringListNode;
 
-  struct Key {
-    NetworkIsolationKey nik;
-    GURL base_url;
-
-    bool operator==(const Key& rhs) const;
-  };
-
-  // KeyReference allows us to do a map lookup without constructing a GURL and a
-  // Key.
-  using KeyReference = std::pair<const NetworkIsolationKey&, std::string_view>;
-
-  struct KeyComparator {
-    using is_transparent = void;
-
-    bool operator()(const Key& lhs, const Key& rhs) const;
-    bool operator()(const Key& lhs, const KeyReference& rhs) const;
-    bool operator()(const KeyReference& lhs, const Key& rhs) const;
-  };
-
-  friend bool operator==(const Key& lhs, const KeyReference& rhs) {
-    return lhs.nik == rhs.first && lhs.base_url == rhs.second;
-  }
+  using BaseURLCacheKey =
+      base::StrongAlias<struct BaseURLCacheKeyTagType, std::string>;
 
   struct QueryStringList {
     base::LinkedList<QueryStringListNode> list;
     // nvs_data_ref can't be raw_ref because it needs to be lazily initialized
     // after the QueryStringList has been added to the map.
     raw_ptr<const HttpNoVarySearchData> nvs_data_ref;
-    raw_ref<const Key> key_ref;
+    raw_ref<const BaseURLCacheKey> key_ref;
 
-    explicit QueryStringList(const Key& key);
+    // The referent of this reference has to be the actual key in the map. It is
+    // not sufficient for the value to match, because the lifetime has to be the
+    // same.
+    explicit QueryStringList(const BaseURLCacheKey& key);
     // base::LinkedList<> does not do memory management, so make sure the
-    // constents of `list` are deleted on destruction.
+    // contents of `list` are deleted on destruction.
     ~QueryStringList();
   };
 
@@ -168,7 +160,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // TODO(crbug.com/382394774): Investigate performance of different map types.
   using DataMapType = std::map<HttpNoVarySearchData, QueryStringList>;
-  using OuterMapType = std::map<Key, DataMapType, KeyComparator>;
+  using OuterMapType = std::map<BaseURLCacheKey, DataMapType, std::less<>>;
 
   // Erases an entry from the cache if it is full;
   void EvictIfFull();
@@ -178,7 +170,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   static std::optional<FindQueryStringResult> FindQueryStringInList(
       QueryStringList& query_strings,
-      std::string_view base,
+      const GURL& base,
       const GURL& url,
       const HttpNoVarySearchData& nvs_data);
 

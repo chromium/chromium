@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_no_vary_search_data.h"
 
 namespace net {
@@ -89,30 +90,12 @@ void EmitNoVarySearchHeaderParseResultHistogram(
 // request, so we want to avoid allocating memory for a GURL in the case of a
 // cache miss. The return value points at memory owned by `url`, so should not
 // outlive it.
-std::string_view ExtractBaseURLView(const GURL& url) {
+GURL ExtractBaseURL(const GURL& url) {
   CHECK(url.is_valid());
-  CHECK(url.has_path());
-  const std::string& spec = url.possibly_invalid_spec();
-  const url::Parsed& parsed = url.parsed_for_possibly_invalid_spec();
-  const url::Component& path = parsed.path;
-  CHECK(path.is_valid());
-  const size_t path_end_offset = base::checked_cast<size_t>(path.end());
-
-  auto base_url = std::string_view(spec).substr(0, path_end_offset);
-
-  if constexpr (DCHECK_IS_ON()) {
-    // This correctness check is very expensive, so is only done when DCHECKs
-    // are enabled.
-    GURL generated_base_url(base_url);
-    DCHECK(generated_base_url.is_valid());
-    GURL::Replacements replacements;
-    replacements.ClearQuery();
-    replacements.ClearRef();
-    GURL replaced_url = url.ReplaceComponents(replacements);
-    DCHECK_EQ(generated_base_url, replaced_url);
-  }
-
-  return base_url;
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return url.ReplaceComponents(replacements);
 }
 
 bool URLIsAcceptable(const GURL& url) {
@@ -172,9 +155,8 @@ class NoVarySearchCache::QueryStringListNode
 
 // QueryString is the entry type for the cache. Its main purpose is to hold the
 // query string, ie. everything between the "?" and the "#" in the original URL.
-// Together with the `base_url` that forms part of the Key, this can be used to
-// reconstruct the original URL that was used to store the original request in
-// the disk cache.
+// Together with the `base_url`, this can be used to reconstruct the original
+// URL that was used to store the original request in the disk cache.
 class NoVarySearchCache::QueryString final
     : public NoVarySearchCache::LruNode,
       public NoVarySearchCache::QueryStringListNode {
@@ -229,12 +211,14 @@ class NoVarySearchCache::QueryString final
   // Return the original GURL that this entry was constructed from (not
   // including any fragment). It's important to use this method to correctly
   // reconstruct URLs that have an empty query (end in '?').
-  GURL ReconstructOriginalURL(std::string_view base_url) {
-    if (query_.has_value()) {
-      return GURL(base::StrCat({base_url, "?", query_.value()}));
-    } else {
-      return GURL(base_url);
+  GURL ReconstructOriginalURL(const GURL& base_url) {
+    if (!query_.has_value()) {
+      return base_url;
     }
+
+    GURL::Replacements replacements;
+    replacements.SetQueryStr(query_.value());
+    return base_url.ReplaceComponents(replacements);
   }
 
   EraseHandle CreateEraseHandle() {
@@ -326,13 +310,23 @@ NoVarySearchCache::~NoVarySearchCache() {
 }
 
 std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
-    const NetworkIsolationKey& nik,
-    const GURL& url) {
-  if (nik.IsTransient() || !URLIsAcceptable(url)) {
+    const HttpRequestInfo& request) {
+  const GURL& url = request.url;
+  if (!URLIsAcceptable(url)) {
     return std::nullopt;
   }
-  std::string_view base_url = ExtractBaseURLView(url);
-  const auto it = map_.find(KeyReference(nik, base_url));
+  // TODO(https://crbug.com/388956603): Try to avoid allocating memory for the
+  // base url.
+  const GURL base_url = ExtractBaseURL(url);
+  // TODO(https://crbug.com/388956603): This does a lot of allocations and
+  // string copies. Try to reduce the amount of work done for a miss.
+  const std::optional<std::string> maybe_cache_key =
+      HttpCache::GenerateCacheKeyForRequestWithAlternateURL(&request, base_url);
+  if (!maybe_cache_key) {
+    return std::nullopt;
+  }
+  const BaseURLCacheKey cache_key(maybe_cache_key.value());
+  const auto it = map_.find(cache_key);
   if (it == map_.end()) {
     return std::nullopt;
   }
@@ -356,10 +350,10 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
   return LookupResult(original_url, best_match->CreateEraseHandle());
 }
 
-void NoVarySearchCache::MaybeInsert(const NetworkIsolationKey& nik,
-                                    const GURL& url,
+void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
                                     const HttpResponseHeaders& headers) {
-  if (nik.IsTransient() || !URLIsAcceptable(url)) {
+  const GURL& url = request.url;
+  if (!URLIsAcceptable(url)) {
     return;
   }
   auto maybe_nvs_data = HttpNoVarySearchData::ParseFromHeaders(headers);
@@ -367,7 +361,7 @@ void NoVarySearchCache::MaybeInsert(const NetworkIsolationKey& nik,
   if (!maybe_nvs_data.has_value()) {
     return;
   }
-  const std::string_view base_url = ExtractBaseURLView(url);
+  const GURL base_url = ExtractBaseURL(url);
 
   std::optional<std::string_view> query;
   if (url.has_query()) {
@@ -377,13 +371,15 @@ void NoVarySearchCache::MaybeInsert(const NetworkIsolationKey& nik,
   // Using lower_bound() followed by emplace_hint() allows us to avoid
   // constructing a Key object if there is already a matching key in the map,
   // and do only a single logN lookup.
-  const KeyReference key(nik, base_url);
-  auto it = map_.lower_bound(key);
-  if (it == map_.end() || it->first != key) {
-    it = map_.emplace_hint(it, Key(nik, GURL(base_url)), DataMapType());
+  const std::optional<std::string> maybe_cache_key =
+      HttpCache::GenerateCacheKeyForRequestWithAlternateURL(&request, base_url);
+  if (!maybe_cache_key) {
+    return;
   }
+  const BaseURLCacheKey cache_key(maybe_cache_key.value());
+  const auto [it, _] = map_.try_emplace(cache_key);
   DataMapType& data_map = it->second;
-  auto [data_it, inserted] =
+  const auto [data_it, inserted] =
       data_map.emplace(std::move(*maybe_nvs_data), it->first);
   const HttpNoVarySearchData& nvs_data = data_it->first;
   QueryStringList& query_strings = data_it->second;
@@ -434,29 +430,7 @@ bool NoVarySearchCache::IsTopLevelMapEmptyForTesting() const {
   return map_.empty();
 }
 
-bool NoVarySearchCache::Key::operator==(const Key& rhs) const = default;
-
-bool NoVarySearchCache::KeyComparator::operator()(const Key& lhs,
-                                                  const Key& rhs) const {
-  return std::tie(lhs.nik, lhs.base_url) < std::tie(rhs.nik, rhs.base_url);
-}
-
-bool NoVarySearchCache::KeyComparator::operator()(
-    const Key& lhs,
-    const KeyReference& rhs) const {
-  const auto lhs_ref =
-      KeyReference(lhs.nik, lhs.base_url.possibly_invalid_spec());
-  return lhs_ref < rhs;
-}
-
-bool NoVarySearchCache::KeyComparator::operator()(const KeyReference& lhs,
-                                                  const Key& rhs) const {
-  const auto rhs_ref =
-      KeyReference(rhs.nik, rhs.base_url.possibly_invalid_spec());
-  return lhs < rhs_ref;
-}
-
-NoVarySearchCache::QueryStringList::QueryStringList(const Key& key)
+NoVarySearchCache::QueryStringList::QueryStringList(const BaseURLCacheKey& key)
     : key_ref(key) {}
 
 NoVarySearchCache::QueryStringList::~QueryStringList() {
@@ -479,10 +453,10 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
   query_string->RemoveAndDelete();
   if (query_strings.list.empty()) {
     const HttpNoVarySearchData* nvs_data_ref = query_strings.nvs_data_ref.get();
-    const Key& key_ref = query_strings.key_ref.get();
+    const BaseURLCacheKey& key_ref = query_strings.key_ref.get();
     const auto map_it = map_.find(key_ref);
     CHECK(map_it != map_.end());
-    size_t removed_count = map_it->second.erase(*nvs_data_ref);
+    const size_t removed_count = map_it->second.erase(*nvs_data_ref);
     CHECK_EQ(removed_count, 1u);
     if (map_it->second.empty()) {
       map_.erase(map_it);
@@ -493,7 +467,7 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
 // static
 std::optional<NoVarySearchCache::FindQueryStringResult>
 NoVarySearchCache::FindQueryStringInList(QueryStringList& query_strings,
-                                         std::string_view base_url,
+                                         const GURL& base_url,
                                          const GURL& url,
                                          const HttpNoVarySearchData& nvs_data) {
   for (auto* node = query_strings.list.head(); node != query_strings.list.end();
