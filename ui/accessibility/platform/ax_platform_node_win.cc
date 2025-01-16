@@ -4644,10 +4644,15 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
   AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
+  if (unignored_selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
+    // This indicates there is no selection.
+    return S_FALSE;
+  }
   AXPlatformNodeWin* anchor_node =
       static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(anchor_id));
-  if (!anchor_node)
+  if (!anchor_node) {
     return E_FAIL;
+  }
 
   // If the selection endpoint is inside this object and therefore, at least
   // from this side, we do not need to crop the selection. Simply convert
@@ -4688,9 +4693,6 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
       << "This value is unexpected here, since we have already determined in "
          "this method that focus_object is in the accessibility tree.";
 
-  if (anchor_node == focus_node && anchor_offset == focus_offset)
-    return S_FALSE;  // No selection within this subtree.
-
   Microsoft::WRL::ComPtr<IAccessibleText> anchor_text_node;
   if (FAILED(anchor_node->QueryInterface(IID_PPV_ARGS(&anchor_text_node))))
     return E_FAIL;
@@ -4726,6 +4728,28 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
   NotifyAddAXModeFlagsForIA2(kScreenReaderAccessibilityMode);
 
   COM_OBJECT_VALIDATE();
+
+  if (nSelections == 0) {
+    // Clear the selection by using an anchor offset of
+    // kNoSelectionOffset. If it's a plain textfield, this will
+    // collapse the selection to the caret, as plain textfields always need to
+    // have some selection.
+    AXActionData clear_action;
+    clear_action.action = ax::mojom::Action::kSetSelection;
+    clear_action.target_tree_id = GetDelegate()->GetTreeData().tree_id;
+    clear_action.anchor_node_id = GetData().id;
+    clear_action.focus_node_id = GetData().id;
+    if (GetData().IsAtomicTextField()) {
+      int caret_offset = GetCaretOffset();
+      clear_action.anchor_offset = caret_offset;
+      clear_action.focus_offset = caret_offset;
+    } else {
+      clear_action.anchor_offset = ax::mojom::kNoSelectionOffset;
+      clear_action.focus_offset = ax::mojom::kNoSelectionOffset;
+    }
+    return GetDelegate()->AccessibilityPerformAction(clear_action) ? S_OK
+                                                                   : S_FALSE;
+  }
 
   // Chromium does not currently support more than one selection.
   if (nSelections != 1 || !selections)

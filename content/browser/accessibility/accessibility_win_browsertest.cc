@@ -3672,11 +3672,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleTextSelectionContainer> selection_container;
   ASSERT_HRESULT_SUCCEEDED(document.As(&selection_container));
 
-  ui::ScopedCoMemArray<IA2TextSelection> received_selections;
-  ASSERT_HRESULT_FAILED(selection_container->get_selections(
-      received_selections.Receive(), received_selections.ReceiveSize()));
-  ASSERT_EQ(0, received_selections.size());
-
   // Test setting the selection to "a".
   std::vector<IA2TextSelection> requested_selections;
   IA2TextSelection requested_selection_range = {paragraph_text.Get(), 0,
@@ -3690,6 +3685,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
       selection_container->setSelections(1, &requested_selections[0]));
   ASSERT_TRUE(waiter.WaitForNotification());
 
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections;
   ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
       received_selections.Receive(), received_selections.ReceiveSize()));
   ASSERT_EQ(1, received_selections.size());
@@ -3874,6 +3870,125 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_EQ(def_text.Get(), received_selections[0].endObj);
   ASSERT_EQ(received_selections[0].endOffset, 3);
   ASSERT_EQ(received_selections[0].startIsActive, false);
+
+  // Clear the selection by sending 0 selections.
+  AccessibilityNotificationWaiter waiter_2(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(0, &requested_selections[0]));
+  ASSERT_TRUE(waiter_2.WaitForNotification());
+
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections_2;
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections_2.Receive(), received_selections_2.ReceiveSize()));
+  ASSERT_EQ(0, received_selections_2.size());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestClearSelectionInInput) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <body>
+        <input value="abc">
+      </body>
+      </html>)HTML");
+
+  // Retrieve the IAccessible interface for the document node.
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+
+  // The document should have one child, a slider.
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+  Microsoft::WRL::ComPtr<IAccessible2> section;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &section));
+  std::vector<base::win::ScopedVariant> section_children =
+      GetAllAccessibleChildren(section.Get());
+  Microsoft::WRL::ComPtr<IAccessible2> input;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(section.Get(), section_children[0].AsInput())
+          .Get(),
+      &input));
+  LONG input_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(input->role(&input_role));
+  ASSERT_EQ(ROLE_SYSTEM_TEXT, input_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> input_text;
+  ASSERT_HRESULT_SUCCEEDED(input.As(&input_text));
+  LONG n_characters;
+  ASSERT_HRESULT_SUCCEEDED(input_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(3, n_characters);
+
+  // Test setting the selection to the last 2 characters
+  std::vector<IA2TextSelection> requested_selections;
+  IA2TextSelection requested_selection_range = {input_text.Get(), 1,
+                                                input_text.Get(), 3, false};
+  requested_selections.push_back(requested_selection_range);
+
+  Microsoft::WRL::ComPtr<IAccessibleTextSelectionContainer> selection_container;
+  ASSERT_HRESULT_SUCCEEDED(input.As(&selection_container));
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(1, &requested_selections[0]));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections;
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections.Receive(), received_selections.ReceiveSize()));
+  ASSERT_EQ(1, received_selections.size());
+
+  EXPECT_EQ(input_text.Get(), received_selections[0].startObj);
+  EXPECT_EQ(received_selections[0].startOffset, 1);
+  EXPECT_EQ(input_text.Get(), received_selections[0].endObj);
+  ASSERT_EQ(received_selections[0].endOffset, 3);
+  ASSERT_EQ(received_selections[0].startIsActive, false);
+
+  // Clear the selection by sending 0 selections.
+  // In a plain textfield, this collapses the selection to the caret position
+  // aka the focus offset.
+  AccessibilityNotificationWaiter waiter_2(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(0, &requested_selections[0]));
+  ASSERT_TRUE(waiter_2.WaitForNotification());
+
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections_2;
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections_2.Receive(), received_selections_2.ReceiveSize()));
+  ASSERT_EQ(1, received_selections_2.size());
+  EXPECT_EQ(input_text.Get(), received_selections_2[0].startObj);
+  EXPECT_EQ(received_selections_2[0].startOffset, 3);
+  EXPECT_EQ(input_text.Get(), received_selections_2[0].endObj);
+  ASSERT_EQ(received_selections_2[0].endOffset, 3);
+  ASSERT_EQ(received_selections_2[0].startIsActive, false);
+
+  // Move the caret.
+  AccessibilityNotificationWaiter waiter_3(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+  requested_selection_range = {input_text.Get(), 2, input_text.Get(), 2, false};
+  requested_selections[0] = requested_selection_range;
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(1, &requested_selections[0]));
+  ASSERT_TRUE(waiter_3.WaitForNotification());
+
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections_3;
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections_3.Receive(), received_selections_3.ReceiveSize()));
+  ASSERT_EQ(1, received_selections_3.size());
+  EXPECT_EQ(input_text.Get(), received_selections_3[0].startObj);
+  EXPECT_EQ(received_selections_3[0].startOffset, 2);
+  EXPECT_EQ(input_text.Get(), received_selections_3[0].endObj);
+  ASSERT_EQ(received_selections_3[0].endOffset, 2);
+  ASSERT_EQ(received_selections_3[0].startIsActive, false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
