@@ -24927,22 +24927,6 @@
             ]
         }
     ],
-    "ValidateNetworkServiceProcessIdentityMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MachPortRendezvousValidatePeerRequirements",
-                        "ValidateNetworkServiceProcessIdentity"
-                    ]
-                }
-            ]
-        }
-    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
