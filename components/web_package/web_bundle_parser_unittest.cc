@@ -248,8 +248,9 @@ void CheckIfSignatureStackEntryIsValid(
   EXPECT_EQ(entry->signature_info->get_ed25519()->public_key, public_key);
 
   // The attributes should contain the public key.
-  EXPECT_FALSE(
-      std::ranges::search(entry->attributes_cbor, public_key.bytes()).empty());
+  EXPECT_NE(
+      std::ranges::search(entry->attributes_cbor, public_key.bytes()).begin(),
+      entry->attributes_cbor.end());
 }
 
 }  // namespace

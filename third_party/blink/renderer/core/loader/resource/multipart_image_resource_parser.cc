@@ -168,7 +168,7 @@ bool MultipartImageResourceParser::ParseHeaders() {
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
   auto found_boundary = std::ranges::search(data, *boundary);
-  if (found_boundary.empty()) {
+  if (found_boundary.begin() == data.end()) {
     return kNotFound;
   }
 

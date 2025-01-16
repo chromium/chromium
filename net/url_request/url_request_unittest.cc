@@ -340,9 +340,9 @@ class PriorityMonitoringURLRequestJob : public URLRequestTestJob {
 
 // Do a case-insensitive search through |haystack| for |needle|.
 bool ContainsString(const std::string& haystack, const char* needle) {
-  return !std::ranges::search(haystack, std::string_view(needle),
-                              base::CaseInsensitiveCompareASCII<char>())
-              .empty();
+  return std::ranges::search(haystack, std::string_view(needle),
+                             base::CaseInsensitiveCompareASCII<char>())
+             .begin() != haystack.end();
 }
 
 std::unique_ptr<UploadDataStream> CreateSimpleUploadData(
