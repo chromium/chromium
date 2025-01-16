@@ -40,6 +40,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final String mAppName;
     private final View mDialogView;
     private final LinearLayout mButtonsView;
+    private final View mPositiveButton;
     private final MaterialSwitch mAudioSwitch;
     private final ModelList mModelList = new ModelList();
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
@@ -80,6 +81,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                         MediaCapturePickerItemProperties.SELECTED, false);
             }
             mModel.set(MediaCapturePickerItemProperties.SELECTED, true);
+            mPositiveButton.setEnabled(true);
             mLastSelectedTabItemState = this;
         }
 
@@ -145,6 +147,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                 (LinearLayout)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.media_capture_picker_button_row, null);
+
+        mPositiveButton = mButtonsView.findViewById(R.id.positive_button);
+
+        // Share audio should be on by default.
         mAudioSwitch = mButtonsView.findViewById(R.id.media_capture_picker_audio_share_switch);
 
         if (requestAudio) {
@@ -225,9 +231,8 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                 .findViewById(R.id.negative_button)
                 .setOnClickListener(view -> controller.onClick(propertyModel, ButtonType.NEGATIVE));
 
-        mButtonsView
-                .findViewById(R.id.positive_button)
-                .setOnClickListener(view -> controller.onClick(propertyModel, ButtonType.POSITIVE));
+        mPositiveButton.setOnClickListener(
+                view -> controller.onClick(propertyModel, ButtonType.POSITIVE));
 
         mModalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
     }

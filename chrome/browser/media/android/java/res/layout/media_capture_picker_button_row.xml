@@ -68,6 +68,7 @@ found in the LICENSE file.
             android:id="@+id/positive_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:text="@string/media_capture_picker_dialog_share_text"
             style="@style/FilledButton" />
 
