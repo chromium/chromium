@@ -10,11 +10,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class BrowserWindowInterface;
-
-namespace content {
-class WebContents;
-}  // namespace content
+class Browser;
 
 namespace gfx {
 class Canvas;
@@ -27,14 +23,7 @@ class BorderView : public views::View,
   METADATA_HEADER(BorderView, views::View)
 
  public:
-  // Helper function to find the `BorderView` for `web_contents`. Returns null
-  // if there isn't a browser view for `web_contents`.
-  static BorderView* FindBorderForWebContents(
-      const content::WebContents* web_contents);
-
-  static void CancelAnimation(BrowserWindowInterface* browser_interface);
-
-  BorderView();
+  explicit BorderView(Browser* browser);
   BorderView(const BorderView&) = delete;
   BorderView& operator=(const BorderView&) = delete;
   ~BorderView() override;
@@ -46,13 +35,19 @@ class BorderView : public views::View,
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
+  // TODO(liuwilliam): These should be private once we can end-to-end test the
+  // UI behaviors.
   void StartAnimation();
-
   void CancelAnimation();
 
   ui::Compositor* compositor_for_testing() const { return compositor_; }
 
  private:
+  // A utility class that subscribe to `GlicKeyedService` for various browser UI
+  // status change.
+  class BorderViewUpdater;
+  const std::unique_ptr<BorderViewUpdater> updater_;
+
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // Records the animation progress, starting from 0 to 1.f.

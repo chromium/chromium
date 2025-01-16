@@ -100,6 +100,10 @@ class GlicKeyedService : public KeyedService {
   // indicator.
   bool IsContextAccessIndicatorShown(const content::WebContents* contents);
 
+  bool is_context_access_indicator_enabled() const {
+    return is_context_access_indicator_enabled_;
+  }
+
   void GetContextFromFocusedTab(
       bool include_inner_text,
       bool include_viewport_screenshot,
