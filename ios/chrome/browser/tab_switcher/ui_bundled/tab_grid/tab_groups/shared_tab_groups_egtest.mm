@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_earl_grey_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
@@ -307,8 +308,8 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-// TODO(crbug.com/380113830): Re-enable this test.
-- (void)DISABLED_testJoinGroup {
+- (void)testJoinGroup {
+  [TabGroupSyncEarlGreyAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
@@ -409,8 +410,8 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-// TODO(crbug.com/380113830): Re-enable this test.
-- (void)DISABLED_testJoinGroup {
+- (void)testJoinGroup {
+  [TabGroupSyncEarlGreyAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
