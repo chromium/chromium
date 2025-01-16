@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -80,6 +81,8 @@ class AutofillProfileImportProcessTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillSupportPhoneticNameForJP};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAddressDataManager address_data_manager_;
@@ -313,6 +316,86 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   EXPECT_FALSE(import_data.ProfilesChanged());
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedElementsAre(account_profile));
+}
+
+// Tests that importing an `ExtendedHiraganaProfile` with address fields is a
+// superset of a `HiraganaProfile` kAccount profile results in an update and
+// not an upload. The record type of the resulting profile remains kAccount.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportJapaneseSupersetProfile_kAccount_PostStorage) {
+  AutofillProfile account_profile = test::HiraganaProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(account_profile);
+
+  ProfileImportProcess import_data(test::ExtendedHiraganaProfile(), "ja_JP",
+                                   url_, ukm_source_id(),
+                                   &address_data_manager(),
+                                   /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kConfirmableMerge);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+  AutofillProfile expected_profile = test::ExtendedHiraganaProfile();
+  expected_profile.set_guid(account_profile.guid());
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedElementsAre(expected_profile));
+}
+
+// Tests that importing a profile that is semantically equal to a kAccount
+// profile is rejected as a duplicate.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportDifferentCharacterProfile_kAccount) {
+  AutofillProfile account_profile = test::HiraganaProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(account_profile);
+
+  // Import a profile with equivalent data but saved in a different alphabet.
+  ProfileImportProcess import_data(test::KatakanaProfile1(), "ja_JP", url_,
+                                   ukm_source_id(), &address_data_manager(),
+                                   /*allow_only_silent_updates=*/false);
+  // The import is rejected as a duplicate.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+  import_data.AcceptWithoutPrompt();
+  EXPECT_FALSE(import_data.ProfilesChanged());
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedElementsAre(account_profile));
+}
+
+// Tests that importing a Katakana profile with a different alternative name
+// than the existing Hiragana profile results in a new profile creation and user
+// is offered to save it.
+TEST_F(AutofillProfileImportProcessTest, ImportNewKatakanaProfile_UserAccepts) {
+  AutofillProfile existing_hiragana_profile = test::HiraganaProfile();
+  test_api(existing_hiragana_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  address_data_manager().AddProfile(existing_hiragana_profile);
+
+  AutofillProfile new_katakana_profile = test::KatakanaProfile2();
+
+  // Advance the test clock to make sure that the modification date of the new
+  // profile gets updated.
+  AdvanceClock(base::Days(1));
+
+  ProfileImportProcess import_data =
+      CreateProfileImportProcess(new_katakana_profile,
+                                 /*allow_only_silent_updates=*/false);
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+  EXPECT_EQ(import_data.import_type(), AutofillProfileImportType::kNewProfile);
+
+  std::vector<AutofillProfile> resulting_profiles =
+      ApplyImportAndGetProfiles(import_data);
+  ASSERT_EQ(resulting_profiles.size(), 2U);
+  EXPECT_THAT(resulting_profiles,
+              testing::UnorderedElementsAre(existing_hiragana_profile,
+                                            new_katakana_profile));
+  EXPECT_EQ(resulting_profiles.at(1).usage_history().modification_date(),
+            base::Time::Now());
 }
 
 // Tests that importing a profile that is a superset of a kAccount profile
