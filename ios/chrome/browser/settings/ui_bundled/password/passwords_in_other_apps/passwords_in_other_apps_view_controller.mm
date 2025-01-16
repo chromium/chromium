@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -27,6 +28,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+using ::password_manager::features::IOSPasskeysM2Enabled;
+
 CGFloat const kCaptionTextViewOffset = 16;
 CGFloat const kDefaultMargin = 16;
 CGFloat const kTitleTopMinimumMargin = 48;
@@ -36,6 +40,7 @@ CGFloat const kContentWidthMultiplier = 0.65;
 CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
+
 }  // namespace
 
 @interface PasswordsInOtherAppsViewController ()
@@ -88,12 +93,18 @@ CGFloat const kContentOptimalWidth = 327;
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _titleText =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+    bool passkeysM2Enabled = IOSPasskeysM2Enabled();
+    _titleText = l10n_util::GetNSString(
+        passkeysM2Enabled
+            ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER
+            : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
 
     UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-    if (idiom == UIUserInterfaceIdiomPad) {
+    if (passkeysM2Enabled) {
+      _subtitleText = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
+    } else if (idiom == UIUserInterfaceIdiomPad) {
       _subtitleText = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD);
     } else {
@@ -618,11 +629,16 @@ CGFloat const kContentOptimalWidth = 327;
 
 - (NSArray<NSString*>*)steps {
   if (self.useShortInstruction) {
+    bool passkeysM2Enabled = IOSPasskeysM2Enabled();
     return @[
       l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
+          passkeysM2Enabled
+              ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_1
+              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
       l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+          passkeysM2Enabled
+              ? IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_2
+              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
   }
   return @[
@@ -661,6 +677,7 @@ CGFloat const kContentOptimalWidth = 327;
 // Returns caption text that shows below the subtitle in turnOffInstructions.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
+  // TODO(crbug.com/389690891): Update the turn off string.
   text = l10n_util::GetNSString(
       IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
   NSDictionary* textAttributes = @{

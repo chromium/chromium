@@ -5250,6 +5250,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS" desc="The title of the view in password settings that allows users to turn on iOS auto-fill from Chrome password manager. Refer to Glossary when translating passkeys. [iOS only]">
         Access passwords &amp; passkeys from any app
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_HEADER" desc="The title of the view that teaches users to turn on iOS AutoFill from Chrome password manager. Refer to Glossary when translating passkeys. [iOS only]">
+        Access your passwords &amp; passkeys from any app
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SHORTENED_STEP_1" desc="Text of the row indicating the first step of shortened instruction of turning on iOS AutoFill from Chrome password manager. 'AutoFill &amp; Passwords' is a name in iOS Settings (in General settings), the translation of it and capitalization in the word 'AutoFill' should match it. [iOS only]">
+        Open AutoFill &amp; Passwords settings
+      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING" desc="The title for a list of items, with each entry consisting of a password or a passkey, and a corresponding username and website. These items are already saved by the browser and can be deleted/edited. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [Length: one line] [iOS only]">
         Saved passwords &amp; passkeys
       </message>
