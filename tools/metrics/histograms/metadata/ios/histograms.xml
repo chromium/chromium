@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2025-02-16">
+    expires_after="2026-02-16">
   <owner>rohitrao@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -2451,7 +2451,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MetricKit.{MXVersion}BackgroundTimePerDay" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2026-01-05">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
