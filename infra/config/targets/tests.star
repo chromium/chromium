@@ -2181,6 +2181,14 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "trees_in_viz_cc_unittests",
+    args = [
+        "--enable-features=TreesInViz",
+    ],
+    binary = "cc_unittests",
+)
+
+targets.tests.gtest_test(
     name = "site_per_process_content_shell_test_apk",
     args = [
         "--site-per-process",
