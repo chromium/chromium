@@ -14,14 +14,14 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-class SearchAggregatorSuggestionsService;
+class EnterpriseSearchAggregatorSuggestionsService;
 class Profile;
 class KeyedService;
 
 class EnterpriseSearchAggregatorSuggestionsServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
-  static SearchAggregatorSuggestionsService* GetForProfile(
+  static EnterpriseSearchAggregatorSuggestionsService* GetForProfile(
       Profile* profile,
       bool create_if_necessary);
   static EnterpriseSearchAggregatorSuggestionsServiceFactory* GetInstance();

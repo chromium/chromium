@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
-#define COMPONENTS_OMNIBOX_BROWSER_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
+#define COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -23,20 +23,20 @@ class SimpleURLLoader;
 }  // namespace network
 
 // A service to fetch suggestions from the search aggregator endpoint URL.
-class SearchAggregatorSuggestionsService : public KeyedService {
+class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
  public:
-  explicit SearchAggregatorSuggestionsService(
+  explicit EnterpriseSearchAggregatorSuggestionsService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  ~SearchAggregatorSuggestionsService() override;
-  SearchAggregatorSuggestionsService(
-      const SearchAggregatorSuggestionsService&) = delete;
-  SearchAggregatorSuggestionsService& operator=(
-      const SearchAggregatorSuggestionsService&) = delete;
+  ~EnterpriseSearchAggregatorSuggestionsService() override;
+  EnterpriseSearchAggregatorSuggestionsService(
+      const EnterpriseSearchAggregatorSuggestionsService&) = delete;
+  EnterpriseSearchAggregatorSuggestionsService& operator=(
+      const EnterpriseSearchAggregatorSuggestionsService&) = delete;
 
   // TODO(crbug.com/385756623): Factor out callback methods so it can be used
   //   across document_suggestions_service and
-  //   search_aggregator_suggestions_service.
+  //   enterprise_search_aggregator_suggestions_service.
   using CreationCallback =
       base::OnceCallback<void(network::ResourceRequest* request)>;
   using StartCallback =
@@ -46,7 +46,7 @@ class SearchAggregatorSuggestionsService : public KeyedService {
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               std::unique_ptr<std::string> response_body)>;
 
-  void CreateSearchAggregatorSuggestionsRequest(
+  void CreateEnterpriseSearchAggregatorSuggestionsRequest(
       const GURL& suggest_url,
       const std::string& request_body,
       CreationCallback creation_callback,
@@ -55,7 +55,8 @@ class SearchAggregatorSuggestionsService : public KeyedService {
 
  private:
   // TODO(crbug.com/385756623): Factor out this method so it can be used across
-  //   document_suggestions_service and search_aggregator_suggestions_service.
+  //   document_suggestions_service and
+  //   enterprise_search_aggregator_suggestions_service.
   void StartDownloadAndTransferLoader(
       std::unique_ptr<network::ResourceRequest> request,
       std::string request_body,
@@ -66,4 +67,4 @@ class SearchAggregatorSuggestionsService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_

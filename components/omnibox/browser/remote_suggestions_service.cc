@@ -12,7 +12,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
-#include "components/omnibox/browser/search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -116,11 +116,12 @@ RemoteSuggestionsService::Delegate::~Delegate() = default;
 
 RemoteSuggestionsService::RemoteSuggestionsService(
     DocumentSuggestionsService* document_suggestions_service,
-    SearchAggregatorSuggestionsService* search_aggregator_suggestions_service,
+    EnterpriseSearchAggregatorSuggestionsService*
+        enterprise_search_aggregator_suggestions_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : document_suggestions_service_(document_suggestions_service),
-      search_aggregator_suggestions_service_(
-          search_aggregator_suggestions_service),
+      enterprise_search_aggregator_suggestions_service_(
+          enterprise_search_aggregator_suggestions_service),
       url_loader_factory_(url_loader_factory) {
   DCHECK(url_loader_factory);
 }
@@ -345,20 +346,21 @@ void RemoteSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
   }
 }
 
-void RemoteSuggestionsService::CreateSearchAggregatorSuggestionsRequest(
-    const GURL& suggest_url,
-    const std::string& request_body,
-    StartCallback start_callback,
-    CompletionCallback completion_callback) {
-  if (!search_aggregator_suggestions_service_) {
+void RemoteSuggestionsService::
+    CreateEnterpriseSearchAggregatorSuggestionsRequest(
+        const GURL& suggest_url,
+        const std::string& request_body,
+        StartCallback start_callback,
+        CompletionCallback completion_callback) {
+  if (!enterprise_search_aggregator_suggestions_service_) {
     return;
   }
 
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  search_aggregator_suggestions_service_
-      ->CreateSearchAggregatorSuggestionsRequest(
+  enterprise_search_aggregator_suggestions_service_
+      ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           suggest_url, request_body,
           base::BindOnce(&RemoteSuggestionsService::OnRequestCreated,
                          weak_ptr_factory_.GetWeakPtr(), request_id),

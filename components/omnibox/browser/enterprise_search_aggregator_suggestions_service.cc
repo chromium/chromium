@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 
 #include <memory>
 #include <string>
@@ -18,17 +18,18 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-SearchAggregatorSuggestionsService::SearchAggregatorSuggestionsService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+EnterpriseSearchAggregatorSuggestionsService::
+    EnterpriseSearchAggregatorSuggestionsService(
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {
   DCHECK(url_loader_factory);
 }
 
-SearchAggregatorSuggestionsService::~SearchAggregatorSuggestionsService() =
-    default;
+EnterpriseSearchAggregatorSuggestionsService::
+    ~EnterpriseSearchAggregatorSuggestionsService() = default;
 
-void SearchAggregatorSuggestionsService::
-    CreateSearchAggregatorSuggestionsRequest(
+void EnterpriseSearchAggregatorSuggestionsService::
+    CreateEnterpriseSearchAggregatorSuggestionsRequest(
         const GURL& suggest_url,
         const std::string& request_body,
         CreationCallback creation_callback,
@@ -90,13 +91,15 @@ void SearchAggregatorSuggestionsService::
 }
 
 // TODO(crbug.com/385756623): Factor out this method so it can be used across
-//   document_suggestions_service and search_aggregator_suggestions_service.
-void SearchAggregatorSuggestionsService::StartDownloadAndTransferLoader(
-    std::unique_ptr<network::ResourceRequest> request,
-    std::string request_body,
-    net::NetworkTrafficAnnotationTag traffic_annotation,
-    StartCallback start_callback,
-    CompletionCallback completion_callback) {
+//   document_suggestions_service and
+//   enterprise_search_aggregator_suggestions_service.
+void EnterpriseSearchAggregatorSuggestionsService::
+    StartDownloadAndTransferLoader(
+        std::unique_ptr<network::ResourceRequest> request,
+        std::string request_body,
+        net::NetworkTrafficAnnotationTag traffic_annotation,
+        StartCallback start_callback,
+        CompletionCallback completion_callback) {
   if (!url_loader_factory_) {
     return;
   }

@@ -9,16 +9,16 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "components/omnibox/browser/search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
 // static
-SearchAggregatorSuggestionsService*
+EnterpriseSearchAggregatorSuggestionsService*
 EnterpriseSearchAggregatorSuggestionsServiceFactory::GetForProfile(
     Profile* profile,
     bool create_if_necessary) {
-  return static_cast<SearchAggregatorSuggestionsService*>(
+  return static_cast<EnterpriseSearchAggregatorSuggestionsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, create_if_necessary));
 }
 
@@ -36,7 +36,7 @@ EnterpriseSearchAggregatorSuggestionsServiceFactory::
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return std::make_unique<SearchAggregatorSuggestionsService>(
+  return std::make_unique<EnterpriseSearchAggregatorSuggestionsService>(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
@@ -44,7 +44,7 @@ EnterpriseSearchAggregatorSuggestionsServiceFactory::
 EnterpriseSearchAggregatorSuggestionsServiceFactory::
     EnterpriseSearchAggregatorSuggestionsServiceFactory()
     : ProfileKeyedServiceFactory(
-          "SearchAggregatorSuggestionsService",
+          "EnterpriseSearchAggregatorSuggestionsService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)

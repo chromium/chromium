@@ -136,7 +136,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
@@ -166,7 +166,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
@@ -195,7 +195,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_DeleteSuggest) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
   auto loader = service.StartDeletionRequest(
       "https://google.com/complete/delete",
@@ -217,7 +217,7 @@ TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
 
   TemplateURLRef::SearchTermsArgs search_terms_args;
@@ -251,7 +251,7 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
@@ -300,7 +300,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
 
   RemoteSuggestionsService service(
       /*document_suggestions_service_=*/nullptr,
-      /*search_aggregator_suggestions_service_*/ nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
       GetUrlLoaderFactory());
 
   // Set up a delegate that will be replaced.

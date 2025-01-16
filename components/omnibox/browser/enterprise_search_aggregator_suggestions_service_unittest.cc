@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/search_aggregator_suggestions_service.h"
+#include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 
 #include "base/functional/bind.h"
 #include "base/json/json_parser.h"
@@ -59,25 +59,25 @@ const std::string& mock_response = base::StringPrintf({
        "dataStore" : ""
    } ] })"});
 
-void OnSearchAggregatorSuggestionsRequestAvailable(
+void OnEnterpriseSearchAggregatorSuggestionsRequestAvailable(
     network::ResourceRequest* request) {}
 
-void OnSearchAggregatorSuggestionsLoaderAvailable(
+void OnEnterpriseSearchAggregatorSuggestionsLoaderAvailable(
     std::unique_ptr<network::SimpleURLLoader> loader,
     const std::string& request_body) {}
 
 void OnURLLoadComplete(const network::SimpleURLLoader* source,
                        std::unique_ptr<std::string> response_body) {}
 
-class SearchAggregatorSuggestionsServiceTest : public testing::Test {
+class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
  public:
-  SearchAggregatorSuggestionsServiceTest()
+  EnterpriseSearchAggregatorSuggestionsServiceTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        search_aggregator_suggestions_service_(
-            new SearchAggregatorSuggestionsService(
+        enterprise_search_aggregator_suggestions_service_(
+            new EnterpriseSearchAggregatorSuggestionsService(
                 shared_url_loader_factory_)) {
     // Set up a variation.
     variations::AssociateGoogleVariationID(
@@ -86,10 +86,10 @@ class SearchAggregatorSuggestionsServiceTest : public testing::Test {
     base::FieldTrialList::CreateFieldTrial("trial name", "group name")
         ->Activate();
   }
-  SearchAggregatorSuggestionsServiceTest(
-      const SearchAggregatorSuggestionsServiceTest&) = delete;
-  SearchAggregatorSuggestionsServiceTest& operator=(
-      const SearchAggregatorSuggestionsServiceTest&) = delete;
+  EnterpriseSearchAggregatorSuggestionsServiceTest(
+      const EnterpriseSearchAggregatorSuggestionsServiceTest&) = delete;
+  EnterpriseSearchAggregatorSuggestionsServiceTest& operator=(
+      const EnterpriseSearchAggregatorSuggestionsServiceTest&) = delete;
 
  protected:
   AccountInfo SetUpPrimaryAccount() {
@@ -107,11 +107,11 @@ class SearchAggregatorSuggestionsServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<SearchAggregatorSuggestionsService>
-      search_aggregator_suggestions_service_;
+  std::unique_ptr<EnterpriseSearchAggregatorSuggestionsService>
+      enterprise_search_aggregator_suggestions_service_;
 };
 
-TEST_F(SearchAggregatorSuggestionsServiceTest, ValidateRequest) {
+TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
   SetUpPrimaryAccount();
 
   network::ResourceRequest resource_request;
@@ -126,11 +126,13 @@ TEST_F(SearchAggregatorSuggestionsServiceTest, ValidateRequest) {
   base::JSONWriter::Write(root, &test_request_body);
   const GURL test_endpoint = GURL("https://fake_url.com");
 
-  search_aggregator_suggestions_service_
-      ->CreateSearchAggregatorSuggestionsRequest(
+  enterprise_search_aggregator_suggestions_service_
+      ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           test_endpoint, test_request_body,
-          base::BindOnce(OnSearchAggregatorSuggestionsRequestAvailable),
-          base::BindOnce(OnSearchAggregatorSuggestionsLoaderAvailable),
+          base::BindOnce(
+              OnEnterpriseSearchAggregatorSuggestionsRequestAvailable),
+          base::BindOnce(
+              OnEnterpriseSearchAggregatorSuggestionsLoaderAvailable),
           base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();
