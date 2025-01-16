@@ -170,6 +170,43 @@ void PermanentFolderOrderingTracker::MoveToIndex(
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
 }
 
+void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(
+    const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
+    size_t index) {
+  CHECK(!elements.empty());
+  const BookmarkNode* parent = GetDefaultParentForNewNodes();
+  const size_t in_storage_index =
+      GetInStorageBookmarkCountBeforeIndex(parent == account_node_, index);
+  const size_t elements_size = elements.size();
+  bookmarks::CloneBookmarkNode(model_, elements, parent, in_storage_index,
+                               /*reset_node_times=*/true);
+  // `BookmarkNodeAdded()` must have been called, verify the size is as
+  // expected.
+  CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+
+  // Check if moving the new nodes is required to satisfy the `index` provided.
+  const BookmarkNode* new_node = parent->children()[in_storage_index].get();
+  CHECK_EQ(new_node->parent()->type(), tracked_type_);
+  const size_t current_start_index = GetIndexOf(new_node);
+  if (current_start_index == index) {
+    return;
+  }
+
+  // If the ordering is not tracked, the `current_start_index` must be equal to
+  // `index`.
+  CHECK(ShouldTrackOrdering());
+  CHECK_GE(ordering_.size(), current_start_index + elements_size);
+  std::vector<const BookmarkNode*> new_nodes(
+      ordering_.cbegin() + current_start_index,
+      ordering_.cbegin() + current_start_index + elements_size);
+  ordering_.erase(ordering_.cbegin() + current_start_index,
+                  ordering_.cbegin() + current_start_index + elements_size);
+  CHECK_LE(index, ordering_.size());
+  ordering_.insert(ordering_.cbegin() + index, new_nodes.cbegin(),
+                   new_nodes.cend());
+  CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+}
+
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
   switch (tracked_type_) {
     case bookmarks::BookmarkNode::URL:

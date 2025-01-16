@@ -383,7 +383,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
       model().bookmark_bar_node()->children()[3].get();
   const bookmarks::BookmarkNodeData::Element node_data(node_to_copy);
   const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().CopyBookmarkNodeData(
+  service().AddNodesAsCopiesOfNodeData(
       {node_data}, BookmarkParentFolder::FromFolderNode(destination), 1);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
@@ -391,6 +391,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
   EXPECT_EQ(ModelStringFromNode(model().other_node()),
             "6 7 8 f2:[ 9 f1:[ 4 5 ] ] ");
 }
+
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
   LoadBookmarkModel();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
@@ -400,17 +401,54 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
   // Copy nodes "2" and "3" to "f2".
   const BookmarkNode* n1 = model().bookmark_bar_node()->children()[1].get();
   const BookmarkNode* n2 = model().bookmark_bar_node()->children()[2].get();
-  std::vector<bookmarks::BookmarkNodeData::Element> nodes_data{
-      bookmarks::BookmarkNodeData::Element(n1),
-      bookmarks::BookmarkNodeData::Element(n2)};
+  std::vector<bookmarks::BookmarkNodeData::Element> nodes_data;
+  nodes_data.emplace_back(n1);
+  nodes_data.emplace_back(n2);
 
   const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().CopyBookmarkNodeData(
+  service().AddNodesAsCopiesOfNodeData(
       nodes_data, BookmarkParentFolder::FromFolderNode(destination), 0);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 5 ] ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 8 f2:[ 2 3 9 ] ");
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
+  LoadBookmarkModel();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
+
+  // Copy node "7" and "8" to bookmark bar.
+  const BookmarkNode* n1 = model().other_node()->children()[1].get();
+  const BookmarkNode* n2 = model().other_node()->children()[2].get();
+  std::vector<bookmarks::BookmarkNodeData::Element> nodes_data;
+  nodes_data.emplace_back(n1);
+  nodes_data.emplace_back(n2);
+
+  const BookmarkParentFolder bb_folder(
+      BookmarkParentFolder::BookmarkBarFolder());
+  service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 1);
+
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 7 8 2 3 ");
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 1),
+            model().bookmark_bar_node()->children()[1].get());
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
+            model().bookmark_bar_node()->children()[2].get());
+
+  // New nodes are added to the account node.
+  model().CreateAccountPermanentFolders();
+  nodes_data.clear();
+  nodes_data.emplace_back(model().other_node()->children()[0].get());
+  nodes_data.emplace_back(model().other_node()->children()[3].get());
+  // Copy node "6" and "F2" to bookmark bar.
+  service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 2);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "6 f2:[ 9 ] ");
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
+            model().account_bookmark_bar_node()->children()[0].get());
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 3),
+            model().account_bookmark_bar_node()->children()[1].get());
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest,

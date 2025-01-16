@@ -15,7 +15,9 @@
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+using bookmarks::BookmarkNodeData;
 using bookmarks::test::AddNodesFromModelString;
+using bookmarks::test::ModelStringFromNode;
 using testing::UnorderedElementsAre;
 
 namespace {
@@ -704,8 +706,6 @@ TEST_F(PermanentFolderOrderingTrackerTest, MoveAddsNewAccountTrackedNodes) {
   PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
   AddNodesFromModelString(&model(), model().account_other_node(), "X Y Z W ");
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
-  // AddNodesFromModelString(&model(), model().bookmark_bar_node(),
-  //                         "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
   EXPECT_EQ(tracker.GetChildrenCount(), 2u);
   {
     const BookmarkNode* node =
@@ -824,6 +824,274 @@ TEST_F(PermanentFolderOrderingTrackerTest, MoveToAccountOrderingNotTracked) {
   EXPECT_EQ(tracker.GetChildrenCount(), 2u);
   EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
   EXPECT_EQ(tracker.GetNodeAtIndex(1), node);
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToMiddle) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 2);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y O2 Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(2),
+            model().account_bookmark_bar_node()->children()[2u].get());
+
+  // Custom order: "X 1 Y O2 Z W 2 "
+  tracker.MoveToIndex(model().bookmark_bar_node()->children()[0].get(), 1u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(1),
+            model().bookmark_bar_node()->children()[0].get());
+
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  // Move O1 to index 3.
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 3);
+  // Expected order: "X 1 Y O1 O2 Z W 2 "
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y O1 O2 Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(3),
+            model().account_bookmark_bar_node()->children()[2u].get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToBeginning) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "O1 X Y Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().account_bookmark_bar_node()->children()[0].get());
+
+  // Custom order: "1 O1 X Y Z W 2 "
+  tracker.MoveToIndex(model().bookmark_bar_node()->children()[0].get(), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().bookmark_bar_node()->children()[0].get());
+
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "O2 O1 X Y Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().account_bookmark_bar_node()->children()[0u].get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopySingleNodeToEnd) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 6);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y Z W O1 ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(6),
+            model().account_bookmark_bar_node()->children().back().get());
+
+  // Custom order: "X Y Z W 1 2 O1"
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 7u);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y Z W O1 O2 ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(7),
+            model().account_bookmark_bar_node()->children().back().get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToMiddle) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(model().other_node()->children()[2].get());
+
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 1);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X O1 O2 O3 Y Z W ");
+  for (size_t i = 0; i < model().account_bookmark_bar_node()->children().size();
+       i++) {
+    EXPECT_EQ(tracker.GetNodeAtIndex(i),
+              model().account_bookmark_bar_node()->children()[i].get());
+  }
+
+  // Custom order: "1 X O1 O2 O3 Y Z W 2 "
+  tracker.MoveToIndex(model().bookmark_bar_node()->children()[0].get(), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().bookmark_bar_node()->children()[0].get());
+
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[3].get());
+  new_nodes.emplace_back(model().other_node()->children()[4].get());
+
+  // Expected order: "1 X O1 O2 O3 Y O4 O5 Z W 2 "
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 6);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X O1 O2 O3 Y O4 O5 Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(6),
+            model().account_bookmark_bar_node()->children()[5].get());
+  EXPECT_EQ(tracker.GetNodeAtIndex(7),
+            model().account_bookmark_bar_node()->children()[6].get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToBeginning) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(model().other_node()->children()[2].get());
+
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "O1 O2 O3 X Y Z W ");
+  for (size_t i = 0; i < model().account_bookmark_bar_node()->children().size();
+       i++) {
+    EXPECT_EQ(tracker.GetNodeAtIndex(i),
+              model().account_bookmark_bar_node()->children()[i].get());
+  }
+
+  // Custom order: "1 O1 O2 O3 X Y Z W 2 "
+  tracker.MoveToIndex(model().bookmark_bar_node()->children()[0].get(), 0u);
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().bookmark_bar_node()->children()[0].get());
+
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[3].get());
+  new_nodes.emplace_back(model().other_node()->children()[4].get());
+
+  // Expected order: "O4 O5 1 O1 O2 O3 X Y Z W 2 "
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "O4 O5 O1 O2 O3 X Y Z W ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(0),
+            model().account_bookmark_bar_node()->children()[0].get());
+  EXPECT_EQ(tracker.GetNodeAtIndex(1),
+            model().account_bookmark_bar_node()->children()[1].get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopyMultipleNodesToEnd) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
+
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(model().other_node()->children()[2].get());
+
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, tracker.GetChildrenCount());
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y Z W O1 O2 O3 ");
+  size_t account_children_count =
+      model().account_bookmark_bar_node()->children().size();
+  for (size_t i = 1; i <= new_nodes.size(); i++) {
+    EXPECT_EQ(tracker.GetNodeAtIndex(tracker.GetChildrenCount() - i),
+              model()
+                  .account_bookmark_bar_node()
+                  ->children()[account_children_count - i]
+                  .get());
+  }
+
+  // Custom order
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[3].get());
+  new_nodes.emplace_back(model().other_node()->children()[4].get());
+
+  // Expected order: "X Y Z W 1 2 O1 O2 O3 O4 O5 "
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, tracker.GetChildrenCount());
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+            "X Y Z W O1 O2 O3 O4 O5 ");
+  account_children_count =
+      model().account_bookmark_bar_node()->children().size();
+  for (size_t i = 1; i <= new_nodes.size(); i++) {
+    EXPECT_EQ(tracker.GetNodeAtIndex(tracker.GetChildrenCount() - i),
+              model()
+                  .account_bookmark_bar_node()
+                  ->children()[account_children_count - i]
+                  .get());
+  }
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopyNodesFirstAccountChildNode) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
+
+  // Copy single node.
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 2);
+  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()), "O1 ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(2),
+            model().account_bookmark_bar_node()->children()[0].get());
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, CopyNodesNoAccountNodes) {
+  model().LoadEmptyForTest();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().other_node(), "O1 O2 O3 O4 O5 ");
+
+  // Copy single node.
+  std::vector<BookmarkNodeData::Element> new_nodes;
+  new_nodes.emplace_back(model().other_node()->children()[0].get());
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 2);
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 2 O1 3 ");
+  EXPECT_EQ(tracker.GetNodeAtIndex(2),
+            model().bookmark_bar_node()->children()[2].get());
+
+  // Copy multiple nodes.
+  new_nodes.clear();
+  new_nodes.emplace_back(model().other_node()->children()[1].get());
+  new_nodes.emplace_back(model().other_node()->children()[2].get());
+  tracker.AddNodesAsCopiesOfNodeData(new_nodes, 0);
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
+            "O2 O3 1 2 O1 3 ");
 }
 
 }  // namespace

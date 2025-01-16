@@ -87,7 +87,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
     RecordBookmarksAdded(profile);
     RecordBookmarkDropped(data, target_parent()->IsPermanentNode(), false);
     // Dropping a folder from different profile. Always accept.
-    CopyBookmarkNodeData(data, index);
+    AddNodesAsCopiesOfNodeData(data, index);
     return DragOperation::kCopy;
   }
 
@@ -124,7 +124,7 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
 
   // Drag from same profile. Copy or move nodes.
   if (copy) {
-    CopyBookmarkNodeData(data, index);
+    AddNodesAsCopiesOfNodeData(data, index);
     return DragOperation::kCopy;
   }
 
@@ -214,7 +214,7 @@ void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
                     &bookmark_data.elements[0].title);
   }
 
-  CopyBookmarkNodeData(bookmark_data, index);
+  AddNodesAsCopiesOfNodeData(bookmark_data, index);
 }
 
 void BookmarkUIOperationsHelper::MakeTitleUnique(const GURL& url,
@@ -331,7 +331,7 @@ bookmarks::BookmarkModel* BookmarkUIOperationsHelperNonMergedSurfaces::model() {
   return model_;
 }
 
-void BookmarkUIOperationsHelperNonMergedSurfaces::CopyBookmarkNodeData(
+void BookmarkUIOperationsHelperNonMergedSurfaces::AddNodesAsCopiesOfNodeData(
     const bookmarks::BookmarkNodeData& data,
     size_t index_to_add_at) {
   CHECK(parent_node());
@@ -477,12 +477,12 @@ bookmarks::BookmarkModel* BookmarkUIOperationsHelperMergedSurfaces::model() {
   return merged_surface_service_->bookmark_model();
 }
 
-void BookmarkUIOperationsHelperMergedSurfaces::CopyBookmarkNodeData(
+void BookmarkUIOperationsHelperMergedSurfaces::AddNodesAsCopiesOfNodeData(
     const bookmarks::BookmarkNodeData& data,
     size_t index_to_add_at) {
   bookmarks::ScopedGroupBookmarkActions group_drops(model());
-  merged_surface_service_->CopyBookmarkNodeData(data.elements, *parent_folder(),
-                                                index_to_add_at);
+  merged_surface_service_->AddNodesAsCopiesOfNodeData(
+      data.elements, *parent_folder(), index_to_add_at);
 }
 
 void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
