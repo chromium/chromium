@@ -16388,8 +16388,7 @@
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocWithAdvancedChecks",
-                        "PartitionAllocZappingByFreeFlags"
+                        "PartitionAllocWithAdvancedChecks"
                     ]
                 }
             ]
