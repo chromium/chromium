@@ -152,11 +152,14 @@ IsolateHolder::~IsolateHolder() {
 void IsolateHolder::Initialize(ScriptMode mode,
                                v8::ArrayBuffer::Allocator* allocator,
                                const intptr_t* reference_table,
-                               const std::string js_command_line_flags,
+                               std::string js_command_line_flags,
+                               bool disallow_v8_feature_flag_overrides,
                                v8::FatalErrorCallback fatal_error_callback,
                                v8::OOMErrorCallback oom_error_callback) {
   CHECK(allocator);
-  V8Initializer::Initialize(mode, js_command_line_flags, oom_error_callback);
+  V8Initializer::Initialize(mode, js_command_line_flags,
+                            disallow_v8_feature_flag_overrides,
+                            oom_error_callback);
   g_array_buffer_allocator = allocator;
   g_reference_table = reference_table;
   g_fatal_error_callback = fatal_error_callback;

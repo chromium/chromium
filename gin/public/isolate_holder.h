@@ -115,7 +115,8 @@ class GIN_EXPORT IsolateHolder {
   static void Initialize(ScriptMode mode,
                          v8::ArrayBuffer::Allocator* allocator,
                          const intptr_t* reference_table = nullptr,
-                         const std::string js_command_line_flags = {},
+                         std::string js_command_line_flags = {},
+                         bool disallow_v8_feature_flag_overrides = false,
                          v8::FatalErrorCallback fatal_error_callback = nullptr,
                          v8::OOMErrorCallback oom_error_callback = nullptr);
 
