@@ -260,8 +260,7 @@ TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURL) {
 
   NavigationItemImpl decoded(storage);
 
-  EXPECT_NE(original.GetURL(), decoded.GetURL());
-  EXPECT_EQ(original.GetVirtualURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetURL(), decoded.GetURL());
   EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
 }
 
@@ -338,7 +337,7 @@ TEST_F(NavigationItemTest, DecodeFileScheme) {
   ASSERT_NE(storage.url(), storage.virtual_url());
 
   NavigationItemImpl navigation_item(storage);
-  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.url()), navigation_item.GetURL());
   EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
 }
 
@@ -350,7 +349,7 @@ TEST_F(NavigationItemTest, DecodeBlobScheme) {
   ASSERT_NE(storage.url(), storage.virtual_url());
 
   NavigationItemImpl navigation_item(storage);
-  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.url()), navigation_item.GetURL());
   EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
 }
 
