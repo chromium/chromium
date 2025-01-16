@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_HTTP_HTTP_STREAM_POOL_QUIC_TASK_H_
-#define NET_HTTP_HTTP_STREAM_POOL_QUIC_TASK_H_
+#ifndef NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_H_
+#define NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_H_
 
 #include <memory>
 #include <optional>
@@ -14,6 +14,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -25,9 +26,8 @@ class QuicSessionAliasKey;
 
 // Handles QUIC session attempts for HttpStreamPool::AttemptManager. Owned by an
 // AttemptManager.
-// TODO(crbug.com/346835898): Make this inner class of AttemptManager so that we
-// don't have to expose AttemptManager's internal methods just for this class.
-class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
+class HttpStreamPool::AttemptManager::QuicTask
+    : public QuicSessionAttempt::Delegate {
  public:
   // `manager` must outlive `this`.
   QuicTask(AttemptManager* manager, quic::ParsedQuicVersion quic_version);
@@ -91,4 +91,4 @@ class HttpStreamPool::QuicTask : public QuicSessionAttempt::Delegate {
 
 }  // namespace net
 
-#endif  // NET_HTTP_HTTP_STREAM_POOL_QUIC_TASK_H_
+#endif  // NET_HTTP_HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_H_

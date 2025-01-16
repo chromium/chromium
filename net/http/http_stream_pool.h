@@ -113,7 +113,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
-  class NET_EXPORT_PRIVATE QuicTask;
 
   // The time to wait between connection attempts.
   static base::TimeDelta GetConnectionAttemptDelay();

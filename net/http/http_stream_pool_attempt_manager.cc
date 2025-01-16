@@ -28,10 +28,10 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool_attempt_manager_quic_task.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
-#include "net/http/http_stream_pool_quic_task.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
@@ -750,18 +750,6 @@ void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
     spdy_session_.reset();
     HandleFinalError(ERR_HTTP_1_1_REQUIRED);
   }
-}
-
-void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
-  if (!should_block_stream_attempt_ ||
-      stream_attempt_delay_timer_.IsRunning()) {
-    return;
-  }
-  CHECK(!stream_attempt_delay_.is_zero());
-  stream_attempt_delay_timer_.Start(
-      FROM_HERE, stream_attempt_delay_,
-      base::BindOnce(&AttemptManager::OnStreamAttemptDelayPassed,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
@@ -1947,6 +1935,18 @@ void HttpStreamPool::AttemptManager::UpdateStreamAttemptState() {
   if (should_block_stream_attempt_ && !CanUseQuic()) {
     CancelStreamAttemptDelayTimer();
   }
+}
+
+void HttpStreamPool::AttemptManager::MaybeRunStreamAttemptDelayTimer() {
+  if (!should_block_stream_attempt_ ||
+      stream_attempt_delay_timer_.IsRunning()) {
+    return;
+  }
+  CHECK(!stream_attempt_delay_.is_zero());
+  stream_attempt_delay_timer_.Start(
+      FROM_HERE, stream_attempt_delay_,
+      base::BindOnce(&AttemptManager::OnStreamAttemptDelayPassed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::AttemptManager::CancelStreamAttemptDelayTimer() {

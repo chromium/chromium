@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/http/http_stream_pool_quic_task.h"
+#include "net/http/http_stream_pool_attempt_manager_quic_task.h"
 
 #include <memory>
 #include <vector>
@@ -29,8 +29,9 @@
 
 namespace net {
 
-HttpStreamPool::QuicTask::QuicTask(AttemptManager* manager,
-                                   quic::ParsedQuicVersion quic_version)
+HttpStreamPool::AttemptManager::QuicTask::QuicTask(
+    AttemptManager* manager,
+    quic::ParsedQuicVersion quic_version)
     : manager_(manager),
       quic_version_(quic_version),
       net_log_(NetLogWithSource::Make(
@@ -51,11 +52,11 @@ HttpStreamPool::QuicTask::QuicTask(AttemptManager* manager,
       net_log_.source());
 }
 
-HttpStreamPool::QuicTask::~QuicTask() {
+HttpStreamPool::AttemptManager::QuicTask::~QuicTask() {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_QUIC_TASK_ALIVE);
 }
 
-void HttpStreamPool::QuicTask::MaybeAttempt() {
+void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
   CHECK(!quic_session_pool()->CanUseExistingSession(GetKey().session_key(),
                                                     GetKey().destination()));
 
@@ -116,19 +117,21 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   }
 }
 
-QuicSessionPool* HttpStreamPool::QuicTask::GetQuicSessionPool() {
+QuicSessionPool*
+HttpStreamPool::AttemptManager::QuicTask::GetQuicSessionPool() {
   return manager_->group()->http_network_session()->quic_session_pool();
 }
 
-const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
+const QuicSessionAliasKey& HttpStreamPool::AttemptManager::QuicTask::GetKey() {
   return manager_->group()->quic_session_alias_key();
 }
 
-const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
+const NetLogWithSource& HttpStreamPool::AttemptManager::QuicTask::GetNetLog() {
   return net_log_;
 }
 
-base::Value::Dict HttpStreamPool::QuicTask::GetInfoAsValue() const {
+base::Value::Dict HttpStreamPool::AttemptManager::QuicTask::GetInfoAsValue()
+    const {
   base::Value::Dict dict;
   dict.Set("has_session_attempt", session_attempt_ != nullptr);
   if (start_result_.has_value()) {
@@ -137,21 +140,22 @@ base::Value::Dict HttpStreamPool::QuicTask::GetInfoAsValue() const {
   return dict;
 }
 
-const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {
+const HttpStreamKey& HttpStreamPool::AttemptManager::QuicTask::stream_key()
+    const {
   return manager_->group()->stream_key();
 }
 
-QuicSessionPool* HttpStreamPool::QuicTask::quic_session_pool() {
+QuicSessionPool* HttpStreamPool::AttemptManager::QuicTask::quic_session_pool() {
   return manager_->group()->http_network_session()->quic_session_pool();
 }
 
 HostResolver::ServiceEndpointRequest*
-HttpStreamPool::QuicTask::service_endpoint_request() {
+HttpStreamPool::AttemptManager::QuicTask::service_endpoint_request() {
   return manager_->service_endpoint_request();
 }
 
 std::optional<QuicEndpoint>
-HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
+HttpStreamPool::AttemptManager::QuicTask::GetQuicEndpointToAttempt() {
   const bool svcb_optional = manager_->IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request()->GetEndpointResults()) {
     std::optional<QuicEndpoint> quic_endpoint =
@@ -165,7 +169,7 @@ HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
 }
 
 std::optional<QuicEndpoint>
-HttpStreamPool::QuicTask::GetQuicEndpointFromServiceEndpoint(
+HttpStreamPool::AttemptManager::QuicTask::GetQuicEndpointFromServiceEndpoint(
     const ServiceEndpoint& service_endpoint,
     bool svcb_optional) {
   quic::ParsedQuicVersion endpoint_quic_version =
@@ -190,13 +194,15 @@ HttpStreamPool::QuicTask::GetQuicEndpointFromServiceEndpoint(
                       service_endpoint.metadata);
 }
 
-std::optional<IPEndPoint> HttpStreamPool::QuicTask::GetPreferredIPEndPoint(
+std::optional<IPEndPoint>
+HttpStreamPool::AttemptManager::QuicTask::GetPreferredIPEndPoint(
     const std::vector<IPEndPoint>& ip_endpoints) {
   // TODO(crbug.com/346835898): Attempt more than one endpoints.
   return ip_endpoints.empty() ? std::nullopt : std::optional(ip_endpoints[0]);
 }
 
-void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
+void HttpStreamPool::AttemptManager::QuicTask::OnSessionAttemptComplete(
+    int rv) {
   if (rv == OK) {
     QuicChromiumClientSession* session =
         quic_session_pool()->FindExistingSession(GetKey().session_key(),
