@@ -249,10 +249,11 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   }
 
   self.loading = YES;
-  bool loading_indicator_is_displayed =
-      _indicatorState == IndicatorState::SHOWING_LOADING_INDICATOR ||
-      _indicatorState == IndicatorState::WAITING_FOR_RESULTS;
-  if ([self shouldDisplayLoadingIndicator] && !loading_indicator_is_displayed) {
+
+  // If we've already requested the loading indicator to be shown, then don't
+  // request again.
+  BOOL waiting_for_results = _indicatorState != IndicatorState::IDLE;
+  if ([self shouldDisplayLoadingIndicator] && !waiting_for_results) {
     // Wait for kDelayUntilShowLoadingMessageMs, before displaying the loading
     // indicator. If the query returns before, then the results are displayed.
     __weak __typeof(self) weakSelf = self;
@@ -262,9 +263,9 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
         }),
         kDelayUntilShowLoadingMessageMs);
   }
-  // If we're already showing the loading indicator, then don't reset the state
-  // machine.
-  if (!loading_indicator_is_displayed) {
+
+  // If we were already waiting for results, then don't reset the state machine.
+  if (!waiting_for_results) {
     _indicatorState = IndicatorState::FETCHING_RESULTS;
   }
 
