@@ -59,6 +59,7 @@ class CONTENT_EXPORT VideoCaptureController
   VideoCaptureController& operator=(const VideoCaptureController&) = delete;
 
   base::WeakPtr<VideoCaptureController> GetWeakPtrForIOThread();
+  void InvalidateWeakPtrsOnIOThread();
 
   // Start video capturing and try to use the resolution specified in |params|.
   // Buffers will be shared to the client as necessary. The client will continue
