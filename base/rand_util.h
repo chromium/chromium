@@ -9,13 +9,19 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
+#include <concepts>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_NACL)
@@ -27,8 +33,6 @@ class MemoryHolder;
 }
 
 namespace base {
-
-class TimeDelta;
 
 namespace internal {
 
@@ -60,6 +64,9 @@ BASE_EXPORT double RandDouble();
 // Returns a random float in range [0, 1). Thread-safe.
 BASE_EXPORT float RandFloat();
 
+// Returns a random bool. Thread-safe.
+BASE_EXPORT bool RandBool();
+
 // Returns a random duration in [`start`, `limit`). Thread-safe.
 //
 // REQUIRES: `start` < `limit`
@@ -69,6 +76,67 @@ BASE_EXPORT TimeDelta RandTimeDelta(TimeDelta start, TimeDelta limit);
 //
 // REQUIRES: `limit.is_positive()`
 BASE_EXPORT TimeDelta RandTimeDeltaUpTo(TimeDelta limit);
+
+// Adjusts `value` up or down by a random amount up to `percentage`%, e.g. to
+// add noise/jitter. Thread-safe.
+//
+// More precisely, implements something equivalent to the following pseudocode:
+// (1) Computes `max_adjustment = value * percentage / 100` as a double
+// (2) If `T` is integral, rounds `max_adjustment`, clamped to what is
+//     effectively a 65-bit signed value
+// (3) Computes `result` as a random value in the range of
+//     [`value - max_adjustment`, `value + max_adjustment`)
+// (4) Checks that the `result` is in the valid range of `T` and returns it
+//
+// REQUIRES: inputs are finite, `percentage` >= 0
+template <typename T>
+  requires std::floating_point<T>
+T RandomizeByPercentage(T value, double percentage) {
+  CHECK(!std::isinf(value));
+  CHECK(!std::isnan(value));
+  CHECK(!std::isinf(percentage));
+  CHECK_GE(percentage, 0);
+  return checked_cast<T>(value +
+                         value * (RandDouble() - 0.5) * 2 * percentage / 100);
+}
+template <typename T>
+  requires std::integral<T>
+T RandomizeByPercentage(T value, double percentage) {
+  CHECK(!std::isinf(percentage));
+  CHECK_GE(percentage, 0);
+  // If `T` is signed and `percentage` is sufficiently large, the maximum
+  // adjustment may not fit in a `T`. The clamped value described in pseudocode
+  // step (2) above will always fit in a `uint64_t`, so do math in `uint64_t`s.
+  const uint64_t abs_value = SafeUnsignedAbs(value);
+  const uint64_t max_abs_adjustment =
+      ClampRound<uint64_t>(abs_value * percentage / 100);
+  if (!max_abs_adjustment) {
+    return value;
+  }
+  uint64_t abs_adjustment = RandGenerator(max_abs_adjustment);
+
+  CheckedNumeric<T> checked_value(value);
+  // Random sign bit for the adjustment.
+  if (RandBool()) {
+    // Subtract adjustment.
+    //
+    // Be careful to "translate" the adjustment to the other side of `value` (by
+    // doing the subtraction from `max_abs_adjustment` here) instead of
+    // "mirroring" it (as would happen if this were omitted). This avoids bias
+    // and preserves the desired half-closed interval property of the result
+    // range.
+    abs_adjustment = max_abs_adjustment - abs_adjustment;
+    checked_value -= abs_adjustment;
+  } else {
+    checked_value += abs_adjustment;
+  }
+  return checked_value.ValueOrDie();
+}
+inline TimeDelta RandomizeByPercentage(TimeDelta value, double percentage) {
+  CHECK(!value.is_inf());
+  return Microseconds(
+      RandomizeByPercentage(value.InMicroseconds(), percentage));
+}
 
 // Given input |bits|, convert with maximum precision to a double in
 // the range [0, 1). Thread-safe.

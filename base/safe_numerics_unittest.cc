@@ -1393,6 +1393,21 @@ struct CastTest2 {
   static constexpr T Underflow() { return lowest(); }
 };
 
+TEST(CheckedNumeric, AddendOutOfRange) {
+  // When adding a value that doesn't fit in the CheckedNumeric, the result
+  // should not depend on the addend's type, but should work as if the math was
+  // done without checking/clamping and then checked_cast back to the right
+  // value.
+  CheckedNumeric<int64_t> n1(std::numeric_limits<int64_t>::lowest() + 2);
+  n1 += std::numeric_limits<uint64_t>::max() - 5;
+  EXPECT_EQ(std::numeric_limits<int64_t>::max() - 3, n1.ValueOrDefault(0));
+
+  // The same procedure shouldn't work if the result wouldn't have fit, though.
+  CheckedNumeric<int64_t> n2(-2);
+  n2 += (static_cast<uint64_t>(std::numeric_limits<int64_t>::max()) + 5);
+  EXPECT_FALSE(n2.IsValid());
+}
+
 TEST(SafeNumerics, CastTests) {
 // MSVC catches and warns that we're forcing saturation in these tests.
 // Since that's intentional, we need to shut this warning off.
