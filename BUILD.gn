@@ -435,6 +435,7 @@ group("gn_all") {
           "//chrome/android:chrome_public_test_apk",
           "//chrome/android:chrome_public_unit_test_apk",
           "//chrome/browser/android/examples/custom_tabs_client:custom_tabs_client_example_apk",
+          "//chrome/browser/android/examples/inline_autofill_service:inline_autofill_service_example_apk",
           "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
           "//content/shell/android:content_shell_test_apk",
         ]
