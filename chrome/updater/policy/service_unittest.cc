@@ -37,6 +37,10 @@ namespace updater {
 
 using PolicyManagers = std::vector<scoped_refptr<PolicyManagerInterface>>;
 
+void PolicyService::SetManagersForTesting(updater::PolicyManagers managers) {
+  policy_managers_.SetManagersForTesting(std::move(managers));
+}
+
 // The Policy Manager Interface is implemented by policy managers such as Group
 // Policy and Device Management.
 class FakePolicyManager : public PolicyManagerInterface {
@@ -228,7 +232,7 @@ class PolicyServiceTest : public ::testing::Test {
         /*external_constants=*/nullptr,
         /*persisted_data=*/nullptr,
         /*is_ceca_experiment_enabled=*/false);
-    policy_service->policy_managers_.SetManagersForTesting(std::move(managers));
+    policy_service->SetManagersForTesting(std::move(managers));
     return policy_service;
   }
 };
