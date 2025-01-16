@@ -41,8 +41,6 @@
   # TODO(thakis): Move mac det bots to use two distinct build dirs,
   # https://crbug.com/899438
   'mac': [
-    # https://crbug.com/390078733
-    'enterprise_companion_installer_unsigned.pkg',
   ],
 
   # https://crbug.com/330260
