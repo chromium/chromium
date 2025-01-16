@@ -103,6 +103,12 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   content::RunAllPendingInMessageLoop();
 }
 
+IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PasswordChangeState) {
+  SetupPasswordChange();
+  EXPECT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE, ViewState());
+  EXPECT_FALSE(GetView()->GetVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,
                        ShowPasswordsBubbleOrPage) {
   const GURL passwords_url = GURL("chrome://password-manager/");
