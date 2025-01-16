@@ -610,6 +610,7 @@ class CORE_EXPORT Animation : public EventTarget,
       native_paint_worklet_reasons_;
   mutable std::optional<NativePaintWorkletReasons>
       prior_native_paint_worklet_reasons_;
+  Member<Element> prior_native_paint_worklet_target_;
 
   // TODO(crbug.com/960944): Consider reintroducing kPause and cleanup use of
   // mutually exclusive pending_play_ and pending_pause_ flags.

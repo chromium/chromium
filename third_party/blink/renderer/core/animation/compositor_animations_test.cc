@@ -2991,6 +2991,132 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
+TEST_P(AnimationCompositorAnimationsTest,
+       CompositedPaintStatusWithTargetChange) {
+  std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
+      scoped_composite_clip_path_animation =
+          std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_background_color_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+  ScopedClipPathPaintImageGenerator clip_image_generator(
+      GetDocument().GetFrame());
+  ScopedBackgroundColorPaintImageGenerator background_image_generator(
+      GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes colorize {
+        0% { background-color: red; }
+        100% { background-color: green; }
+      }
+      @keyframes fade-in {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      @keyframes clip {
+        0% { clip-path: circle(50% at 50% 50%); }
+        100% { clip-path: circle(30% at 30% 30%); }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: colorize 1s linear;
+      }
+      #target2 {
+        background-color: blue;
+        width: 100px;
+        height: 100px;
+        animation: fade-in 1s linear;
+      }
+      #target3 {
+        background-color: pink;
+        width: 100px;
+        height: 100px;
+        animation: clip 1s linear;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="target2"></div>
+    <div id="target3"></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Animation* animation2 =
+      target2->GetElementAnimations()->Animations().begin()->key;
+  Element* target3 = GetDocument().getElementById(AtomicString("target3"));
+  Animation* animation3 =
+      target3->GetElementAnimations()->Animations().begin()->key;
+
+  EXPECT_EQ(
+      Animation::NativePaintWorkletProperties::kBackgroundColorPaintWorklet,
+      animation->GetNativePaintWorkletReasons());
+  EXPECT_EQ(Animation::NativePaintWorkletProperties::kNoPaintWorklet,
+            animation2->GetNativePaintWorkletReasons());
+  EXPECT_EQ(Animation::NativePaintWorkletProperties::kClipPathPaintWorklet,
+            animation3->GetNativePaintWorkletReasons());
+
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation2->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target2->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target2->GetElementAnimations()->CompositedClipPathStatus());
+  EXPECT_TRUE(animation2->HasActiveAnimationsOnCompositor());
+
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation3->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target3->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target3->GetElementAnimations()->CompositedClipPathStatus());
+  EXPECT_TRUE(animation3->HasActiveAnimationsOnCompositor());
+
+  animation->setEffect(animation2->effect());
+
+  // The first animation is now a fade-in on target2
+  // The second animation no longer has an effect.
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(To<KeyframeEffect>(animation->effect())
+                  ->HasActiveAnimationsOnCompositor(
+                      PropertyHandle(GetCSSPropertyOpacity())));
+  EXPECT_EQ(nullptr, animation2->effect());
+  EXPECT_FALSE(animation2->HasActiveAnimationsOnCompositor());
+
+  animation3->setEffect(animation->effect());
+
+  // The first animation no longer has an effect.
+  // The third animation is now a fade-in on target2
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(nullptr, animation->effect());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target3->GetElementAnimations()->CompositedClipPathStatus());
+  EXPECT_TRUE(animation3->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(To<KeyframeEffect>(animation3->effect())
+                  ->HasActiveAnimationsOnCompositor(
+                      PropertyHandle(GetCSSPropertyOpacity())));
+}
+
 TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
   ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
