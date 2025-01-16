@@ -20,14 +20,27 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     // We could turn this into a delegate if we start needing more things from AwContents.
     private final BooleanSupplier mShouldAcceptCookies;
 
+     /**
+     * Constructor for AwContentsIoThreadClientImpl.
+     *
+     * @param settings The {@link AwSettings} instance providing configuration options.
+     * @param backgroundThreadClient The background thread client for handling specific tasks.
+     * @param shouldAcceptCookies A functional interface to determine cookie acceptance policy.
+     * @throws IllegalArgumentException If any argument is null.
+     */
+
     public AwContentsIoThreadClientImpl(
             AwSettings settings,
             AwContentsBackgroundThreadClient backgroundThreadClient,
-            BooleanSupplier shouldAcceptCookies) {
-        mSettings = settings;
-        mBackgroundThreadClient = backgroundThreadClient;
-        mShouldAcceptCookies = shouldAcceptCookies;
+            BooleanSupplier shouldAcceptCookies){
+        if (settings == null || backgroundThreadClient == null || shouldAcceptCookies == null) {
+            throw new IllegalArgumentException("Arguments cannot be null");
+        }
+        this.mSettings = settings;
+        this.mBackgroundThreadClient = backgroundThreadClient;
+        this.mShouldAcceptCookies = shouldAcceptCookies;
     }
+
 
     @Override
     public int getCacheMode() {
