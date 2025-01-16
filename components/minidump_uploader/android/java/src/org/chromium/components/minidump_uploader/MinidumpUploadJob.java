@@ -4,13 +4,17 @@
 
 package org.chromium.components.minidump_uploader;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for uploading minidumps. */
+@NullMarked
 public interface MinidumpUploadJob {
     /**
-     * Try to upload all the minidumps in the crash directory.
-     * This method will be called on the UI thread of our JobService.
+     * Try to upload all the minidumps in the crash directory. This method will be called on the UI
+     * thread of our JobService.
+     *
      * @param uploadsFinishedCallback a callback that will be called when the uploading is finished
-     * (whether or not all of the uploads succeeded).
+     *     (whether or not all of the uploads succeeded).
      */
     void uploadAllMinidumps(UploadsFinishedCallback uploadsFinishedCallback);
 
