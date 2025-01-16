@@ -282,8 +282,8 @@ void AudioDestination::Start() {
   if (device_state_ != DeviceState::kStopped) {
     return;
   }
-  web_audio_device_->Start();
   SetDeviceState(DeviceState::kRunning);
+  web_audio_device_->Start();
 }
 
 void AudioDestination::Stop() {
@@ -324,8 +324,8 @@ void AudioDestination::Resume() {
   if (device_state_ != DeviceState::kPaused) {
     return;
   }
-  web_audio_device_->Resume();
   SetDeviceState(DeviceState::kRunning);
+  web_audio_device_->Resume();
 }
 
 void AudioDestination::SetWorkletTaskRunner(
@@ -355,8 +355,8 @@ void AudioDestination::StartWithWorkletTaskRunner(
   }
 
   SetWorkletTaskRunner(worklet_task_runner);
-  web_audio_device_->Start();
   SetDeviceState(DeviceState::kRunning);
+  web_audio_device_->Start();
 }
 
 bool AudioDestination::IsPlaying() {
