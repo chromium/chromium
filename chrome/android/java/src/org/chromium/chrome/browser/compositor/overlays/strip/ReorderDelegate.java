@@ -1013,7 +1013,14 @@ public class ReorderDelegate {
                                 /* oldStartMargin= */ 0.f);
             }
 
-            // TODO(crbug.com/388563582): Clamp to scrollable region.
+            // Clamp the group to the scrollable region. Re-grab the first/last tab index here,
+            // since these may have changed as a result of a reorder above.
+            int firstTabIndex =
+                    StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
+            int lastTabIndex =
+                    StripLayoutUtils.findIndexForTab(stripTabs, mLastTabInGroup.getTabId());
+            if (firstTabIndex == 0) offset = Math.max(0, offset);
+            if (lastTabIndex == stripTabs.length - 1) offset = Math.min(0, offset);
             for (StripLayoutView view : mInteractingViews) {
                 view.setOffsetX(offset);
             }
