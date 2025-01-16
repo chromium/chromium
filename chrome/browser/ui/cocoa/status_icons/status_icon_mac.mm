@@ -14,8 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/status_icons/status_tray.h"
-#include "skia/ext/skia_utils_mac.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #import "ui/menus/cocoa/menu_controller.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -166,7 +165,7 @@ NSStatusItem* StatusIconMac::item() {
 
 void StatusIconMac::SetImage(const gfx::ImageSkia& image) {
   if (!image.isNull()) {
-    NSImage* ns_image = skia::SkBitmapToNSImage(*image.bitmap());
+    NSImage* ns_image = gfx::Image(image).AsNSImage();
     if (ns_image) {
       item().button.image = ns_image;
     }
