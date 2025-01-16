@@ -1,10 +1,5 @@
 set noparent
-
-antoniori@google.com
-sanfin@chromium.org
-shawnq@google.com
-vigeni@google.com
-yucliu@chromium.org
+file://chromecast/CHROMECAST_OWNERS
 
 # Android
 per-file *android*=file://chromecast/android/OWNERS
