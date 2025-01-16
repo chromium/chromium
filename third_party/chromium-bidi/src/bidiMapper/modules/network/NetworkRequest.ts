@@ -29,6 +29,7 @@ import {
   type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -258,7 +259,19 @@ export class NetworkRequest {
   get #requestHeaders(): Network.Header[] {
     let headers: Network.Header[] = [];
     if (this.#requestOverrides?.headers) {
-      headers = this.#requestOverrides.headers;
+      const headerMap = new DefaultMap<string, string[]>(() => []);
+      for (const header of this.#requestOverrides.headers) {
+        headerMap.get(header.name).push(header.value.value);
+      }
+      for (const [name, value] of headerMap.entries()) {
+        headers.push({
+          name,
+          value: {
+            type: 'string',
+            value: value.join('\n').trimEnd(),
+          },
+        });
+      }
     } else {
       headers = [
         ...bidiNetworkHeadersFromCdpNetworkHeaders(
