@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
@@ -19,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_validation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,6 +38,7 @@ using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
 using optimization_guide::proto::OptimizationType;
+using MerchantTrustStatus = merchant_trust_validation::MerchantTrustStatus;
 
 namespace {
 const char kTestSummary[] = "This is a test summary.";
@@ -195,4 +198,31 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
   run_loop.Run();
 }
 
+// Tests that status is recorded as not valid when a proto is missing a field
+// and no data is returned.
+TEST_F(MerchantTrustServiceTest, InvalidProto) {
+  base::HistogramTester t;
+
+  commerce::MerchantTrustSignalsV2 proto = CreateValidProto();
+  proto.clear_shopper_voice_summary();
+  OptimizationMetadata metadata;
+  metadata.set_any_metadata(AnyWrapProto(proto));
+
+  SetResponse(GURL("https://foo.com"), OptimizationGuideDecision::kTrue,
+              metadata);
+
+  base::RunLoop run_loop;
+  service()->GetMerchantTrustInfo(
+      GURL("https://foo.com"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             std::optional<page_info::MerchantData> info) {
+            ASSERT_FALSE(info.has_value());
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+  t.ExpectUniqueSample("Security.PageInfo.MerchantTrustStatus",
+                       MerchantTrustStatus::kMissingReviewsSummary, 1);
+}
 }  // namespace page_info

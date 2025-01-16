@@ -9,17 +9,20 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_validation.h"
 #include "components/page_info/core/page_info_types.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace page_info {
 using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
+using MerchantTrustStatus = merchant_trust_validation::MerchantTrustStatus;
 
 namespace {
 
@@ -75,8 +78,6 @@ void MerchantTrustService::OnCanApplyOptimizationComplete(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) const {
   if (decision != optimization_guide::OptimizationGuideDecision::kUnknown) {
-    // TODO(tommasin): Add and log validation for
-    // the proto.
     std::optional<commerce::MerchantTrustSignalsV2> merchant_trust_metadata =
         metadata.ParsedMetadata<commerce::MerchantTrustSignalsV2>();
     if (merchant_trust_metadata.has_value()) {
@@ -103,7 +104,11 @@ bool MerchantTrustService::IsOptimizationGuideAllowed() const {
 std::optional<page_info::MerchantData>
 MerchantTrustService::GetMerchantDataFromProto(
     const std::optional<commerce::MerchantTrustSignalsV2>& metadata) const {
-  if (!metadata.has_value()) {
+
+  auto status = merchant_trust_validation::ValidateProto(metadata);
+  base::UmaHistogramEnumeration("Security.PageInfo.MerchantTrustStatus",
+                                status);
+  if (status != MerchantTrustStatus::kValid) {
     return std::nullopt;
   }
 
@@ -122,10 +127,8 @@ MerchantTrustService::GetMerchantDataFromProto(
     }
 
     if (merchant_proto.has_merchant_details_page_url()) {
-      GURL page_url = GURL(merchant_proto.merchant_details_page_url());
-      if (page_url.is_valid()) {
-        merchant_data->page_url = page_url;
-      }
+      merchant_data->page_url =
+          GURL(merchant_proto.merchant_details_page_url());
     }
 
     if (merchant_proto.has_shopper_voice_summary()) {
