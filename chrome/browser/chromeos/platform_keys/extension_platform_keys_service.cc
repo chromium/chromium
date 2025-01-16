@@ -493,7 +493,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     }
 
     extension_key_permissions_service_->CanUseKey(
-        public_key_spki_der_,
+        public_key_spki_der_, /*is_sign_operation=*/true,
         base::BindOnce(&SignTask::OnCanUseKeyForSigningKnown,
                        weak_factory_.GetWeakPtr()));
   }
@@ -601,8 +601,8 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
         callback_(std::move(callback)),
         service_(service) {}
 
-  SetKeyTagTask(const SignTask&) = delete;
-  auto operator=(const SignTask&) = delete;
+  SetKeyTagTask(const SetKeyTagTask&) = delete;
+  auto operator=(const SetKeyTagTask&) = delete;
 
   ~SetKeyTagTask() override = default;
 
@@ -653,8 +653,9 @@ class ExtensionPlatformKeysService::SetKeyTagTask : public Task {
 
   void CheckPermissions() {
     extension_key_permissions_service_->CanUseKey(
-        public_key_spki_der_, base::BindOnce(&SetKeyTagTask::OnCanUseKeyKnown,
-                                             weak_factory_.GetWeakPtr()));
+        public_key_spki_der_, /*is_sign_operation=*/false,
+        base::BindOnce(&SetKeyTagTask::OnCanUseKeyKnown,
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnCanUseKeyKnown(bool allowed) {
@@ -865,7 +866,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   // element and removes it from the deque. Each processed certificate is added
   // to |matches_| if it is selectable according to
   // ExtensionKeyPermissionsService. When all certificates have been processed,
-  // advances the SignTask state machine to |next_step|.
+  // advances the SelectTask state machine to |next_step|.
   void CheckKeyPermissions(Step next_step) {
     if (matches_pending_permissions_check_.empty()) {
       next_step_ = next_step;
@@ -880,7 +881,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         platform_keys::GetSubjectPublicKeyInfoBlob(certificate);
 
     extension_key_permissions_service_->CanUseKey(
-        public_key_spki_der,
+        public_key_spki_der, /*is_sign_operation=*/true,
         base::BindOnce(&SelectTask::OnKeySigningPermissionKnown,
                        weak_factory_.GetWeakPtr(), public_key_spki_der,
                        certificate));
@@ -961,7 +962,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       DoStep();
       return;
     }
-    extension_key_permissions_service_->SetUserGrantedPermission(
+    extension_key_permissions_service_->SetUserGrantedSigningPermission(
         platform_keys::GetSubjectPublicKeyInfoBlob(selected_cert_),
         base::BindOnce(&SelectTask::OnPermissionsUpdated,
                        weak_factory_.GetWeakPtr()));
