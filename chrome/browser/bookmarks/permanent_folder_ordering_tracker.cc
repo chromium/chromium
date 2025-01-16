@@ -62,6 +62,12 @@ PermanentFolderOrderingTracker::GetUnderlyingPermanentNodes() const {
   return nodes;
 }
 
+const BookmarkNode*
+PermanentFolderOrderingTracker::GetDefaultParentForNewNodes() const {
+  CHECK(model_->loaded());
+  return account_node_ ? account_node_ : local_or_syncable_node_;
+}
+
 size_t PermanentFolderOrderingTracker::GetIndexOf(
     const bookmarks::BookmarkNode* node) const {
   CHECK(node);
