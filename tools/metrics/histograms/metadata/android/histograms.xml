@@ -5609,7 +5609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.Static" enum="WebViewApiCallStatic"
-    expires_after="2024-08-22">
+    expires_after="2025-10-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5621,11 +5621,14 @@ chromium-metrics-reviews@google.com.
     each time an API is called.
 
     Recorded in M118+.
+
+    This metric was expired between Aug 2024 and Jan 2025 and may be missing
+    data.
   </summary>
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.Static.First"
-    enum="WebViewApiCallStatic" expires_after="2024-08-22">
+    enum="WebViewApiCallStatic" expires_after="2025-10-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5640,11 +5643,14 @@ chromium-metrics-reviews@google.com.
     &quot;Android.WebView.AndroidX.ApiCall&quot; for details).
 
     Recorded in M125+.
+
+    This metric was expired between Aug 2024 and Jan 2025 and may be missing
+    data.
   </summary>
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.System" enum="WebViewApiCallSystem"
-    expires_after="2024-08-22">
+    expires_after="2025-10-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5653,6 +5659,9 @@ chromium-metrics-reviews@google.com.
     (framework) APIs. This is logged each time an API is called.
 
     Recorded in M118+.
+
+    This metric was expired between Aug 2024 and Jan 2025 and may be missing
+    data.
   </summary>
 </histogram>
 
