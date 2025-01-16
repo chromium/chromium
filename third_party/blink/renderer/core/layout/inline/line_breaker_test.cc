@@ -1200,7 +1200,7 @@ C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 // crbug.com/342027571 A crash with an overflowing continuation ruby column.
 TEST_F(LineBreakerTest, OverflowingContinuationRuby2) {
   InlineNode node = CreateInlineNode(R"HTML(
-<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word;">
+<div id="container" style="writing-mode:vertical-rl; word-wrap:break-word; font-size: 12px;">
 <ruby>)S
 <rb dir="rtl" style="margin-bottom:-6em;"><svg></svg></rb>
 <rt>x AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
