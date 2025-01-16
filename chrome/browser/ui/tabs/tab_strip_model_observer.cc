@@ -63,22 +63,22 @@ TabStripModelChange::~TabStripModelChange() = default;
 
 const TabStripModelChange::Insert* TabStripModelChange::GetInsert() const {
   CHECK_EQ(type_, Type::kInserted);
-  return &std::get<Insert>(delta_);
+  return &absl::get<Insert>(delta_);
 }
 
 const TabStripModelChange::Remove* TabStripModelChange::GetRemove() const {
   CHECK_EQ(type_, Type::kRemoved);
-  return &std::get<Remove>(delta_);
+  return &absl::get<Remove>(delta_);
 }
 
 const TabStripModelChange::Move* TabStripModelChange::GetMove() const {
   CHECK_EQ(type_, Type::kMoved);
-  return &std::get<Move>(delta_);
+  return &absl::get<Move>(delta_);
 }
 
 const TabStripModelChange::Replace* TabStripModelChange::GetReplace() const {
   CHECK_EQ(type_, Type::kReplaced);
-  return &std::get<Replace>(delta_);
+  return &absl::get<Replace>(delta_);
 }
 
 TabStripModelChange::TabStripModelChange(Type type, Delta delta)
@@ -125,7 +125,7 @@ void TabStripModelChange::Replace::WriteIntoTrace(
 void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", type_);
-  std::visit([&dict](auto&& delta) { dict.Add("delta", delta); }, delta_);
+  absl::visit([&dict](auto&& delta) { dict.Add("delta", delta); }, delta_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
