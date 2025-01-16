@@ -17,6 +17,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "crypto/random.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -136,6 +137,9 @@ void ArcCameraBridge::StartCameraService(StartCameraServiceCallback callback) {
   pending_start_camera_service_results_[pending_result_ptr] =
       std::move(pending_result);
 
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());
