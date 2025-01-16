@@ -583,11 +583,6 @@ class ASH_EXPORT AccessibilityController
   // Enables ChromeVox's volume slide gesture.
   void EnableChromeVoxVolumeSlideGesture();
 
-  // Shows a notification card in the message center informing the user that
-  // ChromeVox has been enabled, or remove the notification if ChromeVox has
-  // been disabled.
-  void ShowNotificationForChromeVox(bool show_notification);
-
   // Updates the enabled state, tooltip, and progress ring of the dictation
   // button in the status tray when speech recognition file download state
   // changes. `download_progress` indicates SODA download progress and is

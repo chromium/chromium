@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/lobster/lobster_event_sink.h"
 #include "chrome/browser/ash/lobster/lobster_insertion.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace manta {
@@ -48,11 +49,6 @@ class LobsterService : public KeyedService, public LobsterEventSink {
   void QueueInsertion(const std::string& image_bytes,
                       StatusCallback insert_status_callback);
 
-  bool SubmitFeedback(const std::string& query,
-                      const std::string& model_version,
-                      const std::string& description,
-                      const std::string& image_bytes);
-
   void LoadUI(std::optional<std::string> query,
               ash::LobsterMode mode,
               const gfx::Rect& caret_bounds);
@@ -61,12 +57,15 @@ class LobsterService : public KeyedService, public LobsterEventSink {
 
   void CloseUI();
 
+  const AccountId& GetAccountId() const { return account_id_; }
+
   // Relevant input events
   void OnFocus(int context_id) override;
 
  private:
   // Not owned by this class
   raw_ptr<Profile> profile_;
+  AccountId account_id_;
   raw_ptr<ash::LobsterSession> active_session_;
 
   LobsterCandidateIdGenerator candidate_id_generator_;

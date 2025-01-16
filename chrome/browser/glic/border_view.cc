@@ -8,6 +8,7 @@
 
 #include <math.h>
 
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -19,7 +20,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
-
+namespace {
 // Note: |           |           |
 //       |<-- 5px -->|<-- 5px -->|
 //       |  outside  |  visible  |
@@ -35,26 +36,101 @@ float GetProgressInRadian(base::TimeDelta since_first_frame) {
   return (since_first_frame / kAnimationDuration) * (M_PI / 2);
 }
 
-// static
-BorderView* BorderView::FindBorderForWebContents(
-    const content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser || !browser->window()) {
-    // We might not have a browser or browser window in unittests.
-    return nullptr;
+}  // namespace
+
+class BorderView::BorderViewUpdater {
+ public:
+  explicit BorderViewUpdater(Browser* browser, BorderView* border_view)
+      : border_view_(border_view), browser_(browser) {
+    auto* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
+
+    // Subscribe to changes in the focus tab.
+    focus_change_subscription_ = glic_service->AddFocusedTabChangedCallback(
+        base::BindRepeating(&BorderView::BorderViewUpdater::OnFocusedTabChanged,
+                            base::Unretained(this)));
+
+    // Subscribe to changes in the context access indicator status.
+    indicator_change_subscription_ =
+        glic_service->AddContextAccessIndicatorStatusChangedCallback(
+            base::BindRepeating(
+                &BorderView::BorderViewUpdater::OnIndicatorStatusChanged,
+                base::Unretained(this)));
   }
-  return browser->GetBrowserView().glic_border();
-}
+  BorderViewUpdater(const BorderViewUpdater&) = delete;
+  BorderViewUpdater& operator=(const BorderViewUpdater&) = delete;
+  ~BorderViewUpdater() = default;
 
-// static.
-void BorderView::CancelAnimation(BrowserWindowInterface* browser_interface) {
-  BorderView* glic_border =
-      static_cast<Browser*>(browser_interface)->GetBrowserView().glic_border();
-  CHECK(glic_border);
-  glic_border->CancelAnimation();
-}
+  // Called when the focused tab changes.
+  void OnFocusedTabChanged(const content::WebContents* contents) {
+    if (contents) {
+      focused_tab_ = const_cast<content::WebContents*>(contents)->GetWeakPtr();
+    } else {
+      focused_tab_.reset();
+    }
+    UpdateBorderView();
+  }
 
-BorderView::BorderView() = default;
+  // Called when the client changes the context access indicator status.
+  void OnIndicatorStatusChanged(bool enabled) {
+    if (context_access_indicator_enabled_ == enabled) {
+      return;
+    }
+    context_access_indicator_enabled_ = enabled;
+    UpdateBorderView();
+  }
+
+ private:
+  // Updates the BorderView UI effect given the current state of the focused tab
+  // and context access indicator flag.
+  void UpdateBorderView() {
+    border_view_->CancelAnimation();
+
+    if (!context_access_indicator_enabled_ || !focused_tab_) {
+      return;
+    }
+    auto* const model = browser_->GetTabStripModel();
+    CHECK(model);
+    const int index = model->GetIndexOfWebContents(focused_tab_.get());
+    if (index == TabStripModel::kNoTab) {
+      return;
+    }
+    auto* service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
+    CHECK(service);
+    if (!service->window_controller().HasWindow()) {
+      return;
+    }
+    border_view_->StartAnimation();
+  }
+
+  // Back pointer to the owner. Guaranteed to outlive `this`.
+  const raw_ptr<BorderView> border_view_;
+
+  // Owned by `BrowserView`. Outlives all the children of the `BrowserView`.
+  const raw_ptr<BrowserWindowInterface> browser_;
+
+  // Tracked states and their subscriptions.
+  base::WeakPtr<const content::WebContents> focused_tab_;
+  base::CallbackListSubscription focus_change_subscription_;
+  bool context_access_indicator_enabled_ = false;
+  base::CallbackListSubscription indicator_change_subscription_;
+};
+
+BorderView::BorderView(Browser* browser)
+    : updater_(std::make_unique<BorderViewUpdater>(browser, this)) {
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
+  // Post-initialization updates. Don't do the update in the updater's ctor
+  // because at that time BorderView isn't fully initialized, which can lead to
+  // undefined behavior.
+  //
+  // Fetch the latest context access indicator status from service. We can't
+  // assume the WebApp always updates the status on the service (thus the new
+  // subscribers not getting the latest value).
+  updater_->OnIndicatorStatusChanged(
+      glic_service->is_context_access_indicator_enabled());
+}
 
 BorderView::~BorderView() = default;
 

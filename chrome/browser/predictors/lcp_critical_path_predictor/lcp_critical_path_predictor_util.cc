@@ -33,6 +33,8 @@ const char kCreateProtoTableStatementTemplate[] =
     "key TEXT, "
     "proto BLOB, "
     "PRIMARY KEY(key))";
+const char kPrefetchSubresourceDBBroken[] =
+    "Blink.LCPP.PrefetchSubresource.DBBroken";
 
 // Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
 // The result is sorted with frequency (from high to low).
@@ -1388,14 +1390,13 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
 
       size_t subresource_urls_same_site = 0;
       size_t subresource_urls_cross_site = 0;
+      bool is_database_broken = false;
       for (const GURL& subresource_url : subresource_urls) {
         const auto destination_it =
             lcpp_stat->fetched_subresource_url_destination().find(
                 subresource_url.spec());
-        // Database is broken.
-        // TODO(crbug.com/365423066): ReportUMA and only delete LCPP
-        // database.
-        const bool is_database_broken =
+        // Check if the database is broken.
+        is_database_broken |=
             (destination_it ==
              lcpp_stat->fetched_subresource_url_destination().end()) ||
             destination_it->second < 0 ||
@@ -1404,9 +1405,8 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
                     network::mojom::RequestDestination::kMaxValue);
         if (is_database_broken) {
           LOG(ERROR) << "fetched_subresource_url_destination is broken.";
-          base::debug::DumpWithoutCrashing();
           DeleteAllData();
-          return;
+          break;
         }
         const network::mojom::RequestDestination destination =
             static_cast<network::mojom::RequestDestination>(
@@ -1428,6 +1428,11 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
           continue;
         }
         prediction.prefetch_requests.emplace_back(subresource_url, destination);
+      }
+      base::UmaHistogramBoolean(kPrefetchSubresourceDBBroken,
+                                is_database_broken);
+      if (is_database_broken) {
+        return;
       }
       base::UmaHistogramCounts10000(
           "Blink.LCPP.PrefetchSubresource.Count.SameSite",

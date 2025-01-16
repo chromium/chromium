@@ -816,8 +816,14 @@ INSTANTIATE_TEST_SUITE_P(,
                                          CoverageConfig{true, false},
                                          CoverageConfig{true, true}));
 
+// TODO(crbug.com/390224186) Re-enable the test after fixing the flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestCoverageEmits DISABLED_TestCoverageEmits
+#else
+#define MAYBE_TestCoverageEmits TestCoverageEmits
+#endif
 IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestCodeCoverageBrowsertest,
-                       TestCoverageEmits) {
+                       MAYBE_TestCoverageEmits) {
   // Navigate and load the New Tab Page, which we know works with code coverage.
   RunTestSequence(
       InstrumentTab(kWebContentsId),

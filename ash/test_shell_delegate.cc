@@ -5,7 +5,9 @@
 #include "ash/test_shell_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/accelerators/test_accelerator_prefs_delegate.h"
 #include "ash/accessibility/default_accessibility_delegate.h"
@@ -212,6 +214,19 @@ void TestShellDelegate::OpenFeedbackDialog(
     const std::string& description_template,
     const std::string& category_tag) {
   ++open_feedback_dialog_call_count_;
+}
+
+bool TestShellDelegate::SendSpecializedFeatureFeedback(
+    const AccountId& account_id,
+    int product_id,
+    std::string description,
+    std::optional<std::string> image,
+    std::optional<std::string> image_mime_type) {
+  return send_specialized_feature_feedback_callback_
+             ? send_specialized_feature_feedback_callback_.Run(
+                   account_id, product_id, std::move(description),
+                   std::move(image), std::move(image_mime_type))
+             : true;
 }
 
 const GURL& TestShellDelegate::GetLastCommittedURLForWindowIfAny(

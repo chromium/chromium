@@ -61,6 +61,7 @@ export class ScannerFeedbackAppElement extends PolymerElement {
       extraInfoCallback: Object,
       screenshotUrl: String,
       revertToPeviousScreen: Object,
+      submitFeedback: Object,
     };
   }
 
@@ -75,6 +76,8 @@ export class ScannerFeedbackAppElement extends PolymerElement {
   private screenshotUrl = '';
   private readonly revertToPreviousScreen = () =>
       PAGE_HANDLER_REMOTE.closeDialog();
+  private readonly submitFeedback = (userDescription: string) =>
+      PAGE_HANDLER_REMOTE.sendFeedback(userDescription);
 
   constructor() {
     super();

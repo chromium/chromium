@@ -4,20 +4,28 @@
 
 #include "ash/lobster/lobster_session_impl.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
+#include "ash/lobster/lobster_candidate_store.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test_shell_delegate.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/account_id/account_id.h"
+#include "components/feedback/feedback_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_ash.h"
@@ -25,6 +33,10 @@
 
 namespace ash {
 namespace {
+
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Optional;
 
 LobsterCandidateStore GetDummyLobsterCandidateStore() {
   LobsterCandidateStore store;
@@ -42,7 +54,9 @@ LobsterCandidateStore GetDummyLobsterCandidateStore() {
 
 class MockLobsterClient : public LobsterClient {
  public:
-  MockLobsterClient() {}
+  MockLobsterClient() {
+    ON_CALL(*this, GetAccountId).WillByDefault(&EmptyAccountId);
+  }
 
   MockLobsterClient(const MockLobsterClient&) = delete;
   MockLobsterClient& operator=(const MockLobsterClient&) = delete;
@@ -63,13 +77,6 @@ class MockLobsterClient : public LobsterClient {
                const std::string& query,
                InflateCandidateCallback),
               (override));
-  MOCK_METHOD(bool,
-              SubmitFeedback,
-              (const std::string& query,
-               const std::string& model_input,
-               const std::string& description,
-               const std::string& image_bytes),
-              (override));
   MOCK_METHOD(void,
               QueueInsertion,
               (const std::string& image_bytes,
@@ -83,6 +90,7 @@ class MockLobsterClient : public LobsterClient {
               (override));
   MOCK_METHOD(void, ShowUI, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
+  MOCK_METHOD(const AccountId&, GetAccountId, (), (override));
 };
 
 class LobsterSessionImplTest : public AshTestBase {
@@ -93,7 +101,10 @@ class LobsterSessionImplTest : public AshTestBase {
   ~LobsterSessionImplTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    auto shell_delegate = std::make_unique<TestShellDelegate>();
+    shell_delegate->SetSendSpecializedFeatureFeedbackCallback(
+        mock_send_specialized_feature_feedback_.Get());
+    AshTestBase::SetUp(std::move(shell_delegate));
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
@@ -103,10 +114,18 @@ class LobsterSessionImplTest : public AshTestBase {
 
   ui::InputMethod& ime() { return ime_; }
 
+  base::MockCallback<TestShellDelegate::SendSpecializedFeatureFeedbackCallback>&
+  mock_send_specialized_feature_feedback() {
+    return mock_send_specialized_feature_feedback_;
+  }
+
  private:
   InputMethodAsh ime_{nullptr};
   base::ScopedTempDir scoped_temp_dir_;
   base::HistogramTester histogram_tester_;
+
+  base::MockCallback<TestShellDelegate::SendSpecializedFeatureFeedbackCallback>
+      mock_send_specialized_feature_feedback_;
 };
 
 TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
@@ -244,24 +263,55 @@ TEST_F(LobsterSessionImplTest, CanPreviewFeedbackForACandidateIfItIsInCache) {
   EXPECT_EQ(future.Get()->fields, expected_feedback_preview_fields);
 }
 
-TEST_F(LobsterSessionImplTest,
-       CanNotSubmitFeedbackForACandiateIfItIsNotCached) {
-  auto lobster_client = std::make_unique<MockLobsterClient>();
+TEST_F(LobsterSessionImplTest, SubmitFeedbackUsesClientAccountId) {
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  AccountId fake_account_id =
+      AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("fakegaia"));
+  EXPECT_CALL(*lobster_client, GetAccountId)
+      .WillOnce(testing::ReturnRef(fake_account_id));
 
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"a1b2c3"))
-      .WillByDefault(testing::Return(true));
-
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"d4e5f6"))
-      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(mock_send_specialized_feature_feedback(),
+              Run(fake_account_id, feedback::kLobsterFeedbackProductId,
+                  /*description=*/
+                  "model_input: a nice raspberry\n"
+                  "model_version: dummy_version\n"
+                  "user_description: Awesome raspberry",
+                  /*image_bytes=*/Optional(Eq("a1b2c3")),
+                  /*image_mime_type=*/Eq(std::nullopt)))
+      .WillOnce(testing::Return(true));
 
   LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kQuickInsert);
+  EXPECT_TRUE(session.SubmitFeedback(/*candidate_id=*/0,
+                                     /*description=*/"Awesome raspberry"));
+}
+
+TEST_F(LobsterSessionImplTest,
+       CanNotSubmitFeedbackForACandiateIfItIsNotCached) {
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+
+  ON_CALL(mock_send_specialized_feature_feedback(),
+          Run(_, feedback::kLobsterFeedbackProductId,
+              /*description=*/
+              "model_input: a nice raspberry\n"
+              "model_version: dummy_version\n"
+              "user_description: Awesome raspberry",
+              /*image_bytes=*/Optional(Eq("a1b2c3")),
+              /*image_mime_type=*/Eq(std::nullopt)))
+      .WillByDefault(testing::Return(true));
+
+  ON_CALL(mock_send_specialized_feature_feedback(),
+          Run(_, feedback::kLobsterFeedbackProductId,
+              /*description=*/
+              "model_input: a nice raspberry\n"
+              "model_version: dummy_version\n"
+              "user_description: Awesome raspberry",
+              /*image_bytes=*/Optional(Eq("d4e5f6")),
+              /*image_mime_type=*/Eq(std::nullopt)))
+      .WillByDefault(testing::Return(true));
+
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
                              LobsterEntryPoint::kQuickInsert);
   EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 2,
                                       /*description=*/"Awesome raspberry"));
@@ -270,39 +320,47 @@ TEST_F(LobsterSessionImplTest,
 TEST_F(LobsterSessionImplTest,
        CanNotSubmitFeedbackForACandiateIfSubmissionFails) {
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
-  auto lobster_client = std::make_unique<MockLobsterClient>();
 
-  ON_CALL(*lobster_client, SubmitFeedback(/*query=*/"a nice raspberry",
-                                          /*model_input=*/"dummy_version",
-                                          /*description=*/"Awesome raspberry",
-                                          /*image_bytes=*/"a1b2c3"))
+  ON_CALL(mock_send_specialized_feature_feedback(),
+          Run(_, feedback::kLobsterFeedbackProductId,
+              /*description=*/
+              "model_input: a nice raspberry\n"
+              "model_version: dummy_version\n"
+              "user_description: Awesome raspberry",
+              /*image_bytes=*/Optional(Eq("a1b2c3")),
+              /*image_mime_type=*/Eq(std::nullopt)))
       .WillByDefault(testing::Return(false));
 
-  LobsterSessionImpl session(std::move(lobster_client), store,
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
                              LobsterEntryPoint::kQuickInsert);
   EXPECT_FALSE(session.SubmitFeedback(/*candidate_id*/ 0,
                                       /*description=*/"Awesome raspberry"));
 }
 
 TEST_F(LobsterSessionImplTest, CanSubmitFeedbackForACandiateIfItIsInCache) {
-  auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
 
-  EXPECT_CALL(*lobster_client,
-              SubmitFeedback(/*query=*/"a nice raspberry",
-                             /*model_input=*/"dummy_version",
-                             /*description=*/"Awesome raspberry",
-                             /*image_bytes=*/"a1b2c3"))
+  EXPECT_CALL(mock_send_specialized_feature_feedback(),
+              Run(_, feedback::kLobsterFeedbackProductId,
+                  /*description=*/
+                  "model_input: a nice raspberry\n"
+                  "model_version: dummy_version\n"
+                  "user_description: Awesome raspberry",
+                  /*image_bytes=*/Optional(Eq("a1b2c3")),
+                  /*image_mime_type=*/Eq(std::nullopt)))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(*lobster_client,
-              SubmitFeedback(/*query=*/"a nice raspberry",
-                             /*model_input=*/"dummy_version",
-                             /*description=*/"Awesome raspberry",
-                             /*image_bytes=*/"d4e5f6"))
+  EXPECT_CALL(mock_send_specialized_feature_feedback(),
+              Run(_, feedback::kLobsterFeedbackProductId,
+                  /*description=*/
+                  "model_input: a nice raspberry\n"
+                  "model_version: dummy_version\n"
+                  "user_description: Awesome raspberry",
+                  /*image_bytes=*/Optional(Eq("d4e5f6")),
+                  /*image_mime_type=*/Eq(std::nullopt)))
       .WillOnce(testing::Return(true));
 
-  LobsterSessionImpl session(std::move(lobster_client), store,
+  LobsterSessionImpl session(std::make_unique<MockLobsterClient>(), store,
                              LobsterEntryPoint::kQuickInsert);
   EXPECT_TRUE(session.SubmitFeedback(/*candidate_id*/ 0,
                                      /*description=*/"Awesome raspberry"));

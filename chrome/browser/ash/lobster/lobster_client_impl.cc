@@ -5,11 +5,13 @@
 #include "chrome/browser/ash/lobster/lobster_client_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
+#include "components/account_id/account_id.h"
 
 LobsterClientImpl::LobsterClientImpl(LobsterService* service)
     : service_(service) {}
@@ -38,14 +40,6 @@ void LobsterClientImpl::InflateCandidate(
   service_->InflateCandidate(seed, query, std::move(callback));
 }
 
-bool LobsterClientImpl::SubmitFeedback(const std::string& query,
-                                       const std::string& model_version,
-                                       const std::string& description,
-                                       const std::string& image_bytes) {
-  return service_->SubmitFeedback(query, model_version, description,
-                                  image_bytes);
-}
-
 void LobsterClientImpl::LoadUI(std::optional<std::string> query,
                                ash::LobsterMode mode,
                                const gfx::Rect& caret_bounds) {
@@ -63,4 +57,8 @@ void LobsterClientImpl::CloseUI() {
 void LobsterClientImpl::QueueInsertion(const std::string& image_bytes,
                                        StatusCallback insert_status_callback) {
   service_->QueueInsertion(image_bytes, std::move(insert_status_callback));
+}
+
+const AccountId& LobsterClientImpl::GetAccountId() {
+  return service_->GetAccountId();
 }

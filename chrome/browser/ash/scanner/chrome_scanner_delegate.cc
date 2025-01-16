@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 
 ChromeScannerDelegate::ChromeScannerDelegate() = default;
 ChromeScannerDelegate::~ChromeScannerDelegate() = default;
@@ -23,7 +25,14 @@ ChromeScannerDelegate::GetProfileScopedDelegate() {
 }
 
 void ChromeScannerDelegate::OpenFeedbackDialog(
-    ash::ScannerFeedbackInfo feedback_info) {
-  auto* dialog = new ash::ScannerFeedbackDialog(std::move(feedback_info));
-  dialog->ShowSystemDialog();
+    const AccountId& account_id,
+    ash::ScannerFeedbackInfo feedback_info,
+    SendFeedbackCallback send_feedback_callback) {
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+
+  auto* dialog = new ash::ScannerFeedbackDialog(
+      std::move(feedback_info), std::move(send_feedback_callback));
+  dialog->ShowSystemDialogForBrowserContext(browser_context);
 }

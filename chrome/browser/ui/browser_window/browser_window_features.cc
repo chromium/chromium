@@ -52,7 +52,6 @@
 #include "components/saved_tab_groups/public/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_border_view_manager.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #endif
 namespace {
@@ -128,11 +127,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_GLIC)
     if (GlicEnabling::IsProfileEligible(browser->GetProfile())) {
-      glic_border_view_manager_ =
-          std::make_unique<glic::GlicBorderViewManager>(browser);
-      if (features::IsTabstripComboButtonEnabled()) {
-        glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>();
-      }
+      DCHECK(features::IsTabstripComboButtonEnabled());
+      glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>();
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }

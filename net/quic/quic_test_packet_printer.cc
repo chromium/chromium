@@ -213,6 +213,10 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnAckFrequencyFrame: " << frame;
     return true;
   }
+  bool OnImmediateAckFrame(const QuicImmediateAckFrame& frame) override {
+    *output_ << "OnImmediateAckFrame: " << frame;
+    return true;
+  }
   bool OnResetStreamAtFrame(const QuicResetStreamAtFrame& frame) override {
     *output_ << "OnResetStreamAtFrame: " << frame;
     return true;

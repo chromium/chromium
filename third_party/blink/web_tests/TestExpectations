@@ -9093,6 +9093,10 @@ crbug.com/388589515 http/tests/devtools/profiler/heap-snapshot-summary-show-rang
 # Gardener 2025-01-10
 crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.html [ Pass Timeout ]
 
+# TODO(crrev.com/c/6172391): Re-enable after landing CL.
+crbug.com/40659523 http/tests/devtools/profiler/heap-snapshot-orphan-nodes.js [ Failure Skip ]
+crbug.com/40659523 http/tests/devtools/profiler/heap-snapshot-statistics.js [ Failure Skip ]
+
 # Flaky performance API tests
 crbug.com/387096438 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-video.tentative.html [ Failure Pass ]
 crbug.com/385337582 external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]

@@ -36,11 +36,6 @@ namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
 
-#if BUILDFLAG(ENABLE_GLIC)
-namespace glic {
-class GlicBorderViewManager;
-}
-#endif
 namespace tabs {
 class GlicNudgeController;
 }
@@ -214,10 +209,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<DownloadToolbarUIController> download_toolbar_ui_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
-
-#if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicBorderViewManager> glic_border_view_manager_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

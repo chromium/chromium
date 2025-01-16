@@ -1908,11 +1908,12 @@ void AccessibilityController::SetSpokenFeedbackEnabled(
   const bool actual_enabled = active_user_prefs_->GetBoolean(
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
-  bool show_notification = false;
+  A11yNotificationType type = A11yNotificationType::kNone;
   if (enabled && actual_enabled && notify == A11Y_NOTIFICATION_SHOW) {
-    show_notification = true;
+    type = A11yNotificationType::kSpokenFeedbackEnabled;
   }
-  ShowNotificationForChromeVox(show_notification);
+  ShowAccessibilityNotification(
+      A11yNotificationWrapper(type, std::vector<std::u16string>()));
 }
 
 bool AccessibilityController::IsSpokenFeedbackSettingVisibleInTray() {
@@ -3750,16 +3751,6 @@ void AccessibilityController::
       ->GetStatusAreaWidget()
       ->dictation_button_tray()
       ->UpdateOnSpeechRecognitionDownloadChanged(download_progress);
-}
-
-void AccessibilityController::ShowNotificationForChromeVox(
-    bool show_notification) {
-  A11yNotificationType type = A11yNotificationType::kNone;
-  if (show_notification) {
-    type = A11yNotificationType::kSpokenFeedbackEnabled;
-  }
-  ShowAccessibilityNotification(
-      A11yNotificationWrapper(type, std::vector<std::u16string>()));
 }
 
 void AccessibilityController::ShowNotificationForDictation(

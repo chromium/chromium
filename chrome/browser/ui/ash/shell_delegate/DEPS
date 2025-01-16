@@ -24,6 +24,7 @@ include_rules = [
   "+chrome/browser/ash/scanner",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/feedback",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",

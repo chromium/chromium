@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -2368,6 +2369,7 @@ TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
   InitializeDB(config);
   ASSERT_TRUE(GetDataMap().empty());
 
+  base::HistogramTester histogram_tester;
   const std::string kUrl = "example.test";
   const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
   // Case #1:
@@ -2383,6 +2385,7 @@ TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
   lcpp_data_map_->GetPreconnectAndPrefetchRequest(
       /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
   EXPECT_TRUE(GetDataMap().empty());
+  EXPECT_TRUE(prediction.prefetch_requests.empty());
 
   // Case #2:
   // fetched_subresource_url_destination has minus value;
@@ -2397,6 +2400,7 @@ TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
   lcpp_data_map_->GetPreconnectAndPrefetchRequest(
       /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
   EXPECT_TRUE(GetDataMap().empty());
+  EXPECT_TRUE(prediction.prefetch_requests.empty());
 
   // Case #3:
   // fetched_subresource_url_destination has over-max value;
@@ -2413,6 +2417,29 @@ TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
   lcpp_data_map_->GetPreconnectAndPrefetchRequest(
       /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
   EXPECT_TRUE(GetDataMap().empty());
+  EXPECT_TRUE(prediction.prefetch_requests.empty());
+
+  // Case #4:
+  // Canonical DB should not be reset and query returns correctly.
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    InitializeSubresourceUrlDestinationsBucket(
+        lcpp_data,
+        {std::make_pair(kJpegA,
+                        static_cast<int32_t>(
+                            network::mojom::RequestDestination::kScript))});
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_FALSE(GetDataMap().empty());
+  EXPECT_EQ(1u, prediction.prefetch_requests.size());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Blink.LCPP.PrefetchSubresource.DBBroken"),
+      base::BucketsAre(base::Bucket(true, 3), base::Bucket(false, 1)));
 }
 
 }  // namespace predictors
