@@ -334,7 +334,7 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   is_hidden_ = hidden;
   if (is_hidden_) {
     recycled_color_buffer_queue_.clear();
-    recycled_bitmaps_.clear();
+    recycled_software_resources_.clear();
   }
 
   // Make sure to interrupt pixel local storage.
@@ -380,41 +380,42 @@ DrawingBuffer::GetSharedImageInterfaceProviderForBitmap() {
   return SharedGpuContext::SharedImageInterfaceProvider();
 }
 
-DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap() {
+DrawingBuffer::SoftwareResource
+DrawingBuffer::CreateOrRecycleSoftwareResource() {
   const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
   // Must call GetSharedImageInterfaceProvider first so all base::WeakPtr
-  // restored in |registered.sii_provider| is updated.
+  // restored in |resource.sii_provider| is updated.
   auto* sii_provider = GetSharedImageInterfaceProviderForBitmap();
 
-  auto it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
-                           [this](const RegisteredBitmap& registered) {
-                             return registered.shared_image->size() != size_ ||
-                                    !registered.sii_provider;
-                           });
-  recycled_bitmaps_.Shrink(
-      static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
+  auto it = std::remove_if(
+      recycled_software_resources_.begin(), recycled_software_resources_.end(),
+      [this](const SoftwareResource& resource) {
+        return resource.shared_image->size() != size_ || !resource.sii_provider;
+      });
+  recycled_software_resources_.Shrink(
+      static_cast<wtf_size_t>(it - recycled_software_resources_.begin()));
 
-  if (!recycled_bitmaps_.empty()) {
-    RegisteredBitmap recycled = std::move(recycled_bitmaps_.back());
-    recycled_bitmaps_.pop_back();
+  if (!recycled_software_resources_.empty()) {
+    SoftwareResource recycled = std::move(recycled_software_resources_.back());
+    recycled_software_resources_.pop_back();
     return recycled;
   }
 
-  // There are no bitmaps to recycle so allocate a new one.
+  // There are no resources to recycle so allocate a new one.
   auto* shared_image_interface = sii_provider->SharedImageInterface();
   if (!shared_image_interface) {
-    return RegisteredBitmap();
+    return SoftwareResource();
   }
   auto shared_image =
       shared_image_interface->CreateSharedImageForSoftwareCompositor(
           {format, size_, gfx::ColorSpace(),
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "DrawingBufferBitmap"});
 
-  RegisteredBitmap registered = {std::move(shared_image),
-                                 shared_image_interface->GenVerifiedSyncToken(),
-                                 sii_provider->GetWeakPtr()};
+  SoftwareResource resource = {std::move(shared_image),
+                               shared_image_interface->GenVerifiedSyncToken(),
+                               sii_provider->GetWeakPtr()};
 
-  return registered;
+  return resource;
 }
 
 bool DrawingBuffer::PrepareTransferableResource(
@@ -447,17 +448,17 @@ bool DrawingBuffer::PrepareTransferableResource(
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
-    RegisteredBitmap registered = CreateOrRecycleBitmap();
-    if (!registered.shared_image) {
+    SoftwareResource resource = CreateOrRecycleSoftwareResource();
+    if (!resource.shared_image) {
       return false;
     }
 
-    auto mapping = registered.shared_image->Map();
+    auto mapping = resource.shared_image->Map();
     ReadFramebufferIntoBitmapPixels(
         static_cast<uint8_t*>(mapping->GetMemoryForPlane(0).data()));
 
     *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        registered.shared_image, registered.sync_token, size_,
+        resource.shared_image, resource.sync_token, size_,
         viz::SinglePlaneFormat::kBGRA_8888,
         viz::TransferableResource::ResourceSource::kDrawingBuffer);
     out_resource->color_space = back_color_buffer_->shared_image->color_space();
@@ -468,10 +469,10 @@ bool DrawingBuffer::PrepareTransferableResource(
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also
-    // owns the SharedBitmap.
+    // owns the resource.
     *out_release_callback =
         base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
-                       weak_factory_.GetWeakPtr(), std::move(registered));
+                       weak_factory_.GetWeakPtr(), std::move(resource));
 
     contents_changed_ = false;
     if (preserve_drawing_buffer_ == kDiscard) {
@@ -699,17 +700,16 @@ void DrawingBuffer::MailboxReleasedGpu(scoped_refptr<ColorBuffer> color_buffer,
   recycled_color_buffer_queue_.push_front(color_buffer);
 }
 
-void DrawingBuffer::MailboxReleasedSoftware(RegisteredBitmap registered,
+void DrawingBuffer::MailboxReleasedSoftware(SoftwareResource resource,
                                             const gpu::SyncToken& sync_token,
                                             bool lost_resource) {
   if (destruction_in_progress_ || lost_resource || is_hidden_ ||
-      registered.shared_image->size() != size_) {
-    // Just delete the RegisteredBitmap, which will free the memory and
-    // unregister it with the compositor.
+      resource.shared_image->size() != size_) {
+    // Just delete the SoftwareResource.
     return;
   }
 
-  recycled_bitmaps_.push_back(std::move(registered));
+  recycled_software_resources_.push_back(std::move(resource));
 }
 
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
@@ -1526,7 +1526,7 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
     // Free all mailboxes, because they are now of the wrong size. Only the
     // first call in this loop has any effect.
     recycled_color_buffer_queue_.clear();
-    recycled_bitmaps_.clear();
+    recycled_software_resources_.clear();
 
     if (adjusted_size.IsEmpty())
       return false;
@@ -1547,7 +1547,7 @@ void DrawingBuffer::SetColorSpace(PredefinedColorSpace predefined_color_space) {
 
   // Free all mailboxes, because they are now of the wrong color space.
   recycled_color_buffer_queue_.clear();
-  recycled_bitmaps_.clear();
+  recycled_software_resources_.clear();
 
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
     // TODO(https://crbug.com/1208480): What is the correct behavior is we fail

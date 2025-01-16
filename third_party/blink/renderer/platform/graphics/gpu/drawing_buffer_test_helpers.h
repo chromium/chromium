@@ -486,7 +486,7 @@ class DrawingBufferForTests : public DrawingBuffer {
 
   raw_ptr<bool> live_;
 
-  int RecycledBitmapCount() { return recycled_bitmaps_.size(); }
+  int RecycledBitmapCount() { return recycled_software_resources_.size(); }
 };
 
 }  // blink
