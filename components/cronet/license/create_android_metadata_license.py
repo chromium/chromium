@@ -198,6 +198,15 @@ def update_license(repo_path: str = _ROOT_CRONET,
             lambda
                 _metadata: _metadata))
 
+    license_file_path = metadata.get_license_file_path()
+    if license_file_path is None:
+      # If there is no license file, create one with just the license name. This
+      # is necessary for e.g.
+      #   //third_party/boringssl/src/pki/testdata/nist-pkits/README.chromium
+      license_file_path = "LICENSE"
+      with open(os.path.join(readme_directory, license_file_path), "w") as license_file:
+        license_file.write("\n".join(metadata.get_licenses()))
+
     license_directory = readme_directory
     if (os.path.relpath(readme_directory, repo_path)
         .startswith("third_party/rust/")):
@@ -205,19 +214,19 @@ def update_license(repo_path: str = _ROOT_CRONET,
       # in a different directory than where the src/LICENSE is stored.
       license_directory = os.path.join(repo_path,
                                        _map_rust_license_path_to_directory(
-                                           metadata.get_license_file_path()))
+                                           license_file_path))
 
-    license_file_path = os.path.join(repo_path, license_utils.resolve_license_path(
+    resolved_license_file_path = os.path.join(repo_path, license_utils.resolve_license_path(
                                             readme_directory,
-                                            metadata.get_license_file_path()))
-    if not os.path.exists(license_file_path):
-      raise Exception(f"License file {license_file_path} does not exist for README.chromium: {readme_file}")
-    _maybe_create_license_file_symlink(license_directory, license_file_path, verify_only)
+                                            license_file_path))
+    if not os.path.exists(resolved_license_file_path):
+      raise Exception(f"License file {resolved_license_file_path} does not exist for README.chromium: {readme_file}")
+    _maybe_create_license_file_symlink(license_directory, resolved_license_file_path, verify_only)
     _create_module_license_file(repo_path, license_directory,
                                 metadata.get_licenses(), verify_only)
     _create_metadata_file(repo_path, license_directory,
                           metadata.to_android_metadata(), verify_only)
-    readme_to_license_content[readme_file] = cronet_utils.read_file(license_file_path)
+    readme_to_license_content[readme_file] = cronet_utils.read_file(resolved_license_file_path)
 
   readme_for_top_level = None
   if reachable_through_dependencies:
