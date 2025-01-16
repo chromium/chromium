@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
