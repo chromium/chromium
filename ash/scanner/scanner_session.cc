@@ -120,8 +120,8 @@ void OnActionPopulated(
   std::move(callback).Run(std::move(action));
 }
 
-void RecordDetectedAction(manta::proto::ScannerAction action) {
-  switch (action.action_case()) {
+void RecordDetectedAction(manta::proto::ScannerAction::ActionCase action_case) {
+  switch (action_case) {
     case manta::proto::ScannerAction::kNewEvent:
       RecordScannerFeatureUserState(
           ScannerFeatureUserState::kNewCalendarEventActionDetected);
@@ -158,7 +158,7 @@ void RecordAllDetectedActions(const manta::proto::ScannerOutput& output) {
     for (const manta::proto::ScannerAction& action : object.actions()) {
       if (action.action_case() != manta::proto::ScannerAction::ACTION_NOT_SET) {
         action_found = true;
-        RecordDetectedAction(action);
+        RecordDetectedAction(action.action_case());
       }
     }
   }
