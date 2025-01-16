@@ -4167,6 +4167,7 @@
     },
     {
       name: "SvgViewportOptimization",
+      status: "stable",
     },
     {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
