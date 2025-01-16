@@ -27,6 +27,7 @@ class GlicProfileConfiguration {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   bool IsEnabledByPolicy() const;
+  bool HasCompletedFre() const;
 
  private:
   void OnEnabledByPolicyChanged();
