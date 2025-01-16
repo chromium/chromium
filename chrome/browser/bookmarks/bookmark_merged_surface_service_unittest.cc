@@ -371,7 +371,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 ");
 }
 
-TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataElement) {
+TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
   LoadBookmarkModel();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
@@ -382,13 +382,34 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataElement) {
       model().bookmark_bar_node()->children()[3].get();
   const bookmarks::BookmarkNodeData::Element node_data(node_to_copy);
   const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().CopyBookmarkNodeDataElement(
-      node_data, BookmarkParentFolder::FromFolderNode(destination), 1);
+  service().CopyBookmarkNodeData(
+      {node_data}, BookmarkParentFolder::FromFolderNode(destination), 1);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 5 ] ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()),
             "6 7 8 f2:[ 9 f1:[ 4 5 ] ] ");
+}
+TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
+  LoadBookmarkModel();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 ] ");
+  AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
+
+  // Copy nodes "2" and "3" to "f2".
+  const BookmarkNode* n1 = model().bookmark_bar_node()->children()[1].get();
+  const BookmarkNode* n2 = model().bookmark_bar_node()->children()[2].get();
+  std::vector<bookmarks::BookmarkNodeData::Element> nodes_data{
+      bookmarks::BookmarkNodeData::Element(n1),
+      bookmarks::BookmarkNodeData::Element(n2)};
+
+  const BookmarkNode* destination = model().other_node()->children()[3].get();
+  service().CopyBookmarkNodeData(
+      nodes_data, BookmarkParentFolder::FromFolderNode(destination), 0);
+
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
+            "1 2 3 f1:[ 4 5 ] ");
+  EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 8 f2:[ 2 3 9 ] ");
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest,
