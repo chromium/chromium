@@ -109,6 +109,7 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
@@ -1207,6 +1208,13 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   if (!element) {
     DCHECK(style_request.IsPseudoStyleRequest());
     return nullptr;
+  }
+
+  if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
+    TRACE_EVENT_INSTANT1(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+        "StyleResolver::ResolveStyle", TRACE_EVENT_SCOPE_THREAD, "elementId",
+        IdentifiersFactory::IntIdForNode(element));
   }
 
   DCHECK(GetDocument().GetFrame());
