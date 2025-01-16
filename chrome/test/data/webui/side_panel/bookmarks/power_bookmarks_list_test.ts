@@ -121,7 +121,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     if (!powerBookmarkRowElement) {
       return undefined;
     }
-    return powerBookmarkRowElement.$.crUrlListItem;
+    return powerBookmarkRowElement.currentUrlListItem_;
   }
 
   function isHidden(element: HTMLElement): boolean {
@@ -228,6 +228,100 @@ suite('SidePanelPowerBookmarksListTest', () => {
   test('GetsAndShowsTopLevelBookmarks', () => {
     assertEquals(1, bookmarksApi.getCallCount('getFolders'));
     assertEquals(folders[1]!.children!.length + 1, getBookmarks().length);
+  });
+
+  test('RebuildsKeyboardNavigationOnCreated', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+      id: '999',
+      title: 'New bookmark of current url',
+      index: 0,
+      parentId: folders[1]!.id,
+      url: powerBookmarksList.getCurrentUrlForTesting(),
+    });
+
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-1',
+          'bookmark-5',
+          'bookmark-999',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
+  });
+
+  test('RebuildsKeyboardNavigationOnRemoved', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
+
+    await flushTasks();
+    await waitAfterNextRender(powerBookmarksList);
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(['bookmark-1', 'bookmark-5', 'bookmark-3']));
+  });
+
+  test('RebuildsKeyboardNavigationMoved', async () => {
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify(
+            ['bookmark-1', 'bookmark-5', 'bookmark-4', 'bookmark-3']));
+
+    const movedBookmark = folders[1]!.children![2]!.children![0]!;
+    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
+      index: 0,
+      parentId: folders[1]!.id,                   // Moving to other bookmarks.
+      oldParentId: folders[1]!.children![2]!.id,  // Moving from child folder.
+      oldIndex: 0,
+    });
+
+    await flushTasks();
+
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
+          'bookmark-1',
+          'bookmark-5',
+          'bookmark-6',
+          'bookmark-4',
+          'bookmark-3',
+        ]));
   });
 
   test('DefaultsToSortByNewest', () => {

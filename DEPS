@@ -328,7 +328,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
-  'freetype_revision': '02953326d4bd164da638cc62c74eefb9c1a1a938',
+  'freetype_revision': 'd4631a2eb358783e34df47747085c839d854ed0a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '6b80ee8c3aa4698442a294dcb9f6e3d49cfb42c5',
+  'devtools_frontend_revision': '961162410fa05622a83e1bc180c18d5bdda6fb07',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.

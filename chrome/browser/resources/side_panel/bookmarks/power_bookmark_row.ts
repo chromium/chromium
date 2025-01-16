@@ -20,6 +20,7 @@ import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_l
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import type {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
 import type {PowerBookmarksService} from './power_bookmarks_service.js';
@@ -27,12 +28,7 @@ import {getFolderLabel} from './power_bookmarks_utils.js';
 
 export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
 export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 17;
-
-export interface PowerBookmarkRowElement {
-  $: {
-    crUrlListItem: CrUrlListItemElement,
-  };
-}
+export const BOOKMARK_ROW_LOAD_EVENT = 'bookmark-row-connected-event';
 
 export class PowerBookmarkRowElement extends CrLitElement {
   static get is() {
@@ -71,6 +67,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
       bookmarksService: {type: Object},
+      keyArrowNavigationService: {type: Object},
       toggleExpand: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
@@ -98,10 +95,13 @@ export class PowerBookmarkRowElement extends CrLitElement {
   canDrag: boolean = true;
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+
+  // TODO(crbug.com/385159984) Update services to not be passed in as parameters
   bookmarksService: PowerBookmarksService;
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
+  keyArrowNavigationService: KeyArrowNavigationService;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -119,6 +119,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
             (product: BookmarkProductInfo) =>
                 this.handleBookmarkSubscriptionChange_(product, false)),
     );
+
+    this.fire(BOOKMARK_ROW_LOAD_EVENT);
   }
 
   override disconnectedCallback() {
@@ -168,14 +170,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   override shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has('updatedElementIds')) {
-        const updatedElementIds = changedProperties.get('updatedElementIds');
-        if (updatedElementIds?.includes(this.bookmark?.id)) {
-            return true;
-        }
-        changedProperties.delete('updatedElementIds');
+      const updatedElementIds = changedProperties.get('updatedElementIds');
+      if (updatedElementIds?.includes(this.bookmark?.id)) {
+        return true;
+      }
+      changedProperties.delete('updatedElementIds');
     }
     return super.shouldUpdate(changedProperties);
-}
+  }
 
   override async getUpdateComplete() {
     // Wait for all children to update before marking as complete.
@@ -187,11 +189,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   override focus() {
-    this.$.crUrlListItem.focus();
+    this.currentUrlListItem_.focus();
   }
 
   private onKeydown_(e: KeyboardEvent) {
-    if (this.shadowRoot!.activeElement !== this.$.crUrlListItem) {
+    if (this.shadowRoot!.activeElement !== this.currentUrlListItem_) {
       return;
     }
     if (e.shiftKey && e.key === 'Tab') {
@@ -219,12 +221,17 @@ export class PowerBookmarkRowElement extends CrLitElement {
       // a specific child (eg. the input).
       // This should only be done when focusing via keyboard, to avoid blocking
       // drag interactions.
-      this.$.crUrlListItem.focus();
+      this.currentUrlListItem_.focus();
     }
   }
 
+  get currentUrlListItem_(): CrLitElement&CrUrlListItemElement {
+    return this.shadowRoot!.querySelector<CrLitElement&CrUrlListItemElement>(
+        '#crUrlListItem')!;
+  }
+
   protected async handleListItemSizeChanged_() {
-    await this.$.crUrlListItem.updateComplete;
+    await this.currentUrlListItem_.updateComplete;
     this.dispatchEvent(new CustomEvent('list-item-size-changed', {
       bubbles: true,
       composed: true,
@@ -251,6 +258,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
     event.preventDefault();
     event.stopPropagation();
     this.toggleExpand = event.detail.value;
+
+    // Elements are removed from the service without event emission since the
+    // child elements need to be visible and present in the dom in order to be
+    // seen by the parent list element and therefore remove them.
+    if (!this.toggleExpand) {
+      this.keyArrowNavigationService.removeElementsWithin(this);
+    }
+
     this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
       bubbles: true,
       composed: true,
@@ -283,6 +298,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // In compact view, if the item is a folder, ignore row clicks to toggle
     // the folder.
     if (this.shouldExpand_() && !this.hasCheckbox) {
+      // If clicking on a row that's a folder in compact view, move focus to it.
+      this.keyArrowNavigationService.setCurrentFocusIndex(this);
       return;
     }
     event.preventDefault();
@@ -548,8 +565,9 @@ export class PowerBookmarkRowElement extends CrLitElement {
           'a11yDescriptionPriceTracking', this.getCurrentPrice_(bookmark));
       const previousPrice = this.getPreviousPrice_(bookmark);
       if (previousPrice) {
-        description += ' ' + loadTimeData.getStringF(
-            'a11yDescriptionPriceChange', previousPrice);
+        description += ' ' +
+            loadTimeData.getStringF(
+                'a11yDescriptionPriceChange', previousPrice);
       }
     }
     return description;
