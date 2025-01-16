@@ -158,7 +158,7 @@ export declare interface WebClientRequestTypes {
   };
   glicWebClientNotifyPanelOpened: {
     request: {
-      dockedToWindowId: string|undefined,
+      attachedToWindowId: string|undefined,
     },
     response: void,
   };

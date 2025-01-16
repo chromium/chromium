@@ -63,11 +63,11 @@ export declare interface GlicWebClient {
   notifyPanelWasClosed?(): Promise<void>;
 
   // The user has requested activation of the web client.
-  // The dockedToWindowId identifies the browser window to which the
-  // panel is docked to. It is undefined if it is floating free.
+  // The attachedToWindowId identifies the browser window to which the
+  // panel is attached to. It is undefined if it is detached.
   // Note: The returned promise is currently not used in the browser.
   // @deprecated: Not supported anymore and will eventually be removed.
-  notifyPanelOpened?(dockedToWindowId: string|undefined): Promise<void>;
+  notifyPanelOpened?(attachedToWindowId: string|undefined): Promise<void>;
 
   // The user has closed the web client window. The window may be activated
   // again later.
@@ -125,11 +125,11 @@ export declare interface GlicBrowserHost {
   // Requests the closing of the panel containing the web client.
   closePanel?(): Promise<void>;
 
-  // Requests that the web client's panel be attached/docked to a browser
+  // Requests that the web client's panel be attached to a browser
   // window.
   attachPanel?(): void;
 
-  // Requests that the web client's panel be detached/undocked from a browser
+  // Requests that the web client's panel be detached from a browser
   // window (floats free).
   detachPanel?(): void;
 
@@ -197,15 +197,19 @@ export declare interface GlicBrowserHost {
 export enum PanelStateKind {
   // Not shown. This is the initial state.
   HIDDEN = 0,
-  // A floating window.
+  /** @deprecated */
   FLOATING = 1,
-  // Docked to a Chrome window.
+  // A floating window detached from any Chrome window.
+  DETACHED = 1,
+  /** @deprecated */
   DOCKED = 2,
+  // Attached to a Chrome window.
+  ATTACHED = 2,
 }
 
 export declare interface PanelState {
   kind: PanelStateKind;
-  // Present when docked, indicates to which window the panel is docked.
+  // Present when attached, indicates to which window the panel is attached.
   windowId?: string;
 }
 

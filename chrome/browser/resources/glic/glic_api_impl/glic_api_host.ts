@@ -45,9 +45,9 @@ type HostMessageHandlerInterface = {
 class WebClientImpl implements WebClientInterface {
   constructor(private sender: PostMessageRequestSender) {}
 
-  notifyPanelOpened(dockedToWindowId: (number|null)): void {
+  notifyPanelOpened(attachedToWindowId: (number|null)): void {
     this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
-      dockedToWindowId: optionalWindowIdToClient(dockedToWindowId),
+      attachedToWindowId: optionalWindowIdToClient(attachedToWindowId),
     });
   }
 

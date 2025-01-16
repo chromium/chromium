@@ -93,11 +93,11 @@ interface WebClientHandler {
   // Closes the Glic panel.
   ClosePanel();
 
-  // Requests that the web client's panel be attached/docked to a browser
+  // Requests that the web client's panel be attached to a browser
   // window.
   AttachPanel();
 
-  // Requests that the web client's panel be detached/undocked from a browser
+  // Requests that the web client's panel be detached from a browser
   // window (floats free).
   DetachPanel();
 
@@ -160,14 +160,14 @@ struct PanelState {
   enum Kind {
     // The panel is hidden.
     kHidden = 0,
-    // The panel is floating free.
-    kFloating = 1,
-    // The panel is docked to a browser window.
-    kDocked = 2,
+    // The panel is floating free and detached from any browser window.
+    kDetached = 1,
+    // The panel is attached to a browser window.
+    kAttached = 2,
   };
 
   Kind kind;
-  // Present when docked, indicates to which window the panel is docked.
+  // Present when attached, indicates to which window the panel is attached.
   int32? window_id;
 };
 
@@ -182,10 +182,10 @@ interface WebClient {
   NotifyPanelWasClosed() => ();
 
   // The user has requested activation of the web client.
-  // `docked_to_window_id` identifies the browser window to which the
-  // panel is docked to. It is undefined if it is floating free.
+  // `attached_to_window_id` identifies the browser window to which the
+  // panel is attached to. It is undefined if it is detached.
   // DEPRECATED: will be removed soon.
-  NotifyPanelOpened(int32? docked_to_window_id);
+  NotifyPanelOpened(int32? attached_to_window_id);
 
   // The user has closed the web client window. The window may be activated
   // again later. Returns when the web client has stored any needed

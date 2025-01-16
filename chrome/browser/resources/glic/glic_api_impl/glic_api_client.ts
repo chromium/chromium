@@ -49,10 +49,11 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
 
-  glicWebClientNotifyPanelOpened(payload: {dockedToWindowId: string|undefined}):
-      void {
+  glicWebClientNotifyPanelOpened(payload: {
+    attachedToWindowId: string|undefined,
+  }): void {
     if (this.webClient.notifyPanelOpened) {
-      this.webClient.notifyPanelOpened(payload.dockedToWindowId);
+      this.webClient.notifyPanelOpened(payload.attachedToWindowId);
     }
   }
 

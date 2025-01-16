@@ -227,7 +227,7 @@ class GlicWindowController : public views::WidgetObserver {
   bool will_show_ = false;
   // While `will_show_` is true, this is the button widget on the browser window
   // where the glic window will be shown. This is null if the glic window should
-  // be shown floating rather than attached.
+  // be shown detached rather than attached to a browser window.
   base::WeakPtr<views::Widget> button_widget_for_browser_attachment_;
 
   // Used to monitor key and mouse events from native window.
