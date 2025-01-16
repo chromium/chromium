@@ -4793,14 +4793,15 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.InterstitialAction"
-    enum="PasswordProtectionWarningAction" expires_after="2024-09-01">
+    enum="PasswordProtectionWarningAction" expires_after="2025-09-01">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the password protection interstitial
     (a.k.a chrome://reset-password page). Logged when the interstitial is shown
     and when the user chooses to change their password. Warning: this histogram
-    was expired from 2021-01-30 to 2021-10-25; data may be missing.
+    was expired from 2021-01-30 to 2021-10-25 and 2024-09-01 to 2025-01-16; data
+    may be missing.
   </summary>
 </histogram>
 
