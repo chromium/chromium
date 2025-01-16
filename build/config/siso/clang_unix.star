@@ -263,6 +263,7 @@ def __rules(ctx):
                 "*.stamp",
             ],
             "remote": config.get(ctx, "remote-link"),
+            "restat_content": True,
             "canonicalize_dir": True,
             "platform_ref": "large",
             "timeout": "4m",
