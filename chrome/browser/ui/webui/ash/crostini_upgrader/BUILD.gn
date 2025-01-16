@@ -73,4 +73,5 @@ source_set("browser_tests") {
 
 mojom("mojo_bindings") {
   sources = [ "crostini_upgrader.mojom" ]
+  webui_module_path = "/"
 }
