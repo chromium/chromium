@@ -310,6 +310,7 @@ if (current_toolchain == default_toolchain) {
       ":chrome_public_apk_template_resources",
       ":google_api_keys_java",
       ":java_overlay_resources",
+      ":system_ai_service_proto_java",
       ":usage_stats_proto_java",
       "$google_play_services_package:google_play_services_auth_base_java",
       "$google_play_services_package:google_play_services_base_java",
@@ -932,6 +933,11 @@ if (current_toolchain == default_toolchain) {
     sources = [ "$proto_path/website_event.proto" ]
   }
 
+  proto_java_library("system_ai_service_proto_java") {
+    proto_path = "java/src/org/chromium/chrome/browser/ai/proto"
+    sources = [ "$proto_path/system_ai_provider_service.proto" ]
+  }
+
   java_cpp_template("resource_id_javagen") {
     sources = [ "java/ResourceId.template" ]
     inputs = [
@@ -986,10 +992,12 @@ if (current_toolchain == default_toolchain) {
       "//base:base_java_test_support",
       "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",
+      "//base:service_loader_java",
       "//base/test:test_support_java",
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
       "//cc/mojom:mojom_java",
+      "//chrome/android:system_ai_service_proto_java",
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/android/features/keyboard_accessory:internal_java",
