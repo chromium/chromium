@@ -94,12 +94,17 @@ origin_files = glob([
     "third_party/netty-tcnative/**",
     "third_party/protobuf/**",
     # Note: Only used for tests.
-    "third_party/quic_trace/**",
-    # Note: Only used for tests.
     "third_party/re2/**",
     # Note: Cronet currently uses Android's zlib
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
+  ]) + glob([
+    # Note: Only used for tests.
+    "third_party/quic_trace/**"
+  ]) - glob([
+    # This is not used and it doesn't have a README.chromium for us to generate
+    # a license.
+    "third_party/quic_trace/src/third_party/glew/**"
   ]) + glob(["third_party/rust/**"]) - glob([
     # Those crates are missing README.chromium and LICENSE files.
     # See crbug.com/369505588 and crbug.com/369075726
