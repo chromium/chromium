@@ -20,6 +20,7 @@
 #include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_value_map.h"
+#include "content/public/browser/tts_controller.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -120,6 +121,53 @@ class TestReadAnythingUntrustedPageHandler
   SkBitmap test_bitmap_;
 };
 
+class FakeTtsEngineDelegate : public content::TtsEngineDelegate {
+ public:
+  void Speak(content::TtsUtterance* utterance,
+             const content::VoiceData& voice) override {}
+  void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
+  }
+  bool IsBuiltInTtsEngineInitialized(
+      content::BrowserContext* browser_context) override {
+    return true;
+  }
+  void GetVoices(content::BrowserContext* browser_context,
+                 const GURL& source_url,
+                 std::vector<content::VoiceData>* out_voices) override {}
+  void Stop(content::TtsUtterance* utterance) override {}
+  void Pause(content::TtsUtterance* utterance) override {}
+  void Resume(content::TtsUtterance* utterance) override {}
+
+  void LanguageStatusRequest(content::BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override {
+    last_requested_status_ = lang;
+  }
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override {
+    last_requested_uninstall_ = lang;
+  }
+  void InstallLanguageRequest(content::BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override {
+    last_requested_install_ = lang;
+  }
+
+  std::string last_requested_status() { return last_requested_status_; }
+  std::string last_requested_install() { return last_requested_install_; }
+  std::string last_requested_uninstall() { return last_requested_uninstall_; }
+
+ private:
+  std::string last_requested_status_ = "";
+  std::string last_requested_install_ = "";
+  std::string last_requested_uninstall_ = "";
+};
+
 // TODO: b/40927698 - Add more tests.
 class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
  public:
@@ -202,8 +250,21 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
     handler_->OnLanguageDetermined(details);
   }
 
+  void GetVoicePackInfo(const std::string& language) {
+    handler_->GetVoicePackInfo(language);
+  }
+
+  void InstallVoicePack(const std::string& language) {
+    handler_->InstallVoicePack(language);
+  }
+
+  void UninstallVoice(const std::string& language) {
+    handler_->UninstallVoice(language);
+  }
+
  protected:
   testing::NiceMock<MockPage> page_;
+  FakeTtsEngineDelegate engine_delegate_;
   std::unique_ptr<ReadAnythingUntrustedPageHandler> handler_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
@@ -620,5 +681,149 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ReadAnythingUntrustedPageHandlerTest, GetVoicePackInfo) {
+  const char kLang1[] = "id-id";
+  const char kLang2[] = "en-gb";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  GetVoicePackInfo(kLang1);
+  ASSERT_EQ(kLang1, engine_delegate_.last_requested_status());
+
+  GetVoicePackInfo(kLang2);
+  ASSERT_EQ(kLang2, engine_delegate_.last_requested_status());
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, InstallVoicePack) {
+  const char kLang1[] = "fr-fr";
+  const char kLang2[] = "en-us";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  InstallVoicePack(kLang1);
+  ASSERT_EQ(kLang1, engine_delegate_.last_requested_install());
+
+  InstallVoicePack(kLang2);
+  ASSERT_EQ(kLang2, engine_delegate_.last_requested_install());
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, UninstallVoice) {
+  const char kLang1[] = "it-it";
+  const char kLang2[] = "en-au";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  UninstallVoice(kLang1);
+  ASSERT_EQ(kLang1, engine_delegate_.last_requested_uninstall());
+
+  UninstallVoice(kLang2);
+  ASSERT_EQ(kLang2, engine_delegate_.last_requested_uninstall());
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnUpdateLanguageStatus_NotInstalled) {
+  const char kLang[] = "it-it";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
+
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnUpdateLanguageStatus_Installing) {
+  const char kLang[] = "it-it";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      kLang, content::LanguageInstallStatus::INSTALLING, "");
+
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kInstalling,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnUpdateLanguageStatus_Installed) {
+  const char kLang[] = "it-it";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      kLang, content::LanguageInstallStatus::INSTALLED, "");
+
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnUpdateLanguageStatus_Failed) {
+  const char kLang[] = "it-it";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      kLang, content::LanguageInstallStatus::FAILED, "");
+
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kUnknown,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnUpdateLanguageStatus_Unknown) {
+  const char kLang[] = "it-it";
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      kLang, content::LanguageInstallStatus::UNKNOWN, "");
+
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kUnknown,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

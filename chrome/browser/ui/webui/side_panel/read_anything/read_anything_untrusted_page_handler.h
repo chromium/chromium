@@ -133,6 +133,9 @@ class ReadAnythingUntrustedPageHandler :
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
+  void GetVoicePackInfo(const std::string& language) override;
+  void InstallVoicePack(const std::string& language) override;
+  void UninstallVoice(const std::string& language) override;
 
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
@@ -175,9 +178,6 @@ class ReadAnythingUntrustedPageHandler :
   // read_anything::mojom::UntrustedPageHandler:
   void GetDependencyParserModel(
       GetDependencyParserModelCallback callback) override;
-  void GetVoicePackInfo(const std::string& language) override;
-  void InstallVoicePack(const std::string& language) override;
-  void UninstallVoice(const std::string& language) override;
   void OnCopy() override;
 
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
