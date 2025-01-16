@@ -155,7 +155,7 @@ class ExtensionPlatformBrowserTest::TestTabModel : public TabModel {
     return web_contents_.get();
   }
   content::WebContents* GetWebContentsAt(int index) const override {
-    return nullptr;
+    return web_contents_.get();
   }
   TabAndroid* GetTabAt(int index) const override { return nullptr; }
   void SetActiveIndex(int index) override {}
@@ -316,11 +316,12 @@ Profile* ExtensionPlatformBrowserTest::GetOrCreateIncognitoProfile() {
   return incognito_profile;
 }
 
-void ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
+content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
     Profile* profile,
     const GURL& url) {
 #if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  OpenURLOffTheRecord(profile, url);
+  Browser* otr_browser = OpenURLOffTheRecord(profile, url);
+  return otr_browser->tab_strip_model()->GetActiveWebContents();
 #else
   // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
   Profile* incognito_profile =
@@ -332,8 +333,10 @@ void ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
   // Create a tab model for the incognito profile then navigate to the URL.
   tab_model_ = std::make_unique<TestTabModel>(incognito_profile);
   TabModelList::AddTabModel(tab_model_.get());
+  content::WebContents* web_contents = tab_model_->GetActiveWebContents();
   // This blocks until the navigation completes.
-  ASSERT_TRUE(content::NavigateToURL(tab_model_->GetActiveWebContents(), url));
+  CHECK(content::NavigateToURL(web_contents, url));
+  return web_contents;
 #endif
 }
 

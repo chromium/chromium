@@ -144,7 +144,8 @@ bool DesktopAndroidExtensionsBrowserClient::IsGuestSession(
 bool DesktopAndroidExtensionsBrowserClient::IsExtensionIncognitoEnabled(
     const std::string& extension_id,
     content::BrowserContext* context) const {
-  return false;
+  return IsGuestSession(context) ||
+         util::IsIncognitoEnabled(extension_id, context);
 }
 
 bool DesktopAndroidExtensionsBrowserClient::CanExtensionCrossIncognito(

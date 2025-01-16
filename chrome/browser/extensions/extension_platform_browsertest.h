@@ -68,8 +68,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   Profile* GetOrCreateIncognitoProfile();
 
   // Opens `url` in an incognito browser window with the incognito profile of
-  // `profile`, blocking until the navigation finishes.
-  void PlatformOpenURLOffTheRecord(Profile* profile, const GURL& url);
+  // `profile`, blocking until the navigation finishes. Returns the WebContents
+  // for `url`.
+  content::WebContents* PlatformOpenURLOffTheRecord(Profile* profile,
+                                                    const GURL& url);
 
   // Opens `url` in a new tab, blocking until the navigation finishes.
   content::RenderFrameHost* NavigateToURLInNewTab(const GURL& url);
