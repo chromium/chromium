@@ -152,6 +152,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableIntPropertyKey("product_icon_drawable_id");
         static final ReadableIntPropertyKey PRODUCT_ICON_HEIGHT =
                 new ReadableIntPropertyKey("product_icon_height");
+        static final ReadableIntPropertyKey PRODUCT_ICON_CONTENT_DESCRIPTION_ID =
+                new ReadableIntPropertyKey("product_icon_content_description_id");
         static final ReadableIntPropertyKey SECURITY_CHECK_DRAWABLE_ID =
                 new ReadableIntPropertyKey("security_check_drawable_id");
         static final ReadableObjectPropertyKey<String> TITLE =
@@ -162,6 +164,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final PropertyKey[] ALL_KEYS = {
             PRODUCT_ICON_DRAWABLE_ID,
             PRODUCT_ICON_HEIGHT,
+            PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
             SECURITY_CHECK_DRAWABLE_ID,
             TITLE,
             DESCRIPTION_ID

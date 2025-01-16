@@ -299,6 +299,26 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
+    public void testPixHeaderProductIconContentDescription() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(mMediator.buildPixHeader(mActivityTestRule.getActivity()));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay, Pix"));
+    }
+
+    @Test
+    @MediumTest
     public void testPixHeaderFirstTimeCheckNotVisible() {
         runOnUiThreadBlocking(
                 () -> {
@@ -317,6 +337,28 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         assertThat(headerSecurityCheckImage.getVisibility(), is(View.GONE));
         assertThat(headerDescription.getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletHeaderProductIconContentDescription() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    mMediator.buildEwalletHeader(
+                                            mActivityTestRule.getActivity(), List.of(EWALLET_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(1));
+        ImageView headerProductIcon = getHeaderProductIconAt(0);
+
+        assertThat(headerProductIcon.getContentDescription(), is("Google Pay"));
     }
 
     @Test
@@ -582,6 +624,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     private TextView getAccountDisplayNameAt(int index) {
         return getSheetItems().getChildAt(index).findViewById(R.id.account_display_name);
+    }
+
+    private ImageView getHeaderProductIconAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.branding_icon);
     }
 
     private ImageView getHeaderSecurityCheckImageAt(int index) {

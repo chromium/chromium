@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_HEIGHT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.SECURITY_CHECK_DRAWABLE_ID;
@@ -163,6 +164,10 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else if (propertyKey == PRODUCT_ICON_HEIGHT) {
             ImageView sheetProductIconImage = view.findViewById(R.id.branding_icon);
             sheetProductIconImage.getLayoutParams().height = model.get(PRODUCT_ICON_HEIGHT);
+        } else if (propertyKey == PRODUCT_ICON_CONTENT_DESCRIPTION_ID) {
+            ImageView sheetProductIconImage = view.findViewById(R.id.branding_icon);
+            sheetProductIconImage.setContentDescription(
+                    view.getContext().getString(model.get(PRODUCT_ICON_CONTENT_DESCRIPTION_ID)));
         } else if (propertyKey == SECURITY_CHECK_DRAWABLE_ID) {
             ImageView sheetSecurityCheckImage = view.findViewById(R.id.security_check_illustration);
             sheetSecurityCheckImage.setImageDrawable(
