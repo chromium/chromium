@@ -868,9 +868,9 @@ def make_trace_function(cg_context):
     for member in cg_context.union_members:
         if member.is_null:
             continue
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.var_name)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.var_name)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_decl, func_def
