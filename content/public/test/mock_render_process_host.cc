@@ -204,6 +204,10 @@ bool MockRenderProcessHost::AreV8OptimizationsDisabled() {
   return false;
 }
 
+bool MockRenderProcessHost::DisallowV8FeatureFlagOverrides() {
+  return false;
+}
+
 bool MockRenderProcessHost::IsPdf() {
   return false;
 }

@@ -2496,6 +2496,45 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
   ASSERT_TRUE(VerifyAndClearExpectations());
 }
 
+// Asserts RenderProcessHosts are configured to reflect the embedder's policy
+// defined by `ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()`.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       DisallowV8FeatureFlagOverridesAppliedToHosts) {
+  class DisallowV8FeatureOverridesContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    // ContentBrowserTestContentBrowserClient:
+    bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
+      return site_url.host() == "a.com";
+    }
+  };
+  DisallowV8FeatureOverridesContentBrowserClient content_browser_client;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  scoped_refptr<SiteInstanceImpl> site_instance_a =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_a);
+  scoped_refptr<SiteInstanceImpl> site_instance_b =
+      SiteInstanceImpl::CreateForTesting(browser_context, url_b);
+
+  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_a.get());
+  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
+      browser_context, site_instance_b.get());
+  process_a->Init();
+  process_b->Init();
+
+  EXPECT_TRUE(process_a->DisallowV8FeatureFlagOverrides());
+  EXPECT_FALSE(process_b->DisallowV8FeatureFlagOverrides());
+
+  process_a->Cleanup();
+  process_b->Cleanup();
+}
+
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 }  // namespace content

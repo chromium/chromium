@@ -223,6 +223,7 @@ CONTENT_EXPORT extern const char kUtilityProcess[];
 CONTENT_EXPORT extern const char kUtilityStartupDialog[];
 CONTENT_EXPORT extern const char kUtilitySubType[];
 CONTENT_EXPORT extern const char kV8CacheOptions[];
+CONTENT_EXPORT extern const char kDisallowV8FeatureFlagOverrides[];
 CONTENT_EXPORT extern const char kVerifyPixels[];
 CONTENT_EXPORT extern const char kWaitForDebuggerChildren[];
 CONTENT_EXPORT extern const char kWaitForDebuggerOnNavigation[];

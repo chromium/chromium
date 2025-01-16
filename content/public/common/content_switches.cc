@@ -373,6 +373,10 @@ const char kEnablePrivacySandboxAdsApis[] = "enable-privacy-sandbox-ads-apis";
 // Set options to cache V8 data. (none, code, or default)
 const char kV8CacheOptions[] = "v8-cache-options";
 
+// Disallows overriding of v8 feature flags.
+const char kDisallowV8FeatureFlagOverrides[] =
+    "disallow-v8-feature-flag-overrides";
+
 // If true the ServiceProcessLauncher is used to launch services. This allows
 // for service binaries to be loaded rather than using the utility process. This
 // is only useful for tests.

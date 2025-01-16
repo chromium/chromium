@@ -7865,6 +7865,13 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
               CONTENT_SETTING_BLOCK);
 }
 
+bool ChromeContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
+    const GURL& site_url) {
+  // Disable V8 feature flag overrides specifically for top-chrome WebUI URLs.
+  return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
+         IsTopChromeWebUIURL(site_url);
+}
+
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }

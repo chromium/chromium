@@ -334,7 +334,8 @@ class CONTENT_EXPORT ContentBrowserClient {
     ExtensionProcess = 4,
     JitDisabled = 5,
     V8OptimizationsDisabled = 6,
-    kMaxValue = V8OptimizationsDisabled,
+    DisallowV8FeatureFlagOverrides = 7,
+    kMaxValue = DisallowV8FeatureFlagOverrides,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareProcessRefusedByEmbedderReason)
 
@@ -2743,6 +2744,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool AreV8OptimizationsDisabledForSite(
       BrowserContext* browser_context,
       const GURL& site_url);
+
+  // Whether v8 feature flag overrides are disallowed for the given `site_url`.
+  virtual bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url);
 
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();

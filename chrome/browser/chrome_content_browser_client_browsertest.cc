@@ -62,6 +62,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
@@ -2276,8 +2277,64 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyStoragePartitioningOriginTrialTest,
   }
 }
 
+class BundledCodeCacheChromeContentBrowserClientTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BundledCodeCacheChromeContentBrowserClientTest() {
+    feature_list_.InitWithFeatureState(features::kWebUIBundledCodeCache,
+                                       IsBundledCodeCacheEnabled());
+  }
+
+  bool IsBundledCodeCacheEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Assert top-chrome webui renderers disallow v8 feature flag overrides only
+// when the bundled webui code cache is enabled.
+IN_PROC_BROWSER_TEST_P(BundledCodeCacheChromeContentBrowserClientTest,
+                       ConfiguresRendererForDisallowV8FeatureOverrides) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL top_chrome_url1(chrome::kChromeUITabSearchURL);
+  const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
+  const GURL non_top_chrome_url1(chrome::kChromeUINewTabPageURL);
+  const GURL non_top_chrome_url2(
+      embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_TRUE(top_chrome_url2.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_FALSE(non_top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+  EXPECT_FALSE(non_top_chrome_url1.DomainIs(chrome::kChromeUITopChromeDomain));
+
+  // Disallow V8 feature flag overrides should only apply to top-chrome URLs
+  // when bundled code caching is enabled.
+  auto navigate_and_expect_policy_result = [this](const GURL& url,
+                                                  bool expectation) {
+    content::RenderFrameHost* rfh =
+        ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_EQ(expectation, rfh->GetProcess()->DisallowV8FeatureFlagOverrides());
+  };
+  navigate_and_expect_policy_result(top_chrome_url1,
+                                    IsBundledCodeCacheEnabled());
+  navigate_and_expect_policy_result(top_chrome_url2,
+                                    IsBundledCodeCacheEnabled());
+  navigate_and_expect_policy_result(non_top_chrome_url1, false);
+  navigate_and_expect_policy_result(non_top_chrome_url1, false);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ThirdPartyStoragePartitioningOriginTrialTest,
                          ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    BundledCodeCacheChromeContentBrowserClientTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        BundledCodeCacheChromeContentBrowserClientTest::ParamType>& info) {
+      return info.param ? "BundledCodeCache_Enabled"
+                        : "BundledCodeCache_Disabled";
+    });
 
 }  // namespace
