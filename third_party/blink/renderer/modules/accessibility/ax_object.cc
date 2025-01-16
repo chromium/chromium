@@ -1736,42 +1736,46 @@ void AXObject::SerializeHTMLAttributesForSnapshot(
 void AXObject::SerializeHTMLNonStandardAttributesForJAWS(
     ui::AXNodeData* node_data) const {
 #if BUILDFLAG(IS_WIN)
-  // brailleonlyregion: a nonstandard attribute used by national testing orgs
-  // to allow testing of reading ability by rendering only to Braille display,
-  // and not to TTS.
-  // TODO(https://github.com/w3c/aria/issues/2352): replace with ARIA feature.
-  DEFINE_STATIC_LOCAL(QualifiedName, brailleonlyregion_attr,
-                      (AtomicString("brailleonlyregion")));
-  if (GetElement()->FastHasAttribute(brailleonlyregion_attr)) {
-    node_data->html_attributes.push_back(
-        std::make_pair(brailleonlyregion_attr.LocalName().Utf8(), ""));
-  }
+  DEFINE_STATIC_LOCAL(
+      HashSet<AtomicString>, attributes_for_jaws,
+      ({// brailleonlyregion: a nonstandard attribute used by national testing
+        // orgs to allow testing of reading ability by rendering only to Braille
+        // display, and not to TTS.
+        // TODO(https://github.com/w3c/aria/issues/2352): replace with ARIA
+        // feature.
+        AtomicString("brailleonlyregion"),
+        // data-at-shortcutkeys: a nonstandard attribute used by Twitter and
+        // Facebook to provide keyboard shortcuts for an entire web page, in the
+        // form of a parseable JSON map, which AT can use to help avoid keyboard
+        // conflicts.
+        // TODO(https://github.com/w3c/aria/issues/2351): Replace with ARIA
+        // feature.
+        AtomicString("data-at-shortcutkeys"),
+        // formcontrolname: a nonstandard attribute used by Angular and consumed
+        // by some password managers (see https://crbug.com/378908266).
+        AtomicString("formcontrolname"),
+        // The rest of these are used by proprietary JAWS scripts needed by
+        // customers of JAWS/Vispero.
+        AtomicString("headers"),
+        AtomicString("_segmentid"),  // Nonstandard.
+        AtomicString("aria-activedescendant"), AtomicString("aria-checked"),
+        AtomicString("aria-describedby"), AtomicString("aria-expanded"),
+        AtomicString("aria-labelledby"), AtomicString("aria-pressed"),
+        AtomicString("aria-selected"),
+        AtomicString("display"),  // Nonstandard.
+        AtomicString("size"), AtomicString("tabindex"),
+        AtomicString("title")}));
 
-  // data-at-shortcutkeys: a nonstandard attribute used by Twitter and Facebook
-  // to provide keyboard shortcuts for an entire web page, in the form of a
-  // parseable JSON map, which AT can use to help avoid keyboard conflicts.
-  // TODO(https://github.com/w3c/aria/issues/2351): Replace with ARIA feature.
-  DEFINE_STATIC_LOCAL(QualifiedName, data_at_shortcutkeys_attr,
-                      (AtomicString("data-at-shortcutkeys")));
-  const AtomicString& data_at_shorcutkeys_value =
-      GetElement()->FastGetAttribute(data_at_shortcutkeys_attr);
-  if (data_at_shorcutkeys_value) {
-    node_data->html_attributes.push_back(
-        std::make_pair(data_at_shortcutkeys_attr.LocalName().Utf8(),
-                       data_at_shorcutkeys_value.Utf8()));
+  for (const Attribute& attr : GetElement()->AttributesWithoutUpdate()) {
+    // Add attribute if in the allow list.
+    const QualifiedName& attr_qname = attr.GetName();
+    const AtomicString& attr_name = attr_qname.LocalName();
+    if (attributes_for_jaws.Contains(attr_name)) {
+      std::string value = attr.Value().Utf8();
+      node_data->html_attributes.push_back(
+          std::make_pair(attr_name.Utf8(), value));
+    }
   }
-
-  // formcontrolname: a nonstandard attribute used by Angular and consumed by
-  // some password managers (see https://crbug.com/378908266).
-  DEFINE_STATIC_LOCAL(QualifiedName, formcontrolname_attr,
-                      (AtomicString("formcontrolname")));
-  const AtomicString& formcontrolname_value =
-      GetElement()->FastGetAttribute(formcontrolname_attr);
-  if (formcontrolname_value) {
-    node_data->html_attributes.push_back(std::make_pair(
-        formcontrolname_attr.LocalName().Utf8(), formcontrolname_value.Utf8()));
-  }
-
 #endif
 }
 
