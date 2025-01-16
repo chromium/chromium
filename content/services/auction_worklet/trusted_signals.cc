@@ -100,10 +100,12 @@ bool ContainsNonUrlInfo(
 
 // Extracts key/value pairs from `v8_object`, using values in `keys` as keys.
 // Does not add entries to the map for keys with missing values.
+template <typename Container, typename Proj = std::identity>
 std::map<std::string, AuctionV8Helper::SerializedValue> ParseKeyValueMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
-    const std::set<std::string>& keys) {
+    Container& keys,
+    Proj proj = {}) {
   std::map<std::string, AuctionV8Helper::SerializedValue> out;
   if (keys.empty()) {
     return out;
@@ -111,7 +113,8 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseKeyValueMap(
 
   for (const auto& key : keys) {
     v8::Local<v8::String> v8_key;
-    if (!v8_helper->CreateUtf8String(key).ToLocal(&v8_key)) {
+    const std::string& str_key = proj(key);
+    if (!v8_helper->CreateUtf8String(str_key).ToLocal(&v8_key)) {
       continue;
     }
 
@@ -133,7 +136,7 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseKeyValueMap(
     if (!serialized_value.IsOK()) {
       continue;
     }
-    out[key] = std::move(serialized_value);
+    out.emplace(str_key, std::move(serialized_value));
   }
   return out;
 }
@@ -141,11 +144,13 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseKeyValueMap(
 // Extracts key/value pairs from the object named `name` in
 // `v8_object`, using values in `keys` as keys. Does not add entries to the map
 // for keys with missing values.
+template <typename Container, typename Proj = std::identity>
 std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Object> v8_object,
     const char* name,
-    const std::set<std::string>& keys) {
+    Container& keys,
+    Proj proj = {}) {
   std::map<std::string, AuctionV8Helper::SerializedValue> out;
   if (keys.empty()) {
     return out;
@@ -165,7 +170,8 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
     return out;
   }
 
-  return ParseKeyValueMap(v8_helper, named_object_value.As<v8::Object>(), keys);
+  return ParseKeyValueMap(v8_helper, named_object_value.As<v8::Object>(), keys,
+                          proj);
 }
 
 // Attempts to parse the `perInterestGroupData` value in `v8_object`, extracting
@@ -530,19 +536,6 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!ads.empty());
 
-  auto extract_render_url = [](const CreativeInfo& c) {
-    return c.ad_descriptor.url.spec();
-  };
-
-  std::set<std::string> render_urls;
-  std::ranges::transform(ads, std::inserter(render_urls, render_urls.end()),
-                         extract_render_url);
-  std::set<std::string> ad_component_render_urls;
-  std::ranges::transform(
-      ad_components,
-      std::inserter(ad_component_render_urls, ad_component_render_urls.end()),
-      extract_render_url);
-
   GURL full_signals_url = BuildTrustedScoringSignalsURL(
       send_creative_scanning_metadata, hostname, trusted_scoring_signals_url,
       ads, ad_components, experiment_group_id);
@@ -550,8 +543,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
           /*interest_group_names=*/std::nullopt,
-          /*bidding_signals_keys=*/std::nullopt, std::move(render_urls),
-          std::move(ad_component_render_urls), trusted_scoring_signals_url,
+          /*bidding_signals_keys=*/std::nullopt, std::move(ads),
+          std::move(ad_components), trusted_scoring_signals_url,
           std::move(auction_network_events_handler), std::move(v8_helper),
           std::move(load_signals_callback)));
 
@@ -635,8 +628,8 @@ std::optional<base::TimeDelta> TrustedSignals::ParseUpdateIfOlderThan(
 TrustedSignals::TrustedSignals(
     std::optional<std::set<std::string>> interest_group_names,
     std::optional<std::set<std::string>> bidding_signals_keys,
-    std::optional<std::set<std::string>> render_urls,
-    std::optional<std::set<std::string>> ad_component_render_urls,
+    std::optional<std::set<CreativeInfo>> ads,
+    std::optional<std::set<CreativeInfo>> ad_components,
     const GURL& trusted_signals_url,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
@@ -644,8 +637,8 @@ TrustedSignals::TrustedSignals(
     LoadSignalsCallback load_signals_callback)
     : interest_group_names_(std::move(interest_group_names)),
       bidding_signals_keys_(std::move(bidding_signals_keys)),
-      render_urls_(std::move(render_urls)),
-      ad_component_render_urls_(std::move(ad_component_render_urls)),
+      ads_(std::move(ads)),
+      ad_components_(std::move(ad_components)),
       trusted_signals_url_(trusted_signals_url),
       v8_helper_(std::move(v8_helper)),
       load_signals_callback_(std::move(load_signals_callback)),
@@ -656,9 +649,9 @@ TrustedSignals::TrustedSignals(
 
   // Either this should be for bidding signals or scoring signals.
   DCHECK((interest_group_names_ && bidding_signals_keys_) ||
-         (render_urls_ && ad_component_render_urls_));
+         (ads_ && ad_components_));
   DCHECK((!interest_group_names_ && !bidding_signals_keys_) ||
-         (!render_urls_ && !ad_component_render_urls_));
+         (!ads_ && !ad_components_));
 }
 
 TrustedSignals::~TrustedSignals() = default;
@@ -698,15 +691,14 @@ void TrustedSignals::OnDownloadComplete(
   // over to the parser on the V8 thread.
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&TrustedSignals::HandleDownloadResultOnV8Thread,
-                     v8_helper_, trusted_signals_url_,
-                     std::move(interest_group_names_),
-                     std::move(bidding_signals_keys_), std::move(render_urls_),
-                     std::move(ad_component_render_urls_), std::move(body),
-                     std::move(headers), std::move(error_msg),
-                     base::SequencedTaskRunner::GetCurrentDefault(),
-                     weak_ptr_factory.GetWeakPtr(),
-                     base::TimeTicks::Now() - download_start_time_));
+      base::BindOnce(
+          &TrustedSignals::HandleDownloadResultOnV8Thread, v8_helper_,
+          trusted_signals_url_, std::move(interest_group_names_),
+          std::move(bidding_signals_keys_), std::move(ads_),
+          std::move(ad_components_), std::move(body), std::move(headers),
+          std::move(error_msg), base::SequencedTaskRunner::GetCurrentDefault(),
+          weak_ptr_factory.GetWeakPtr(),
+          base::TimeTicks::Now() - download_start_time_));
 }
 
 // static
@@ -715,8 +707,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     const GURL& signals_url,
     std::optional<std::set<std::string>> interest_group_names,
     std::optional<std::set<std::string>> bidding_signals_keys,
-    std::optional<std::set<std::string>> render_urls,
-    std::optional<std::set<std::string>> ad_component_render_urls,
+    std::optional<std::set<CreativeInfo>> ads,
+    std::optional<std::set<CreativeInfo>> ad_components,
     std::unique_ptr<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error_msg,
@@ -831,17 +823,21 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.TrustedScoring",
                             download_time);
 
+    auto extract_render_url = [](const CreativeInfo& c) -> const std::string& {
+      return c.ad_descriptor.url.spec();
+    };
+
     // TODO(crbug.com/40266734): Remove deprecated `renderUrl` alias.
-    auto render_urls_map = ParseChildKeyValueMap(v8_helper.get(), v8_object,
-                                                 "renderURLs", *render_urls);
+    auto render_urls_map = ParseChildKeyValueMap(
+        v8_helper.get(), v8_object, "renderURLs", *ads, extract_render_url);
     auto render_urls_map_deprecated = ParseChildKeyValueMap(
-        v8_helper.get(), v8_object, "renderUrls", *render_urls);
+        v8_helper.get(), v8_object, "renderUrls", *ads, extract_render_url);
     auto ad_component_render_urls_map = ParseChildKeyValueMap(
-        v8_helper.get(), v8_object, "adComponentRenderURLs",
-        *ad_component_render_urls);
+        v8_helper.get(), v8_object, "adComponentRenderURLs", *ad_components,
+        extract_render_url);
     auto ad_component_render_urls_map_deprecated = ParseChildKeyValueMap(
-        v8_helper.get(), v8_object, "adComponentRenderUrls",
-        *ad_component_render_urls);
+        v8_helper.get(), v8_object, "adComponentRenderUrls", *ad_components,
+        extract_render_url);
     result = base::MakeRefCounted<Result>(
         !render_urls_map.empty() ? std::move(render_urls_map)
                                  : std::move(render_urls_map_deprecated),

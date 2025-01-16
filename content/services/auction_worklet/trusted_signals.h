@@ -274,8 +274,8 @@ class CONTENT_EXPORT TrustedSignals {
   TrustedSignals(
       std::optional<std::set<std::string>> interest_group_names,
       std::optional<std::set<std::string>> bidding_signals_keys,
-      std::optional<std::set<std::string>> render_urls,
-      std::optional<std::set<std::string>> ad_component_render_urls,
+      std::optional<std::set<CreativeInfo>> ads,
+      std::optional<std::set<CreativeInfo>> ad_components,
       const GURL& trusted_signals_url,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
@@ -298,8 +298,8 @@ class CONTENT_EXPORT TrustedSignals {
       const GURL& signals_url,
       std::optional<std::set<std::string>> interest_group_names,
       std::optional<std::set<std::string>> bidding_signals_keys,
-      std::optional<std::set<std::string>> render_urls,
-      std::optional<std::set<std::string>> ad_component_render_urls,
+      std::optional<std::set<CreativeInfo>> ads,
+      std::optional<std::set<CreativeInfo>> ad_components,
       std::unique_ptr<std::string> body,
       scoped_refptr<net::HttpResponseHeaders> headers,
       std::optional<std::string> error_msg,
@@ -320,13 +320,13 @@ class CONTENT_EXPORT TrustedSignals {
 
   // Keys being fetched. For bidding signals, only `bidding_signals_keys_` and
   // `interest_group_names_` are non-null. For scoring signals, only
-  // `render_urls_` and `ad_component_render_urls_` are non-null. These are
+  // `ads_` and `ad_components_` are non-null. These are
   // cleared and ownership is passed to the V8 thread once the download
   // completes, as they're no longer on the main thread after that point.
   std::optional<std::set<std::string>> interest_group_names_;
   std::optional<std::set<std::string>> bidding_signals_keys_;
-  std::optional<std::set<std::string>> render_urls_;
-  std::optional<std::set<std::string>> ad_component_render_urls_;
+  std::optional<std::set<CreativeInfo>> ads_;
+  std::optional<std::set<CreativeInfo>> ad_components_;
 
   const GURL trusted_signals_url_;  // original, for error messages.
   const scoped_refptr<AuctionV8Helper> v8_helper_;
