@@ -70,7 +70,7 @@ base::expected<void, FilterValuesError> ValidateForSource(
 }
 
 // Records the Conversions.FiltersPerFilterData metric.
-void RecordFiltersPerFilterData(base::HistogramBase::Sample count) {
+void RecordFiltersPerFilterData(base::HistogramBase::Sample32 count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(
@@ -84,7 +84,7 @@ void RecordFiltersPerFilterData(base::HistogramBase::Sample count) {
 }
 
 // Records the Conversions.ValuesPerFilter metric.
-void RecordValuesPerFilter(base::HistogramBase::Sample count) {
+void RecordValuesPerFilter(base::HistogramBase::Sample32 count) {
   const int kExclusiveMaxHistogramValue = 101;
 
   static_assert(kMaxValuesPerFilter < kExclusiveMaxHistogramValue,

@@ -315,7 +315,7 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
 
     case AvatarSyncErrorType::kPassphraseError:
       return {SyncStatusMessageType::kSyncError,
-              IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION,
+              IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
               IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON, IDS_SETTINGS_SIGN_OUT,
               SyncStatusActionType::kEnterPassphrase};
 

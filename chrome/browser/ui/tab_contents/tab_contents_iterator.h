@@ -47,8 +47,8 @@ class AllTabContentsesList {
     Iterator(const Iterator& iterator);
     ~Iterator();
 
-    value_type operator->() { return cur_; }
-    reference operator*() { return cur_; }
+    value_type operator->() const { return cur_; }
+    reference operator*() const { return cur_; }
 
     Iterator& operator++() {
       Next();

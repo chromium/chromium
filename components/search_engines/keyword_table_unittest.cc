@@ -292,7 +292,7 @@ struct TestCase {
   bool encryption_enabled;
   bool feature_enabled;
   bool tamper;
-  base::HistogramBase::Sample expected_histogram_sample;
+  base::HistogramBase::Sample32 expected_histogram_sample;
   size_t expected_keyword_count;
 
   std::string Name() const {
@@ -412,10 +412,10 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
     // TODO(crbug.com/365712505): Remove this fallback.
 #if BUILDFLAG(IS_WIN)
     // HashValidationStatus::kDecryptFailed
-    constexpr base::HistogramBase::Sample kExpectedBucket = 1;
+    constexpr base::HistogramBase::Sample32 kExpectedBucket = 1;
 #else
     // HashValidationStatus::kInvalidHash
-    constexpr base::HistogramBase::Sample kExpectedBucket = 2;
+    constexpr base::HistogramBase::Sample32 kExpectedBucket = 2;
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !(BUILDFLAG(IS_LINUX)
         // && !BUILDFLAG(IS_CASTOS)) || BUILDFLAG(IS_FUCHSIA)
     histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",

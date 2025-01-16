@@ -154,6 +154,10 @@ AtomicString PerformanceResourceTiming::contentType() const {
   return AtomicString(info_->content_type);
 }
 
+AtomicString PerformanceResourceTiming::contentEncoding() const {
+  return AtomicString(info_->content_encoding);
+}
+
 uint16_t PerformanceResourceTiming::responseStatus() const {
   return info_->response_status;
 }
@@ -508,6 +512,9 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   }
   if (RuntimeEnabledFeatures::ResourceTimingContentTypeEnabled()) {
     builder.AddString("contentType", contentType());
+  }
+  if (RuntimeEnabledFeatures::ResourceTimingContentEncodingEnabled()) {
+    builder.AddString("contentEncoding", contentEncoding());
   }
   builder.AddNumber("workerStart", workerStart());
   if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(

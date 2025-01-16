@@ -16,7 +16,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
@@ -65,14 +64,6 @@ class PolicyCertService : public KeyedService,
     return !!on_policy_provided_certs_changed_callback_;
   }
 
-  // Returns true if the service corresponding to `profile` has used
-  // certificates installed via policy to establish a secure connection before.
-  // This means that it may have cached content from an untrusted source.
-  static bool UsedPolicyCertificates(Profile* profile);
-
-  // Sets the flag that `profile` used certificates pushed by policy before.
-  static void SetUsedPolicyCertificates(Profile* profile);
-
   // Returns true if the profile that owns this service has at least one
   // policy-provided trust anchor configured.
   bool has_policy_certificates() const {
@@ -93,8 +84,6 @@ class PolicyCertService : public KeyedService,
       const base::FilePath& partition_path,
       net::CertificateList* out_all_server_and_authority_certificates,
       net::CertificateList* out_trust_anchors) const;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   static std::unique_ptr<PolicyCertService> CreateForTesting(Profile* profile);
 

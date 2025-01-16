@@ -663,8 +663,9 @@ int TestVfsFullPathname(sqlite3_vfs* vfs,
 
   // `copy()` returns an output iterator just past the last char copied. Write
   // the string terminator to that location.
-  *base::ranges::copy(file_path_view,
-                      base::span(result, expected_result_size).begin()) = 0;
+  *std::ranges::copy(file_path_view,
+                     base::span(result, expected_result_size).begin())
+       .out = 0;
   return SQLITE_OK;
 }
 

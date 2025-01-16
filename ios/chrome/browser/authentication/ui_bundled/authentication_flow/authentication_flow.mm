@@ -18,6 +18,7 @@
 #import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -411,13 +412,12 @@ enum class CancelationReason {
     std::vector<AccountInfo> accountInfos =
         identityManager->GetAccountsOnDevice();
     isValidIdentityOnDevice = base::Contains(
-        accountInfos, base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
-        &AccountInfo::gaia);
+        accountInfos, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
     std::vector<CoreAccountInfo> coreAccountInfos =
         identityManager->GetAccountsWithRefreshTokens();
-    isValidIdentityInProfile = base::Contains(
-        coreAccountInfos, base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
-        &CoreAccountInfo::gaia);
+    isValidIdentityInProfile =
+        base::Contains(coreAccountInfos, GaiaId(_identityToSignIn.gaiaID),
+                       &CoreAccountInfo::gaia);
   } else {
     isValidIdentityOnDevice = isValidIdentityInProfile =
         accountManagerService->IsValidIdentity(_identityToSignIn);
@@ -582,8 +582,8 @@ enum class CancelationReason {
 - (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Only show the dialog once per account.
-    signin::GaiaIdHash gaiaIDHash = signin::GaiaIdHash::FromGaiaId(
-        base::SysNSStringToUTF8(_identityToSignIn.gaiaID));
+    signin::GaiaIdHash gaiaIDHash =
+        signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));
     syncer::SetAccountKeyedPrefValue([self prefs],
                                      prefs::kSigninHasAcceptedManagementDialog,
                                      gaiaIDHash, base::Value(true));
@@ -685,8 +685,7 @@ enum class CancelationReason {
       IdentityManagerFactory::GetForProfile(profile);
   std::vector<CoreAccountInfo> coreAccountInfos =
       identityManager->GetAccountsWithRefreshTokens();
-  CHECK(base::Contains(coreAccountInfos,
-                       base::SysNSStringToUTF8(_identityToSignIn.gaiaID),
+  CHECK(base::Contains(coreAccountInfos, GaiaId(_identityToSignIn.gaiaID),
                        &CoreAccountInfo::gaia));
   [_performer signInIdentity:_identityToSignIn
                atAccessPoint:self.accessPoint
@@ -703,8 +702,7 @@ enum class CancelationReason {
   return access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
          GetApplicationContext()
              ->GetAccountProfileMapper()
-             ->IsProfileForGaiaIDFullyInitialized(
-                 base::SysNSStringToUTF8(gaia_id));
+             ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));
 }
 
 #pragma mark - Used for testing

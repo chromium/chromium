@@ -17,33 +17,33 @@ namespace gaia {
 
 namespace {
 
-const char kGaiaId[] = "fake_gaia_id";
+constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
 
 ListedAccount ValidListedAccount(const std::string& raw_email,
-                                 const std::string& gaia_id) {
+                                 const GaiaId& gaia_id) {
   gaia::ListedAccount result;
   result.email = CanonicalizeEmail(raw_email);
-  result.gaia_id = GaiaId(gaia_id);
+  result.gaia_id = gaia_id;
   result.raw_email = raw_email;
   return result;
 }
 
 ListedAccount InvalidListedAccount(const std::string& raw_email,
-                                   const std::string& gaia_id) {
+                                   const GaiaId& gaia_id) {
   gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
   result.valid = false;
   return result;
 }
 
 ListedAccount SignedOutListedAccount(const std::string& raw_email,
-                                     const std::string& gaia_id) {
+                                     const GaiaId& gaia_id) {
   gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
   result.signed_out = true;
   return result;
 }
 
 ListedAccount NonverifiedListedAccount(const std::string& raw_email,
-                                       const std::string& gaia_id) {
+                                       const GaiaId& gaia_id) {
   gaia::ListedAccount result = ValidListedAccount(raw_email, gaia_id);
   result.verified = false;
   return result;
@@ -232,23 +232,24 @@ TEST(GaiaAuthUtilTest, ParseListAccountsData) {
       "[\"foo\", "
       "[[\"bar\", 0, \"name\", \"u@g.c\", \"p\", 0, 0, 0, 0, 1, \"45\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", "45")));
+  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", GaiaId("45"))));
 
   ASSERT_TRUE(ParseListAccountsData(
       "[\"foo\", "
       "[[\"bar1\",0,\"name1\",\"u1@g.c\",\"photo1\",0,0,0,0,1,\"45\"], "
       "[\"bar2\",0,\"name2\",\"u2@g.c\",\"photo2\",0,0,0,0,1,\"6\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u1@g.c", "45"),
-                                    ValidListedAccount("u2@g.c", "6")));
+  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u1@g.c", GaiaId("45")),
+                                    ValidListedAccount("u2@g.c", GaiaId("6"))));
 
   ASSERT_TRUE(ParseListAccountsData(
       "[\"foo\", "
       "[[\"b1\", 0,\"name1\",\"U1@g.c\",\"photo1\",0,0,0,0,1,\"45\"], "
       "[\"b2\",0,\"name2\",\"u.2@g.c\",\"photo2\",0,0,0,0,1,\"46\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("U1@g.c", "45"),
-                                    ValidListedAccount("u.2@g.c", "46")));
+  ASSERT_THAT(accounts,
+              ElementsAre(ValidListedAccount("U1@g.c", GaiaId("45")),
+                          ValidListedAccount("u.2@g.c", GaiaId("46"))));
 }
 
 TEST(GaiaAuthUtilTest, ParseListAccountsDataValidSession) {
@@ -258,13 +259,14 @@ TEST(GaiaAuthUtilTest, ParseListAccountsDataValidSession) {
   ASSERT_TRUE(ParseListAccountsData(
       "[\"foo\", [[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"45\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", "45")));
+  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", GaiaId("45"))));
 
   // Valid session is false means: return account with valid bit false.
   ASSERT_TRUE(ParseListAccountsData(
       "[\"foo\", [[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,0,\"45\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(InvalidListedAccount("u@g.c", "45")));
+  ASSERT_THAT(accounts,
+              ElementsAre(InvalidListedAccount("u@g.c", GaiaId("45"))));
 }
 
 TEST(GaiaAuthUtilTest, ParseListAccountsDataGaiaId) {
@@ -281,7 +283,8 @@ TEST(GaiaAuthUtilTest, ParseListAccountsDataGaiaId) {
       "[\"foo\", "
       "[[\"b\",0,\"n\",\"u@g.c\",\"photo\",0,0,0,0,1,\"9863\"]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", "9863")));
+  ASSERT_THAT(accounts,
+              ElementsAre(ValidListedAccount("u@g.c", GaiaId("9863"))));
 }
 
 TEST(GaiaAuthUtilTest, ParseListAccountsWithSignedOutAccounts) {
@@ -293,8 +296,9 @@ TEST(GaiaAuthUtilTest, ParseListAccountsWithSignedOutAccounts) {
       "[\"c\",0,\"n\",\"u.2@g.c\",\"photo\",0,0,0,0,1,\"46\","
       "null,null,null,1]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("u@g.c", "45"),
-                                    SignedOutListedAccount("u.2@g.c", "46")));
+  ASSERT_THAT(accounts,
+              ElementsAre(ValidListedAccount("u@g.c", GaiaId("45")),
+                          SignedOutListedAccount("u.2@g.c", GaiaId("46"))));
 }
 
 TEST(GaiaAuthUtilTest, ParseListAccountsVerifiedAccounts) {
@@ -308,9 +312,10 @@ TEST(GaiaAuthUtilTest, ParseListAccountsVerifiedAccounts) {
       "[\"c\",0,\"n\",\"c@g.c\",\"photo\",0,0,0,0,1,\"47\","
       "null,null,null,null,1]]]",
       &accounts));
-  ASSERT_THAT(accounts, ElementsAre(ValidListedAccount("a@g.c", "45"),
-                                    NonverifiedListedAccount("b@g.c", "46"),
-                                    ValidListedAccount("c@g.c", "47")));
+  ASSERT_THAT(accounts,
+              ElementsAre(ValidListedAccount("a@g.c", GaiaId("45")),
+                          NonverifiedListedAccount("b@g.c", GaiaId("46")),
+                          ValidListedAccount("c@g.c", GaiaId("47"))));
 }
 
 TEST(GaiaAuthUtilTest, ParseListAccountsAcceptsNull) {
@@ -520,26 +525,26 @@ TEST(GaiaAuthUtilTest, ParseBinaryListAccountsWithInvalidInput) {
 
 TEST(GaiaAuthUtilTest, ParseConsentResultApproved) {
   const char kApprovedConsent[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
-  EXPECT_EQ(kApprovedConsent, GenerateOAuth2MintTokenConsentResult(
-                                  true, "ENCRYPTED", GaiaId(kGaiaId)));
+  EXPECT_EQ(kApprovedConsent,
+            GenerateOAuth2MintTokenConsentResult(true, "ENCRYPTED", kGaiaId));
   bool approved = false;
   GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kApprovedConsent, &approved, &gaia_id));
   EXPECT_TRUE(approved);
-  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
+  EXPECT_EQ(gaia_id, kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyData) {
   const char kApprovedConsent[] = "CAEaDGZha2VfZ2FpYV9pZA";
-  EXPECT_EQ(kApprovedConsent, GenerateOAuth2MintTokenConsentResult(
-                                  true, std::nullopt, GaiaId(kGaiaId)));
+  EXPECT_EQ(kApprovedConsent,
+            GenerateOAuth2MintTokenConsentResult(true, std::nullopt, kGaiaId));
   bool approved = false;
   GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kApprovedConsent, &approved, &gaia_id));
   EXPECT_TRUE(approved);
-  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
+  EXPECT_EQ(gaia_id, kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyGaiaId) {
@@ -556,14 +561,14 @@ TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyGaiaId) {
 
 TEST(GaiaAuthUtilTest, ParseConsentResultNotApproved) {
   const char kNoGrantConsent[] = "CAAaDGZha2VfZ2FpYV9pZA";
-  EXPECT_EQ(kNoGrantConsent, GenerateOAuth2MintTokenConsentResult(
-                                 false, std::nullopt, GaiaId(kGaiaId)));
+  EXPECT_EQ(kNoGrantConsent,
+            GenerateOAuth2MintTokenConsentResult(false, std::nullopt, kGaiaId));
   bool approved = false;
   GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kNoGrantConsent, &approved, &gaia_id));
   EXPECT_FALSE(approved);
-  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
+  EXPECT_EQ(gaia_id, kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultEmpty) {

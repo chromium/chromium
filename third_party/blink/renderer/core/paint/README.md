@@ -246,25 +246,15 @@ paint invalidation of the object.
 
 #### Paint invalidation of text
 
-Text is painted by `InlineTextBoxPainter` using `InlineTextBox` as display
-item client. Text backgrounds and masks are painted by `InlineTextFlowPainter`
-using `InlineFlowBox` as display item client. We should invalidate these display
-item clients when their painting will change.
-
-`LayoutInline`s and `LayoutText`s are marked for full paint invalidation if
-needed when new style is set on them. During paint invalidation, we invalidate
-the `InlineFlowBox`s directly contained by the `LayoutInline` in
-`LayoutInline::InvalidateDisplayItemClients()` and `InlineTextBox`s contained by
-the `LayoutText` in `LayoutText::InvalidateDisplayItemClients()`. We don't need
-to traverse into the subtree of `InlineFlowBox`s in
-`LayoutInline::InvalidateDisplayItemClients()` because the descendant
-`InlineFlowBox`s and `InlineTextBox`s will be handled by their owning
-`LayoutInline`s and `LayoutText`s, respectively, when changed style is
-propagated.
+Text is painted by `TextFragmentPainter` using
+`FragmentItem::GetDisplayItemClient()` (which is the containing `LayoutText` or
+`LayoutInline`) as the display item client. We should invalidate these display
+item clients when their painting will change, which is the same as paint
+invalidation of other `LayoutObject`s.
 
 #### Specialty of `::first-line`
 
-`::first-line` pseudo style dynamically applies to all `InlineBox`'s in the
+`::first-line` pseudo style dynamically applies to all `FragmentItem`'s in the
 first line in the block having `::first-line` style. The actual applied style is
 computed from the `::first-line` style and other applicable styles.
 
@@ -283,8 +273,8 @@ The normal paint invalidation of texts doesn't work for first line because:
 
 We have a special path for first line style change: the style system informs the
 layout system when the computed first-line style changes through
-`LayoutObject::FirstLineStyleDidChange()`. When this happens, we invalidate all
-`InlineBox`es in the first line.
+`LayoutObject::ApplyFirstLineChanges()`. When this happens, we invalidate all
+`LayoutObject`s contributing to the first line.
 
 ### Building paint property trees
 [`PaintPropertyTreeBuilder`](paint_property_tree_builder.h)
@@ -510,14 +500,23 @@ structures:
    and
    [`HitTestData::scroll_hit_test_rect`](../../platform/graphics/paint/hit_test_data.h)
 
-   Used to create
-   [non-fast scrollable regions](https://docs.google.com/document/d/1IyYJ6bVF7KZq96b_s5NrAzGtVoBXn_LQnya9y4yT3iw/view)
-   to prevent compositor scrolling of non-composited scrollers, plugins with
-   blocking scroll event handlers, and resize handles.
+   Used to create main-thread scroll hit-test regions (renamed from
+   [non-fast scrollable regions](https://docs.google.com/document/d/1IyYJ6bVF7KZq96b_s5NrAzGtVoBXn_LQnya9y4yT3iw/view))
+   to force main-thread hit test for non-composited scrollers with mixed
+   hit-test opaqueness, non-composited scrollbars, and resize handles.
 
    If `scroll_translation` is not null, this is also used to force a special
    cc::Layer that is marked as being scrollable when composited scrolling is
    needed for the scroller.
+
+5. [Hit-test opaqueness](../../../cc/input/hit_test_opaqueness.h)
+
+   Iindicates if a hit test can be reliably sent to a paint chunk directly or
+   ignored. During layerization, the [paint artifact compositor](../../platform/graphics/paint/README.md#paint-artifact-compositor)
+   will accumulate the hit-test opaqueness on paint chunks to cc::Layers, and
+   cc will use the information (as well as main-thread scroll hit-test regions)
+   to determine if a hit-test can be done directly on the compositor or must be
+   done on the main thread.
 
 ### Scrollbar painting
 

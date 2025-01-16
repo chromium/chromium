@@ -78,7 +78,7 @@ class PopupNavigationDelegate;
 
 namespace content {
 class BrowserContext;
-class DIPSService;
+class BtmService;
 class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -423,9 +423,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                        const net::SchemefulSite& accessing_site,
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
-#endif
   bool CanSendSCTAuditingReport(
       content::BrowserContext* browser_context) override;
   void OnNewSCTAuditingReportSent(
@@ -924,6 +921,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AreV8OptimizationsDisabledForSite(
       content::BrowserContext* browser_context,
       const GURL& site_url) override;
+  bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;
 
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
@@ -1087,7 +1085,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldEnableDips(content::BrowserContext* browser_context) override;
   void OnDipsServiceCreated(content::BrowserContext* browser_context,
-                            content::DIPSService* dips_service) override;
+                            content::BtmService* dips_service) override;
   uint64_t GetDipsRemoveMask() override;
   bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
 

@@ -232,8 +232,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
         signin::ConsentLevel::kSignin);
     if (push_notification_settings::
             GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kCommerce,
-                base::SysNSStringToUTF8(identity.gaiaID))) {
+                PushNotificationClientId::kCommerce, GaiaId(identity.gaiaID))) {
       [self disableModule];
     }
   }

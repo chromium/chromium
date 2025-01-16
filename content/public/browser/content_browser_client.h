@@ -243,7 +243,7 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
-class DIPSService;
+class BtmService;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;
@@ -334,7 +334,8 @@ class CONTENT_EXPORT ContentBrowserClient {
     ExtensionProcess = 4,
     JitDisabled = 5,
     V8OptimizationsDisabled = 6,
-    kMaxValue = V8OptimizationsDisabled,
+    DisallowV8FeatureFlagOverrides = 7,
+    kMaxValue = DisallowV8FeatureFlagOverrides,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareProcessRefusedByEmbedderReason)
 
@@ -1217,11 +1218,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const net::SchemefulSite& accessing_site,
       base::TimeDelta ttl,
       bool ignore_schemes);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Notification that a trust anchor was used by the given user.
-  virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}
-#endif
 
   // Allows the embedder to implement policy for whether an SCT auditing report
   // should be sent.
@@ -2749,6 +2745,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& site_url);
 
+  // Whether v8 feature flag overrides are disallowed for the given `site_url`.
+  virtual bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url);
+
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
 
@@ -3063,11 +3062,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // default implementation returns true for all contexts.
   virtual bool ShouldEnableDips(BrowserContext* browser_context);
 
-  // Called once for each DIPSService instance when it's created.
-  // DIPSService::Get() is guaranteed to return the given instance if called
-  // i.e., DIPSService::Get(browser_context) == dips_service.
+  // Called once for each BtmService instance when it's created.
+  // BtmService::Get() is guaranteed to return the given instance if called
+  // i.e., BtmService::Get(browser_context) == dips_service.
   virtual void OnDipsServiceCreated(BrowserContext* browser_context,
-                                    DIPSService* dips_service) {}
+                                    BtmService* dips_service) {}
 
   // The default value returned by ContentBrowserClient::GetDipsRemoveMask().
   // This should contain everything known to //content that can be deleted by

@@ -128,7 +128,7 @@ class UmaPageLoadMetricsObserverTest
         tester()->histogram_tester().GetAllSamples(
             internal::kHistogramLargestContentfulPaintContentType),
         testing::ElementsAre(base::Bucket(
-            static_cast<base::HistogramBase::Sample>(text_or_image), 1)));
+            static_cast<base::HistogramBase::Sample32>(text_or_image), 1)));
 
     if (is_incognito) {
       EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
@@ -155,7 +155,7 @@ class UmaPageLoadMetricsObserverTest
         tester()->histogram_tester().GetAllSamples(
             internal::kHistogramLargestContentfulPaintMainFrameContentType),
         testing::ElementsAre(base::Bucket(
-            static_cast<base::HistogramBase::Sample>(text_or_image), 1)));
+            static_cast<base::HistogramBase::Sample32>(text_or_image), 1)));
   }
 
   void TestEmptyMainFrameLCP() {

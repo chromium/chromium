@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_constants.mojom-blink.h"
 
 namespace blink {
 
@@ -555,6 +556,19 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
     return false;
   }
 
+  if (anchor_offset == ax::mojom::blink::kNoSelectionOffset) {
+    DCHECK_EQ(anchor_object, *this);
+    DCHECK_EQ(focus_object, *this);
+    DCHECK_EQ(focus_offset, ax::mojom::blink::kNoSelectionOffset);
+    if (private_->IsAtomicTextField()) {
+      // There is always a selection in a textfield, so in that case, just
+      // collapse the selection to the start.
+      anchor_offset = 0;
+    } else {
+      AXSelection::ClearCurrentSelection(*private_->GetDocument());
+      return true;
+    }
+  }
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kSetSelection);
   AXPosition ax_anchor, ax_focus;

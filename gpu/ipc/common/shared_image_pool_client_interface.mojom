@@ -7,6 +7,8 @@ module gpu.mojom;
 // Interface used by the GPU process to notify the client/renderer side
 // SharedImagePool instance to clear/purge the pool.
 interface SharedImagePoolClientInterface {
-  // Currently empty and methods will be added in future CLs along with its
-  // implementations.
+  // Can be called by GPU service based on the memory pressure signals. On
+  // receiving this, client side SharedImagePool will purge all of its
+  // SharedImageBacking.
+  OnClearPool();
 };

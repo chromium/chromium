@@ -20,6 +20,7 @@ source_set("profile") {
     "//components/prefs",
     "//components/sync_preferences",
     "//components/variations/net",
+    "//google_apis",
     "//ios/chrome/browser/net/model:net_types",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",

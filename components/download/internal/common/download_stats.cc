@@ -191,7 +191,7 @@ void RecordDownloadInterrupted(DownloadInterruptReason reason,
                                       is_parallel_download_enabled);
   }
 
-  std::vector<base::HistogramBase::Sample> samples =
+  std::vector<base::HistogramBase::Sample32> samples =
       base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.InterruptedReason", reason,
                                    samples);
@@ -222,7 +222,7 @@ void RecordDownloadInterrupted(DownloadInterruptReason reason,
 }
 
 void RecordDownloadRetry(DownloadInterruptReason reason) {
-  std::vector<base::HistogramBase::Sample> samples =
+  std::vector<base::HistogramBase::Sample32> samples =
       base::CustomHistogram::ArrayToCustomEnumRanges(kAllInterruptReasonCodes);
   UMA_HISTOGRAM_CUSTOM_ENUMERATION("Download.Retry.InterruptReason", reason,
                                    samples);

@@ -19,7 +19,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +41,7 @@ struct ProfilePickerTestParam {
   bool outline_silhouette_icon = false;
   bool disallow_profile_creation = false;
   bool use_glic_version = false;
+  bool no_glic_eligible_profiles = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -105,6 +108,9 @@ const ProfilePickerTestParam kTestParams[] = {
                           .window_size =
                               PixelTestParam::kPortraitModeWindowSize},
      .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicNoProfiles"},
+     .use_glic_version = true,
+     .no_glic_eligible_profiles = true},
     {.pixel_test_param = {.test_suffix = "GlicMultipleProfiles"},
      .use_multiple_profiles = true,
      .use_glic_version = true},
@@ -125,6 +131,57 @@ enum class ProfileStatus {
   kSignedInManaged,
   kSignedInSupervised,
 };
+
+void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
+                                ProfileStatus profile_status,
+                                bool is_glic_version) {
+  CHECK(identity_manager);
+
+  AccountInfo account_info;
+  switch (profile_status) {
+    case ProfileStatus::kSignedOut:
+      break;
+    case ProfileStatus::kSignedIn:
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joe@gmail.com", signin::ConsentLevel::kSignin);
+      break;
+    case ProfileStatus::kSignedInManaged: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joework@example.com",
+          signin::ConsentLevel::kSignin);
+      account_info =
+          FillAccountInfo(account_info, AccountManagementStatus::kManaged,
+                          signin::Tribool::kUnknown);
+      signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+      break;
+    }
+    case ProfileStatus::kSignedInSupervised: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, "joejunior@gmail.com",
+          signin::ConsentLevel::kSignin);
+      supervised_user::UpdateSupervisionStatusForAccount(
+          account_info, identity_manager, true);
+      break;
+    }
+  }
+
+  // Make non empty account Glic eligible in Glic mode by adapting the
+  // account capabilities of the signed in account and propagating them to the
+  // `ProfileAttributesEntry`.
+  if (!account_info.IsEmpty() && is_glic_version) {
+    CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+
+    // In order to have the propagation of the account capabilities in the
+    // `ProfileAttributesEntry` the account info must be complete/valid.
+    account_info.hosted_domain = signin::constants::kNoHostedDomainFound;
+    account_info.full_name = "Joe Testing";
+    account_info.given_name = "Joe";
+    account_info.picture_url = "PICTURE_URL_EMPTY";
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+}
 
 // Create 4 profiles with different icons and types.
 void AddMultipleProfiles(bool is_glic_version) {
@@ -148,43 +205,13 @@ void AddMultipleProfiles(bool is_glic_version) {
     ProfileManager::CreateMultiProfileAsync(
         u"Joe", icon_index++, /*is_hidden=*/false,
         /*initialized_callback=*/
-        base::BindLambdaForTesting([&run_loop,
-                                    &profile_status](Profile* profile) {
-          // Set properties for the profile.
-          signin::IdentityManager* identity_manager =
-              IdentityManagerFactory::GetForProfile(profile);
-          CHECK(identity_manager);
-
-          switch (profile_status) {
-            case ProfileStatus::kSignedOut:
-              break;
-            case ProfileStatus::kSignedIn:
-              signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joe@gmail.com",
-                  signin::ConsentLevel::kSignin);
-              break;
-            case ProfileStatus::kSignedInManaged: {
-              AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joework@example.com",
-                  signin::ConsentLevel::kSignin);
-              account_info = FillAccountInfo(account_info,
-                                             AccountManagementStatus::kManaged,
-                                             signin::Tribool::kUnknown);
-              signin::UpdateAccountInfoForAccount(identity_manager,
-                                                  account_info);
-              break;
-            }
-            case ProfileStatus::kSignedInSupervised: {
-              AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-                  identity_manager, "joejunior@gmail.com",
-                  signin::ConsentLevel::kSignin);
-              supervised_user::UpdateSupervisionStatusForAccount(
-                  account_info, identity_manager, true);
-              break;
-            }
-          }
-          run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop, &profile_status, &is_glic_version](Profile* profile) {
+              SetSigninProfileProperties(
+                  IdentityManagerFactory::GetForProfile(profile),
+                  profile_status, is_glic_version);
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 }
@@ -210,7 +237,21 @@ class ProfilePickerUIPixelTest
     DCHECK(browser());
 
     bool is_glic_version = GetParam().use_glic_version;
+    bool no_glic_eligible_profiles = GetParam().no_glic_eligible_profiles;
+
+    // In Glic mode, sign in the default account as well if we need eligible
+    // profiles.
+    if (is_glic_version && !no_glic_eligible_profiles) {
+      SetSigninProfileProperties(
+          IdentityManagerFactory::GetForProfile(browser()->profile()),
+          ProfileStatus::kSignedIn,
+          /*is_glic_version=*/true);
+    }
+
     if (GetParam().use_multiple_profiles) {
+      // In Glic mode, if `use_multiple_profiles` is set,
+      // `no_glic_eligible_profiles` must be set to false.
+      CHECK(!is_glic_version || !no_glic_eligible_profiles);
       AddMultipleProfiles(is_glic_version);
     }
 

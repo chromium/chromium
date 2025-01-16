@@ -99,7 +99,7 @@ ConvertSystemIdentitiesToAccountInfos(NSArray<id<SystemIdentity>>* identities) {
   for (id<SystemIdentity> identity : identities) {
     CHECK(identity);
     AccountInfo account_info;
-    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
+    account_info.gaia = GaiaId(identity.gaiaID);
     account_info.email = base::SysNSStringToUTF8(identity.userEmail);
 
     // If hosted domain is nil, then it means the information has not been
@@ -141,7 +141,7 @@ void DeviceAccountsProviderImpl::RemoveObserver(
 }
 
 void DeviceAccountsProviderImpl::GetAccessToken(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {

@@ -67,7 +67,7 @@ void PageActionController::ClearOverrideText(actions::ActionId action_id) {
 
 void PageActionController::AddObserver(
     actions::ActionId action_id,
-    base::ScopedObservation<PageActionModel, PageActionModelObserver>&
+    base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>&
         observation) {
   observation.Observe(&FindPageActionModel(action_id));
 }

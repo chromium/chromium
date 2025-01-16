@@ -764,10 +764,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnVerifyCertForSignedExchangeComplete(uint64_t cert_verify_id,
                                              int result);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  void TrustAnchorUsed();
-#endif
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
   // Checks the Certificate Transparency policy compliance for a given
   // certificate and SCTs in `cert_verify_result`, and updates

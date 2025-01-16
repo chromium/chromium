@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
@@ -52,6 +53,7 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -446,6 +448,9 @@ public class ContentTextSelectionTest {
     @Test
     @MediumTest
     @Feature({"TextSelection"})
+    // TODO(crbug.com/385205045) Re-enable on automotive devices once fixed / made less flaky on
+    // auto.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testCorrectSelectionMenuItemsAddedForPlainTextSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();

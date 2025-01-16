@@ -140,7 +140,7 @@ class CONTENT_EXPORT VideoCaptureManager
   // client of the device, the |controller| and its VideoCaptureDevice may be
   // destroyed. The client must not access |controller| after calling this
   // function.
-  void DisconnectClient(scoped_refptr<VideoCaptureController> controller,
+  void DisconnectClient(VideoCaptureController* controller,
                         VideoCaptureControllerID client_id,
                         VideoCaptureControllerEventHandler* client_handler,
                         media::VideoCaptureError error);
@@ -233,13 +233,11 @@ class CONTENT_EXPORT VideoCaptureManager
   void EnumerateDevices(EnumerationCallback client_callback);
 
   // VideoCaptureDeviceLaunchObserver implementation:
-  void OnDeviceLaunched(
-      scoped_refptr<VideoCaptureController> controller) override;
-  void OnDeviceLaunchFailed(scoped_refptr<VideoCaptureController> controller,
+  void OnDeviceLaunched(VideoCaptureController* controller) override;
+  void OnDeviceLaunchFailed(VideoCaptureController* controller,
                             media::VideoCaptureError error) override;
   void OnDeviceLaunchAborted() override;
-  void OnDeviceConnectionLost(
-      scoped_refptr<VideoCaptureController> controller) override;
+  void OnDeviceConnectionLost(VideoCaptureController* controller) override;
 
   void OpenNativeScreenCapturePicker(
       DesktopMediaID::Type type,
@@ -290,17 +288,19 @@ class CONTENT_EXPORT VideoCaptureManager
   // freed by this function.
   void DestroyControllerIfNoClients(
       const base::UnguessableToken& capture_session_id,
-      scoped_refptr<VideoCaptureController> controller);
+      VideoCaptureController* controller);
 
   // Finds a VideoCaptureController in different ways: by |session_id|, by its
   // |device_id| and |type| (if it is already opened), by its |controller| or by
   // its |serial_id|. In all cases, if not found, nullptr is returned.
-  scoped_refptr<VideoCaptureController> LookupControllerBySessionId(
+  VideoCaptureController* LookupControllerBySessionId(
       const base::UnguessableToken& session_id) const;
-  scoped_refptr<VideoCaptureController> LookupControllerByMediaTypeAndDeviceId(
+  VideoCaptureController* LookupControllerByMediaTypeAndDeviceId(
       blink::mojom::MediaStreamType type,
       const std::string& device_id) const;
-  bool HasController(VideoCaptureController* controller) const;
+  bool IsControllerPointerValid(const VideoCaptureController* controller) const;
+  scoped_refptr<VideoCaptureController> GetControllerSharedRef(
+      VideoCaptureController* controller) const;
 
   // Finds the device info by |id| in |devices_info_cache_|, or nullptr.
   media::VideoCaptureDeviceInfo* GetDeviceInfoById(const std::string& id);
@@ -324,7 +324,7 @@ class CONTENT_EXPORT VideoCaptureManager
       const media::VideoCaptureParams& params,
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor);
-  void DoStopDevice(scoped_refptr<VideoCaptureController> controller);
+  void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 
   void MaybePostDesktopCaptureWindowId(

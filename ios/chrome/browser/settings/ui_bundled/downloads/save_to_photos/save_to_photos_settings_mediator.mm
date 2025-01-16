@@ -182,8 +182,8 @@
 // Update consumers with information from `_prefService` and
 // `_accountManagerService`.
 - (void)updateConsumers {
-  const std::string savedGaiaID =
-      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
+  const GaiaId savedGaiaID(
+      _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
   id<SystemIdentity> savedIdentity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(savedGaiaID);
 

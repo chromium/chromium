@@ -25,8 +25,6 @@ BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
-BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
-BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxCr23Theming);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
@@ -77,6 +75,7 @@ BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold);
 BASE_DECLARE_FEATURE(kNtpMobilePromo);
 BASE_DECLARE_FEATURE(kNtpMicrosoftAuthenticationModule);
+BASE_DECLARE_FEATURE(kNtpOneGoogleBarAsyncBarParts);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

@@ -37,7 +37,7 @@ class MetricsRecorder {
     EXPECT_EQ(count, GetTotalCount());
   }
 
-  void CheckValueCount(HistogramBase::Sample value, int count) {
+  void CheckValueCount(HistogramBase::Sample32 value, int count) {
     Snapshot();
     EXPECT_EQ(count, GetCountWithoutSnapshot(value));
   }
@@ -50,7 +50,7 @@ class MetricsRecorder {
     samples_ = histogram->SnapshotSamples();
   }
 
-  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample value) {
+  HistogramBase::Count GetCountWithoutSnapshot(HistogramBase::Sample32 value) {
     if (!samples_)
       return 0;
     HistogramBase::Count count = samples_->GetCount(value);

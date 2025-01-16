@@ -1059,11 +1059,11 @@ enum class PasskeyCreationEligibility {
                                    primaryButtonAction:
                                        (ProceduralBlock)primaryButtonAction {
   // Early return if the `passkeyNavigationController` is already visible. This
-  // early return shouldn't be triggered, but was added to monitor a crash fix.
-  // This check should be removed if no crash reports are observed. See
-  // crbug.com/377712051.
+  // means that a passkey welcome screen is already presented and a new one
+  // shouldn't be shown. Hitting this early return is most likely a result of
+  // the user tapping a button multiple times, triggering the creation of
+  // multiple simultaneous passkey requests. See crbug.com/377712051.
   if (self.passkeyNavigationController.visibleViewController) {
-    NOTREACHED(base::NotFatalUntil::M135);
     return;
   }
 

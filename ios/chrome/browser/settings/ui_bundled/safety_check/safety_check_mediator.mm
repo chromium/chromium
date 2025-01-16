@@ -23,6 +23,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/version_info/version_info.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -353,7 +354,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       notificationsOptInItem.text =
           push_notification_settings::
                   GetMobileNotificationPermissionStatusForClient(
-                      PushNotificationClientId::kSafetyCheck, "")
+                      PushNotificationClientId::kSafetyCheck, GaiaId())
               ? GetNSString(
                     IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
               : GetNSString(

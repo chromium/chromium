@@ -1081,7 +1081,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
-  <owner>drubery@chromium.org</owner>
+  <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
     The id of a tracked preference whose value has been changed since the last
@@ -1156,7 +1156,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
     expires_after="2025-06-22">
-  <owner>drubery@chromium.org</owner>
+  <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>

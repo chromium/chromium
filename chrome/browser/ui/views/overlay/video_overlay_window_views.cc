@@ -963,7 +963,7 @@ void VideoOverlayWindowViews::SetUpViews() {
     favicon_view->SetSize(kFaviconSize);
     origin = std::make_unique<views::Label>(std::u16string(),
                                             views::style::CONTEXT_LABEL,
-                                            views::style::STYLE_BODY_4_MEDIUM);
+                                            views::style::STYLE_BODY_4);
     origin->SetEnabledColorId(ui::kColorSysOnSurface);
     origin->SetBackgroundColor(SK_ColorTRANSPARENT);
     origin->SetHorizontalAlignment(gfx::ALIGN_LEFT);

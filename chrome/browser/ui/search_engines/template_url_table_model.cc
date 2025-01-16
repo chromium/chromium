@@ -38,6 +38,8 @@ namespace {
 class OrderByManagedAndAlphabetically {
  public:
   OrderByManagedAndAlphabetically();
+  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other)
+      : collator_(other.collator_->clone()) {}
 
   bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
 

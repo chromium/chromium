@@ -238,6 +238,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // leaving the basic JIT compiler in V8 (and the wasm JIT compiler) enabled.
   virtual bool AreV8OptimizationsDisabled() = 0;
 
+  // Indicates whether the current RenderProcessHost disallows overrides of
+  // v8 feature flags.
+  virtual bool DisallowV8FeatureFlagOverrides() = 0;
+
   // Indicates whether the current RenderProcessHost exclusively hosts PDF
   // content.
   virtual bool IsPdf() = 0;

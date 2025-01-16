@@ -779,14 +779,14 @@
       },
     },
   },
-  'win10_nvidia_rtx_4070_super_stable': {
+  'win11_nvidia_rtx_4070_super_stable': {
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '10de:2783',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
+        'gpu': '10de:2783-32.0.15.6070',
+        'os': 'Windows-11',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },

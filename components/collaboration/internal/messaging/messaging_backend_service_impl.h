@@ -69,6 +69,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       std::optional<PersistentNotificationType> type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
+  void ClearDirtyTabMessagesForGroup(
+      tab_groups::EitherGroupID group_id) override;
   void AddActivityLogForTesting(
       data_sharing::GroupId collaboration_id,
       const std::vector<ActivityLogItem>& activity_log) override;

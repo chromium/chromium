@@ -329,7 +329,6 @@
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_registry_util.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/policy/annotations/blocklist_handler.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
@@ -1130,6 +1129,12 @@ inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
 inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
     "safe_browsing.automatic_deep_scan_performed";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 01/2025.
+inline constexpr char kUsedPolicyCertificates[] =
+    "policy.used_policy_certificates";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1591,6 +1596,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanningIPHSeen,
                                 false);
   registry->RegisterBooleanPref(kSafeBrowsingAutomaticDeepScanPerformed, false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 01/2025.
+  registry->RegisterBooleanPref(kUsedPolicyCertificates, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2143,7 +2153,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::cloud_storage::RegisterProfilePrefs(registry);
   chromeos::cloud_upload::RegisterProfilePrefs(registry);
   policy::NetworkAnnotationBlocklistHandler::RegisterPrefs(registry);
-  policy::PolicyCertService::RegisterProfilePrefs(registry);
   quickoffice::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(prefs::kDeskAPIThirdPartyAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeskAPIDeskSaveAndShareEnabled, false);
@@ -2884,6 +2893,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2025.
   profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanPerformed);
   profile_prefs->ClearPref(kSafeBrowsingAutomaticDeepScanningIPHSeen);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 01/2025.
+  profile_prefs->ClearPref(kUsedPolicyCertificates);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

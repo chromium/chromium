@@ -47,7 +47,7 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
          !push_notification_settings::
              GetMobileNotificationPermissionStatusForClient(
                  PushNotificationClientId::kCommerce,
-                 base::SysNSStringToUTF8(identity.gaiaID)) &&
+                 GaiaId(identity.gaiaID)) &&
          !pref_service->GetBoolean(kPriceTrackingPromoDisabled) &&
          (service->IsShoppingListEligible() ||
           (base::GetFieldTrialParamByFeatureAsString(

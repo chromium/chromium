@@ -227,7 +227,7 @@ bool ChromeAccountManagerService::HasIdentities() const {
 
 bool ChromeAccountManagerService::IsValidIdentity(
     id<SystemIdentity> identity) const {
-  return GetIdentityWithGaiaID(identity.gaiaID) != nil;
+  return GetIdentityWithGaiaID(GaiaId(identity.gaiaID)) != nil;
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(
@@ -236,28 +236,16 @@ bool ChromeAccountManagerService::IsEmailRestricted(
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    NSString* gaia_id) const {
+    const GaiaId& gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
-  if (!gaia_id.length) {
+  if (gaia_id.empty()) {
     return nil;
   }
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id.ToNSString()}},
       profile_name_);
-}
-
-id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
-    std::string_view gaia_id) const {
-  // Do not iterate if the gaia ID is invalid. This is duplicated here
-  // to avoid allocating a NSString unnecessarily.
-  if (gaia_id.empty()) {
-    return nil;
-  }
-
-  // Use the NSString* overload to avoid duplicating implementation.
-  return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
 }
 
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
@@ -305,8 +293,8 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    std::string_view gaia_id) const {
-  return GetIdentityOnDeviceWithGaiaID(base::SysUTF8ToNSString(gaia_id));
+    const GaiaId& gaia_id) const {
+  return GetIdentityOnDeviceWithGaiaID(gaia_id.ToNSString());
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
@@ -326,7 +314,7 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     const std::vector<AccountInfo>& account_infos) const {
   NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
   for (const AccountInfo& account_info : account_infos) {
-    NSString* gaia_id = base::SysUTF8ToNSString(account_info.gaia);
+    NSString* gaia_id = account_info.gaia.ToNSString();
     id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
     if (identity) {
       [identities addObject:identity];

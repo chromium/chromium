@@ -73,8 +73,7 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
     child_context_provider_ = std::move(context_provider);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
-        gpu_service->gpu_scheduler());
+        gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }

@@ -51,6 +51,18 @@
 #include "chrome/browser/ui/views/passwords/biometric_authentication_for_filling_bubble_view.h"
 #endif
 
+namespace {
+PageActionIconType GetPageActionIconType(content::WebContents* web_contents) {
+  base::WeakPtr<PasswordsModelDelegate> delegate =
+      PasswordsModelDelegateFromWebContents(web_contents);
+  password_manager::ui::State model_state = delegate->GetState();
+  if (model_state == password_manager::ui::PASSWORD_CHANGE_STATE) {
+    return PageActionIconType::kChangePassword;
+  }
+  return PageActionIconType::kManagePasswords;
+}
+}  // namespace
+
 // static
 PasswordBubbleViewBase* PasswordBubbleViewBase::g_manage_passwords_bubble_ =
     nullptr;
@@ -87,7 +99,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   if (!views::Button::AsButton(anchor_view)) {
     g_manage_passwords_bubble_->SetHighlightedButton(
         button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords));
+            GetPageActionIconType(web_contents)));
   }
 
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);

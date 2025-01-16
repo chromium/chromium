@@ -19,6 +19,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -127,8 +128,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache() {
           [NSNumber numberWithBool:pair.second.GetBool()];
     }
 
-    account_preference_map[base::SysUTF8ToNSString(attr.GetGaiaId())] =
-        preference_map;
+    account_preference_map[attr.GetGaiaId().ToNSString()] = preference_map;
   }
 
   return account_preference_map;
@@ -493,8 +493,7 @@ void SendNAUFConfigurationForProfileWithSettings(
           prefs::kSendTabNotificationsPreviouslyDisabled) ||
       push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kSendTab,
-              base::SysNSStringToUTF8(gaiaID))) {
+              PushNotificationClientId::kSendTab, GaiaId(gaiaID))) {
     return;
   }
 

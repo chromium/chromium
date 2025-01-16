@@ -246,6 +246,12 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // expanded to show the label.
   void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
 
+  // Gets whether tonal colors are used for the background of the view when
+  // expanded to show the label.
+  bool GetUseTonalColorsWhenExpanded() const {
+    return use_tonal_color_when_expanded_;
+  }
+
   // Subclasses that want extra spacing added to the internal spacing can
   // override this method. This may be used when we want to align the label text
   // to the suggestion text, like in the SelectedKeywordView.

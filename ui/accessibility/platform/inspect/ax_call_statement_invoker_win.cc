@@ -429,9 +429,6 @@ AXOptionalObject AXCallStatementInvokerWin::SetSelections(
 
   std::vector<IA2TextSelection> selections =
       PropertyNodeToIA2TextSelectionArray(property_node.arguments[0]);
-  if (selections.size() == 0) {
-    return AXOptionalObject::Error("Empty IA2TextSelection array is given");
-  }
 
   if (target->setSelections(selections.size(), selections.data()) == S_OK) {
     return AXOptionalObject({target});

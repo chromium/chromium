@@ -59,17 +59,17 @@ bool GetIsItemComplete(SetUpListItemType type,
           auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       if (IsIOSTipsNotificationsEnabled()) {
         return push_notification_settings::
-            IsMobileNotificationsEnabledForAnyClient(
-                base::SysNSStringToUTF8(identity.gaiaID), prefs);
+            IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
+                                                     prefs);
       } else {
         return push_notification_settings::
                    GetMobileNotificationPermissionStatusForClient(
                        PushNotificationClientId::kContent,
-                       base::SysNSStringToUTF8(identity.gaiaID)) ||
+                       GaiaId(identity.gaiaID)) ||
                push_notification_settings::
                    GetMobileNotificationPermissionStatusForClient(
                        PushNotificationClientId::kSports,
-                       base::SysNSStringToUTF8(identity.gaiaID));
+                       GaiaId(identity.gaiaID));
       }
     }
     case SetUpListItemType::kDocking:

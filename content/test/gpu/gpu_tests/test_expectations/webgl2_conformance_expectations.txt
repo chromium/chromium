@@ -495,7 +495,7 @@ crbug.com/371971708 conformance2/state/gl-enum-tests.html [ Failure ]
 # ========================
 
 # Failing new updated tests
-crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win10 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
+crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 # Failing at least on Pixel 4, both validating and passthrough
@@ -576,7 +576,6 @@ crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/reading/format-r11f-g11f-b10f.html [ Failure ]
-crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/varying.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shadertexturefunction/texelfetchoffset.html [ Failure ]

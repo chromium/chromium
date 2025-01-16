@@ -4,8 +4,11 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
+@NullMarked
 public interface PrefetchOperationCallbackBoundaryInterface {
 
     void onSuccess();

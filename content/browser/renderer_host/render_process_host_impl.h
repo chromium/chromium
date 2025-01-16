@@ -241,6 +241,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
+  bool DisallowV8FeatureFlagOverrides() override;
   bool IsPdf() override;
   StoragePartitionImpl* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
@@ -942,6 +943,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
     // Indicates whether v8 optimizations are disabled in this renderer process.
     kV8OptimizationsDisabled = 1 << 4,
+
+    // Indicates whether v8 feature flag overrides are disallowed in this
+    // renderer process.
+    kDisallowV8FeatureFlagOverrides = 1 << 5,
   };
 
   // A RenderProcessHostImpl's IO thread implementation of the

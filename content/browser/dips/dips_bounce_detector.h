@@ -50,15 +50,15 @@ namespace content {
 
 class WebContents;
 
-using DIPSRedirectChainHandler =
-    base::RepeatingCallback<void(std::vector<DIPSRedirectInfoPtr>,
-                                 DIPSRedirectChainInfoPtr)>;
-using DIPSIssueHandler =
+using BtmRedirectChainHandler =
+    base::RepeatingCallback<void(std::vector<BtmRedirectInfoPtr>,
+                                 BtmRedirectChainInfoPtr)>;
+using BtmIssueHandler =
     base::RepeatingCallback<void(std::set<std::string> sites)>;
-using DIPSIssueReportingCallback =
+using BtmIssueReportingCallback =
     base::RepeatingCallback<void(const std::set<std::string>& sites)>;
 
-// ClientBounceDetectionState is owned by the DIPSBounceDetector and stores
+// ClientBounceDetectionState is owned by the BtmBounceDetector and stores
 // data needed to detect stateful client-side redirects.
 class ClientBounceDetectionState {
  public:
@@ -76,18 +76,18 @@ class ClientBounceDetectionState {
   std::optional<base::Time> last_activation_time;
   std::optional<base::Time> last_storage_time;
   std::optional<base::Time> last_successful_web_authn_assertion_time;
-  DIPSDataAccessType site_data_access_type = DIPSDataAccessType::kUnknown;
+  BtmDataAccessType site_data_access_type = BtmDataAccessType::kUnknown;
 };
 
 // Either the URL navigated away from (starting a new chain), or the client-side
 // redirect connecting the navigation to the currently-committed chain.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-using DIPSNavigationStart = absl::variant<UrlAndSourceId, DIPSRedirectInfoPtr>;
+using BtmNavigationStart = absl::variant<UrlAndSourceId, BtmRedirectInfoPtr>;
 
 // In case of a client-side redirect loop, we need to impose a limit on the
 // stored redirect chain to avoid boundless memory use. Past this limit,
 // redirects are trimmed from the front of the list.
-constexpr size_t kDIPSRedirectChainMax = 1000;
+constexpr size_t kBtmRedirectChainMax = 1000;
 
 // When checking the history of the current tab for sites following the
 // first-party site, this is the maximum number of navigation entries to check.
@@ -96,35 +96,35 @@ inline constexpr int kAllSitesFollowingFirstPartyLookbackLength = 10;
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
 // calls to EndChain().
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-class CONTENT_EXPORT DIPSRedirectContext {
+class CONTENT_EXPORT BtmRedirectContext {
  public:
-  DIPSRedirectContext(DIPSRedirectChainHandler handler,
-                      DIPSIssueHandler issue_handler,
-                      const UrlAndSourceId& initial_url,
-                      size_t redirect_prefix_count);
-  ~DIPSRedirectContext();
+  BtmRedirectContext(BtmRedirectChainHandler handler,
+                     BtmIssueHandler issue_handler,
+                     const UrlAndSourceId& initial_url,
+                     size_t redirect_prefix_count);
+  ~BtmRedirectContext();
 
-  // Immediately calls the `DIPSRedirectChainHandler` for the uncommitted
+  // Immediately calls the `BtmRedirectChainHandler` for the uncommitted
   // navigation. It will take into account the length and initial URL of the
   // current chain (without modifying it).
-  void HandleUncommitted(DIPSNavigationStart navigation_start,
-                         std::vector<DIPSRedirectInfoPtr> server_redirects);
+  void HandleUncommitted(BtmNavigationStart navigation_start,
+                         std::vector<BtmRedirectInfoPtr> server_redirects);
 
   // Either calls for termination of the in-progress redirect chain, with a
   // start of a new one, or extends it, according to the value of
   // `navigation_start`.
-  void AppendCommitted(DIPSNavigationStart navigation_start,
-                       std::vector<DIPSRedirectInfoPtr> server_redirects,
+  void AppendCommitted(BtmNavigationStart navigation_start,
+                       std::vector<BtmRedirectInfoPtr> server_redirects,
                        const UrlAndSourceId& final_url,
                        bool current_page_has_interaction);
 
   // Trims |trim_count| redirect from the front of the in-progress redirect
   // chain. Passes the redirects as partial chains to the
-  // `DIPSRedirectChainHandler`.
+  // `BtmRedirectChainHandler`.
   void TrimAndHandleRedirects(size_t trim_count);
 
   // Terminates the in-progress redirect chain, ending it with `final_url`, and
-  // parsing it to the `DIPSRedirectChainHandler` iff the chain is valid. It
+  // parsing it to the `BtmRedirectChainHandler` iff the chain is valid. It
   // also starts a fresh redirect chain with `final_url` whilst clearing the
   // state of the terminated chain.
   // NOTE: A chain is valid if it has a non-empty `initial_url_`.
@@ -138,7 +138,7 @@ class CONTENT_EXPORT DIPSRedirectContext {
 
   const GURL& GetInitialURLForTesting() const { return initial_url_.url; }
 
-  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
+  void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     handler_ = handler;
   }
 
@@ -146,11 +146,11 @@ class CONTENT_EXPORT DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  const DIPSRedirectInfo& operator[](size_t index) const {
+  const BtmRedirectInfo& operator[](size_t index) const {
     return *redirects_.at(index);
   }
 
-  std::optional<std::pair<size_t, DIPSRedirectInfo*>> GetRedirectInfoFromChain(
+  std::optional<std::pair<size_t, BtmRedirectInfo*>> GetRedirectInfoFromChain(
       const std::string& site) const;
 
   // Return whether `site` had a user activation or authentication interaction
@@ -171,18 +171,18 @@ class CONTENT_EXPORT DIPSRedirectContext {
       bool require_current_interaction) const;
 
   // Returns the server redirects from the last navigation. Note that due to
-  // limitations in C++ the DIPSRedirectInfo objects are unavoidably mutable.
+  // limitations in C++ the BtmRedirectInfo objects are unavoidably mutable.
   // Clients must not modify them.
-  base::span<const DIPSRedirectInfoPtr>
+  base::span<const BtmRedirectInfoPtr>
   GetServerRedirectsSinceLastPrimaryPageChange() const;
 
  private:
-  void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);
-  void AppendServerRedirects(std::vector<DIPSRedirectInfoPtr> server_redirects);
+  void AppendClientRedirect(BtmRedirectInfoPtr client_redirect);
+  void AppendServerRedirects(std::vector<BtmRedirectInfoPtr> server_redirects);
   void TrimRedirectsFromFront();
 
-  DIPSRedirectChainHandler handler_;
-  DIPSIssueHandler issue_handler_;
+  BtmRedirectChainHandler handler_;
+  BtmIssueHandler issue_handler_;
   // Represents the start of a chain and also indicates the presence of a valid
   // chain.
   UrlAndSourceId initial_url_;
@@ -192,7 +192,7 @@ class CONTENT_EXPORT DIPSRedirectContext {
 
   // TODO(amaliev): Make redirects_ a circular queue to handle the memory bound
   // more gracefully.
-  std::vector<DIPSRedirectInfoPtr> redirects_;
+  std::vector<BtmRedirectInfoPtr> redirects_;
   std::set<std::string> redirectors_;
   // The number of redirects preceding this chain, that should be counted toward
   // this chain's total length. Includes both committed redirects (for an
@@ -200,15 +200,15 @@ class CONTENT_EXPORT DIPSRedirectContext {
   size_t redirect_prefix_count_ = 0;
 };
 
-// A simplified interface to WebContents and DIPSServiceImpl that can be faked
-// in tests. Needed to allow unit testing DIPSBounceDetector.
+// A simplified interface to WebContents and BtmServiceImpl that can be faked
+// in tests. Needed to allow unit testing BtmBounceDetector.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-class CONTENT_EXPORT DIPSBounceDetectorDelegate {
+class CONTENT_EXPORT BtmBounceDetectorDelegate {
  public:
-  virtual ~DIPSBounceDetectorDelegate();
+  virtual ~BtmBounceDetectorDelegate();
   virtual UrlAndSourceId GetLastCommittedURL() const = 0;
-  virtual void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
-                                   DIPSRedirectChainInfoPtr chain) = 0;
+  virtual void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
+                                   BtmRedirectChainInfoPtr chain) = 0;
   virtual void ReportRedirectors(std::set<std::string> sites) = 0;
   virtual void OnSiteStorageAccessed(const GURL& first_party_url,
                                      CookieOperation op,
@@ -231,7 +231,7 @@ class CONTENT_EXPORT ServerBounceDetectionState
     const GURL destination_url;
   };
 
-  DIPSNavigationStart navigation_start;
+  BtmNavigationStart navigation_start;
   CookieAccessFilter filter;
   std::vector<ServerRedirectData> server_redirects;
   base::TimeTicks last_server_redirect;
@@ -244,11 +244,11 @@ class CONTENT_EXPORT ServerBounceDetectionState
 };
 
 // A simplified interface to NavigationHandle that can be faked in
-// tests. Needed to allow unit testing DIPSBounceDetector.
+// tests. Needed to allow unit testing BtmBounceDetector.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-class CONTENT_EXPORT DIPSNavigationHandle {
+class CONTENT_EXPORT BtmNavigationHandle {
  public:
-  virtual ~DIPSNavigationHandle();
+  virtual ~BtmNavigationHandle();
 
   // See NavigationHandle for an explanation of these methods:
   const GURL& GetURL() const { return GetRedirectChain().back(); }
@@ -273,7 +273,7 @@ class CONTENT_EXPORT DIPSNavigationHandle {
   // chain.
   ukm::SourceId GetRedirectSourceId(int index) const;
   // Calls ServerBounceDetectionState::GetOrCreateForNavigationHandle(). We
-  // declare this instead of making DIPSNavigationHandle a subclass of
+  // declare this instead of making BtmNavigationHandle a subclass of
   // SupportsUserData, because ServerBounceDetectionState inherits from
   // NavigationHandleUserData, whose helper functions only work with actual
   // NavigationHandle, not any SupportsUserData.
@@ -281,30 +281,30 @@ class CONTENT_EXPORT DIPSNavigationHandle {
 };
 
 // Detects client/server-side bounces and handles them (currently by collecting
-// metrics and storing them in the DIPSDatabase).
+// metrics and storing them in the BtmDatabase).
 // TODO: crbug.com/324573484 - rename this to avoid confusion with
 // RedirectChainDetector and remove its association with DIPS.
-class CONTENT_EXPORT DIPSBounceDetector {
+class CONTENT_EXPORT BtmBounceDetector {
  public:
-  explicit DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
-                              const base::TickClock* tick_clock,
-                              const base::Clock* clock);
-  ~DIPSBounceDetector();
-  DIPSBounceDetector(const DIPSBounceDetector&) = delete;
-  DIPSBounceDetector& operator=(const DIPSBounceDetector&) = delete;
+  explicit BtmBounceDetector(BtmBounceDetectorDelegate* delegate,
+                             const base::TickClock* tick_clock,
+                             const base::Clock* clock);
+  ~BtmBounceDetector();
+  BtmBounceDetector(const BtmBounceDetector&) = delete;
+  BtmBounceDetector& operator=(const BtmBounceDetector&) = delete;
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
   const base::Clock* GetClock() { return clock_.get(); }
   // The following methods are based on WebContentsObserver, simplified.
-  void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
-  void DidRedirectNavigation(DIPSNavigationHandle* navigation_handle);
+  void DidStartNavigation(BtmNavigationHandle* navigation_handle);
+  void DidRedirectNavigation(BtmNavigationHandle* navigation_handle);
   void OnClientSiteDataAccessed(const GURL& url, CookieOperation op);
   // Note: `navigation_handle` may be null if this server cookie access is
   // associated with a document rather than a navigation.
-  void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
+  void OnServerCookiesAccessed(BtmNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
-  void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
+  void DidFinishNavigation(BtmNavigationHandle* navigation_handle);
   // Only records a new user activation event once per
   // |kTimestampUpdateInterval| for a given page.
   void OnUserActivation();
@@ -315,11 +315,11 @@ class CONTENT_EXPORT DIPSBounceDetector {
   // the tab closure.
   void BeforeDestruction();
   // Use the passed handler instead of
-  // DIPSBounceDetectorDelegate::HandleRedirect().
-  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
+  // BtmBounceDetectorDelegate::HandleRedirect().
+  void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     committed_redirect_context_.SetRedirectChainHandlerForTesting(handler);
   }
-  const DIPSRedirectContext& CommittedRedirectContext() const {
+  const BtmRedirectContext& CommittedRedirectContext() const {
     return committed_redirect_context_;
   }
 
@@ -344,19 +344,19 @@ class CONTENT_EXPORT DIPSBounceDetector {
 
   raw_ptr<const base::TickClock> tick_clock_;
   raw_ptr<const base::Clock> clock_;
-  raw_ptr<DIPSBounceDetectorDelegate> delegate_;
+  raw_ptr<BtmBounceDetectorDelegate> delegate_;
   std::optional<ClientBounceDetectionState> client_detection_state_;
-  DIPSRedirectContext committed_redirect_context_;
+  BtmRedirectContext committed_redirect_context_;
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 
 class DelayedChainHandler {
  public:
-  explicit DelayedChainHandler(DIPSRedirectChainHandler handler);
+  explicit DelayedChainHandler(BtmRedirectChainHandler handler);
   ~DelayedChainHandler();
 
-  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
-                           DIPSRedirectChainInfoPtr chain);
+  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
+                           BtmRedirectChainInfoPtr chain);
   [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
   void HandlePreviousChainNow() {
     HandlePreviousChainNowImpl(/*timer_fired=*/false);
@@ -365,9 +365,9 @@ class DelayedChainHandler {
  private:
   void HandlePreviousChainNowImpl(bool timer_fired);
 
-  DIPSRedirectChainHandler handler_;
+  BtmRedirectChainHandler handler_;
   std::optional<
-      std::pair<std::vector<DIPSRedirectInfoPtr>, DIPSRedirectChainInfoPtr>>
+      std::pair<std::vector<BtmRedirectInfoPtr>, BtmRedirectChainInfoPtr>>
       prev_chain_pair_;
   base::RetainingOneShotTimer timer_;
 };
@@ -377,7 +377,7 @@ class DelayedChainHandler {
 class CONTENT_EXPORT RedirectChainDetector
     : public WebContentsObserver,
       public WebContentsUserData<RedirectChainDetector>,
-      public DIPSBounceDetectorDelegate {
+      public BtmBounceDetectorDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -387,8 +387,8 @@ class CONTENT_EXPORT RedirectChainDetector
     virtual void OnNavigationCommitted(NavigationHandle* navigation_handle) {}
     // Called when any redirect chain ends, including ones that end with an
     // uncommitted navigation.
-    virtual void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>&,
-                                      const DIPSRedirectChainInfo&) {}
+    virtual void OnRedirectChainEnded(const std::vector<BtmRedirectInfoPtr>&,
+                                      const BtmRedirectChainInfo&) {}
     // Called before OnRedirectChainEnded() with set of redirector sites in the
     // chain, omitting the initial and final sites.
     // TODO(rtarpine) - replace with more general purpose method
@@ -406,11 +406,11 @@ class CONTENT_EXPORT RedirectChainDetector
 
   ~RedirectChainDetector() override;
 
-  void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
+  void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     detector_.SetRedirectChainHandlerForTesting(handler);
   }
 
-  const DIPSRedirectContext& CommittedRedirectContext() const {
+  const BtmRedirectContext& CommittedRedirectContext() const {
     return detector_.CommittedRedirectContext();
   }
 
@@ -423,15 +423,15 @@ class CONTENT_EXPORT RedirectChainDetector
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class WebContentsUserData<RedirectChainDetector>;
 
-  // DIPSBounceDetectorDelegate overrides:
+  // BtmBounceDetectorDelegate overrides:
   UrlAndSourceId GetLastCommittedURL() const override;
-  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
-                           DIPSRedirectChainInfoPtr chain) override;
+  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
+                           BtmRedirectChainInfoPtr chain) override;
   void ReportRedirectors(std::set<std::string> sites) override;
   void OnSiteStorageAccessed(const GURL& first_party_url,
                              CookieOperation op,
                              bool http_cookie) override;
-  // End DIPSBounceDetectorDelegate overrides.
+  // End BtmBounceDetectorDelegate overrides.
 
   // Start WebContentsObserver overrides:
   void PrimaryPageChanged(Page& page) override;
@@ -451,10 +451,10 @@ class CONTENT_EXPORT RedirectChainDetector
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
 
-  void NotifyOnRedirectChainEnded(std::vector<DIPSRedirectInfoPtr> redirects,
-                                  DIPSRedirectChainInfoPtr chain);
+  void NotifyOnRedirectChainEnded(std::vector<BtmRedirectInfoPtr> redirects,
+                                  BtmRedirectChainInfoPtr chain);
 
-  DIPSBounceDetector detector_;
+  BtmBounceDetector detector_;
   DelayedChainHandler delayed_handler_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<RedirectChainDetector> weak_factory_{this};
@@ -464,20 +464,19 @@ class CONTENT_EXPORT RedirectChainDetector
 
 // Populates the DIPS Database with site metadata, for the DIPS Service to
 // recognize and delete the storage of sites that perform bounce tracking.
-class CONTENT_EXPORT DIPSWebContentsObserver
+class CONTENT_EXPORT BtmWebContentsObserver
     : public WebContentsObserver,
-      public WebContentsUserData<DIPSWebContentsObserver>,
+      public WebContentsUserData<BtmWebContentsObserver>,
       public SharedWorkerService::Observer,
       public DedicatedWorkerService::Observer,
       public RedirectChainDetector::Observer {
  public:
   static void MaybeCreateForWebContents(WebContents* web_contents);
 
-  ~DIPSWebContentsObserver() override;
+  ~BtmWebContentsObserver() override;
 
-  // Use the passed handler instead of DIPSWebContentsObserver::EmitDIPSIssue().
-  void SetIssueReportingCallbackForTesting(
-      DIPSIssueReportingCallback callback) {
+  // Use the passed handler instead of BtmWebContentsObserver::EmitBtmIssue().
+  void SetIssueReportingCallbackForTesting(BtmIssueReportingCallback callback) {
     issue_reporting_callback_ = callback;
   }
 
@@ -485,7 +484,7 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   void SetClockForTesting(base::Clock* clock) {
     DCHECK(dips_service_);
     dips_service_->storage()
-        ->AsyncCall(&DIPSStorage::SetClockForTesting)
+        ->AsyncCall(&BtmStorage::SetClockForTesting)
         .WithArgs(clock);
     RedirectChainDetector::FromWebContents(web_contents())
         ->SetClockForTesting(clock);
@@ -493,22 +492,22 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   }
 
  private:
-  DIPSWebContentsObserver(WebContents* web_contents,
-                          DIPSServiceImpl* dips_service);
+  BtmWebContentsObserver(WebContents* web_contents,
+                         BtmServiceImpl* dips_service);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
-  friend class WebContentsUserData<DIPSWebContentsObserver>;
+  friend class WebContentsUserData<BtmWebContentsObserver>;
 
-  void EmitDIPSIssue(const std::set<std::string>& sites);
+  void EmitBtmIssue(const std::set<std::string>& sites);
 
-  void RecordEvent(DIPSRecordedEvent event,
+  void RecordEvent(BtmRecordedEvent event,
                    const GURL& url,
                    const base::Time& time);
   void OnStatefulBounce(const GURL& final_url);
 
   // Start RedirectChainDetector::Observer overrides:
   void ReportRedirectors(const std::set<std::string>& sites) override;
-  void OnRedirectChainEnded(const std::vector<DIPSRedirectInfoPtr>& redirects,
-                            const DIPSRedirectChainInfo& chain) override;
+  void OnRedirectChainEnded(const std::vector<BtmRedirectInfoPtr>& redirects,
+                            const BtmRedirectChainInfo& chain) override;
   void OnSiteStorageAccessed(const GURL& first_party_url,
                              CookieOperation op,
                              bool http_cookie) override;
@@ -556,18 +555,18 @@ class CONTENT_EXPORT DIPSWebContentsObserver
   // End DedicatedWorkerService.Observer overrides.
 
   raw_ptr<RedirectChainDetector> detector_;
-  // raw_ptr<> is safe here because DIPSServiceImpl is a KeyedService,
+  // raw_ptr<> is safe here because BtmServiceImpl is a KeyedService,
   // associated with the BrowserContext/Profile which will outlive the
-  // WebContents that DIPSWebContentsObserver is observing.
-  raw_ptr<DIPSServiceImpl> dips_service_;
+  // WebContents that BtmWebContentsObserver is observing.
+  raw_ptr<BtmServiceImpl> dips_service_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
-  DIPSIssueReportingCallback issue_reporting_callback_;
+  BtmIssueReportingCallback issue_reporting_callback_;
 
   std::optional<std::string> last_committed_site_;
   std::optional<base::Time> last_storage_timestamp_;
   std::optional<base::Time> last_interaction_timestamp_;
 
-  base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
+  base::WeakPtrFactory<BtmWebContentsObserver> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -584,7 +583,7 @@ CONTENT_EXPORT void Populate3PcExceptions(
     WebContents* web_contents,
     const GURL& initial_url,
     const GURL& final_url,
-    base::span<DIPSRedirectInfoPtr> redirects);
+    base::span<BtmRedirectInfoPtr> redirects);
 
 }  // namespace dips
 

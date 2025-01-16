@@ -23,6 +23,7 @@
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -62,7 +63,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
       const override {
-    std::string gaia_id =
+    GaiaId gaia_id =
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia;
     bool send_tab_notifications_enabled = push_notification_settings::
@@ -86,14 +87,13 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
             send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
       return std::nullopt;
     }
-    std::string gaia_id =
+    GaiaId gaia_id =
         identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia;
     std::string representative_target_id =
         GetApplicationContext()
             ->GetPushNotificationService()
-            ->GetRepresentativeTargetIdForGaiaId(
-                base::SysUTF8ToNSString(gaia_id));
+            ->GetRepresentativeTargetIdForGaiaId(gaia_id.ToNSString());
     // Sharing info is not implemented on iOS, so empty structs are passed in.
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(

@@ -14,7 +14,7 @@ DeviceAccountsProvider::GetAccountsOnDevice() const {
   return std::vector<DeviceAccountsProvider::AccountInfo>();
 }
 
-void DeviceAccountsProvider::GetAccessToken(const std::string& gaia_id,
+void DeviceAccountsProvider::GetAccessToken(const GaiaId& gaia_id,
                                             const std::string& client_id,
                                             const std::set<std::string>& scopes,
                                             AccessTokenCallback callback) {}

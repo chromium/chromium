@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
@@ -128,6 +131,25 @@ void ManagePasswordsTest::SetupManagingPasswords(
                                                        federated_form};
   GetController()->OnPasswordAutofilled(
       forms, embedded_test_server()->GetOrigin(), {});
+}
+
+void ManagePasswordsTest::SetupPasswordChange() {
+  affiliations::MockAffiliationService mock_affiliation_service;
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindLambdaForTesting(
+          [&mock_affiliation_service](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<ChromePasswordChangeService>(
+                &mock_affiliation_service);
+          }));
+
+  const GURL kUrl = GURL("https://example.com/");
+  ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
+      .WillByDefault(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+  static_cast<PasswordsLeakDialogDelegate*>(GetController())
+      ->ChangePassword(kUrl, u"new_username", u"new_password");
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {

@@ -199,7 +199,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
     quick_start::TargetDeviceBootstrapController::GaiaCredentials gaia_creds;
     gaia_creds.auth_code = FakeGaiaMixin::kFakeAuthCode;
     gaia_creds.email = FakeGaiaMixin::kFakeUserEmail;
-    gaia_creds.gaia_id = GaiaId(FakeGaiaMixin::kFakeUserGaiaId);
+    gaia_creds.gaia_id = FakeGaiaMixin::kFakeUserGaiaId;
     quick_start::TargetDeviceBootstrapController::
         SetGaiaCredentialsResponseForTesting(gaia_creds);
   }

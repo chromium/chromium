@@ -114,6 +114,18 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     }
 
     @CalledByNative
+    private void invokeClearDirtyTabMessagesForGroupAndVerify(
+            LocalTabGroupId localGroupId, @Nullable String syncId) {
+        EitherId.EitherGroupId groupId;
+        if (syncId == null) {
+            groupId = EitherId.EitherGroupId.createLocalId(localGroupId);
+        } else {
+            groupId = EitherId.EitherGroupId.createSyncId(syncId);
+        }
+        mService.clearDirtyTabMessagesForGroup(groupId);
+    }
+
+    @CalledByNative
     private void invokeGetMessagesForTabAndVerify(
             int localTabId,
             @Nullable String syncId,

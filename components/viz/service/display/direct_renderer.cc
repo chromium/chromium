@@ -437,7 +437,7 @@ void DirectRenderer::DrawFrame(
                               kMaxPixelCount, kNumBucketsPixelCount);
 
   // Data focused on pixel counts closer to screen resolution sizes.
-  constexpr base::Histogram::Sample kHistogramScale = 100 * 1024;
+  constexpr base::Histogram::Sample32 kHistogramScale = 100 * 1024;
   constexpr uint64_t kNumberOfBucketsLinear = 100;
   UMA_HISTOGRAM_SCALED_EXACT_LINEAR(
       "Compositing.DirectRenderer.TotalPixelsRenderedNarrow",

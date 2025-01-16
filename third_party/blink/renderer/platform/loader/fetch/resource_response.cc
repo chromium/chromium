@@ -27,7 +27,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
@@ -50,6 +53,18 @@
 namespace blink {
 
 namespace {
+
+constexpr auto kSupportedContentEncodingsValues =
+    base::MakeFixedFlatSet<std::string_view>({
+        "",
+        "br",
+        "dcb",
+        "dcz",
+        "deflate",
+        "gzip",
+        "identity",
+        "zstd",
+    });
 
 template <typename Interface>
 Vector<Interface> IsolatedCopy(const Vector<Interface>& src) {
@@ -441,6 +456,18 @@ bool ResourceResponse::IsAttachment() const {
 AtomicString ResourceResponse::HttpContentType() const {
   return ExtractMIMETypeFromMediaType(
       HttpHeaderField(http_names::kContentType).LowerASCII());
+}
+
+AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
+  AtomicString content_encoding =
+      HttpHeaderField(http_names::kContentEncoding).LowerASCII();
+  if (content_encoding.IsNull()) {
+    return g_empty_atom;
+  }
+  if (kSupportedContentEncodingsValues.contains(content_encoding.Ascii())) {
+    return content_encoding;
+  }
+  return AtomicString("unknown");
 }
 
 bool ResourceResponse::WasCached() const {

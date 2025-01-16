@@ -50,6 +50,7 @@ aggregate_vector_icons("views_vector_icons") {
     "new_window.icon",
     "open.icon",
     "options.icon",
+    "password_change.icon",
     "pin.icon",
     "psychiatry.icon",
     "radio_button_active.icon",

@@ -23,3 +23,13 @@ DEFAULT_TESTS = [
     "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
     '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test'  # Added to make sure that rust still compiles
 ]
+
+# Usually, README.chromium lives next to the BUILD.gn. However, some cases are
+# different, this dictionary allows setting a specific README.chromium path
+# for a specific BUILD.gn
+README_MAPPING = {
+    # Moving is undergoing, see crbug/40273848
+    "buildtools/third_party/libc++": "third_party/libc++",
+    # Moving is undergoing, see crbug/40273848
+    "buildtools/third_party/libc++abi": "third_party/libc++abi",
+}

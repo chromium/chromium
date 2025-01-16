@@ -24,6 +24,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
@@ -158,7 +159,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(identity.gaiaID));
+          ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
   if (!profileName.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -178,7 +179,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   GetApplicationContext()
       ->GetAccountProfileMapper()
       ->MakePersonalProfileManagedWithGaiaID(
-          base::SysNSStringToUTF8(identity.gaiaID), base::BindOnce(^{
+          GaiaId(identity.gaiaID), base::BindOnce(^{
             [weakDelegate didMakePersonalProfileManaged];
           }));
 }
@@ -351,7 +352,7 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
       IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
-          base::SysNSStringToUTF8(identity.gaiaID), userEmail);
+          GaiaId(identity.gaiaID), userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
       policy::UserPolicySigninServiceFactory::GetForProfile(profile);
@@ -397,9 +398,8 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       policy::UserPolicySigninServiceFactory::GetForProfile(profile);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
-  AccountId accountID =
-      AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(userEmail),
-                                     base::SysNSStringToUTF8(identity.gaiaID));
+  AccountId accountID = AccountId::FromUserEmailGaiaId(
+      gaia::CanonicalizeEmail(userEmail), GaiaId(identity.gaiaID));
 
   __weak __typeof(self) weakSelf = self;
 

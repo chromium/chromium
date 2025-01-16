@@ -42,6 +42,8 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
       ("ZLIB", LicenseType.RECIPROCAL, "SPDX-license-identifier-Zlib"),
     "MPL 1.1":
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
+    "MPL 2.0":
+      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
     "unencumbered":
       ("UNENCUMBERED", LicenseType.UNENCUMBERED,
        "SPDX-license-identifier-Unlicense"),
@@ -57,8 +59,7 @@ POST_PROCESS_OPERATION = {
     "base/third_party/nspr/README.chromium": create_license_post_processing(
         Mapper("License", ['MPL 1.1/GPL 2.0/LGPL 2.1'], ["MPL 1.1"])),
     "url/third_party/mozilla/README.chromium": create_license_post_processing(
-        Mapper("License", ['BSD and MPL 1.1/GPL 2.0/LGPL 2.1'],
-               ["BSD"])),
+        Mapper("License", ['MPLv2'], ["MPL 2.0"])),
     "third_party/libc++abi/README.chromium": create_license_post_processing(
         Mapper("License",
                ['MIT',
@@ -110,4 +111,13 @@ IGNORED_README = {
     "third_party/rust/rstest_macros/v0_17/README.chromium",
     "third_party/rust/codespan_reporting/v0_11/README.chromium",
     "third_party/rust/rstest_reuse/v0_5/README.chromium",
+}
+
+# READMEs that should have been discovered through gn, but were not, e.g.
+# because they don't have a corresponding BUILD.gn file.
+# TODO: http://crbug.com/389925432 - remove the need for this list.
+INCLUDED_README = {
+  "base/third_party/nspr/README.chromium",
+  "third_party/boringssl/src/pki/testdata/nist-pkits/README.chromium",
+  "url/third_party/mozilla/README.chromium",
 }

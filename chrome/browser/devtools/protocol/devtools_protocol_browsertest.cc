@@ -546,7 +546,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kDIPS,
+        /*enabled_features=*/{{features::kBtm,
                                {{"delete", "true"},
                                 {"triggering_action", "stateful_bounce"}}}},
         /*disabled_features=*/{});
@@ -589,8 +589,8 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
     return testing::AssertionFailure() << "Failed to wait for loading to stop";
   }
 
-  content::DIPSService* dips_service =
-      content::DIPSService::Get(web_contents->GetBrowserContext());
+  content::BtmService* dips_service =
+      content::BtmService::Get(web_contents->GetBrowserContext());
   if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
     return testing::AssertionFailure()
            << "Failed to navigate to " << bounce_url;
@@ -626,15 +626,14 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
                                        << final_observer.redirects()->size();
   }
 
-  const content::DIPSRedirectInfo& redirect =
-      *final_observer.redirects()->at(0);
+  const content::BtmRedirectInfo& redirect = *final_observer.redirects()->at(0);
   if (redirect.url.url != bounce_url) {
     return testing::AssertionFailure() << "Expected redirect at " << bounce_url
                                        << "; found " << redirect.url.url;
   }
 
-  if (redirect.access_type != content::DIPSDataAccessType::kWrite &&
-      redirect.access_type != content::DIPSDataAccessType::kReadWrite) {
+  if (redirect.access_type != content::BtmDataAccessType::kWrite &&
+      redirect.access_type != content::BtmDataAccessType::kReadWrite) {
     return testing::AssertionFailure()
            << "No write access recorded for redirect";
   }
@@ -672,15 +671,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
   EXPECT_THAT(deleted_sites, testing::ElementsAre("example.test"));
 }
 
-class DIPSStatusDevToolsProtocolTest
+class BtmStatusDevToolsProtocolTest
     : public DevToolsProtocolTest,
       public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
   // The fields of `GetParam()` indicate/control the following:
-  //   `std::get<0>(GetParam())` => `features::kDIPS`
-  //   `std::get<1>(GetParam())` => `features::kDIPSDeletionEnabled`
-  //   `std::get<2>(GetParam())` => `features::kDIPSTriggeringAction`
+  //   `std::get<0>(GetParam())` => `features::kBtm`
+  //   `std::get<1>(GetParam())` => `features::kBtmDeletionEnabled`
+  //   `std::get<2>(GetParam())` => `features::kBtmTriggeringAction`
   //
-  // In order for Bounce Tracking Mitigations to take effect, `features::kDIPS`
+  // In order for Bounce Tracking Mitigations to take effect, `features::kBtm`
   // must be true/enabled, `kDeletionEnabled` must be true, and
   // `kTriggeringAction` must NOT be `none`.
   //
@@ -691,11 +690,11 @@ class DIPSStatusDevToolsProtocolTest
   void SetUp() override {
     if (std::get<0>(GetParam())) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kDIPS,
+          features::kBtm,
           {{"delete", base::ToString((std::get<1>(GetParam())))},
            {"triggering_action", std::get<2>(GetParam())}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kDIPS);
+      scoped_feature_list_.InitAndDisableFeature(features::kBtm);
     }
 
     DevToolsProtocolTest::SetUp();
@@ -710,7 +709,7 @@ class DIPSStatusDevToolsProtocolTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(DIPSStatusDevToolsProtocolTest,
+IN_PROC_BROWSER_TEST_P(BtmStatusDevToolsProtocolTest,
                        TrueWhenEnabledAndDeleting) {
   AttachToBrowserTarget();
 
@@ -723,7 +722,7 @@ IN_PROC_BROWSER_TEST_P(DIPSStatusDevToolsProtocolTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DIPSStatusDevToolsProtocolTest,
+    BtmStatusDevToolsProtocolTest,
     ::testing::Combine(
         ::testing::Bool(),
         ::testing::Bool(),

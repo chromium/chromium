@@ -336,6 +336,7 @@ AuctionV8Helper::SerializedValue::~SerializedValue() {
 
 AuctionV8Helper::SerializedValue& AuctionV8Helper::SerializedValue::operator=(
     SerializedValue&& other) {
+  free(buffer_.ExtractAsDangling());
   buffer_ = other.buffer_;
   size_ = other.size_;
   other.buffer_ = nullptr;

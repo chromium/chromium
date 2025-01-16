@@ -17,7 +17,6 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/share_url_interception_context.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/data_type_sync_bridge.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -30,6 +29,10 @@ class Image;
 namespace image_fetcher {
 class ImageFetcher;
 }  // namespace image_fetcher
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
 
 namespace data_sharing {
 class DataSharingNetworkLoader;

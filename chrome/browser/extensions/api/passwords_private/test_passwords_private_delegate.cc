@@ -134,11 +134,12 @@ bool TestPasswordsPrivateDelegate::ChangeCredential(
 void TestPasswordsPrivateDelegate::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
-  const auto removed = base::ranges::remove(
+  const auto to_remove = std::ranges::remove(
       current_entries_, id, &api::passwords_private::PasswordUiEntry::id);
-  if (removed != current_entries_.end()) {
-    last_deleted_entry_ = std::move(*removed);
-    current_entries_.erase(removed);
+  if (!to_remove.empty()) {
+    CHECK_EQ(1u, to_remove.size());
+    last_deleted_entry_ = std::move(*to_remove.begin());
+    current_entries_.erase(to_remove.begin(), to_remove.end());
   }
   SendSavedPasswordsList();
 }

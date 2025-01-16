@@ -38,19 +38,19 @@ namespace {
 constexpr char kValidToken[] = "valid-token";
 
 constexpr char kPrimaryAccount[] = "primaryaccount@gmail.com";
-constexpr char kPrimaryAccountGaiaId[] = "primary-account-id";
+constexpr GaiaId::Literal kPrimaryAccountGaiaId("primary-account-id");
 
 constexpr char kSecondaryAccount1[] = "secondaryAccount1@gmail.com";
-constexpr char kSecondaryAccount1GaiaId[] = "secondary-account-1";
+constexpr GaiaId::Literal kSecondaryAccount1GaiaId("secondary-account-1");
 
 constexpr char kSecondaryAccount2[] = "secondaryAccount2@gmail.com";
-constexpr char kSecondaryAccount2GaiaId[] = "secondary-account-2";
+constexpr GaiaId::Literal kSecondaryAccount2GaiaId("secondary-account-2");
 
 constexpr char kSecondaryAccount3[] = "secondaryAccount3@gmail.com";
-constexpr char kSecondaryAccount3GaiaId[] = "secondary-account-3";
+constexpr GaiaId::Literal kSecondaryAccount3GaiaId("secondary-account-3");
 
 constexpr char kSecondaryAccount4[] = "secondaryAccount4@gmail.com";
-constexpr char kSecondaryAccount4GaiaId[] = "secondary-account-4";
+constexpr GaiaId::Literal kSecondaryAccount4GaiaId("secondary-account-4");
 
 const AccountId kDeviceAccount =
     AccountId::FromUserEmailGaiaId(kPrimaryAccount,

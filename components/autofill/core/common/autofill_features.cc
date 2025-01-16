@@ -809,7 +809,7 @@ BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,
 // virtual view structures to third party providers.
 BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
              "AutofillThirdPartyModeContentProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the whether the Chrome may provide a virtual view structure for
 // Android Autofill.

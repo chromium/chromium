@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -15,11 +14,9 @@
 namespace viz {
 
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
-    SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
-      shared_bitmap_manager_(shared_bitmap_manager),
       shared_image_manager_(shared_image_manager),
       gpu_scheduler_(scheduler) {
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
@@ -53,36 +50,20 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
-  if (resource->transferable.IsSoftwareSharedImage()) {
-    DCHECK(shared_image_manager_);
-    auto it = resource_shared_images_.find(id);
-    if (it == resource_shared_images_.end()) {
-      const gpu::Mailbox& mailbox = resource->transferable.mailbox();
-      auto access = std::make_unique<SharedImageAccess>();
-      access->representation = GetSharedImageRepresentation(
-          mailbox, resource->transferable.sync_token());
-      if (!access->representation) {
-        return nullptr;
-      }
+  DCHECK(resource->transferable.IsSoftwareSharedImage());
+  DCHECK(shared_image_manager_);
+  auto it = resource_shared_images_.find(id);
+  if (it == resource_shared_images_.end()) {
+    const gpu::Mailbox& mailbox = resource->transferable.mailbox();
+    auto access = std::make_unique<SharedImageAccess>();
+    access->representation = GetSharedImageRepresentation(
+        mailbox, resource->transferable.sync_token());
+    if (!access->representation) {
+      return nullptr;
+    }
 
-      access->read_access = access->representation->BeginScopedReadAccess();
-      resource_shared_images_.emplace(id, std::move(access));
-    }
-  } else {
-    if (!resource->shared_bitmap) {
-      const SharedBitmapId& shared_bitmap_id =
-          resource->transferable.shared_bitmap_id();
-      std::unique_ptr<SharedBitmap> bitmap =
-          shared_bitmap_manager_->GetSharedBitmapFromId(
-              resource->transferable.size, resource->transferable.format,
-              shared_bitmap_id);
-      if (bitmap) {
-        resource->shared_bitmap = std::move(bitmap);
-        resource->shared_bitmap_tracing_guid =
-            shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
-                shared_bitmap_id);
-      }
-    }
+    access->read_access = access->representation->BeginScopedReadAccess();
+    resource_shared_images_.emplace(id, std::move(access));
   }
 
   resource->lock_for_read_count++;

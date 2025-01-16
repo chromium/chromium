@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
+#import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
@@ -30,22 +31,22 @@
 @implementation AIPrototypingMediator {
   raw_ptr<WebStateList> _webStateList;
 
+  // Mojo related service and service implementations. Kept alive to have an
+  // existing implementation instance during the lifecycle of the mediator.
   // Remote used to make calls to functions related to `AIPrototypingService`.
   mojo::Remote<ai::mojom::AIPrototypingService> _ai_prototyping_service;
   // Instantiated to pipe virtual remote calls to overridden functions in the
-  // `AIPrototypingServiceImpl`. Kept alive to have an existing implementation
-  // instance during the lifecycle of the mediator.
+  // `AIPrototypingServiceImpl`.
   std::unique_ptr<ai::AIPrototypingServiceImpl> _ai_prototyping_service_impl;
 
-// TODO(crbug.com/379908732): Move to a mojo interface.
+  // Remote used to make calls to functions related to `TabOrganizationService`.
+  mojo::Remote<ai::mojom::TabOrganizationService> _tab_organization_service;
+  // Instantiated to pipe virtual remote calls to overridden functions in the
+  // `TabOrganizationServiceImpl`.
+  std::unique_ptr<ai::TabOrganizationServiceImpl>
+      _tab_organization_service_impl;
+
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  // Service used to execute LLM queries.
-  raw_ptr<OptimizationGuideService> _service;
-
-  // Retains the on-device session in memory.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      _on_device_session;
-
   // The Tab Organization feature's request wrapper.
   TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
 #endif
@@ -56,21 +57,22 @@
   if (self) {
     _webStateList = webStateList;
 
-// TODO(crbug.com/379908732): Remove when service is fully ported to a mojo
-// interface.
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-    _service = OptimizationGuideServiceFactory::GetForProfile(
-        ProfileIOS::FromBrowserState(
-            _webStateList->GetActiveWebState()->GetBrowserState()));
-#endif
-
-    mojo::PendingReceiver<ai::mojom::AIPrototypingService> receiver =
-        _ai_prototyping_service.BindNewPipeAndPassReceiver();
+    bool startOnDevice = false;
+    mojo::PendingReceiver<ai::mojom::AIPrototypingService>
+        ai_prototyping_receiver =
+            _ai_prototyping_service.BindNewPipeAndPassReceiver();
     web::BrowserState* browserState =
         _webStateList->GetActiveWebState()->GetBrowserState();
     _ai_prototyping_service_impl =
         std::make_unique<ai::AIPrototypingServiceImpl>(
-            std::move(receiver), browserState, /*start_on_device=*/false);
+            std::move(ai_prototyping_receiver), browserState, startOnDevice);
+
+    mojo::PendingReceiver<ai::mojom::TabOrganizationService>
+        tab_organization_receiver =
+            _tab_organization_service.BindNewPipeAndPassReceiver();
+    _tab_organization_service_impl =
+        std::make_unique<ai::TabOrganizationServiceImpl>(
+            std::move(tab_organization_receiver), _webStateList, startOnDevice);
   }
   return self;
 }
@@ -109,91 +111,42 @@
          TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
   __weak __typeof(self) weakSelf = self;
 
+  // Create return callback for `_tab_organization_service`.
+  base::OnceCallback<void(const std::string& response_string)>
+      service_callback =
+          base::BindOnce(^void(const std::string& response_string) {
+            [weakSelf.consumer
+                updateQueryResult:base::SysUTF8ToNSString(response_string)
+                       forFeature:AIPrototypingFeature::kTabOrganization];
+          });
+
+  // Create completion callback for TabOrganization request wrapper.
+  base::OnceCallback<void(
+      std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)>
+      completion_callback = base::BindOnce(
+          [](AIPrototypingMediator* mediator,
+             base::OnceCallback<void(const std::string& response_string)>
+                 callback,
+             std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>
+                 request) {
+            ::mojo_base::ProtoWrapper proto_wrapper =
+                mojo_base::ProtoWrapper(*request.get());
+
+            mediator->_tab_organization_service->ExecuteGroupTabs(
+                std::move(proto_wrapper), std::move(callback));
+          },
+          base::Unretained(self), std::move(service_callback));
+
   // Create the TabOrganization request wrapper, and start populating its
   // fields. When completed, `completionCallback` will be executed.
-  _tabOrganizationRequestWrapper =
-      [[TabOrganizationRequestWrapper alloc]
-                     initWithWebStateList:_webStateList
-          allowReorganizingExistingGroups:true
-                         groupingStrategy:strategy
-                       completionCallback:base::BindOnce(^(
-                                              std::unique_ptr<
-                                                  optimization_guide::proto::
-                                                      TabOrganizationRequest>
-                                                  request) {
-                         [weakSelf
-                             onTabOrganizationRequestCreated:std::move(
-                                                                 request)];
-                       })];
+  _tabOrganizationRequestWrapper = [[TabOrganizationRequestWrapper alloc]
+                 initWithWebStateList:_webStateList
+      allowReorganizingExistingGroups:true
+                     groupingStrategy:strategy
+                   completionCallback:std::move(completion_callback)];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
-}
-
-#pragma mark - Private
-
-// Handles the populated tab organization request by passing it to the model
-// execution service.
-- (void)onTabOrganizationRequestCreated:
-    (std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)
-        request {
-  // Execute the request.
-  __weak __typeof(self) weakSelf = self;
-  _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
-      *request.release(),
-      /*execution_timeout*/ std::nullopt,
-      base::BindOnce(
-          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
-            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            [weakSelf onGroupTabsResponse:std::move(result)];
-          }));
   _tabOrganizationRequestWrapper = nil;
-}
 
-// Handles the response for a tab organization query.
-- (void)onGroupTabsResponse:
-    (optimization_guide::OptimizationGuideModelExecutionResult)result {
-  std::string response = "";
-
-  // The model doesn't necessarily group every tab, so track the tabs that have
-  // been grouped in order to later list the ungrouped tabs.
-  NSMutableSet<NSNumber*>* groupedTabIdentifiers = [NSMutableSet set];
-
-  auto parsed = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(
-      result.response.value());
-
-  // For each tab group, print its name and the information of each tab within
-  // it.
-  for (const optimization_guide::proto::TabGroup& tab_group :
-       parsed->tab_groups()) {
-    response +=
-        base::StringPrintf("Group name: %s\n", tab_group.label().c_str());
-
-    for (const optimization_guide::proto::Tab& tab : tab_group.tabs()) {
-      response += base::StringPrintf("- %s (%s)\n", tab.title().c_str(),
-                                     tab.url().c_str());
-      [groupedTabIdentifiers addObject:[NSNumber numberWithInt:tab.tab_id()]];
-    }
-    response += "\n";
-  }
-
-  // Find the tabs that haven't been grouped, and print them under "Ungrouped
-  // tabs".
-  response += "\nUngrouped tabs:\n";
-  for (int index = 0; index < _webStateList->count(); ++index) {
-    web::WebState* webState = _webStateList->GetWebStateAt(index);
-    if (![groupedTabIdentifiers
-            containsObject:[NSNumber
-                               numberWithInt:webState->GetUniqueIdentifier()
-                                                 .identifier()]]) {
-      response += base::StringPrintf(
-          "- %s (%s)\n", base::UTF16ToUTF8(webState->GetTitle()).c_str(),
-          webState->GetVisibleURL().spec().c_str());
-    }
-  }
-
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
-                        forFeature:AIPrototypingFeature::kTabOrganization];
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)

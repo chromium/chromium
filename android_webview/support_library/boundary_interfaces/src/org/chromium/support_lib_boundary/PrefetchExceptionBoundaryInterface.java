@@ -4,9 +4,13 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public interface PrefetchExceptionBoundaryInterface {
 
-    String getMessage();
+    @Nullable String getMessage();
 
-    Throwable getCause();
+    @Nullable Throwable getCause();
 }

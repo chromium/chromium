@@ -1165,6 +1165,7 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     return;
   }
   browser->window()->UpdatePageActionIcon(PageActionIconType::kManagePasswords);
+  browser->window()->UpdatePageActionIcon(PageActionIconType::kChangePassword);
 }
 
 AccountChooserPrompt* ManagePasswordsUIController::CreateAccountChooser(

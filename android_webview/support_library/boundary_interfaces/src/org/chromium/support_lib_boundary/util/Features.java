@@ -4,11 +4,14 @@
 
 package org.chromium.support_lib_boundary.util;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Class containing all the features the support library can support. This class lives in the
  * boundary interface directory so that the Android Support Library and Chromium can share its
  * definition.
  */
+@NullMarked
 public class Features {
 
     // Features suffixed with DEV will only be visible on debug devices.

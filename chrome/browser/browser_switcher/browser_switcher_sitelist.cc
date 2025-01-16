@@ -38,9 +38,9 @@ namespace {
 // of |input|.
 auto StringFindInsensitiveASCII(std::string_view input,
                                 std::string_view token) {
-  return base::ranges::search(input, token, std::equal_to<>(),
-                              &base::ToLowerASCII<char>,
-                              &base::ToLowerASCII<char>);
+  return std::ranges::search(input, token, std::equal_to<>(),
+                             &base::ToLowerASCII<char>,
+                             &base::ToLowerASCII<char>);
 }
 
 // Checks if the omitted prefix for a non-fully specific prefix is one of the
@@ -176,8 +176,8 @@ class DefaultModeRule : public Rule {
     }
 
     // Compare hosts and ports, case-insensitive.
-    auto it = StringFindInsensitiveASCII(url.host_and_port(), pattern);
-    return it != url.host_and_port().end();
+    auto result = StringFindInsensitiveASCII(url.host_and_port(), pattern);
+    return !result.empty();
   }
 
   bool IsValid() const override { return true; }
@@ -242,11 +242,12 @@ class IESiteListModeRule : public Rule {
     //
     // "http://" may have been added by FixupUrl(), so look for it in the
     // original string instead.
-    if (valid_ && (StringFindInsensitiveASCII(original_rule, "http://") ==
-                       original_rule.begin() ||
-                   StringFindInsensitiveASCII(original_rule, "https://") ==
-                       original_rule.begin() ||
-                   url.SchemeIsFile())) {
+    if (valid_ &&
+        (StringFindInsensitiveASCII(original_rule, "http://").begin() ==
+             original_rule.begin() ||
+         StringFindInsensitiveASCII(original_rule, "https://").begin() ==
+             original_rule.begin() ||
+         url.SchemeIsFile())) {
       scheme_ = url.scheme();
     }
 
@@ -283,11 +284,8 @@ class IESiteListModeRule : public Rule {
       return false;
 
     // Compare paths, case-insensitively. They must match at the beginning.
-    auto pos = StringFindInsensitiveASCII(url.path_piece(), path_);
-    if (pos != url.path_piece().begin())
-      return false;
-
-    return true;
+    return StringFindInsensitiveASCII(url.path_piece(), path_).begin() ==
+           url.path_piece().begin();
   }
 
   bool IsValid() const override { return valid_; }

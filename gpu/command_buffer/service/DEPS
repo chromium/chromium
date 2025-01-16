@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/paint",
+  "+mojo/public",
   "+net",
   "+skia",
   "+third_party/dawn/include",

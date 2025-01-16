@@ -33,6 +33,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_common.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -257,7 +258,7 @@ class AXPosition {
 
   static const int BEFORE_TEXT = -1;
   static const int INVALID_INDEX = -2;
-  static const int INVALID_OFFSET = -1;
+  static const int INVALID_OFFSET = ax::mojom::kNoSelectionOffset;
 
   static AXPositionInstance CreateNullPosition() {
     AXPositionInstance new_position(new AXPositionType());

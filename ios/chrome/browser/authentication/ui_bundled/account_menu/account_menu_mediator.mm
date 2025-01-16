@@ -317,7 +317,7 @@
     std::optional<std::string> profileName =
         GetApplicationContext()
             ->GetAccountProfileMapper()
-            ->FindProfileNameForGaiaID(base::SysNSStringToUTF8(gaiaID));
+            ->FindProfileNameForGaiaID(GaiaId(gaiaID));
     if (profileName &&
         *profileName != _accountManagerService->GetProfileName()) {
       // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if

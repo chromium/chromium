@@ -2873,7 +2873,7 @@ ci.thin_tester(
             "gpu_fyi_win_optional_isolated_scripts",
         ],
         mixins = [
-            "win10_nvidia_rtx_4070_super_stable",
+            "win11_nvidia_rtx_4070_super_stable",
             "limited_capacity_bot",
         ],
     ),
@@ -2882,7 +2882,7 @@ ci.thin_tester(
         os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
+        category = "Windows|11|x64|Nvidia",
         short_name = "4070",
     ),
 )

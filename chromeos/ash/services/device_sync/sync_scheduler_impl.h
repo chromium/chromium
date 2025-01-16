@@ -25,13 +25,13 @@ class SyncSchedulerImpl : public SyncScheduler {
   // |base_recovery_period|: The initial time to wait for the
   //    AGGRESSIVE_RECOVERY strategy. The time delta is increased for each
   //    subsequent failure.
-  // |max_jitter_ratio|: The maximum ratio that the time to next sync can be
-  //    jittered (both positively and negatively).
+  // |max_jitter_percentage|: The maximum percentage that the time to next sync
+  //    can be jittered (both positively and negatively).
   // |scheduler_name|: The name of the scheduler for debugging purposes.
   SyncSchedulerImpl(Delegate* delegate,
                     base::TimeDelta refresh_period,
                     base::TimeDelta base_recovery_period,
-                    double max_jitter_ratio,
+                    double max_jitter_percentage,
                     const std::string& scheduler_name);
 
   SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
@@ -82,7 +82,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // The maximum percentage (both positively and negatively) that the time to
   // wait between each sync request is jittered. The jitter is randomly applied
   // to each period so we can avoid synchronous calls to the server.
-  const double max_jitter_ratio_;
+  const double max_jitter_percentage_;
 
   // The name of the scheduler, used for debugging purposes.
   const std::string scheduler_name_;

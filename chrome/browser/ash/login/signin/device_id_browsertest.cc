@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_PRE_NewUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken1);
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken2, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken2, FakeGaiaMixin::kFakeUserGaiaId);
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken2);
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_Migration) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
   // Simulate user that has device ID saved only in preferences (pre-M44).
   PrefService* prefs =
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_LegacyUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
+               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
   PrefService* prefs =
       ProfileHelper::Get()

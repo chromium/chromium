@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Stores information about a single profile.
 //
@@ -23,7 +24,7 @@
 class ProfileAttributesIOS {
  public:
   // Represents a set of gaia ids.
-  using GaiaIdSet = std::set<std::string, std::less<>>;
+  using GaiaIdSet = std::set<GaiaId, std::less<>>;
 
   // Represents a set of session ids.
   using SessionIds = std::set<std::string>;
@@ -52,7 +53,7 @@ class ProfileAttributesIOS {
   // and all first-time setup steps have been completed (e.g. for work profiles,
   // this includes signing in the corresponding managed account).
   bool IsFullyInitialized() const;
-  const std::string& GetGaiaId() const;
+  GaiaId GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
   GaiaIdSet GetAttachedGaiaIds() const;
@@ -64,8 +65,7 @@ class ProfileAttributesIOS {
   // Sets information related to the profile.
   void ClearIsNewProfile();
   void SetFullyInitialized();
-  void SetAuthenticationInfo(std::string_view gaia_id,
-                             std::string_view user_name);
+  void SetAuthenticationInfo(const GaiaId& gaia_id, std::string_view user_name);
   void SetHasAuthenticationError(bool value);
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);

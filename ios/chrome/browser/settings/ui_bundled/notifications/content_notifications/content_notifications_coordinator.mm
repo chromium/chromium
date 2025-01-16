@@ -59,7 +59,7 @@
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  const GaiaId gaiaID(identity.gaiaID);
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
 
   self.viewController = [[ContentNotificationsViewController alloc]

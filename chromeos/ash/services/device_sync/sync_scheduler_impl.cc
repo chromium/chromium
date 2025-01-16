@@ -41,16 +41,19 @@ std::string TimeDeltaToString(const base::TimeDelta& time_delta) {
 SyncSchedulerImpl::SyncSchedulerImpl(Delegate* delegate,
                                      base::TimeDelta refresh_period,
                                      base::TimeDelta base_recovery_period,
-                                     double max_jitter_ratio,
+                                     double max_jitter_percentage,
                                      const std::string& scheduler_name)
     : delegate_(delegate),
       refresh_period_(refresh_period),
       base_recovery_period_(base_recovery_period),
-      max_jitter_ratio_(max_jitter_ratio),
+      max_jitter_percentage_(max_jitter_percentage),
       scheduler_name_(scheduler_name),
       strategy_(Strategy::PERIODIC_REFRESH),
       sync_state_(SyncState::NOT_STARTED),
-      failure_count_(0) {}
+      failure_count_(0) {
+  CHECK(!refresh_period_.is_negative());
+  CHECK(!base_recovery_period_.is_negative());
+}
 
 SyncSchedulerImpl::~SyncSchedulerImpl() {}
 
@@ -165,12 +168,9 @@ void SyncSchedulerImpl::OnSyncCompleted(bool success) {
 }
 
 base::TimeDelta SyncSchedulerImpl::GetJitteredPeriod() {
-  double jitter = 2 * max_jitter_ratio_ * (base::RandDouble() - 0.5);
-  base::TimeDelta period = GetPeriod();
-  base::TimeDelta jittered_time_delta = period + (period * jitter);
-  if (jittered_time_delta.InMilliseconds() < 0)
-    jittered_time_delta = base::Milliseconds(0);
-  return jittered_time_delta;
+  const base::TimeDelta jittered_time_delta =
+      base::RandomizeByPercentage(GetPeriod(), max_jitter_percentage_);
+  return std::max(jittered_time_delta, base::Milliseconds(0));
 }
 
 base::TimeDelta SyncSchedulerImpl::GetPeriod() {

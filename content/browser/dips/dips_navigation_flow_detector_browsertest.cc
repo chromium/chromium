@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
-      static_cast<int64_t>(DIPSRedirectType::kServer));
+      static_cast<int64_t>(BtmRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
   // It's not possible to interact with a page that server-redirected.
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(
                                          first_entrypoint_url);
   ukm_recorder().ExpectEntryMetric(
       first_entrypoint_entry, "ExitRedirectType",
-      static_cast<int64_t>(DIPSRedirectType::kServer));
+      static_cast<int64_t>(BtmRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(first_entrypoint_entry, "FlowId",
                                    *first_flow_id);
   auto second_entrypoint_entry = entrypoint_entries.at(1);
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(
                                          second_entrypoint_url);
   ukm_recorder().ExpectEntryMetric(
       second_entrypoint_entry, "ExitRedirectType",
-      static_cast<int64_t>(DIPSRedirectType::kServer));
+      static_cast<int64_t>(BtmRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(second_entrypoint_entry, "FlowId",
                                    *second_flow_id);
   // It's not possible to interact with a page that server-redirected.
@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
-      static_cast<int64_t>(DIPSRedirectType::kClient));
+      static_cast<int64_t>(BtmRedirectType::kClient));
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
   // Expect InFlowInteraction to have been emitted appropriately.
   auto in_flow_interaction_entries =
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
-      static_cast<int64_t>(DIPSRedirectType::kClient));
+      static_cast<int64_t>(BtmRedirectType::kClient));
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
 }
 

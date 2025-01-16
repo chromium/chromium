@@ -269,8 +269,6 @@ component("network_service") {
 
   if (is_chromeos) {
     sources += [
-      "cert_verifier_with_trust_anchors.cc",
-      "cert_verifier_with_trust_anchors.h",
       "dhcp_pac_file_fetcher_mojo.cc",
       "dhcp_pac_file_fetcher_mojo.h",
     ]
@@ -517,10 +515,7 @@ source_set("tests") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "cert_verifier_with_trust_anchors_unittest.cc",
-      "dhcp_pac_file_fetcher_mojo_unittest.cc",
-    ]
+    sources += [ "dhcp_pac_file_fetcher_mojo_unittest.cc" ]
   }
 
   if (is_win) {

@@ -80,8 +80,7 @@
           self.browser->GetProfile());
 
   id<SystemIdentity> identity =
-      accountManagerService->GetIdentityOnDeviceWithGaiaID(
-          base::SysNSStringToUTF8(gaiaID));
+      accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
   DCHECK(identity);
   self.mediator.selectedIdentity = identity;
   [self.delegate consistencyAccountChooserCoordinatorIdentitySelected:self];

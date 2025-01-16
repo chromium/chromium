@@ -84,5 +84,6 @@ UserAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<user_annotations::UserAnnotationsService>(
-      ogks, profile->GetPath(), g_browser_process->os_crypt_async(), ogks);
+      ogks, ogks->GetModelQualityLogsUploaderService(), profile->GetPath(),
+      g_browser_process->os_crypt_async(), ogks);
 }

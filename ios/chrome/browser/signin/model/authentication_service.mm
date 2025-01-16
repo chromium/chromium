@@ -27,6 +27,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -71,7 +72,7 @@ enum class IOSDeviceRestoreSignedinState : int {
 CoreAccountId SystemIdentityToAccountID(
     signin::IdentityManager* identity_manager,
     id<SystemIdentity> identity) {
-  std::string gaia_id = base::SysNSStringToUTF8([identity gaiaID]);
+  GaiaId gaia_id([identity gaiaID]);
   std::string email = base::SysNSStringToUTF8([identity userEmail]);
   return identity_manager->PickAccountIdForAccount(gaia_id, email);
 }
@@ -87,8 +88,7 @@ void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
     [account setObject:base::SysUTF8ToNSString(account_info.email)
                 forKey:app_group::kEmail];
     // Add the account to the dictionary of accounts.
-    [accounts setObject:account
-                 forKey:base::SysUTF8ToNSString(account_info.gaia)];
+    [accounts setObject:account forKey:account_info.gaia.ToNSString()];
     // TODO(crbug.com/380847504): Save avatar info to disk.
   }
 
@@ -406,8 +406,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      base::SysNSStringToUTF8(identity.gaiaID),
-      base::SysNSStringToUTF8(identity.userEmail));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
 
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library.
@@ -465,8 +464,7 @@ void AuthenticationService::GrantSyncConsent(
   DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      base::SysNSStringToUTF8(identity.gaiaID),
-      base::SysNSStringToUTF8(identity.userEmail));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library and that hosted_domain is set (should be the proper
   // hosted domain or kNoHostedDomainFound that are both non-empty strings).
@@ -670,8 +668,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      base::SysNSStringToUTF8(identity.gaiaID),
-      base::SysNSStringToUTF8(identity.userEmail));
+      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
   if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
     return;
   }
@@ -772,7 +769,7 @@ void AuthenticationService::HandleForgottenIdentity(
   // Sign the user out.
   SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
 
-  NSString* gaia_id = base::SysUTF8ToNSString(account_info.gaia);
+  NSString* gaia_id = account_info.gaia.ToNSString();
   // Should prompt the user if the identity was not removed by the user.
   bool should_prompt = !GetApplicationContext()
                             ->GetSystemIdentityManager()
@@ -831,8 +828,8 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   std::vector<signin::GaiaIdHash> available_gaia_ids;
   for (id<SystemIdentity> identity in account_manager_service_
            ->GetAllIdentities()) {
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-        base::SysNSStringToUTF8(identity.gaiaID));
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(GaiaId(identity.gaiaID));
     available_gaia_ids.push_back(gaia_id_hash);
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(

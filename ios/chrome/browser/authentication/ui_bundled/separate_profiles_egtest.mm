@@ -242,13 +242,12 @@ id<GREYMatcher> PromoDeclineButtonMatcher() {
 
 // Tests signing in with a managed account during the FRE. This should convert
 // the existing profile to a managed profile.
-// TODO(crbug.com/390383517): Fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSignInWithManagedAccount FLAKY_testSignInWithManagedAccount
-#else
-#define MAYBE_testSignInWithManagedAccount testSignInWithManagedAccount
-#endif
 - (void)testSignInWithManagedAccount {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+
   FakeSystemIdentity* const managedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey addFakeIdentity:managedIdentity];

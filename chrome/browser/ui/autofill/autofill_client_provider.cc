@@ -92,6 +92,8 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
                     uses_platform_autofill_);
   if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVirtualViewStructureAndroid) &&
+      base::FeatureList::IsEnabled(
           autofill::features::kAutofillThirdPartyModeContentProvider)) {
     Java_AutofillClientProviderUtils_setThirdPartyModePref(
         base::android::AttachCurrentThread(), uses_platform_autofill_);

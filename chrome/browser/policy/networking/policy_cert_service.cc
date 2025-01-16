@@ -16,11 +16,8 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -171,16 +168,6 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
                             extension_trust_anchors.end());
 }
 
-// static
-bool PolicyCertService::UsedPolicyCertificates(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates);
-}
-
-// static
-void PolicyCertService::SetUsedPolicyCertificates(Profile* profile) {
-  profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);
-}
-
 net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
   if (!may_use_profile_wide_trust_anchors_) {
     return {};
@@ -188,11 +175,6 @@ net::CertificateList PolicyCertService::GetAllowedProfileWideTrustAnchors() {
 
   return policy_certificate_provider_->GetWebTrustedCertificates(
       chromeos::onc::CertificateScope::Default());
-}
-
-//  static
-void PolicyCertService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kUsedPolicyCertificates, false);
 }
 
 // static

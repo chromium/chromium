@@ -14,6 +14,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
@@ -323,7 +324,7 @@ enum class SigninScreenState {
 - (bool)selectedIdentityIsValid {
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (self.selectedIdentity) {
-      std::string gaia = base::SysNSStringToUTF8(self.selectedIdentity.gaiaID);
+      GaiaId gaia(self.selectedIdentity.gaiaID);
       return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
                             [](const AccountInfo& info) { return info.gaia; });
     }

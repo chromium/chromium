@@ -881,7 +881,7 @@ std::optional<std::string> LoopbackServer::SerializeData() {
   }
   UMA_HISTOGRAM_MEMORY_KB(
       "Sync.Local.FileSizeKB",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           base::ClampDiv(base::ClampAdd(data.size(), 512), 1024)));
   return data;
 }

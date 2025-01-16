@@ -324,8 +324,7 @@ bool CredentialProviderService::SaveAccountInfo() {
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return credential_provider_extension::StoreAccountInfoInKeychain(
-      base::SysUTF8ToNSString(account.gaia),
-      base::SysUTF8ToNSString(account.email));
+      account.gaia.ToNSString(), base::SysUTF8ToNSString(account.email));
 }
 
 void CredentialProviderService::SyncStore() {
@@ -370,7 +369,7 @@ void CredentialProviderService::AddCredentialsLegacy(
       CanSendHistoryData(sync_service_);
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = account.gaia.ToNSString();
 
   int fetched_favicon_count = 0;
 
@@ -412,7 +411,7 @@ void CredentialProviderService::AddCredentialsRefactored(
       CanSendHistoryData(sync_service_);
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = account.gaia.ToNSString();
 
   // Get the list of existing favicon files, along with their creation date.
   NSDictionary<NSString*, NSDate*>* favicon_dict =
@@ -457,7 +456,7 @@ void CredentialProviderService::AddCredentials(
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
+  NSString* gaia = account.gaia.ToNSString();
 
   for (const auto& passkey : passkeys) {
     if (passkey.hidden()) {
@@ -512,7 +511,7 @@ void CredentialProviderService::UpdateAccountId() {
   NSString* account_id = nil;
   if (!account.IsEmpty() &&
       identity_manager_->FindExtendedAccountInfo(account).IsManaged()) {
-    account_id = base::SysUTF8ToNSString(account.gaia);
+    account_id = account.gaia.ToNSString();
   }
   [app_group::GetGroupUserDefaults()
       setObject:account_id

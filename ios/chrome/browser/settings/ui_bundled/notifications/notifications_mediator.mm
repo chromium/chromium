@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
@@ -63,7 +64,7 @@
 
 @implementation NotificationsMediator {
   // Identity object that contains the user's account details.
-  std::string _gaiaID;
+  GaiaId _gaiaID;
   // Used to refresh Send Tab notifications enabled status in DeviceInfo.
   raw_ptr<syncer::DeviceInfoSyncService> _deviceInfoSyncService;
 }
@@ -75,7 +76,7 @@
 @synthesize sendTabNotificationsItem = _sendTabNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID
+                             gaiaID:(const GaiaId&)gaiaID
               deviceInfoSyncService:
                   (syncer::DeviceInfoSyncService*)deviceInfoSyncService {
   self = [super init];
@@ -451,9 +452,8 @@
   if (!_prefService->GetBoolean(
           prefs::kSendTabNotificationsPreviouslyDisabled) &&
       clientEnabled) {
-    pushNotificationService->SetPreference(base::SysUTF8ToNSString(_gaiaID),
-                                           PushNotificationClientId::kSendTab,
-                                           true);
+    pushNotificationService->SetPreference(
+        _gaiaID.ToNSString(), PushNotificationClientId::kSendTab, true);
     // Refresh enabled status in DeviceInfo.
     _deviceInfoSyncService->RefreshLocalDeviceInfo();
   }
@@ -465,7 +465,7 @@
 - (void)disablePreferenceFor:(PushNotificationClientId)clientID {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(base::SysUTF8ToNSString(_gaiaID), clientID, false);
+  service->SetPreference(_gaiaID.ToNSString(), clientID, false);
 }
 
 // Returns the TableViewSwitchItem for the given `clientId`.

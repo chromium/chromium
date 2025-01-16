@@ -1429,6 +1429,13 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     flags |= RenderProcessFlags::kFontDataManager;
   }
 #endif
+
+  if (site_instance &&
+      GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
+          site_instance->GetSiteInfo().process_lock_url())) {
+    flags |= RenderProcessFlags::kDisallowV8FeatureFlagOverrides;
+  }
+
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
                                    flags);
 }
@@ -3178,6 +3185,10 @@ bool RenderProcessHostImpl::AreV8OptimizationsDisabled() {
   return !!(flags_ & RenderProcessFlags::kV8OptimizationsDisabled);
 }
 
+bool RenderProcessHostImpl::DisallowV8FeatureFlagOverrides() {
+  return !!(flags_ & RenderProcessFlags::kDisallowV8FeatureFlagOverrides);
+}
+
 bool RenderProcessHostImpl::IsPdf() {
   return !!(flags_ & RenderProcessFlags::kPdf);
 }
@@ -3263,6 +3274,10 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   } else if (AreV8OptimizationsDisabled()) {
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--disable-optimizing-compilers");
+  }
+
+  if (DisallowV8FeatureFlagOverrides()) {
+    command_line->AppendSwitch(switches::kDisallowV8FeatureFlagOverrides);
   }
 
   if (features::IsTouchTextEditingRedesignEnabled()) {
@@ -4394,6 +4409,14 @@ bool RenderProcessHostImpl::IsSuitableHost(
       site_info.storage_partition_config());
   if (!host->InSameStoragePartition(dest_partition))
     return false;
+
+  // If this process has a different v8 feature flag override policy then it
+  // can't be reused.
+  if (host->DisallowV8FeatureFlagOverrides() !=
+      GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
+          site_info.process_lock_url())) {
+    return false;
+  }
 
   // Check WebUI bindings and origin locks.  Note that |lock_url| may differ
   // from |site_url| if an effective URL is used.

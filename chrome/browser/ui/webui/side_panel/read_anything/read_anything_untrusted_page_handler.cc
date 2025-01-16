@@ -623,7 +623,9 @@ void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
   ScopedListPrefUpdate update(
       prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
   if (enabled) {
-    if (!base::Contains(update.Get(), lang)) {
+    const std::string& (base::Value::*get_string)() const =
+        &base::Value::GetString;
+    if (!base::Contains(update.Get(), lang, get_string)) {
       update->Append(lang);
     }
   } else {

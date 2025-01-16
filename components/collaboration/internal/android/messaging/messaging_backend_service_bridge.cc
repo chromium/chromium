@@ -175,6 +175,27 @@ MessagingBackendServiceBridge::GetActivityLog(
   return ActivityLogItemsToJava(env, activity_log_items);
 }
 
+void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    const base::android::JavaParamRef<jobject>& j_local_group_id,
+    const base::android::JavaParamRef<jstring>& j_sync_group_id) {
+  if (j_local_group_id) {
+    CHECK(!j_sync_group_id);
+    auto group_id =
+        tab_groups::TabGroupSyncConversionsBridge::FromJavaTabGroupId(
+            env, j_local_group_id);
+    service_->ClearDirtyTabMessagesForGroup(group_id);
+  }
+  if (j_sync_group_id) {
+    CHECK(!j_local_group_id);
+    std::string sync_group_id_str =
+        base::android::ConvertJavaStringToUTF8(env, j_sync_group_id);
+    auto group_id = base::Uuid::ParseLowercase(sync_group_id_str);
+    service_->ClearDirtyTabMessagesForGroup(group_id);
+  }
+}
+
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_caller,

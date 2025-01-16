@@ -356,9 +356,7 @@ void PasswordChangeDelegateImpl::ChangePasswordFormFilled(
 void PasswordChangeDelegateImpl::FillChangePasswordForm(
     password_manager::PasswordForm form,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
-  CHECK(form_manager_);
-
-  if (!driver || !driver->GetPasswordGenerationHelper()) {
+  if (!form_manager_ || !driver || !driver->GetPasswordGenerationHelper()) {
     return;
   }
 

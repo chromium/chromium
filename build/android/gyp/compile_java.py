@@ -742,9 +742,13 @@ def main(argv):
       errorprone_flags += ['-XepOpt:NullAway:OnlyNullMarked']
       errorprone_flags += [
           '-XepOpt:NullAway:CustomContractAnnotations='
-          'org.chromium.build.annotations.Contract'
+          'org.chromium.build.annotations.Contract,'
+          'org.chromium.support_lib_boundary.util.Contract'
       ]
-      errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
+      # TODO(agrieve): Re-enable once this is fixed:
+      #     https://github.com/uber/NullAway/issues/1104
+      # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
+
       # Make it a warning to use assumeNonNull() with a @NonNull.
       errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
                             'org.chromium.build.NullUtil.assumeNonNull')]

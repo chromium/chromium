@@ -31,8 +31,7 @@ AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
 }
 
 void AutofillProgressDialogControllerImpl::ShowDialog(
-    base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
-        create_and_show_view_callback) {
+    CreateAndShowViewCallback create_and_show_view_callback) {
   if (autofill_progress_dialog_view_) {
     return;
   }
@@ -62,7 +61,7 @@ void AutofillProgressDialogControllerImpl::DismissDialog(
 void AutofillProgressDialogControllerImpl::OnDismissed(
     bool is_canceled_by_user) {
   // Dialog is being dismissed so set the pointer to nullptr.
-  autofill_progress_dialog_view_ = nullptr;
+  autofill_progress_dialog_view_.reset();
   if (is_canceled_by_user) {
     std::move(cancel_callback_).Run();
   } else {

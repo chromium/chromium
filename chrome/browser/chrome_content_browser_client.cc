@@ -567,8 +567,6 @@
 #include "chrome/browser/chromeos/quickoffice/quickoffice_prefs.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/smart_card/chromeos_smart_card_delegate.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -3708,14 +3706,6 @@ void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
       accessing_site.GetURL(), top_frame_site.GetURL(), ttl,
       /*use_schemeless_patterns=*/ignore_schemes);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ChromeContentBrowserClient::OnTrustAnchorUsed(
-    content::BrowserContext* browser_context) {
-  policy::PolicyCertService::SetUsedPolicyCertificates(
-      Profile::FromBrowserContext(browser_context));
-}
-#endif
 
 bool ChromeContentBrowserClient::CanSendSCTAuditingReport(
     content::BrowserContext* browser_context) {
@@ -7875,6 +7865,13 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
               CONTENT_SETTING_BLOCK);
 }
 
+bool ChromeContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
+    const GURL& site_url) {
+  // Disable V8 feature flag overrides specifically for top-chrome WebUI URLs.
+  return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
+         IsTopChromeWebUIURL(site_url);
+}
+
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }
@@ -8568,9 +8565,9 @@ bool ShouldBrowserContextEnableDips(content::BrowserContext* browser_context) {
 
 void ChromeContentBrowserClient::OnDipsServiceCreated(
     content::BrowserContext* browser_context,
-    content::DIPSService* dips_service) {
-  // Create DIPSBrowserSigninDetector.
-  CHECK(DIPSBrowserSigninDetector::Get(browser_context));
+    content::BtmService* dips_service) {
+  // Create BtmBrowserSigninDetector.
+  CHECK(BtmBrowserSigninDetector::Get(browser_context));
   dips::StatefulBounceCounter::CreateFor(dips_service);
 }
 

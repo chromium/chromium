@@ -142,6 +142,28 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyMessageForTab) {
                 .size());
 }
 
+TEST_F(MessagingBackendStoreTest, ClearDirtyTabMessagesForGroup) {
+  // Message 1 and message 2 are from different tabs and they are both dirty.
+  auto message1 = CreateMessage(collaboration_pb::TAB_ADDED);
+  auto message2 =
+      CreateMessage(collaboration_pb::TAB_UPDATED, message1.collaboration_id());
+
+  data_sharing::GroupId collaboration_id(message1.collaboration_id());
+  EXPECT_EQ(0u,
+            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
+                .size());
+  store_->AddMessage(message1);
+  store_->AddMessage(message2);
+  EXPECT_EQ(2u,
+            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
+                .size());
+
+  store_->ClearDirtyTabMessagesForGroup(collaboration_id);
+  EXPECT_EQ(0u,
+            store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kAll)
+                .size());
+}
+
 TEST_F(MessagingBackendStoreTest, ClearDirtyMessageById) {
   auto message = CreateMessage(collaboration_pb::TAB_ADDED);
   store_->AddMessage(message);

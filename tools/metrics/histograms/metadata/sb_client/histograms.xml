@@ -300,7 +300,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
-    enum="BooleanRequested" expires_after="2025-02-23">
+    enum="BooleanRequested" expires_after="2026-02-23">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

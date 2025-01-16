@@ -55,6 +55,9 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   // override it.
   void SetupManagingPasswords(const GURL& password_form_url = GURL());
 
+  // Put the controller, icon, and bubble into password_change state.
+  void SetupPasswordChange();
+
   // Put the controller, icon, and bubble into the confirmation state.
   void SetupAutomaticPassword();
 

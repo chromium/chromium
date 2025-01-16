@@ -2034,7 +2034,7 @@ struct EnhancedSafeBrowsingActivePromoData
   // `GetMobileNotificationPermissionStatusForClient()`.
   BOOL enabled = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
   [_safetyCheckCoordinator updateNotificationsButton:enabled];
 }
@@ -2051,7 +2051,7 @@ struct EnhancedSafeBrowsingActivePromoData
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   PrefService* prefService = _profile->GetPrefs();
-  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  const GaiaId gaiaID(identity.gaiaID);
   push_notification_settings::ClientPermissionState permission_state =
       push_notification_settings::GetNotificationPermissionState(gaiaID,
                                                                  prefService);

@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
@@ -264,8 +265,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 - (void)loadPrefs {
   // Retrieve the last selected identity from prefs.
-  const std::string defaultGaiaId =
-      _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId);
+  const GaiaId defaultGaiaId(
+      _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId));
   id<SystemIdentity> defaultIdentity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(defaultGaiaId);
   if (defaultIdentity) {

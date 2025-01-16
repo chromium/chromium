@@ -125,6 +125,10 @@ struct ResourceTimingInfo {
   // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
   string content_type;
 
+  // Holds the string corresponding to |contentEncoding| in
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  string content_encoding;
+
   // Holds the source type of ServiceWorker static routing API. It keeps track
   // of |matchedSourceType| and |finalSourceType|. This is a proposed field in
   // https://github.com/WICG/service-worker-static-routing-api, not in the

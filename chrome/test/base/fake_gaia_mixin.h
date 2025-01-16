@@ -35,7 +35,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   // Default fake user email and password, may be used by tests.
   static const char kFakeUserEmail[];
   static const char kFakeUserPassword[];
-  static const char kFakeUserGaiaId[];
+  static const GaiaId::Literal kFakeUserGaiaId;
   static const char kFakeAuthCode[];
   static const char kFakeRefreshToken[];
   static const char kEmptyUserServices[];

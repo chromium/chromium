@@ -5917,6 +5917,8 @@ data/accessibility/win/ia2/iaccessible2/iaccessible2-role-expected.txt
 data/accessibility/win/ia2/iaccessible2/iaccessible2-role.html
 data/accessibility/win/ia2/iaccessibletable/iaccessibletable-selected-columns-expected.txt
 data/accessibility/win/ia2/iaccessibletable/iaccessibletable-selected-columns.html
+data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-clear-selections-expected.txt
+data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-clear-selections.html
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-selections-expected.txt
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-selections.html
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-set-selections-expected.txt

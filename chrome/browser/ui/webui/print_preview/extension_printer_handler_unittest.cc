@@ -616,8 +616,10 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionName", "Provider 2")
           .Set("extensionId", extension_2->id())
           .Set("provisional", true);
-  EXPECT_TRUE(base::Contains(printers, extension_1_entry));
-  EXPECT_TRUE(base::Contains(printers, extension_2_entry));
+  const base::Value::Dict& (base::Value::*get_dict)() const =
+      &base::Value::GetDict;
+  EXPECT_TRUE(base::Contains(printers, extension_1_entry, get_dict));
+  EXPECT_TRUE(base::Contains(printers, extension_2_entry, get_dict));
 
   fake_api->TriggerNextGetPrintersCallback(base::Value::List(), /*done=*/true);
 

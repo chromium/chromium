@@ -507,7 +507,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 
   BOOL isOptedIn = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
   if (isOptedIn) {
     return NO;

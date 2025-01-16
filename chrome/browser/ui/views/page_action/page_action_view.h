@@ -16,6 +16,7 @@
 namespace page_actions {
 
 class PageActionController;
+class PageActionModelInterface;
 
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
@@ -33,9 +34,13 @@ class PageActionView : public IconLabelBubbleView,
   // controller.
   void OnNewActiveController(PageActionController* controller);
 
+  // As an alternative to OnNewActiveController(), just set the observed model.
+  // TODO(crbug.com/388524315): Merge OnNewActiveController and this method.
+  void SetModel(PageActionModelInterface* model);
+
   // PageActionModelObserver
-  void OnPageActionModelChanged(PageActionModel* model) override;
-  void OnPageActionModelWillBeDeleted(PageActionModel* model) override;
+  void OnPageActionModelChanged(PageActionModelInterface* model) override;
+  void OnPageActionModelWillBeDeleted(PageActionModelInterface* model) override;
 
   // IconLabelBubbleView
   void ViewHierarchyChanged(
@@ -61,7 +66,7 @@ class PageActionView : public IconLabelBubbleView,
   bool should_show_label_ = false;
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
-  base::ScopedObservation<PageActionModel, PageActionModelObserver>
+  base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
       observation_{this};
 
   // The view creates and holds the current controller's subscription to

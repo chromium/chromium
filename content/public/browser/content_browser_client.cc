@@ -1553,6 +1553,11 @@ bool ContentBrowserClient::AreV8OptimizationsDisabledForSite(
   return false;
 }
 
+bool ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
+    const GURL& site_url) {
+  return false;
+}
+
 ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }

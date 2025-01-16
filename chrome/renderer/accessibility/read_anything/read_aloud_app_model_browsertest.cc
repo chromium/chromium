@@ -94,10 +94,12 @@ TEST_F(ReadAnythingReadAloudAppModelTest, EnabledLanguages) {
 
   const std::string enabled_lang = "fr";
   SetLanguageEnabled(enabled_lang, true);
-  EXPECT_TRUE(base::Contains(EnabledLanguages(), enabled_lang));
+  const std::string& (base::Value::*get_string)() const =
+      &base::Value::GetString;
+  EXPECT_TRUE(base::Contains(EnabledLanguages(), enabled_lang, get_string));
 
   SetLanguageEnabled(enabled_lang, false);
-  EXPECT_FALSE(base::Contains(EnabledLanguages(), enabled_lang));
+  EXPECT_FALSE(base::Contains(EnabledLanguages(), enabled_lang, get_string));
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest, Voices) {

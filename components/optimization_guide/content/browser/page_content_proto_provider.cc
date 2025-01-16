@@ -126,6 +126,11 @@ void GetAIPageContent(content::WebContents* web_contents,
   DCHECK(web_contents);
   DCHECK(web_contents->GetPrimaryMainFrame());
 
+  if (!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    std::move(done_callback).Run(std::nullopt);
+    return;
+  }
+
   ApplyOptionsOverridesForWebContents(web_contents, *options);
   auto page_content_map =
       std::make_unique<optimization_guide::AIPageContentMap>();
@@ -135,6 +140,10 @@ void GetAIPageContent(content::WebContents* web_contents,
 
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&](content::RenderFrameHost* rfh) {
+        if (!rfh->IsRenderFrameLive()) {
+          return;
+        }
+
         auto* parent_frame = rfh->GetParentOrOuterDocument();
 
         // Skip dispatching IPCs for non-local root frames. The local root

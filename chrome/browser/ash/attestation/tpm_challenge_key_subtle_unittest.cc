@@ -54,7 +54,7 @@ namespace attestation {
 namespace {
 
 constexpr char kTestUserEmail[] = "test@google.com";
-constexpr char kTestUserGaiaId[] = "test_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
 constexpr char kFakeCertificate[] = "fake_cert";
@@ -335,7 +335,7 @@ TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
       is_managed);
 
   auto test_account =
-      AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   fake_user_manager_->AddUserWithAffiliation(test_account, is_affiliated);
 
   return testing_profile;

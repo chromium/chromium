@@ -92,8 +92,8 @@
 }
 
 - (void)selectIdentityWithGaiaID:(NSString*)gaiaID {
-  self.selectedIdentity = _accountManagerService->GetIdentityOnDeviceWithGaiaID(
-      base::SysNSStringToUTF8(gaiaID));
+  self.selectedIdentity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
 }
 
 #pragma mark - Private
@@ -101,7 +101,7 @@
 - (bool)selectedIdentityIsValid {
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (self.selectedIdentity) {
-      std::string gaia = base::SysNSStringToUTF8(self.selectedIdentity.gaiaID);
+      GaiaId gaia(self.selectedIdentity.gaiaID);
       return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
                             [](const AccountInfo& info) { return info.gaia; });
     }

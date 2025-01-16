@@ -230,9 +230,8 @@ class DisplayTest : public testing::Test {
     // well, so there is no need to pass in a real
     // DisplayCompositorMemoryAndTaskController.
     auto display = std::make_unique<Display>(
-        &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_,
-        settings, &debug_settings_, frame_sink_id,
-        nullptr /* DisplayCompositorMemoryAndTaskController */,
+        &shared_image_manager_, &gpu_scheduler_, settings, &debug_settings_,
+        frame_sink_id, nullptr /* DisplayCompositorMemoryAndTaskController */,
         std::move(output_surface), std::move(overlay_processor),
         std::move(scheduler), task_runner_);
     display->SetVisible(true);

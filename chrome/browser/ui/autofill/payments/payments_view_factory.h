@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_FACTORY_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
@@ -34,7 +36,7 @@ class PaymentsWindowUserConsentDialog;
 // deletes it on dismissal, so no lifecycle management is needed. However, on
 // Android this is not the case, the view's implementation must delete itself
 // when dismissed.
-base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+std::unique_ptr<AutofillProgressDialogView> CreateAndShowProgressDialog(
     base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents);
 

@@ -385,6 +385,16 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
         V8OptimizationsDisabled;
   }
 
+  // V8 feature flags are globally initialized during renderer process startup,
+  // and spare renderers allow V8 feature flag overrides by default. As such
+  // spare renderers should not be used when v8 flag overrides are disabled.
+  if (GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
+          site_instance->GetSiteInfo().process_lock_url())) {
+    embedder_allows_spare_usage = false;
+    refuse_reason = ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
+        DisallowV8FeatureFlagOverrides;
+  }
+
   if (refuse_reason.has_value()) {
     base::UmaHistogramEnumeration(
         "BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason",

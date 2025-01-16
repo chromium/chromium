@@ -5760,10 +5760,10 @@ crbug.com/1407078 fast/frames/sandboxed-iframe-close-top.html [ Failure Pass Tim
 
 # Depends on fixing WPT cross-origin iframe click flake in crbug.com/1066891.
 crbug.com/1227710 [ Mac ] external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.window.html [ Failure Pass ]
-crbug.com/1066891 external/wpt/bluetooth/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
-crbug.com/1066891 external/wpt/bluetooth/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
-crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
-crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
+crbug.com/1066891 external/wpt/bluetooth/legacy/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
+crbug.com/1066891 external/wpt/bluetooth/legacy/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
+crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/legacy/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
+crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/legacy/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-13
 

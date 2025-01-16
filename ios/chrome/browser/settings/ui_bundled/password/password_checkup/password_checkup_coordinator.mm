@@ -316,7 +316,7 @@ using password_manager::PasswordCheckReferrer;
   // `GetMobileNotificationPermissionStatusForClient()`.
   return push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, "");
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 }
 
 // Prompts the user to opt-in to Safety Check push notifications.

@@ -48,7 +48,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
           ->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName());
 
-  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+  return attributes.GetGaiaId().ToNSString();
 }
 
 }  // namespace

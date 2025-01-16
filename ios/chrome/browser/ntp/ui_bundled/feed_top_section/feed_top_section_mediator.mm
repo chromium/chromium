@@ -206,7 +206,7 @@ using base::UserMetricsAction;
   // Check if user has notifications enabled at the Chime level.
   BOOL isChimeEnabled =
       push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
-          base::SysNSStringToUTF8(identity.gaiaID), self.prefService);
+          GaiaId(identity.gaiaID), self.prefService);
   if (isChimeEnabled) {
     return true;
   }

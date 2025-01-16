@@ -12,6 +12,10 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_IOS) && defined(__OBJC__)
+@class NSString;
+#endif  // BUILDFLAG(IS_IOS) && defined(__OBJC__)
+
 // A string-like object representing an obfuscated Gaia ID that allows
 // identifying a Google account. This value can be safely persisted to disk as
 // it remains stable over time, but for additional privacy it is generally
@@ -24,15 +28,20 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
     }
   };
 
+  // Constructs an empty instance.
   GaiaId() = default;
   // Temporarily allow implicit conversion on iOS to allow splitting code
   // changes.
-  // TODO(crbug.com/380416867): Make the constructor explicit on iOS too.
-#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/380416867): Make the constructor explicit on iOS tests too.
+#if BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
   GaiaId(std::string value);
 #else
   explicit GaiaId(std::string value);
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
+  // On iOS, allow direct construction from NSString, which is fairly common.
+#if BUILDFLAG(IS_IOS) && defined(__OBJC__)
+  explicit GaiaId(NSString* value);
+#endif  // BUILDFLAG(IS_IOS) && defined(__OBJC__)
   GaiaId(const GaiaId&) = default;
   GaiaId(GaiaId&&) noexcept = default;
   ~GaiaId() = default;
@@ -40,7 +49,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   GaiaId& operator=(const GaiaId&) = default;
   GaiaId& operator=(GaiaId&&) noexcept = default;
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
   // Temporary implicit conversion to allow splitting code changes.
   // TODO(crbug.com/380416867): Remove implicit conversions.
   GaiaId(const char gaia_id[]) { id_ = gaia_id; }
@@ -53,16 +62,38 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
   const char* c_str() const { return id_.c_str(); }
   std::string::const_iterator begin() const { return id_.begin(); }
   std::string::const_iterator end() const { return id_.end(); }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && defined(UNIT_TEST)
 
   // Checks if the ID is valid or not.
   bool empty() const;
 
-  const std::string& ToString() const;
+  [[nodiscard]] const std::string& ToString() const;
+
+#if BUILDFLAG(IS_IOS) && defined(__OBJC__)
+  [[nodiscard]] NSString* ToNSString() const;
+#endif  // BUILDFLAG(IS_IOS) && defined(__OBJC__)
 
   // Default comparisons.
   friend bool operator==(const GaiaId&, const GaiaId&) = default;
   friend auto operator<=>(const GaiaId&, const GaiaId&) = default;
+
+  // Convenience test-only class that allows defining constexpr or static
+  // values and can be implicitly converted to GaiaId.
+#if defined(UNIT_TEST)
+  class Literal {
+   public:
+    constexpr explicit Literal(std::string_view gaia_id) : gaia_id_(gaia_id) {}
+    ~Literal() = default;
+
+    // Allow implicit conversion to GaiaId.
+    operator GaiaId() const { return GaiaId(std::string(gaia_id_)); }
+
+    std::string ToString() const { return std::string(gaia_id_); }
+
+   private:
+    std::string_view gaia_id_;
+  };
+#endif  // defined(UNIT_TEST)
 
  private:
   std::string id_;

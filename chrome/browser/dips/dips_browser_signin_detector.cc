@@ -21,9 +21,9 @@ using signin::constants::kNoHostedDomainFound;
 
 const char kIdentityProviderDomain[] = "google.com";
 
-DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
-    base::PassKey<DIPSBrowserSigninDetectorFactory>,
-    content::DIPSService* dips_service,
+BtmBrowserSigninDetector::BtmBrowserSigninDetector(
+    base::PassKey<BtmBrowserSigninDetectorFactory>,
+    content::BtmService* dips_service,
     signin::IdentityManager* identity_manager)
     : dips_service_(dips_service), identity_manager_(identity_manager) {
   CHECK(dips_service_);
@@ -49,9 +49,9 @@ DIPSBrowserSigninDetector::DIPSBrowserSigninDetector(
   }
 }
 
-DIPSBrowserSigninDetector::~DIPSBrowserSigninDetector() = default;
+BtmBrowserSigninDetector::~BtmBrowserSigninDetector() = default;
 
-void DIPSBrowserSigninDetector::Shutdown() {
+void BtmBrowserSigninDetector::Shutdown() {
   scoped_observation_.Reset();
   dips_service_ = nullptr;
   identity_manager_ = nullptr;
@@ -64,7 +64,7 @@ bool IsInfoRelevant(const AccountInfo& info) {
   return !info.CoreAccountInfo::IsEmpty() && !info.hosted_domain.empty();
 }
 
-void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
+void BtmBrowserSigninDetector::RecordInteractionsIfRelevant(
     const AccountInfo& info) {
   if (!IsInfoRelevant(info)) {
     return;
@@ -87,7 +87,7 @@ void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
   dips_service_->RecordBrowserSignIn(info.hosted_domain);
 }
 
-void DIPSBrowserSigninDetector::OnExtendedAccountInfoUpdated(
+void BtmBrowserSigninDetector::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   RecordInteractionsIfRelevant(info);
 }
