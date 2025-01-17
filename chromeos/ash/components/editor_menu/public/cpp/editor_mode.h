@@ -17,7 +17,7 @@ enum class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) EditorMode {
   // internet connection, device mode.
   kSoftBlocked,
   // Mode that requires users to provide consent before using the feature.
-  kPromoCard,
+  kConsentNeeded,
   // Feature in rewrite mode.
   kRewrite,
   // Feature in write mode.

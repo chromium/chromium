@@ -242,7 +242,7 @@ void EditorMediator::HandleTrigger(
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case chromeos::editor_menu::EditorMode::kPromoCard:
+    case chromeos::editor_menu::EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
       ShowNotice(EditorNoticeTransitionAction::kShowEditorPanel);

@@ -38,10 +38,11 @@ TEST_F(EditorMenuCardContextTest, BlockedMode) {
 }
 
 TEST_F(EditorMenuCardContextTest, PromoCardMode) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kPromoCard)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
+  EditorMenuCardContext context =
+      EditorMenuCardContext()
+          .set_editor_mode(EditorMode::kConsentNeeded)
+          .set_lobster_mode(LobsterMode::kBlocked)
+          .build();
 
   EXPECT_EQ(context.text_and_image_mode(), TextAndImageMode::kPromoCard);
 }
@@ -133,10 +134,11 @@ TEST_F(EditorMenuCardContextTest, ReturnsNoChipsWhenBothFeaturesAreBlocked) {
 }
 
 TEST_F(EditorMenuCardContextTest, ReturnsNoChipsInPromoCardMode) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kPromoCard)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
+  EditorMenuCardContext context =
+      EditorMenuCardContext()
+          .set_editor_mode(EditorMode::kConsentNeeded)
+          .set_lobster_mode(LobsterMode::kBlocked)
+          .build();
 
   EXPECT_TRUE(context.preset_queries().empty());
 }

@@ -453,7 +453,7 @@ chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
 
   if (current_consent_status == ConsentStatus::kPending ||
       current_consent_status == ConsentStatus::kUnset) {
-    return chromeos::editor_menu::EditorMode::kPromoCard;
+    return chromeos::editor_menu::EditorMode::kConsentNeeded;
   } else if (context_->selected_text_length() > 0) {
     return chromeos::editor_menu::EditorMode::kRewrite;
   } else {

@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
                                    /*consent_status_settled=*/false));
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
                                    /*consent_status_settled=*/false));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
                                    /*consent_status_settled=*/false));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nDisabledTest,
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
                                    /*consent_status_settled=*/false));
   auto* promo_card =
       views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nEnabledTest,
 
   GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       kAnchorBounds,
-      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+      CreateTestEditorPanelContext(EditorMode::kConsentNeeded,
                                    /*consent_status_settled=*/false));
   auto* promo_card =
       views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());

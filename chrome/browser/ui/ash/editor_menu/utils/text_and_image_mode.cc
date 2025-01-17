@@ -15,7 +15,7 @@ TextAndImageMode CalculateTextAndImageMode(EditorMode editor_mode,
     if (editor_mode == EditorMode::kWrite) {
       return TextAndImageMode::kEditorWriteOnly;
     }
-    if (editor_mode == EditorMode::kPromoCard) {
+    if (editor_mode == EditorMode::kConsentNeeded) {
       return TextAndImageMode::kPromoCard;
     }
     return TextAndImageMode::kBlocked;
@@ -27,7 +27,7 @@ TextAndImageMode CalculateTextAndImageMode(EditorMode editor_mode,
   if (editor_mode == EditorMode::kWrite) {
     return TextAndImageMode::kEditorWriteAndLobster;
   }
-  if (editor_mode == EditorMode::kPromoCard) {
+  if (editor_mode == EditorMode::kConsentNeeded) {
     return TextAndImageMode::kPromoCard;
   }
   if (lobster_mode == LobsterMode::kNoSelectedText) {

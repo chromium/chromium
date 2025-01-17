@@ -473,7 +473,7 @@ INSTANTIATE_TEST_SUITE_P(
          .user_pref = true,
          .consent_status = ConsentStatus::kPending,
          .num_chars_selected = 100,
-         .expected_editor_mode = EditorMode::kPromoCard,
+         .expected_editor_mode = EditorMode::kConsentNeeded,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
          .expected_blocked_reasons = {}},
         {.test_name = "TriggersWriteModeForNoTextSelection",

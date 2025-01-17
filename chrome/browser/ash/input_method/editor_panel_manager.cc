@@ -161,7 +161,7 @@ void EditorPanelManagerImpl::LogEditorMode(
     }
   }
 
-  if (mode == chromeos::editor_menu::EditorMode::kPromoCard) {
+  if (mode == chromeos::editor_menu::EditorMode::kConsentNeeded) {
     logger->LogEditorState(EditorStates::kPromoCardImpression);
   }
 }

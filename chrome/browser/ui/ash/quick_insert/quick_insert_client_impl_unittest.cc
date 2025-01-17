@@ -668,7 +668,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      chromeos::editor_menu::EditorMode::kPromoCard);
+      chromeos::editor_menu::EditorMode::kConsentNeeded);
 
   EXPECT_FALSE(client.CacheEditorContext().is_null());
 }
@@ -678,7 +678,7 @@ TEST_F(QuickInsertClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      chromeos::editor_menu::EditorMode::kPromoCard);
+      chromeos::editor_menu::EditorMode::kConsentNeeded);
   ui::FakeTextInputClient text_input_client(
       &ime(), {
                   .type = ui::TEXT_INPUT_TYPE_TEXT,

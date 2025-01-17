@@ -291,7 +291,7 @@ INSTANTIATE_TEST_SUITE_P(
         /*editor_mode=*/testing::Values(
             chromeos::editor_menu::EditorMode::kHardBlocked,
             chromeos::editor_menu::EditorMode::kSoftBlocked,
-            chromeos::editor_menu::EditorMode::kPromoCard,
+            chromeos::editor_menu::EditorMode::kConsentNeeded,
             chromeos::editor_menu::EditorMode::kRewrite,
             chromeos::editor_menu::EditorMode::kWrite),
         /*orca_consent_status=*/

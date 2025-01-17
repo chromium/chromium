@@ -345,7 +345,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     ExpectControllersEqual(
         "",
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false));
 
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
@@ -386,7 +386,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
     auto controllers =
-        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false);
 
     ExpectControllersEqual(
@@ -481,7 +481,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<
                     ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kPromoCard,
+      editor_menu::EditorMode::kConsentNeeded,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {

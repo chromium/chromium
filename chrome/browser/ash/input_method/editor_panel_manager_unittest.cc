@@ -285,7 +285,7 @@ TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsShown) {
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(EditorMode::kPromoCard);
+  manager.LogEditorMode(EditorMode::kConsentNeeded);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
                                      EditorStates::kPromoCardImpression, 1);
