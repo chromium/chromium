@@ -96,7 +96,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   const mojom::CreateContextOptions::Device device_type =
       context_options->device;
 
-  ASSIGN_OR_RETURN(std::unique_ptr<GraphBuilderOrt::Result> result,
+  ASSIGN_OR_RETURN(std::unique_ptr<OrtModelBuilder::ModelInfo> model_info,
                    GraphBuilderOrt::CreateAndBuild(
                        *graph_info, std::move(context_properties),
                        std::move(constant_operands)));
@@ -218,7 +218,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   ScopedOrtSessionPtr session;
   status = GetOrtModelBuilderApi()->CreateSessionFromModel(
-      env, result->model_info->model, session_options, session.GetAddressOf());
+      env, model_info->model, session_options, session.GetAddressOf());
   if (status) {
     std::string_view msg = ort_api->GetErrorMessage(status);
     LOG(ERROR) << "[WebNN] Failed to create session from model: " << msg;
@@ -232,7 +232,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   return base::WrapUnique(
       new GraphImplOrt::Session(std::move(env), std::move(session),
-                                std::move(result->model_info->external_data)));
+                                std::move(model_info->external_data)));
 }
 
 // static

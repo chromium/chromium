@@ -46,49 +46,14 @@ class GraphBuilderOrt {
   STACK_ALLOCATED();
 
  public:
-  // Tracks Operand information during graph building, so that
-  // future operations can look them up based on operand id.
-  // When an operation is decomposed, additional `OperandInfo` entities are
-  // created to represent intermediate layers.
-  struct OperandInfo {
-    OperandInfo();
-
-    OperandInfo(std::string name,
-                OperandDataType data_type,
-                base::span<const uint32_t> uint32_shape);
-
-    OperandInfo(std::string name,
-                ONNXTensorElementDataType data_type,
-                base::span<const uint32_t> uint32_shape);
-
-    OperandInfo(OperandInfo&);
-    OperandInfo(OperandInfo&&);
-    ~OperandInfo();
-
-    std::string name;
-    ONNXTensorElementDataType onnx_data_type;
-    std::vector<int64_t> int64_shape;
-  };
-
-  struct Result {
-    explicit Result();
-    Result(const Result&) = delete;
-    Result& operator=(const Result&) = delete;
-    ~Result();
-
-    const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
-
-    std::map<uint64_t, OperandInfo> id_to_operand_info;
-
-    std::unique_ptr<OrtModelBuilder::ModelInfo> model_info;
-  };
-
   // Factory method that creates a GraphBuilderOrt, builds and serializes the
   // ONNX model to the `working_directory`. This expects the
   // `working_directory` to be an empty directory.
   //
   // Returns unexpected if it fails.
-  [[nodiscard]] static base::expected<std::unique_ptr<Result>, mojom::ErrorPtr>
+  [[nodiscard]] static base::expected<
+      std::unique_ptr<OrtModelBuilder::ModelInfo>,
+      mojom::ErrorPtr>
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -227,7 +192,9 @@ class GraphBuilderOrt {
   void AddTriangularOperation(const mojom::Triangular& triangular);
   void AddWhereOperation(const mojom::Where& where);
 
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
+  [[nodiscard]] base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>,
+                               mojom::ErrorPtr>
+  BuildModel();
 
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;
@@ -246,8 +213,6 @@ class GraphBuilderOrt {
   const ContextProperties context_properties_;
 
   OrtModelBuilder model_builder_;
-
-  std::unique_ptr<Result> result_;
 };
 
 }  // namespace ort

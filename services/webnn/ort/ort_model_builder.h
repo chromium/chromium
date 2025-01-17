@@ -10,7 +10,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/memory/stack_allocated.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
@@ -19,12 +18,10 @@ namespace webnn {
 
 namespace ort {
 
-class OrtModelBuilder final {
-  STACK_ALLOCATED();
-
+class OrtModelBuilder {
  public:
   struct ModelInfo {
-    explicit ModelInfo();
+    ModelInfo();
     ModelInfo(const ModelInfo&) = delete;
     ModelInfo& operator=(const ModelInfo&) = delete;
     ~ModelInfo();

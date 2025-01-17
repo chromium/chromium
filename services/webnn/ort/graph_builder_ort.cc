@@ -103,8 +103,6 @@ constexpr char kOpTypeTranspose[] = "Transpose";
 constexpr char kOpTypeTriangular[] = "Trilu";
 constexpr char kOpTypeWhere[] = "Where";
 
-// constexpr char kBuildGraphError[] = "Failed to build graph.";
-
 base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
   return base::unexpected(mojom::Error::New(
       mojom::Error::Code::kNotSupportedError, std::move(message)));
@@ -181,41 +179,8 @@ struct TensorTypeMap<int64_t> {
 
 }  // namespace
 
-GraphBuilderOrt::OperandInfo::OperandInfo(
-    std::string name,
-    OperandDataType data_type,
-    base::span<const uint32_t> uint32_shape)
-    : OperandInfo(std::move(name),
-                  OperandTypeToONNXTensorElementDataType(data_type),
-                  std::move(uint32_shape)) {}
-
-GraphBuilderOrt::OperandInfo::OperandInfo(
-    std::string name,
-    ONNXTensorElementDataType data_type,
-    base::span<const uint32_t> uint32_shape)
-    : name(std::move(name)), onnx_data_type(data_type) {
-  base::ranges::transform(
-      uint32_shape.begin(), uint32_shape.end(), std::back_inserter(int64_shape),
-      [](uint32_t dim) { return static_cast<int64_t>(dim); });
-}
-
-GraphBuilderOrt::OperandInfo::OperandInfo() = default;
-GraphBuilderOrt::OperandInfo::~OperandInfo() = default;
-GraphBuilderOrt::OperandInfo::OperandInfo(OperandInfo&) = default;
-GraphBuilderOrt::OperandInfo::OperandInfo(OperandInfo&&) = default;
-
-GraphBuilderOrt::Result::Result() = default;
-GraphBuilderOrt::Result::~Result() = default;
-
-const GraphBuilderOrt::OperandInfo& GraphBuilderOrt::Result::GetOperandInfo(
-    uint64_t operand_id) const {
-  auto it = id_to_operand_info.find(operand_id);
-  CHECK(it != id_to_operand_info.end());
-  return it->second;
-}
-
 // static
-base::expected<std::unique_ptr<GraphBuilderOrt::Result>, mojom::ErrorPtr>
+base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>, mojom::ErrorPtr>
 GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
@@ -224,8 +189,7 @@ GraphBuilderOrt::CreateAndBuild(
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
                                 std::move(constant_operands));
 
-  RETURN_IF_ERROR(graph_builder.BuildModel());
-  return std::move(graph_builder.result_);
+  return graph_builder.BuildModel();
 }
 
 GraphBuilderOrt::GraphBuilderOrt(
@@ -236,8 +200,7 @@ GraphBuilderOrt::GraphBuilderOrt(
     : graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
-      model_builder_(OrtModelBuilder()),
-      result_(std::make_unique<Result>()) {
+      model_builder_(OrtModelBuilder()) {
   for (const auto& [id, _] : graph_info.id_to_operand_map) {
     next_operand_id_ = std::max(next_operand_id_, id + 1);
   }
@@ -290,9 +253,9 @@ template <typename DataType>
 std::string GraphBuilderOrt::CreateInitializer(
     base::span<const uint32_t> shape,
     base::span<const DataType> data) {
-  int64_t next_operand_id = next_operand_id_;
   std::string name = GenerateNextOperandName();
-  OperandInfo operand_info{name, TensorTypeMap<DataType>::value, shape};
+  std::vector<int64_t> int64_shape(shape.begin(), shape.end());
+
   base::span<const uint8_t> byte_span;
   if constexpr (std::floating_point<DataType>) {
     // Floating point types do not have unique object representations, but
@@ -306,16 +269,12 @@ std::string GraphBuilderOrt::CreateInitializer(
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
-    model_builder_.AddInitializer(name, operand_info.int64_shape, byte_span,
-                                  operand_info.onnx_data_type);
+    model_builder_.AddInitializer(name, int64_shape, byte_span,
+                                  TensorTypeMap<DataType>::value);
   } else {
-    model_builder_.AddInitializerAsRawData(
-        name, operand_info.int64_shape, byte_span, operand_info.onnx_data_type);
+    model_builder_.AddInitializerAsRawData(name, int64_shape, byte_span,
+                                           TensorTypeMap<DataType>::value);
   }
-
-  CHECK(result_->id_to_operand_info
-            .try_emplace(next_operand_id, std::move(operand_info))
-            .second);
   return name;
 }
 
@@ -346,55 +305,45 @@ void GraphBuilderOrt::AddInput(uint64_t input_id) {
   const mojom::Operand& operand = GetOperand(input_id);
   std::string name = GetOperandNameById(input_id);
 
-  OperandInfo operand_info{name, operand.descriptor.data_type(),
-                           operand.descriptor.shape()};
+  std::vector<int64_t> int64_shape(operand.descriptor.shape().begin(),
+                                   operand.descriptor.shape().end());
 
-  model_builder_.AddInput(name, operand_info.int64_shape,
-                          operand_info.onnx_data_type);
-
-  CHECK(
-      result_->id_to_operand_info.try_emplace(input_id, std::move(operand_info))
-          .second);
+  model_builder_.AddInput(
+      name, int64_shape,
+      OperandTypeToONNXTensorElementDataType(operand.descriptor.data_type()));
 }
 
 void GraphBuilderOrt::AddOutput(uint64_t output_id) {
   const mojom::Operand& operand = GetOperand(output_id);
   std::string name = GetOperandNameById(output_id);
 
-  OperandInfo operand_info{name, operand.descriptor.data_type(),
-                           operand.descriptor.shape()};
+  std::vector<int64_t> int64_shape(operand.descriptor.shape().begin(),
+                                   operand.descriptor.shape().end());
 
-  model_builder_.AddOutput(name, operand_info.int64_shape,
-                           operand_info.onnx_data_type);
-
-  CHECK(result_->id_to_operand_info
-            .try_emplace(output_id, std::move(operand_info))
-            .second);
+  model_builder_.AddOutput(
+      name, int64_shape,
+      OperandTypeToONNXTensorElementDataType(operand.descriptor.data_type()));
 }
 
 void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   const WebNNConstantOperand& operand = *constant_operands_.at(constant_id);
   std::string name = GetOperandNameById(constant_id);
 
-  OperandInfo operand_info{name, operand.descriptor().data_type(),
-                           operand.descriptor().shape()};
+  std::vector<int64_t> int64_shape(operand.descriptor().shape().begin(),
+                                   operand.descriptor().shape().end());
+  ONNXTensorElementDataType onnx_data_type =
+      OperandTypeToONNXTensorElementDataType(operand.descriptor().data_type());
 
   // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
-    model_builder_.AddInitializer(name, operand_info.int64_shape,
-                                  operand.ByteSpan(),
-                                  operand_info.onnx_data_type);
+    model_builder_.AddInitializer(name, int64_shape, operand.ByteSpan(),
+                                  onnx_data_type);
   } else {
-    model_builder_.AddInitializerAsRawData(name, operand_info.int64_shape,
-                                           operand.ByteSpan(),
-                                           operand_info.onnx_data_type);
+    model_builder_.AddInitializerAsRawData(name, int64_shape,
+                                           operand.ByteSpan(), onnx_data_type);
   }
-
-  CHECK(result_->id_to_operand_info
-            .try_emplace(constant_id, std::move(operand_info))
-            .second);
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1630,7 +1579,8 @@ void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
   model_builder_.AddNode(kOpTypeWhere, node_name, input_names, output_names);
 }
 
-[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+[[nodiscard]] base::expected<std::unique_ptr<OrtModelBuilder::ModelInfo>,
+                             mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   // Add inputs.
   for (uint64_t input_id : graph_info_->input_operands) {
@@ -1781,9 +1731,7 @@ GraphBuilderOrt::BuildModel() {
     AddOutput(output_id);
   }
 
-  result_->model_info = model_builder_.BuildAndTakeModelInfo();
-
-  return base::ok();
+  return model_builder_.BuildAndTakeModelInfo();
 }
 
 }  // namespace webnn::ort
