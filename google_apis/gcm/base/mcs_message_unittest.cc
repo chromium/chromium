@@ -50,7 +50,7 @@ TEST_F(MCSMessageTest, InitInferTag) {
   login_copy.reset();
   ASSERT_TRUE(message.IsValid());
   EXPECT_EQ(kLoginRequestTag, message.tag());
-  EXPECT_EQ(login_request->ByteSize(), message.size());
+  EXPECT_EQ(login_request->ByteSizeLong(), message.size());
   EXPECT_EQ(login_request->SerializeAsString(), message.SerializeAsString());
   EXPECT_EQ(login_request->SerializeAsString(),
             message.GetProtobuf().SerializeAsString());
@@ -68,7 +68,7 @@ TEST_F(MCSMessageTest, InitWithTag) {
   login_copy.reset();
   ASSERT_TRUE(message.IsValid());
   EXPECT_EQ(kLoginRequestTag, message.tag());
-  EXPECT_EQ(login_request->ByteSize(), message.size());
+  EXPECT_EQ(login_request->ByteSizeLong(), message.size());
   EXPECT_EQ(login_request->SerializeAsString(), message.SerializeAsString());
   EXPECT_EQ(login_request->SerializeAsString(),
             message.GetProtobuf().SerializeAsString());
@@ -86,7 +86,7 @@ TEST_F(MCSMessageTest, InitPassOwnership) {
   EXPECT_FALSE(login_copy.get());
   ASSERT_TRUE(message.IsValid());
   EXPECT_EQ(kLoginRequestTag, message.tag());
-  EXPECT_EQ(login_request->ByteSize(), message.size());
+  EXPECT_EQ(login_request->ByteSizeLong(), message.size());
   EXPECT_EQ(login_request->SerializeAsString(), message.SerializeAsString());
   EXPECT_EQ(login_request->SerializeAsString(),
             message.GetProtobuf().SerializeAsString());

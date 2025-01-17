@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_GCM_BASE_MCS_MESSAGE_H_
 #define GOOGLE_APIS_GCM_BASE_MCS_MESSAGE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -46,7 +47,7 @@ class GCM_EXPORT MCSMessage {
 
   // Getters for serialization.
   uint8_t tag() const { return tag_; }
-  int size() const {return size_; }
+  size_t size() const { return size_; }
   std::string SerializeAsString() const;
 
   // Getter for accessing immutable probotuf fields.
@@ -78,7 +79,7 @@ class GCM_EXPORT MCSMessage {
 
   // These are cached separately to avoid having to recompute them.
   const uint8_t tag_;
-  const int size_;
+  const size_t size_;
 
   // The refcounted core, containing the protobuf memory.
   scoped_refptr<const Core> core_;

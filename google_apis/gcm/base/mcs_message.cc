@@ -35,14 +35,15 @@ const google::protobuf::MessageLite& MCSMessage::Core::Get() const {
 MCSMessage::MCSMessage() : tag_(0), size_(0) {}
 
 MCSMessage::MCSMessage(const google::protobuf::MessageLite& protobuf)
-  : tag_(GetMCSProtoTag(protobuf)),
-    size_(protobuf.ByteSize()),
-    core_(new Core(tag_, protobuf)) {
-}
+    : tag_(GetMCSProtoTag(protobuf)),
+      size_(protobuf.ByteSizeLong()),
+      core_(new Core(tag_, protobuf)) {}
 
 MCSMessage::MCSMessage(uint8_t tag,
                        const google::protobuf::MessageLite& protobuf)
-    : tag_(tag), size_(protobuf.ByteSize()), core_(new Core(tag_, protobuf)) {
+    : tag_(tag),
+      size_(protobuf.ByteSizeLong()),
+      core_(new Core(tag_, protobuf)) {
   DCHECK_EQ(tag, GetMCSProtoTag(protobuf));
 }
 
@@ -50,7 +51,7 @@ MCSMessage::MCSMessage(
     uint8_t tag,
     std::unique_ptr<const google::protobuf::MessageLite> protobuf)
     : tag_(tag),
-      size_(protobuf->ByteSize()),
+      size_(protobuf->ByteSizeLong()),
       core_(new Core(tag_, std::move(protobuf))) {
   DCHECK_EQ(tag, GetMCSProtoTag(core_->Get()));
 }
