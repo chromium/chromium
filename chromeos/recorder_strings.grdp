@@ -219,6 +219,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Accessibility label of the landmark for the playback controls section in the playback page." name="IDS_RECORDER_PLAYBACK_CONTROLS_LANDMARK_ARIA_LABEL">
     Playback controls
   </message>
+  <message desc="Accessibility label of the floating volume close button in playback page." name="IDS_RECORDER_PLAYBACK_FLOATING_VOLUME_CLOSE_BUTTON_ARIA_LABEL">
+    Close
+  </message>
+  <message desc="Accessibility label of the floating volume show button in playback page." name="IDS_RECORDER_PLAYBACK_FLOATING_VOLUME_SHOW_BUTTON_ARIA_LABEL">
+    Volume
+  </message>
   <message desc="Tooltip of the button to forward the recording playback 10 seconds." name="IDS_RECORDER_PLAYBACK_FORWARD_BUTTON_TOOLTIP">
     Forward 10 seconds
   </message>
@@ -264,8 +270,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Tooltip of the button to unmute the playback." name="IDS_RECORDER_PLAYBACK_UNMUTE_BUTTON_TOOLTIP">
     Turn on volume
   </message>
-  <message desc="Accessibility label of the volume slider for the playback." meaning="Set the playback volume." name="IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL">
-    Volume
+  <message desc="Accessibility label of the volume slider in playback page." name="IDS_RECORDER_PLAYBACK_VOLUME_SLIDER_ARIA_LABEL">
+    Adjust volume
   </message>
   <message desc="Accessibility label of the button to open more recording options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_ARIA_LABEL">
     More options for <ph name="RECORDING_NAME">$1<ex>Audio recording</ex></ph>

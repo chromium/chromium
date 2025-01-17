@@ -865,8 +865,7 @@ export class PlaybackPage extends ReactiveLitElement {
         min="0"
         max="100"
         @input=${this.onVolumeInput}
-        aria-label=${i18n.playbackVolumeAriaLabel}
-        ${withTooltip()}
+        aria-label=${i18n.playbackVolumeSliderAriaLabel}
       ></cros-slider>
     `;
   }
@@ -907,7 +906,8 @@ export class PlaybackPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           @click=${this.showFloatingVolume}
-          aria-label=${i18n.playbackVolumeAriaLabel}
+          aria-label=${i18n.playbackFloatingVolumeShowButtonAriaLabel}
+          ${withTooltip()}
         >
           ${this.renderVolumeIcon()}
         </cra-icon-button>
@@ -916,13 +916,20 @@ export class PlaybackPage extends ReactiveLitElement {
           ${ref(this.floatingVolume)}
           @focusout=${this.hideFloatingVolume}
         >
-          <cra-icon-button buttonstyle="floating" @click=${this.toggleMuted}>
+          <cra-icon-button
+            buttonstyle="floating"
+            @click=${this.toggleMuted}
+            aria-label=${volumeButtonLabel}
+            ${withTooltip()}
+          >
             ${this.renderVolumeIcon()}
           </cra-icon-button>
           ${this.renderVolumeSlider()}
           <cra-icon-button
             buttonstyle="floating"
             @click=${this.hideFloatingVolume}
+            aria-label=${i18n.playbackFloatingVolumeCloseButtonAriaLabel}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="close"></cra-icon>
           </cra-icon-button>

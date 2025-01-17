@@ -52,6 +52,7 @@ import {
 import {stopPropagation} from '../core/utils/event_handler.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
@@ -626,6 +627,7 @@ export class SettingsMenu extends ReactiveLitElement {
             shape="circle"
             @click=${this.onCloseClick}
             aria-label=${i18n.closeDialogButtonTooltip}
+            ${withTooltip()}
           >
             <cra-icon slot="icon" name="close"></cra-icon>
           </cra-icon-button>
