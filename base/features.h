@@ -19,12 +19,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
 
-BASE_EXPORT extern const base::FeatureParam<bool>
-    kUseRustJsonParserInCurrentSequence;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                       kUseRustJsonParserInCurrentSequence);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
-BASE_EXPORT extern const base::FeatureParam<int> kLowMemoryDeviceThresholdMB;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kLowMemoryDeviceThresholdMB);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);

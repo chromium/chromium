@@ -52,8 +52,11 @@ BASE_FEATURE(kUseRustJsonParser,
 
 // If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
 // pool.
-const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
-    &kUseRustJsonParser, "UseRustJsonParserInCurrentSequence", false};
+BASE_FEATURE_PARAM(bool,
+                   kUseRustJsonParserInCurrentSequence,
+                   &kUseRustJsonParser,
+                   "UseRustJsonParserInCurrentSequence",
+                   false);
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
@@ -67,9 +70,11 @@ const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
 BASE_FEATURE(kLowEndMemoryExperiment,
              "LowEndMemoryExperiment",
              FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
-    &kLowEndMemoryExperiment, "LowMemoryDeviceThresholdMB",
-    LOW_MEMORY_DEVICE_THRESHOLD_MB};
+BASE_FEATURE_PARAM(size_t,
+                   kLowMemoryDeviceThresholdMB,
+                   &kLowEndMemoryExperiment,
+                   "LowMemoryDeviceThresholdMB",
+                   LOW_MEMORY_DEVICE_THRESHOLD_MB);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Force to enable LowEndDeviceMode partially on Android 3Gb devices.

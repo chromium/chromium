@@ -103,15 +103,24 @@ bool IsOptimizedRealtimeThreadingMacEnabled() {
 
 // Fine-tuning optimized real-time thread config:
 // Whether or not the thread should be preemptible.
-const FeatureParam<bool> kOptimizedRealtimeThreadingMacPreemptible{
-    &kOptimizedRealtimeThreadingMac, "preemptible", true};
+BASE_FEATURE_PARAM(bool,
+                   kOptimizedRealtimeThreadingMacPreemptible,
+                   &kOptimizedRealtimeThreadingMac,
+                   "preemptible",
+                   true);
 // Portion of the time quantum the thread is expected to be busy, (0, 1].
-const FeatureParam<double> kOptimizedRealtimeThreadingMacBusy{
-    &kOptimizedRealtimeThreadingMac, "busy", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kOptimizedRealtimeThreadingMacBusy,
+                   &kOptimizedRealtimeThreadingMac,
+                   "busy",
+                   0.5);
 // Maximum portion of the time quantum the thread is expected to be busy,
 // (kOptimizedRealtimeThreadingMacBusy, 1].
-const FeatureParam<double> kOptimizedRealtimeThreadingMacBusyLimit{
-    &kOptimizedRealtimeThreadingMac, "busy_limit", 1.0};
+BASE_FEATURE_PARAM(double,
+                   kOptimizedRealtimeThreadingMacBusyLimit,
+                   &kOptimizedRealtimeThreadingMac,
+                   "busy_limit",
+                   1.0);
 
 namespace {
 

@@ -21,12 +21,6 @@
 
 namespace base {
 namespace {
-uint64_t GetLowMemoryDeviceThresholdMB() {
-  static const uint64_t threshold = base::saturated_cast<uint64_t>(
-      features::kLowMemoryDeviceThresholdMB.Get());
-  return threshold;
-}
-
 std::optional<uint64_t> g_amount_of_physical_memory_mb_for_testing;
 }  // namespace
 
@@ -65,7 +59,7 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemory() {
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
     uint64_t memory_used =
         AmountOfPhysicalMemoryImpl() - AmountOfAvailablePhysicalMemoryImpl();
-    uint64_t memory_limit = GetLowMemoryDeviceThresholdMB() * 1024 * 1024;
+    uint64_t memory_limit = features::kLowMemoryDeviceThresholdMB.Get() * 1024 * 1024;
     // std::min ensures no underflow, as |memory_used| can be > |memory_limit|.
     return memory_limit - std::min(memory_used, memory_limit);
   }
@@ -207,7 +201,7 @@ bool DetectLowEndDevice() {
 
   int ram_size_mb = SysInfo::AmountOfPhysicalMemoryMB();
   return ram_size_mb > 0 &&
-         static_cast<uint64_t>(ram_size_mb) <= GetLowMemoryDeviceThresholdMB();
+         static_cast<unsigned>(ram_size_mb) <= features::kLowMemoryDeviceThresholdMB.Get();
 }
 
 // static
