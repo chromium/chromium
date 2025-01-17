@@ -197,10 +197,9 @@ void SessionAuthzAuthenticator::VerifySessionToken(
     const jingle_xmpp::XmlElement& message,
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::VERIFYING_SESSION_TOKEN;
-  internal::VerifySessionTokenRequestStruct request;
-  request.session_token = message.TextNamed(kSessionTokenTag);
+  std::string session_token = message.TextNamed(kSessionTokenTag);
   service_client_->VerifySessionToken(
-      request,
+      session_token,
       base::BindOnce(&SessionAuthzAuthenticator::OnVerifiedSessionToken,
                      base::Unretained(this), message,
                      std::move(resume_callback)));

@@ -49,10 +49,10 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
 
   // SessionAuthzServiceClient implementation.
   void GenerateHostToken(GenerateHostTokenCallback callback) override;
-  void VerifySessionToken(
-      const internal::VerifySessionTokenRequestStruct& request,
-      VerifySessionTokenCallback callback) override;
-  void ReauthorizeHost(const internal::ReauthorizeHostRequestStruct& request,
+  void VerifySessionToken(std::string_view session_token,
+                          VerifySessionTokenCallback callback) override;
+  void ReauthorizeHost(std::string_view session_reauth_token,
+                       std::string_view session_id,
                        ReauthorizeHostCallback callback) override;
 
  private:
@@ -89,20 +89,21 @@ void CloudSessionAuthzServiceClient::GenerateHostToken(
 }
 
 void CloudSessionAuthzServiceClient::VerifySessionToken(
-    const internal::VerifySessionTokenRequestStruct& request,
+    std::string_view session_token,
     VerifySessionTokenCallback callback) {
   client_.VerifySessionToken(
-      request.session_token,
+      std::string(session_token),
       base::BindOnce(
           &CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse,
           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CloudSessionAuthzServiceClient::ReauthorizeHost(
-    const internal::ReauthorizeHostRequestStruct& request,
+    std::string_view session_reauth_token,
+    std::string_view session_id,
     ReauthorizeHostCallback callback) {
   client_.ReauthorizeHost(
-      request.session_reauth_token, request.session_id,
+      std::string(session_reauth_token), std::string(session_id),
       base::BindOnce(&CloudSessionAuthzServiceClient::OnReauthorizeHostResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

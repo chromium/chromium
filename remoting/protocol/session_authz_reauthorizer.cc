@@ -83,12 +83,10 @@ void SessionAuthzReauthorizer::ScheduleNextReauth() {
 
 void SessionAuthzReauthorizer::Reauthorize() {
   HOST_LOG << "Reauthorizing session...";
-  internal::ReauthorizeHostRequestStruct request;
-  request.session_id = session_id_;
-  request.session_reauth_token = session_reauth_token_;
   service_client_->ReauthorizeHost(
-      request, base::BindOnce(&SessionAuthzReauthorizer::OnReauthorizeResult,
-                              base::Unretained(this)));
+      session_reauth_token_, session_id_,
+      base::BindOnce(&SessionAuthzReauthorizer::OnReauthorizeResult,
+                     base::Unretained(this)));
 }
 
 void SessionAuthzReauthorizer::OnReauthorizeResult(

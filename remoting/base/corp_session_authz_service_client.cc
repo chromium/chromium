@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -49,11 +50,17 @@ ResponseCallback<ProtoType> ConvertCallback(
 
 CorpSessionAuthzServiceClient::CorpSessionAuthzServiceClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<OAuthTokenGetter> oauth_token_getter)
+    std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
+    std::string_view support_id)
     : oauth_token_getter_(std::move(oauth_token_getter)),
       http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
                    oauth_token_getter_.get(),
-                   url_loader_factory) {}
+                   url_loader_factory),
+      support_id_(support_id) {
+  session_authz_path_ = support_id.empty()
+                            ? internal::GetRemoteAccessSessionAuthzPath()
+                            : internal::GetRemoteSupportSessionAuthzPath();
+}
 
 CorpSessionAuthzServiceClient::~CorpSessionAuthzServiceClient() = default;
 
@@ -94,14 +101,14 @@ void CorpSessionAuthzServiceClient::GenerateHostToken(
             "Not implemented."
         })");
   ExecuteRequest(
-      traffic_annotation, internal::GetGenerateHostTokenRequestPath(),
-      internal::GetGenerateHostTokenRequest({}),
+      traffic_annotation, internal::GetGenerateHostTokenRequestVerb(),
+      internal::GetGenerateHostTokenRequest({.support_id = support_id_}),
       ConvertCallback(std::move(callback),
                       &internal::GetGenerateHostTokenResponseStruct));
 }
 
 void CorpSessionAuthzServiceClient::VerifySessionToken(
-    const internal::VerifySessionTokenRequestStruct& request,
+    std::string_view session_token,
     VerifySessionTokenCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -139,15 +146,19 @@ void CorpSessionAuthzServiceClient::VerifySessionToken(
           policy_exception_justification:
             "Not implemented."
         })");
+  internal::VerifySessionTokenRequestStruct request;
+  request.session_token = session_token;
+  request.support_id = support_id_;
   ExecuteRequest(
-      traffic_annotation, internal::GetVerifySessionTokenRequestPath(),
+      traffic_annotation, internal::GetVerifySessionTokenRequestVerb(),
       internal::GetVerifySessionTokenRequest(request),
       ConvertCallback(std::move(callback),
                       &internal::GetVerifySessionTokenResponseStruct));
 }
 
 void CorpSessionAuthzServiceClient::ReauthorizeHost(
-    const internal::ReauthorizeHostRequestStruct& request,
+    std::string_view session_reauth_token,
+    std::string_view session_id,
     ReauthorizeHostCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -183,7 +194,11 @@ void CorpSessionAuthzServiceClient::ReauthorizeHost(
           policy_exception_justification:
             "Not implemented."
         })");
-  ExecuteRequest(traffic_annotation, internal::GetReauthorizeHostRequestPath(),
+  internal::ReauthorizeHostRequestStruct request;
+  request.session_reauth_token = session_reauth_token;
+  request.session_id = session_id;
+  request.support_id = support_id_;
+  ExecuteRequest(traffic_annotation, internal::GetReauthorizeHostRequestVerb(),
                  internal::GetReauthorizeHostRequest(request),
                  ConvertCallback(std::move(callback),
                                  &internal::GetReauthorizeHostResponseStruct));
@@ -192,12 +207,12 @@ void CorpSessionAuthzServiceClient::ReauthorizeHost(
 template <typename CallbackType>
 void CorpSessionAuthzServiceClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& path,
+    std::string_view verb,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
     CallbackType callback) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
-  request_config->path = path;
+  request_config->path = base::StrCat({session_authz_path_, ":", verb});
   request_config->api_key = internal::GetRemotingCorpApiKey();
   request_config->authenticated = true;
   request_config->provide_certificate = true;

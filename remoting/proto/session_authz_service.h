@@ -16,7 +16,9 @@
 // builds, they are populated by code in internal_stubs.h.
 namespace remoting::internal {
 
-struct GenerateHostTokenRequestStruct {};
+struct GenerateHostTokenRequestStruct {
+  std::string support_id;
+};
 
 struct GenerateHostTokenResponseStruct {
   GenerateHostTokenResponseStruct();
@@ -33,6 +35,7 @@ struct VerifySessionTokenRequestStruct {
   bool operator==(const VerifySessionTokenRequestStruct&) const;
 
   std::string session_token;
+  std::string support_id;
 };
 
 struct VerifySessionTokenResponseStruct {
@@ -53,6 +56,7 @@ struct ReauthorizeHostRequestStruct {
 
   std::string session_reauth_token;
   std::string session_id;
+  std::string support_id;
 };
 
 struct ReauthorizeHostResponseStruct {

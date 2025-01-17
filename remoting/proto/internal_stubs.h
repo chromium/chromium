@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "remoting/proto/logging_service.h"
 #include "remoting/proto/session_authz_service.h"
@@ -89,9 +90,12 @@ GetUpdateRemoteAccessHostRequest(const std::string& directory_id,
 // SessionAuthzService helpers
 // ===========================
 
+extern std::string_view GetRemoteAccessSessionAuthzPath();
+extern std::string_view GetRemoteSupportSessionAuthzPath();
+
 // GenerateHostToken
 using GenerateHostTokenRequest = DoNothingProto;
-extern std::string GetGenerateHostTokenRequestPath();
+extern std::string_view GetGenerateHostTokenRequestVerb();
 extern std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
     const GenerateHostTokenRequestStruct&);
 
@@ -101,7 +105,7 @@ GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&);
 
 // VerifySessionToken
 using VerifySessionTokenRequest = DoNothingProto;
-extern std::string GetVerifySessionTokenRequestPath();
+extern std::string_view GetVerifySessionTokenRequestVerb();
 extern std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
     const VerifySessionTokenRequestStruct&);
 
@@ -111,7 +115,7 @@ GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&);
 
 // ReauthorizeHost
 using ReauthorizeHostRequest = DoNothingProto;
-extern std::string GetReauthorizeHostRequestPath();
+extern std::string_view GetReauthorizeHostRequestVerb();
 extern std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(
     const ReauthorizeHostRequestStruct&);
 

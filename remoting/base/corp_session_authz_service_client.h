@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -29,9 +30,12 @@ namespace remoting {
 // API. For internal details, see go/crd-sessionauthz.
 class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
  public:
+  // |support_id|: The 7-digit support ID. Empty implies that the connection
+  //   mode is remote access.
   CorpSessionAuthzServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<OAuthTokenGetter> oauth_token_getter);
+      std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
+      std::string_view support_id);
   ~CorpSessionAuthzServiceClient() override;
 
   CorpSessionAuthzServiceClient(const CorpSessionAuthzServiceClient&) = delete;
@@ -39,22 +43,24 @@ class CorpSessionAuthzServiceClient : public SessionAuthzServiceClient {
       const CorpSessionAuthzServiceClient&) = delete;
 
   void GenerateHostToken(GenerateHostTokenCallback callback) override;
-  void VerifySessionToken(
-      const internal::VerifySessionTokenRequestStruct& request,
-      VerifySessionTokenCallback callback) override;
-  void ReauthorizeHost(const internal::ReauthorizeHostRequestStruct& request,
+  void VerifySessionToken(std::string_view session_token,
+                          VerifySessionTokenCallback callback) override;
+  void ReauthorizeHost(std::string_view session_reauth_token,
+                       std::string_view session_id,
                        ReauthorizeHostCallback callback) override;
 
  private:
   template <typename CallbackType>
   void ExecuteRequest(
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      const std::string& path,
+      std::string_view verb,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
   std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;
+  std::string support_id_;
+  std::string_view session_authz_path_;
 };
 
 }  // namespace remoting
