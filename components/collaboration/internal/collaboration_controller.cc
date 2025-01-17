@@ -334,7 +334,8 @@ class AddingUserToGroupState : public ControllerState {
   void ProcessSharedDataPreviewOrFailureOutcome(
       const data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome&
           preview_outcome) {
-    if (!preview_outcome.has_value()) {
+    if (!preview_outcome.has_value() ||
+        !preview_outcome.value().shared_tab_group_preview.has_value()) {
       HandleError();
       return;
     }

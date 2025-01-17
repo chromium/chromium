@@ -171,7 +171,9 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   // 4. CheckingFlowRequirements -> AddingUserToGroup state.
   std::move(group_data_callback).Run(group_data);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
-  std::move(preview_callback).Run(data_sharing::SharedDataPreview());
+  data_sharing::SharedDataPreview preview;
+  preview.shared_tab_group_preview = data_sharing::SharedTabGroupPreview();
+  std::move(preview_callback).Run(preview);
 
   // Simulate the user accepts the join invitation. Wait for tab group to be
   // added in sync.
@@ -362,7 +364,9 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
   controller_->SetStateForTesting(StateId::kAddingUserToGroup);
 
   // Show group preview screen.
-  std::move(preview_callback).Run(data_sharing::SharedDataPreview());
+  data_sharing::SharedDataPreview preview;
+  preview.shared_tab_group_preview = data_sharing::SharedTabGroupPreview();
+  std::move(preview_callback).Run(preview);
 
   // Cancel the join flow.
   EXPECT_CALL(*delegate_, OnFlowFinished);
