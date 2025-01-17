@@ -74,6 +74,14 @@ constexpr base::FeatureParam<base::TimeDelta>
         HttpStreamPool::kConnectionAttemptDelayParamName.data(),
         HttpStreamPool::kDefaultConnectionAttemptDelay};
 
+constexpr base::FeatureParam<HttpStreamPool::StreamAttemptDelayBehavior>
+    kStreamAttemptDelayBehavior{
+        &features::kHappyEyeballsV3,
+        HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
+        HttpStreamPool::StreamAttemptDelayBehavior::
+            kStartTimerOnFirstQuicAttempt,
+        HttpStreamPool::kStreamAttemptDelayBehaviorOptions};
+
 constexpr base::FeatureParam<bool> kVerboseNetLog{
     &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
     false};
@@ -117,6 +125,12 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
 // static
 base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
   return kHttpStreamPoolConnectionAttemptDelay.Get();
+}
+
+// static
+HttpStreamPool::StreamAttemptDelayBehavior
+HttpStreamPool::GetStreamAttemptDelayBehavior() {
+  return kStreamAttemptDelayBehavior.Get();
 }
 
 // static

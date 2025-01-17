@@ -435,7 +435,8 @@ class HttpStreamPool::AttemptManager
   void UpdateStreamAttemptState();
 
   // Runs the stream attempt delay timer if stream attempts are blocked and the
-  // timer is not running. Called by QuicTask.
+  // timer is not running. StreamAttemptDelayBehavior specifies when this method
+  // is called.
   void MaybeRunStreamAttemptDelayTimer();
 
   // Cancels `stream_attempt_delay_timer_`.

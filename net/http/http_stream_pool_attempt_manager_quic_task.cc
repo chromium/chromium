@@ -108,7 +108,11 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
       cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,
       /*use_dns_aliases=*/true, std::move(dns_aliases),
       manager_->CalculateMultiplexedSessionCreationInitiator());
-  manager_->MaybeRunStreamAttemptDelayTimer();
+
+  if (GetStreamAttemptDelayBehavior() ==
+      StreamAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
+    manager_->MaybeRunStreamAttemptDelayTimer();
+  }
 
   int rv = session_attempt_->Start(base::BindOnce(
       &QuicTask::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));
