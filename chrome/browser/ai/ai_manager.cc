@@ -391,55 +391,41 @@ void AIManager::GetModelInfo(GetModelInfoCallback callback) {
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                 CanCreateWriterCallback callback) {
   // TODO(crbug.com/382596381): Check Options.
-  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
-  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
-                   std::move(callback));
+  CanCreateSession(
+      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      std::move(callback));
 }
 
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
-  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
-      CreateAndStart(browser_context_,
-                     optimization_guide::ModelBasedCapabilityKey::kCompose,
-                     context_bound_object_set_, std::move(options),
-                     std::move(client));
+      CreateAndStart(
+          browser_context_,
+          optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+          context_bound_object_set_, std::move(options), std::move(client));
 }
 
 void AIManager::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
-  // TODO(crbug.com/382615217): Check Options.
-  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
-  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
-                   std::move(callback));
+  CanCreateSession(
+      optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+      std::move(callback));
 }
 
 void AIManager::CreateRewriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
     blink::mojom::AIRewriterCreateOptionsPtr options) {
-  if (options->tone != blink::mojom::AIRewriterTone::kAsIs &&
-      options->length != blink::mojom::AIRewriterLength::kAsIs) {
-    // TODO(crbug.com/358214322): Currently the combination of the tone and the
-    // length option is not supported.
-    // TODO(crbug.com/358214322): Return an error enum and throw a clear
-    // exception from the blink side.
-    mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
-        std::move(client));
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
-    return;
-  }
-  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::
-      CreateAndStart(browser_context_,
-                     optimization_guide::ModelBasedCapabilityKey::kCompose,
-                     context_bound_object_set_, std::move(options),
-                     std::move(client));
+      CreateAndStart(
+          browser_context_,
+          optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
+          context_bound_object_set_, std::move(options), std::move(client));
 }
 
 void AIManager::CanCreateSession(

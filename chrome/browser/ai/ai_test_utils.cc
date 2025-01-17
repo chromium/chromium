@@ -110,3 +110,25 @@ const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
   static base::NoDestructor<optimization_guide::proto::Any> data;
   return *data;
 }
+
+// static
+void AITestUtils::CheckWritingAssistanceApiRequest(
+    const google::protobuf::MessageLite& request_metadata,
+    const std::string& expected_shared_context,
+    const std::string& expected_context,
+    const optimization_guide::proto::WritingAssistanceApiOptions&
+        expected_options,
+    const std::string& expected_input) {
+  const optimization_guide::proto::WritingAssistanceApiRequest* request =
+      static_cast<
+          const optimization_guide::proto::WritingAssistanceApiRequest*>(
+          &request_metadata);
+  EXPECT_EQ(request->shared_context(), expected_shared_context);
+  EXPECT_EQ(request->context(), expected_context);
+  EXPECT_EQ(request->options().output_tone(), expected_options.output_tone());
+  EXPECT_EQ(request->options().output_format(),
+            expected_options.output_format());
+  EXPECT_EQ(request->options().output_length(),
+            expected_options.output_length());
+  EXPECT_EQ(request->rewrite_text(), expected_input);
+}
