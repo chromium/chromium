@@ -6,8 +6,11 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 
 #include <optional>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace ip_protection {
 
@@ -121,6 +124,26 @@ struct BlindSignedAuthToken {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProxyLayer { kProxyA = 0, kProxyB = 1, kMaxValue = kProxyB };
+
+// The type of MDL that is being represented. This is used to determine which
+// MDL to use for a given matching request.
+enum class MdlType {
+  // The default MDL type which is for IPP in incognito browsing.
+  kDefault,
+
+  // The MDL type for IPP experiments within regular browsing.
+  kRegularBrowsing,
+};
+
+// Returns all MDL types that are represented by the given MDL resource.
+//
+// A given MDL resource may represent multiple MDL types. For example, a
+// resource that is in the default MDL group and the regular browsing MDL group
+// would return both kDefault and kRegularBrowsing. Also, an empty vector
+// indicates that the resource does not represent any MDL types which is
+// unexpected and will be logged as such.
+std::vector<MdlType> FromMdlResourceProto(
+    masked_domain_list::Resource resource);
 
 }  // namespace ip_protection
 

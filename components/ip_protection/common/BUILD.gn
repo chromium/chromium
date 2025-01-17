@@ -136,7 +136,10 @@ source_set("ip_protection_data_types") {
     "ip_protection_data_types.cc",
     "ip_protection_data_types.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+  ]
 }
 
 source_set("ip_protection_data_types_unittest") {
@@ -472,6 +475,7 @@ source_set("masked_domain_list_manager") {
     "//services/network/public/mojom",
   ]
   deps = [
+    ":ip_protection_data_types",
     ":ip_protection_telemetry",
     "//services/network/public/cpp",
   ]
@@ -517,13 +521,17 @@ source_set("url_matcher_with_bypass") {
     "//net",
     "//url",
   ]
-  deps = [ "//services/network/public/cpp" ]
+  deps = [
+    ":ip_protection_data_types",
+    "//services/network/public/cpp",
+  ]
 }
 
 source_set("url_matcher_with_bypass_unittest") {
   testonly = true
   sources = [ "url_matcher_with_bypass_unittest.cc" ]
   deps = [
+    ":ip_protection_data_types",
     ":url_matcher_with_bypass",
     "//base",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",

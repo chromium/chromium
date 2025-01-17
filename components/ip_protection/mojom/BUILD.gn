@@ -35,7 +35,10 @@ mojom("mojom") {
           [ "//components/ip_protection/mojom/data_types_mojom_traits.h" ]
       traits_sources =
           [ "//components/ip_protection/mojom/data_types_mojom_traits.cc" ]
-      traits_public_deps = [ "//mojo/public/cpp/base" ]
+      traits_public_deps = [
+        "//components/ip_protection/common:ip_protection_data_types",
+        "//mojo/public/cpp/base",
+      ]
     },
   ]
 }

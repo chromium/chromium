@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -100,9 +101,9 @@ bool MaskedDomainListManager::Matches(
   switch (proxy_bypass_policy_) {
     case IpProtectionProxyBypassPolicy::kNone:
     case IpProtectionProxyBypassPolicy::kExclusionList:
-      match_result =
-          url_matcher_with_bypass_.Matches(request_url_ref, top_frame_site,
-                                           /*skip_bypass_check=*/true);
+      match_result = url_matcher_with_bypass_.Matches(
+          request_url_ref, top_frame_site, MdlType::kDefault,
+          /*skip_bypass_check=*/true);
       break;
     case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
       if (!top_frame_site.has_value()) {
@@ -139,7 +140,7 @@ bool MaskedDomainListManager::Matches(
       // opaque), we should skip the first party check and match only on the
       // request_url.
       match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site,
+          request_url_ref, top_frame_site, MdlType::kDefault,
           network_anonymization_key.IsTransient());
       break;
   }
