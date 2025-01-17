@@ -67,7 +67,7 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
 
   if (*resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
       !*resultForHasDefaultBrowserPromoShownInOtherSurface) {
-    result.position = EphemeralHomeModuleRank::kTop;
+    result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
 

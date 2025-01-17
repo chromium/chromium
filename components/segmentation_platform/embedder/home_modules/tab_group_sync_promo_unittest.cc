@@ -41,7 +41,7 @@ TEST_F(TabGroupSyncPromoTest, GetInputsReturnsExpectedInputs) {
             inputs.end());
 }
 
-// Validates that ComputeCardResult() returns kTop when tab group sync promo
+// Validates that ComputeCardResult() returns kLast when tab group sync promo
 // card is enabled.
 TEST_F(TabGroupSyncPromoTest, TestComputeCardResultWithCardEnabled) {
   pref_service_.SetUserPref(kTabGroupSyncPromoInteractedPref,
@@ -52,7 +52,7 @@ TEST_F(TabGroupSyncPromoTest, TestComputeCardResultWithCardEnabled) {
                                         /* kTabGroupSyncPromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kTabGroupSyncPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
 }
 
 // Validates that when the tab group sync promo card is disabled because the

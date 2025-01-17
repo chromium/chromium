@@ -116,7 +116,7 @@ CardSelectionInfo::ShowResult QuickDeletePromo::ComputeCardResult(
        (resultForCountOfClearingBrowsingData.value() > 0 &&
         resultForCountOfClearingBrowsingDataThroughQuickDelete.value() == 0)) &&
       resultForQuickDeletePromoShownCount.value() < kShownCountLimit) {
-    result.position = EphemeralHomeModuleRank::kTop;
+    result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
 

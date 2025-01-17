@@ -96,7 +96,7 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
   if (!*resultForTabGroupExists &&
       resultForNumberOfTabs.value() > kTabCountLimit &&
       resultForTabGroupPromoShownCount.value() < kShownCountLimit) {
-    result.position = EphemeralHomeModuleRank::kTop;
+    result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
 

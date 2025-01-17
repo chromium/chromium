@@ -95,21 +95,21 @@ public class EducationalTipModuleMediatorUnitTest {
 
         // Test showing tab group promo card.
         testShowModuleImpl(
-                ModuleType.TAB_GROUP,
+                ModuleType.TAB_GROUP_PROMO,
                 R.string.educational_tip_tab_group_title,
                 R.string.educational_tip_tab_group_description,
                 R.drawable.tab_group_promo_logo);
 
         // Test showing tab group sync promo card.
         testShowModuleImpl(
-                ModuleType.TAB_GROUP_SYNC,
+                ModuleType.TAB_GROUP_SYNC_PROMO,
                 R.string.educational_tip_tab_group_sync_title,
                 R.string.educational_tip_tab_group_sync_description,
                 R.drawable.tab_group_sync_promo_logo);
 
         // Test showing quick delete promo card.
         testShowModuleImpl(
-                ModuleType.QUICK_DELETE,
+                ModuleType.QUICK_DELETE_PROMO,
                 R.string.educational_tip_quick_delete_title,
                 R.string.educational_tip_quick_delete_description,
                 R.drawable.quick_delete_promo_logo);
@@ -143,8 +143,12 @@ public class EducationalTipModuleMediatorUnitTest {
 
         mEducationalTipModuleMediator =
                 new EducationalTipModuleMediator(
-                        ModuleType.TAB_GROUP, mModel, mModuleDelegate, mActionDelegate, mProfile);
-        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.TAB_GROUP);
+                        ModuleType.TAB_GROUP_PROMO,
+                        mModel,
+                        mModuleDelegate,
+                        mActionDelegate,
+                        mProfile);
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.TAB_GROUP_PROMO);
         mEducationalTipModuleMediator.showModule();
         mEducationalTipModuleMediator.onViewCreated();
         verify(mMockDefaultBrowserPromoUtils, never())

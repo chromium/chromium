@@ -114,7 +114,7 @@ public class HomeModulesConfigSettingsUnitTest {
 
         String tabGroupPromoNotExistedPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
-                        String.valueOf(ModuleType.TAB_GROUP));
+                        String.valueOf(ModuleType.TAB_GROUP_PROMO));
         String defaultBrowserPromoPreferenceKey =
                 ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
                         String.valueOf(ModuleType.DEFAULT_BROWSER_PROMO));

@@ -44,7 +44,7 @@ TEST_F(QuickDeletePromoTest, GetInputsReturnsExpectedInputs) {
             inputs.end());
 }
 
-// Validates that ComputeCardResult() returns kTop when quick delete promo card
+// Validates that ComputeCardResult() returns kLast when quick delete promo card
 // is enabled for user who never cleared their browsing data at all in the past
 // 30 days.
 TEST_F(QuickDeletePromoTest,
@@ -58,10 +58,10 @@ TEST_F(QuickDeletePromoTest,
                    /* kQuickDeletePromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
 }
 
-// Validates that ComputeCardResult() returns kTop when quick delete promo card
+// Validates that ComputeCardResult() returns kLast when quick delete promo card
 // is enabled for user who cleared their browsing data without knowing about the
 // Quick Delete feature in the past 30 days.
 TEST_F(QuickDeletePromoTest,
@@ -75,7 +75,7 @@ TEST_F(QuickDeletePromoTest,
                    /* kQuickDeletePromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kQuickDeletePromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
 }
 
 // Validates that when the quick delete promo card is disabled because the user
