@@ -418,7 +418,6 @@
     "WebKit Linux ASAN": "ci/WebKit Linux ASAN/gn-args.json",
     "WebKit Linux Leak": "ci/WebKit Linux Leak/gn-args.json",
     "WebKit Linux MSAN": "ci/WebKit Linux MSAN/gn-args.json",
-    "android-asan": "ci/android-asan/gn-args.json",
     "ios-asan": "ci/ios-asan/gn-args.json",
     "win-asan": "ci/win-asan/gn-args.json"
   },

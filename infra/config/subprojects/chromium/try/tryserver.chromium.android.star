@@ -421,20 +421,6 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(crbug.com/40240078): Reenable this builder once the reboot issue is resolved.
-# try_.builder(
-#     name = "android-asan",
-#     mirrors = ["ci/android-asan"],
-#     gn_args = gn_args.config(
-#         configs = [
-#             "ci/android-asan",
-#             "release_try_builder",
-#             "minimal_symbols",
-#         ],
-#     ),
-#     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-# )
-
 try_.builder(
     name = "android-bfcache-rel",
     mirrors = [
