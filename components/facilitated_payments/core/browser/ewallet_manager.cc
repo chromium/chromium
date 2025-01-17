@@ -172,6 +172,7 @@ void EwalletManager::OnEwalletPaymentPromptResult(
   }
 
   LogEwalletFopSelected(GetAvailableEwalletsConfiguration());
+  LogEwalletFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_, scheme_);
 
   ShowProgressScreen();
 
@@ -327,6 +328,8 @@ void EwalletManager::OnUiEvent(UiEvent ui_event_type) {
       if (ui_state_ == UiState::kFopSelector) {
         LogEwalletFlowExitedReason(
             EwalletFlowExitedReason::kFopSelectorClosedByUser, scheme_);
+        LogEwalletFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_,
+                                       scheme_);
       }
       ui_state_ = UiState::kHidden;
       break;

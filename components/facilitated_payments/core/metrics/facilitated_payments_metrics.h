@@ -132,10 +132,17 @@ void LogEwalletFopSelectorShownUkm(ukm::SourceId ukm_source_id,
 // Log when the Pix FOP selector UI is shown.
 void LogPixFopSelectorShownUkm(ukm::SourceId ukm_source_id);
 
-// Log after user accepts / rejects the FOP UI. The `accepted` will be false
+// Log after user accepts / rejects the Pix UI. The `accepted` will be false
 // if the user rejects the UI, and it will be true if the user accepts the
 // selector UI and selects a FoP to use.
-void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id);
+void LogPixFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id);
+
+// Log after user accepts / rejects the eWallet UI. The `accepted` will be false
+// if the user rejects the UI, and it will be true if the user accepts the
+// selector UI and selects a FoP to use.
+void LogEwalletFopSelectorResultUkm(bool accepted,
+                                    ukm::SourceId ukm_source_id,
+                                    PaymentLinkValidator::Scheme scheme);
 
 // Log when user selects a Pix FOP to pay with.
 void LogPixFopSelected();

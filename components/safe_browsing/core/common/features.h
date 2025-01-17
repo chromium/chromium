@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
 
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
+// Pass the LlamaTriggerRuleInfo from RTLookupResponse to ClientPhishingRequest
+// if it exists and the force request mechanism occurs.
+BASE_DECLARE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo);
+
 // Inquire the on device model when the forced llama trigger info in
 // RTLookupResponse asks to scan the page.
 BASE_DECLARE_FEATURE(

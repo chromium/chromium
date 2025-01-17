@@ -19,7 +19,9 @@
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/mojom/base/values.mojom.h"
@@ -28,6 +30,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
@@ -198,6 +201,24 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
     web_contents_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
+
+  ChromeTranslateClient* GetChromeTranslateClient() {
+    return ChromeTranslateClient::FromWebContents(
+        browser()
+            ->GetActiveTabInterface()
+            ->GetTabFeatures()
+            ->read_anything_side_panel_controller()
+            ->tab()
+            ->GetContents());
+  }
+
+  void SetTranslateSourceLanguage(const std::string& language) {
+    GetChromeTranslateClient()
+        ->GetTranslateManager()
+        ->GetLanguageState()
+        ->SetSourceLanguage(language);
+  }
+
   void OnLineSpaceChange(read_anything::mojom::LineSpacing line_spacing) {
     handler_->OnLineSpaceChange(line_spacing);
   }
@@ -260,6 +281,16 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
 
   void UninstallVoice(const std::string& language) {
     handler_->UninstallVoice(language);
+  }
+
+  void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details) {
+    handler_->AccessibilityEventReceived(details);
+  }
+
+  void OnActiveAXTreeIDChanged() { handler_->OnActiveAXTreeIDChanged(); }
+
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) {
+    handler_->OnTranslateDriverDestroyed(driver);
   }
 
  protected:
@@ -680,6 +711,95 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest,
   OnLanguageDetermined(kLang1);
 
   EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnLanguageDetermined_UnknownLanguageSendsEmpty) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  EXPECT_CALL(page_, SetLanguageCode).Times(1);
+
+  OnLanguageDetermined(language_detection::kUnknownLanguageCode);
+
+  EXPECT_CALL(page_, SetLanguageCode("")).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, AccessibilityEventReceived) {
+  ui::AXUpdatesAndEvents details;
+  details.events = {};
+  details.updates = {};
+  details.ax_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  AccessibilityEventReceived(details);
+
+  EXPECT_CALL(page_, AccessibilityEventReceived(details.ax_tree_id, _, _))
+      .Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnActiveAXTreeIDChanged) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnActiveAXTreeIDChanged();
+
+  // This is called once during construction, so we check for 2 calls here.
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged).Times(2);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnActiveAXTreeIDChanged_SendsExistingLanguageCode) {
+  const char kLang[] = "pt-br";
+  SetTranslateSourceLanguage(kLang);
+
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  // Sets the default language code.
+  EXPECT_CALL(page_, SetLanguageCode).Times(1);
+  // Sends the detected language code.
+  EXPECT_CALL(page_, SetLanguageCode(kLang)).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       OnActiveAXTreeIDChanged_SendsNewLanguageCode) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  // The default language code.
+  EXPECT_CALL(page_, SetLanguageCode).Times(1);
+  const char kLang1[] = "pt-br";
+  const char kLang2[] = "bd";
+
+  // Send a new language code.
+  SetTranslateSourceLanguage(kLang1);
+  OnActiveAXTreeIDChanged();
+
+  EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
+
+  // Send another language code.
+  SetTranslateSourceLanguage(kLang2);
+  OnActiveAXTreeIDChanged();
+
+  EXPECT_CALL(page_, SetLanguageCode(kLang2)).Times(1);
+}
+
+TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnActiveAXTreeIDChanged_AfterTranslateDriverDestroyed_StillSendsLanguage) {
+  const char kLang1[] = "pt-br";
+  const char kLang2[] = "es-es";
+  SetTranslateSourceLanguage(kLang1);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+  EXPECT_CALL(page_, SetLanguageCode).Times(1);
+  EXPECT_CALL(page_, SetLanguageCode(kLang1)).Times(1);
+
+  OnTranslateDriverDestroyed(GetChromeTranslateClient()->GetTranslateDriver());
+  SetTranslateSourceLanguage(kLang2);
+  OnActiveAXTreeIDChanged();
+
+  EXPECT_CALL(page_, SetLanguageCode(kLang2)).Times(1);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

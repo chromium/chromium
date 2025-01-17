@@ -8241,6 +8241,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.Ewallet.FopSelectorResult">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged when the eWallet FoP selector UI is closed.
+  </summary>
+  <metric name="Result" enum="Boolean">
+    <summary>
+      Set to true after user accepted the FoP selector UI and selected a FoP to
+      use, and to false after user rejected/dismissed the FoP selector UI.
+    </summary>
+  </metric>
+  <metric name="Scheme" enum="FacilitatedPayments.EwalletScheme">
+    <summary>
+      The scheme of the payment link.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="FacilitatedPayments.Ewallet.FopSelectorShown">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>

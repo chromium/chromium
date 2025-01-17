@@ -30,7 +30,7 @@ class GlicWindowResizeAnimation : public gfx::LinearAnimation,
   // FinishedCallback. FinishedCallback is always invoked asynchronously.
   using FinishedCallback = base::OnceClosure;
   GlicWindowResizeAnimation(views::Widget* widget,
-                            gfx::Size new_size,
+                            const gfx::Rect& target_bounds,
                             base::TimeDelta duration,
                             FinishedCallback finished_callback);
   GlicWindowResizeAnimation(const GlicWindowResizeAnimation&) = delete;
@@ -43,8 +43,8 @@ class GlicWindowResizeAnimation : public gfx::LinearAnimation,
 
  private:
   const raw_ptr<views::Widget> widget_;
-  const gfx::Size initial_size_;
-  const gfx::Size new_size_;
+  const gfx::Rect initial_bounds_;
+  const gfx::Rect new_bounds_;
   FinishedCallback finished_callback_;
   base::WeakPtrFactory<GlicWindowResizeAnimation> weak_ptr_factory_{this};
 };

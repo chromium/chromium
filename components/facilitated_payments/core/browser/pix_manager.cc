@@ -193,7 +193,7 @@ void PixManager::OnPixPaymentPromptResult(bool is_prompt_accepted,
     return;
   }
   LogPixFopSelected();
-  LogFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
+  LogPixFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
@@ -336,7 +336,7 @@ void PixManager::OnUiEvent(UiEvent ui_event_type) {
     case UiEvent::kScreenClosedByUser: {
       if (ui_state_ == UiState::kFopSelector) {
         LogPixFlowExitedReason(PixFlowExitedReason::kFopSelectorClosedByUser);
-        LogFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
+        LogPixFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
       }
       ui_state_ = UiState::kHidden;
       break;

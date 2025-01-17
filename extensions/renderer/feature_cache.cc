@@ -179,10 +179,8 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
                      base::ranges::less{}, &Feature::name);
   base::ranges::sort(features.available_features, base::ranges::less{},
                      &Feature::name);
-  DCHECK(base::ranges::unique(features.dev_mode_restricted_features) ==
-         features.dev_mode_restricted_features.end());
-  DCHECK(base::ranges::unique(features.available_features) ==
-         features.available_features.end());
+  DCHECK(std::ranges::unique(features.dev_mode_restricted_features).empty());
+  DCHECK(std::ranges::unique(features.available_features).empty());
 
   return features;
 }

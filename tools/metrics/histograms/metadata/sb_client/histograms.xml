@@ -922,6 +922,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo"
+    enum="BooleanForceRequest" expires_after="2026-01-16">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records if the RTUrlLookupResponse that contained FORCE_REQUEST in
+    client_side_detection_type contains the ForcedLlamaTriggerInfo. This
+    histogram is logged if the RTUrlLookupResponse contains FORCE_REQUEST in
+    client_side_detection_type and in the client side detection host class when
+    the FORCE_REQUEST is fetched from the verdict cache manager.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing{RequestType}"
     enum="BooleanIsPhishing" expires_after="2026-01-06">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still

@@ -242,19 +242,19 @@ class BrowserToPageConnector {
     std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
                                 message.size());
     if (agent_host == page_host_.get()) {
-      std::optional<base::Value> value = base::JSONReader::Read(message_sp);
-      if (!value || !value->is_dict()) {
+      std::optional<base::Value::Dict> value =
+          base::JSONReader::ReadDict(message_sp);
+      if (!value) {
         return;
       }
 
-      const base::Value::Dict& dict = value->GetDict();
       // Make sure this is a binding call.
-      const std::string* method = dict.FindString("method");
+      const std::string* method = value->FindString("method");
       if (!method || *method != "Runtime.bindingCalled") {
         return;
       }
 
-      const base::Value::Dict* params = dict.FindDict("params");
+      const base::Value::Dict* params = value->FindDict("params");
       if (!params) {
         return;
       }
@@ -491,12 +491,11 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DCHECK(!flatten_protocol_);
 
     if (throttle_ || worker_throttle_) {
-      std::optional<base::Value> value =
-          base::JSONReader::Read(std::string_view(
+      std::optional<base::Value::Dict> value =
+          base::JSONReader::ReadDict(std::string_view(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
-      if (value.has_value() && value->is_dict() &&
-          (method = value->GetDict().FindString(kMethod)) &&
+      if (value && (method = value->FindString(kMethod)) &&
           *method == kResumeMethod) {
         ResumeIfThrottled();
       }
