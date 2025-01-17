@@ -61,7 +61,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   viz::ResourceId id;
 
   gpu::SyncToken sync_token;
-  viz::MemoryBufferId memory_buffer_id;
+  gpu::Mailbox memory_buffer_id;
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
       !data.ReadMemoryBufferId(&memory_buffer_id) ||
       !data.ReadSyncToken(&sync_token) ||
@@ -89,48 +89,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
 #endif
 
   return true;
-}
-
-// static
-viz::mojom::MemoryBufferIdDataView::Tag
-UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::GetTag(
-    const viz::MemoryBufferId& memory_buffer_id) {
-  return absl::visit(
-      base::Overloaded{
-          [](gpu::Mailbox) {
-            return viz::mojom::MemoryBufferIdDataView::Tag::kMailbox;
-          },
-
-          [](viz::SharedBitmapId) {
-            return viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId;
-          },
-      },
-      memory_buffer_id);
-}
-
-// static
-bool UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId>::Read(
-    viz::mojom::MemoryBufferIdDataView memory_buffer_id,
-    viz::MemoryBufferId* out) {
-  switch (memory_buffer_id.tag()) {
-    case viz::mojom::MemoryBufferIdDataView::Tag::kMailbox: {
-      gpu::Mailbox mailbox;
-      if (!memory_buffer_id.ReadMailbox(&mailbox)) {
-        return false;
-      }
-      *out = mailbox;
-      return true;
-    }
-    case viz::mojom::MemoryBufferIdDataView::Tag::kSharedBitmapId: {
-      viz::SharedBitmapId shared_bitmap_id;
-      if (!memory_buffer_id.ReadSharedBitmapId(&shared_bitmap_id)) {
-        return false;
-      }
-      *out = shared_bitmap_id;
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace mojo

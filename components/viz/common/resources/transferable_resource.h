@@ -30,8 +30,6 @@ class ClientSharedImage;
 
 namespace viz {
 
-using MemoryBufferId = absl::variant<gpu::Mailbox, SharedBitmapId>;
-
 struct ReturnedResource;
 
 struct VIZ_COMMON_EXPORT TransferableResource {
@@ -95,12 +93,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       const MetadataOverride& override = {});
 
   // Following Make* functions are deprecated. Please use the one above.
-  static TransferableResource MakeSoftwareSharedBitmap(
-      const SharedBitmapId& id,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      ResourceSource source = ResourceSource::kUnknown);
   static TransferableResource MakeSoftwareSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
       const gpu::SyncToken& sync_token,
@@ -133,16 +125,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ReturnedResource ToReturnedResource() const;
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
-  bool is_empty() const {
-    return (absl::holds_alternative<gpu::Mailbox>(memory_buffer_id_) &&
-            mailbox().IsZero()) ||
-           (absl::holds_alternative<SharedBitmapId>(memory_buffer_id_) &&
-            shared_bitmap_id().IsZero());
-  }
-
-  // Returns true if this resource (which must be software) is holding a
-  // SharedImage ID rather than a SharedBitmapId.
-  bool IsSoftwareSharedImage() const;
+  bool is_empty() const { return mailbox().IsZero(); }
 
   // TODO(danakj): Some of these fields are only GL, some are only Software,
   // some are both but used for different purposes (like the mailbox name).
@@ -167,9 +150,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   void set_mailbox(const gpu::Mailbox& mailbox) { memory_buffer_id_ = mailbox; }
 
-  void set_shared_bitmap_id(const SharedBitmapId& shared_bitmap_id) {
-    memory_buffer_id_ = shared_bitmap_id;
-  }
   void set_sync_token(const gpu::SyncToken& sync_token) {
     sync_token_ = sync_token;
   }
@@ -179,14 +159,8 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   // Returns the Mailbox that this instance is storing. Valid to call only if
   // this instance has been created via MakeSoftwareSharedImage() or MakeGpu().
-  const gpu::Mailbox& mailbox() const {
-    return absl::get<gpu::Mailbox>(memory_buffer_id_);
-  }
-  // Returns the SharedBitmapId that this instance is storing. Valid to call
-  // only if this instance has been created via MakeSoftwareSharedBitmap().
-  const SharedBitmapId& shared_bitmap_id() const {
-    return absl::get<SharedBitmapId>(memory_buffer_id_);
-  }
+  const gpu::Mailbox& mailbox() const { return memory_buffer_id_; }
+
   const gpu::SyncToken& sync_token() const { return sync_token_; }
   gpu::SyncToken& mutable_sync_token() { return sync_token_; }
   uint32_t texture_target() const { return texture_target_; }
@@ -266,13 +240,13 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool operator!=(const TransferableResource& o) const { return !(*this == o); }
 
   // For usage only in Mojo serialization/deserialization.
-  const MemoryBufferId& memory_buffer_id() const { return memory_buffer_id_; }
-  void set_memory_buffer_id(MemoryBufferId memory_buffer_id) {
+  const gpu::Mailbox& memory_buffer_id() const { return memory_buffer_id_; }
+  void set_memory_buffer_id(gpu::Mailbox memory_buffer_id) {
     memory_buffer_id_ = memory_buffer_id;
   }
 
  private:
-  MemoryBufferId memory_buffer_id_;
+  gpu::Mailbox memory_buffer_id_;
 
   // TODO(crbug.com/337538024): Remove once DUMP_WILL_BE_CHECK() in
   // TransferableResource::mailbox() has safely rolled out.
