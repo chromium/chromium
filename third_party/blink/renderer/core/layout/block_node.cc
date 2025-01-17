@@ -1359,15 +1359,6 @@ void BlockNode::PlaceChildrenInFlowThread(
     PlaceChildrenInLayoutBox(child_fragment, previous_column_break_token,
                              /* needs_invalidation_check */ true);
 
-    // If the multicol container has inline children, there may still be floats
-    // there, but they aren't stored as child fragments of |column| in that case
-    // (but rather inside fragment items). Make sure that they get positioned,
-    // too.
-    if (const FragmentItems* items = child_fragment.Items()) {
-      CopyFragmentItemsToLayoutBox(child_fragment, *items,
-                                   previous_column_break_token);
-    }
-
     previous_column_break_token = child_fragment.GetBreakToken();
   }
 
