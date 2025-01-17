@@ -827,14 +827,12 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, GetSkColorType(), GetAlphaType(),
-          PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_),
+          size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
           kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
           RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, GetSkColorType(), GetAlphaType(),
-        PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_),
+        size, GetSkColorType(), GetAlphaType(), GetColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -5634,11 +5632,11 @@ SkColorType WebGLRenderingContextBase::GetSkColorType() const {
 }
 
 gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {
-  return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
+  return PredefinedColorSpaceToGfxColorSpace(drawing_buffer_color_space_);
 }
 
 sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
-  return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
+  return GetColorSpace().ToSkColorSpace();
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
