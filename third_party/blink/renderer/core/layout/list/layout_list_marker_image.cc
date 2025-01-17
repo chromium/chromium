@@ -29,9 +29,9 @@ gfx::SizeF LayoutListMarkerImage::DefaultSize() const {
   return gfx::SizeF(bullet_width, bullet_width);
 }
 
-NaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  NaturalSizingInfo sizing_info = LayoutImage::GetNaturalDimensions();
+  PhysicalNaturalSizingInfo sizing_info = LayoutImage::GetNaturalDimensions();
 
   // If this is an image without natural width and height, compute the concrete
   // object size by using the specified default object size.
@@ -43,7 +43,8 @@ NaturalSizingInfo LayoutListMarkerImage::GetNaturalDimensions() const {
         StyleRef().EffectiveZoom(), DefaultSize());
     concrete_size.Scale(ImageDevicePixelRatio());
 
-    sizing_info = NaturalSizingInfo::MakeFixed(concrete_size);
+    sizing_info = PhysicalNaturalSizingInfo::MakeFixed(
+        PhysicalSize::FromSizeFRound(concrete_size));
   }
   return sizing_info;
 }

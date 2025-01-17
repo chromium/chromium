@@ -157,18 +157,16 @@ void LayoutInputNode::IntrinsicSize(
   if (*computed_inline_size && *computed_block_size)
     return;
 
-  const NaturalSizingInfo legacy_sizing_info =
+  const PhysicalNaturalSizingInfo legacy_sizing_info =
       To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
 
   std::optional<LayoutUnit> intrinsic_inline_size =
       legacy_sizing_info.has_width
-          ? std::make_optional(
-                LayoutUnit::FromFloatRound(legacy_sizing_info.size.width()))
+          ? std::make_optional(legacy_sizing_info.size.width)
           : std::nullopt;
   std::optional<LayoutUnit> intrinsic_block_size =
       legacy_sizing_info.has_height
-          ? std::make_optional(
-                LayoutUnit::FromFloatRound(legacy_sizing_info.size.height()))
+          ? std::make_optional(legacy_sizing_info.size.height)
           : std::nullopt;
   if (!IsHorizontalWritingMode()) {
     std::swap(intrinsic_inline_size, intrinsic_block_size);

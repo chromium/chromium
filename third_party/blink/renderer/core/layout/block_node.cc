@@ -1537,12 +1537,11 @@ LogicalSize BlockNode::GetAspectRatio() const {
   }
 
   if (!ShouldApplySizeContainment()) {
-    const NaturalSizingInfo legacy_sizing_info =
+    const PhysicalNaturalSizingInfo legacy_sizing_info =
         To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      return StyleAspectRatio::LayoutRatioFromSizeF(
-                 legacy_sizing_info.aspect_ratio)
-          .ConvertToLogical(Style().GetWritingMode());
+      return legacy_sizing_info.aspect_ratio.ConvertToLogical(
+          Style().GetWritingMode());
     }
   }
 

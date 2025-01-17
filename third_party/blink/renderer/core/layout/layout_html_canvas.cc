@@ -80,9 +80,9 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
   SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
 }
 
-NaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  return NaturalSizingInfo::MakeFixed(gfx::SizeF(natural_size_));
+  return PhysicalNaturalSizingInfo::MakeFixed(natural_size_);
 }
 
 bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {

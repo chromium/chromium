@@ -29,6 +29,14 @@
 
 namespace blink {
 
+// static
+PhysicalNaturalSizingInfo PhysicalNaturalSizingInfo::FromSizingInfo(
+    const NaturalSizingInfo& sizing_info) {
+  return {PhysicalSize::FromSizeFRound(sizing_info.size),
+          LayoutRatioFromSizeF(sizing_info.aspect_ratio), sizing_info.has_width,
+          sizing_info.has_height};
+}
+
 // https://www.w3.org/TR/css3-images/#default-sizing
 gfx::SizeF ConcreteObjectSize(const NaturalSizingInfo& sizing_info,
                               const gfx::SizeF& default_object_size) {
@@ -71,6 +79,16 @@ gfx::SizeF ConcreteObjectSize(const NaturalSizingInfo& sizing_info,
   }
 
   return default_object_size;
+}
+
+PhysicalSize ConcreteObjectSize(const PhysicalNaturalSizingInfo& sizing_info,
+                                const PhysicalSize& default_object_size) {
+  // TODO: Provide a proper LayoutUnit implementation.
+  const NaturalSizingInfo float_sizing_info{
+      gfx::SizeF(sizing_info.size), gfx::SizeF(sizing_info.aspect_ratio),
+      sizing_info.has_width, sizing_info.has_height};
+  return PhysicalSize::FromSizeFRound(
+      ConcreteObjectSize(float_sizing_info, gfx::SizeF(default_object_size)));
 }
 
 }  // namespace blink

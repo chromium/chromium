@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NATURAL_SIZING_INFO_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -17,18 +18,30 @@ struct NaturalSizingInfo {
   static NaturalSizingInfo None() {
     return {gfx::SizeF(), gfx::SizeF(), false, false};
   }
-  static NaturalSizingInfo MakeFixed(const gfx::SizeF& natural_size) {
-    return {natural_size, natural_size, true, true};
-  }
 
   bool IsNone() const {
     return !has_width && !has_height && aspect_ratio.IsEmpty();
   }
 
-  // Because they are using float instead of LayoutUnit, we can't use
-  // PhysicalSize here.
   gfx::SizeF size;
   gfx::SizeF aspect_ratio;
+  bool has_width = true;
+  bool has_height = true;
+};
+
+struct PhysicalNaturalSizingInfo {
+  DISALLOW_NEW();
+
+  static PhysicalNaturalSizingInfo None() { return {{}, {}, false, false}; }
+  static PhysicalNaturalSizingInfo MakeFixed(const PhysicalSize& natural_size) {
+    return {natural_size, natural_size, true, true};
+  }
+  static PhysicalNaturalSizingInfo FromSizingInfo(const NaturalSizingInfo&);
+
+  bool operator==(const PhysicalNaturalSizingInfo&) const = default;
+
+  PhysicalSize size;
+  PhysicalSize aspect_ratio;
   bool has_width = true;
   bool has_height = true;
 };
@@ -49,6 +62,9 @@ inline float ResolveHeightForRatio(float width,
 CORE_EXPORT gfx::SizeF ConcreteObjectSize(
     const NaturalSizingInfo& sizing_info,
     const gfx::SizeF& default_object_size);
+CORE_EXPORT PhysicalSize
+ConcreteObjectSize(const PhysicalNaturalSizingInfo& sizing_info,
+                   const PhysicalSize& default_object_size);
 
 }  // namespace blink
 

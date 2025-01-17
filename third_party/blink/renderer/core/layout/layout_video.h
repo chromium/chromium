@@ -72,7 +72,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   void UpdateFromElement() final;
   void InvalidateCompositing();
 
-  NaturalSizingInfo GetNaturalDimensions() const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
   void UpdateNaturalSize();
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
@@ -91,7 +91,8 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
-  NaturalSizingInfo cached_image_natural_dimensions_;
+  PhysicalNaturalSizingInfo cached_image_natural_dimensions_ =
+      PhysicalNaturalSizingInfo::None();
 };
 
 template <>

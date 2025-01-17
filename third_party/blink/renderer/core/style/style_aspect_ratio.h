@@ -22,8 +22,6 @@ class CORE_EXPORT StyleAspectRatio {
   // Style data for aspect-ratio: auto || <ratio>
   StyleAspectRatio(EAspectRatioType type, gfx::SizeF ratio);
 
-  static PhysicalSize LayoutRatioFromSizeF(gfx::SizeF ratio);
-
   // 0/x and x/0 are valid (and computed style needs to serialize them
   // as such), but they are not useful for layout, so we map it to auto here.
   EAspectRatioType GetType() const {

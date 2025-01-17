@@ -106,7 +106,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     NOT_DESTROYED();
     CanvasSizeChanged();
   }
-  NaturalSizingInfo GetNaturalDimensions() const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   LayoutObjectChildList children_;
   PhysicalSize natural_size_;

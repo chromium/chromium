@@ -95,16 +95,15 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   }
 }
 
-NaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
   NOT_DESTROYED();
   NaturalSizingInfo sizing_info;
   UnscaledIntrinsicSizingInfo(sizing_info);
-
   sizing_info.size.Scale(StyleRef().EffectiveZoom());
-  return sizing_info;
+  return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
 }
 
-NaturalSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
+PhysicalNaturalSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   return GetNaturalDimensions();

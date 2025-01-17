@@ -344,11 +344,10 @@ bool LayoutImage::CanApplyObjectViewBox() const {
   return info.has_width && info.has_height;
 }
 
-NaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  NaturalSizingInfo sizing_info;
   if (EmbeddedSVGImage()) {
-    sizing_info =
+    NaturalSizingInfo sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
 
     // The value returned by LayoutImageResource will be in zoomed CSS
@@ -357,18 +356,18 @@ NaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
       sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
-  } else {
-    sizing_info = NaturalSizingInfo::MakeFixed(gfx::SizeF(NaturalSize()));
+    return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
+  }
 
-    // Don't compute an intrinsic ratio to preserve historical WebKit behavior
-    // if we're painting alt text and/or a broken image.
-    // Video is excluded from this behavior because video elements have a
-    // default aspect ratio that a failed poster image load should not
-    // override.
-    if (image_resource_ && image_resource_->ErrorOccurred() &&
-        !IsA<LayoutVideo>(this)) {
-      sizing_info.aspect_ratio = gfx::SizeF(1, 1);
-    }
+  auto sizing_info = PhysicalNaturalSizingInfo::MakeFixed(NaturalSize());
+
+  // Don't compute an intrinsic ratio to preserve historical WebKit behavior if
+  // we're painting alt text and/or a broken image.
+  // Video is excluded from this behavior because video elements have a default
+  // aspect ratio that a failed poster image load should not override.
+  if (image_resource_ && image_resource_->ErrorOccurred() &&
+      !IsA<LayoutVideo>(this)) {
+    sizing_info.aspect_ratio = PhysicalSize(LayoutUnit(1), LayoutUnit(1));
   }
   return sizing_info;
 }

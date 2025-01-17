@@ -29,7 +29,7 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
     return true;
   }
 
-  NaturalSizingInfo GetNaturalDimensions() const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 };
 
 template <>
