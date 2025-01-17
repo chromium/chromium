@@ -834,24 +834,6 @@ void CanonicalCookie::PostIncludeForRequestURL(
     UMA_HISTOGRAM_ENUMERATION(
         "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
         CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
-
-    using HttpMethod =
-        CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod;
-
-    HttpMethod http_method_enum = options_used.same_site_cookie_context()
-                                      .GetMetadataForCurrentSchemefulMode()
-                                      .http_method_bug_1221316;
-
-    DCHECK(http_method_enum != HttpMethod::kUnset);
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusionHttpMethod",
-        http_method_enum);
-
-    base::TimeDelta cookie_age = base::Time::Now() - CreationDate();
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusionAge",
-        cookie_age.InMinutes(), 30);
   }
 }
 

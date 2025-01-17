@@ -313,8 +313,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
   metadata.redirect_type_bug_1221316 =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
-  metadata.http_method_bug_1221316 = net::CookieOptions::SameSiteCookieContext::
-      ContextMetadata::HttpMethod::kPost;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
           metadata, roundtrip));
@@ -335,15 +333,11 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
       ContextMetadata::ContextDowngradeType::kStrictToLax;
   metadata1.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
-  metadata1.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
   metadata2.redirect_type_bug_1221316 =
       ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
-  metadata2.http_method_bug_1221316 = net::CookieOptions::
-      SameSiteCookieContext::ContextMetadata::HttpMethod::kGet;
 
   const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 

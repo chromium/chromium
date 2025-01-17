@@ -670,13 +670,6 @@ MATCHER_P5(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
   if (metadata.redirect_type_bug_1221316 != redirect_type_with_chain)
     return false;
 
-  // http_method_bug_1221316 is only set when there is a context downgrade.
-  if (metadata.cross_site_redirect_downgrade !=
-          ContextDowngradeType::kNoDowngrade &&
-      metadata.http_method_bug_1221316 != method) {
-    return false;
-  }
-
   switch (metadata.cross_site_redirect_downgrade) {
     case ContextDowngradeType::kNoDowngrade:
       return context_type_without_chain == context_type_with_chain;
