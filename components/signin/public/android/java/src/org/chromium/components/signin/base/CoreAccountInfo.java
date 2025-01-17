@@ -62,13 +62,6 @@ public class CoreAccountInfo {
         return mGaiaId;
     }
 
-    // TODO(crbug.com/380416867): Remove this API once all callers, including internal ones, are
-    // migrated.
-    /** Returns the Gaia ID in string form */
-    public String getGaiaIdAsString() {
-        return mGaiaId.toString();
-    }
-
     @Override
     public String toString() {
         return String.format("CoreAccountInfo{id[%s], name[%s]}", getId(), getEmail());
