@@ -44,7 +44,7 @@ declare global {
 
 export interface ViewerToolbarElement {
   $: {
-    sidenavToggle: HTMLElement,
+    sidenavToggle: HTMLButtonElement,
     menu: CrActionMenuElement,
     'present-button': HTMLButtonElement,
     'two-page-view-button': HTMLButtonElement,
@@ -268,7 +268,7 @@ export class ViewerToolbarElement extends CrLitElement {
         this.isInInk1AnnotationMode_();
   }
 
-  private isInInk1AnnotationMode_(): boolean {
+  protected isInInk1AnnotationMode_(): boolean {
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled) {
       return false;

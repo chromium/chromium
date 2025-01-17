@@ -4,7 +4,7 @@
         title="$i18n{menu}" aria-label="$i18n{menu}"
         aria-expanded="${this.getAriaExpanded_()}"
 <if expr="enable_ink">
-        ?disabled="${this.annotationMode}"
+        ?disabled="${this.isInInk1AnnotationMode_()}"
 </if>
         @click="${this.onSidenavToggleClick_}">
     </cr-icon-button>
@@ -44,7 +44,7 @@
     <cr-icon-button id="rotate" .ironIcon="${this.iconsetName_()}:rotate-left"
         suppress-rtl-flip
 <if expr="enable_ink">
-        ?disabled="${this.annotationMode}"
+        ?disabled="${this.isInInk1AnnotationMode_()}"
 </if>
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         @click="${this.onRotateClick_}">
@@ -106,7 +106,7 @@
   <button id="two-page-view-button" class="dropdown-item"
       @click="${this.toggleTwoPageViewClick_}" role="checkbox"
 <if expr="enable_ink">
-      ?disabled="${this.annotationMode}"
+      ?disabled="${this.isInInk1AnnotationMode_()}"
 </if>
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
