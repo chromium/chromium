@@ -523,6 +523,7 @@ subsetTest(promise_test, async test => {
 
 // Runs responseMutator on a minimal correct server response, and expects
 // either success/failure based on expectWin.
+// TODO(qingxinwu): Remove this and use the one in ba-fledge-util.sub.js.
 async function testWithMutatedServerResponse(
     test, expectWin, responseMutator, igMutator = undefined) {
   const uuid = generateUuid(test);
