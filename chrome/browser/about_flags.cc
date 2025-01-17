@@ -4390,7 +4390,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"feedback-include-variations",
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription,
-     kOsWin | kOsLinux | kOsMac,
+     kOsWin | kOsLinux | kOsMac | kOsAndroid,
      FEATURE_VALUE_TYPE(variations::kFeedbackIncludeVariations)},
 #endif
     {"ui-disable-partial-swap", flag_descriptions::kUiPartialSwapName,
