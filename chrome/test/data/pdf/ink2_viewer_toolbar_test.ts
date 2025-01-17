@@ -35,6 +35,27 @@ chrome.test.runTests([
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     chrome.test.succeed();
   },
+  // <if expr="enable_ink">
+  // Test that the original Ink annotation bar is not used.
+  async function testInkAnnotationBarNotVisible() {
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    viewerToolbar.toggleAnnotation();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertTrue(
+        !viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar'));
+
+    viewerToolbar.toggleAnnotation();
+    await microtasksFinished();
+
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertTrue(
+        !viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar'));
+    chrome.test.succeed();
+  },
+  // </if>
   // Test that toggling annotation mode does not affect displaying annotations.
   async function testTogglingAnnotationModeDoesNotAffectDisplayAnnotations() {
     // The menu needs to be open to check for visible menu elements.
