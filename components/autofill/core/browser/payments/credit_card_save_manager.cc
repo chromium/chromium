@@ -558,11 +558,13 @@ void CreditCardSaveManager::InitVirtualCardEnroll(
   // Hides save card confirmation dialog if still showing.
   client_->GetPaymentsAutofillClient()->HideSaveCardPrompt();
 
-  client_->GetPaymentsAutofillClient()
-      ->GetVirtualCardEnrollmentManager()
+  if (auto* virtual_card_enrollment_manager =
+      client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager()) {
+    virtual_card_enrollment_manager
       ->InitVirtualCardEnroll(
-          credit_card, VirtualCardEnrollmentSource::kUpstream,
-          std::move(get_details_for_enrollment_response_details));
+        credit_card, VirtualCardEnrollmentSource::kUpstream,
+        std::move(get_details_for_enrollment_response_details));
+  }
 }
 
 CreditCardSaveStrikeDatabase*
@@ -1269,9 +1271,12 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
         client_->GetAppLocale());
   }
 
-  client_->GetPaymentsAutofillClient()
-      ->GetVirtualCardEnrollmentManager()
+  // Virtual card enrollment manager may not be set of CWV clients.
+  if (auto* virtual_card_enrollment_manager =
+      client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager()) {
+    virtual_card_enrollment_manager
       ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
+  }
 
   // Populating risk data and offering upload occur asynchronously.
   // If |risk_data| has already been loaded, send the upload card request.
