@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_EDITOR_MENU_CARD_CONTEXT_H_
 #define CHROME_BROWSER_UI_ASH_EDITOR_MENU_EDITOR_MENU_CARD_CONTEXT_H_
 
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 

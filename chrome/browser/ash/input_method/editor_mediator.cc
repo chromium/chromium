@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
@@ -96,10 +97,10 @@ void EditorMediator::ResetEditorConnections() {
   }
 }
 
+// TODO: b:389534173 - Remove this method.
 void EditorMediator::BindEditorPanelManager(
     mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
         pending_receiver) {
-  panel_manager_.BindReceiver(std::move(pending_receiver));
 }
 
 void EditorMediator::OnContextUpdated() {
@@ -206,7 +207,8 @@ size_t EditorMediator::GetSelectedTextLength() {
   return surrounding_text_.selection_range.length();
 }
 
-void EditorMediator::OnEditorModeChanged(const EditorMode& mode) {
+void EditorMediator::OnEditorModeChanged(
+    const chromeos::editor_menu::EditorMode& mode) {
   panel_manager_.NotifyEditorModeChanged(mode);
 }
 
@@ -226,7 +228,7 @@ void EditorMediator::HandleTrigger(
           : EditorQueryContext{preset_query_id, freeform_text};
 
   switch (GetEditorMode()) {
-    case EditorMode::kRewrite:
+    case chromeos::editor_menu::EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kRewrite,
           /*can_fallback_to_center_position=*/true,
@@ -236,7 +238,7 @@ void EditorMediator::HandleTrigger(
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kWrite:
+    case chromeos::editor_menu::EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(
           profile_, MakoEditorMode::kWrite,
           /*can_fallback_to_center_position=*/true,
@@ -246,14 +248,14 @@ void EditorMediator::HandleTrigger(
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kConsentNeeded:
+    case chromeos::editor_menu::EditorMode::kPromoCard:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
       ShowNotice(EditorNoticeTransitionAction::kShowEditorPanel);
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
-    case EditorMode::kHardBlocked:
-    case EditorMode::kSoftBlocked:
+    case chromeos::editor_menu::EditorMode::kHardBlocked:
+    case chromeos::editor_menu::EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
   }
 }
@@ -371,7 +373,7 @@ bool EditorMediator::CanShowNoticeBanner() const {
   return editor_switch_->CanShowNoticeBanner();
 }
 
-EditorMode EditorMediator::GetEditorMode() const {
+chromeos::editor_menu::EditorMode EditorMediator::GetEditorMode() const {
   if (editor_mode_override_for_testing_.has_value()) {
     return *editor_mode_override_for_testing_;
   }
@@ -416,7 +418,8 @@ bool EditorMediator::SetTextQueryProviderResponseForTesting(
   return true;
 }
 
-void EditorMediator::OverrideEditorModeForTesting(EditorMode editor_mode) {
+void EditorMediator::OverrideEditorModeForTesting(
+    chromeos::editor_menu::EditorMode editor_mode) {
   editor_mode_override_for_testing_ = editor_mode;
 }
 

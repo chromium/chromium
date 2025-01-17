@@ -14,14 +14,15 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 namespace chromeos::editor_menu {
 
 class EditorManagerAsh : public EditorManager {
  public:
   explicit EditorManagerAsh(
-      ash::input_method::EditorPanelManager* panel_manager);
+      ash::input_method::EditorPanelManagerImpl* panel_manager);
   ~EditorManagerAsh() override;
 
   // EditorManager overrides
@@ -40,14 +41,14 @@ class EditorManagerAsh : public EditorManager {
   void RequestCacheContext() override;
 
  private:
-  class AshObserver : public ash::input_method::EditorPanelManager::Observer {
+  class AshObserver
+      : public ash::input_method::EditorPanelManagerImpl::Observer {
    public:
     explicit AshObserver(EditorManagerAsh* manager);
     ~AshObserver() override;
 
     // EditorObserver overrides
-    void OnEditorModeChanged(
-        const ash::input_method::EditorMode& mode) override;
+    void OnEditorModeChanged(const EditorMode& mode) override;
 
    private:
     // Not owned by this class
@@ -56,9 +57,9 @@ class EditorManagerAsh : public EditorManager {
 
   void OnEditorPanelContextResult(
       base::OnceCallback<void(const EditorContext&)> callback,
-      crosapi::mojom::EditorPanelContextPtr panel_context);
+      const EditorContext& editor_context);
 
-  raw_ptr<ash::input_method::EditorPanelManager> panel_manager_;
+  raw_ptr<ash::input_method::EditorPanelManagerImpl> panel_manager_;
 
   AshObserver ash_observer_;
 

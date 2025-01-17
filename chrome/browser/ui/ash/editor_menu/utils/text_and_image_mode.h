@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_TEXT_AND_IMAGE_MODE_H_
 #define CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_TEXT_AND_IMAGE_MODE_H_
 
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 namespace chromeos::editor_menu {
 

@@ -9,7 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 namespace chromeos::editor_menu {
 

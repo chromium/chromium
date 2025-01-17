@@ -1,28 +1,24 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_EDITOR_TYPES_H_
-#define CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_EDITOR_TYPES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_CONTEXT_H_
+#define CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_CONTEXT_H_
 
+#include "base/component_export.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 
 namespace chromeos::editor_menu {
 
-enum EditorMode {
-  kHardBlocked,
-  kSoftBlocked,
-  kWrite,
-  kRewrite,
-  kPromoCard,
-};
-
-struct EditorContext {
+struct COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) EditorContext {
   EditorContext(EditorMode mode,
                 bool consent_status_settled,
                 PresetTextQueries preset_queries);
   EditorContext(const EditorContext&);
   ~EditorContext();
+
+  bool operator==(const EditorContext&) const = default;
 
   EditorMode mode;
 
@@ -34,4 +30,4 @@ struct EditorContext {
 
 }  // namespace chromeos::editor_menu
 
-#endif  // CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_EDITOR_TYPES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_EDITOR_CONTEXT_H_

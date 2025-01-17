@@ -9,12 +9,8 @@ assert(is_chromeos_ash)
 
 source_set("utils") {
   sources = [
-    "utils/editor_types.cc",
-    "utils/editor_types.h",
     "utils/focus_search.cc",
     "utils/focus_search.h",
-    "utils/mojo.cc",
-    "utils/mojo.h",
     "utils/pre_target_handler.cc",
     "utils/pre_target_handler.h",
     "utils/pre_target_handler_view.cc",

@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -36,6 +37,7 @@
 namespace ash::input_method {
 namespace {
 
+using ::chromeos::editor_menu::EditorMode;
 using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
@@ -471,7 +473,7 @@ INSTANTIATE_TEST_SUITE_P(
          .user_pref = true,
          .consent_status = ConsentStatus::kPending,
          .num_chars_selected = 100,
-         .expected_editor_mode = EditorMode::kConsentNeeded,
+         .expected_editor_mode = EditorMode::kPromoCard,
          .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
          .expected_blocked_reasons = {}},
         {.test_name = "TriggersWriteModeForNoTextSelection",

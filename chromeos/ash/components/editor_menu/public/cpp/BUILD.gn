@@ -10,8 +10,11 @@ component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
 
   sources = [
+    "editor_context.cc",
+    "editor_context.h",
     "editor_helpers.cc",
     "editor_helpers.h",
+    "editor_mode.h",
     "icon.cc",
     "icon.h",
     "preset_text_query.cc",

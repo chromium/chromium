@@ -358,6 +358,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/ash/components/dbus/federated",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/ash/components/language_preferences",
     "//chromeos/ash/services/federated/public/cpp",
     "//chromeos/ash/services/federated/public/cpp:test_support",

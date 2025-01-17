@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -438,13 +439,13 @@ bool EditorSwitch::CanBeTriggered() const {
           IsSystemInEnglishLanguage());
 }
 
-EditorMode EditorSwitch::GetEditorMode() const {
+chromeos::editor_menu::EditorMode EditorSwitch::GetEditorMode() const {
   if (!IsAllowedForUse()) {
-    return EditorMode::kHardBlocked;
+    return chromeos::editor_menu::EditorMode::kHardBlocked;
   }
 
   if (!CanBeTriggered()) {
-    return EditorMode::kSoftBlocked;
+    return chromeos::editor_menu::EditorMode::kSoftBlocked;
   }
 
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
@@ -452,16 +453,16 @@ EditorMode EditorSwitch::GetEditorMode() const {
 
   if (current_consent_status == ConsentStatus::kPending ||
       current_consent_status == ConsentStatus::kUnset) {
-    return EditorMode::kConsentNeeded;
+    return chromeos::editor_menu::EditorMode::kPromoCard;
   } else if (context_->selected_text_length() > 0) {
-    return EditorMode::kRewrite;
+    return chromeos::editor_menu::EditorMode::kRewrite;
   } else {
-    return EditorMode::kWrite;
+    return chromeos::editor_menu::EditorMode::kWrite;
   }
 }
 
 void EditorSwitch::OnContextUpdated() {
-  EditorMode current_mode = GetEditorMode();
+  chromeos::editor_menu::EditorMode current_mode = GetEditorMode();
   if (current_mode != last_known_editor_mode_) {
     observer_->OnEditorModeChanged(current_mode);
   }
