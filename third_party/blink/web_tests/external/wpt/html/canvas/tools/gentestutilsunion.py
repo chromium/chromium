@@ -30,7 +30,7 @@
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
 from typing import Any, DefaultDict, FrozenSet, List, Mapping, MutableMapping
-from typing import Optional, Set, Tuple
+from typing import Set
 
 import re
 import collections
@@ -38,7 +38,6 @@ import copy
 import dataclasses
 import enum
 import importlib
-import itertools
 import math
 import os
 import pathlib
