@@ -187,7 +187,7 @@ build_webui_tests("build") {
     "multidevice_setup/integration_test.js",
     "multidevice_setup/setup_succeeded_page_test.js",
     "multidevice_setup/start_setup_page_test.js",
-    "network/apn_list_item_test.js",
+    "network/apn_list_item_test.ts",
     "network/apn_list_test.ts",
     "network/apn_selection_dialog_list_item_test.js",
     "network/apn_selection_dialog_test.ts",

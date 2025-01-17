@@ -9,28 +9,23 @@
 import './network_shared.css.js';
 import '//resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from '//resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {ApnState, ApnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrActionMenuElement} from '//resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
+import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './apn_list_item.html.js';
+import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from './cellular_utils.js';
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ApnListItemBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ApnListItemBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-export class ApnListItem extends ApnListItemBase {
+export class ApnListItemElement extends ApnListItemBase {
   static get is() {
-    return 'apn-list-item';
+    return 'apn-list-item' as const;
   }
 
   static get template() {
@@ -42,10 +37,9 @@ export class ApnListItem extends ApnListItemBase {
       /** The GUID of the network to display details for. */
       guid: String,
 
-      /**@type {!ApnProperties}*/
       apn: {type: Object},
 
-      isConnected: {
+      isApnConnected: {
         type: Boolean,
         value: false,
       },
@@ -74,19 +68,16 @@ export class ApnListItem extends ApnListItemBase {
        */
       listSize: Number,
 
-      /** @type {?PortalState} */
       portalState: {
         type: Object,
       },
 
-      /** @private */
       isDisabled_: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsDisabled_(apn)',
       },
 
-      /** @private */
       isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
@@ -99,77 +90,75 @@ export class ApnListItem extends ApnListItemBase {
     };
   }
 
+  guid: string;
+  apn: ApnProperties;
+  isApnConnected: boolean;
+  shouldDisallowDisablingRemoving: boolean;
+  shouldDisallowEnabling: boolean;
+  shouldDisallowApnModification: boolean;
+  itemIndex: number;
+  listSize: number;
+  portalState: PortalState|null;
+  private isDisabled_: boolean;
+  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     super();
-    /** @private {!CrosNetworkConfigInterface} */
+
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /**
-   * @param {!ApnProperties} apn
-   * @private
-   */
-  getApnDisplayName_(apn) {
+  private getApnDisplayName_(apn: ApnProperties): string {
     return getApnDisplayName(this.i18n.bind(this), apn);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSublabel_() {
+  private getSublabel_(): string {
     if (this.isPortalStateNoInternet_()) {
       return this.i18n('networkListItemConnectedNoConnectivity');
     }
     return this.i18n('OncConnected');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPortalStateNoInternet_() {
+  private isPortalStateNoInternet_(): boolean {
     return !!this.portalState && this.portalState === PortalState.kNoInternet;
   }
 
   /**
    * Opens the three dots menu.
-   * @private
    */
-  onMenuButtonClicked_(event) {
-    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu)
-        .showAt(/** @type {!HTMLElement} */ (event.target));
+  private onMenuButtonClicked_(event: {target: HTMLElement}): void {
+    this.shadowRoot!.querySelector<CrActionMenuElement>('#dotsMenu')!.showAt(
+        event.target);
   }
 
-  /** @private */
-  closeMenu_() {
-    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
+  private closeMenu_(): void {
+    this.shadowRoot!.querySelector<CrActionMenuElement>('#dotsMenu')!.close();
   }
 
   /**
    * Opens APN Details dialog.
-   * @private
    */
-  onDetailsClicked_() {
+  private onDetailsClicked_(): void {
     assert(!!this.apn);
     this.closeMenu_();
+    const apnEventData: ApnEventData = {
+      apn: this.apn,
+      // Only allow editing if the APN is a custom APN.
+      mode: this.getDetailDialogMode_(),
+    };
     this.dispatchEvent(new CustomEvent('show-apn-detail-dialog', {
       composed: true,
       bubbles: true,
-      detail: /** @type {!ApnEventData} */ ({
-        apn: this.apn,
-        // Only allow editing if the APN is a custom APN.
-        mode: this.getDetailDialogMode_(),
-      }),
+      detail: apnEventData,
     }));
   }
 
   /**
    * Returns the mode the APN detail dialog should be if opened.
-   * @private
    */
-  getDetailDialogMode_() {
+  private getDetailDialogMode_(): ApnDetailDialogMode {
     if (!this.apn) {
       return ApnDetailDialogMode.VIEW;
     }
@@ -189,9 +178,8 @@ export class ApnListItem extends ApnListItemBase {
 
   /**
    * Disables the selected APN.
-   * @private
    */
-  onDisableClicked_() {
+  private onDisableClicked_(): void {
     assert(this.guid);
     assert(this.apn);
     this.closeMenu_();
@@ -214,17 +202,15 @@ export class ApnListItem extends ApnListItemBase {
       return;
     }
 
-    const apn =
-        /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
+    const apn: ApnProperties = Object.assign({}, this.apn);
     apn.state = ApnState.kDisabled;
     this.networkConfig_.modifyCustomApn(this.guid, apn);
   }
 
   /**
    * Enables the selected APN.
-   * @private
    */
-  onEnableClicked_() {
+  private onEnableClicked_(): void {
     assert(this.guid);
     assert(this.apn);
     this.closeMenu_();
@@ -247,17 +233,15 @@ export class ApnListItem extends ApnListItemBase {
       return;
     }
 
-    const apn =
-        /** @type {!ApnProperties} */ (Object.assign({}, this.apn));
+    const apn = Object.assign({}, this.apn);
     apn.state = ApnState.kEnabled;
     this.networkConfig_.modifyCustomApn(this.guid, apn);
   }
 
   /**
    * Removes the selected APN.
-   * @private
    */
-  onRemoveClicked_() {
+  private onRemoveClicked_(): void {
     assert(this.guid);
     assert(this.apn);
     this.closeMenu_();
@@ -275,52 +259,41 @@ export class ApnListItem extends ApnListItemBase {
       return;
     }
 
-    this.networkConfig_.removeCustomApn(
-        this.guid, /** @type {string} */ (this.apn.id));
+    this.networkConfig_.removeCustomApn(this.guid, this.apn.id);
   }
 
   /**
    * Returns true if disable menu button should be shown.
-   * @return {boolean}
-   * @private
    */
-  shouldShowDisableMenuItem_() {
+  private shouldShowDisableMenuItem_(): boolean {
     return !!this.apn.id && this.apn.state === ApnState.kEnabled;
   }
 
   /**
    * Returns true if enable menu button should be shown.
-   * @return {boolean}
-   * @private
    */
-  shouldShowEnableMenuItem_() {
+  private shouldShowEnableMenuItem_(): boolean {
     return !!this.apn.id && this.apn.state === ApnState.kDisabled;
   }
 
   /**
    * Returns true if remove menu button should be shown.
-   * @return {boolean}
-   * @private
    */
-  shouldShowRemoveMenuItem_() {
+  private shouldShowRemoveMenuItem_(): boolean {
     return !!this.apn.id;
   }
 
   /**
    * Returns true if the apn is disabled.
-   * @return {boolean}
-   * @private
    */
-  computeIsDisabled_() {
+  private computeIsDisabled_(): boolean {
     return !!this.apn.id && this.apn.state === ApnState.kDisabled;
   }
 
   /**
    * Returns the label for the "Details" menu item.
-   * @return {string}
-   * @private
    */
-  getDetailsMenuItemLabel_() {
+  private getDetailsMenuItemLabel_(): string {
     return this.getDetailDialogMode_() === ApnDetailDialogMode.EDIT ?
         this.i18n('apnMenuEdit') :
         this.i18n('apnMenuDetails');
@@ -328,10 +301,8 @@ export class ApnListItem extends ApnListItemBase {
 
   /**
    * Returns accessibility label for the item.
-   * @return {string}
-   * @private
    */
-  getAriaLabel_() {
+  private getAriaLabel_(): string {
     if (!this.apn) {
       return '';
     }
@@ -344,7 +315,7 @@ export class ApnListItem extends ApnListItemBase {
       a11yLabel += ' ' + this.i18n('apnA11yAutoDetected');
     }
 
-    if (this.isConnected) {
+    if (this.isApnConnected) {
       a11yLabel += ' ' + this.i18n('apnA11yConnected');
     } else if (this.isDisabled_) {
       a11yLabel += ' ' + this.i18n('apnA11yDisabled');
@@ -374,4 +345,11 @@ export class ApnListItem extends ApnListItemBase {
   }
 }
 
-customElements.define(ApnListItem.is, ApnListItem);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ApnListItemElement.is]: ApnListItemElement;
+  }
+}
+
+customElements.define(ApnListItemElement.is, ApnListItemElement);
