@@ -344,7 +344,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     return std::nullopt;
   }
   if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
+    FIDO_LOG(DEBUG) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
     return std::nullopt;
   }
 
