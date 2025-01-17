@@ -42,10 +42,20 @@ class CONTENT_EXPORT FederatedProviderFetcher {
     FetchResult(const FetchResult&);
     ~FetchResult();
     GURL identity_provider_config_url;
+    bool force_skip_well_known_enforcement = false;
     IdpNetworkRequestManager::WellKnown wellknown;
     IdpNetworkRequestManager::Endpoints endpoints;
     std::optional<IdentityProviderMetadata> metadata;
     std::optional<FetchError> error;
+  };
+
+  struct FetchRequest {
+    GURL identity_provider_config_url;
+    bool force_skip_well_known_enforcement = false;
+    FetchRequest(const GURL& url, bool force_skip_well_known_enforcement)
+        : identity_provider_config_url(url),
+          force_skip_well_known_enforcement(force_skip_well_known_enforcement) {
+    }
   };
 
   using RequesterCallback = base::OnceCallback<void(std::vector<FetchResult>)>;
@@ -61,7 +71,7 @@ class CONTENT_EXPORT FederatedProviderFetcher {
 
   // Starts fetch of config and well-known files. Start() should be called at
   // most once per FederatedProviderFetcher instance.
-  void Start(const std::set<GURL>& identity_provider_config_urls,
+  void Start(const std::vector<FetchRequest>& requested_providers,
              blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
              int icon_minimum_size,
@@ -91,7 +101,7 @@ class CONTENT_EXPORT FederatedProviderFetcher {
 
   void RunCallbackIfDone();
 
-  bool ShouldSkipWellKnownEnforcementForIdp(const GURL& idp_url);
+  bool ShouldSkipWellKnownEnforcementForIdp(const FetchResult& fetch_result);
 
   raw_ref<RenderFrameHost> render_frame_host_;
 
