@@ -35,30 +35,17 @@ namespace content {
 
 class ClipboardHostImplTest;
 
-// Helpers to check if an `rfh`/`seqno` pair was the last to write to the
-// clipboard.
-bool IsLastClipboardWrite(const RenderFrameHost& rfh,
-                          ui::ClipboardSequenceNumberToken seqno);
-
-// Helper to set the last rfh-seqno pair that wrote to the clipboard.
-void SetLastClipboardWrite(const RenderFrameHost& rfh,
-                           ui::ClipboardSequenceNumberToken seqno);
-
 // Returns a representation of the last source ClipboardEndpoint. This will
-// either match the last clipboard write if `seqno` matches the last browser tab
-// write, or an endpoint built from `Clipboard::GetSource()` called with
+// either match the last clipboard write if there is an RFH token in the
+// clipboard, or an endpoint built from `Clipboard::GetSource()` called with
 // `clipboard_buffer` otherwise.
 //
 // //content maintains additional metadata on top of what the //ui layer already
 // tracks about clipboard data's source, e.g. the WebContents that provided the
 // data. This function allows retrieving both the //ui metadata and the
 // //content metadata in a single call.
-//
-// To avoid returning stale //content metadata if the writer has changed, the
-// sequence number is used to validate if the writer has changed or not since
-// the //content metadata was last updated.
 CONTENT_EXPORT ClipboardEndpoint
-GetSourceClipboardEndpoint(ui::ClipboardSequenceNumberToken seqno,
+GetSourceClipboardEndpoint(const ui::DataTransferEndpoint* data_dst,
                            ui::ClipboardBuffer clipboard_buffer);
 
 class CONTENT_EXPORT ClipboardHostImpl
@@ -196,6 +183,10 @@ class CONTENT_EXPORT ClipboardHostImpl
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
+
+  // Resets `clipboard_writer_` to write its data to the clipboard, and
+  // reinitialize it in preparation for the next write.
+  void ResetClipboardWriter();
 
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();

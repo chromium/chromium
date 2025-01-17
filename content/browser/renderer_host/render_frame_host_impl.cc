@@ -179,6 +179,7 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -17935,12 +17936,19 @@ void RenderFrameHostImpl::AddDeferredSharedStorageHeaderCallback(
 
 bool RenderFrameHostImpl::IsClipboardOwner(
     ui::ClipboardSequenceNumberToken seqno) const {
-  return IsLastClipboardWrite(*this, seqno);
-}
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  if (clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste) != seqno) {
+    return false;
+  }
 
-void RenderFrameHostImpl::MarkClipboardOwner(
-    ui::ClipboardSequenceNumberToken seqno) {
-  SetLastClipboardWrite(*this, seqno);
+  std::string pickled_rfh_token;
+  clipboard->ReadData(SourceRFHTokenType(), /*data_dst=*/nullptr,
+                      &pickled_rfh_token);
+
+  auto rfh_token = GlobalRenderFrameHostToken::FromPickle(
+      base::Pickle::WithData(base::as_byte_span(pickled_rfh_token)));
+
+  return rfh_token && RenderFrameHost::FromFrameToken(*rfh_token) == this;
 }
 
 bool RenderFrameHostImpl::HasPolicyContainerHost() const {

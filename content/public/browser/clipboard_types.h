@@ -144,6 +144,8 @@ struct ClipboardMetadata {
 };
 
 // Chromium-only type to associate clipboard data to the RFH it originated from.
+// This should only be used internally by the browser process to retrieve RFHs,
+// renderers should never have access to a serialized token.
 const ui::ClipboardFormatType& SourceRFHTokenType();
 
 }  // namespace content

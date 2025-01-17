@@ -575,8 +575,9 @@ void ClipboardOzone::ReadDataTransferCustomData(
   auto custom_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
       buffer, kMimeTypeDataTransferCustomData);
 
-  if (!IsReadAllowed(GetSource(buffer), data_dst, custom_data))
+  if (!IsReadAllowed(GetSource(buffer), data_dst, custom_data)) {
     return;
+  }
 
   RecordRead(ClipboardFormatMetric::kCustomData);
   if (std::optional<std::u16string> maybe_data =

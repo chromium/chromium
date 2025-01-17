@@ -870,7 +870,10 @@ void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
   const ClipboardInternal& clipboard_internal =
       GetInternalClipboard(ClipboardBuffer::kCopyPaste);
 
-  if (!clipboard_internal.IsReadAllowed(
+  // Reading an RFH token written in the clipboard is always allowed as it is
+  // used internally by the browser to evaluate other policies.
+  if (format.GetName() != "chromium/x-internal-source-rfh-token" &&
+      !clipboard_internal.IsReadAllowed(
           data_dst, ClipboardInternalFormat::kCustom, format)) {
     return;
   }

@@ -229,6 +229,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();
+  raw_objects_.clear();
   platform_representations_.clear();
   registered_formats_.clear();
   privacy_types_ = 0;

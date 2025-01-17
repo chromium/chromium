@@ -581,7 +581,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       content::mojom::ExtraMojoJsFeaturesPtr features) override;
   bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const override;
   bool IsClipboardOwner(ui::ClipboardSequenceNumberToken seqno) const override;
-  void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) override;
   bool IsUntrustedNetworkDisabled() const override;
   bool HasPolicyContainerHost() const override;
 
