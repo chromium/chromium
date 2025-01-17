@@ -271,7 +271,7 @@ void PixManager::OnInitiatePaymentResponseReceived(
   LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/true, latency);
 
   DCHECK(response_details);
-  if (response_details->action_token_.empty()) {
+  if (response_details->secure_payload_.action_token.empty()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kActionTokenNotAvailable);
     ShowErrorScreen();
     return;
@@ -289,7 +289,7 @@ void PixManager::OnInitiatePaymentResponseReceived(
   LogInitiatePurchaseActionAttempt(kPaymentsType);
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
-      account_info.value(), response_details->action_token_,
+      account_info.value(), response_details->secure_payload_.action_token,
       base::BindOnce(&PixManager::OnPurchaseActionResult,
                      weak_ptr_factory_.GetWeakPtr()));
 

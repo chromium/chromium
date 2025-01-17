@@ -11,6 +11,8 @@ static_library("browser") {
     "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",
     "facilitated_payments_driver.h",
+    "model/secure_payload.cc",
+    "model/secure_payload.h",
     "network_api/facilitated_payments_initiate_payment_request.cc",
     "network_api/facilitated_payments_initiate_payment_request.h",
     "network_api/facilitated_payments_initiate_payment_request_details.cc",
