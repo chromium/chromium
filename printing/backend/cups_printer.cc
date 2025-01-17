@@ -165,12 +165,14 @@ class CupsPrinterImpl : public CupsPrinter {
     printer_info->options[kDriverInfoTagName] = make_and_model;
 
     // Store printer options.
-    UNSAFE_TODO({
-      for (int opt_index = 0; opt_index < printer->num_options; ++opt_index) {
-        printer_info->options[printer->options[opt_index].name] =
-            printer->options[opt_index].value;
+    if (printer->num_options > 0) {
+      // SAFETY: Required from CUPS.
+      auto options = UNSAFE_BUFFERS(base::span<const cups_option_t>(
+          printer->options, static_cast<size_t>(printer->num_options)));
+      for (const auto& option : options) {
+        printer_info->options[option.name] = option.value;
       }
-    });
+    }
 
     return true;
   }
