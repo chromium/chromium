@@ -16,6 +16,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
@@ -32,8 +33,10 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -244,9 +247,37 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc] init];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
-    [_lensOverlayPlaceholderView addTarget:self
-                                    action:@selector(openLensOverlay)
-                          forControlEvents:UIControlEventTouchUpInside];
+
+    BOOL showSpeedbumpMenu = GetLensOverlayOnboardingTreatment() ==
+                             LensOverlayOnboardingTreatment::kSpeedbumpMenu;
+    if (showSpeedbumpMenu) {
+      __weak __typeof__(self) weakSelf = self;
+      _lensOverlayPlaceholderView.menu = [UIMenu
+          menuWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME)
+               children:@[
+                 [UIAction actionWithTitle:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN)
+                                     image:nil
+                                identifier:nil
+                                   handler:^(UIAction* _) {
+                                     [weakSelf openLensOverlay];
+                                   }],
+                 [UIAction actionWithTitle:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA)
+                                     image:nil
+                                identifier:nil
+                                   handler:^(UIAction* _) {
+                                     [weakSelf openLensViewFinder];
+                                   }],
+               ]];
+      _lensOverlayPlaceholderView.showsMenuAsPrimaryAction = YES;
+    } else {
+      [_lensOverlayPlaceholderView addTarget:self
+                                      action:@selector(openLensOverlay)
+                            forControlEvents:UIControlEventTouchUpInside];
+    }
   }
 
   [_locationBarSteadyView.locationButton
@@ -931,6 +962,17 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     RecordAction(
         UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
   }
+}
+
+// Creates and shows the LVF input selection UI.
+- (void)openLensViewFinder {
+  TriggerHapticFeedbackForSelectionChange();
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::LensOverlayLocationBar
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.dispatcher openLensInputSelection:command];
 }
 
 // Creates and shows the lens overlay UI.
