@@ -2884,6 +2884,23 @@ void DocumentLoader::CommitNavigation() {
     }
   }
 
+  // Temporary measurement to evaluate the change proposed in
+  // https://github.com/w3c/webappsec-mixed-content/issues/73.
+  if (!frame_->GetSecurityContext()
+           ->GetSecurityOrigin()
+           ->IsPotentiallyTrustworthy() &&
+      !frame_->IsOutermostMainFrame() &&
+      // IsOutermostMainFrame() can be false with a null Parent() in the case of
+      // fenced frames.
+      frame_->Tree().Parent() &&
+      frame_->Tree()
+          .Parent()
+          ->GetSecurityContext()
+          ->GetSecurityOrigin()
+          ->IsLocalhost()) {
+    CountUse(WebFeature::kMixedFrameEmbeddedByLocalhost);
+  }
+
   SecurityContextInit security_init(frame_->DomWindow());
 
   // The document constructed by XSLTProcessor and ScriptController should
