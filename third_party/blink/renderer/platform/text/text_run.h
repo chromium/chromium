@@ -91,6 +91,14 @@ class PLATFORM_EXPORT TextRun final {
     }
   }
 
+  // TextRun supports move construction, but supports neither copy construction,
+  // copy assignment, nor move assignment.
+
+  TextRun(const TextRun&) = delete;
+  TextRun& operator=(const TextRun&) = delete;
+  TextRun(TextRun&&) = default;
+  TextRun& operator=(TextRun&&) = delete;
+
   // direction - An optional TextDirection of the new TextRun. If this is not
   //             specified, the new TextRun inherits the TextDirection of
   //             `this`.
