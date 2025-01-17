@@ -171,7 +171,11 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
     ExceptionState& exception_state) {
   if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
     GetChildNodes(*fragment, nodes);
-    fragment->RemoveChildren();
+    if (fragment->HoldsUnnotifiedChildren()) {
+      fragment->ForgetChildren();
+    } else {
+      fragment->RemoveChildren();
+    }
     return !nodes.empty();
   }
   nodes.push_back(&node);
@@ -1247,7 +1251,8 @@ void ContainerNode::ParserAppendChildInDocumentFragment(Node* new_child) {
   probe::DidInsertDOMNode(this);
 }
 
-void ContainerNode::ParserFinishedBuildingDocumentFragment() {
+void ContainerNode::ParserFinishedBuildingDocumentFragment(
+    ShouldNotifyInsertedNodes call_mode) {
   EventDispatchForbiddenScope assert_no_event_dispatch;
   ScriptForbiddenScope forbid_script;
   const bool may_contain_shadow_roots = GetDocument().MayContainShadowRoots();
@@ -1256,10 +1261,11 @@ void ContainerNode::ParserFinishedBuildingDocumentFragment() {
       ChildrenChange::ForFinishingBuildingDocumentFragmentTree();
   for (Node& node : NodeTraversal::DescendantsOf(*this)) {
     NotifyNodeAtEndOfBuildingFragmentTree(node, change,
-                                          may_contain_shadow_roots);
+                                          may_contain_shadow_roots, call_mode);
   }
 
-  if (GetDocument().ShouldInvalidateNodeListCaches(nullptr)) {
+  if (call_mode == ShouldNotifyInsertedNodes::kNotify &&
+      GetDocument().ShouldInvalidateNodeListCaches(nullptr)) {
     GetDocument().InvalidateNodeListCaches(nullptr);
   }
 }
@@ -1267,7 +1273,8 @@ void ContainerNode::ParserFinishedBuildingDocumentFragment() {
 void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
     Node& node,
     const ChildrenChange& change,
-    bool may_contain_shadow_roots) {
+    bool may_contain_shadow_roots,
+    ShouldNotifyInsertedNodes call_mode) {
   // Fast path parser only creates disconnected nodes.
   DCHECK(!node.isConnected());
 
@@ -1287,13 +1294,15 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
   // kInsertionShouldCallDidNotifySubtreeInsertions, but only if the node
   // is connected. None of the nodes are connected at this point, so it's
   // not needed here.
-  node.InsertedInto(*this);
+  if (call_mode == ShouldNotifyInsertedNodes::kNotify) {
+    node.InsertedInto(*this);
+  }
 
   if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
     for (Node& shadow_node :
          NodeTraversal::InclusiveDescendantsOf(*shadow_root)) {
-      NotifyNodeAtEndOfBuildingFragmentTree(shadow_node, change,
-                                            may_contain_shadow_roots);
+      NotifyNodeAtEndOfBuildingFragmentTree(
+          shadow_node, change, may_contain_shadow_roots, call_mode);
     }
   }
 

@@ -1716,7 +1716,6 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
   number_of_bytes_parsed = parser.NumberOfBytesParsed();
   // The time needed to parse is typically < 1ms (even at the 99%).
   if (success) {
-    root_node.ParserFinishedBuildingDocumentFragment();
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.HTMLFastPathParser.SuccessfulParseTime2", parse_timer.Elapsed(),
         base::Microseconds(1), base::Milliseconds(10), 100);

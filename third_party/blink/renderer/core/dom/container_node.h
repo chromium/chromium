@@ -188,7 +188,11 @@ class CORE_EXPORT ContainerNode : public Node {
   // Called when the parser has finished building a DocumentFragment. This is
   // not called if the parser fails parsing (if parsing fails, the
   // DocumentFragment is orphaned and will eventually be gc'd).
-  void ParserFinishedBuildingDocumentFragment();
+  //
+  // ShouldNotifyInsertedNodes controls whether to skip notifications that are
+  // redone if the contents of the DocumentFragment are moved to a new parent.
+  enum class ShouldNotifyInsertedNodes { kNotify, kSkip };
+  void ParserFinishedBuildingDocumentFragment(ShouldNotifyInsertedNodes);
   void ParserRemoveChild(Node&);
   void ParserInsertBefore(Node* new_child, Node& ref_child);
   void ParserTakeAllChildrenFrom(ContainerNode&);
@@ -528,7 +532,8 @@ class CORE_EXPORT ContainerNode : public Node {
   // it was inserted.
   void NotifyNodeAtEndOfBuildingFragmentTree(Node& node,
                                              const ChildrenChange& change,
-                                             bool may_contain_shadow_roots);
+                                             bool may_contain_shadow_roots,
+                                             ShouldNotifyInsertedNodes);
 
   NodeListsNodeData& EnsureNodeLists();
   void RemoveBetween(Node* previous_child, Node* next_child, Node& old_child);
