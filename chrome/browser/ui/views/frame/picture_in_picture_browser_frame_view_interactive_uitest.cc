@@ -16,9 +16,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -104,6 +108,49 @@ class AnimationWaiter {
  private:
   const base::TimeTicks waiter_creation_time_ = base::TimeTicks::Now();
   std::vector<gfx::Animation*> animations_;
+};
+
+class ChipAnimationObserver : PermissionChipView::Observer {
+ public:
+  enum class QuitOnEvent {
+    kExpand,
+    kCollapse,
+    kVisibiltyTrue,
+    kVisibiltyFalse,
+  };
+
+  explicit ChipAnimationObserver(PermissionChipView* chip) {
+    observation_.Observe(chip);
+  }
+
+  void WaitForChip() { loop_.Run(); }
+
+  void OnExpandAnimationEnded() override {
+    if (quit_on_event == QuitOnEvent::kExpand) {
+      loop_.Quit();
+    }
+  }
+  void OnCollapseAnimationEnded() override {
+    if (quit_on_event == QuitOnEvent::kCollapse) {
+      loop_.Quit();
+    }
+  }
+
+  void OnChipVisibilityChanged(bool is_visible) override {
+    if (quit_on_event == QuitOnEvent::kVisibiltyTrue && is_visible) {
+      loop_.Quit();
+      return;
+    }
+
+    if (quit_on_event == QuitOnEvent::kVisibiltyFalse && !is_visible) {
+      loop_.Quit();
+    }
+  }
+
+  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+      observation_{this};
+  base::RunLoop loop_;
+  QuitOnEvent quit_on_event = QuitOnEvent::kExpand;
 };
 
 class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
@@ -677,6 +724,83 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
     ASSERT_EQ(hide_expectations.expected_has_any_visible_content_setting_views,
               pip_frame_view()->HasAnyVisibleContentSettingViews());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
+                       TestMediaBlockedIndicators) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpDocumentPIP({}, kPictureInPictureDocumentPipPage));
+
+  content::WebContents* pip_web_contents = pip_frame_view()
+                                               ->browser_view()
+                                               ->browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents();
+  ASSERT_TRUE(pip_web_contents);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  ASSERT_TRUE(browser_view->GetLocationBarView());
+  PermissionDashboardController* permission_dashboard_controller =
+      browser_view->GetLocationBarView()->permission_dashboard_controller();
+  PermissionDashboardView* permission_dashboard_view =
+      permission_dashboard_controller->permission_dashboard_view();
+
+  ASSERT_TRUE(permission_dashboard_view);
+
+  permissions::PermissionRequestManager::FromWebContents(pip_web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DISMISS);
+
+  // Request microphone permission and wait for the mic indicator to expand.
+  {
+    ChipAnimationObserver chip_animation_observer(
+        permission_dashboard_view->GetIndicatorChip());
+    chip_animation_observer.quit_on_event =
+        ChipAnimationObserver::QuitOnEvent::kExpand;
+
+    constexpr char kRequestMicrophone[] = R"(
+    new Promise(async resolve => {
+      var constraints = { audio: true };
+      window.focus();
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        resolve('granted');
+      } catch(error) {
+        resolve('denied')
+      }
+    })
+    )";
+
+    EXPECT_TRUE(content::ExecJs(
+        pip_web_contents->GetPrimaryMainFrame(), kRequestMicrophone,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    chip_animation_observer.WaitForChip();
+  }
+
+  // Blocked LHS indicator should be visible.
+  EXPECT_TRUE(permission_dashboard_view->GetVisible());
+  // Blocked media indicator is not supported by PiP window, hence it should not
+  // be shown.
+  EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
+
+  // Wait for the LHS indicator to disappear.
+  {
+    ChipAnimationObserver chip_animation_observer(
+        permission_dashboard_view->GetIndicatorChip());
+    chip_animation_observer.quit_on_event =
+        ChipAnimationObserver::QuitOnEvent::kVisibiltyFalse;
+
+    // Wait until chip hides.
+    chip_animation_observer.WaitForChip();
+  }
+
+  // Blocked LHS indicator is hidden.
+  EXPECT_FALSE(permission_dashboard_view->GetVisible());
+  // Blocked media indicator is not supported by PiP window, hence it should not
+  // be shown.
+  EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
 }
 
 INSTANTIATE_TEST_SUITE_P(

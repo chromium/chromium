@@ -93,6 +93,7 @@ class PageSpecificContentSettingsDelegate
   bool IsBlockedOnSystemLevel(ContentSettingsType type) override;
   bool IsFrameAllowlistedForJavaScript(
       content::RenderFrameHost* render_frame_host) override;
+  bool IsPiPWindow(content::WebContents* web_contents) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

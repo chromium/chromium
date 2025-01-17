@@ -36,6 +36,7 @@ class TestPageSpecificContentSettingsDelegate
   bool IsBlockedOnSystemLevel(ContentSettingsType type) override;
   bool IsFrameAllowlistedForJavaScript(
       content::RenderFrameHost* render_frame_host) override;
+  bool IsPiPWindow(content::WebContents* web_contents) override;
 
  private:
   raw_ptr<PrefService> prefs_;

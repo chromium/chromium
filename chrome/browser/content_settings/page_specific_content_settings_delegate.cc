@@ -317,6 +317,15 @@ bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
   return false;
 }
 
+bool PageSpecificContentSettingsDelegate::IsPiPWindow(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  content::WebContents* child_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+
+  return child_web_contents == web_contents;
+}
+
 void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
     content::Page& page) {
   ClearPendingProtocolHandler();
