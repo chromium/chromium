@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
@@ -15,172 +17,375 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-using ::testing::ElementsAre;
-
-class EditorMenuCardContextTest : public testing::Test {
- public:
-  EditorMenuCardContextTest() = default;
-
-  EditorMenuCardContextTest(const EditorMenuCardContextTest&) = delete;
-  EditorMenuCardContextTest& operator=(const EditorMenuCardContextTest&) =
-      delete;
-
-  ~EditorMenuCardContextTest() override = default;
+struct TextAndImageModeTestCase {
+  bool magic_boost_revamp_enabled;
+  EditorMode editor_mode;
+  LobsterMode lobster_mode;
+  EditorMenuCardTextSelectionMode text_selection_mode;
+  TextAndImageMode expected_mode;
 };
 
-TEST_F(EditorMenuCardContextTest, BlockedMode) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kHardBlocked)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
+class EditorMenuCardContextTextAndImageModeTest
+    : public testing::TestWithParam<TextAndImageModeTestCase> {};
 
-  EXPECT_EQ(context.text_and_image_mode(), TextAndImageMode::kBlocked);
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EditorMenuCardContextTextAndImageModeTest,
+    testing::Values(
+        // magic_boost_revamp_enabled=false
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kHardBlocked,
+                                 LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kBlocked},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kConsentNeeded,
+                                 LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kPromoCard},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kWrite, LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kEditorWriteOnly},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kRewrite, LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kEditorRewriteOnly},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kHardBlocked,
+                                 LobsterMode::kSelectedText,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kLobsterWithSelectedText},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kWrite,
+                                 LobsterMode::kNoSelectedText,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kEditorWriteAndLobster},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/false,
+                                 EditorMode::kRewrite,
+                                 LobsterMode::kSelectedText,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kEditorRewriteAndLobster},
+        // magic_boost_revamp_enabled=true
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kHardBlocked,
+                                 LobsterMode::kNoSelectedText,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kLobsterWithNoSelectedText},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kHardBlocked,
+                                 LobsterMode::kSelectedText,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kLobsterWithSelectedText},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kConsentNeeded,
+                                 LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kEditorRewriteOnly},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kConsentNeeded,
+                                 LobsterMode::kBlocked,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kEditorWriteOnly},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kConsentNeeded,
+                                 LobsterMode::kSelectedText,
+                                 EditorMenuCardTextSelectionMode::kHasSelection,
+                                 TextAndImageMode::kEditorRewriteAndLobster},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kConsentNeeded,
+                                 LobsterMode::kNoSelectedText,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kEditorWriteAndLobster},
+        TextAndImageModeTestCase{/*magic_boost_revamp_enabled=*/true,
+                                 EditorMode::kWrite,
+                                 LobsterMode::kNoSelectedText,
+                                 EditorMenuCardTextSelectionMode::kNoSelection,
+                                 TextAndImageMode::kEditorWriteAndLobster},
+        TextAndImageModeTestCase{
+            /*magic_boost_revamp_enabled=*/true, EditorMode::kRewrite,
+            LobsterMode::kSelectedText,
+            EditorMenuCardTextSelectionMode::kHasSelection,
+            TextAndImageMode::kEditorRewriteAndLobster}, ));
 
-TEST_F(EditorMenuCardContextTest, PromoCardMode) {
+TEST_P(EditorMenuCardContextTextAndImageModeTest, TextAndImageModeIsCorrect) {
+  base::test::ScopedFeatureList feature_list;
+
+  feature_list.InitWithFeatureState(ash::features::kMagicBoostRevamp,
+                                    GetParam().magic_boost_revamp_enabled);
+
   EditorMenuCardContext context =
       EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kConsentNeeded)
-          .set_lobster_mode(LobsterMode::kBlocked)
+          .set_editor_mode(GetParam().editor_mode)
+          .set_lobster_mode(GetParam().lobster_mode)
+          .set_text_selection_mode(GetParam().text_selection_mode)
           .build();
 
-  EXPECT_EQ(context.text_and_image_mode(), TextAndImageMode::kPromoCard);
+  EXPECT_EQ(context.text_and_image_mode(), GetParam().expected_mode);
 }
 
-TEST_F(EditorMenuCardContextTest, EditorWriteOnly) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kWrite)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
+struct PresetQueriesTestCase {
+  bool magic_boost_revamp_enabled;
+  EditorMode editor_mode;
+  LobsterMode lobster_mode;
+  EditorMenuCardTextSelectionMode text_selection_mode;
+  std::vector<PresetTextQuery> editor_preset_queries;
+  std::vector<PresetTextQuery> expected_queries;
+};
 
-  EXPECT_EQ(context.text_and_image_mode(), TextAndImageMode::kEditorWriteOnly);
-}
+class EditorMenuCardContextPresetQueriesTest
+    : public testing::TestWithParam<PresetQueriesTestCase> {};
 
-TEST_F(EditorMenuCardContextTest, EditorRewriteOnly) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kRewrite)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EditorMenuCardContextPresetQueriesTest,
+    testing::Values(
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kHardBlocked, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kConsentNeeded, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kRewrite,
+                              LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kHasSelection,
+                              /*editor_preset_queries=*/
+                              {PresetTextQuery(/*preset_text_id=*/"1",
+                                               u"Query 1",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"2",
+                                               u"Query 2",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"3",
+                                               u"Query 3",
+                                               PresetQueryCategory::kUnknown)},
+                              /*expected_queries=*/
+                              {PresetTextQuery(/*preset_text_id=*/"1",
+                                               u"Query 1",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"2",
+                                               u"Query 2",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"3",
+                                               u"Query 3",
+                                               PresetQueryCategory::kUnknown)}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kWrite, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kHardBlocked,
+                              LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kConsentNeeded,
+                              LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kWrite, LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kHardBlocked,
+                              LobsterMode::kSelectedText,
+                              EditorMenuCardTextSelectionMode::kHasSelection,
+                              /*editor_preset_queries=*/
+                              {},
+                              /*expected_queries=*/
+                              {PresetTextQuery(
+                                  /*preset_text_id=*/kLobsterPresetId,
+                                  GetEditorMenuLobsterChipLabel(),
+                                  PresetQueryCategory::kLobster)}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/false,
+                              EditorMode::kConsentNeeded,
+                              LobsterMode::kSelectedText,
+                              EditorMenuCardTextSelectionMode::kHasSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/
+                              {}},
+        PresetQueriesTestCase{
+            /*magic_boost_revamp_enabled=*/false,
+            EditorMode::kRewrite,
+            LobsterMode::kSelectedText,
+            EditorMenuCardTextSelectionMode::kHasSelection,
+            /*editor_preset_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown)},
+            /*expected_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/kLobsterPresetId,
+                             GetEditorMenuLobsterChipLabel(),
+                             PresetQueryCategory::kLobster)}},
 
-  EXPECT_EQ(context.text_and_image_mode(),
-            TextAndImageMode::kEditorRewriteOnly);
-}
+        // MagicBoostRevamp enabled
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kHardBlocked, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kConsentNeeded, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kRewrite,
+                              LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kHasSelection,
+                              /*editor_preset_queries=*/
+                              {PresetTextQuery(/*preset_text_id=*/"1",
+                                               u"Query 1",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"2",
+                                               u"Query 2",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"3",
+                                               u"Query 3",
+                                               PresetQueryCategory::kUnknown)},
+                              /*expected_queries=*/
+                              {PresetTextQuery(/*preset_text_id=*/"1",
+                                               u"Query 1",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"2",
+                                               u"Query 2",
+                                               PresetQueryCategory::kUnknown),
+                               PresetTextQuery(/*preset_text_id=*/"3",
+                                               u"Query 3",
+                                               PresetQueryCategory::kUnknown)}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kWrite, LobsterMode::kBlocked,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kHardBlocked,
+                              LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kConsentNeeded,
+                              LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kWrite, LobsterMode::kNoSelectedText,
+                              EditorMenuCardTextSelectionMode::kNoSelection,
+                              /*editor_preset_queries=*/{},
+                              /*expected_queries=*/{}},
+        PresetQueriesTestCase{/*magic_boost_revamp_enabled=*/true,
+                              EditorMode::kHardBlocked,
+                              LobsterMode::kSelectedText,
+                              EditorMenuCardTextSelectionMode::kHasSelection,
+                              /*editor_preset_queries=*/
+                              {},
+                              /*expected_queries=*/
+                              {PresetTextQuery(
+                                  /*preset_text_id=*/kLobsterPresetId,
+                                  GetEditorMenuLobsterChipLabel(),
+                                  PresetQueryCategory::kLobster)}},
+        PresetQueriesTestCase{
+            /*magic_boost_revamp_enabled=*/true,
+            EditorMode::kConsentNeeded,
+            LobsterMode::kSelectedText,
+            EditorMenuCardTextSelectionMode::kHasSelection,
+            /*editor_preset_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown)},
+            /*expected_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/kLobsterPresetId,
+                             GetEditorMenuLobsterChipLabel(),
+                             PresetQueryCategory::kLobster)}},
+        PresetQueriesTestCase{
+            /*magic_boost_revamp_enabled=*/true,
+            EditorMode::kRewrite,
+            LobsterMode::kSelectedText,
+            EditorMenuCardTextSelectionMode::kHasSelection,
+            /*editor_preset_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown)},
+            /*expected_queries=*/
+            {PresetTextQuery(/*preset_text_id=*/"1",
+                             u"Query 1",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"2",
+                             u"Query 2",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/"3",
+                             u"Query 3",
+                             PresetQueryCategory::kUnknown),
+             PresetTextQuery(/*preset_text_id=*/kLobsterPresetId,
+                             GetEditorMenuLobsterChipLabel(),
+                             PresetQueryCategory::kLobster)}}, )
 
-TEST_F(EditorMenuCardContextTest, LobsterWithSelectedText) {
+);
+
+TEST_P(EditorMenuCardContextPresetQueriesTest, PresetQueriesAreCorrect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      ash::features::kMagicBoostRevamp, GetParam().magic_boost_revamp_enabled);
+
   EditorMenuCardContext context =
       EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kHardBlocked)
-          .set_lobster_mode(LobsterMode::kSelectedText)
-          .build();
-
-  EXPECT_EQ(context.text_and_image_mode(),
-            TextAndImageMode::kLobsterWithSelectedText);
-}
-
-TEST_F(EditorMenuCardContextTest, EditorWriteAndLobster) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kWrite)
-          .set_lobster_mode(LobsterMode::kNoSelectedText)
-          .build();
-
-  EXPECT_EQ(context.text_and_image_mode(),
-            TextAndImageMode::kEditorWriteAndLobster);
-}
-
-TEST_F(EditorMenuCardContextTest, EditorRewriteAndLobster) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kRewrite)
-          .set_lobster_mode(LobsterMode::kSelectedText)
-          .build();
-
-  EXPECT_EQ(context.text_and_image_mode(),
-            TextAndImageMode::kEditorRewriteAndLobster);
-}
-
-TEST_F(EditorMenuCardContextTest,
-       ReturnsEditorPresetQueriesWhenLobsterIsBlocked) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kRewrite)
-          .set_lobster_mode(LobsterMode::kBlocked)
-          .set_editor_preset_queries({
-              PresetTextQuery(/*preset_text_id=*/"1", u"Query 1",
-                              PresetQueryCategory::kUnknown),
-              PresetTextQuery(/*preset_text_id=*/"2", u"Query 2",
-                              PresetQueryCategory::kUnknown),
-              PresetTextQuery(/*preset_text_id=*/"3", u"Query 3",
-                              PresetQueryCategory::kUnknown),
-          })
+          .set_editor_mode(GetParam().editor_mode)
+          .set_lobster_mode(GetParam().lobster_mode)
+          .set_text_selection_mode(
+              GetParam().text_selection_mode)  // Add this line
+          .set_editor_preset_queries(GetParam().editor_preset_queries)
           .build();
 
   EXPECT_THAT(context.preset_queries(),
-              ElementsAre(PresetTextQuery(/*preset_text_id=*/"1", u"Query 1",
-                                          PresetQueryCategory::kUnknown),
-                          PresetTextQuery(/*preset_text_id=*/"2", u"Query 2",
-                                          PresetQueryCategory::kUnknown),
-                          PresetTextQuery(/*preset_text_id=*/"3", u"Query 3",
-                                          PresetQueryCategory::kUnknown)));
-}
-
-TEST_F(EditorMenuCardContextTest, ReturnsNoChipsWhenBothFeaturesAreBlocked) {
-  EditorMenuCardContext context = EditorMenuCardContext()
-                                      .set_editor_mode(EditorMode::kHardBlocked)
-                                      .set_lobster_mode(LobsterMode::kBlocked)
-                                      .build();
-
-  EXPECT_TRUE(context.preset_queries().empty());
-}
-
-TEST_F(EditorMenuCardContextTest, ReturnsNoChipsInPromoCardMode) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kConsentNeeded)
-          .set_lobster_mode(LobsterMode::kBlocked)
-          .build();
-
-  EXPECT_TRUE(context.preset_queries().empty());
-}
-
-TEST_F(EditorMenuCardContextTest,
-       ReturnsNoChipsWhenBothFeaturesAreEnabledInWriteMode) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kWrite)
-          .set_lobster_mode(LobsterMode::kNoSelectedText)
-          .build();
-
-  EXPECT_TRUE(context.preset_queries().empty());
-}
-
-TEST_F(EditorMenuCardContextTest,
-       ReturnsEditorAndLobsterChipWhenBothFeaturesAreEnabledInRewriteMode) {
-  EditorMenuCardContext context =
-      EditorMenuCardContext()
-          .set_editor_mode(EditorMode::kRewrite)
-          .set_lobster_mode(LobsterMode::kSelectedText)
-          .set_editor_preset_queries({
-              PresetTextQuery(/*preset_text_id=*/"1", u"Query 1",
-                              PresetQueryCategory::kUnknown),
-              PresetTextQuery(/*preset_text_id=*/"2", u"Query 2",
-                              PresetQueryCategory::kUnknown),
-              PresetTextQuery(/*preset_text_id=*/"3", u"Query 3",
-                              PresetQueryCategory::kUnknown),
-          })
-          .build();
-
-  EXPECT_THAT(context.preset_queries(),
-              ElementsAre(PresetTextQuery(/*preset_text_id=*/"1", u"Query 1",
-                                          PresetQueryCategory::kUnknown),
-                          PresetTextQuery(/*preset_text_id=*/"2", u"Query 2",
-                                          PresetQueryCategory::kUnknown),
-                          PresetTextQuery(/*preset_text_id=*/"3", u"Query 3",
-                                          PresetQueryCategory::kUnknown),
-                          PresetTextQuery(
-                              /*preset_text_id=*/kLobsterPresetId,
-                              GetEditorMenuLobsterChipLabel(),
-                              PresetQueryCategory::kLobster)));
+              testing::ElementsAreArray(GetParam().expected_queries));
 }
 
 }  // namespace
