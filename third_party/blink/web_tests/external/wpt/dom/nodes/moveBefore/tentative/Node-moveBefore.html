@@ -329,4 +329,14 @@ promise_test(async t => {
   await Promise.resolve();
   assert_array_equals(reactions, []);
 }, "No custom element callbacks are run during disconnected moveBefore()");
+
+// This is a regression test for a Chromium crash: https://crbug.com/388934346.
+test(t => {
+  // This test caused a crash in Chromium because after the detection of invalid
+  // /node hierarchy, and throwing the JS error, we did not return from native
+  // code, and continued to operate on the node tree on bad assumptions.
+  const outer = document.createElement('div');
+  const div = outer.appendChild(document.createElement('div'));
+  assert_throws_dom("HIERARCHY_REQUEST_ERR", () => div.moveBefore(outer, null));
+}, "Invalid node hierarchy with null old parent does not crash");
 </script>
