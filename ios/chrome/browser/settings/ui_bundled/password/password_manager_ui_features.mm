@@ -4,37 +4,18 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 
-#import "components/sync/base/features.h"
-
 namespace password_manager::features {
 
-// Kill switch for the logic that allows the user to open the native Password
-// Settings page. Used when the user wants to access the Password Manager UI
-// without a passcode set.
 BASE_FEATURE(kIOSEnablePasscodeSettings,
              "IOSEnablePasscodeSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature switch for the logic that allows the user to delete all saved
-// credentials in PWM.
 BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
              "IOSEnableDeleteAllSavedCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables passkey syncing follow-up features.
-BASE_FEATURE(kIOSPasskeysM2,
-             "IOSPasskeysM2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
-}
-
-bool IOSPasskeysM2Enabled() {
-  return syncer::IsWebauthnCredentialSyncEnabled() &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kIOSPasskeysM2);
 }
 
 }  // namespace password_manager::features

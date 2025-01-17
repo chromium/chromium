@@ -18,6 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -37,8 +38,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-using ::password_manager::features::IOSPasskeysM2Enabled;
 
 // Sections of the password settings UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {

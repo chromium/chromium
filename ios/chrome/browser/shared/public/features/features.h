@@ -1000,4 +1000,11 @@ extern const std::string_view
 // Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
 bool FRESignInSecondaryActionLabelUpdate();
 
+// Enables passkey syncing follow-up features.
+BASE_DECLARE_FEATURE(kIOSPasskeysM2);
+
+// Helper function returning the status of `kIOSPasskeysM2` and the M1
+// prerequisite.
+bool IOSPasskeysM2Enabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
