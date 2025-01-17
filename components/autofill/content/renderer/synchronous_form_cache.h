@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_SYNCHRONOUS_FORM_CACHE_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_SYNCHRONOUS_FORM_CACHE_H_
 
+#include <memory>
+
 #include "base/containers/flat_set.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -41,7 +43,7 @@ class SynchronousFormCache {
   SynchronousFormCache(FormRendererId form_id,
                        base::optional_ref<const FormData> form);
   explicit SynchronousFormCache(
-      const std::map<FormRendererId, FormData>& forms);
+      const std::map<FormRendererId, std::unique_ptr<FormData>>& forms);
   ~SynchronousFormCache();
 
   // Tries to look for the extracted form corresponding to `form_element` in

@@ -183,6 +183,15 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     return form_util::GetFieldRendererId(GetWebElementById(id));
   }
 
+  size_t num_extracted_forms() {
+    return std::ranges::count_if(
+        test_api(autofill_agent()).form_cache().extracted_forms(),
+        [](const auto& id_and_form) {
+          const auto& [id, form] = id_and_form;
+          return form != nullptr;
+        });
+  }
+
   void Focus(const char* id) {
     ExecuteJavaScriptForTests(base::StringPrintf(R"(
       document.getElementById('%s').focus();
@@ -789,11 +798,10 @@ TEST_F(AutofillAgentTest,
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
-  const std::map<FormRendererId, FormData>& extracted_forms =
+  const auto& extracted_forms =
       test_api(autofill_agent()).form_cache().extracted_forms();
-  ASSERT_EQ(test_api(autofill_agent()).form_cache().extracted_forms().size(),
-            1u);
-  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+  ASSERT_EQ(num_extracted_forms(), 1u);
+  ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 
   // Add a button to the form. We also modify the ID attribute of the first
   // input to be able to check whether the agent triggered a reparse or not.
@@ -812,12 +820,11 @@ TEST_F(AutofillAgentTest,
                 .IsRunning();
   });
 
-  ASSERT_EQ(test_api(autofill_agent()).form_cache().extracted_forms().size(),
-            1u);
-  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+  ASSERT_EQ(num_extracted_forms(), 1u);
+  ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
   // The JS changes to the ID are not reflected in the cache, meaning that the
   // cache was not updated as a result of executing the prior JS script.
-  EXPECT_EQ(extracted_forms.begin()->second.fields().front().id_attribute(),
+  EXPECT_EQ(extracted_forms.rbegin()->second->fields().front().id_attribute(),
             u"name");
 }
 
@@ -828,10 +835,10 @@ TEST_F(AutofillAgentTest,
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
-  const std::map<FormRendererId, FormData>& extracted_forms =
+  const auto& extracted_forms =
       test_api(autofill_agent()).form_cache().extracted_forms();
-  ASSERT_EQ(extracted_forms.size(), 1u);
-  ASSERT_EQ(extracted_forms.begin()->second.fields().size(), 1u);
+  ASSERT_EQ(num_extracted_forms(), 1u);
+  ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 
   // Add a fourth text field. This should be detected by the agent and should
   // trigger a reparse.
@@ -848,9 +855,9 @@ TEST_F(AutofillAgentTest,
                 .IsRunning();
   });
 
-  ASSERT_EQ(extracted_forms.size(), 1u);
+  ASSERT_EQ(num_extracted_forms(), 1u);
   // The added input should be visible in the cache now.
-  EXPECT_EQ(extracted_forms.begin()->second.fields().size(), 2u);
+  EXPECT_EQ(extracted_forms.rbegin()->second->fields().size(), 2u);
 }
 
 // Tests that when JS adds a new form to the DOM, we trigger a DOM
@@ -859,9 +866,7 @@ TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
-  const std::map<FormRendererId, FormData>& extracted_forms =
-      test_api(autofill_agent()).form_cache().extracted_forms();
-  ASSERT_EQ(extracted_forms.size(), 1u);
+  ASSERT_EQ(num_extracted_forms(), 1u);
 
   // Add a second form. This should also be detected by the agent and should
   // trigger a reparse.
@@ -880,7 +885,7 @@ TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
                 .IsRunning();
   });
 
-  EXPECT_EQ(extracted_forms.size(), 2u);
+  ASSERT_EQ(num_extracted_forms(), 2u);
 }
 
 class AutofillAgentSubmissionTest : public AutofillAgentTest,

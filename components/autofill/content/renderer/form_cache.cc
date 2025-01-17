@@ -67,14 +67,20 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   ScopedCallTimer timer("UpdateFormCache", timer_state);
 
   // |extracted_forms_| is re-populated below in ProcessForm().
-  std::map<FormRendererId, FormData> old_extracted_forms =
+  std::map<FormRendererId, std::unique_ptr<FormData>> old_extracted_forms =
       std::move(extracted_forms_);
   extracted_forms_.clear();
 
   UpdateFormCacheResult r;
   r.removed_forms = base::MakeFlatSet<FormRendererId>(
       old_extracted_forms, {},
-      &std::pair<const FormRendererId, FormData>::first);
+      &std::pair<const FormRendererId, std::unique_ptr<FormData>>::first);
+
+  for (const auto& [id, form] : old_extracted_forms) {
+    if (!form) {
+      r.removed_forms.erase(id);
+    }
+  }
 
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
@@ -104,12 +110,12 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       FormRendererId form_id = form.renderer_id();
       DCHECK(extracted_forms_.find(form_id) == extracted_forms_.end());
       auto it = old_extracted_forms.find(form_id);
-      if (it == old_extracted_forms.end() ||
-          !FormData::DeepEqual(std::move(it->second), form)) {
+      if (it == old_extracted_forms.end() || !it->second ||
+          !FormData::DeepEqual(std::move(*it->second), form)) {
         r.updated_forms.push_back(form);
       }
       r.removed_forms.erase(form_id);
-      extracted_forms_[form_id] = std::move(form);
+      extracted_forms_[form_id] = std::make_unique<FormData>(std::move(form));
     }
     return true;
   };
@@ -126,6 +132,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       if (!ProcessForm(std::move(*form))) {
         return r;
       }
+    } else {
+      extracted_forms_[form_util::GetFormRendererId(form_element)] = nullptr;
     }
   }
 
@@ -136,6 +144,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       agent_->GetCallTimerState(kUpdateFormCache));
   if (synthetic_form) {
     ProcessForm(std::move(*synthetic_form));
+  } else {
+    extracted_forms_[FormRendererId()] = nullptr;
   }
   return r;
 }

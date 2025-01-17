@@ -24,9 +24,9 @@ SynchronousFormCache::SynchronousFormCache(
   insert(form_id, form);
 }
 SynchronousFormCache::SynchronousFormCache(
-    const std::map<FormRendererId, FormData>& forms) {
+    const std::map<FormRendererId, std::unique_ptr<FormData>>& forms) {
   for (const auto& [id, form] : forms) {
-    insert(id, form);
+    insert(id, form.get());
   }
 }
 SynchronousFormCache::~SynchronousFormCache() = default;
