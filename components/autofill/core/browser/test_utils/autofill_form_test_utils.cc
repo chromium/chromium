@@ -217,8 +217,10 @@ void FormStructureTest::CheckFormStructureTestData(
     }
 
     if (test_case.form_flags.is_complete_credit_card_form.has_value()) {
-      EXPECT_EQ(form_structure->IsCompleteCreditCardForm(),
-                *test_case.form_flags.is_complete_credit_card_form);
+      auto [completeness, expected_result] =
+          *test_case.form_flags.is_complete_credit_card_form;
+      EXPECT_EQ(form_structure->IsCompleteCreditCardForm(completeness),
+                expected_result);
     }
     if (test_case.form_flags.field_count) {
       ASSERT_EQ(*test_case.form_flags.field_count,

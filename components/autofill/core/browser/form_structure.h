@@ -93,10 +93,24 @@ class FormStructure {
   // auto-fillable, like google/yahoo/msn search, etc.
   bool IsAutofillable() const;
 
-  // Returns whether |this| form represents a complete Credit Card form, which
-  // consists in having at least a credit card number field and an expiration
-  // field.
-  bool IsCompleteCreditCardForm() const;
+  // This enum defines two different states of completeness for a credit card
+  // form, each used for a distinct purpose to check if the required credit card
+  // fields exist.
+  enum class CreditCardFormCompleteness {
+    // This represents a minimal complete credit card form which has at least a
+    // credit card number field and an expiration date field.
+    kCompleteCreditCardForm,
+    // This represents a credit card form which has a CVC field and a cardholder
+    // name field in addition to the credit card number field and the expiration
+    // date field. For example, this level is required for offering `Save and
+    // Fill`.
+    kCompleteCreditCardFormIncludingCvcAndName,
+  };
+
+  // Returns whether |this| form represents a complete Credit Card form, as
+  // defined by the given CreditCardFormCompleteness level.
+  bool IsCompleteCreditCardForm(
+      CreditCardFormCompleteness credit_card_form_completeness) const;
 
   // Resets |autofill_count_| and counts the number of auto-fillable fields.
   // This is used when we receive server data for form fields.  At that time,

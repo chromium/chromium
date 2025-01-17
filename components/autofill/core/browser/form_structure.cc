@@ -359,20 +359,33 @@ bool FormStructure::IsAutofillable() const {
   return ShouldBeParsed();
 }
 
-bool FormStructure::IsCompleteCreditCardForm() const {
-  bool found_cc_number = false;
-  bool found_cc_expiration = false;
-  for (const auto& field : fields_) {
-    FieldType type = field->Type().GetStorableType();
-    if (!found_cc_expiration && data_util::IsCreditCardExpirationType(type)) {
-      found_cc_expiration = true;
-    } else if (!found_cc_number && type == CREDIT_CARD_NUMBER) {
-      found_cc_number = true;
+bool FormStructure::IsCompleteCreditCardForm(
+    CreditCardFormCompleteness credit_card_form_completeness) const {
+  bool found_cc_expiration =
+      std::ranges::any_of(fields_, [](const auto& field) {
+        return data_util::IsCreditCardExpirationType(
+            field->Type().GetStorableType());
+      });
+  auto has_type = [&](FieldType type) {
+    return std::ranges::any_of(fields_, [&](const auto& field) {
+      return field->Type().GetStorableType() == type;
+    });
+  };
+  bool found_cc_number = has_type(CREDIT_CARD_NUMBER);
+
+  switch (credit_card_form_completeness) {
+    case CreditCardFormCompleteness::kCompleteCreditCardForm:
+      return found_cc_expiration && found_cc_number;
+    case CreditCardFormCompleteness::
+        kCompleteCreditCardFormIncludingCvcAndName: {
+      bool found_cc_cvc = has_type(CREDIT_CARD_VERIFICATION_CODE);
+      bool found_cc_name =
+          has_type(CREDIT_CARD_NAME_FULL) ||
+          (has_type(CREDIT_CARD_NAME_FIRST) && has_type(CREDIT_CARD_NAME_LAST));
+      return found_cc_expiration && found_cc_number && found_cc_cvc &&
+             found_cc_name;
     }
-    if (found_cc_expiration && found_cc_number)
-      return true;
   }
-  return false;
 }
 
 void FormStructure::UpdateAutofillCount() {

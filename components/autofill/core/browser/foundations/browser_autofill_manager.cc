@@ -179,7 +179,8 @@ void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
   if (form_structure.developer_engagement_metrics()) {
     AutofillMetrics::LogDeveloperEngagementUkm(
         ukm_recorder, source_id, form_structure.main_frame_origin().GetURL(),
-        form_structure.IsCompleteCreditCardForm(),
+        form_structure.IsCompleteCreditCardForm(
+            FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm),
         autofill_metrics::GetFormTypesForLogging(form_structure),
         form_structure.developer_engagement_metrics(),
         form_structure.form_signature());
