@@ -494,7 +494,8 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
                    const SkBitmap& actual_bmp,
                    const gfx::Rect& matching_mask,
                    float device_scale_factor,
-                   int max_collor_diff) {
+                   int max_collor_diff,
+                   int fuzz = 0) {
   // Number of pixels with an error
   int error_pixels_count = 0;
 
@@ -506,17 +507,19 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
   // Check that bitmaps have identical dimensions.
   int expected_width = round(expected_bmp.width() * device_scale_factor);
   int expected_height = round(expected_bmp.height() * device_scale_factor);
-  EXPECT_EQ(expected_width, actual_bmp.width());
-  EXPECT_EQ(expected_height, actual_bmp.height());
-  if (expected_width != actual_bmp.width() ||
-      expected_height != actual_bmp.height()) {
-    return false;
-  }
+  EXPECT_NEAR(expected_width, actual_bmp.width(), fuzz);
+  EXPECT_NEAR(expected_height, actual_bmp.height(), fuzz);
 
   DCHECK(gfx::SkIRectToRect(actual_bmp.bounds()).Contains(matching_mask));
 
   for (int x = matching_mask.x(); x < matching_mask.right(); ++x) {
     for (int y = matching_mask.y(); y < matching_mask.bottom(); ++y) {
+      if (x * device_scale_factor >= actual_bmp.width() ||
+          y * device_scale_factor >= actual_bmp.height() ||
+          x >= expected_bmp.width() || y >= expected_bmp.height()) {
+        continue;
+      }
+
       SkColor actual_color =
           actual_bmp.getColor(x * device_scale_factor, y * device_scale_factor);
       SkColor expected_color = expected_bmp.getColor(x, y);
@@ -607,7 +610,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                      float device_scale_factor = 0,
                                      const gfx::RectF& clip = gfx::RectF(),
                                      float clip_scale = 0,
-                                     bool capture_beyond_viewport = false) {
+                                     bool capture_beyond_viewport = false,
+                                     int fuzz = 0) {
     SkBitmap result_bitmap = CaptureScreenshot(
         encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
@@ -626,7 +630,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     int max_collor_diff = 20;
 
     EXPECT_TRUE(MatchesBitmap(expected_bitmap, result_bitmap, matching_mask,
-                              device_scale_factor, max_collor_diff));
+                              device_scale_factor, max_collor_diff, fuzz));
   }
 
   gfx::Size GetPageContentSize() {
@@ -792,11 +796,12 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       device_scale_factor,
       /*clip=*/
       gfx::RectF(0, 0, actual_page_size.width(), actual_page_size.height()),
-      /*clip_scale=*/1, true);
+      /*clip_scale=*/1, /*capture_beyond_viewport=*/true);
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
                                 /*from_surface=*/true, device_scale_factor,
                                 /*clip=*/gfx::RectF(), /*clip_scale=*/0,
-                                /*capture_beyond_viewport=*/true);
+                                /*capture_beyond_viewport=*/true,
+                                /*fuzz*/ 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,

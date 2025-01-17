@@ -238,14 +238,20 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                         });
     }
 
+    private boolean approxEqual(final int a, final int b) {
+        return Math.abs(a - b) <= 2;
+    }
+
     private boolean checkScrollOnMainSync(
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
+        // Allow the scroll to be off by 2px, to account for non-integer
+        // device pixel ratio devicse where scroll*Pix is rounded inaccurately.
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        scrollXPix == testContainerView.getScrollX()
-                                && scrollYPix == testContainerView.getScrollY());
+                        approxEqual(scrollXPix, testContainerView.getScrollX())
+                                && approxEqual(scrollYPix, testContainerView.getScrollY()));
     }
 
     private int[] getScrollOnMainSync(final ScrollTestContainerView testContainerView) {

@@ -826,11 +826,11 @@ void WebContentsAndroid::SetSize(JNIEnv* env, jint width, jint height) {
 }
 
 int WebContentsAndroid::GetWidth(JNIEnv* env) {
-  return web_contents_->GetNativeView()->GetSize().width();
+  return web_contents_->GetNativeView()->GetSizeDIPs().width();
 }
 
 int WebContentsAndroid::GetHeight(JNIEnv* env) {
-  return web_contents_->GetNativeView()->GetSize().height();
+  return web_contents_->GetNativeView()->GetSizeDIPs().height();
 }
 
 ScopedJavaLocalRef<jobject> WebContentsAndroid::GetOrCreateEventForwarder(

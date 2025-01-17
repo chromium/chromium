@@ -353,7 +353,7 @@ void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
 
 void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
     BeginScreenStateChange() {
-  current_screen_state_.visible_viewport_size = rwhva_->view_.GetSize();
+  current_screen_state_.visible_viewport_size = rwhva_->view_.GetSizeDIPs();
   current_screen_state_.physical_backing_size =
       rwhva_->view_.GetPhysicalBackingSize();
   auto screen_info = rwhva_->GetScreenInfo();
@@ -1185,9 +1185,22 @@ gfx::Rect RenderWidgetHostViewAndroid::GetViewBounds() {
   if (!view_.parent())
     return default_bounds_dip_;
 
-  gfx::Size size(view_.GetSize());
-
+  gfx::Size size(view_.GetSizeDIPs());
   return gfx::Rect(size);
+}
+
+gfx::Size RenderWidgetHostViewAndroid::GetRequestedRendererSizeDevicePx() {
+  if (!view_.parent()) {
+    if (default_bounds_dip_.IsEmpty()) {
+      return gfx::Size();
+    }
+
+    const float scale_factor = GetDeviceScaleFactor();
+    return gfx::Size(default_bounds_dip_.width() * scale_factor,
+                     default_bounds_dip_.height() * scale_factor);
+  }
+
+  return view_.GetSizeDevicePx();
 }
 
 gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSize() {
@@ -2471,8 +2484,8 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
     // TODO(yusufo) : Get rid of the below conditions and have a better handling
     // for resizing after crbug.com/628302 is handled.
     bool is_size_initialized = !will_build_tree ||
-                               view_.GetSize().width() != 0 ||
-                               view_.GetSize().height() != 0;
+                               view_.GetSizeDIPs().width() != 0 ||
+                               view_.GetSizeDIPs().height() != 0;
     if (has_view_tree || is_size_initialized)
       resize = true;
     has_view_tree = will_build_tree;
@@ -2596,7 +2609,8 @@ bool RenderWidgetHostViewAndroid::RequiresDoubleTapGestureEvents() const {
 }
 
 void RenderWidgetHostViewAndroid::OnSizeChanged() {
-  screen_state_change_handler_.OnVisibleViewportSizeChanged(view_.GetSize());
+  screen_state_change_handler_.OnVisibleViewportSizeChanged(
+      view_.GetSizeDIPs());
   // The display feature depends on the view size so we need to recompute it.
   ComputeDisplayFeature();
 }
@@ -2946,7 +2960,7 @@ void RenderWidgetHostViewAndroid::ComputeDisplayFeature() {
   }
 
   display_feature_ = std::nullopt;
-  gfx::Size view_size(view_.GetSize());
+  gfx::Size view_size(view_.GetSizeDIPs());
   // On some devices like the Galaxy Fold the display feature has a size of
   // 0 (width or height depending on the orientation). IsEmpty() will fail here.
   if (display_feature_bounds_.size().IsZero() || view_size.IsEmpty()) {
