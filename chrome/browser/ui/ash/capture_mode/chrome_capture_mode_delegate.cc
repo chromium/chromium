@@ -57,6 +57,7 @@
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
@@ -141,6 +142,14 @@ ChromeCaptureModeDelegate::~ChromeCaptureModeDelegate() {
 ChromeCaptureModeDelegate* ChromeCaptureModeDelegate::Get() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+bool ChromeCaptureModeDelegate::IsSearchAllowedByPolicy() const {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  return profile && profile->GetPrefs() &&
+         profile->GetPrefs()->GetInteger(lens::prefs::kLensOverlaySettings) ==
+             static_cast<int>(
+                 lens::prefs::LensOverlaySettingsPolicyValue::kEnabled);
 }
 
 void ChromeCaptureModeDelegate::SetIsScreenCaptureLocked(bool locked) {

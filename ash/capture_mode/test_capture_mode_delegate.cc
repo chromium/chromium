@@ -110,6 +110,10 @@ bool TestCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
   return is_allowed_by_policy_;
 }
 
+bool TestCaptureModeDelegate::IsSearchAllowedByPolicy() const {
+  return is_search_allowed_by_policy_;
+}
+
 void TestCaptureModeDelegate::StartObservingRestrictedContent(
     const aura::Window* window,
     const gfx::Rect& bounds,

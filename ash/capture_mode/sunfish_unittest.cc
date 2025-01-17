@@ -517,6 +517,23 @@ TEST_F(SunfishTest, CaptureLabelView) {
   EXPECT_FALSE(capture_label->GetVisible());
 }
 
+// Tests the Search button does not show in default mode.
+TEST_F(SunfishTest, CheckSearchPolicy) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
+
+  // Start default session. Test the Search button does not show.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/false);
+  WaitForCaptureModeWidgetsVisible();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
 // Tests that sunfish checks DLP restrictions upon selecting a region.
 TEST_F(SunfishTest, CheckDlpRestrictions) {
   auto* controller = CaptureModeController::Get();
