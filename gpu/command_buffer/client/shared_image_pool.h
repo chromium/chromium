@@ -197,8 +197,13 @@ class GPU_EXPORT SharedImagePool
                             std::move(unused_resource_expiration_time)));
   }
 
-  // Clears the pool, deleting all contained images.
-  ~SharedImagePool() override = default;
+  // Clears the pool, deleting all contained images. Also sends an IPC to
+  // destroy the corresponding service side pool.
+  ~SharedImagePool() override {
+    if (sii_) {
+      sii_->DestroySharedImagePool(pool_id_);
+    }
+  }
 
   // Retrieves an image from the pool or creates a new one if the pool is empty.
   scoped_refptr<ClientImageType> GetImage() {
@@ -260,9 +265,20 @@ class GPU_EXPORT SharedImagePool
       std::optional<base::TimeDelta> unused_resource_expiration_time)
       : SharedImagePoolBase(SharedImagePoolId::Create(),
                             image_info,
-                            std::move(sii),
+                            sii,
                             std::move(max_pool_size),
-                            std::move(unused_resource_expiration_time)) {}
+                            std::move(unused_resource_expiration_time)) {
+    mojo::PendingReceiver<gpu::mojom::SharedImagePoolClientInterface>
+        client_receiver;
+    auto client_remote = client_receiver.InitWithNewPipeAndPassRemote();
+    receiver_.Bind(std::move(client_receiver));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &SharedImagePool::OnDisconnectedSharedImagePoolClientInterface,
+        base::Unretained(this)));
+    sii->CreateSharedImagePool(pool_id_, std::move(client_remote));
+  }
+
+  void OnDisconnectedSharedImagePoolClientInterface() { ClearInternal(); }
 
   mojo::Receiver<mojom::SharedImagePoolClientInterface> receiver_{this};
 
