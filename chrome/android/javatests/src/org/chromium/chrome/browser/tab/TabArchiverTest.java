@@ -148,7 +148,6 @@ public class TabArchiverTest {
                                 new TabArchiverImpl(
                                         archivedTabGroupModelFilter,
                                         mArchivedTabCreator,
-                                        mTabWindowManager,
                                         mTabArchiveSettings,
                                         mClock));
         mUserActionTester = new UserActionTester();
@@ -170,17 +169,6 @@ public class TabArchiverTest {
     @AfterClass
     public static void tearDownTestSuite() {
         ActivityFinisher.finishAll();
-    }
-
-    @Test
-    @MediumTest
-    public void testDestroy() throws Exception {
-        runOnUiThreadBlocking(
-                () -> {
-                    mTabArchiver.initialize();
-                    mTabArchiver.destroy();
-                    verify(mTabWindowManager).removeObserver(mTabArchiver);
-                });
     }
 
     @Test
@@ -333,7 +321,7 @@ public class TabArchiverTest {
         // The grouped tab should be skipped.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -378,7 +366,7 @@ public class TabArchiverTest {
         // The grouped tab should not be skipped.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -432,7 +420,7 @@ public class TabArchiverTest {
         // URL, should be archived since it is a standalone tab which passed the time threshold.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -480,7 +468,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setArchiveDuplicateTabsEnabled(true);
-                    mTabArchiver.onTabModelSelectorAdded(
+                    mTabArchiver.doArchivePass(
                             sActivityTestRule.getActivity().getTabModelSelectorSupplier().get());
                 });
         CriteriaHelper.pollUiThread(() -> 3 == mRegularTabModel.getCount());
@@ -530,7 +518,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setArchiveDuplicateTabsEnabled(false);
-                    mTabArchiver.onTabModelSelectorAdded(
+                    mTabArchiver.doArchivePass(
                             sActivityTestRule.getActivity().getTabModelSelectorSupplier().get());
                 });
         CriteriaHelper.pollUiThread(() -> 4 == mRegularTabModel.getCount());
@@ -582,7 +570,7 @@ public class TabArchiverTest {
         // None of the tabs with duplicate URLs should be archived.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -629,7 +617,7 @@ public class TabArchiverTest {
         // Send an event, similar to how TabWindowManager would.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -705,7 +693,7 @@ public class TabArchiverTest {
     @MediumTest
     public void testTabModelSelectorUninitialized() throws Exception {
         doReturn(false).when(mSelector).isTabStateInitialized();
-        runOnUiThreadBlocking(() -> mTabArchiver.onTabModelSelectorAdded(mSelector));
+        runOnUiThreadBlocking(() -> mTabArchiver.doArchivePass(mSelector));
         verify(mSelector, times(0)).getModel(anyBoolean());
     }
 
@@ -737,7 +725,7 @@ public class TabArchiverTest {
         // Send an event, similar to how TabWindowManager would.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -807,7 +795,7 @@ public class TabArchiverTest {
         // 1 tab in each.
         runOnUiThreadBlocking(
                 () ->
-                        mTabArchiver.onTabModelSelectorAdded(
+                        mTabArchiver.doArchivePass(
                                 sActivityTestRule
                                         .getActivity()
                                         .getTabModelSelectorSupplier()
@@ -862,9 +850,9 @@ public class TabArchiverTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mTabArchiver.initialize();
                     assertEquals(0, mTabArchiver.getObserversForTesting().size());
-                    mTabArchiver.doArchivePass();
+                    mTabArchiver.doArchivePass(
+                            sActivityTestRule.getActivity().getTabModelSelector());
                     assertEquals(1, mTabArchiver.getObserversForTesting().size());
                 });
 

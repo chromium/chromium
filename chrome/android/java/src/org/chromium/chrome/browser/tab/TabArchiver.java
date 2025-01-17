@@ -25,18 +25,16 @@ public interface TabArchiver extends Destroyable {
     /** Removes an observer from the class. */
     void removeObserver(Observer observer);
 
-    /** Initialize the archiving process by observing TabWindowManager for new TabModelSelectors. */
-    void initialize();
-
     /**
      * Do an archive pass of the main {@link TabModelSelector}.
      *
      * <p>1. Iterates through all known tab model selects, and archives inactive tabs. 2. Iterates
      * through all archived tabs, and automatically deletes those old enough (only if auto-deletion
      * is enabled through settings).
+     *
+     * @param selectorToArchive The {@link TabModelSelector} to archive.
      */
-    // TODO: Refactor this to take an Activity so that work isn't duplicate between windows.
-    void doArchivePass();
+    void doArchivePass(TabModelSelector selectorToArchive);
 
     /** Delete eligible archived tabs. */
     void doAutodeletePass();

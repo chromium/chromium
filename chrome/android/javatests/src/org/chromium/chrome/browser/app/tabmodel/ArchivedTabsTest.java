@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-
-import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
@@ -20,7 +17,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -56,21 +52,6 @@ import java.util.List;
 public class ArchivedTabsTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
-    private static class FakeTaskRunner implements TaskRunner {
-
-        public final List<Pair<Runnable, Long>> mDelayedTasks = new ArrayList<>();
-
-        @Override
-        public void execute(Runnable task) {
-            assert false;
-        }
-
-        @Override
-        public void postDelayedTask(Runnable task, long delay) {
-            mDelayedTasks.add(new Pair<>(task, delay));
-        }
-    }
-
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
         private List<Runnable> mTasks = new ArrayList<>();
 
@@ -95,7 +76,6 @@ public class ArchivedTabsTest {
     @Mock private ArchivedTabModelOrchestrator.Observer mObserver;
 
     private Profile mProfile;
-    private FakeTaskRunner mTaskRunner;
     private FakeDeferredStartupHandler mDeferredStartupHandler;
     private ArchivedTabModelOrchestrator mOrchestrator;
     private TabModel mArchivedTabModel;
@@ -118,8 +98,6 @@ public class ArchivedTabsTest {
                                     .get()
                                     .getOriginalProfile();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
-                    mTaskRunner = new FakeTaskRunner();
-                    mOrchestrator.setTaskRunnerForTesting(mTaskRunner);
                 });
         finishLoading();
     }
