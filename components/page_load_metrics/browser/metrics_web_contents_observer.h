@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 
 namespace content {
