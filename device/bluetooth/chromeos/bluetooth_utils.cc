@@ -60,24 +60,29 @@ BluetoothAdapter::DeviceList GetLimitedNumDevices(
     size_t max_device_num,
     const BluetoothAdapter::DeviceList& devices) {
   // If |max_device_num| is 0, it means there's no limit.
-  if (max_device_num == 0)
+  if (max_device_num == 0) {
     return devices;
+  }
 
   BluetoothAdapter::DeviceList result;
   for (BluetoothDevice* device : devices) {
-    if (result.size() == max_device_num)
+    if (result.size() == max_device_num) {
       break;
+    }
 
-    if (device->IsPaired() || device->IsConnecting())
+    if (device->IsPaired() || device->IsConnecting()) {
       result.push_back(device);
+    }
   }
 
   for (BluetoothDevice* device : devices) {
-    if (result.size() == max_device_num)
+    if (result.size() == max_device_num) {
       break;
+    }
 
-    if (!device->IsPaired() && !device->IsConnecting())
+    if (!device->IsPaired() && !device->IsConnecting()) {
       result.push_back(device);
+    }
   }
 
   return result;
@@ -87,8 +92,9 @@ BluetoothAdapter::DeviceList GetLimitedNumDevices(
 BluetoothAdapter::DeviceList FilterUnknownDevices(
     const BluetoothAdapter::DeviceList& devices) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled())
+  if (ash::switches::IsUnfilteredBluetoothDevicesEnabled()) {
     return devices;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -100,8 +106,9 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
 
   BluetoothAdapter::DeviceList result;
   for (BluetoothDevice* device : devices) {
-    if (device::IsUnsupportedDevice(device))
+    if (device::IsUnsupportedDevice(device)) {
       continue;
+    }
 
     result.push_back(device);
   }
@@ -426,8 +433,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
 
   // Always filter out phones. There is no intended use case or Bluetooth
   // profile in this context.
-  if (base::FeatureList::IsEnabled(chromeos::features::kBluetoothPhoneFilter) &&
-      device->GetDeviceType() == BluetoothDeviceType::PHONE) {
+  if (device->GetDeviceType() == BluetoothDeviceType::PHONE) {
     return true;
   }
 
@@ -572,8 +578,9 @@ void RecordDeviceSelectionDuration(base::TimeDelta duration,
   // |kMaxDeviceSelectionDuration|. Assume that these thrown out results reflect
   // the user not being actively engaged with device connection: leaving the
   // page open for a long time, walking away from computer, etc.
-  if (duration > kMaxDeviceSelectionDuration)
+  if (duration > kMaxDeviceSelectionDuration) {
     return;
+  }
 
   std::string base_histogram_name =
       "Bluetooth.ChromeOS.DeviceSelectionDuration";
