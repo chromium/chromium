@@ -1002,12 +1002,22 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
     return;
   }
 
+  frame.metadata.send_frame_token_to_embedder = true;
+
   frame.resource_list.insert(frame.resource_list.end(),
                              next_frame_resources_.begin(),
                              next_frame_resources_.end());
   next_frame_resources_.clear();
+
+  std::optional<HitTestRegionList> hit_test_region_list =
+      host_impl_->BuildHitTestData();
+
+  // TODO(vmiura): Implement other functionality from
+  // AsyncLayerTreeFrameSink::SubmitCompositorFrame()
+
   compositor_sink_->SubmitCompositorFrame(host_impl_->target_local_surface_id(),
-                                          std::move(frame));
+                                          std::move(frame),
+                                          std::move(hit_test_region_list), 0);
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     constexpr bool start_ready_animations = true;
