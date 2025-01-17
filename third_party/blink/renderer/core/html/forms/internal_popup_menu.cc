@@ -385,6 +385,7 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
   const HeapVector<Member<HTMLElement>>& items = owner_element.GetListItems();
   for (; context.list_index_ < items.size(); ++context.list_index_) {
     Element& child = *items[context.list_index_];
+    // TODO this shouldn't just look at parentNode right??
     if (!IsA<HTMLOptGroupElement>(child.parentNode()))
       context.FinishGroupIfNecessary();
     if (auto* option = DynamicTo<HTMLOptionElement>(child))
