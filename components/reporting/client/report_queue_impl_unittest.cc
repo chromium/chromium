@@ -110,7 +110,7 @@ class ReportQueueImplTest : public testing::Test {
 
   TestStorageModule* test_storage_module() const {
     TestStorageModule* const test_storage_module =
-        google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
+        static_cast<TestStorageModule*>(storage_module_.get());
     EXPECT_THAT(test_storage_module, NotNull());
     return test_storage_module;
   }
