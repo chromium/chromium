@@ -43,6 +43,7 @@ std::unique_ptr<views::Widget> GlicView::CreateWidget(
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.remove_standard_frame = true;
 #if BUILDFLAG(IS_WIN)
   params.dont_show_in_taskbar = true;
@@ -76,12 +77,6 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
     }
   }
   return false;
-}
-
-void GlicView::AnimateFrameBounds(const gfx::Rect& bounds) {
-  bounds_change_animation_ =
-      std::make_unique<BrowserFrameBoundsChangeAnimation>(*GetWidget(), bounds);
-  bounds_change_animation_->Start();
 }
 
 }  // namespace glic

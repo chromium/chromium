@@ -44,9 +44,6 @@ class GlicView : public views::View {
 
   views::WebView* web_view() { return web_view_; }
 
-  // Sets the bounds of the widget with animation
-  void AnimateFrameBounds(const gfx::Rect& bounds);
-
  private:
   raw_ptr<views::WebView> web_view_;
 
