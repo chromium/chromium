@@ -390,13 +390,13 @@ HeadlessWebContentsImpl::CreateForChildContents(
   // setting.
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
   child->InitializeWindow(child->web_contents_->GetContainerBounds(),
-                          /*window_state=*/"normal");
+                          HeadlessWindowState::kNormal);
   return child;
 }
 
 void HeadlessWebContentsImpl::InitializeWindow(
     const gfx::Rect& bounds,
-    const std::string& window_state) {
+    HeadlessWindowState window_state) {
   static int window_id = 1;
   window_id_ = window_id++;
 
@@ -405,15 +405,18 @@ void HeadlessWebContentsImpl::InitializeWindow(
   SetWindowState(window_state);
 }
 
-void HeadlessWebContentsImpl::SetWindowState(const std::string& state) {
-  if (state == "normal" || state == "maximized" || state == "fullscreen") {
-    web_contents_->WasShown();
-  } else if (state == "minimized") {
-    web_contents_->WasHidden();
-  } else {
-    NOTREACHED() << "Unknown window state: " << state;
+void HeadlessWebContentsImpl::SetWindowState(HeadlessWindowState window_state) {
+  switch (window_state) {
+    case HeadlessWindowState::kNormal:
+    case HeadlessWindowState::kMaximized:
+    case HeadlessWindowState::kFullscreen:
+      web_contents_->WasShown();
+      break;
+    case HeadlessWindowState::kMinimized:
+      web_contents_->WasHidden();
+      break;
   }
-  window_state_ = state;
+  window_state_ = window_state;
 }
 
 void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
@@ -548,7 +551,7 @@ HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowBounds(
 }
 
 HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowState(
-    std::string_view window_state) {
+    HeadlessWindowState window_state) {
   window_state_ = window_state;
   return *this;
 }
