@@ -5896,6 +5896,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Including link: <ph name="ORIGIN">%1$s<ex>https://www.example.com</ex></ph>
       </message>
 
+      <message name="IDS_SHARING_TAB_GROUP" desc="Label for the button in share bottom sheet for sharing a link to collaborate in a shared tab group.">
+        Tab group
+      </message>
+
       <message name="IDS_QR_CODE_FILENAME_PREFIX" desc="File name prefix for downloaded qrcode that is followed by timestamp.">
         chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>

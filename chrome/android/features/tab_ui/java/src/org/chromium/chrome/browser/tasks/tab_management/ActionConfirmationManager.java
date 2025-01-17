@@ -92,7 +92,7 @@ public class ActionConfirmationManager {
                 R.string.delete_shared_tab_group_dialog_title,
                 R.string.delete_shared_tab_group_description,
                 groupTitle,
-                R.string.delete_tab_group_menu_item,
+                R.string.delete_tab_group_action,
                 onResult);
     }
 

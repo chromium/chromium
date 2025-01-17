@@ -244,7 +244,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
-                    R.string.collaboration_share_group_title,
+                    R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,
@@ -858,7 +858,7 @@ public class AndroidShareSheetControllerUnitTest {
         } else {
             assertCustomActions(
                     intent,
-                    R.string.collaboration_share_group_title,
+                    R.string.sharing_tab_group,
                     R.string.sharing_long_screenshot,
                     R.string.print_share_activity_title,
                     R.string.sharing_send_tab_to_self,
