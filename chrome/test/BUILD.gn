@@ -4066,6 +4066,7 @@ if (!is_android) {
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_apitest.cc",
+        "../browser/controlled_frame/controlled_frame_contextmenus_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_disabled_permission_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_new_window_browsertest.cc",
