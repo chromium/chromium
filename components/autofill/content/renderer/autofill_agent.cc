@@ -1662,31 +1662,43 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const WebElement& element,
     WebFormRelatedChangeType form_related_change) {
-  auto should_discard_signal = [&] {
+  auto should_handle_event = [&] {
     if (!is_dom_content_loaded_) {
       // When the agent receives the DomContentLoaded signal, it will extract
       // all forms and notify PasswordAutofillAgent by default, so we do not
       // need to run this function as this would be redundant.
-      return true;
+      return false;
     }
     if (!base::FeatureList::IsEnabled(
             features::kAutofillOptimizeFormExtraction)) {
-      return false;
+      return true;
     }
-    if (WebFormControlElement control_element =
-            element.DynamicTo<WebFormControlElement>();
+    auto maybe_control_element = element.DynamicTo<WebFormControlElement>();
+    const bool is_autofillable_element =
         element.DynamicTo<WebFormElement>() ||
-        (control_element &&
-         form_util::IsAutofillableElement(control_element))) {
-      return false;
+        (maybe_control_element &&
+         form_util::IsAutofillableElement(maybe_control_element));
+    switch (form_related_change) {
+      case blink::WebFormRelatedChangeType::kAdd:
+      case blink::WebFormRelatedChangeType::kRemove:
+      case blink::WebFormRelatedChangeType::kReassociate:
+        // If the element dynamically added is not a form element or
+        // autofillable control element (see condition above), it will probably
+        // not have any influence on Autofill at all, and therefore there's no
+        // need to trigger DOM re-extraction on any other case.
+        return is_autofillable_element;
+      case blink::WebFormRelatedChangeType::kHide:
+        // Hidden elements have a slightly different behavior, since they don't
+        // lead to form extraction. Here, we are also interested in input
+        // elements that have type 'hidden', which are not autofillable, but are
+        // one way to hide previously autofillable elements.
+        return is_autofillable_element ||
+               (maybe_control_element &&
+                maybe_control_element.FormControlTypeForAutofill() ==
+                    blink::mojom::FormControlType::kInputHidden);
     }
-    // If the element dynamically added is not a form element or autofillable
-    // control element (see condition above), it will probably not have any
-    // influence on Autofill at all, and therefore there's no need to trigger
-    // DOM re-extraction on any other case.
-    return true;
   };
-  if (should_discard_signal()) {
+  if (!should_handle_event()) {
     return;
   }
 
