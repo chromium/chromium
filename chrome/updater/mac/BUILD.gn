@@ -619,6 +619,7 @@ artifact_zip("updater_zip") {
     "$root_out_dir/CRURegistration/CRURegistration.h",
     "$root_out_dir/CRURegistration/CRURegistration-Private.h",
     "$root_out_dir/CRURegistration/CRURegistration.m",
+    "$root_out_dir/CRURegistration/CRURegistrationPaths.m",
   ]
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
