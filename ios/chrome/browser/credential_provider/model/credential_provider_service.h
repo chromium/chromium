@@ -138,6 +138,9 @@ class CredentialProviderService
   // includes account storage.)
   void UpdatePasswordSyncSetting();
 
+  // Syncs whether or not PRF is enabled.
+  void UpdatePasskeyPRFSetting();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,

@@ -8,6 +8,12 @@
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
+BOOL IsPasskeyPRFEnabled() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()]
+      boolValue];
+}
+
 BOOL IsPasswordCreationUserEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:

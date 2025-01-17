@@ -1621,6 +1621,11 @@
     "expiry_milestone": 134
   },
   {
+    "name": "cpe-passkey-prf-support",
+    "owners": ["sugoi@chromium.org", "bling-transactions-eng@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "cpe-performance-improvements",
     "owners": ["sebsg@chromium.org", "bling-transactions-eng@google.com"],
     "expiry_milestone": 135

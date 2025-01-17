@@ -211,6 +211,11 @@ extern const char kContextualPanelForceShowEntrypointDescription[];
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];
 
+// Title and description for the flag to enable passkey PRF support in the
+// Credential Provider.
+extern const char kCredentialProviderPasskeyPRFName[];
+extern const char kCredentialProviderPasskeyPRFDescription[];
+
 // Title and description for the flag to enable the Credential Provider
 // Improvements.
 extern const char kCredentialProviderPerformanceImprovementsName[];
