@@ -1290,9 +1290,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     MaybeUpdateLocationBar();
   }
 
-  // The PiP window does not support blocked indicators, hence there is no need
-  // to start a timer to display it.
-  if (!delegate_->IsPiPWindow(GetWebContents())) {
     // Camera and/or Mic is blocked, start a blocked indicator's dismiss timer.
     if (microphone_camera_state_.Has(kMicrophoneBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_MIC);
@@ -1300,7 +1297,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     if (microphone_camera_state_.Has(kCameraBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_CAMERA);
     }
-  }
 }
 
 void PageSpecificContentSettings::AddPermissionUsageObserver(
