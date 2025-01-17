@@ -25,6 +25,15 @@
             (UISwipeGestureRecognizerDirection)direction
                         completionHandler:(void (^)(void))completion;
 
+// Moves the target view offscreen in the specified direction.
+- (void)moveTargetViewOffscreenInDirection:
+    (UISwipeGestureRecognizerDirection)direction;
+
+// Performs an animation that moves the target view back to its initial position
+// on the screen. Used to restore the target view after it has been moved
+// offscreen or repositioned.
+- (void)moveTargetViewOnScreenWithAnimation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_HORIZONTAL_PAN_GESTURE_HANDLER_H_

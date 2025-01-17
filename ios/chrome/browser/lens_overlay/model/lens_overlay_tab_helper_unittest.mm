@@ -112,7 +112,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
   // Given a shown lens overlay state.
   helper_->SetLensOverlayUIAttachedAndAlive(true);
   // Then the Lens UI should be hidden.
-  OCMExpect([mock_commands_handler_ hideLensUI:YES]);
+  OCMExpect([mock_commands_handler_ hideLensUI:YES completion:nil]);
   // When the tab helper is notify of a change in the web state.
   helper_->WasHidden(web_state_.get());
 
@@ -126,7 +126,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldNotChangeUIStateWhenOverlayIsNotShown) {
   helper_->SetLensOverlayUIAttachedAndAlive(false);
   // Then the Lens UI methods should not be called.
   OCMReject([mock_commands_handler_ showLensUI:YES]);
-  OCMReject([mock_commands_handler_ hideLensUI:YES]);
+  OCMReject([mock_commands_handler_ hideLensUI:YES completion:nil]);
   // When the tab helper is notify of a change in the web state.
   helper_->WasShown(web_state_.get());
   helper_->WasHidden(web_state_.get());

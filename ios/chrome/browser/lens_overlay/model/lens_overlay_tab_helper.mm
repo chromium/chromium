@@ -54,6 +54,23 @@ bool LensOverlayTabHelper::IsLensOverlayInvokedOnMostRecentBackItem() {
          invokation_navigation_id_ == backItems[0]->GetUniqueID();
 }
 
+bool LensOverlayTabHelper::IsLensOverlayInvokedOnCurrentNavigationItem() {
+  if (!is_ui_attached_and_alive_) {
+    return false;
+  }
+
+  bool is_lens_overlay_invoked = false;
+
+  if (web_state_->GetNavigationManager() &&
+      web_state_->GetNavigationManager()->GetVisibleItem()) {
+    is_lens_overlay_invoked =
+        invokation_navigation_id_ ==
+        web_state_->GetNavigationManager()->GetVisibleItem()->GetUniqueID();
+  }
+
+  return is_lens_overlay_invoked;
+}
+
 #pragma mark - WebStateObserver
 
 void LensOverlayTabHelper::DidStartNavigation(
@@ -74,7 +91,7 @@ void LensOverlayTabHelper::DidStartNavigation(
                                          ->GetUniqueID()) {
       [commands_handler_ showLensUI:NO];
     } else {
-      [commands_handler_ hideLensUI:NO];
+      [commands_handler_ hideLensUI:NO completion:nil];
     }
   }
   if (web_state_ && snapshot_controller_) {
@@ -113,7 +130,7 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
   }
 
   if (is_ui_attached_and_alive_) {
-    [commands_handler_ hideLensUI:YES];
+    [commands_handler_ hideLensUI:YES completion:nil];
   }
 }
 

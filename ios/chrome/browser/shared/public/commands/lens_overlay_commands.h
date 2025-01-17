@@ -29,7 +29,7 @@
 - (void)showLensUI:(BOOL)animated;
 
 /// Hide lens overlay if it exists.
-- (void)hideLensUI:(BOOL)animated;
+- (void)hideLensUI:(BOOL)animated completion:(void (^)())completion;
 
 /// Destroy lens overlay (called e.g. in response to memory pressure).
 - (void)destroyLensUI:(BOOL)animated

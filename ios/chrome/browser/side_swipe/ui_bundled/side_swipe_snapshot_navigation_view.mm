@@ -87,6 +87,26 @@ const NSTimeInterval kNavigationDelay = 0.2;
                               completionHandler:completion];
 }
 
+- (void)moveTargetViewOffscreenInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  CGFloat width = CGRectGetWidth(self.targetView.bounds);
+  // Position the target view's frame offscreen.
+  CGRect targetFrame = self.targetView.frame;
+  targetFrame.origin.x =
+      direction == UISwipeGestureRecognizerDirectionLeft ? width : -width;
+  self.targetView.frame = targetFrame;
+}
+
+- (void)moveTargetViewOnScreenWithAnimation {
+  [UIView animateWithDuration:kOverThresholdAnimationDuration
+      animations:^{
+        [self resetTargetViewFrame];
+      }
+      completion:^(BOOL finished) {
+        [self handleTargetViewAnimationCompletion];
+      }];
+}
+
 #pragma mark - Private
 
 // Animates navigation with the duration `animationTime` and execute completion
@@ -150,11 +170,16 @@ const NSTimeInterval kNavigationDelay = 0.2;
   }
 }
 
-// Resets the target frame and removes the view.
-- (void)handleTargetViewAnimationCompletion {
+// Resets the target frame.
+- (void)resetTargetViewFrame {
   CGRect frame = self.targetView.frame;
   frame.origin.x = 0;
   self.targetView.frame = frame;
+}
+
+// Resets the target frame and removes the view.
+- (void)handleTargetViewAnimationCompletion {
+  [self resetTargetViewFrame];
   [self removeFromSuperview];
 }
 

@@ -55,6 +55,10 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // invoked.
   bool IsLensOverlayInvokedOnMostRecentBackItem();
 
+  // Returns true if the current navigation item has lens overlay
+  // invoked.
+  bool IsLensOverlayInvokedOnCurrentNavigationItem();
+
   // Get the recorded bottom sheet detent state associate with this tab helper.
   SheetDimensionState GetRecordedSheetDimensionState() {
     return sheet_dimension_state_;

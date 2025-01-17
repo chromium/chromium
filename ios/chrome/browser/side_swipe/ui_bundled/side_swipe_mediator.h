@@ -13,6 +13,7 @@ class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;
+@protocol LensOverlayCommands;
 class WebStateList;
 
 namespace feature_engagement {
@@ -111,6 +112,26 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // Performs an animation that simulates a swipe with `swipeType` in `direction`.
 - (void)animateSwipe:(SwipeType)swipeType
          inDirection:(UISwipeGestureRecognizerDirection)direction;
+
+// Prepares the view for a slide-in overlay navigation transition in the
+// specified direction.
+//
+// This method sets up for an overlay navigation transition where the entire
+// screen is initially positioned offscreen. A snapshot of the screen is taken
+// and used to replace the current fullscreen view, creating a seamless slide-in
+// effect when `slideToCenterAnimated` is called.
+//
+// Important: After calling this method, you must call `slideToCenterAnimated`
+// to restore the fullscreen view to its original position and complete the
+// transition.
+- (void)prepareForSlideInDirection:(UISwipeGestureRecognizerDirection)direction;
+
+// Restores the fullscreen view to its original position with an animation.
+//
+// This method animates the fullscreen view back to its original onscreen
+// position after it has been moved offscreen using
+// `prepareForSlideInDirection:`.
+- (void)slideToCenterAnimated;
 
 @end
 

@@ -114,6 +114,9 @@ class GURL;
 // back and return YES. Otherwise, do nothing and return NO.
 - (BOOL)navigateBackWithAnimationIfNeeded;
 
+// Animates the navigation to a lens overlay result page item URL.
+- (void)animateLensOverlayNavigationToURL:(GURL)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
