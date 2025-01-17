@@ -127,11 +127,11 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::optional<base::Value> json = base::JSONReader::Read(
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(response->data()),
                        response->size()),
       base::JSON_PARSE_RFC);
-  if (!json || !json->is_dict()) {
+  if (!json) {
     FIDO_LOG(ERROR) << "Invalid JSON response: " << base::HexEncode(*response);
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
     return;
@@ -142,8 +142,7 @@ void RequestDispatcher::OnComplete(
       *json, base::JsonOptions::OPTIONS_PRETTY_PRINT, &reserialized);
   FIDO_LOG(EVENT) << "-> " << reserialized;
 
-  const base::Value::Dict& dict = json->GetDict();
-  const base::Value::Dict* response_dict = dict.FindDict("response");
+  const base::Value::Dict* response_dict = json->FindDict("response");
   if (!response_dict) {
     FIDO_LOG(ERROR) << "no 'response' element in response";
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));

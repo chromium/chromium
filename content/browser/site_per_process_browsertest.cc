@@ -353,17 +353,15 @@ void FocusFrame(FrameTreeNode* frame) {
 }
 
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
-  if (!value.has_value())
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(str);
+  if (!value) {
     return false;
-  if (!value->is_dict())
+  }
+  std::optional<double> x = value->FindDouble("x");
+  std::optional<double> y = value->FindDouble("y");
+  if (!x || !y) {
     return false;
-  std::optional<double> x = value->GetDict().FindDouble("x");
-  std::optional<double> y = value->GetDict().FindDouble("y");
-  if (!x.has_value())
-    return false;
-  if (!y.has_value())
-    return false;
+  }
   point->set_x(x.value());
   point->set_y(y.value());
   return true;
