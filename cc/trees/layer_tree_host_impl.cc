@@ -3007,6 +3007,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // drawn.
   if (active_tree_->hud_layer()) {
     TRACE_EVENT0("cc", "DrawLayers.UpdateHudTexture");
+    if (use_layer_context_for_display_) {
+      // We won't have ran WillDraw() for layers. This must run before calling
+      // into UpdateHudTexture().
+      active_tree_->hud_layer()->WillDraw(draw_mode, resource_provider_.get());
+    }
+
     active_tree_->hud_layer()->UpdateHudTexture(
         draw_mode, layer_tree_frame_sink_, resource_provider_.get(),
         raster_caps(), frame->render_passes);
