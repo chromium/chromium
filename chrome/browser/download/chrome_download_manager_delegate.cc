@@ -1013,7 +1013,8 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    if (!blink::IsSupportedMimeType(mime_type)) {
+    if (!blink::IsSupportedMimeType(mime_type) &&
+        !IsPdfAndSupported(mime_type, web_contents)) {
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
       base::UmaHistogramEnumeration(
           "Download.Blocked.ContentType.Automotive",
@@ -1033,6 +1034,21 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
 
   return false;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool ChromeDownloadManagerDelegate::IsPdfAndSupported(
+    const std::string& mime_type,
+    content::WebContents* web_contents) {
+  if (mime_type != pdf::kPDFMimeType) {
+    return false;
+  }
+  if (web_contents == nullptr || web_contents->GetBrowserContext() == nullptr) {
+    return false;
+  }
+  return ShouldOpenPdfInlineInternal(
+      web_contents->GetBrowserContext()->IsOffTheRecord());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeDownloadManagerDelegate::GetSaveDir(
     content::BrowserContext* browser_context,

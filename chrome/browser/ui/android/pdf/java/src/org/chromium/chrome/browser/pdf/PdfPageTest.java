@@ -18,7 +18,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfLoadResult;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,16 +25,12 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Test for user flows around {@link PdfPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
-// TODO(crbug.com/389959412): Remove the device restriction once it is decided
-// how PDF is supported on Automotive.
-@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class PdfPageTest {
     private static final long TIMEOUT_MS = 8000;
     private static final long POLLING_INTERVAL_MS = 500;
