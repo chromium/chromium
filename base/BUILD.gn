@@ -4429,6 +4429,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CallbackController.java",
+      "android/java/src/org/chromium/base/CancelableRunnable.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",
       "android/java/src/org/chromium/base/CommandLineInitUtil.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
