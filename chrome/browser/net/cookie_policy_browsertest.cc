@@ -666,7 +666,8 @@ IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
-                       NestedThirdPartyIFrameStorage) {
+                       // TODO(crbug.com/390648566): Re-enable this test
+                       DISABLED_NestedThirdPartyIFrameStorage) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
