@@ -249,12 +249,4 @@ BASE_FEATURE(kWebViewInterceptedCookieHeader,
 BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
              "WebViewInterceptedCookieHeaderReadWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for autofill suggestions to be terminated when they are displayed
-// above a soft keyboard and window losses focus. This is to prevent the
-// suggestions of one app being shown in another app with active keyboard.
-BASE_FEATURE(kWebViewAutofillHandleFocusChange,
-             "WebViewAutofillHandleFocusChange",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace android_webview::features

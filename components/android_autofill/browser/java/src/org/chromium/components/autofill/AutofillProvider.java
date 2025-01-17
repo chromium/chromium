@@ -38,8 +38,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
-import java.util.Objects;
-
 /**
  * This class works with Android autofill service to fill web form, it doesn't use Chrome's autofill
  * service or suggestion UI. All methods are supposed to be called in UI thread.
@@ -84,7 +82,6 @@ public class AutofillProvider {
     // Whether onProvideAutofillVirtualStructure has been called for the current PrefillRequest.
     // Used solely for metrics.
     private boolean mStructureProvidedForPrefillRequest;
-    private boolean mVirtualViewExitedAfterFocusLoss;
 
     public AutofillProvider(
             Context context,
@@ -756,45 +753,6 @@ public class AutofillProvider {
             matrix.mapRect(bounds, field.getBounds());
             field.setBoundsInContainerViewCoordinates(bounds);
         }
-    }
-
-    /**
-     * Notify autofill provider window focus has changed.
-     *
-     * @param hasWindowFocus whether window gained or lost focus.
-     */
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        if (mRequest == null) return;
-        FocusField focusField = mRequest.getFocusField();
-        if (focusField == null) return;
-
-        if (!hasWindowFocus) {
-            // When physical keyboard is being used, suggestions appear as a popup window anchored
-            // next to the form. That causes window focus loss, since the popup gains the focus.
-            // So we only want to send virtualViewExit when suggestions are displayed above
-            // the soft keyboard.
-            if (mAutofillManager.isAutofillInputUiShowing() && isSoftKeyboardVisible()) {
-                notifyVirtualViewExited(mContainerView, focusField.fieldIndex);
-                mVirtualViewExitedAfterFocusLoss = true;
-            } else {
-                mVirtualViewExitedAfterFocusLoss = false;
-            }
-        }
-
-        if (hasWindowFocus && mVirtualViewExitedAfterFocusLoss) {
-            notifyVirtualViewEntered(mContainerView, focusField.fieldIndex, focusField.absBound);
-        }
-    }
-
-    /**
-     * Checks if the soft keyboard is currently visible on the screen.
-     *
-     * @return {@code true} if the soft keyboard is visible, {@code false} otherwise.
-     */
-    private boolean isSoftKeyboardVisible() {
-        return Objects.requireNonNull(mWebContents.getTopLevelNativeWindow())
-                .getKeyboardDelegate()
-                .isKeyboardShowing(mContext, mContainerView);
     }
 
     /**
