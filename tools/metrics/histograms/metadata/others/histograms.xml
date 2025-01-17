@@ -8891,16 +8891,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2"
-    units="counts" expires_after="2024-05-19">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    Represents the (hypothetical) size of the memory-backed code cache. Recorded
-    for every 5 minutes.
-  </summary>
-</histogram>
-
 <histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
     enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
   <owner>temao@chromium.org</owner>

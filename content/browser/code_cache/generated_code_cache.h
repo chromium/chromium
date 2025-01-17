@@ -228,8 +228,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
   // possible.
   bool IsValidHeader(scoped_refptr<net::IOBufferWithSize> small_buffer) const;
 
-  void ReportPeriodicalHistograms();
-
   std::unique_ptr<disk_cache::Backend> backend_;
   BackendState backend_state_;
 
@@ -246,7 +244,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   // A hypothetical memory-backed code cache. Used to collect UMAs.
   SimpleLruCache lru_cache_;
-  base::RepeatingTimer histograms_timer_;
   static constexpr int64_t kLruCacheCapacity = 50 * 1024 * 1024;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
