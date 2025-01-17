@@ -175,9 +175,9 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #else
-#include "chrome/browser/chromeos/quickoffice/quickoffice_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
