@@ -61,12 +61,16 @@ class DomatoGrammarBuilder:
   def __init__(self):
     self.rules: List[Rule] = []
     self.lines: List[Rule] = []
+    self.helperlines : List[Rule] = []
 
   def add_rule(self, rule: Rule):
     self.rules.append(rule)
 
   def add_line(self, rule: Rule):
     self.lines.append(rule)
+
+  def add_helper_line(self, rule: Rule):
+    self.helperlines.append(rule)
 
 
 SIMPLE_TYPE_TO_DOMATOTYPE = {
@@ -170,13 +174,13 @@ def get_idl_type(builder: DomatoGrammarBuilder,
     builder.add_rule(Rule(record_elements_type, recursive_rule))
     if element_type.should_record:
       rule = [DomatoType(record_name), '[<int min=0 max=10>];']
-      builder.add_line(Rule(element_type, rule))
+      builder.add_helper_line(Rule(element_type, rule))
     return DomatoType(name=record_name, should_record=True)
   if isinstance(idl_type, web_idl.idl_type.PromiseType):
     inner = get_idl_type(builder, idl_type.result_type)
     promise_type = DomatoType(f'Promise{inner.name}', should_record=True)
     rule = ['new Promise(() => { return ', inner, '; });']
-    builder.add_line(Rule(promise_type, rule))
+    builder.add_helper_line(Rule(promise_type, rule))
     return promise_type
   if isinstance(idl_type, web_idl.idl_type.RecordType):
     # We basically need to create the following rules:
@@ -200,7 +204,7 @@ def get_idl_type(builder: DomatoGrammarBuilder,
     ]
     builder.add_rule(elements_rules[0])
     builder.add_rule(elements_rules[1])
-    builder.add_line(record_rule)
+    builder.add_helper_line(record_rule)
     return DomatoType(name=record_name, should_record=True)
   return DomatoType(name='', should_record=False)
 
@@ -297,7 +301,7 @@ def build_constructor_rules(builder: DomatoGrammarBuilder,
   rhs = [', '] * (len(combination) * 2 - 1)
   rhs[0::2] = combination
   rule = [f'new {interface_identifier}('] + rhs + [');']
-  builder.add_line(Rule(lhs, rule))
+  builder.add_helper_line(Rule(lhs, rule))
 
 
 def build_dictionary_rules(builder: DomatoGrammarBuilder,
@@ -315,14 +319,14 @@ def build_dictionary_rules(builder: DomatoGrammarBuilder,
   if rhs:
     rhs.pop()
   rhs = ['{'] + rhs + ['};']
-  builder.add_line(Rule(lhs, rhs))
+  builder.add_helper_line(Rule(lhs, rhs))
   for member in dictionary.members:
     if not member.is_required:
       continue
     type = get_idl_type(builder, member.idl_type)
     if type.should_record:
       rule = [DomatoType(dictionary.identifier), f'.{member.identifier};']
-      builder.add_line(Rule(type, rule))
+      builder.add_helper_line(Rule(type, rule))
 
 
 def build_enumeration_rules(builder: DomatoGrammarBuilder,
@@ -370,7 +374,7 @@ def build_callback_interface_rules(
 def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
   graph = {}
   backrefs = {}
-  for rule in builder.rules + builder.lines:
+  for rule in builder.rules + builder.lines + builder.helperlines:
     assert isinstance(graph, dict)
     if not rule.lhs.name in graph:
       graph[rule.lhs.name] = []
@@ -443,6 +447,7 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
 
   builder.rules = list(filter(filter_rule, builder.rules))
   builder.lines = list(filter(filter_rule, builder.lines))
+  builder.helperlines = list(filter(filter_rule, builder.helperlines))
 
 
 def main():
@@ -503,6 +508,19 @@ def main():
         else:
           rhs_line += f'<{elt.name}>'
       f.write(line + rhs_line + '\n')
+
+    f.write('!begin helperlines\n')
+    for rule in builder.helperlines:
+      assert rule.lhs.should_record
+      line = f'<new {rule.lhs.name}> = '
+      rhs_line = ''
+      for elt in rule.rhs:
+        if isinstance(elt, str):
+          rhs_line += elt
+        else:
+          rhs_line += f'<{elt.name}>'
+      f.write(line + rhs_line + '\n')
+    f.write('!end helperlines\n')
 
     f.write('!begin lines\n')
     for rule in builder.lines:
