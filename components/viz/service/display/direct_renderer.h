@@ -120,6 +120,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // integration testing.
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
+
+    bool is_handling_interaction_or_animation = false;
+
     std::optional<int64_t> choreographer_vsync_id;
     int64_t swap_trace_id = -1;
   };

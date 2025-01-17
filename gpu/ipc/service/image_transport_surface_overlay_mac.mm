@@ -52,6 +52,10 @@ BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
              "NewPresentationFeedbackTimeStamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPresentationDelayForInteractiveFrames,
+             "PresentationDelayForInteractiveFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // CrGpuMain OnVSyncPresentation().
 void RecordVSyncCallbackDelay(base::TimeDelta delay) {
@@ -161,6 +165,12 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
 
   bool delay_presenetation_until_next_vsync =
       features::IsVSyncAlignedPresentEnabled();
+
+  if (base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames) &&
+      !ca_layer_tree_coordinator_->NumPendingSwaps() &&
+      !data.is_handling_interaction_or_animation) {
+    delay_presenetation_until_next_vsync = false;
+  }
 
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
