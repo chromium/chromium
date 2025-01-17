@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   // Navigate to a page that disallows scripts via CSP and has an iframe that
   // tries to load an invalid URL, which results in an error page.
-  GURL error_url("http://invalid.foo/");
+  GURL error_url("https://invalid.test/");
   content::NavigationHandleObserver observer(web_contents, error_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(observer.has_committed());
