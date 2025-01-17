@@ -90,7 +90,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     ~EditorCardSession() override;
 
     // EditorManager::Observer overrides
-    void OnEditorModeChanged(const EditorMode& mode) override;
+    void OnEditorModeChanged(EditorMode mode) override;
 
     void StartFlowWithFreeformText(const std::string& freeform_text);
     void StartFlowWithPreset(const std::string& preset_id);

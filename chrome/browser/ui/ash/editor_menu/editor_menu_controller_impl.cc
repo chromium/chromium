@@ -369,7 +369,7 @@ EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() {
 }
 
 void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
-    const EditorMode& mode) {
+    EditorMode mode) {
   if (mode == EditorMode::kHardBlocked || mode == EditorMode::kSoftBlocked) {
     controller_->DismissCard();
   }

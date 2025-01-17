@@ -18,7 +18,7 @@ class EditorManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnEditorModeChanged(const EditorMode& mode) = 0;
+    virtual void OnEditorModeChanged(EditorMode mode) = 0;
   };
 
   virtual ~EditorManager() = default;
@@ -34,7 +34,7 @@ class EditorManager {
   virtual void LogEditorMode(EditorMode mode) = 0;
   virtual void AddObserver(EditorManager::Observer* observer) = 0;
   virtual void RemoveObserver(EditorManager::Observer* observer) = 0;
-  virtual void NotifyEditorModeChanged(const EditorMode& mode) = 0;
+  virtual void NotifyEditorModeChanged(EditorMode mode) = 0;
   virtual void RequestCacheContext() = 0;
 };
 

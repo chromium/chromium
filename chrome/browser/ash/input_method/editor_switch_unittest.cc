@@ -91,7 +91,7 @@ class FakeSystem : public EditorContext::System {
 class FakeEditorSwitchObserver : public EditorSwitch::Observer {
  public:
   // EditorSwitch::Observer overrides
-  void OnEditorModeChanged(const EditorMode& mode) override {}
+  void OnEditorModeChanged(EditorMode mode) override {}
 };
 
 struct EditorSwitchAvailabilityWithoutPolicyTestCase {

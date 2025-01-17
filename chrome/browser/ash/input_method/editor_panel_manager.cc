@@ -176,8 +176,7 @@ void EditorPanelManagerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void EditorPanelManagerImpl::NotifyEditorModeChanged(
-    const chromeos::editor_menu::EditorMode& mode) {
+void EditorPanelManagerImpl::NotifyEditorModeChanged(chromeos::editor_menu::EditorMode mode) {
   for (EditorPanelManagerImpl::Observer& obs : observers_) {
     obs.OnEditorModeChanged(mode);
   }

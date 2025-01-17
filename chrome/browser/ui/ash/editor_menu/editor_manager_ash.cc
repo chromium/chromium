@@ -67,7 +67,7 @@ void EditorManagerAsh::RemoveObserver(EditorManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void EditorManagerAsh::NotifyEditorModeChanged(const EditorMode& mode) {
+void EditorManagerAsh::NotifyEditorModeChanged(EditorMode mode) {
   observers_.Notify(&EditorManager::Observer::OnEditorModeChanged, mode);
 }
 
@@ -86,8 +86,7 @@ EditorManagerAsh::AshObserver::AshObserver(EditorManagerAsh* manager)
 
 EditorManagerAsh::AshObserver::~AshObserver() = default;
 
-void EditorManagerAsh::AshObserver::OnEditorModeChanged(
-    const chromeos::editor_menu::EditorMode& mode) {
+void EditorManagerAsh::AshObserver::OnEditorModeChanged(EditorMode mode) {
   manager_->NotifyEditorModeChanged(mode);
 }
 

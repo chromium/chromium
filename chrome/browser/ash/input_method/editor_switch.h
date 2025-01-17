@@ -22,7 +22,7 @@ class EditorSwitch {
   class Observer {
    public:
     virtual void OnEditorModeChanged(
-        const chromeos::editor_menu::EditorMode& mode) = 0;
+        chromeos::editor_menu::EditorMode mode) = 0;
   };
 
   EditorSwitch(Observer* observer, Profile* profile, EditorContext* context);

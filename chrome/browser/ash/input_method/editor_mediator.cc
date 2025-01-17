@@ -202,7 +202,7 @@ size_t EditorMediator::GetSelectedTextLength() {
 }
 
 void EditorMediator::OnEditorModeChanged(
-    const chromeos::editor_menu::EditorMode& mode) {
+    chromeos::editor_menu::EditorMode mode) {
   panel_manager_.NotifyEditorModeChanged(mode);
 }
 

@@ -99,7 +99,7 @@ class EditorPanelManagerImpl : public EditorPanelManager {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnEditorModeChanged(
-        const chromeos::editor_menu::EditorMode& mode) = 0;
+        chromeos::editor_menu::EditorMode mode) = 0;
   };
 
   explicit EditorPanelManagerImpl(Delegate* delegate);
@@ -121,7 +121,7 @@ class EditorPanelManagerImpl : public EditorPanelManager {
   bool IsEditorMenuVisible() const;
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-  void NotifyEditorModeChanged(const chromeos::editor_menu::EditorMode& mode);
+  void NotifyEditorModeChanged(chromeos::editor_menu::EditorMode mode);
   void RequestCacheContext();
 
   // Used by the Magic Boost opt-in flow. Virtual for testing.

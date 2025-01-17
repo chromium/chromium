@@ -37,7 +37,7 @@ class EditorManagerAsh : public EditorManager {
   void LogEditorMode(EditorMode mode) override;
   void AddObserver(EditorManager::Observer* observer) override;
   void RemoveObserver(EditorManager::Observer* observer) override;
-  void NotifyEditorModeChanged(const EditorMode& mode) override;
+  void NotifyEditorModeChanged(EditorMode mode) override;
   void RequestCacheContext() override;
 
  private:
@@ -48,7 +48,7 @@ class EditorManagerAsh : public EditorManager {
     ~AshObserver() override;
 
     // EditorObserver overrides
-    void OnEditorModeChanged(const EditorMode& mode) override;
+    void OnEditorModeChanged(EditorMode mode) override;
 
    private:
     // Not owned by this class

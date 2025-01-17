@@ -101,8 +101,7 @@ class EditorMediator : public EditorContext::Observer,
   size_t GetSelectedTextLength() override;
 
   // EditorSwitch::Observer overrides
-  void OnEditorModeChanged(
-      const chromeos::editor_menu::EditorMode& mode) override;
+  void OnEditorModeChanged(chromeos::editor_menu::EditorMode mode) override;
 
   // KeyedService overrides
   void Shutdown() override;
