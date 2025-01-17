@@ -138,10 +138,7 @@ source_set("common") {
 
 if (is_chromeos) {
   source_set("chrome_os_host") {
-    sources = [
-      "it2me_native_messaging_host_allowed_origins.cc",
-      "it2me_native_messaging_host_allowed_origins.h",
-    ]
+    sources = [ "it2me_native_messaging_host_allowed_origins.h" ]
 
     if (is_chromeos_lacros) {
       sources += [

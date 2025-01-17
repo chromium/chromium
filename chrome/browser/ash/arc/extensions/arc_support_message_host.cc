@@ -15,13 +15,6 @@
 namespace arc {
 
 // static
-const char ArcSupportMessageHost::kHostName[] = "com.google.arc_support";
-
-// static
-const char* const ArcSupportMessageHost::kHostOrigin[] = {
-    "chrome-extension://cnbgggchhmkkdmeppjobngjoejnihlei/"};
-
-// static
 std::unique_ptr<extensions::NativeMessageHost> ArcSupportMessageHost::Create(
     content::BrowserContext* browser_context) {
   return std::unique_ptr<NativeMessageHost>(new ArcSupportMessageHost());
