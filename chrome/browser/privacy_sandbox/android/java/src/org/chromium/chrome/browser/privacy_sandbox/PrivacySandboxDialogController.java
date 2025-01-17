@@ -32,7 +32,6 @@ public class PrivacySandboxDialogController {
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
     private static LoadUrlParams sThinWebViewLoadUrlParams;
-    private static Runnable sOnDialogDismissedRunnable;
 
     public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
         assert profile != null;
@@ -124,9 +123,6 @@ public class PrivacySandboxDialogController {
                                 surfaceType,
                                 profile,
                                 activityWindowAndroid);
-                if (sOnDialogDismissedRunnable != null) {
-                    dialog.setOnDismissListener(d -> sOnDialogDismissedRunnable.run());
-                }
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -167,16 +163,9 @@ public class PrivacySandboxDialogController {
                         new PrivacySandboxDialogNoticeEEA(
                                 context, privacySandboxBridge, surfaceType);
             }
-            if (sOnDialogDismissedRunnable != null) {
-                dialog.setOnDismissListener(d -> sOnDialogDismissedRunnable.run());
-            }
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }
-    }
-
-    public static void setOnDialogDismissRunnable(Runnable runnable) {
-        sOnDialogDismissedRunnable = runnable;
     }
 
     static Dialog getDialogForTesting() {
