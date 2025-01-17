@@ -449,14 +449,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .clearPersistentOriginTrialStorageForTesting(mNativeAwBrowserContext);
     }
 
-    public boolean hasFormData() {
-        return AwBrowserContextJni.get().hasFormData(mNativeAwBrowserContext);
-    }
-
-    public void clearFormData() {
-        AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
-    }
-
     public void setServiceWorkerIoThreadClient(AwContentsIoThreadClient ioThreadClient) {
         AwBrowserContextJni.get()
                 .setServiceWorkerIoThreadClient(mNativeAwBrowserContext, ioThreadClient);
@@ -514,10 +506,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                 long nativeAwBrowserContext, String[] rules);
 
         void clearPersistentOriginTrialStorageForTesting(long nativeAwBrowserContext);
-
-        boolean hasFormData(long nativeAwBrowserContext);
-
-        void clearFormData(long nativeAwBrowserContext);
 
         void setServiceWorkerIoThreadClient(
                 long nativeAwBrowserContext, AwContentsIoThreadClient ioThreadClient);

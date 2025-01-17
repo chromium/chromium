@@ -1179,4 +1179,30 @@ bool AddressAutofillTable::InitAddressTypeTokensTable() {
                                 /*composite_primary_key=*/{kGuid, kType});
 }
 
+AddressAutofillTable::Dropper::Dropper() = default;
+AddressAutofillTable::Dropper::~Dropper() = default;
+
+WebDatabaseTable::TypeKey AddressAutofillTable::Dropper::GetTypeKey() const {
+  static int table_key = 0;
+  return reinterpret_cast<void*>(&table_key);
+}
+
+bool AddressAutofillTable::Dropper::CreateTablesIfNecessary() {
+  return true;
+}
+
+bool AddressAutofillTable::Dropper::MigrateToVersion(
+    int version,
+    bool* update_compatible_version) {
+  static constexpr auto kTables = std::to_array<std::string_view>(
+      {kAddressesTable, kAddressTypeTokensTable, kAutofillProfileAddressesTable,
+       kAutofillProfileBirthdatesTable, kAutofillProfileEmailsTable,
+       kAutofillProfileNamesTable, kAutofillProfilePhonesTable,
+       kAutofillProfilesTable, kContactInfoTable, kContactInfoTypeTokensTable,
+       kLocalAddressesTable, kLocalAddressesTypeTokensTable});
+  return std::ranges::all_of(kTables, [this](std::string_view table_name) {
+    return DropTableIfExists(db(), table_name);
+  });
+}
+
 }  // namespace autofill

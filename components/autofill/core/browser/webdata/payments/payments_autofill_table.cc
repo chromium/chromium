@@ -2404,4 +2404,47 @@ bool PaymentsAutofillTable::InitPaymentInstrumentCreationOptionsTable() {
        {kSerializedValueEncrypted, "VARCHAR NOT NULL"}});
 }
 
+PaymentsAutofillTable::Dropper::Dropper() = default;
+PaymentsAutofillTable::Dropper::~Dropper() = default;
+
+WebDatabaseTable::TypeKey PaymentsAutofillTable::Dropper::GetTypeKey() const {
+  static int table_key = 0;
+  return reinterpret_cast<void*>(&table_key);
+}
+
+bool PaymentsAutofillTable::Dropper::CreateTablesIfNecessary() {
+  return true;
+}
+
+bool PaymentsAutofillTable::Dropper::MigrateToVersion(
+    int version,
+    bool* update_compatible_version) {
+  static constexpr auto kTables =
+      std::to_array<std::string_view>({kBenefitMerchantDomainsTable,
+                                       kCreditCardsTable,
+                                       kGenericPaymentInstrumentsTable,
+                                       kIbansTable,
+                                       kLocalIbansTable,
+                                       kLocalStoredCvcTable,
+                                       kMaskedBankAccountsMetadataTable,
+                                       kMaskedBankAccountsTable,
+                                       kMaskedCreditCardBenefitsTable,
+                                       kMaskedCreditCardsTable,
+                                       kMaskedIbansMetadataTable,
+                                       kMaskedIbansTable,
+                                       kOfferDataTable,
+                                       kOfferEligibleInstrumentTable,
+                                       kOfferMerchantDomainTable,
+                                       kPaymentInstrumentCreationOptionsTable,
+                                       kPaymentsCustomerDataTable,
+                                       kPaymentsUpiVpaTable,
+                                       kServerCardCloudTokenDataTable,
+                                       kServerCardMetadataTable,
+                                       kServerStoredCvcTable,
+                                       kVirtualCardUsageDataTable});
+  return std::ranges::all_of(kTables, [this](std::string_view table_name) {
+    return DropTableIfExists(db(), table_name);
+  });
+}
+
 }  // namespace autofill
