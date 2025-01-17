@@ -88,6 +88,7 @@ export enum SaveRequestType {
   ANNOTATION,
   ORIGINAL,
   EDITED,
+  SEARCHIFIED,  // Saves the PDF with extracted text.
 }
 
 export interface Point {

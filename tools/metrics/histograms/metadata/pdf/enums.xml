@@ -126,6 +126,8 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="OpenInk2SidePanel"/>
   <int value="97" label="OpenInk2BottomToolbarFirst"/>
   <int value="98" label="OpenInk2BottomToolbar"/>
+  <int value="99" label="SaveSearchifiedFirst"/>
+  <int value="100" label="SaveSearchified"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

@@ -261,7 +261,11 @@ export enum UserAction {
   OPEN_INK2_BOTTOM_TOOLBAR_FIRST = 97,
   OPEN_INK2_BOTTOM_TOOLBAR = 98,
 
-  NUMBER_OF_ACTIONS = 99,
+  // Recorded when the user triggers a save of the searchified document.
+  SAVE_SEARCHIFIED_FIRST = 99,
+  SAVE_SEARCHIFIED = 100,
+
+  NUMBER_OF_ACTIONS = 101,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {
