@@ -282,14 +282,21 @@ void GlicWindowController::ShowFinish() {
     return;
   }
 
-  glic_window_widget_->Show();
-
   if (button_widget_for_browser_attachment_) {
+    glic_window_widget_->Show();
     Browser* browser = chrome::FindBrowserWithWindow(
         button_widget_for_browser_attachment_->GetNativeWindow());
     AttachToBrowser(browser);
   } else {
+    // Be sure to reparent the widget and set its state first before showing it.
     MaybeCreateHolderWindowAndReparent();
+#if BUILDFLAG(IS_MAC)
+    // Be careful to not activate, so that in case Chromium isn't the front-most
+    // app it's not brought to the front.
+    glic_window_widget_->ShowInactive();
+#else
+    glic_window_widget_->Show();
+#endif
   }
 
   window_event_observer_ =
