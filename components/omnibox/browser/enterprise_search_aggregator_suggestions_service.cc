@@ -9,6 +9,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
@@ -20,10 +24,11 @@
 
 EnterpriseSearchAggregatorSuggestionsService::
     EnterpriseSearchAggregatorSuggestionsService(
+        signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
-  DCHECK(url_loader_factory);
-}
+    : url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager),
+      token_fetcher_(nullptr) {}
 
 EnterpriseSearchAggregatorSuggestionsService::
     ~EnterpriseSearchAggregatorSuggestionsService() = default;
@@ -84,6 +89,40 @@ void EnterpriseSearchAggregatorSuggestionsService::
             }
         }
       })");
+
+  // Create and fetch an OAuth2 token.
+  signin::ScopeSet scopes;
+  // TODO(crbug.com/380631529): Add scope once access is provided.
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+      "enterprise_search_aggregator_suggestions_service", identity_manager_,
+      scopes,
+      base::BindOnce(
+          &EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable,
+          base::Unretained(this), std::move(request), std::move(request_body),
+          traffic_annotation, std::move(start_callback),
+          std::move(completion_callback)),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+      signin::ConsentLevel::kSignin);
+}
+
+void EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable(
+    std::unique_ptr<network::ResourceRequest> request,
+    std::string request_body,
+    net::NetworkTrafficAnnotationTag traffic_annotation,
+    StartCallback start_callback,
+    CompletionCallback completion_callback,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  DCHECK(token_fetcher_);
+  token_fetcher_.reset();
+  // If there were no errors obtaining the access token, append it to the
+  // request as a header.
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    DCHECK(!access_token_info.token.empty());
+    request->headers.SetHeader(
+        "Authorization",
+        base::StringPrintf("Bearer %s", access_token_info.token.c_str()));
+  }
 
   StartDownloadAndTransferLoader(std::move(request), std::move(request_body),
                                  traffic_annotation, std::move(start_callback),

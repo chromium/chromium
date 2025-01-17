@@ -8,13 +8,13 @@
 #include "base/json/json_parser.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -59,16 +59,6 @@ const std::string& mock_response = base::StringPrintf({
        "dataStore" : ""
    } ] })"});
 
-void OnEnterpriseSearchAggregatorSuggestionsRequestAvailable(
-    network::ResourceRequest* request) {}
-
-void OnEnterpriseSearchAggregatorSuggestionsLoaderAvailable(
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    const std::string& request_body) {}
-
-void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                       std::unique_ptr<std::string> response_body) {}
-
 class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
  public:
   EnterpriseSearchAggregatorSuggestionsServiceTest()
@@ -76,8 +66,10 @@ class EnterpriseSearchAggregatorSuggestionsServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
+        identity_test_env_(&test_url_loader_factory_, &prefs_),
         enterprise_search_aggregator_suggestions_service_(
             new EnterpriseSearchAggregatorSuggestionsService(
+                identity_test_env_.identity_manager(),
                 shared_url_loader_factory_)) {
     // Set up a variation.
     variations::AssociateGoogleVariationID(
@@ -126,16 +118,25 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest, ValidateRequest) {
   base::JSONWriter::Write(root, &test_request_body);
   const GURL test_endpoint = GURL("https://fake_url.com");
 
+  base::test::TestFuture<network::ResourceRequest*> request_future;
+  base::test::TestFuture<std::unique_ptr<network::SimpleURLLoader>,
+                         const std::string&>
+      loader_future;
+  base::test::TestFuture<const network::SimpleURLLoader*,
+                         std::unique_ptr<std::string>>
+      complete_future;
+
   enterprise_search_aggregator_suggestions_service_
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
-          test_endpoint, test_request_body,
-          base::BindOnce(
-              OnEnterpriseSearchAggregatorSuggestionsRequestAvailable),
-          base::BindOnce(
-              OnEnterpriseSearchAggregatorSuggestionsLoaderAvailable),
-          base::BindOnce(OnURLLoadComplete));
+          test_endpoint, test_request_body, request_future.GetCallback(),
+          loader_future.GetCallback(), complete_future.GetCallback());
 
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(request_future.Wait());
+  ASSERT_TRUE(loader_future.Wait());
+
+  complete_future.SetValue(nullptr,
+                           std::make_unique<std::string>(mock_response));
+  ASSERT_TRUE(complete_future.Wait());
 
   EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
       net::SiteForCookies::FromUrl(GURL(test_endpoint))))
