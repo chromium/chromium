@@ -102,6 +102,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   SkAlphaType GetRenderingContextAlphaType() const;
   SkColorType GetRenderingContextSkColorType() const;
   sk_sp<SkColorSpace> GetRenderingContextSkColorSpace() const;
+  gfx::ColorSpace GetRenderingContextColorSpace() const;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;

@@ -371,6 +371,12 @@ CanvasRenderingContextHost::GetRenderingContextSkColorSpace() const {
                             : SkColorSpace::MakeSRGB();
 }
 
+gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()
+    const {
+  return RenderingContext() ? RenderingContext()->GetColorSpace()
+                            : gfx::ColorSpace::CreateSRGB();
+}
+
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
   return host_type_ == HostType::kOffscreenCanvasHost;
 }
