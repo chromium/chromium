@@ -18,10 +18,6 @@ virtual/trust-tokens/wpt_internal/*
 virtual/details-styling-disabled/wpt_internal/*
 virtual/third-party-storage-partitioning/wpt_internal/*
 virtual/popover-hint-disabled/wpt_internal/*
-virtual/async-script-scheduling-disabled/wpt_internal/*
-virtual/async-script-scheduling-apply-to-cross-site-only/wpt_internal/*
-virtual/async-script-scheduling-apply-to-allowlist/wpt_internal/*
-virtual/async-script-scheduling-paint-or-parsing/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
