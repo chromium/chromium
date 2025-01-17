@@ -637,4 +637,6 @@ public interface WebContents extends Parcelable {
     void disconnectFileSelectListenerIfAny();
 
     void captureContentAsBitmapForTesting(Callback<Bitmap> callback);
+
+    void setSupportsForwardTransitionAnimation(boolean supports);
 }
