@@ -504,6 +504,9 @@ class CORE_EXPORT LocalFrameView final
   void RemoveScrollableArea(PaintLayerScrollableArea&);
   const ScrollableAreaMap& ScrollableAreas() const { return scrollable_areas_; }
 
+  void AddScrollableAreaWithScrollNode(PaintLayerScrollableArea&);
+  void RemoveScrollableAreaWithScrollNode(PaintLayerScrollableArea&);
+
   void ServiceScrollAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
@@ -1105,6 +1108,7 @@ class CORE_EXPORT LocalFrameView final
   // All scrollable areas in the frame's document,
   // or user-scrollable ones if UnifiedScrollableAreas is disabled.
   ScrollableAreaMap scrollable_areas_;
+  ScrollableAreaSet scrollable_areas_with_scroll_node_;
   BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
