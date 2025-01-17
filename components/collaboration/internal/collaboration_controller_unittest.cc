@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/collaboration/test_support/mock_collaboration_service.h"
 #include "components/data_sharing/public/group_data.h"
@@ -82,7 +83,7 @@ class CollaborationControllerTest : public testing::Test {
   void InitializeJoinController(OnceClosure run_on_flow_exit) {
     InitializeController(
         std::move(run_on_flow_exit),
-        Flow(Flow::Type::kJoin,
+        Flow(FlowType::kJoin,
              GroupToken(data_sharing::GroupId(kGroupId), kAccessToken)));
   }
 
@@ -238,7 +239,7 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
   RunLoop run_loop;
   // Start Join flow.
   InitializeController(run_loop.QuitClosure(),
-                       Flow(Flow::Type::kJoin, GroupToken()));
+                       Flow(FlowType::kJoin, GroupToken()));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate an error parsing join URL.
@@ -465,7 +466,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
   tab_groups::LocalTabGroupID local_id =
       tab_groups::test::GenerateRandomTabGroupID();
   InitializeController(base::DoNothing(),
-                       Flow(Flow::Type::kShareOrManage, local_id));
+                       Flow(FlowType::kShareOrManage, local_id));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate that the tab group exist locally, but is not shared.

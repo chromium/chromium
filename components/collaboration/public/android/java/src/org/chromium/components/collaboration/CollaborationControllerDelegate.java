@@ -13,4 +13,7 @@ public interface CollaborationControllerDelegate {
      * @return The native pointer of the current delegate.
      */
     long getNativePtr();
+
+    /** Cleans up any outstanding resources. */
+    public void destroy();
 }

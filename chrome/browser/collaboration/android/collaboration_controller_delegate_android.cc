@@ -29,6 +29,22 @@ static void JNI_CollaborationControllerDelegateImpl_RunResultCallback(
   std::move(*callback_ptr).Run(outcome);
 }
 
+static void JNI_CollaborationControllerDelegateImpl_RunExitCallback(
+    JNIEnv* env,
+    jlong callback) {
+  std::unique_ptr<base::OnceClosure> callback_ptr =
+      conversion::GetNativeExitCallbackFromJava(callback);
+  std::move(*callback_ptr).Run();
+}
+
+static void JNI_CollaborationControllerDelegateImpl_DeleteExitCallback(
+    JNIEnv* env,
+    jlong callback) {
+  std::unique_ptr<base::OnceClosure> callback_ptr =
+      conversion::GetNativeExitCallbackFromJava(callback);
+  callback_ptr.reset();
+}
+
 static jlong JNI_CollaborationControllerDelegateImpl_CreateNativeObject(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_object) {
@@ -51,11 +67,13 @@ CollaborationControllerDelegateAndroid::
 }
 
 void CollaborationControllerDelegateAndroid::PrepareFlowUI(
-    base::OnceCallback<void()> exit_callback,
+    base::OnceClosure exit_callback,
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_prepareFlowUI(
-      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
+      env, java_obj_,
+      conversion::GetJavaExitCallbackPtr(std::move(exit_callback)),
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::ShowError(const ErrorInfo& error,

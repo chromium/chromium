@@ -1034,6 +1034,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/browser_controls/android:junit",
       "//chrome/browser/collaboration:factory_java",
+      "//chrome/browser/collaboration:internal_java",
       "//chrome/browser/collaboration:messaging_factory_java",
       "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/commerce/android:java",

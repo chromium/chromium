@@ -33,6 +33,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
         SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
         SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
+        SigninAccessPoint.COLLABORATION_TAB_GROUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}

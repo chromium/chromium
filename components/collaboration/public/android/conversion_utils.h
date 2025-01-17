@@ -20,6 +20,14 @@ jlong GetJavaResultCallbackPtr(
 std::unique_ptr<CollaborationControllerDelegate::ResultCallback>
 GetNativeResultCallbackFromJava(jlong callback);
 
+// Converts a exit base::OnceClosure to a Java readable long.
+jlong GetJavaExitCallbackPtr(base::OnceClosure callback);
+
+// Converts a Java long obtained from GetJavaExitCallbackPtr() back into a
+// native callback.
+std::unique_ptr<base::OnceClosure> GetNativeExitCallbackFromJava(
+    jlong callback);
+
 // Converts a unique CollaborationControllerDelegate to a Java readable long.
 jlong GetJavaDelegateUniquePtr(
     std::unique_ptr<CollaborationControllerDelegate> delegate);

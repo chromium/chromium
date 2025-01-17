@@ -6,6 +6,7 @@
 
 #include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/internal/metrics.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
@@ -84,7 +85,7 @@ void CollaborationServiceImpl::StartJoinFlow(
   // is needed in order to show the url parsing error message to the user.
   join_controllers_.insert(
       {token, std::make_unique<CollaborationController>(
-                  Flow(Flow::Type::kJoin, token), this,
+                  Flow(FlowType::kJoin, token), this,
                   data_sharing_service_.get(), tab_group_sync_service_.get(),
                   sync_service_.get(), std::move(delegate),
                   base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
@@ -107,7 +108,7 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
   share_controllers_.insert(
       {group_id,
        std::make_unique<CollaborationController>(
-           Flow(Flow::Type::kShareOrManage, group_id), this,
+           Flow(FlowType::kShareOrManage, group_id), this,
            data_sharing_service_.get(), tab_group_sync_service_.get(),
            sync_service_.get(), std::move(delegate),
            base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,

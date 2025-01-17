@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_TYPE_H_
+#define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_TYPE_H_
+
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.collaboration)
+enum class FlowType {
+  kJoin = 0,
+  kShareOrManage = 1,
+};
+
+#endif  // COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_TYPE_H_
