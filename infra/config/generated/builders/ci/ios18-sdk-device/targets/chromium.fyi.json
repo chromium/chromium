@@ -1,5 +1,5 @@
 {
-  "ios17-sdk-device": {
+  "ios18-sdk-device": {
     "additional_compile_targets": [
       "all"
     ]

@@ -672,9 +672,9 @@
     #   ios-webkit-tot
     #   ios-wpt-fyi-rel
     #   ios17-beta-simulator
-    #   ios17-sdk-device
     #   ios17-sdk-simulator
     #   ios18-beta-simulator
+    #   ios18-sdk-device
     #   ios18-sdk-simulator
     #   Linux Viz
     #   linux-annotator-rel
