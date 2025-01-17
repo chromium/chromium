@@ -2154,7 +2154,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
       child_frames.clear();
     }
     const bool success = (!fields.empty() || !child_frames.empty()) &&
-                         fields.size() < kMaxExtractableFields;
+                         fields.size() <= kMaxExtractableFields;
     if (!success) {
       return std::nullopt;
     }

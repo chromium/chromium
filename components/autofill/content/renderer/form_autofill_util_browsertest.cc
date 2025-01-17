@@ -1681,78 +1681,67 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_WebFormElementToFormData) {
 // Tests that if the number of iframes exceeds kMaxExtractableChildFrames,
 // child frames of that form are not extracted.
 TEST_F(FormAutofillUtilsTest, ExtractFormData_ExtractNoFramesIfTooManyIframes) {
-  auto CreateFormElement = [this](const char* element) {
+  auto AddElementToForm = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
     ExecuteJavaScriptForTests(js.c_str());
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");
-  for (size_t i = 0; i < kMaxExtractableFields - 1; ++i) {
-    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxExtractableFields; ++i) {
+    AddElementToForm("input");
   }
   for (size_t i = 0; i < kMaxExtractableChildFrames; ++i) {
-    CreateFormElement("iframe");
+    AddElementToForm("iframe");
   }
 
   // Ensure that Android runs at default page scale.
   web_view_->SetPageScaleFactor(1.0);
 
   WebDocument doc = GetDocument();
-  WebFormElement form = GetFormElementById(doc, "f");
-  {
-    FormData form_data = *ExtractFormData(form);
-    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
-    EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
-  }
+  WebFormElement form_element = GetFormElementById(doc, "f");
+  FormData form_data = *ExtractFormData(form_element);
+  EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields);
+  EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
 
-  // There may be multiple checks (e.g., == kMaxExtractableChildFrames, <=
-  // kMaxExtractableChildFrames, < kMaxExtractableChildFrames), so we test
-  // different numbers of <iframe> elements.
-  for (int i = 0; i < 3; ++i) {
-    CreateFormElement("iframe");
-    FormData form_data = *ExtractFormData(form);
-    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
-    EXPECT_TRUE(form_data.child_frames().empty());
-  }
+  // Upon adding one more frame, this exceeds the limit and therefore we start
+  // returning a form with no iframes.
+  AddElementToForm("iframe");
+  form_data = *ExtractFormData(form_element);
+  EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields);
+  EXPECT_TRUE(form_data.child_frames().empty());
 }
 
 // Tests that if the number of fields exceeds |kMaxExtractableFields|, neither
 // fields nor child frames of that form are extracted.
 TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
-  auto CreateFormElement = [this](const char* element) {
+  auto AddElementToForm = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
     ExecuteJavaScriptForTests(js.c_str());
   };
 
   LoadHTML(R"(<html><body><form id='f'></form>)");
-  for (size_t i = 0; i < kMaxExtractableFields - 1; ++i) {
-    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxExtractableFields; ++i) {
+    AddElementToForm("input");
   }
   for (size_t i = 0; i < kMaxExtractableChildFrames; ++i) {
-    CreateFormElement("iframe");
+    AddElementToForm("iframe");
   }
 
   // Ensure that Android runs at default page scale.
   web_view_->SetPageScaleFactor(1.0);
 
   WebDocument doc = GetDocument();
-  WebFormElement form = GetFormElementById(doc, "f");
-  {
-    FormData form_data = *ExtractFormData(form);
-    EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields - 1);
-    EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
-  }
+  WebFormElement form_element = GetFormElementById(doc, "f");
+  FormData form_data = *ExtractFormData(form_element);
+  EXPECT_EQ(form_data.fields().size(), kMaxExtractableFields);
+  EXPECT_EQ(form_data.child_frames().size(), kMaxExtractableChildFrames);
 
-  // There may be multiple checks (e.g., == kMaxExtractableFields, <=
-  // kMaxExtractableFields, < kMaxExtractableFields), so we test different
-  // numbers of <input> elements.
-  for (int i = 0; i < 3; ++i) {
-    SCOPED_TRACE(base::NumberToString(i));
-    CreateFormElement("input");
-    ASSERT_FALSE(ExtractFormData(form));
-  }
+  // Upon adding one more field, this exceeds the limit and therefore we start
+  // returning a null form.
+  AddElementToForm("input");
+  ASSERT_FALSE(ExtractFormData(form_element));
 }
 
 // Verifies that the callback happens even if no sequences of 4 digits are
