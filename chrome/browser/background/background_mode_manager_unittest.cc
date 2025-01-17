@@ -259,7 +259,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   void TearDown() override {
     // Clean up the status icon. If this is not done before profile deletes,
     // the context menu updates will DCHECK with the now deleted profiles.
-    delete manager_->status_icon_;
     manager_->status_icon_ = nullptr;
 
     // We're getting ready to shutdown the message loop. Clear everything out!
@@ -770,7 +769,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   service2->AddExtension(build_regular_extension().get());
   service2->AddExtension(build_regular_extension_with_options().get());
 
-  manager_->status_icon_ = new TestStatusIcon();
+  std::unique_ptr<StatusIcon> test_status_icon =
+      std::make_unique<TestStatusIcon>();
+  manager_->status_icon_ = test_status_icon.get();
   manager_->UpdateStatusTrayIconContextMenu();
   StatusIconMenuModel* context_menu = manager_->context_menu_;
   EXPECT_TRUE(context_menu);
@@ -846,6 +847,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   EXPECT_TRUE(IsCommandEnabled(context_menu, 6));   // P2 - RE
   EXPECT_TRUE(IsCommandEnabled(context_menu, 7));   // P2 - REO
   EXPECT_TRUE(IsCommandEnabled(context_menu, 8));   // P2
+
+  manager_->context_menu_ = nullptr;
+  manager_->status_icon_ = nullptr;
 }
 
 TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
@@ -891,7 +895,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   run_loop.Run();
 
   ASSERT_TRUE(system->is_ready());
-  manager_->status_icon_ = new TestStatusIcon();
+  std::unique_ptr<StatusIcon> test_status_icon =
+      std::make_unique<TestStatusIcon>();
+  manager_->status_icon_ = test_status_icon.get();
   manager_->UpdateStatusTrayIconContextMenu();
 
   // Adding a background extension should show the balloon.
@@ -921,6 +927,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   // show the balloon.
   service->AddExtension(upgraded_no_bg_ext_has_bg.get());
   EXPECT_TRUE(manager_->HasShownBalloon());
+
+  manager_->context_menu_ = nullptr;
+  manager_->status_icon_ = nullptr;
 }
 
 TEST_F(BackgroundModeManagerTest, TransientBackgroundApp) {
