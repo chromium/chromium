@@ -105,6 +105,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private boolean mContentViewScrolling;
 
+    private boolean mForceRelayoutOnVisibilityChange;
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
                 @Override
@@ -130,7 +131,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
                             obs.onAndroidControlsVisibilityChanged(visibility);
                         }
-                        if (!ToolbarFeatures.shouldSuppressCaptures()) {
+                        if (!ToolbarFeatures.shouldSuppressCaptures()
+                                || (mForceRelayoutOnVisibilityChange
+                                        && shouldShowAndroidControls())) {
                             // requestLayout is required to trigger a new gatherTransparentRegion(),
                             // which only occurs together with a layout and let's SurfaceFlinger
                             // trim overlays.
@@ -142,6 +145,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             ViewUtils.requestLayout(
                                     mControlContainer.getView(),
                                     "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
+                            mForceRelayoutOnVisibilityChange = false;
                         }
                     }
                 }
@@ -599,6 +603,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             mRendererTopContentOffset = newRendererTopControlsOffset + newTopControlsHeight;
             mBottomControlsHeight = newBottomControlsHeight;
             mBottomControlsMinHeight = newBottomControlsMinHeight;
+            // If the controls position changes concurrently with a change to renderer offset(s),
+            // the control container will be invisible during the subsequent layout pass. This
+            // causes it to fail to draw when it returns to visible, so we force a relayout upon
+            // returning to visibility via this flag.
+            mForceRelayoutOnVisibilityChange =
+                    newRendererTopControlsOffset != 0 || newRendererBottomControlsOffset != 0;
             if (canAnimateNativeBrowserControls()) {
                 mRendererTopControlOffset = newRendererTopControlsOffset;
                 mRendererBottomControlOffset = newRendererBottomControlsOffset;
