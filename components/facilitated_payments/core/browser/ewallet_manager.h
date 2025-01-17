@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
@@ -134,6 +135,10 @@ class EwalletManager {
   // Returns the `AvailableEwalletsConfiguration` for this user profile.
   AvailableEwalletsConfiguration GetAvailableEwalletsConfiguration();
 
+  // Dismisses the FacilitatedPayments bottom sheet if the progress screen is
+  // being shown.
+  void DismissProgressScreen();
+
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
   //
@@ -186,6 +191,9 @@ class EwalletManager {
   // True indicates that the eWallet selected by the user is bound to the
   // device. This field is used for logging purposes.
   bool is_device_bound_for_logging_ = false;
+
+  // A timer to make UI changes.
+  base::OneShotTimer ui_timer_;
 
   base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
 };

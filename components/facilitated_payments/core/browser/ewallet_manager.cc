@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -31,6 +32,8 @@ namespace {
 
 static constexpr FacilitatedPaymentsType kPaymentsType =
     FacilitatedPaymentsType::kEwallet;
+
+static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -283,6 +286,11 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
       account_info.value(), response_details->secure_payload_.action_token,
       base::BindOnce(&EwalletManager::OnTransactionResult,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+
+  // Close the progress screen just after the platform screen appears.
+  ui_timer_.Start(FROM_HERE, kProgressScreenDismissDelay,
+                  base::BindOnce(&EwalletManager::DismissProgressScreen,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EwalletManager::OnTransactionResult(base::TimeTicks start_time,
@@ -369,6 +377,12 @@ EwalletManager::GetAvailableEwalletsConfiguration() {
                : AvailableEwalletsConfiguration::kSingleUnboundEwallet;
   }
   return AvailableEwalletsConfiguration::kMultipleEwallets;
+}
+
+void EwalletManager::DismissProgressScreen() {
+  if (ui_state_ == UiState::kProgressScreen) {
+    DismissPrompt();
+  }
 }
 
 }  // namespace payments::facilitated
