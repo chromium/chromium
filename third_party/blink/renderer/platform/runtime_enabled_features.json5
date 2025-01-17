@@ -3142,18 +3142,12 @@
       name: "OverscrollCustomization",
       status: "experimental",
     },
-    // The following are developer opt-outs and opt-ins for page freezing. If
-    // neither is specified then heuristics will be applied to determine whether
-    // the page is eligible.
-    {
-      name: "PageFreezeOptIn",
-      base_feature: "none",
-      origin_trial_feature_name: "PageFreezeOptIn",
-    },
+    // A developer opt-out for page freezing.
     {
       name: "PageFreezeOptOut",
       base_feature: "none",
       origin_trial_feature_name: "PageFreezeOptOut",
+      origin_trial_type: "deprecation",
     },
     // Support for page margin boxes.
     // https://www.w3.org/TR/css-page-3/#margin-boxes
