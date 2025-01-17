@@ -683,12 +683,6 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kFileSystemInfo)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetFileSystemInfo::Params>
       params =
           api::enterprise_reporting_private::GetFileSystemInfo::Params::Create(
@@ -763,12 +757,6 @@ EnterpriseReportingPrivateGetSettingsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetSettingsFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kSettings)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetSettings::Params> params =
       api::enterprise_reporting_private::GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -840,12 +828,6 @@ EnterpriseReportingPrivateGetAvInfoFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetAvInfoFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kAntiVirus)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetAvInfo::Params> params =
       api::enterprise_reporting_private::GetAvInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -892,12 +874,6 @@ EnterpriseReportingPrivateGetHotfixesFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetHotfixesFunction::Run() {
-  if (!IsNewFunctionEnabled(
-          enterprise_signals::features::NewEvFunction::kHotfix)) {
-    return RespondNow(Error(device_signals::ErrorToString(
-        device_signals::SignalCollectionError::kUnsupported)));
-  }
-
   std::optional<api::enterprise_reporting_private::GetHotfixes::Params> params =
       api::enterprise_reporting_private::GetHotfixes::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);

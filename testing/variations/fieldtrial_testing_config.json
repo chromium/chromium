@@ -14900,27 +14900,6 @@
             ]
         }
     ],
-    "NewEvSignalsEnabled": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "DisableFileSystemInfo": "true",
-                        "DisableSettings": "true"
-                    },
-                    "enable_features": [
-                        "NewEvSignalsEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewOSCryptAlgorithmForPasswords": [
         {
             "platforms": [
