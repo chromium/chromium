@@ -53,13 +53,8 @@ void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
   menus_.erase(menu);
 }
 
-DbusAppmenuRegistrar::DbusAppmenuRegistrar() {
-  dbus::Bus::Options bus_options;
-  bus_options.bus_type = dbus::Bus::SESSION;
-  bus_options.connection_type = dbus::Bus::PRIVATE;
-  bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
-
+DbusAppmenuRegistrar::DbusAppmenuRegistrar()
+    : bus_(dbus_thread_linux::GetSharedSessionBus()) {
   registrar_proxy_ = bus_->GetObjectProxy(
       kAppMenuRegistrarName, dbus::ObjectPath(kAppMenuRegistrarPath));
 

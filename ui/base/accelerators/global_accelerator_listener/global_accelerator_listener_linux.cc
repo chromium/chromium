@@ -35,10 +35,7 @@ GlobalAcceleratorListenerLinux::GlobalAcceleratorListenerLinux(
     scoped_refptr<dbus::Bus> bus)
     : bus_(std::move(bus)) {
   if (!bus_) {
-    dbus::Bus::Options options;
-    options.bus_type = dbus::Bus::SESSION;
-    options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-    bus_ = base::MakeRefCounted<dbus::Bus>(options);
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
 
   global_shortcuts_proxy_ = bus_->GetObjectProxy(
@@ -69,9 +66,6 @@ GlobalAcceleratorListenerLinux::~GlobalAcceleratorListenerLinux() {
         base::DoNothing());
   }
   session_map_.clear();
-
-  dbus_thread_linux::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
 void GlobalAcceleratorListenerLinux::OnSystemdUnitStarted(

@@ -40,14 +40,6 @@ namespace {
 constexpr char kSaltForHkdf[] = "fdo_portal_secret_salt";
 constexpr char kInfoForHkdf[] = "HKDF-SHA-256 AES-256-GCM";
 
-scoped_refptr<dbus::Bus> CreateBus() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
 }  // namespace
 
 // static
@@ -59,12 +51,12 @@ void SecretPortalKeyProvider::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 
 SecretPortalKeyProvider::SecretPortalKeyProvider(PrefService* local_state,
                                                  bool use_for_encryption)
-    : SecretPortalKeyProvider(local_state, CreateBus(), use_for_encryption) {}
+    : SecretPortalKeyProvider(local_state,
+                              dbus_thread_linux::GetSharedSessionBus(),
+                              use_for_encryption) {}
 
 SecretPortalKeyProvider::~SecretPortalKeyProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bus_->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
 SecretPortalKeyProvider::SecretPortalKeyProvider(PrefService* local_state,
