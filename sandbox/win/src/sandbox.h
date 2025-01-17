@@ -303,6 +303,14 @@ class [[clang::lto_visibility_public]] BrokerServicesDelegate {
   // this will be called on the thread pool.
   virtual void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                         DWORD process_id) = 0;
+
+  // Record error histograms when CreateThreadAction IPC failed to create a
+  // thread in the target process.
+  virtual void OnCreateThreadActionCreateFailure(DWORD last_error) = 0;
+  // Record error histograms when CreateThreadAction IPC failed to duplicate a
+  // handle into the child process.
+  virtual void OnCreateThreadActionDuplicateFailure(DWORD last_error) = 0;
+
   virtual ~BrokerServicesDelegate() {}
 };
 

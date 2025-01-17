@@ -13,10 +13,12 @@
 #include "base/memory/free_deleter.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
+#include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
+#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/win_utils.h"
@@ -109,11 +111,24 @@ DWORD ProcessPolicy::CreateThreadAction(
       ::CreateRemoteThread(client_info.process, nullptr, stack_size,
                            start_address, parameter, creation_flags, nullptr));
   if (!local_handle.is_valid()) {
-    return ::GetLastError();
+    // Gather diagnostics for failures - we avoid always DumpWithoutCrashing as
+    // it might mask child process crashes that result when this IPC returns
+    // failure. See crbug.com/389729365.
+    DWORD gle = ::GetLastError();
+    BrokerServicesBase::GetInstance()
+        ->GetMetricsDelegate()
+        ->OnCreateThreadActionCreateFailure(gle);
+    return gle;
   }
   if (!CallDuplicateHandle(::GetCurrentProcess(), local_handle.get(),
                            client_info.process, handle, 0, FALSE,
                            DUPLICATE_SAME_ACCESS)) {
+    // Gather diagnostics for failures - we avoid always DumpWithoutCrashing as
+    // it might mask child process crashes that result when this IPC returns
+    // failure. See crbug.com/389729365.
+    BrokerServicesBase::GetInstance()
+        ->GetMetricsDelegate()
+        ->OnCreateThreadActionDuplicateFailure(::GetLastError());
     return ERROR_ACCESS_DENIED;
   }
   return ERROR_SUCCESS;

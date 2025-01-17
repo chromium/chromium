@@ -829,6 +829,16 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
                                     trace_id, "pid", process_id);
   }
 
+  void OnCreateThreadActionCreateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE(
+        "Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode", last_error);
+  }
+
+  void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {
+    UMA_HISTOGRAM_SPARSE("Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode",
+                         last_error);
+  }
+
  private:
   // When parallel launching is enabled, target creation will happen on the
   // thread pool. This is atomic to keep track of the number of threads that are

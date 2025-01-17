@@ -7713,6 +7713,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode"
+    enum="WinGetLastError" expires_after="2025-06-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Error returned when CreateThreadAction fails to CreateRemoteThread(). Not
+    logged on success. For decoding error code please refer to
+    http://goo.gl/fJJiAv.
+  </summary>
+</histogram>
+
+<histogram name="Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode"
+    enum="WinGetLastError" expires_after="2025-06-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Error returned when CreateThreadAction fails to DuplicateHandle(). Not
+    logged on success. For decoding error code please refer to
+    http://goo.gl/fJJiAv.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->
