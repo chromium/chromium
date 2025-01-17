@@ -191,6 +191,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
       redirection_info.source_tab_app_id();
   std::optional<webapps::AppId> navigation_handling_first_stage_app =
       redirection_info.first_navigation_app_id();
+  Browser* navigation_params_browser =
+      redirection_info.navigation_params_browser();
 
   // Do not handle redirections for navigations that create an auxiliary
   // browsing context, or if the app window that opened is not a part of the
@@ -340,14 +342,11 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // TODO(https://crbug.com/382542355): Populate
-  // `navigate_params_requested_browser` by passing it through the redirection
-  // info from `MaybeHandleAppNavigation`.
   ClientModeAndBrowser client_mode_and_browser =
       GetEffectiveClientModeAndBrowserForCapturing(
           *profile_, *target_app_id, source_tab_app_id,
           /*ignore_browser_tabs_for_standalone_apps=*/false,
-          /*navigate_params_requested_browser=*/nullptr);
+          /*navigate_params_requested_browser=*/navigation_params_browser);
 
   // After this point:
   // - The navigation is non-user-modified.

@@ -95,6 +95,7 @@ class AppNavigationResult {
       std::optional<webapps::AppId> source_browser_app_id,
       std::optional<webapps::AppId> source_tab_app_id,
       WindowOpenDisposition disposition,
+      Browser* navigation_params_browser,
       base::Value::Dict debug_data);
 
   // Create AppNavigationResult for a navigation triggered by user modified link
@@ -106,6 +107,7 @@ class AppNavigationResult {
       blink::mojom::DisplayMode new_client_display_mode,
       Browser* host_browser,
       WindowOpenDisposition disposition,
+      Browser* navigation_params_browser,
       base::Value::Dict debug_data);
 
   // Create AppNavigationResult for a navigation that is captured by non user
@@ -118,6 +120,7 @@ class AppNavigationResult {
       blink::mojom::DisplayMode new_client_display_mode,
       Browser* host_browser,
       WindowOpenDisposition disposition,
+      Browser* navigation_params_browser,
       base::Value::Dict debug_data);
 
   // Create AppNavigationResult for a navigation that is captured by non user
@@ -130,6 +133,7 @@ class AppNavigationResult {
       Browser* app_browser,
       int browser_tab,
       WindowOpenDisposition disposition,
+      Browser* navigation_params_browser,
       base::Value::Dict debug_data);
 
   AppNavigationResult(AppNavigationResult&&);
