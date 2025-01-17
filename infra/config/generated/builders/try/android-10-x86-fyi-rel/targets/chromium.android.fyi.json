@@ -3863,7 +3863,8 @@
         "args": [
           "--extra-browser-args=--enable-crashpad",
           "--use-persistent-shell",
-          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
+          "--browser=android-chromium"
         ],
         "isolate_profile_data": true,
         "merge": {
