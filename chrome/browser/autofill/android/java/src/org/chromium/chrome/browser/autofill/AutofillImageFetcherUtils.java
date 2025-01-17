@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import androidx.annotation.Px;
@@ -36,7 +35,7 @@ final class AutofillImageFetcherUtils {
     }
 
     /**
-     * Adds corner radius to the bitmap.
+     * Adds corner radius to a bitmap.
      *
      * @param bitmap The input bitmap whose corners are to be rounded.
      * @param cornerRadius Corner radius in Px.
@@ -87,6 +86,31 @@ final class AutofillImageFetcherUtils {
     }
 
     /**
+     * Adds border to a bitmap.
+     *
+     * @param bitmap The input to which a border is to be added.
+     * @param cornerRadius Corner radius of the bitmap in Px. The border will be added with the same
+     *     corner radius.
+     * @param borderThickness Border thickness in Px.
+     * @param borderColor Border color.
+     * @return A copy of the input bitmap with border.
+     */
+    static Bitmap addBorder(
+            Bitmap bitmap, @Px int cornerRadius, @Px int borderThickness, int borderColor) {
+        Bitmap outputBitmap = bitmap.copy(bitmap.getConfig(), /* isMutable= */ true);
+        Canvas canvas = new Canvas(outputBitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(borderColor);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(borderThickness);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        RectF rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
+
+        return outputBitmap;
+    }
+
+    /**
      * Treats Pix account image as per specifications:
      *
      * <p>Resizes the logo to 18dp x 18dp if the logo is of a different dimension, and adds a corner
@@ -104,10 +128,7 @@ final class AutofillImageFetcherUtils {
      */
     static Bitmap treatPixAccountImage(Bitmap bitmap) {
         @Px int logoSize = getPixelSize(R.dimen.square_card_icon_side_length);
-        @Px int iconWidth = getPixelSize(R.dimen.large_card_icon_width);
-        @Px int iconHeight = getPixelSize(R.dimen.large_card_icon_height);
         @Px int iconCornerRadius = getPixelSize(R.dimen.large_card_icon_corner_radius);
-        @Px int iconBorderWidth = getPixelSize(R.dimen.card_icon_border_width);
 
         if (bitmap.getWidth() != logoSize || bitmap.getHeight() != logoSize) {
             bitmap = Bitmap.createScaledBitmap(bitmap, logoSize, logoSize, /* filter= */ true);
@@ -120,27 +141,26 @@ final class AutofillImageFetcherUtils {
         // Create a white background and place the square logo in the center.
         Bitmap compositeBitmap =
                 addCenterAlignedBackground(
-                        logoWithRoundCorners, iconWidth, iconHeight, Color.WHITE);
+                        logoWithRoundCorners,
+                        getPixelSize(R.dimen.large_card_icon_width),
+                        getPixelSize(R.dimen.large_card_icon_height),
+                        Color.WHITE);
 
         // Round the corners of the composite bitmap.
-        Bitmap compositeIconWithRoundCorners = roundCorners(compositeBitmap, iconCornerRadius);
+        Bitmap compositeBitmapWithRoundCorners = roundCorners(compositeBitmap, iconCornerRadius);
 
         // Add the grey border.
         // TODO(crbug.com/389947287): Verify the border color.
         int greyColor =
                 ContextCompat.getColor(
                         ContextUtils.getApplicationContext(), R.color.baseline_neutral_90);
-        Canvas canvas = new Canvas(compositeIconWithRoundCorners);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        Rect rect = new Rect(0, 0, iconWidth, iconHeight);
-        RectF rectF = new RectF(rect);
-        paint.setColor(greyColor);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(iconBorderWidth);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawRoundRect(rectF, iconCornerRadius, iconCornerRadius, paint);
+        Bitmap compositeBitmapWithRoundCornersAndGreyBorder =
+                addBorder(
+                        compositeBitmapWithRoundCorners,
+                        iconCornerRadius,
+                        getPixelSize(R.dimen.card_icon_border_width),
+                        greyColor);
 
-        return compositeIconWithRoundCorners;
+        return compositeBitmapWithRoundCornersAndGreyBorder;
     }
 }
