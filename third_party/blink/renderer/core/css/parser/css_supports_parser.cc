@@ -219,6 +219,7 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
   StyleRule::RuleType rule_type;
   switch (at_rule_id) {
     case CSSAtRuleID::kCSSAtRuleInvalid:
+    case CSSAtRuleID::kCount:
       NOTREACHED();
     case CSSAtRuleID::kCSSAtRuleViewTransition:
       rule_type = StyleRule::kViewTransition;
