@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -6433,6 +6434,10 @@ TEST_F(CookieMonsterTest, CookieDomainSetHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookiePortReadHistogram) {
+  // The per-resource cookie histograms are subsampled, simulate for this test
+  // that the dice roll makes them record.
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling;
+
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.Port.Read.RemoteHost";
   const char kHistogramNameLocal[] = "Cookie.Port.Read.Localhost";
@@ -6538,6 +6543,10 @@ TEST_F(CookieMonsterTest, CookiePortSetHistogram) {
 }
 
 TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
+  // The per-resource cookie histograms are subsampled, simulate for this test
+  // that the dice roll makes them record.
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling;
+
   base::HistogramTester histograms;
   const char kHistogramName[] = "Cookie.Port.ReadDiffersFromSet.RemoteHost";
   const char kHistogramNameLocal[] = "Cookie.Port.ReadDiffersFromSet.Localhost";

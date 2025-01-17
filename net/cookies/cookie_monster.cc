@@ -730,7 +730,7 @@ void CookieMonster::GetCookieListWithOptions(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::optional<base::ElapsedTimer> timer;
-  if (get_cookie_list_timing_subsampler_.ShouldSample(0.001)) {
+  if (metrics_subsampler_.ShouldSample(0.001)) {
     timer.emplace();
   }
 
@@ -1409,8 +1409,11 @@ void CookieMonster::FilterCookiesWithOptions(
     CookieAccessResult& access_result = cookie_result.second;
 
     // We want to collect these metrics for cookies that would be included
-    // without considering shadowing domain cookies.
-    if (access_result.status.IsInclude()) {
+    // without considering shadowing domain cookies. Recording them on every
+    // resource sequest results in unnecessarily large amounts of samples
+    // and has a non-zero runtime cost, so only collect 1/1000 times.
+    if (metrics_subsampler_.ShouldSample(0.001) &&
+        access_result.status.IsInclude()) {
       int destination_port = url.EffectiveIntPort();
 
       if (IsLocalhost(url)) {

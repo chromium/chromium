@@ -813,7 +813,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   bool persist_session_cookies_ = false;
 
-  base::MetricsSubSampler get_cookie_list_timing_subsampler_;
+  base::MetricsSubSampler metrics_subsampler_;
 
   THREAD_CHECKER(thread_checker_);
 

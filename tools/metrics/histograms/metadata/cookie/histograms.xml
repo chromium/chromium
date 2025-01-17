@@ -845,6 +845,8 @@ chromium-metrics-reviews@google.com.
     other origins.
 
     This metric is recorded once per included cookie on every read attempt.
+
+    Subsampled to 1/1000.
   </summary>
   <token key="HostType">
     <variant name="Localhost"/>
@@ -875,6 +877,8 @@ chromium-metrics-reviews@google.com.
     domain to set the Domain attribute).
 
     This metric is recorded once per included cookie on every read attempt.
+
+    Subsampled to 1/1000.
   </summary>
   <token key="HostType">
     <variant name="DomainSet"/>
