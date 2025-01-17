@@ -402,7 +402,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */
-    static boolean shouldShowToolbarOnTop(Tab tab) {
+    public static boolean shouldShowToolbarOnTop(Tab tab) {
         boolean isNtpUrl =
                 (tab != null) && (tab.getUrl() != null) && UrlUtilities.isNtpUrl(tab.getUrl());
 

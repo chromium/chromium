@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -206,8 +207,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
-    public int getCurrentTabId() {
-        return TabModelUtils.getCurrentTabId(
+    public @Nullable Tab getCurrentTab() {
+        return TabModelUtils.getCurrentTab(
                 mIncognitoTabGroupModelFilterSupplier.get().getTabModel());
     }
 

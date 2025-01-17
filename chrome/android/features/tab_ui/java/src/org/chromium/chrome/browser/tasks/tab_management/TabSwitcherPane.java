@@ -190,8 +190,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     @Override
-    public int getCurrentTabId() {
-        return TabModelUtils.getCurrentTabId(mTabGroupModelFilterSupplier.get().getTabModel());
+    public @Nullable Tab getCurrentTab() {
+        return TabModelUtils.getCurrentTab(mTabGroupModelFilterSupplier.get().getTabModel());
     }
 
     @Override
