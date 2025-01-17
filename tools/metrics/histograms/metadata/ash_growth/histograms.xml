@@ -83,6 +83,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot.Attempt"
+    enum="CampaignSlot" expires_after="2025-04-27">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Tracks the slot to fetch a campaign. Recorded each time before a campaign
+    will be fetched.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500"
+    units="int" expires_after="2025-04-27">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when a campaign is fetched after a call to GetCampaignBySlot. The
+    bucket is indexed by the campaign_id. The campaign_id recorded in this
+    histogram should be less than 500.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Growth.CampaignsManager.MatchDuration" units="ms"
     expires_after="2025-06-29">
   <owner>llin@google.com</owner>

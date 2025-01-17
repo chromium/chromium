@@ -206,6 +206,9 @@ void CampaignsManager::LoadCampaigns(base::OnceClosure load_callback,
 const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   CHECK(campaigns_loaded_)
       << "Getting campaign before campaigns finish loading";
+
+  RecordGetCampaignBySlotAttempt(slot);
+
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
   RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
@@ -215,10 +218,11 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
     return nullptr;
   }
 
-  CAMPAIGNS_LOG(DEBUG) << "Campaign: "
-                       << growth::GetCampaignId(match_result).value()
+  int campaign_id = growth::GetCampaignId(match_result).value();
+  CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
                        << " is selected for slot " << static_cast<int>(slot);
-  RecordGetCampaignBySlot(slot);
+
+  RecordGetCampaignBySlot(slot, campaign_id);
   LogCampaignInSystemLog(match_result, slot);
   RegisterTrialForCampaign(match_result);
   MaybeRecordImpressionForControl(match_result);

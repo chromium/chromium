@@ -4,8 +4,12 @@
 
 #include "chromeos/ash/components/growth/growth_metrics.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 
 namespace growth {
 
@@ -13,6 +17,9 @@ namespace {
 
 inline constexpr char kCampaignsManagerErrorHistogramName[] =
     "Ash.Growth.CampaignsManager.Error";
+
+inline constexpr char kGetCampaignBySlotAttemptHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot.Attempt";
 
 inline constexpr char kGetCampaignBySlotHistogramName[] =
     "Ash.Growth.CampaignsManager.GetCampaignBySlot";
@@ -30,14 +37,33 @@ inline constexpr char kCampaignsComponentReadDurationHistogram[] =
 inline constexpr char kCampaignMatchDurationHistogram[] =
     "Ash.Growth.CampaignsManager.MatchDuration";
 
+constexpr char kGetCampaignHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns%d";
+
+std::string GetCampaignHistogramName(int campaign_id) {
+  // E.g. "Ash.Growth.CampaignsManager.GetCampaignBySlot.Campaigns500".
+  return base::StringPrintf(kGetCampaignHistogramName,
+                            GetHistogramMaxCampaignId(campaign_id));
+}
+
+void RecordCampaignFetched(int campaign_id) {
+  const std::string histogram_name = GetCampaignHistogramName(campaign_id);
+  base::UmaHistogramSparse(histogram_name, campaign_id);
+}
+
 }  // namespace
 
 void RecordCampaignsManagerError(CampaignsManagerError error) {
   base::UmaHistogramEnumeration(kCampaignsManagerErrorHistogramName, error);
 }
 
-void RecordGetCampaignBySlot(Slot slot) {
+void RecordGetCampaignBySlotAttempt(Slot slot) {
+  base::UmaHistogramEnumeration(kGetCampaignBySlotAttemptHistogramName, slot);
+}
+
+void RecordGetCampaignBySlot(Slot slot, int campaign_id) {
   base::UmaHistogramEnumeration(kGetCampaignBySlotHistogramName, slot);
+  RecordCampaignFetched(campaign_id);
 }
 
 void RecordCampaignsComponentDownloadDuration(const base::TimeDelta duration,

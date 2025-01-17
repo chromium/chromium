@@ -238,6 +238,9 @@ inline constexpr char kCampaignsComponentReadDurationHistogram[] =
 inline constexpr char kCampaignMatchDurationHistogram[] =
     "Ash.Growth.CampaignsManager.MatchDuration";
 
+inline constexpr char kGetCampaignBySlotAttemptHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot.Attempt";
+
 inline constexpr char kGetCampaignBySlotHistogramName[] =
     "Ash.Growth.CampaignsManager.GetCampaignBySlot";
 
@@ -678,6 +681,10 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
 
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotAttemptHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
+
   histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
                                       Slot::kDemoModeApp,
                                       /*expected_bucket_count=*/1);
@@ -778,6 +785,9 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotAttemptHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
                                       Slot::kDemoModeApp,
                                       /*expected_bucket_count=*/0);
