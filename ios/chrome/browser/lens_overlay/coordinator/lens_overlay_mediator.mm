@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
@@ -240,6 +241,13 @@
 }
 
 - (void)loadURL:(const GURL&)URL omniboxText:(NSString*)omniboxText {
+  // Restore the thumbnail when navigating back to an LRP.
+  if (!_currentLensResult.isTextSelection && _thumbnailRemoved &&
+      !lens::IsLensOverlaySRP(URL)) {
+    _thumbnailRemoved = NO;
+    [self.omniboxCoordinator
+        setThumbnailImage:_currentLensResult.selectionPreviewImage];
+  }
   [self updateOmniboxText:omniboxText];
   [self.resultConsumer loadResultsURL:URL];
 }

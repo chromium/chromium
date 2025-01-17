@@ -6,8 +6,8 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -21,21 +21,6 @@ std::string ExtractQueryFromSRP(const GURL& url) {
   std::string search_term = "";
   net::GetValueForKeyInQuery(url, "q", &search_term);
   return search_term;
-}
-
-/// Returns whether the `url` is a lens overlay SRP.
-BOOL IsLensOverlaySRP(GURL url) {
-  std::string search_term;
-  BOOL hasSearchTerms = net::GetValueForKeyInQuery(url, "q", &search_term);
-  std::string lens_surface;
-  BOOL hasLensSurface = net::GetValueForKeyInQuery(
-      url, lens::kLensSurfaceQueryParameter, &lens_surface);
-  std::string request_id;
-  BOOL hasLensParam = net::GetValueForKeyInQuery(
-      url, lens::kLensRequestQueryParameter, &request_id);
-
-  return hasSearchTerms && hasLensSurface && !hasLensParam &&
-         lens_surface == "4";
 }
 
 }  // namespace
@@ -175,8 +160,8 @@ BOOL LensOverlayNavigationManager::IsNavigationRelatedSearch(
   id<ChromeLensOverlayResult> result =
       lens_navigation_items_.back()->lens_result();
 
-  return !result.isTextSelection && !IsLensOverlaySRP(current_url) &&
-         IsLensOverlaySRP(destination_url);
+  return !result.isTextSelection && !lens::IsLensOverlaySRP(current_url) &&
+         lens::IsLensOverlaySRP(destination_url);
 }
 
 void LensOverlayNavigationManager::RegisterSubNavigation(
