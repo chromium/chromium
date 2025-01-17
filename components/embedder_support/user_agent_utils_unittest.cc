@@ -578,21 +578,6 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
                                  version_info::GetMajorVersionNumber().c_str()),
               GetUserAgent());
   }
-
-  // Verify disable reduce legacy windows platform
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kReduceUserAgentMinorVersion, {}},
-       {blink::features::kReduceUserAgentPlatformOsCpu,
-        {{"all_except_legacy_windows_platform", "true"},
-         {"legacy_windows_platform", "false"}}}},
-      {});
-  {
-    EXPECT_EQ(base::StringPrintf(kDesktop,
-                                 version_info::GetMajorVersionNumber().c_str()),
-              GetUserAgent());
-  }
-
 #endif
 
 // Verify only reduce platform and oscpu in desktop user agent string in

@@ -1431,9 +1431,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                                kUserAgentFrozenBuildVersion);
 
 // Parameters for kReduceUserAgentPlatformOsCpu;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                               kAllExceptLegacyWindowsPlatform);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

@@ -175,8 +175,7 @@ bool ShouldSendUserAgentUnifiedPlatform(
 #else
   return ShouldReduceUserAgentMinorVersion(user_agent_reduction) &&
          base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentPlatformOsCpu) &&
-         blink::features::kAllExceptLegacyWindowsPlatform.Get();
+             blink::features::kReduceUserAgentPlatformOsCpu);
 #endif
 }
 
