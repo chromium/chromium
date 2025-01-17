@@ -180,11 +180,14 @@ bool SafeBrowsingTabHelper::PolicyDecider::ShouldReloadOnCommit() {
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
-  committed_redirect_chain_.clear();
-  for (auto& query : to_be_committed_redirect_chain_) {
-    committed_redirect_chain_.push_back(std::move(query));
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    committed_redirect_chain_.clear();
+    for (auto& query : to_be_committed_redirect_chain_) {
+      committed_redirect_chain_.push_back(std::move(query));
+    }
+    to_be_committed_redirect_chain_.clear();
   }
-  to_be_committed_redirect_chain_.clear();
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
@@ -346,12 +349,17 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  if (!pending_main_frame_query_) {
-    base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", true);
-    return std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (!pending_main_frame_query_) {
+      base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled",
+                                true);
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Allow());
+    }
+  } else {
+    DCHECK(pending_main_frame_query_);
   }
-
   base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", false);
 
   // When there's a server redirect, a ShouldAllowRequest call sometimes
@@ -374,11 +382,16 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     pending_main_frame_redirect_chain_.clear();
   }
 
-  // Logic only needs to check if sync queries in the redirect chain are
-  // completed since async queries can respond after navigation.
-  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision =
-      RedirectChainDecisionWithFilter(RedirectChain::kPendingMainFrame,
-                                      RedirectChainFilter::kSyncQueries);
+  std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    // Logic only needs to check if sync queries in the redirect chain are
+    // completed since async queries can respond after navigation.
+    decision = RedirectChainDecisionWithFilter(
+        RedirectChain::kPendingMainFrame, RedirectChainFilter::kSyncQueries);
+  } else {
+    decision = MainFrameRedirectChainDecision();
+  }
 
   if (decision) {
     RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
@@ -740,14 +753,17 @@ SafeBrowsingTabHelper::PolicyDecider::QueryDecisionFromFilter(
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateToBeCommittedRedirectChain() {
-  to_be_committed_redirect_chain_.clear();
-  to_be_committed_redirect_chain_.push_back(
-      std::move(*pending_main_frame_query_));
-  pending_main_frame_query_.reset();
-  for (auto& query : pending_main_frame_redirect_chain_) {
-    to_be_committed_redirect_chain_.push_back(std::move(query));
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    to_be_committed_redirect_chain_.clear();
+    to_be_committed_redirect_chain_.push_back(
+        std::move(*pending_main_frame_query_));
+    pending_main_frame_query_.reset();
+    for (auto& query : pending_main_frame_redirect_chain_) {
+      to_be_committed_redirect_chain_.push_back(std::move(query));
+    }
+    pending_main_frame_redirect_chain_.clear();
   }
-  pending_main_frame_redirect_chain_.clear();
 }
 
 #pragma mark SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery
