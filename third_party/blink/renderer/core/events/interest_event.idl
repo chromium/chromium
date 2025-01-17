@@ -7,11 +7,9 @@
     Exposed=Window
 ] interface InterestEvent : Event {
     constructor(DOMString type, optional InterestEventInit eventInitDict = {});
-    readonly attribute Element? invoker;
-    readonly attribute DOMString action;
+    readonly attribute Element? source;
 };
 
 dictionary InterestEventInit : EventInit {
-    Element? invoker = null;
-    DOMString action = "";
+    Element? source = null;
 };

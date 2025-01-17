@@ -3412,7 +3412,6 @@ interface HTMLAnchorElement : HTMLElement
     getter hostname
     getter href
     getter hreflang
-    getter interestAction
     getter interestTargetElement
     getter name
     getter origin
@@ -3442,7 +3441,6 @@ interface HTMLAnchorElement : HTMLElement
     setter hostname
     setter href
     setter hreflang
-    setter interestAction
     setter interestTargetElement
     setter name
     setter password
@@ -3470,7 +3468,6 @@ interface HTMLAreaElement : HTMLElement
     getter host
     getter hostname
     getter href
-    getter interestAction
     getter interestTargetElement
     getter noHref
     getter origin
@@ -3496,7 +3493,6 @@ interface HTMLAreaElement : HTMLElement
     setter host
     setter hostname
     setter href
-    setter interestAction
     setter interestTargetElement
     setter noHref
     setter password
@@ -3602,7 +3598,6 @@ interface HTMLButtonElement : HTMLElement
     getter formMethod
     getter formNoValidate
     getter formTarget
-    getter interestAction
     getter interestTargetElement
     getter labels
     getter name
@@ -3625,7 +3620,6 @@ interface HTMLButtonElement : HTMLElement
     setter formMethod
     setter formNoValidate
     setter formTarget
-    setter interestAction
     setter interestTargetElement
     setter name
     setter popoverTargetAction
@@ -4281,7 +4275,6 @@ interface HTMLInputElement : HTMLElement
     getter height
     getter incremental
     getter indeterminate
-    getter interestAction
     getter interestTargetElement
     getter labels
     getter list
@@ -4342,7 +4335,6 @@ interface HTMLInputElement : HTMLElement
     setter height
     setter incremental
     setter indeterminate
-    setter interestAction
     setter interestTargetElement
     setter max
     setter maxLength
@@ -5450,8 +5442,7 @@ interface InputEvent : UIEvent
     method getTargetRanges
 interface InterestEvent : Event
     attribute @@toStringTag
-    getter action
-    getter invoker
+    getter source
     method constructor
 interface IntersectionObserver
     attribute @@toStringTag
@@ -7673,11 +7664,9 @@ interface Response
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
-    getter interestAction
     getter interestTargetElement
     getter target
     method constructor
-    setter interestAction
     setter interestTargetElement
 interface SVGAngle
     attribute @@toStringTag

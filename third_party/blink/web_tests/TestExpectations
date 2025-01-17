@@ -1556,6 +1556,9 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html [ Failure ]
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Failure ]
 
+# Interesttarget related tests
+crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-target/interesttarget-svg-a-event-dispatch.tentative.html [ Failure ]
+
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
 
 crbug.com/350730710 inspector-protocol/css/css-get-position-try.js [ Failure Skip ]

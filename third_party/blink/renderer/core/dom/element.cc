@@ -1273,45 +1273,63 @@ PopoverData* Element::GetPopoverData() const {
 
 void Element::InterestGained() {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(IsInTreeScope());
+  CHECK(GetDocument().IsActive());
 
-  if (!IsInTreeScope()) {
-    return;
-  }
-
-  Element* interest_target_element = this->interestTargetElement();
-  AtomicString interest_action = this->interestAction();
-  if (interest_target_element && !interest_action.IsNull()) {
-    // TODO(crbug.com/326681249): This should only fire if action is valid.
-    Event* interest_event = InterestEvent::Create(event_type_names::kInterest,
-                                                  interest_action, this);
+  if (Element* interest_target_element = this->interestTargetElement()) {
+    Event* interest_event =
+        InterestEvent::Create(event_type_names::kInterest, this);
     interest_target_element->DispatchEvent(*interest_event);
     if (!interest_event->defaultPrevented()) {
       if (auto* popover = DynamicTo<HTMLElement>(interest_target_element);
           popover && popover->PopoverType() != PopoverValueType::kNone) {
-        if (!(interest_action.empty() ||
-              EqualIgnoringASCIICase(interest_action,
-                                     keywords::kTogglePopover))) {
-          return;
-        }
-
         // TODO(crbug.com/326681249): This might need to queue a task with a
         // delay based on CSS properties.
-        auto& document = GetDocument();
-        bool can_show = popover->IsPopoverReady(
-            PopoverTriggerAction::kShow,
-            /*exception_state=*/nullptr,
-            /*include_event_handler_text=*/true, &document);
-        bool can_hide = popover->IsPopoverReady(
-            PopoverTriggerAction::kHide,
-            /*exception_state=*/nullptr,
-            /*include_event_handler_text=*/true, &document);
-        if (can_hide) {
+        if (popover->IsPopoverReady(PopoverTriggerAction::kShow,
+                                    /*exception_state=*/nullptr,
+                                    /*include_event_handler_text=*/true,
+                                    &GetDocument())) {
+          popover->InvokePopover(*this);
+        }
+      } else if (auto* dialog =
+                     DynamicTo<HTMLDialogElement>(interest_target_element)) {
+        if (!dialog->IsOpen()) {
+          dialog->showModal(ASSERT_NO_EXCEPTION);
+        }
+      }
+    }
+  }
+}
+
+void Element::InterestLost() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  CHECK(IsInTreeScope());
+
+  // TODO(masonf): It would be a good idea to add a DHECK method that makes sure
+  // we never get InterestLost without first getting an InterestGained.
+
+  if (Element* interest_target_element = this->interestTargetElement()) {
+    Event* lose_interest_event =
+        InterestEvent::Create(event_type_names::kLoseinterest, this);
+    interest_target_element->DispatchEvent(*lose_interest_event);
+    if (!lose_interest_event->defaultPrevented()) {
+      if (auto* popover = DynamicTo<HTMLElement>(interest_target_element);
+          popover && popover->PopoverType() != PopoverValueType::kNone) {
+        // TODO(crbug.com/326681249): This might need to queue a task with a
+        // delay based on CSS properties.
+        if (popover->IsPopoverReady(PopoverTriggerAction::kHide,
+                                    /*exception_state=*/nullptr,
+                                    /*include_event_handler_text=*/true,
+                                    &GetDocument())) {
           popover->HidePopoverInternal(
               HidePopoverFocusBehavior::kFocusPreviousElement,
               HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
               /*exception_state=*/nullptr);
-        } else if (can_show) {
-          popover->InvokePopover(*this);
+        }
+      } else if (auto* dialog =
+                     DynamicTo<HTMLDialogElement>(interest_target_element)) {
+        if (dialog->IsOpen()) {
+          dialog->close();
         }
       }
     }
@@ -6625,11 +6643,6 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
 
   FocusStateChanged();
 
-  if (received &&
-      RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
-    InterestGained();
-  }
-
   if (GetLayoutObject() || received) {
     return;
   }
@@ -10205,8 +10218,13 @@ void Element::SetHovered(bool hovered) {
 
   InvalidateIfHasEffectiveAppearance();
 
-  if (hovered && RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled()) {
-    InterestGained();
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled() &&
+      IsInTreeScope() && GetDocument().IsActive()) {
+    if (hovered) {
+      InterestGained();
+    } else {
+      InterestLost();
+    }
   }
 }
 

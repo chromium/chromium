@@ -114,8 +114,6 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
   Element* interestTargetElement() override;
 
-  AtomicString interestAction() const override;
-
   void Trace(Visitor*) const override;
 
  protected:
