@@ -763,6 +763,7 @@ Called by update_extension_histograms.py.-->
   <int value="560" label="TTS_ENGINE_ON_INSTALL_LANGUAGE_REQUEST"/>
   <int value="561" label="TTS_ENGINE_ON_LANGUAGE_STATUS_REQUEST"/>
   <int value="562" label="TTS_ENGINE_ON_UNINSTALL_LANGUAGE_REQUEST"/>
+  <int value="563" label="PDF_VIEWER_PRIVATE_ON_SHOULD_UPDATE_VIEWPORT"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">

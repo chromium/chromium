@@ -379,6 +379,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
 
+    // Listen for hash updates from the browser.
+    chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
+        this.handleMaybeUpdateViewport_.bind(this));
+
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
     if (this.pdfOopifEnabled && !this.embedded_) {
@@ -1011,6 +1015,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private handleNavigate_(url: string, disposition: WindowOpenDisposition):
       void {
     this.navigator_!.navigate(url, disposition);
+  }
+
+  /** Handles updating viewport params based on the `newUrl` provided. */
+  private handleMaybeUpdateViewport_(newUrl: string) {
+    assert(this.paramsParser);
+    this.paramsParser.getViewportFromUrlParams(newUrl).then(
+        params => this.handleUrlParams(params));
   }
 
   // <if expr="enable_pdf_ink2">
