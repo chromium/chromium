@@ -5,6 +5,7 @@
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <set>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -157,41 +158,6 @@ bool MaskedDomainListManager::Matches(
       // third-party.
       return MatchesPublicSuffixList(request_url_ref);
   }
-}
-
-std::set<std::string> MaskedDomainListManager::ExcludeDomainsFromMDL(
-    const std::set<std::string>& mdl_domains,
-    const std::set<std::string>& excluded_domains) {
-  if (excluded_domains.empty()) {
-    return mdl_domains;
-  }
-
-  std::set<std::string> mdl_domains_after_exclusions;
-  for (const auto& mdl_domain : mdl_domains) {
-    std::string mdl_superdomain(mdl_domain);
-    bool shouldInclude = true;
-
-    // Check if any super domains exist in the exclusion set
-    // For example, mdl_domain W.X.Y.Z should be excluded if exclusion set
-    // contains super domains W.X.Y.Z or X.Y.Z or Y.Z or Z
-
-    // TODO(crbug/326399905): Add logic for excluding a domain X if any other
-    // domain owned by X's resource owner is on the exclusion list.
-
-    while (!mdl_superdomain.empty()) {
-      if (base::Contains(excluded_domains, mdl_superdomain)) {
-        shouldInclude = false;
-        break;
-      }
-      mdl_superdomain = net::GetSuperdomain(mdl_superdomain);
-    }
-
-    if (shouldInclude) {
-      mdl_domains_after_exclusions.insert(mdl_domain);
-    }
-  }
-
-  return mdl_domains_after_exclusions;
 }
 
 void MaskedDomainListManager::UpdateMaskedDomainList(

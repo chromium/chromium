@@ -4,8 +4,12 @@
 
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
+#include <map>
+#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -497,26 +501,89 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 TEST_F(MaskedDomainListManagerBaseTest, ExclusionSetDomainsRemovedFromMDL) {
-  MaskedDomainListManager allow_list_no_bypass(
+  auto mdl_manager = MaskedDomainListManager(
       network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
-  const std::set<std::string> mdl_domains(
-      {"com", "example.com", "subdomain.example.com",
-       "sub.subdomain.example.com", "unrelated-example.com", "example.net",
-       "subdomain.example.net", "example.com.example.net", "excluded-tld",
-       "included-tld", "subdomain.excluded-tld", "subdomain.included-tld"});
-  const std::set<std::string> exclusion_set(
-      {"example.com", "excluded-tld", "irrelevant-tld"});
-  const std::set<std::string> mdl_domains_after_exclusions(
-      {"com", "unrelated-example.com", "example.net", "subdomain.example.net",
-       "example.com.example.net", "included-tld", "subdomain.included-tld"});
-  const std::set<std::string> empty_exclusion_set({});
 
-  EXPECT_THAT(
-      allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains, exclusion_set),
-      Eq(mdl_domains_after_exclusions));
-  EXPECT_THAT(allow_list_no_bypass.ExcludeDomainsFromMDL(mdl_domains,
-                                                         empty_exclusion_set),
-              Eq(mdl_domains));
+  // Determine domains that should be excluded from the MDL.
+  std::string example_com = "example.com";
+  std::string excluded_tld = "excluded-tld";
+  std::string irrelevant_tld = "irrelevant-tld";  // Not in the MDL.
+  std::vector<std::string> exclusion_list = {example_com, excluded_tld,
+                                             irrelevant_tld};
+
+  // The following map contains domains as keys and any subdomains as
+  // values. This will be used to create the MDL being tested. Any domains
+  // excluded from the MDL will be tracked in the exclusion list. Excluded
+  // domains and their subdomains should not be matched on.
+  std::map<std::string, std::vector<std::string>> tld_map_with_domains = {
+      {example_com,
+       {
+           "subdomain.example.com",
+           "sub.subdomain.example.com",
+       }},
+      {"example.net",
+       {
+           "subdomain.example.net",
+           "example.com.example.net",
+       }},
+      {"included-tld",
+       {
+           "subdomain.included-tld",
+       }},
+      {excluded_tld,
+       {
+           "subdomain.excluded-tld",
+       }},
+      {"unrelated-example.com", {}},  // No subdomains for this domain.
+      {"com", {}}};
+
+  // Create an MDL with domains above:
+  MaskedDomainList mdl;
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    // Create a ResourceOwner for the domain. The owner name here is abritrary,
+    // but needs to be set. The more important thing is the owned resources must
+    // include the domain itself as well as any subdomains.
+    ResourceOwner* resource_owner = mdl.add_resource_owners();
+    resource_owner->set_owner_name(domain);
+    resource_owner->add_owned_resources()->set_domain(domain);
+    for (auto const& subdomain : subdomains) {
+      resource_owner->add_owned_resources()->set_domain(subdomain);
+    }
+  }
+
+  // First update the MDL and provide an empty exclusion list.
+  mdl_manager.UpdateMaskedDomainList(mdl, /*exclusion_list=*/{});
+
+  // Every domain in the domain map should be matched on b/c no domains are
+  // excluded.
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    EXPECT_TRUE(mdl_manager.Matches(GURL(base::StrCat({"https://", domain})),
+                                    net::NetworkAnonymizationKey()));
+    for (auto const& subdomain : subdomains) {
+      EXPECT_TRUE(
+          mdl_manager.Matches(GURL(base::StrCat({"https://", subdomain})),
+                              net::NetworkAnonymizationKey()));
+    }
+  }
+
+  // Now update the MDL with an exclusion list.
+  mdl_manager.UpdateMaskedDomainList(mdl, exclusion_list);
+
+  // An excluded domain nor its subdomains should not be matched on.
+  for (auto const& [domain, subdomains] : tld_map_with_domains) {
+    bool should_match = !base::Contains(exclusion_list, domain);
+    net::NetworkAnonymizationKey nak;
+
+    // If the domain is excluded, it should not be matched on and vice versa.
+    EXPECT_EQ(should_match, mdl_manager.Matches(
+                                GURL(base::StrCat({"https://", domain})), nak));
+
+    for (auto const& subdomain : subdomains) {
+      EXPECT_EQ(should_match,
+                mdl_manager.Matches(GURL(base::StrCat({"https://", subdomain})),
+                                    nak));
+    }
+  }
 }
 
 }  // namespace ip_protection
