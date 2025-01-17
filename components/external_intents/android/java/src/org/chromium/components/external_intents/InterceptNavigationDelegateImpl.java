@@ -522,13 +522,23 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .getLastCommittedEntryIndexBeforeStartingNavigation();
         if (getLastCommittedEntryIndex() <= lastCommittedEntryIndexBeforeNavigation) return;
 
-        // http://crbug/426679 : we want to go back to the last committed entry index which
-        // was saved before this navigation, and remove the empty entries from the
-        // navigation history.
-        mClearAllForwardHistoryRequired = true;
-        mClient.getWebContents()
-                .getNavigationController()
-                .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
+        // Like clobbering below, changing navigation index could cancel the current navigation and
+        // delete the NavigationThrottle calling this code, leading to UAFs. Do the navigation
+        // asynchronously to avoid that.
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // http://crbug.com/426679 : we want to go back to the last committed entry
+                        // index which was saved before this navigation, and remove the empty
+                        // entries from the navigation history.
+                        mClearAllForwardHistoryRequired = true;
+                        mClient.getWebContents()
+                                .getNavigationController()
+                                .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
+                    }
+                });
     }
 
     private void clobberMainFrame(GURL targetUrl, ExternalNavigationParams params) {
