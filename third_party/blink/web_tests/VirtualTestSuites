@@ -891,7 +891,7 @@
     "owners": ["drott@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
-    "args": ["--enable-font-antialiasing",  "--text-contrast=0.5", "--text-gamma=0.0"],
+    "args": ["--enable-font-antialiasing"],
     "expires": "Jan 1, 2026"
   },
   " Temporary test suite running virtual/text-antialias using FreeType, until   ",
