@@ -962,6 +962,11 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
     CHECK(in_flight_attempts_.empty()) << info;
     return;
   }
+
+  if (GetStreamAttemptDelayBehavior() ==
+      StreamAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate) {
+    MaybeRunStreamAttemptDelayTimer();
+  }
   MaybeCalculateSSLConfig();
   MaybeAttemptQuic();
   MaybeAttemptConnection();

@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -169,7 +170,19 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     media::cast::encoding_support::ClearHardwareCodecDenyListForTesting();
   }
 
-  ~OpenscreenSessionHostTest() override { task_environment_.RunUntilIdle(); }
+  void OnSessionHostDeletion() {
+    ASSERT_TRUE(session_host_deletion_cb_);
+    if (session_host_deletion_cb_) {
+      std::move(session_host_deletion_cb_).Run();
+    }
+  }
+
+  ~OpenscreenSessionHostTest() override {
+    // We may have already deleted the session host if the session was stopped.
+    if (session_host_) {
+      DeleteSessionHost();
+    }
+  }
 
  protected:
   // mojom::SessionObserver implementation.
@@ -342,7 +355,11 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
         std::move(session_params), gfx::Size(1920, 1080),
         std::move(session_observer_remote), std::move(resource_provider_remote),
         std::move(outbound_channel_remote),
-        inbound_channel_.BindNewPipeAndPassReceiver(), nullptr);
+        inbound_channel_.BindNewPipeAndPassReceiver(), nullptr,
+        // NOTE: unretained used is safe since we wait for this task to complete
+        // before deleting `this`.
+        base::BindOnce(&OpenscreenSessionHostTest::OnSessionHostDeletion,
+                       base::Unretained(this)));
     session_host_->AsyncInitialize(MakeOnInitializedCallback());
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
@@ -378,12 +395,19 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   // Negotiate mirroring.
   void NegotiateMirroring() { session_host_->NegotiateMirroring(); }
 
+  void DeleteSessionHost() {
+    ASSERT_TRUE(session_host_);
+    session_host_deletion_cb_ = task_environment_.QuitClosure();
+    session_host_.reset();
+    task_environment_.RunUntilQuit();
+  }
+
   void StopSession() {
     if (video_host_) {
       EXPECT_CALL(*video_host_, OnStopped());
     }
     EXPECT_CALL(*this, DidStop());
-    session_host_.reset();
+    DeleteSessionHost();
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
   }
@@ -695,6 +719,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   bool force_letterboxing_{false};
 
   std::unique_ptr<OpenscreenSessionHost> session_host_;
+  base::OnceClosure session_host_deletion_cb_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 

@@ -151,7 +151,7 @@ class ASH_EXPORT FocusModeController
 
   // Used to clear some controller states when the user clicks the tray icon to
   // show the ending moment bubble.
-  void OnEndingBubbleShown();
+  void OnEndingBubbleShowing();
 
   // Sets a specific value for `session_duration_`. We have two different
   // notions of a session, so this one is only in charge of updating the session

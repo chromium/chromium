@@ -333,9 +333,14 @@ class LensOverlayQueryController {
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
 
-  // Creates a full image request with the page content bytes and sends it to
-  // the server.
+  // Prepares the data needed for the page content request (aka compression) and
+  // then sends the request.
   void PrepareAndFetchPageContentRequest();
+
+  // Creates the PageContentRequest that is sent to the server and performs the
+  // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
+  // it calls this method after doing the necessary preprocessing.
+  void PrepareAndFetchPageContentRequestPart2(lens::Payload payload);
 
   // Performs the page content request. This is a send and forget request, so we
   // are not expecting a response.
@@ -480,8 +485,6 @@ class LensOverlayQueryController {
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayClientLogs client_logs);
 
-  lens::Payload CreatePageContentPayload();
-
   // Resets the request cluster info state.
   void ResetRequestClusterInfoState();
 
@@ -623,6 +626,12 @@ class LensOverlayQueryController {
   // endpoint fetcher is kept; additional fetch requests will discard
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
+
+  // Task runner used to compress page content bytes on a separate thread.
+  scoped_refptr<base::TaskRunner> compression_task_runner_;
+
+  // Tracks the compress tasks currently running for page content requests.
+  std::unique_ptr<base::CancelableTaskTracker> compression_task_tracker_;
 
   // Task runner used to encode/downscale the JPEG images on a separate thread.
   scoped_refptr<base::TaskRunner> encoding_task_runner_;

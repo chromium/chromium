@@ -13,7 +13,10 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -21,6 +24,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -434,6 +438,46 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, ClickOnFocusPanelInOverviewMode) {
   test::Click(toggle_button);
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
   EXPECT_TRUE(ash::OverviewController::Get()->InOverviewSession());
+}
+
+// Tests that clicking the ending moment nudge will show the focus tray bubble.
+// Regression test for crbug.com/384586824
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, EndingMomentNudgeClick) {
+  FocusModeTray* focus_mode_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Open a browser window.
+  CreateBrowser(ProfileManager::GetActiveUserProfile());
+
+  // Start a focus session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+
+  // Trigger the ending moment and verify that the tray icon is still visible,
+  // even though the focus session has ended.
+  controller->TriggerEndingMomentImmediately();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+  EXPECT_FALSE(focus_mode_tray->GetBubbleView());
+
+  // Force the ending moment nudge to show immediately since normally there is a
+  // delay. Verify that it is showing.
+  controller->MaybeShowEndingMomentNudge();
+  EXPECT_TRUE(AnchoredNudgeManager::Get()->IsNudgeShown(
+      focus_mode_util::kFocusModeEndingMomentNudgeId));
+
+  // Simulate a "click" on the nudge.
+  focus_mode_tray->ShowBubble();
+
+  // Verify that the focus mode tray bubble is showing and we are still in the
+  // focus session ending moment.
+  EXPECT_TRUE(focus_mode_tray->GetBubbleView());
+  EXPECT_TRUE(focus_mode_tray->GetVisible());
+  EXPECT_TRUE(controller->in_ending_moment());
 }
 
 class FocusModeSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {

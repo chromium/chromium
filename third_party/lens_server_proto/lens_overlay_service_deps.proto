@@ -78,7 +78,7 @@ message LensOverlayInteractionResponse {
   reserved 1, 2;
 }
 
-// Next ID: 8
+// Next ID: 9
 message Payload {
   // The type of the request the payload is sent in.
   enum RequestType {
@@ -113,6 +113,17 @@ message Payload {
   // The partially parsed PDF document. Used to get early suggest signals. This
   // is only set for REQUEST_TYPE_EARLY_PARTIAL_PDF.
   LensOverlayDocument partial_pdf_document = 7;
+
+  // Possible compression types for content_data.
+  enum CompressionType {
+    // Default value. File is not compressed.
+    UNCOMPRESSED = 0;
+    // ZSTD compression.
+    ZSTD = 1;
+  }
+
+  // Compression format of content_data. Currently only used for PDF data.
+  CompressionType compression_type = 8;
 
   reserved 1;
 }

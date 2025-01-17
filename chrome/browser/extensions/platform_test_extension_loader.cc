@@ -41,19 +41,6 @@ scoped_refptr<const Extension> PlatformTestExtensionLoader::LoadExtension(
     return nullptr;
   }
 
-  // Force file access and/or incognito state and set install param if
-  // requested.
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-  if (allow_file_access_.has_value()) {
-    prefs->SetAllowFileAccess(extension->id(), *allow_file_access_);
-  }
-  if (allow_incognito_access_.has_value()) {
-    prefs->SetIsIncognitoEnabled(extension->id(), *allow_incognito_access_);
-  }
-  if (install_param_.has_value()) {
-    SetInstallParam(prefs, extension->id(), *install_param_);
-  }
-
   extension_id_ = extension->id();
 
   extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
@@ -86,6 +73,21 @@ PlatformTestExtensionLoader::LoadExtensionFromDirectory(
   if (!extension) {
     ADD_FAILURE() << "Failed to parse extension: " << load_error;
     return nullptr;
+  }
+
+  // Force file access and/or incognito state and set install param if
+  // requested. This must occur before the call to AddExtension() below,
+  // because ExtensionRegistry observers do things like load content scripts,
+  // and the incognito status must be set.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if (allow_file_access_.has_value()) {
+    prefs->SetAllowFileAccess(extension->id(), *allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    prefs->SetIsIncognitoEnabled(extension->id(), *allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    SetInstallParam(prefs, extension->id(), *install_param_);
   }
 
   extension_registry_->TriggerOnWillBeInstalled(extension.get(),

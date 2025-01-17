@@ -17,6 +17,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "media/cast/test/test_with_cast_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/public/environment.h"
@@ -74,7 +75,7 @@ static const openscreen::cast::SessionConfig kOpenscreenVideoConfig =
 
 }  // namespace
 
-class OpenscreenFrameSenderTest : public ::testing::Test,
+class OpenscreenFrameSenderTest : public TestWithCastEnvironment,
                                   public FrameSender::Client {
  public:
   // FrameSender::Client overrides.
@@ -84,32 +85,28 @@ class OpenscreenFrameSenderTest : public ::testing::Test,
 
  protected:
   OpenscreenFrameSenderTest()
-      : task_runner_(
-            base::MakeRefCounted<FakeSingleThreadTaskRunner>(&testing_clock_)),
-        cast_environment_(base::MakeRefCounted<CastEnvironment>(&testing_clock_,
-                                                                task_runner_,
-                                                                task_runner_,
-                                                                task_runner_)),
-        openscreen_task_runner_(task_runner_),
+      : openscreen_task_runner_(GetMainThreadTaskRunner()),
         openscreen_environment_(openscreen::Clock::now,
                                 openscreen_task_runner_,
                                 openscreen::IPEndpoint::kAnyV4()),
-        openscreen_packet_router_(openscreen_environment_,
-                                  20,
-                                  std::chrono::milliseconds(10)) {
+        openscreen_packet_router_(
+            std::make_unique<openscreen::cast::SenderPacketRouter>(
+                openscreen_environment_,
+                20,
+                std::chrono::milliseconds(10))) {
     auto openscreen_audio_sender = std::make_unique<openscreen::cast::Sender>(
-        openscreen_environment_, openscreen_packet_router_,
+        openscreen_environment_, *openscreen_packet_router_,
         kOpenscreenAudioConfig, openscreen::cast::RtpPayloadType::kAudioOpus);
     auto openscreen_video_sender = std::make_unique<openscreen::cast::Sender>(
-        openscreen_environment_, openscreen_packet_router_,
+        openscreen_environment_, *openscreen_packet_router_,
         kOpenscreenVideoConfig, openscreen::cast::RtpPayloadType::kVideoVp8);
 
     audio_sender_ = std::make_unique<OpenscreenFrameSender>(
-        cast_environment_, kAudioConfig, std::move(openscreen_audio_sender),
+        cast_environment(), kAudioConfig, std::move(openscreen_audio_sender),
         *this);
 
     video_sender_ = std::make_unique<OpenscreenFrameSender>(
-        cast_environment_, kVideoConfig, std::move(openscreen_video_sender),
+        cast_environment(), kVideoConfig, std::move(openscreen_video_sender),
         *this);
   }
 
@@ -120,14 +117,11 @@ class OpenscreenFrameSenderTest : public ::testing::Test,
   OpenscreenFrameSender& video_sender() { return *video_sender_; }
 
  private:
-  base::SimpleTestTickClock testing_clock_;
-  const scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
-  const scoped_refptr<CastEnvironment> cast_environment_;
-
   // openscreen::Sender related classes.
   openscreen_platform::TaskRunner openscreen_task_runner_;
   openscreen::cast::Environment openscreen_environment_;
-  openscreen::cast::SenderPacketRouter openscreen_packet_router_;
+  std::unique_ptr<openscreen::cast::SenderPacketRouter>
+      openscreen_packet_router_;
   std::unique_ptr<openscreen::cast::Sender> openscreen_video_sender_;
   std::unique_ptr<openscreen::cast::Sender> openscreen_audio_sender_;
 

@@ -129,13 +129,14 @@ SourceBufferState::SourceBufferState(
     MediaLog* media_log)
     : timestamp_offset_during_append_(nullptr),
       parsing_media_segment_(false),
-      stream_parser_(stream_parser.release()),
-      frame_processor_(frame_processor.release()),
+      stream_parser_(std::move(stream_parser)),
+      frame_processor_(std::move(frame_processor)),
       create_demuxer_stream_cb_(std::move(create_demuxer_stream_cb)),
       media_log_(media_log),
       state_(UNINITIALIZED) {
   DCHECK(create_demuxer_stream_cb_);
   DCHECK(frame_processor_);
+  DCHECK(stream_parser_);
 }
 
 SourceBufferState::~SourceBufferState() {

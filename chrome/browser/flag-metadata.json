@@ -6122,6 +6122,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ntp-ogb-async-bar-parts",
+    "owners": [ "romanarora@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ntp-outlook-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150

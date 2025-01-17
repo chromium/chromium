@@ -6,6 +6,7 @@
 #define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_SESSION_HOST_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -94,7 +95,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       mojo::PendingRemote<mojom::ResourceProvider> resource_provider,
       mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
       mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      base::OnceClosure deletion_cb);
 
   ~OpenscreenSessionHost() override;
 
@@ -304,6 +306,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Manages the clock and thread proxies for the audio sender, video sender,
   // and media remoter.
+  //
+  // NOTE: this is lazy initialized on the first session negotiation, and then
+  // destructed only on the destruction of this class.
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
 
   // Task runners used specifically for audio, video encoding.
@@ -359,6 +364,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // An optional stats client for fetching quality statistics from an Openscreen
   // casting session.
   std::unique_ptr<OpenscreenStatsClient> stats_client_;
+
+  // Callback invoked once this instance and all of its resources are released.
+  base::OnceClosure deletion_cb_;
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(crbug.com/40238714): determine if weak pointers can be removed.

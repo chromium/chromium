@@ -280,7 +280,8 @@ void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
 void GlicPageHandler::WebviewCommitted(const GURL& url) {
   // TODO(crbug.com/388328847): Remove this code once launch issues are ironed
   // out.
-  if (url.DomainIs("login.corp.google.com")) {
+  if (url.DomainIs("login.corp.google.com") ||
+      url.DomainIs("accounts.google.com")) {
     GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_)
         ->window_controller()
         .LoginPageCommitted();

@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -35,6 +34,7 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
+#include "media/cast/test/test_with_cast_environment.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
@@ -80,28 +80,22 @@ struct VideoEncoderTestParam {
   bool enable_media_encoder_feature;
 };
 
-class VideoEncoderTest
-    : public ::testing::TestWithParam<VideoEncoderTestParam> {
+class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
+                         public WithCastEnvironment {
  public:
   VideoEncoderTest(const VideoEncoderTest&) = delete;
   VideoEncoderTest& operator=(const VideoEncoderTest&) = delete;
 
  protected:
   VideoEncoderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        video_config_(GetDefaultVideoSenderConfig()),
+      : video_config_(GetDefaultVideoSenderConfig()),
         codec_params_(video_config_.video_codec_params.value()) {
-    task_runner_ = task_environment_.GetMainThreadTaskRunner();
     accelerator_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-    cast_environment_ = base::MakeRefCounted<CastEnvironment>(
-        task_environment_.GetMockTickClock(), task_runner_, task_runner_,
-        task_runner_);
-    task_environment_.AdvanceClock(base::TimeTicks::Now() - base::TimeTicks());
-    first_frame_time_ = Now();
+    first_frame_time_ = NowTicks();
 
     if (GetParam().use_hardware_encoder) {
       vea_factory_ = std::make_unique<FakeVideoEncodeAcceleratorFactory>(
@@ -161,7 +155,7 @@ class VideoEncoderTest
         .Times(testing::AtLeast(expected_frames));
 
     video_encoder_ = VideoEncoder::Create(
-        cast_environment_, video_config_, std::move(metrics_provider),
+        cast_environment(), video_config_, std::move(metrics_provider),
         base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
                             base::Unretained(this)),
         std::move(output_cb),
@@ -190,25 +184,20 @@ class VideoEncoderTest
 
   void DestroyEncoder() { video_encoder_.reset(); }
 
-  base::TimeTicks Now() {
-    return task_environment_.GetMockTickClock()->NowTicks();
-  }
-
   void RunTasksAndAdvanceClock() {
     CHECK_GT(video_config_.max_frame_rate, 0);
     const base::TimeDelta frame_duration =
         base::Microseconds(1000000.0 / video_config_.max_frame_rate);
-    task_environment_.AdvanceClock(frame_duration);
-    accelerator_task_runner_->PostTask(FROM_HERE,
-                                       task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
-    task_runner_->PostTask(FROM_HERE, task_environment_.QuitClosure());
-    task_environment_.RunUntilQuit();
+    AdvanceClock(frame_duration);
+    accelerator_task_runner_->PostTask(FROM_HERE, QuitClosure());
+    RunUntilQuit();
+    GetMainThreadTaskRunner()->PostTask(FROM_HERE, QuitClosure());
+    RunUntilQuit();
   }
 
   // Creates a new VideoFrame of the given |size|, filled with a test pattern.
   scoped_refptr<media::VideoFrame> CreateTestVideoFrame(const gfx::Size& size) {
-    const base::TimeDelta timestamp = Now() - first_frame_time_;
+    const base::TimeDelta timestamp = NowTicks() - first_frame_time_;
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::CreateFrame(
         PIXEL_FORMAT_I420, size, gfx::Rect(size), size, timestamp);
     PopulateVideoFrame(frame.get(), 123);
@@ -241,11 +230,7 @@ class VideoEncoderTest
                 operational_status_ == STATUS_INITIALIZED);
   }
 
-  base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> accelerator_task_runner_;
-  scoped_refptr<CastEnvironment> cast_environment_;
-
   FrameSenderConfig video_config_;
   raw_ref<VideoCodecParams> codec_params_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
@@ -312,7 +297,7 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     // successfully encoded.
     while (encoded_frames.size() <= kNumFramesExpected ||
            AnyOfLastFramesAreEmpty(encoded_frames, kNumFramesExpected)) {
-      const auto reference_time = Now();
+      const auto reference_time = NowTicks();
       auto video_frame = CreateTestVideoFrame(frame_size);
       expectations.emplace(
           reference_time,
@@ -413,7 +398,7 @@ TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
   const bool encode_result = video_encoder()->EncodeVideoFrame(
-      CreateTestVideoFrame(gfx::Size(128, 72)), Now());
+      CreateTestVideoFrame(gfx::Size(128, 72)), NowTicks());
 
   // Hardware encoders should fail to encode at this point, since the VEA has
   // not responded yet. Since software encoders don't use VEA, they should

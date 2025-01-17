@@ -13,6 +13,7 @@
 
 #include "base/cpu.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -322,7 +323,8 @@ OpenscreenSessionHost::OpenscreenSessionHost(
     mojo::PendingRemote<mojom::ResourceProvider> resource_provider,
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    base::OnceClosure deletion_cb)
     : session_params_(*session_params),
       observer_(std::move(observer)),
       resource_provider_(std::move(resource_provider)),
@@ -330,7 +332,8 @@ OpenscreenSessionHost::OpenscreenSessionHost(
                     session_params_.destination_id,
                     std::move(outbound_channel),
                     std::move(inbound_channel)),
-      logger_(kLogPrefix, observer_) {
+      logger_(kLogPrefix, observer_),
+      deletion_cb_(std::move(deletion_cb)) {
   CHECK(resource_provider_);
 
   openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
@@ -399,6 +402,11 @@ OpenscreenSessionHost::~OpenscreenSessionHost() {
   if (set_network_context_proxy_) {
     openscreen_platform::ClearNetworkContextGetter();
   }
+
+  if (deletion_cb_) {
+    CHECK(!cast_environment_);
+    std::move(deletion_cb_).Run();
+  }
 }
 
 void OpenscreenSessionHost::AsyncInitialize(
@@ -460,11 +468,11 @@ void OpenscreenSessionHost::OnNegotiated(
         NumberOfEncodeThreads();
   }
 
-  // NOTE: the audio and video encode threads are reused across negotiations
-  // and should only be instantiated once each.
-  const bool initially_starting_session =
-      !audio_encode_thread_ && !video_encode_thread_;
+  // NOTE: the CastEnvironment and its associated threads should only be
+  // instantiated once.
+  const bool initially_starting_session = !cast_environment_;
   if (initially_starting_session) {
+    CHECK(!audio_encode_thread_ && !video_encode_thread_);
     audio_encode_thread_ = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
@@ -474,12 +482,11 @@ void OpenscreenSessionHost::OnNegotiated(
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
          base::WithBaseSyncPrimitives(), base::MayBlock()},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    cast_environment_ = base::MakeRefCounted<media::cast::CastEnvironment>(
+        *base::DefaultTickClock::GetInstance(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), audio_encode_thread_,
+        video_encode_thread_, std::move(deletion_cb_));
   }
-
-  cast_environment_ = base::MakeRefCounted<media::cast::CastEnvironment>(
-      base::DefaultTickClock::GetInstance(),
-      base::SingleThreadTaskRunner::GetCurrentDefault(), audio_encode_thread_,
-      video_encode_thread_);
 
   if (state_ == State::kRemoting) {
     CHECK(media_remoter_);
@@ -807,7 +814,8 @@ void OpenscreenSessionHost::StopStreaming() {
   logger_.LogInfo(
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
-  if (!cast_environment_) {
+
+  if (!session_) {
     return;
   }
 
@@ -815,16 +823,13 @@ void OpenscreenSessionHost::StopStreaming() {
   PauseCapturingVideo();
   audio_stream_.reset();
   video_stream_.reset();
-  gpu_factories_factory_.reset();
 
   // The factory should be deleted on the VIDEO thread to ensure it is not
   // deleted before BindOnVideoThread() can be called.
-  video_encode_thread_->DeleteSoon(FROM_HERE,
-                                   std::move(gpu_factories_factory_));
-
-  // Since the environment and its properties are ref-counted, this call to
-  // release it may not immediately close any of its resources.
-  cast_environment_ = nullptr;
+  if (gpu_factories_factory_) {
+    video_encode_thread_->DeleteSoon(FROM_HERE,
+                                     std::move(gpu_factories_factory_));
+  }
 }
 
 void OpenscreenSessionHost::StopSession() {
@@ -1188,7 +1193,7 @@ void OpenscreenSessionHost::StartCapturingAudio() {
 void OpenscreenSessionHost::StopCapturingAudio() {
   if (audio_input_device_) {
     audio_input_device_->Stop();
-    audio_input_device_ = nullptr;
+    audio_input_device_.reset();
   }
   audio_capturing_callback_.reset();
 }

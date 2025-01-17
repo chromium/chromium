@@ -194,7 +194,7 @@ base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {
 
 CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   CHECK(encoded_frame);
   VLOG_WITH_SSRC(2) << "About to send another frame ("
                     << encoded_frame->frame_id
@@ -203,7 +203,7 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   CHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";
   last_enqueued_frame_id_ = encoded_frame->frame_id;
-  last_send_time_ = cast_environment_->Clock()->NowTicks();
+  last_send_time_ = cast_environment_->NowTicks();
 
   if (!is_audio_ && encoded_frame->is_key_frame) {
     VLOG_WITH_SSRC(1) << "Sending encoded key frame, id="

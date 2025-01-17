@@ -20,8 +20,7 @@ namespace media {
 class AudioBus;
 }
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 // Produces AudioBuses of varying duration where each successive output contains
 // the continuation of a single sine wave.
@@ -42,16 +41,15 @@ class TestAudioBusFactory {
   std::unique_ptr<AudioBus> NextAudioBus(const base::TimeDelta& duration);
 
   // A reasonable test tone.
-  static const int kMiddleANoteFreq = 440;
+  static constexpr int kMiddleANoteFreq = 440;
 
  private:
-  const int num_channels_;
-  const int sample_rate_;
-  const float volume_;
+  const int num_channels_ = 0;
+  const int sample_rate_ = 0;
+  const float volume_ = 0.0f;
   SineWaveAudioSource source_;
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_TEST_UTILITY_AUDIO_UTILITY_H_

@@ -33,8 +33,8 @@ class StatsEventSubscriberTest;
 class StatsEventSubscriber final : public RawEventSubscriber {
  public:
   StatsEventSubscriber(EventMediaType event_media_type,
-                       const base::TickClock* clock,
-                       ReceiverTimeOffsetEstimator* offset_estimator);
+                       const base::TickClock& clock,
+                       ReceiverTimeOffsetEstimator& offset_estimator);
 
   StatsEventSubscriber(const StatsEventSubscriber&) = delete;
   StatsEventSubscriber& operator=(const StatsEventSubscriber&) = delete;
@@ -254,10 +254,10 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   const EventMediaType event_media_type_;
 
   // Not owned by this class.
-  const raw_ptr<const base::TickClock> clock_;
+  const raw_ref<const base::TickClock> clock_;
 
   // Not owned by this class.
-  const raw_ptr<ReceiverTimeOffsetEstimator> offset_estimator_;
+  const raw_ref<ReceiverTimeOffsetEstimator> offset_estimator_;
 
   FrameStatsMap frame_stats_;
   PacketStatsMap packet_stats_;

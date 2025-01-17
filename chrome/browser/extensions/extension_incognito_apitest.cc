@@ -59,36 +59,41 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoNoScript) {
   EXPECT_EQ(true, content::EvalJs(tab, "document.title == 'Unmodified'"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/390226690): Enable on Android.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoYesScript) {
-  // Load a dummy extension. This just tests that we don't regress a
-  // crash fix when multiple incognito- and non-incognito-enabled extensions
-  // are mixed.
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("content_scripts")
-      .AppendASCII("all_frames")));
-
   // Loads a simple extension which attempts to change the title of every page
   // that loads to "modified".
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("incognito").AppendASCII("content_scripts"),
       {.allow_in_incognito = true}));
 
-  // Dummy extension #2.
-  ASSERT_TRUE(LoadExtension(test_data_dir_
-      .AppendASCII("content_scripts").AppendASCII("isolated_world1")));
-
   // Open incognito window and navigate to test page.
-  Browser* otr_browser = OpenURLOffTheRecord(
-      browser()->profile(),
-      embedded_test_server()->GetURL("/extensions/test_file.html"));
-
-  WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
+  GURL test_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  WebContents* tab = PlatformOpenURLOffTheRecord(profile(), test_url);
 
   // Verify the script ran.
   EXPECT_EQ(true, content::EvalJs(tab, "document.title == 'modified'"));
 }
 
+IN_PROC_BROWSER_TEST_F(IncognitoApiTest, NoCrashWithMultipleExtensions) {
+  // Load a dummy extension. This just tests that we don't regress a
+  // crash fix when multiple incognito- and non-incognito-enabled extensions
+  // are mixed.
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts").AppendASCII("inject_div")));
+
+  // Load an incognito extension.
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("incognito").AppendASCII("content_scripts"),
+      {.allow_in_incognito = true}));
+
+  // Dummy extension #2.
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("content_scripts")
+                                .AppendASCII("css_injection")));
+
+  // No crash.
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that an extension which is enabled for incognito mode doesn't
 // accidentally create an incognito profile.
 // TODO(https://crbug.com/390226690): Enable on Android when chrome.windows
