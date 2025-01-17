@@ -313,7 +313,7 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     case TextAndImageMode::kBlocked:
       break;
     case TextAndImageMode::kPromoCard:
-      if (chromeos::features::IsMagicBoostRevampEnabled()) {
+      if (ash::features::IsMagicBoostRevampEnabled()) {
         NOTREACHED();
       }
       editor_menu_widget_ =

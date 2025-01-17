@@ -1763,6 +1763,11 @@ BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the new Magic Boost Consent Flow.
+BASE_FEATURE(kMagicBoostRevamp,
+             "MagicBoostRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi,
              "MediaAppPdfMahi",
@@ -3912,6 +3917,10 @@ bool IsLobsterEnabled() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
+}
+
+bool IsMagicBoostRevampEnabled() {
+  return base::FeatureList::IsEnabled(kMagicBoostRevamp);
 }
 
 bool IsGameDashboardGamepadSupportEnabled() {

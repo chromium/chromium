@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -135,11 +134,6 @@ BASE_FEATURE(kGeminiAppPreinstall,
 BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the new Magic Boost Consent Flow.
-BASE_FEATURE(kMagicBoostRevamp,
-             "MagicBoostRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -450,14 +444,6 @@ bool IsGeminiAppPreinstallFeatureManagementEnabled() {
 
 bool IsGeminiAppPreinstallEnabled() {
   return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
-}
-
-bool IsMagicBoostRevampEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(kMagicBoostRevamp);
-#else
-  return false;
-#endif
 }
 
 bool IsMahiEnabled() {
