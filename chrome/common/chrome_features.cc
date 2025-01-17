@@ -1441,20 +1441,6 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
-// Please note that a Chrome policy must also be set, for this to have effect.
-// Effectively, this is a kill-switch for the feature.
-// TODO(crbug.com/40545136): Remove this kill-switch.
-BASE_FEATURE(kWebRtcRemoteEventLog,
-             "WebRtcRemoteEventLog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Compress remote-bound WebRTC event logs (if used; see kWebRtcRemoteEventLog).
-BASE_FEATURE(kWebRtcRemoteEventLogGzipped,
-             "WebRtcRemoteEventLogGzipped",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 // Enables Web Share (navigator.share)
 BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);

@@ -41,7 +41,7 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
 
  private:
   PhysicalRect ReplacedContentRectForCapturedContent() const;
-  IntrinsicSizingInfo GetNaturalDimensions() const override;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   scoped_refptr<cc::ViewTransitionContentLayer> layer_;
   gfx::RectF captured_rect_;

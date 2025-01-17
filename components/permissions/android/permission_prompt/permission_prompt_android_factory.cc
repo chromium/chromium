@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_message.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_infobar.h"

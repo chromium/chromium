@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 
@@ -17,7 +18,38 @@ EditorMenuCardContext::EditorMenuCardContext(const EditorMenuCardContext&) =
 EditorMenuCardContext::~EditorMenuCardContext() = default;
 
 TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
-  return CalculateTextAndImageMode(editor_mode_, lobster_mode_);
+  // TODO: b:389553095 - With the introduction of EditorTextSelectionMode,
+  // merge kRewrite and kWrite into a single enum value.
+  switch (editor_mode_) {
+    case EditorMode::kRewrite:
+    case EditorMode::kWrite:
+    case EditorMode::kConsentNeeded:
+      if (editor_mode_ == EditorMode::kConsentNeeded &&
+          !ash::features::IsMagicBoostRevampEnabled()) {
+        return TextAndImageMode::kPromoCard;
+      }
+      if (lobster_mode_ == LobsterMode::kBlocked) {
+        return text_selection_mode_ ==
+                       EditorMenuCardTextSelectionMode::kHasSelection
+                   ? TextAndImageMode::kEditorRewriteOnly
+                   : TextAndImageMode::kEditorWriteOnly;
+      }
+      return text_selection_mode_ ==
+                     EditorMenuCardTextSelectionMode::kHasSelection
+                 ? TextAndImageMode::kEditorRewriteAndLobster
+                 : TextAndImageMode::kEditorWriteAndLobster;
+
+    case EditorMode::kSoftBlocked:
+    case EditorMode::kHardBlocked:
+      if (lobster_mode_ == LobsterMode::kBlocked) {
+        return TextAndImageMode::kBlocked;
+      }
+
+      return text_selection_mode_ ==
+                     EditorMenuCardTextSelectionMode::kHasSelection
+                 ? TextAndImageMode::kLobsterWithSelectedText
+                 : TextAndImageMode::kLobsterWithNoSelectedText;
+  }
 }
 
 bool EditorMenuCardContext::consent_status_settled() const {
@@ -76,6 +108,12 @@ EditorMenuCardContext& EditorMenuCardContext::set_editor_mode(
 EditorMenuCardContext& EditorMenuCardContext::set_lobster_mode(
     LobsterMode lobster_mode) {
   lobster_mode_ = lobster_mode;
+  return *this;
+}
+
+EditorMenuCardContext& EditorMenuCardContext::set_text_selection_mode(
+    EditorMenuCardTextSelectionMode text_selection_mode) {
+  text_selection_mode_ = text_selection_mode;
   return *this;
 }
 

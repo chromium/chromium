@@ -51,26 +51,24 @@ void LayoutVideo::IntrinsicSizeChanged() {
 
 void LayoutVideo::UpdateNaturalSize() {
   NOT_DESTROYED();
-
-  const IntrinsicSizingInfo sizing_info = GetNaturalDimensions();
-  PhysicalSize size = PhysicalSize::FromSizeFRound(sizing_info.size);
+  const PhysicalNaturalSizingInfo sizing_info = GetNaturalDimensions();
 
   // Never set the element size to zero when in a media document.
-  if (size.IsEmpty() && GetDocument().IsMediaDocument()) {
+  if (sizing_info.size.IsEmpty() && GetDocument().IsMediaDocument()) {
     return;
   }
 
-  if (size == NaturalSize()) {
+  if (sizing_info.size == NaturalSize()) {
     return;
   }
 
-  SetNaturalSize(size);
+  SetNaturalSize(sizing_info.size);
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
 }
 
-IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutVideo::GetNaturalDimensions() const {
   NOT_DESTROYED();
 
   auto display_mode = GetDisplayMode();
@@ -100,16 +98,18 @@ IntrinsicSizingInfo LayoutVideo::GetNaturalDimensions() const {
       if (const auto* player = video->GetWebMediaPlayer()) {
         gfx::Size video_size = player->NaturalSize();
         if (!video_size.IsEmpty()) {
-          return IntrinsicSizingInfo::MakeFixed(gfx::ScaleSize(
-              gfx::SizeF(video_size), StyleRef().EffectiveZoom()));
+          PhysicalSize natural_size(video_size);
+          natural_size.Scale(StyleRef().EffectiveZoom());
+          return PhysicalNaturalSizingInfo::MakeFixed(natural_size);
         }
       }
       break;
   }
 
   // Natural dimensions are missing.
-  return IntrinsicSizingInfo::MakeFixed(
-      gfx::ScaleSize(gfx::SizeF(DefaultSize()), StyleRef().EffectiveZoom()));
+  PhysicalSize default_size(DefaultSize());
+  default_size.Scale(StyleRef().EffectiveZoom());
+  return PhysicalNaturalSizingInfo::MakeFixed(default_size);
 }
 
 void LayoutVideo::ImageChanged(WrappedImagePtr new_image,

@@ -60,6 +60,8 @@ class URLLoaderFactoryParamsHelper {
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter,
       RenderProcessHost* process,
       network::mojom::TrustTokenOperationPolicyVerdict
           trust_token_issuance_policy,

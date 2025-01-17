@@ -134,7 +134,7 @@ class PendingState : public ControllerState {
   }
 
   void OnProcessingFinishedWithSuccess() override {
-    if (controller->flow().type == Flow::Type::kJoin) {
+    if (controller->flow().type == FlowType::kJoin) {
       // Handle URL parsing errors.
       if (!controller->flow().join_token().IsValid()) {
         HandleError();
@@ -146,7 +146,7 @@ class PendingState : public ControllerState {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
-      if (Flow::Type::kJoin == controller->flow().type) {
+      if (FlowType::kJoin == controller->flow().type) {
         RecordJoinEvent(CollaborationServiceJoinEvent::kNotSignedIn);
       }
 
@@ -176,7 +176,7 @@ class AuthenticatingState : public ControllerState,
 
   void ProcessOutcome(Outcome outcome) override {
     if (Outcome::kCancel == outcome) {
-      if (Flow::Type::kJoin == controller->flow().type) {
+      if (FlowType::kJoin == controller->flow().type) {
         RecordJoinEvent(CollaborationServiceJoinEvent::kCanceledNotSignedIn);
       }
     }
@@ -226,7 +226,7 @@ class CheckingFlowRequirementsState : public ControllerState {
 
   void OnEnter(const ErrorInfo& error) override {
     switch (controller->flow().type) {
-      case CollaborationController::Flow::Type::kJoin: {
+      case FlowType::kJoin: {
         const data_sharing::GroupId group_id =
             controller->flow().join_token().group_id;
         // Check if user is already part of the group.
@@ -252,7 +252,7 @@ class CheckingFlowRequirementsState : public ControllerState {
                            local_weak_ptr_factory_.GetWeakPtr()));
         break;
       }
-      case CollaborationController::Flow::Type::kShareOrManage:
+      case FlowType::kShareOrManage:
         std::optional<tab_groups::SavedTabGroup> sync_group =
             controller->tab_group_sync_service()->GetGroup(
                 controller->flow().either_id());
@@ -306,7 +306,7 @@ class AddingUserToGroupState : public ControllerState {
 
   void ProcessOutcome(Outcome outcome) override {
     if (Outcome::kCancel == outcome) {
-      CHECK_EQ(controller->flow().type, Flow::Type::kJoin)
+      CHECK_EQ(controller->flow().type, FlowType::kJoin)
           << "Only the join flow can transition into the AddingUserToGroup "
              "state.";
       RecordJoinEvent(CollaborationServiceJoinEvent::kCanceled);
@@ -413,7 +413,7 @@ class OpeningLocalTabGroupState : public ControllerState {
 
   void OnEnter(const ErrorInfo& error) override {
     // Only the join flow has a valid `group_id`.
-    CHECK_EQ(controller->flow().type, Flow::Type::kJoin);
+    CHECK_EQ(controller->flow().type, FlowType::kJoin);
 
     controller->delegate()->PromoteTabGroup(
         controller->flow().join_token().group_id,
@@ -430,7 +430,7 @@ class ShowingShareScreen : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    CHECK_EQ(controller->flow().type, Flow::Type::kShareOrManage);
+    CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
 
     // TODO(crbug.com/382557489): Wait for sync to upload the group before
     // showing the system share sheet.
@@ -455,7 +455,7 @@ class ShowingManageScreen : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    CHECK_EQ(controller->flow().type, Flow::Type::kShareOrManage);
+    CHECK_EQ(controller->flow().type, FlowType::kShareOrManage);
 
     controller->delegate()->ShowManageDialog(
         controller->flow().either_id(),
@@ -485,17 +485,16 @@ class ErrorState : public ControllerState {
 
 }  // namespace
 
-CollaborationController::Flow::Flow(Flow::Type type,
+CollaborationController::Flow::Flow(FlowType type,
                                     const data_sharing::GroupToken& token)
     : type(type), join_token_(token) {
-  DCHECK(type == Flow::Type::kJoin);
+  DCHECK(type == FlowType::kJoin);
 }
 
-CollaborationController::Flow::Flow(Flow::Type type,
+CollaborationController::Flow::Flow(FlowType type,
                                     const tab_groups::EitherGroupID& either_id)
     : type(type), either_id_(either_id) {
-  DCHECK(type == Flow::Type::kShareOrManage);
-  DCHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id_));
+  DCHECK(type == FlowType::kShareOrManage);
 }
 
 CollaborationController::Flow::Flow(const Flow&) = default;

@@ -1051,7 +1051,7 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
 }
 
 bool LocalFrameView::GetIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+    NaturalSizingInfo& intrinsic_sizing_info) const {
   if (LayoutSVGRoot* content_layout_object = EmbeddedReplacedContent()) {
     content_layout_object->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
     return true;

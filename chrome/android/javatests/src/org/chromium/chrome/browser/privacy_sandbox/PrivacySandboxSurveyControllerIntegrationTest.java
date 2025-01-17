@@ -5,25 +5,16 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
 import android.content.Context;
 import android.content.Intent;
-import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.PerformException;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -117,381 +108,6 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
         return intent;
     }
 
-    // TODO(crbug.com/389997409): Move this to a shared test util library.
-    private void tryClickOn(Matcher<View> viewMatcher) {
-        expandDialogIfNeeded();
-        onViewWaiting(viewMatcher, true).perform(click());
-    }
-
-    private void expandDialogIfNeeded() {
-        while (true) {
-            try {
-                onView(withId(R.id.more_button)).inRoot(isDialog()).perform(click());
-            } catch (PerformException e) {
-                return;
-            }
-        }
-    }
-
-    private void acknowledgeRowNotice() {
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
-        tryClickOn(withId(R.id.ack_button));
-    }
-
-    private void interactWithEeaConsentAndNotice(boolean shouldAcceptConsent) {
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isDisplayed()));
-        // Accept or decline the EEA consent dialog
-        if (shouldAcceptConsent) {
-            tryClickOn(withId(R.id.ack_button));
-        } else {
-            tryClickOn(withId(R.id.no_button));
-        }
-
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
-        // Acknowledge the EEA notice
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)) {
-            tryClickOn(withId(R.id.ack_button_equalized));
-        } else {
-            tryClickOn(withId(R.id.ack_button));
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForRowTreatmentAcceptSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        acknowledgeRowNotice();
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
-                });
-        Assert.assertEquals(
-                "Last shown survey triggerId not match.",
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-                mTestSurveyComponentRule.getLastShownTriggerId());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForRowTreatmentDismissSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        acknowledgeRowNotice();
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mMessageDispatcher.dismissMessage(mSurveyMessage, DismissReason.GESTURE));
-        Assert.assertTrue(
-                "Survey displayed not recorded.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForRowTreatmentNotShownWhenTriggerIdNotSet() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        acknowledgeRowNotice();
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-notice-row-for-testing/true/notice-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
-    })
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY})
-    public void adsCctSurveyForRowNoticeNotShownWithSurveyFeatureDisabled() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        acknowledgeRowNotice();
-        Assert.assertEquals(
-                "Survey was displayed.", mTestSurveyComponentRule.getLastShownTriggerId(), null);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaAcceptedConsentAcceptSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
-                });
-        Assert.assertEquals(
-                "Last shown survey triggerId not match.",
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-                mTestSurveyComponentRule.getLastShownTriggerId());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaAcceptedConsentDismissSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
-                });
-        Assert.assertEquals(
-                "Last shown survey triggerId not match.",
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-                mTestSurveyComponentRule.getLastShownTriggerId());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/1.0/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaAcceptedNotShownWhenTriggerIdNotSet() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "accepted-trigger-rate/0.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaAcceptedNotShownSurveyDueToAcceptedTriggerRate() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
-                + "eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaDeclinedConsentAcceptSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
-                });
-        Assert.assertEquals(
-                "Last shown survey triggerId not match.",
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-                mTestSurveyComponentRule.getLastShownTriggerId());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
-                + "eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaDeclinedConsentDismissSurvey() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
-        waitForSurveyMessageToShowOnCct();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
-                });
-        Assert.assertEquals(
-                "Last shown survey triggerId not match.",
-                TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-                mTestSurveyComponentRule.getLastShownTriggerId());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/0.0/"
-                + "eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaDeclinedNotShownSurveyDueToDeclinedTriggerRate() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
-    })
-    public void adsCctSurveyForEeaDeclinedNotShownWhenTriggerIdNotSet() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ false);
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "declined-trigger-rate/1.0/"
-                + "eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true"
-                + "/force-show-notice-row-for-testing/true/notice-required/true",
-    })
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT})
-    public void adsCctSurveyForTreatmentNotShownWhenAdsNoticeCctFeatureDisabled() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
-        Assert.assertFalse(
-                "Survey was displayed.",
-                mTestSurveyComponentRule.isPromptShownForTriggerId(
-                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
-                + ":force-show-consent-for-testing/true/consent-required/true",
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
-    })
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY})
-    public void adsCctSurveyForEeaConsentNotShownWithSurveyFeatureDisabled() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        interactWithEeaConsentAndNotice(/* shouldAcceptConsent= */ true);
-        Assert.assertEquals(
-                "Survey was displayed.", mTestSurveyComponentRule.getLastShownTriggerId(), null);
-    }
-
     @Test
     @MediumTest
     @Features.EnableFeatures({
@@ -548,22 +164,14 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
+                + ":app-id/org.chromium.chrome.tests/",
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
     @DisableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
     })
-    public void adsCctSurveyForRowControlNotShownWhenTriggerIdNotSet() {
+    public void adsCctSurveyForRowControlNotShownWhenNoTriggerIdProvided() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         Assert.assertFalse(
                 "Survey was displayed.",
@@ -627,22 +235,14 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-acknowledged-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-declined-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/eea-accepted-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
+                + ":app-id/org.chromium.chrome.tests/",
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-consent-for-testing/true/consent-required/true"
     })
     @DisableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
     })
-    public void adsCctSurveyForEeaControlNotShownWhenTriggerIdNotSet() {
+    public void adsCctSurveyForEeaControlNotShownWhenNoTriggerIdProvided() {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         Assert.assertFalse(
                 "Survey was displayed.",
@@ -654,11 +254,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/org.chromium.chrome.tests/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
+                + ":app-id/org.chromium.chrome.tests/",
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-consent-for-testing/true/consent-required/true"
                 + "/force-show-notice-row-for-testing/true/notice-required/true",
@@ -675,12 +271,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY
-                + ":app-id/invalid-app-id/"
-                + "eea-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-                + "/row-control-trigger-id/"
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO,
+        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY + ":app-id/invalid-app-id/",
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-consent-for-testing/true/consent-required/true"
                 + "/force-show-notice-row-for-testing/true/notice-required/true",

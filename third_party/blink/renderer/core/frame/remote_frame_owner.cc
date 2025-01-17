@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
 namespace blink {
@@ -71,7 +71,7 @@ void RemoteFrameOwner::DispatchLoad() {
 
 void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
-  IntrinsicSizingInfo intrinsic_sizing_info;
+  NaturalSizingInfo intrinsic_sizing_info;
   bool result =
       local_frame.View()->GetIntrinsicSizingInfo(intrinsic_sizing_info);
   // By virtue of having been invoked, GetIntrinsicSizingInfo() should always

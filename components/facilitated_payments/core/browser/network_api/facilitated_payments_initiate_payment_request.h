@@ -52,7 +52,15 @@ class FacilitatedPaymentsInitiatePaymentRequest
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
                            ParseResponse_WithActionToken);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
+                           ParseResponse_WithSecurePayload);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
                            ParseResponse_WithCorruptActionToken);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
+                           ParseResponse_MissingSecureDataKey);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
+                           ParseResponse_MissingSecureDataValue);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
+                           ParseResponse_ActionTokenContainedInOldFormatAndNew);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
                            ParseResponse_WithErrorMessage);
 

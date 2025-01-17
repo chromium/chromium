@@ -32,7 +32,7 @@
 
 namespace blink {
 
-struct IntrinsicSizingInfo;
+struct PhysicalNaturalSizingInfo;
 
 // LayoutReplaced is the base class for a replaced element as defined by CSS:
 //
@@ -103,11 +103,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // Compute the natural dimensions of the replaced content. Should not apply
   // any additional transformations (like 'object-view-box').
-  virtual IntrinsicSizingInfo GetNaturalDimensions() const = 0;
+  virtual PhysicalNaturalSizingInfo GetNaturalDimensions() const = 0;
 
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  virtual IntrinsicSizingInfo ComputeIntrinsicSizingInfo() const;
+  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const;
 
   // This callback must be invoked whenever the underlying intrinsic size has
   // changed.
@@ -124,13 +124,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   bool ClipsToContentBox() const;
 
  protected:
-  virtual bool CanApplyObjectViewBox() const {
+  virtual bool ShouldApplyObjectViewBox() const {
     NOT_DESTROYED();
     return true;
   }
-  // Applies a 'object-view-box' (if present) to the provided natural
-  // dimensions.
-  void ApplyObjectViewBox(IntrinsicSizingInfo&) const;
 
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();
@@ -149,7 +146,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // box according to object-fit, object-position and object-view-box.
   PhysicalRect ComputeReplacedContentRect(
       const PhysicalRect& base_content_rect,
-      const IntrinsicSizingInfo& sizing_info) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -174,11 +171,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
   std::optional<PhysicalRect> ComputeObjectViewBoxRect(
-      const gfx::SizeF& natural_size) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
-      const IntrinsicSizingInfo& sizing_info) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 };
 
 template <>

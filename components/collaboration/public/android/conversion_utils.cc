@@ -28,6 +28,21 @@ GetNativeResultCallbackFromJava(jlong callback) {
           callback));
 }
 
+jlong GetJavaExitCallbackPtr(base::OnceClosure callback) {
+  std::unique_ptr<base::OnceClosure> wrapped_callback =
+      std::make_unique<base::OnceClosure>(std::move(callback));
+  CHECK(wrapped_callback.get());
+  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  wrapped_callback.release();
+
+  return j_native_ptr;
+}
+
+std::unique_ptr<base::OnceClosure> GetNativeExitCallbackFromJava(
+    jlong callback) {
+  return base::WrapUnique(reinterpret_cast<base::OnceClosure*>(callback));
+}
+
 jlong GetJavaDelegateUniquePtr(
     std::unique_ptr<CollaborationControllerDelegate> delegate) {
   CollaborationControllerDelegate* delegate_ptr = delegate.get();

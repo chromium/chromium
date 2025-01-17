@@ -23,6 +23,7 @@ static_library("magic_boost") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/mahi:mahi_availability",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
@@ -55,6 +56,7 @@ static_library("test_support") {
     ":magic_boost",
     "//base",
     "//chrome/browser/ash/input_method",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//testing/gmock",
   ]
 }
@@ -102,6 +104,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/mahi",
     "//chrome/browser/ui/webui/ash/mako",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",

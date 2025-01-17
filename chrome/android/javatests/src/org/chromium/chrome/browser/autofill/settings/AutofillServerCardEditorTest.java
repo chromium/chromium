@@ -54,6 +54,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -75,6 +76,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for AutofillServerCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillServerCardEditorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();

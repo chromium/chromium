@@ -29,6 +29,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -85,7 +86,7 @@ void WaitUntilViewClosed(views::Widget* widget) {
 class MagicBoostBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<std::tuple<
-          /*editor_mode=*/input_method::EditorMode,
+          /*editor_mode=*/chromeos::editor_menu::EditorMode,
           /*orca_consent_status=*/input_method::ConsentStatus,
           /*is_hmr_consent_unset=*/chromeos::HMRConsentStatus>> {
  public:
@@ -220,7 +221,7 @@ class MagicBoostBrowserTest
   bool ShouldIncludeOrca() const {
     // See `GetConsentStatusFromInteger` method in `editor_consent_enums.cc`,
     // `kInvalid` is treated as `kUnset`.
-    return GetEditorMode() != input_method::EditorMode::kHardBlocked &&
+    return GetEditorMode() != chromeos::editor_menu::EditorMode::kHardBlocked &&
            (GetInitEditorConsentStatus() ==
                 input_method::ConsentStatus::kUnset ||
             GetInitEditorConsentStatus() ==
@@ -236,11 +237,11 @@ class MagicBoostBrowserTest
     // Orca consent status to find the current editor mode. It will get
     // `kRewrite` when the selected length is greater than 0, and get `kWrite`
     // when the selected length is 0.
-    return GetEditorMode() == input_method::EditorMode::kRewrite ||
-           GetEditorMode() == input_method::EditorMode::kWrite;
+    return GetEditorMode() == chromeos::editor_menu::EditorMode::kRewrite ||
+           GetEditorMode() == chromeos::editor_menu::EditorMode::kWrite;
   }
 
-  input_method::EditorMode GetEditorMode() const {
+  chromeos::editor_menu::EditorMode GetEditorMode() const {
     return std::get<0>(GetParam());
   }
 
@@ -288,11 +289,11 @@ INSTANTIATE_TEST_SUITE_P(
     MagicBoostBrowserTest,
     testing::Combine(
         /*editor_mode=*/testing::Values(
-            input_method::EditorMode::kHardBlocked,
-            input_method::EditorMode::kSoftBlocked,
-            input_method::EditorMode::kConsentNeeded,
-            input_method::EditorMode::kRewrite,
-            input_method::EditorMode::kWrite),
+            chromeos::editor_menu::EditorMode::kHardBlocked,
+            chromeos::editor_menu::EditorMode::kSoftBlocked,
+            chromeos::editor_menu::EditorMode::kConsentNeeded,
+            chromeos::editor_menu::EditorMode::kRewrite,
+            chromeos::editor_menu::EditorMode::kWrite),
         /*orca_consent_status=*/
         testing::Values(input_method::ConsentStatus::kInvalid,
                         input_method::ConsentStatus::kPending,

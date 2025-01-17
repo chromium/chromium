@@ -41,7 +41,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -103,6 +105,7 @@ public class DataSharingTabManager {
     private @Nullable DataSharingService mDataSharingService;
     private @Nullable MessagingBackendService mMessagingBackendService;
     private @Nullable CollaborationService mCollaborationService;
+    private @Nullable CollaborationControllerDelegate mCurrentDelegate;
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
@@ -171,6 +174,20 @@ public class DataSharingTabManager {
     }
 
     /**
+     * @return The {@link Profile} instance associated with the tab manager.
+     */
+    public Profile getProfile() {
+        return mProfile;
+    }
+
+    /**
+     * @return The {@link WindowAndroid} instance associated with the tab manager.
+     */
+    public WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
+
+    /**
      * Initializes when profile is available.
      *
      * @param profile The loaded profile.
@@ -201,6 +218,16 @@ public class DataSharingTabManager {
         }
         mSyncObserversList.clear();
         mBulkFaviconUtil.destroy();
+
+        if (mCurrentDelegate != null) {
+            mCurrentDelegate.destroy();
+            mCurrentDelegate = null;
+        }
+    }
+
+    /** Cleans up the current collaboration delegate reference. */
+    public void onCollaborationDelegateFlowFinished() {
+        mCurrentDelegate = null;
     }
 
     /** Returns whether the current session supports creating collaborations. */
@@ -298,8 +325,8 @@ public class DataSharingTabManager {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
                 && mCollaborationControllerDelegateFactory != null) {
             assert mCollaborationService != null;
-            mCollaborationService.startJoinFlow(
-                    mCollaborationControllerDelegateFactory.create(), dataSharingUrl);
+            mCurrentDelegate = mCollaborationControllerDelegateFactory.create(FlowType.JOIN);
+            mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
             return;
         }
 
@@ -644,6 +671,18 @@ public class DataSharingTabManager {
 
         SavedTabGroup existingGroup = tabGroupService.getGroup(localTabGroupId);
         assert existingGroup != null : "Group not found in TabGroupSyncService.";
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
+                && mCollaborationControllerDelegateFactory != null) {
+            assert mCollaborationService != null;
+            // TODO(haileywang): Ensure createGroupFinishedCallback is called when the creation is
+            // finished.
+            mCurrentDelegate =
+                    mCollaborationControllerDelegateFactory.create(FlowType.SHARE_OR_MANAGE);
+            mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId);
+            return;
+        }
+
         if (existingGroup.collaborationId != null) {
             DataSharingMetrics.recordShareActionFlowState(
                     DataSharingMetrics.ShareActionStateAndroid.GROUP_EXISTS);

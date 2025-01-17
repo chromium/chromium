@@ -418,10 +418,6 @@ AwQuotaManagerBridge* AwBrowserContext::GetQuotaManagerBridge() {
   return quota_manager_bridge_.get();
 }
 
-AwFormDatabaseService* AwBrowserContext::GetFormDatabaseService() {
-  return form_database_service_.get();
-}
-
 CookieManager* AwBrowserContext::GetCookieManager() {
   if (IsDefaultBrowserContext()) {
     // For the default context, the CookieManager isn't owned by the context,
@@ -683,14 +679,6 @@ void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
       GetOriginTrialsControllerDelegate();
   if (delegate)
     delegate->ClearPersistedTokens();
-}
-
-jboolean AwBrowserContext::HasFormData(JNIEnv* env) {
-  return GetFormDatabaseService()->HasFormData();
-}
-
-void AwBrowserContext::ClearFormData(JNIEnv* env) {
-  return GetFormDatabaseService()->ClearFormData();
 }
 
 base::android::ScopedJavaLocalRef<jobject>

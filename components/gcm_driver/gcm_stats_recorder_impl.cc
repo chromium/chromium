@@ -480,17 +480,15 @@ void GCMStatsRecorderImpl::RecordNotifySendStatus(
     const std::string& receiver_id,
     const std::string& message_id,
     gcm::MCSClient::MessageSendStatus status,
-    int byte_size,
+    size_t byte_size,
     int ttl) {
   if (!is_recording_)
     return;
   RecordSending(
-      app_id,
-      receiver_id,
-      message_id,
+      app_id, receiver_id, message_id,
       base::StringPrintf("SEND status: %s",
                          GetMessageSendStatusString(status).c_str()),
-      base::StringPrintf("Msg size: %d bytes, TTL: %d", byte_size, ttl));
+      base::StringPrintf("Msg size: %zu bytes, TTL: %d", byte_size, ttl));
 }
 
 void GCMStatsRecorderImpl::RecordIncomingSendError(

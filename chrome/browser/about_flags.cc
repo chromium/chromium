@@ -4365,12 +4365,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"webrtc-hw-encoding", flag_descriptions::kWebrtcHwEncodingName,
      flag_descriptions::kWebrtcHwEncodingDescription, kOsAndroid | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebRtcHWEncoding)},
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-webrtc-remote-event-log",
-     flag_descriptions::kWebRtcRemoteEventLogName,
-     flag_descriptions::kWebRtcRemoteEventLogDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebRtcRemoteEventLog)},
-#endif
     {"enable-webrtc-allow-input-volume-adjustment",
      flag_descriptions::kWebRtcAllowInputVolumeAdjustmentName,
      flag_descriptions::kWebRtcAllowInputVolumeAdjustmentDescription,

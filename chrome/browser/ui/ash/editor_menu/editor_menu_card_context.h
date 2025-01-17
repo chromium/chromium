@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_EDITOR_MENU_CARD_CONTEXT_H_
 #define CHROME_BROWSER_UI_ASH_EDITOR_MENU_EDITOR_MENU_CARD_CONTEXT_H_
 
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 
 namespace chromeos::editor_menu {
+
+enum class EditorMenuCardTextSelectionMode {
+  kNoSelection,
+  kHasSelection,
+};
 
 struct EditorMenuCardContext {
  public:
@@ -27,6 +31,8 @@ struct EditorMenuCardContext {
       const PresetTextQueries& preset_queries);
   EditorMenuCardContext& set_editor_mode(EditorMode editor_mode);
   EditorMenuCardContext& set_lobster_mode(LobsterMode lobster_mode);
+  EditorMenuCardContext& set_text_selection_mode(
+      EditorMenuCardTextSelectionMode text_selection_mode);
   EditorMenuCardContext& build();
 
  private:
@@ -36,6 +42,8 @@ struct EditorMenuCardContext {
   PresetTextQueries editor_preset_queries_;
   EditorMode editor_mode_ = EditorMode::kHardBlocked;
   LobsterMode lobster_mode_ = LobsterMode::kBlocked;
+  EditorMenuCardTextSelectionMode text_selection_mode_ =
+      EditorMenuCardTextSelectionMode::kNoSelection;
 };
 
 }  // namespace chromeos::editor_menu

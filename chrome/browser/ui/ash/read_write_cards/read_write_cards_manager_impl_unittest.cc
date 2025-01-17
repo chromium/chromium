@@ -13,13 +13,14 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -344,7 +345,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     ExpectControllersEqual(
         "",
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false));
 
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
@@ -385,7 +386,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
     auto controllers =
-        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+        GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false);
 
     ExpectControllersEqual(
@@ -480,7 +481,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<
                     ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kPromoCard,
+      editor_menu::EditorMode::kConsentNeeded,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {

@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -89,6 +90,41 @@ std::optional<EntityInstance> ValidateEntityInstance(
   return std::move(entity);
 }
 
+// TODO(crbug.com/388590912): Remove when test data is no longer needed.
+void AddTestDataIfNeeded(EntityTable& table) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiTestData)) {
+    return;
+  }
+
+  // We skip subsequent calls so that test data isn't re-added after it was
+  // deleted.
+  static bool has_been_called = false;
+  if (has_been_called) {
+    return;
+  }
+  has_been_called = true;
+
+  using enum AttributeTypeName;
+  table.AddEntityInstance(EntityInstance(
+      EntityType(EntityTypeName::kPassport),
+      {AttributeInstance(AttributeType(kPassportNumber), "123", {}),
+       AttributeInstance(AttributeType(kPassportName), "Pippi Långstrump", {}),
+       AttributeInstance(AttributeType(kPassportCountry), "Sweden", {}),
+       AttributeInstance(AttributeType(kPassportExpiryDate), "09/2098", {}),
+       AttributeInstance(AttributeType(kPassportIssueDate), "10/1998", {})},
+      base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
+      "Passie", base::Time::Now()));
+  table.AddEntityInstance(EntityInstance(
+      EntityType(EntityTypeName::kLoyaltyCard),
+      {AttributeInstance(AttributeType(kLoyaltyCardProgram),
+                         "Asterisk Alliance", {}),
+       AttributeInstance(AttributeType(kLoyaltyCardProvider),
+                         "Propeller Airways", {}),
+       AttributeInstance(AttributeType(kLoyaltyCardMemberId), "987", {})},
+      base::Uuid::ParseLowercase("11111111-1111-4111-8111-111111111111"),
+      "Loyie", base::Time::Now()));
+}
+
 }  // namespace
 
 EntityTable::EntityTable() = default;
@@ -151,11 +187,12 @@ bool EntityTable::MigrateToVersion(int version,
 }
 
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
+  AddTestDataIfNeeded(*this);
+
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {
     return false;
   }
-
   // Add the attributes.
   for (const AttributeInstance& attribute : entity.attributes()) {
     sql::Statement s;
@@ -187,12 +224,16 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 }
 
 bool EntityTable::UpdateEntityInstance(const EntityInstance& entity) {
+  AddTestDataIfNeeded(*this);
+
   sql::Transaction transaction(db());
   return transaction.Begin() && RemoveEntityInstance(entity.guid()) &&
          AddEntityInstance(entity) && transaction.Commit();
 }
 
 bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
+  AddTestDataIfNeeded(*this);
+
   sql::Transaction transaction(db());
   return transaction.Begin() &&
          DeleteWhereColumnEq(db(), attributes::kTableName,
@@ -205,6 +246,8 @@ bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
 
 bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                                        base::Time delete_end) {
+  AddTestDataIfNeeded(*this);
+
   if (delete_begin.is_null()) {
     delete_begin = base::Time::Min();
   }
@@ -239,6 +282,8 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
 }
 
 std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
+  AddTestDataIfNeeded(const_cast<EntityTable&>(*this));
+
   // Collects all attributes, keyed by the owning entity's GUID.
   std::map<base::Uuid, std::vector<AttributeInstance>> attributes;
   {

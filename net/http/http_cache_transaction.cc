@@ -46,6 +46,7 @@
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/base/transport_info.h"
@@ -62,6 +63,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/http/no_vary_search_cache.h"
 #include "net/log/net_log_event_type.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
@@ -165,6 +167,13 @@ bool HeaderMatches(const HttpRequestHeaders& headers,
   return false;
 }
 
+// Methods other than "GET" or "HEAD" can have request bodies, which causes
+// problems for the request matching.
+// TODO(https://crbug.com/390459312): Consider supporting additional methods.
+bool MethodUsesNoVarySearch(const std::string& method) {
+  return method == "GET" || method == "HEAD";
+}
+
 }  // namespace
 
 #define CACHE_STATUS_HISTOGRAMS(type)                                      \
@@ -179,7 +188,8 @@ bool HeaderMatches(const HttpRequestHeaders& headers,
 HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
     : trace_id_(GetNextTraceId(cache)),
       priority_(priority),
-      cache_(cache->GetWeakPtr()) {
+      cache_(cache->GetWeakPtr()),
+      read_no_vary_search_cache_(cache->no_vary_search_cache_) {
   static_assert(HttpCache::Transaction::kNumValidationHeaders ==
                     std::size(kValidationHeaders),
                 "invalid number of validation headers");
@@ -1180,6 +1190,11 @@ int HttpCache::Transaction::DoInitEntry() {
     return OK;
   }
 
+  if ((mode_ & READ) && read_no_vary_search_cache_ &&
+      IsNoVarySearchApplicable()) {
+    no_vary_search_use_result_ = LookupRequestInNoVarySearchCache();
+  }
+
   TransitionToState(STATE_OPEN_OR_CREATE_ENTRY);
   return OK;
 }
@@ -1254,6 +1269,15 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     return cache_->OpenEntry(cache_key_, &new_entry_, this);
   }
 
+  if (no_vary_search_cache_erase_handle_) {
+    // We should never create a new entry with the original URL.
+    if (entry_not_suitable) {
+      return ERR_CACHE_ENTRY_NOT_SUITABLE;
+    }
+
+    return cache_->OpenEntry(cache_key_, &new_entry_, this);
+  }
+
   return cache_->OpenOrCreateEntry(cache_key_, &new_entry_, this);
 }
 
@@ -1300,6 +1324,8 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
             base::TimeTicks::Now() - first_cache_access_since_);
       }
 
+      CHECK(!no_vary_search_cache_erase_handle_);
+
       // Entry was created so mode changes to WRITE.
       mode_ = WRITE;
     }
@@ -1313,6 +1339,19 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
     return OK;
   }
 
+  // This handles the case where opening the disk cache entry failed, or it was
+  // found to be unusable due to in-memory flags.
+  if (no_vary_search_cache_erase_handle_) {
+    if (result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
+      return RestartWithoutNoVarySearchCache(
+          RestartCacheEntryAction::kDontErase,
+          NoVarySearchUseResult::kNotSuitable);
+    } else {
+      return RestartWithoutNoVarySearchCache(
+          RestartCacheEntryAction::kErase, NoVarySearchUseResult::kNotOpenable);
+    }
+  }
+
   if (ShouldOpenOnlyMethods() || result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
     // Bypassing the cache.
     mode_ = NONE;
@@ -1320,9 +1359,9 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
     return OK;
   }
 
-  // Since the operation failed, what we do next depends on the mode_ which can
-  // be the following: READ, READ_WRITE, or UPDATE. Note: mode_ cannot be WRITE
-  // or NONE at this point as DoInitEntry() handled those cases.
+  // Since the operation failed, what we do next depends on the mode_ which
+  // can be the following: READ, READ_WRITE, or UPDATE. Note: mode_ cannot be
+  // WRITE or NONE at this point as DoInitEntry() handled those cases.
 
   switch (mode_) {
     case READ:
@@ -2078,6 +2117,14 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
     return OK;
   }
 
+  // If we get here we are going to write or update the cache entry, possibly
+  // with a new No-Vary-Search response header, so insert into the NoVarySearch
+  // cache if appropriate.
+  if (cache_->no_vary_search_cache_ && IsNoVarySearchApplicable()) {
+    cache_->no_vary_search_cache_->MaybeInsert(*request_,
+                                               *new_response_->headers);
+  }
+
   // Are we expecting a response to a conditional query?
   if (mode_ == READ_WRITE || mode_ == UPDATE) {
     if (new_response->headers->response_code() == HTTP_NOT_MODIFIED ||
@@ -2745,6 +2792,13 @@ int HttpCache::Transaction::BeginCacheRead() {
   }
 
   if (RequiresValidation() != VALIDATION_NONE) {
+    if (no_vary_search_cache_erase_handle_) {
+      // A future transaction that is not read-only may be able to use this
+      // entry, so don't remove it from the cache.
+      return RestartWithoutNoVarySearchCache(
+          RestartCacheEntryAction::kDontErase,
+          NoVarySearchUseResult::kReadOnlyNeedsValidation);
+    }
     TransitionToState(STATE_FINISH_HEADERS);
     return ERR_CACHE_MISS;
   }
@@ -2764,6 +2818,15 @@ int HttpCache::Transaction::BeginCacheValidation() {
 
   bool skip_validation = (required_validation == VALIDATION_NONE);
   bool needs_stale_while_revalidate_cache_update = false;
+  const bool incomplete_body =
+      truncated_ || response_.headers->response_code() == HTTP_PARTIAL_CONTENT;
+
+  if (no_vary_search_cache_erase_handle_ && incomplete_body) {
+    // Avoid using the No-Vary-Search cache in partial content situations.
+    return RestartWithoutNoVarySearchCache(
+        RestartCacheEntryAction::kErase,
+        NoVarySearchUseResult::kIncompleteBody);
+  }
 
   if ((effective_load_flags_ & LOAD_SUPPORT_ASYNC_REVALIDATION) &&
       required_validation == VALIDATION_ASYNCHRONOUS) {
@@ -2774,8 +2837,7 @@ int HttpCache::Transaction::BeginCacheValidation() {
         response_.stale_revalidate_timeout.is_null();
   }
 
-  if (method_ == "HEAD" && (truncated_ || response_.headers->response_code() ==
-                                              HTTP_PARTIAL_CONTENT)) {
+  if (method_ == "HEAD" && incomplete_body) {
     DCHECK(!partial_);
     if (skip_validation) {
       DCHECK(!reading_);
@@ -2838,6 +2900,15 @@ int HttpCache::Transaction::BeginCacheValidation() {
       UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE);
       if (partial_) {
         return DoRestartPartialRequest();
+      }
+      if (no_vary_search_cache_erase_handle_) {
+        // We shouldn't send an unconditional request for the original URL, so
+        // restart the transaction. However, don't remove the cache entry, as it
+        // might still be usable by a future request with the
+        // LOAD_SKIP_CACHE_VALIDATION flag.
+        RestartWithoutNoVarySearchCache(
+            RestartCacheEntryAction::kDontErase,
+            NoVarySearchUseResult::kCouldntConditionalize);
       }
 
       DCHECK_NE(HTTP_PARTIAL_CONTENT, response_.headers->response_code());
@@ -3110,7 +3181,9 @@ bool HttpCache::Transaction::ConditionalizeRequest() {
     }
   }
 
-  if (!partial_) {
+  // We will need to modify `request_` to change the headers, so allocate
+  // `custom_request_` if it has not been allocated already.
+  if (!custom_request_) {
     // Need to customize the request, so this forces us to allocate :(
     custom_request_ = std::make_unique<HttpRequestInfo>(*request_);
     request_ = custom_request_.get();
@@ -3909,6 +3982,17 @@ void HttpCache::Transaction::RecordHistograms() {
        (cache_entry_status_ == CacheEntryStatus::ENTRY_USED ||
         cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE)));
 
+  if (no_vary_search_use_result_ == NoVarySearchUseResult::kUsed &&
+      did_send_request) {
+    no_vary_search_use_result_ =
+        cache_entry_status_ == CacheEntryStatus::ENTRY_VALIDATED
+            ? NoVarySearchUseResult::kValidated
+            : NoVarySearchUseResult::kUpdated;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("HttpCache.NoVarySearch.UseResult",
+                            no_vary_search_use_result_);
+
   if (!did_send_request) {
     if (cache_entry_status_ == CacheEntryStatus::ENTRY_USED) {
       UMA_HISTOGRAM_CUSTOM_TIMES("HttpCache.AccessToDone2.Used", total_time,
@@ -4130,6 +4214,48 @@ void HttpCache::Transaction::RecordEntrySizeHistograms(
   UMA_HISTOGRAM_CUSTOM_COUNTS("HttpCache.Experimental.Read.EntryTotalSize",
                               header_size + content_size, 1, kMaxEntrySize,
                               100);
+}
+
+bool HttpCache::Transaction::IsNoVarySearchApplicable() const {
+  return !partial_ && MethodUsesNoVarySearch(method_);
+}
+
+HttpCache::Transaction::NoVarySearchUseResult
+HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
+  std::optional<NoVarySearchCache::LookupResult> maybe_result =
+      cache_->no_vary_search_cache_->Lookup(*request_);
+  if (!maybe_result) {
+    return NoVarySearchUseResult::kNoMatch;
+  }
+  if (maybe_result->original_url == request_->url) {
+    return NoVarySearchUseResult::kURLUnchanged;
+  }
+  NoVarySearchCache::LookupResult result = std::move(maybe_result).value();
+  if (!custom_request_) {
+    custom_request_ = std::make_unique<HttpRequestInfo>(*request_);
+    request_ = custom_request_.get();
+  }
+  custom_request_->url = std::move(result.original_url);
+  no_vary_search_cache_erase_handle_ = std::move(result.erase_handle);
+  // May be updated to a different value later.
+  return NoVarySearchUseResult::kUsed;
+}
+
+int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
+    RestartCacheEntryAction entry_action,
+    NoVarySearchUseResult restart_reason) {
+  no_vary_search_use_result_ = restart_reason;
+  if (entry_action == RestartCacheEntryAction::kErase) {
+    cache_->no_vary_search_cache_->Erase(
+        std::move(no_vary_search_cache_erase_handle_.value()));
+  }
+  no_vary_search_cache_erase_handle_ = std::nullopt;
+  // Don't try to use the NoVarySearchCache next time around.
+  read_no_vary_search_cache_ = false;
+  // This will reset this object and send us back to the beginning of the
+  // state machine to try again without using the NoVarySearchCache.
+  TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);
+  return OK;
 }
 
 }  // namespace net

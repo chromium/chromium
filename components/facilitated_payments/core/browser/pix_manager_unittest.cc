@@ -621,7 +621,7 @@ TEST_F(PixManagerTest, OnInitiatePaymentResponseReceived_FailureResponse) {
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   FastForwardBy(base::Seconds(2));
   pix_manager_->OnInitiatePaymentResponseReceived(
@@ -684,7 +684,7 @@ TEST_F(PixManagerTest,
   FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -715,7 +715,7 @@ TEST_F(PixManagerTest,
   FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -745,7 +745,7 @@ TEST_F(PixManagerTest,
   FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -837,7 +837,7 @@ TEST_F(PixManagerTest, LogInitiatePurchaseActionAttempt) {
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -862,7 +862,7 @@ TEST_F(PixManagerTest, LogInitiatePurchaseActionResultAndLatency) {
     EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
     auto response_details =
         std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-    response_details->action_token_ =
+    response_details->secure_payload_.action_token =
         std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
     pix_manager_->OnInitiatePaymentResponseReceived(
         autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -1080,7 +1080,7 @@ TEST_F(PixManagerTest, ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -1106,7 +1106,7 @@ TEST_F(PixManagerTest, ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   pix_manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,

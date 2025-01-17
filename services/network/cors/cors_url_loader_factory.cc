@@ -231,6 +231,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               ? params->client_security_state->cross_origin_embedder_policy
               : CrossOriginEmbedderPolicy()),
       coep_reporter_(std::move(params->coep_reporter)),
+      dip_reporter_(std::move(params->dip_reporter)),
       client_security_state_(params->client_security_state.Clone()),
       url_loader_network_service_observer_(
           std::move(params->url_loader_network_observer)),

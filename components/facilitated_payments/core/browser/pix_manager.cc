@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
@@ -27,6 +28,8 @@ namespace {
 static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
 static constexpr FacilitatedPaymentsType kPaymentsType =
     FacilitatedPaymentsType::kPix;
+// TODO(crbug.com/375501469): Remove logging after investigating the bug.
+static constexpr char kClassName[] = "PixManager";
 
 }  // namespace
 
@@ -45,6 +48,8 @@ PixManager::PixManager(
 }
 
 PixManager::~PixManager() {
+  // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+  LOG(WARNING) << kClassName << " - Destroyed.";
   DismissPrompt();
 }
 
@@ -266,7 +271,7 @@ void PixManager::OnInitiatePaymentResponseReceived(
   LogInitiatePaymentResultAndLatency(kPaymentsType, /*result=*/true, latency);
 
   DCHECK(response_details);
-  if (response_details->action_token_.empty()) {
+  if (response_details->secure_payload_.action_token.empty()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kActionTokenNotAvailable);
     ShowErrorScreen();
     return;
@@ -284,7 +289,7 @@ void PixManager::OnInitiatePaymentResponseReceived(
   LogInitiatePurchaseActionAttempt(kPaymentsType);
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
-      account_info.value(), response_details->action_token_,
+      account_info.value(), response_details->secure_payload_.action_token,
       base::BindOnce(&PixManager::OnPurchaseActionResult,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -302,8 +307,14 @@ void PixManager::OnPurchaseActionResult(PurchaseActionResult result) {
       ShowErrorScreen();
       break;
     case PurchaseActionResult::kResultOk:
-      [[fallthrough]];  // Intentional fallthrough.
+      // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+      LOG(WARNING) << kClassName << " - PurchaseActionResult is kResultOk.";
+      DismissPrompt();
+      break;
     case PurchaseActionResult::kResultCanceled:
+      // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+      LOG(WARNING) << kClassName
+                   << " - PurchaseActionResult is kResultCanceled.";
       DismissPrompt();
       break;
   }
@@ -326,6 +337,12 @@ void PixManager::OnUiEvent(UiEvent ui_event_type) {
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
+      if (ui_state_ == UiState::kProgressScreen) {
+        // TODO(crbug.com/375501469): Remove logging after investigating the
+        // bug.
+        LOG(WARNING) << kClassName
+                     << " - The progress screen is closed (not by user).";
+      }
       if (ui_state_ == UiState::kFopSelector) {
         LogPixFlowExitedReason(
             PixFlowExitedReason::kFopSelectorClosedNotByUser);
@@ -334,6 +351,12 @@ void PixManager::OnUiEvent(UiEvent ui_event_type) {
       break;
     }
     case UiEvent::kScreenClosedByUser: {
+      if (ui_state_ == UiState::kProgressScreen) {
+        // TODO(crbug.com/375501469): Remove logging after investigating the
+        // bug.
+        LOG(WARNING) << kClassName
+                     << " - The user has closed the progress screen.";
+      }
       if (ui_state_ == UiState::kFopSelector) {
         LogPixFlowExitedReason(PixFlowExitedReason::kFopSelectorClosedByUser);
         LogPixFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
@@ -345,6 +368,10 @@ void PixManager::OnUiEvent(UiEvent ui_event_type) {
 }
 
 void PixManager::DismissPrompt() {
+  if (ui_state_ != UiState::kHidden) {
+    // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+    LOG(WARNING) << kClassName << " - Dismissing the prompt.";
+  }
   ui_state_ = UiState::kHidden;
   client_->DismissPrompt();
 }
@@ -359,16 +386,27 @@ void PixManager::ShowPixPaymentPrompt(
 
 void PixManager::ShowProgressScreen() {
   ui_state_ = UiState::kProgressScreen;
+  // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+  LOG(WARNING) << kClassName << " - Showing pogress screen.";
   client_->ShowProgressScreen();
 }
 
 void PixManager::ShowErrorScreen() {
+  if (ui_state_ == UiState::kProgressScreen) {
+    // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+    LOG(WARNING) << kClassName
+                 << " - Showing error screen after the progress screen.";
+  }
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
 }
 
 void PixManager::DismissProgressScreen() {
   if (ui_state_ == UiState::kProgressScreen) {
+    // TODO(crbug.com/375501469): Remove logging after investigating the bug.
+    LOG(WARNING)
+        << kClassName
+        << " - Progress screen closed shortly after invoking purchase action.";
     DismissPrompt();
   }
 }

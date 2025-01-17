@@ -207,24 +207,26 @@ const Vector<AtomicString> ConvertFontFamilyToVector(const CSSValue* value) {
   return families;
 }
 
-bool DocumentHasComplexSafeAreaConstraint(Document& document) {
-  Node* root = document.documentElement();
-  Node* current = root;
-  while (current) {
-    if (auto* element = DynamicTo<Element>(current)) {
-      if (const ComputedStyle* style =
-              ComputedStyle::NullifyEnsured(element->GetComputedStyle())) {
-        if (style->HasEnvSafeAreaInsetBottom() && !style->Bottom().IsAuto() &&
-            !style->IsBottomRelativeToSafeAreaInset()) {
+bool ElementHasComplexSafeAreaConstraint(Element* element,
+                                         bool bottom_anchored_parent) {
+  if (const ComputedStyle* style =
+          ComputedStyle::NullifyEnsured(element->GetComputedStyle())) {
+    bool is_bottom_anchored = !style->Bottom().IsAuto();
+    if (style->HasEnvSafeAreaInsetBottom() &&
+        (is_bottom_anchored || bottom_anchored_parent) &&
+        !style->IsBottomRelativeToSafeAreaInset()) {
+      return true;
+    }
+
+    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*element); child;
+         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      if (Element* child_element = DynamicTo<Element>(child)) {
+        if (ElementHasComplexSafeAreaConstraint(child_element,
+                                                is_bottom_anchored)) {
           return true;
         }
-      } else {
-        current =
-            LayoutTreeBuilderTraversal::NextSkippingChildren(*element, root);
-        continue;
       }
     }
-    current = LayoutTreeBuilderTraversal::Next(*current, root);
   }
   return false;
 }
@@ -3189,8 +3191,8 @@ void StyleEngine::InvalidateEnvDependentStylesIfNeeded() {
 bool StyleEngine::HasComplexSafaAreaConstraints() {
   DCHECK(RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled());
   if (needs_to_update_complex_safe_area_constraints_) {
-    has_complex_safe_area_constraints_ =
-        DocumentHasComplexSafeAreaConstraint(GetDocument());
+    has_complex_safe_area_constraints_ = ElementHasComplexSafeAreaConstraint(
+        GetDocument().documentElement(), false);
     if (!has_complex_safe_area_constraints_) {
       needs_to_update_complex_safe_area_constraints_ = false;
     }

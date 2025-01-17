@@ -483,12 +483,70 @@ void CSSShapeInterpolationType::Composite(
 InterpolationValue CSSShapeInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  return nullptr;
+  conversion_checkers.push_back(
+      UnderlyingShapeConversionChecker::Create(underlying));
+
+  HeapVector<Member<InterpolableValue>> values;
+  auto WriteLength = [&](size_t number = 1) {
+    for (size_t i = 0; i < number; ++i) {
+      values.push_back(InterpolableLength::CreateNeutral());
+    }
+  };
+
+  WriteLength(2);
+
+  for (const auto& params :
+       To<ShapeNonInterpolableValue>(*underlying.non_interpolable_value)
+           .GetParams()) {
+    switch (params.type) {
+      case SVGPathSegType::kPathSegLineToAbs:
+      case SVGPathSegType::kPathSegLineToRel:
+      case SVGPathSegType::kPathSegMoveToAbs:
+      case SVGPathSegType::kPathSegMoveToRel:
+      case SVGPathSegType::kPathSegCurveToQuadraticSmoothAbs:
+      case SVGPathSegType::kPathSegCurveToQuadraticSmoothRel:
+        WriteLength(2);
+        break;
+      case SVGPathSegType::kPathSegLineToHorizontalAbs:
+      case SVGPathSegType::kPathSegLineToHorizontalRel:
+      case SVGPathSegType::kPathSegLineToVerticalAbs:
+      case SVGPathSegType::kPathSegLineToVerticalRel:
+        WriteLength(1);
+        break;
+      case SVGPathSegType::kPathSegClosePath:
+        break;
+      case SVGPathSegType::kPathSegCurveToCubicAbs:
+      case SVGPathSegType::kPathSegCurveToCubicRel: {
+        WriteLength(6);
+        break;
+      }
+      case SVGPathSegType::kPathSegCurveToQuadraticAbs:
+      case SVGPathSegType::kPathSegCurveToQuadraticRel:
+      case SVGPathSegType::kPathSegCurveToCubicSmoothAbs:
+      case SVGPathSegType::kPathSegCurveToCubicSmoothRel:
+        WriteLength(4);
+        break;
+      case SVGPathSegType::kPathSegArcAbs:
+      case SVGPathSegType::kPathSegArcRel: {
+        WriteLength(2);
+        values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
+        WriteLength(2);
+        break;
+      }
+      case SVGPathSegType::kPathSegUnknown:
+        NOTREACHED();
+    }
+  }
+
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableList>(std::move(values)),
+      underlying.non_interpolable_value);
 }
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers&) const {
+  // There is currently no property that has an initial shape().
   return nullptr;
 }
 

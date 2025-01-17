@@ -3,7 +3,7 @@ Short Name: cpu_features
 URL: https://github.com/google/cpu_features
 Version: v0.8.0
 Date: 2023-05-17
-License: Apache 2.0
+License: BSD-2-Clause, Apache-2.0
 License File: src/LICENSE
 Security Critical: Yes
 Shipped: yes

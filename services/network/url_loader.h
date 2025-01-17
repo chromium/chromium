@@ -669,8 +669,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // URLLoaderFactory is guaranteed to outlive URLLoader, so it is safe to
   // store a raw pointer to mojom::URLLoaderFactoryParams.
   const raw_ref<const mojom::URLLoaderFactoryParams> factory_params_;
-  // This also belongs to URLLoaderFactory and outlives this loader.
+  // The following also belong to URLLoaderFactory and outlives this loader.
   const raw_ptr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  const raw_ptr<mojom::DocumentIsolationPolicyReporter> dip_reporter_;
 
   const int32_t request_id_;
   const int keepalive_request_size_;

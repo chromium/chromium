@@ -189,12 +189,15 @@ PhysicalSize LayoutCustomScrollbarPart::Size() const {
   return overridden_size_;
 }
 
-IntrinsicSizingInfo LayoutCustomScrollbarPart::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutCustomScrollbarPart::GetNaturalDimensions()
+    const {
   NOT_DESTROYED();
   // 300x150, no aspect ratio. (Should probably be none.)
-  IntrinsicSizingInfo sizing_info;
-  sizing_info.size = gfx::ScaleSize(gfx::SizeF(kDefaultWidth, kDefaultHeight),
-                                    StyleRef().EffectiveZoom());
+  PhysicalSize natural_size{LayoutUnit(kDefaultWidth),
+                            LayoutUnit(kDefaultHeight)};
+  natural_size.Scale(StyleRef().EffectiveZoom());
+  PhysicalNaturalSizingInfo sizing_info;
+  sizing_info.size = natural_size;
   return sizing_info;
 }
 

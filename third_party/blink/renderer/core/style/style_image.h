@@ -25,7 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -99,7 +99,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   //
   // The size will respect the image orientation if requested and if the image
   // supports it.
-  virtual IntrinsicSizingInfo GetNaturalSizingInfo(
+  virtual NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const = 0;
 

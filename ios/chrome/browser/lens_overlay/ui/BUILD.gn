@@ -83,6 +83,8 @@ source_set("view_controller") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/lens_overlay/ui/resources",
     "//ios/chrome/browser/lens_overlay/ui/resources:animation_files",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",

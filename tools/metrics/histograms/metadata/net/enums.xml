@@ -1910,6 +1910,52 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/http/http_no_vary_search_data.h:NoVarySearchHeaderParseResult) -->
 
+<!-- LINT.IfChange(NoVarySearchUseResult) -->
+
+<enum name="NoVarySearchUseResult">
+  <int value="0" label="Not applied">
+    The request was not suitable, or the feature was disabled.
+  </int>
+  <int value="1" label="No match">
+    There was no match in the No-Vary-Search cache.
+  </int>
+  <int value="2" label="URL Unchanged">
+    There was a match, but the URL was identical so it has no effect.
+  </int>
+  <int value="3" label="Used">
+    There was a match, and the original cache entry was used.
+  </int>
+  <int value="4" label="Not suitable">
+    There was a match, but it was unusable due to in-memory hints, so the match
+    was not used.
+  </int>
+  <int value="5" label="Not openable">
+    There was a match, but the corresponding disk cache entry was missing or
+    could not be loaded, so the match was not used.
+  </int>
+  <int value="6" label="Read-only entry needs validation">
+    There was a match, but the disk cache entry needed revalidation in read-only
+    mode, so the match was not used.
+  </int>
+  <int value="7" label="Incomplete body">
+    There was a match, but the disk cache entry has an incomplete body. Partial
+    responses are not supported for No-Vary-Search, so the match was not used.
+  </int>
+  <int value="8" label="Couldn't conditionalize">
+    There was a match, but revalidation was required and the request could not
+    be conditionalized, so the match was not used.
+  </int>
+  <int value="9" label="Validated">
+    There was a match, and the original cache entry was successfully
+    revalidated.
+  </int>
+  <int value="10" label="Updated">
+    There was a match, and the original cache entry was updated.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:NoVarySearchUseResult) -->
+
 <enum name="NsswitchService">
   <int value="0" label="Unknown"/>
   <int value="1" label="&quot;files&quot;"/>

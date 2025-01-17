@@ -608,8 +608,6 @@ class FormEventLoggerBaseEmailHeuristicOnlyMetricsTest
 
   // Fillable form.
   FormData form_;
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
 };
 
 void FormEventLoggerBaseEmailHeuristicOnlyMetricsTest::SetUp() {

@@ -50,7 +50,7 @@ class StyleMaskSourceImage : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(WTF::String& failing_url) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
 

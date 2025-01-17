@@ -22,11 +22,6 @@ BASE_FEATURE(kBatteryBadgeIcon,
              "BatteryBadgeIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables more filtering out of phones from the Bluetooth UI.
-BASE_FEATURE(kBluetoothPhoneFilter,
-             "BluetoothPhoneFilter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables better quick settings UI for bluetooth and wifi error states.
 BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",

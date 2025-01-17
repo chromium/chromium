@@ -15,13 +15,24 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
 
     deps = [
+      ":java_resources",
       "//base:base_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/android/signin:java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
+      "//components/signin/public/android:java",
+      "//components/strings:components_strings_grd",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
     ]
+  }
+
+  android_resources("java_resources") {
+    sources = []
+    deps = [ "//components/browser_ui/styles/android:java_resources" ]
   }
 
   android_library("utils_java") {

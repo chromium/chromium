@@ -615,7 +615,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
@@ -694,7 +694,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
@@ -734,7 +734,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(
@@ -763,7 +763,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
+  response_details->secure_payload_.action_token =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   test_api(*ewallet_manager_)
       .OnInitiatePaymentResponseReceived(

@@ -39,9 +39,9 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -334,21 +334,10 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
   return inside;
 }
 
-bool LayoutImage::CanApplyObjectViewBox() const {
-  if (!EmbeddedSVGImage()) {
-    return true;
-  }
-  // Only apply object-view-box if the image has both natural width/height.
-  const IntrinsicSizingInfo info =
-      image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-  return info.has_width && info.has_height;
-}
-
-IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
+PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  IntrinsicSizingInfo sizing_info;
   if (EmbeddedSVGImage()) {
-    sizing_info =
+    NaturalSizingInfo sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
 
     // The value returned by LayoutImageResource will be in zoomed CSS
@@ -357,18 +346,18 @@ IntrinsicSizingInfo LayoutImage::GetNaturalDimensions() const {
     if (StyleRef().GetObjectFit() == EObjectFit::kScaleDown) {
       sizing_info.size.InvScale(ImageDevicePixelRatio());
     }
-  } else {
-    sizing_info = IntrinsicSizingInfo::MakeFixed(gfx::SizeF(NaturalSize()));
+    return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
+  }
 
-    // Don't compute an intrinsic ratio to preserve historical WebKit behavior
-    // if we're painting alt text and/or a broken image.
-    // Video is excluded from this behavior because video elements have a
-    // default aspect ratio that a failed poster image load should not
-    // override.
-    if (image_resource_ && image_resource_->ErrorOccurred() &&
-        !IsA<LayoutVideo>(this)) {
-      sizing_info.aspect_ratio = gfx::SizeF(1, 1);
-    }
+  auto sizing_info = PhysicalNaturalSizingInfo::MakeFixed(NaturalSize());
+
+  // Don't compute an intrinsic ratio to preserve historical WebKit behavior if
+  // we're painting alt text and/or a broken image.
+  // Video is excluded from this behavior because video elements have a default
+  // aspect ratio that a failed poster image load should not override.
+  if (image_resource_ && image_resource_->ErrorOccurred() &&
+      !IsA<LayoutVideo>(this)) {
+    sizing_info.aspect_ratio = PhysicalSize(LayoutUnit(1), LayoutUnit(1));
   }
   return sizing_info;
 }

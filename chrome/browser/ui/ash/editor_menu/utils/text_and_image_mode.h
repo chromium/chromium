@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_TEXT_AND_IMAGE_MODE_H_
 #define CHROME_BROWSER_UI_ASH_EDITOR_MENU_UTILS_TEXT_AND_IMAGE_MODE_H_
 
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
 namespace chromeos::editor_menu {
 
 enum class LobsterMode {
+  // TODO: b:388964690 - Merge kNoSelectedText and kSelectedText into one enum
+  // value.
   kNoSelectedText = 0,
   kSelectedText,
   kBlocked,
@@ -25,9 +27,6 @@ enum class TextAndImageMode {
   kEditorWriteAndLobster,
   kEditorRewriteAndLobster,
 };
-
-TextAndImageMode CalculateTextAndImageMode(EditorMode editor_mode,
-                                           LobsterMode lobster_menu_mode);
 
 }  // namespace chromeos::editor_menu
 

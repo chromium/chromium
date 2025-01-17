@@ -67,7 +67,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,

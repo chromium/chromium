@@ -9066,21 +9066,6 @@
             ]
         }
     ],
-    "EnableMainFrameOnlyADPFRendererMain": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableMainFrameOnlyADPFRendererMain"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableOverwritingPlaceholderUsernames": [
         {
             "platforms": [
@@ -24717,6 +24702,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8Flag_minor_gc_task_with_lower_priority"
+                    ]
+                }
+            ]
+        }
+    ],
+    "V8SafepointBumpQoSClass": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_safepoint_bump_qos_class"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "V8Flag_safepoint_bump_qos_class"
                     ]
                 }
             ]

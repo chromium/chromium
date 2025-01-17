@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -70,30 +71,25 @@ class CollaborationController {
 
   class Flow {
    public:
-    enum class Type {
-      kJoin,
-      kShareOrManage,
-    };
-
     // Join flow constructor.
-    Flow(Type type, const data_sharing::GroupToken& token);
+    Flow(FlowType type, const data_sharing::GroupToken& token);
 
     // Share flow constructor.
-    Flow(Type type, const tab_groups::EitherGroupID& either_id);
+    Flow(FlowType type, const tab_groups::EitherGroupID& either_id);
 
     ~Flow();
 
     Flow(const Flow&);
 
-    const Type type;
+    const FlowType type;
 
     const data_sharing::GroupToken& join_token() const {
-      DCHECK_EQ(type, Type::kJoin);
+      DCHECK_EQ(type, FlowType::kJoin);
       return join_token_;
     }
 
     const tab_groups::EitherGroupID& either_id() const {
-      DCHECK_EQ(type, Type::kShareOrManage);
+      DCHECK_EQ(type, FlowType::kShareOrManage);
       return either_id_;
     }
 

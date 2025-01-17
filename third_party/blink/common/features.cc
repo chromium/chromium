@@ -2188,12 +2188,6 @@ BASE_FEATURE_PARAM(std::string,
                    "build_version",
                    "0");
 
-BASE_FEATURE_PARAM(bool,
-                   kAllExceptLegacyWindowsPlatform,
-                   &kReduceUserAgentPlatformOsCpu,
-                   "all_except_legacy_windows_platform",
-                   true);
-
 // Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
 // strong references to resources on memory pressure.
 BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,

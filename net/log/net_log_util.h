@@ -17,8 +17,7 @@ class URLRequestContext;
 
 // Request mode for GetNetConstants.
 enum class NetConstantsRequestMode {
-  // Requests all constants including field trials, `timeTickOffset` and an
-  // empty `clientInfo` dictionary. This is the default mode.
+  // Requests all constants including field trials. This is the default mode.
   kDefault,
   // Requests only minimum constants. Used for tracing metadata.
   kTracing,

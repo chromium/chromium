@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
+  <!-- Collaboration -->
+  <message name ="IDS_COLLABORATION_SIGNIN_TITLE" desc="The title of the collaboration signin screen." formatter_data="android_java">
+    Collaborate in tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_DESCRIPTION" desc="The description of the collaboration signin screen." formatter_data="android_java">
+    Sign in to Chrome to share and join tab groups, and work together on ideas
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_TITLE" desc="The title of the collaboration signin bottom sheet screen." formatter_data="android_java">
+    Sign in to Chrome
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_BOTTOM_SHEET_DESCRIPTION" desc="The description of the collaboration signin bottom sheet screen." formatter_data="android_java">
+    You’ll get to share, join, and collaborate in tab groups
+  </message>
+  <message name ="IDS_COLLABORATION_SIGNIN_SYNC_DISMISS" desc="The dismiss text of the collaboration signin and sync screen." formatter_data="android_java">
+    Cancel
+  </message>
+  <message name ="IDS_COLLABORATION_SYNC_TITLE" desc="The title of the collaboration sync screen." formatter_data="android_java">
+    Sync tabs and history to continue
+  </message>
+  <message name ="IDS_COLLABORATION_SYNC_DESCRIPTION" desc="The description of the collaboration sync screen." formatter_data="android_java">
+    To share, join, and collaborate in tab groups, sync your history and tabs
+  </message>
+  <!-- /Collaboration -->
+
   <!-- Data Sharing -->
   <!-- Error Messages -->
   <if expr="is_android">

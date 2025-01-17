@@ -15,6 +15,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,11 +27,13 @@
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_manager_factory.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -99,7 +102,13 @@ void EditorMenuControllerImpl::OnTextAvailable(
   if (card_session_->editor_manager() == nullptr) {
     OnGetAnchorBoundsAndEditorContext(
         anchor_bounds, lobster_mode,
-        EditorContext(EditorMode::kHardBlocked, false, {}));
+        EditorContext(EditorMode::kHardBlocked,
+                      /*text_selection_mode=*/selected_text.length() > 0
+                          ? EditorTextSelectionMode::kHasSelection
+                          : EditorTextSelectionMode::kNoSelection,
+                      /*consent_status_settled=*/false,
+                      /*preset_queries=*/{}));
+    return;
   }
 
   card_session_->editor_manager()->GetEditorPanelContext(base::BindOnce(
@@ -273,6 +282,11 @@ void EditorMenuControllerImpl::OnGetEditorCardMenuContext(
           .set_editor_preset_queries(editor_context.preset_queries)
           .set_editor_mode(editor_context.mode)
           .set_lobster_mode(lobster_mode)
+          .set_text_selection_mode(
+              editor_context.text_selection_mode ==
+                      EditorTextSelectionMode::kHasSelection
+                  ? EditorMenuCardTextSelectionMode::kHasSelection
+                  : EditorMenuCardTextSelectionMode::kNoSelection)
           .build());
 }
 
@@ -286,6 +300,11 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
           .set_editor_preset_queries(editor_context.preset_queries)
           .set_editor_mode(editor_context.mode)
           .set_lobster_mode(lobster_mode)
+          .set_text_selection_mode(
+              editor_context.text_selection_mode ==
+                      EditorTextSelectionMode::kHasSelection
+                  ? EditorMenuCardTextSelectionMode::kHasSelection
+                  : EditorMenuCardTextSelectionMode::kNoSelection)
           .build();
 
   TextAndImageMode text_and_image_mode =
@@ -295,6 +314,9 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     case TextAndImageMode::kBlocked:
       break;
     case TextAndImageMode::kPromoCard:
+      if (ash::features::IsMagicBoostRevampEnabled()) {
+        NOTREACHED();
+      }
       editor_menu_widget_ =
           EditorMenuPromoCardView::CreateWidget(anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
@@ -368,7 +390,7 @@ EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() {
 }
 
 void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
-    const EditorMode& mode) {
+    EditorMode mode) {
   if (mode == EditorMode::kHardBlocked || mode == EditorMode::kSoftBlocked) {
     controller_->DismissCard();
   }

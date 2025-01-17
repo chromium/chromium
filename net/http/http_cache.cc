@@ -409,6 +409,12 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
       keys_marked_no_store_(
           features::kAvoidEntryCreationForNoStoreCacheSize.Get()) {
   g_init_cache = true;
+  if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
+    size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
+    if (max_entries) {
+      no_vary_search_cache_.emplace(static_cast<size_t>(max_entries));
+    }
+  }
   HttpNetworkSession* session = network_layer_->GetSession();
   // Session may be NULL in unittests.
   // TODO(mmenke): Seems like tests could be changed to provide a session,

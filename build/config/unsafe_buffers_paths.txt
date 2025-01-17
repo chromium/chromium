@@ -56,6 +56,7 @@
 -chrome/browser/platform_experience/win/
 -chrome/chrome_elf/third_party_dlls/
 -chrome/elevation_service/internal/
+-chrome/installer/mac/third_party/
 -chromecast/
 -components/optimization_guide/internal/
 -ios/
@@ -75,12 +76,6 @@
 # TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
 # as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
 -Program Files (x86)/Windows Kits/
-
-# Please be cautious before removing this opt-out, because it won't show up on
-# the Mega-CQ, nor Sheriffs' dashboards. See https://crbug.com/361760067
-# Removing this directory may fail on the bot CI bot:
-# https://luci-milo.appspot.com/ui/p/chrome/builders/official/win-arm64-clang
--chrome/installer/
 
 # Please check 'linux-v4l2-codec-rel' bot before removing this opt-out.
 -media/gpu/v4l2/

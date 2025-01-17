@@ -614,7 +614,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kHardBlocked);
+      chromeos::editor_menu::EditorMode::kHardBlocked);
 
   EXPECT_FALSE(client.IsEligibleForEditor());
 }
@@ -625,7 +625,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kHardBlocked);
+      chromeos::editor_menu::EditorMode::kHardBlocked);
 
   EXPECT_FALSE(client.IsEligibleForEditor());
 }
@@ -636,7 +636,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kSoftBlocked);
+      chromeos::editor_menu::EditorMode::kSoftBlocked);
 
   EXPECT_TRUE(client.IsEligibleForEditor());
 }
@@ -646,7 +646,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kHardBlocked);
+      chromeos::editor_menu::EditorMode::kHardBlocked);
 
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
@@ -657,7 +657,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kSoftBlocked);
+      chromeos::editor_menu::EditorMode::kSoftBlocked);
 
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
@@ -668,7 +668,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kConsentNeeded);
+      chromeos::editor_menu::EditorMode::kConsentNeeded);
 
   EXPECT_FALSE(client.CacheEditorContext().is_null());
 }
@@ -678,7 +678,7 @@ TEST_F(QuickInsertClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kConsentNeeded);
+      chromeos::editor_menu::EditorMode::kConsentNeeded);
   ui::FakeTextInputClient text_input_client(
       &ime(), {
                   .type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -699,7 +699,7 @@ TEST_F(QuickInsertClientImplEditorTest, GetSuggestedEditorResults) {
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kRewrite);
+      chromeos::editor_menu::EditorMode::kRewrite);
   ui::FakeTextInputClient text_input_client(&ime(),
                                             {.type = ui::TEXT_INPUT_TYPE_TEXT});
   text_input_client.Focus();
@@ -718,7 +718,7 @@ TEST_F(QuickInsertClientImplEditorTest,
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kSoftBlocked);
+      chromeos::editor_menu::EditorMode::kSoftBlocked);
   ui::FakeTextInputClient text_input_client(&ime(),
                                             {.type = ui::TEXT_INPUT_TYPE_TEXT});
   text_input_client.Focus();

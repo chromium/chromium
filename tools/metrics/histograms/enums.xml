@@ -10983,6 +10983,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5243" label="CharsetAutoDetection"/>
   <int value="5244" label="CharsetAutoDetectionISO2022JP"/>
   <int value="5245" label="RequestOTRMainFrame"/>
+  <int value="5246" label="MixedContentOnLocalhost"/>
+  <int value="5247" label="MixedFrameEmbeddedByLocalhost"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

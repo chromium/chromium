@@ -177,6 +177,19 @@ export const TopRowKey = {
 };
 
 /**
+ * Enum of action keys to be shown on the top row for split modifier keyboard.
+ * If no such key is found here, it will fall back to TopRowKey.
+ * @enum {!Object<string,
+ *                !{icon: ?string, text: ?string, ariaNameI18n: ?string}>}
+ */
+export const SplitModifierTopRowKey = {
+  kOverview: {
+    icon: 'keyboard:split-modifier-overview',
+  },
+  kUnknown: {text: 'unknown'},
+};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}

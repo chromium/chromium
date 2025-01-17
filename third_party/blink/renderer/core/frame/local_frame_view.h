@@ -120,7 +120,7 @@ class TapFriendlinessChecker;
 class TransformState;
 class WebPluginContainerImpl;
 struct DraggableRegionValue;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
 
@@ -268,7 +268,7 @@ class CORE_EXPORT LocalFrameView final
     return layout_size_fixed_to_frame_size_;
   }
 
-  bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
+  bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
   bool HasIntrinsicSizingInfo() const override;
 
   void Dispose() override;

@@ -51,6 +51,12 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, populates the Autofill AI database with simple test entity
+// instances.
+BASE_FEATURE(kAutofillAiTestData,
+             "AutofillAiTestData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the second iteration Autofill with AI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,
@@ -126,26 +132,12 @@ BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
              "AutofillEnableSupportForParsingWithSharedLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if heuristic field parsing should be performed on email-only forms.
-// TODO(crbug.com/40285735): Remove when/if launched.
-BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
-             "AutofillEnableEmailHeuristicOnlyAddressForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if heuristic field parsing should be performed on email-only forms
-// without an enclosing form tag. This feature will only be launched once
-// `kAutofillEnableEmailHeuristicOnlyAddressForms` rolls out.
+// without an enclosing form tag.
 // TODO(crbug.com/40285735): Remove when/if launched.
 BASE_FEATURE(kAutofillEnableEmailHeuristicOutsideForms,
              "AutofillEnableEmailHeuristicOutsideForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When true, use autocomplete=email as required signal for email fields on
-// email-only forms, else accept a wider range of autocomplete values except for
-// `off` and `false`.
-const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
-    &kAutofillEnableEmailHeuristicOnlyAddressForms, "autocomplete_email",
-    false};
 
 // Control if Autofill supports German transliteration.
 // TODO(crbug.com/328968064): Remove when/if launched.
@@ -799,6 +791,11 @@ BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// If enabled, other apps can open the Autofill Options in Chrome.
+BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
+             "AutofillDeepLinkAutofillOptions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
 BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,

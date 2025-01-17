@@ -85,7 +85,6 @@
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
-#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
@@ -439,16 +438,6 @@ void CrosapiAsh::BindDriveIntegrationService(
 void CrosapiAsh::BindEchoPrivate(
     mojo::PendingReceiver<mojom::EchoPrivate> receiver) {
   echo_private_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindEditorPanelManager(
-    mojo::PendingReceiver<mojom::EditorPanelManager> receiver) {
-  auto* editor_mediator =
-      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
-          GetAshProfile());
-  if (editor_mediator) {
-    editor_mediator->BindEditorPanelManager(std::move(receiver));
-  }
 }
 
 void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(

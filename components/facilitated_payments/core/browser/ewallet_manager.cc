@@ -260,7 +260,8 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
                                scheme_);
     return;
   }
-  if (!response_details || response_details->action_token_.empty()) {
+  if (!response_details ||
+      response_details->secure_payload_.action_token.empty()) {
     LogEwalletFlowExitedReason(
         EwalletFlowExitedReason::kActionTokenNotAvailable, scheme_);
     ShowErrorScreen();
@@ -279,7 +280,7 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
 
   LogInitiatePurchaseActionAttempt(kPaymentsType, scheme_);
   GetApiClient()->InvokePurchaseAction(
-      account_info.value(), response_details->action_token_,
+      account_info.value(), response_details->secure_payload_.action_token,
       base::BindOnce(&EwalletManager::OnTransactionResult,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }

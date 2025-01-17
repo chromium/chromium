@@ -4629,6 +4629,8 @@ enum WebFeature {
   kCharsetAutoDetection = 5243,
   kCharsetAutoDetectionISO2022JP = 5244,
   kRequestOTRMainFrame = 5245,
+  kMixedContentOnLocalhost = 5246,
+  kMixedFrameEmbeddedByLocalhost = 5247,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

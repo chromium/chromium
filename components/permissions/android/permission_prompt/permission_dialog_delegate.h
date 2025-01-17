@@ -102,6 +102,15 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page&) override;
   void WebContentsDestroyed() override;
 
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveButtonText(
+      JNIEnv* env,
+      bool is_one_time) const;
+  base::android::ScopedJavaLocalRef<jstring> GetNegativeButtonText(
+      JNIEnv* env,
+      bool is_one_time) const;
+  base::android::ScopedJavaLocalRef<jstring> GetPositiveEphemeralButtonText(
+      JNIEnv* env,
+      bool is_one_time) const;
   // `permission_prompt_` owns and outlives this object, this is safe to use.
   raw_ptr<PermissionPromptAndroid> permission_prompt_;
 

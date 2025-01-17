@@ -431,14 +431,13 @@ bool RemoteFrameView::CanThrottleRendering() const {
   return IsHiddenForThrottling() || IsSubtreeThrottled() || IsDisplayLocked();
 }
 
-void RemoteFrameView::SetIntrinsicSizeInfo(
-    const IntrinsicSizingInfo& size_info) {
+void RemoteFrameView::SetIntrinsicSizeInfo(const NaturalSizingInfo& size_info) {
   intrinsic_sizing_info_ = size_info;
   has_intrinsic_sizing_info_ = true;
 }
 
 bool RemoteFrameView::GetIntrinsicSizingInfo(
-    IntrinsicSizingInfo& sizing_info) const {
+    NaturalSizingInfo& sizing_info) const {
   if (!has_intrinsic_sizing_info_)
     return false;
 

@@ -43,6 +43,7 @@
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/http/no_vary_search_cache.h"
 
 class GURL;
 
@@ -809,6 +810,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Used to track which keys led to a no-store response.
   base::LRUCacheSet<base::SHA1Digest> keys_marked_no_store_;
+
+  // Set if the kHttpCacheNoVarySearch feature is enabled. Translates the URL in
+  // the request into the URL of a previous response that is equivalent
+  // according to the rules of the No-Vary-Search header in the response.
+  std::optional<NoVarySearchCache> no_vary_search_cache_;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -295,8 +295,7 @@ jboolean FaviconHelper::GetForeignFaviconImageForURL(
       page_url, static_cast<int>(j_desired_size_in_pixel),
       base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)),
-      favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)));
   return true;
 }
 

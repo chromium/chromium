@@ -2352,17 +2352,9 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   }
 }
 
-// Verifies that with kAutofillEnableEmailHeuristicAutocompleteEmail enabled,
-// only fields with autocomplete=email are parsed as email fields.
+// Verifies that fields with autocomplete=off are not parsed as email fields.
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsEnabledAutocompleteEmail) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-      base::FieldTrialParams{
-          {features::kAutofillEnableEmailHeuristicAutocompleteEmail.name,
-           "true"}});
-
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "off"},
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
@@ -2388,10 +2380,8 @@ TEST_F(FormStructureTestImpl,
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsNotSupportedOutsideFormTag) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableEmailHeuristicOnlyAddressForms},
-      {features::kAutofillEnableEmailHeuristicOutsideForms});
-
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableEmailHeuristicOutsideForms);
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   // Set the form to simulate a field outside a <form> tag.
   form.set_renderer_id(FormRendererId());
@@ -2416,11 +2406,8 @@ TEST_F(FormStructureTestImpl,
 // is enabled.
 TEST_F(FormStructureTestImpl,
        SingleFieldEmailHeuristicsSupportedOutsideFormTag) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitWithFeatures(
-      {features::kAutofillEnableEmailHeuristicOnlyAddressForms,
-       features::kAutofillEnableEmailHeuristicOutsideForms},
-      {});
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
 
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
   // Set the form to simulate a field outside a <form> tag.

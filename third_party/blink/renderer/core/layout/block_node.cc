@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/mathml/math_token_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_under_over_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/replaced_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -1537,12 +1537,11 @@ LogicalSize BlockNode::GetAspectRatio() const {
   }
 
   if (!ShouldApplySizeContainment()) {
-    const IntrinsicSizingInfo legacy_sizing_info =
+    const PhysicalNaturalSizingInfo legacy_sizing_info =
         To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      return StyleAspectRatio::LayoutRatioFromSizeF(
-                 legacy_sizing_info.aspect_ratio)
-          .ConvertToLogical(Style().GetWritingMode());
+      return legacy_sizing_info.aspect_ratio.ConvertToLogical(
+          Style().GetWritingMode());
     }
   }
 

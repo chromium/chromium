@@ -104,8 +104,6 @@ std::u16string Transliterate(std::u16string_view value,
 }
 }  // namespace
 
-// TODO(crbug.com/359768803): Merge with the function
-// `TransliterateAlternativeName()`.
 std::u16string RemoveDiacriticsAndConvertToLowerCase(
     std::u16string_view value,
     const AddressCountryCode& country_code) {

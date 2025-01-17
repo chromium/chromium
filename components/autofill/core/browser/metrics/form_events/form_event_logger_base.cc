@@ -49,13 +49,7 @@ const char* AblationGroupToString(AblationGroup ablation_group) {
 }
 
 bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
-  // First, check the prerequisites.
-  // Without the feature being enabled, such forms are not parsed.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-    return false;
-  }
-  // When the feature is enabled, the forms for which this classification is
+  // First, check the prerequisites. The forms for which this classification is
   // applicable must be inside a form tag (unless
   // `kAutofillEnableEmailHeuristicOutsideForms` is enabled), must not run
   // heuristics normally (i.e., their field count is below
@@ -442,9 +436,8 @@ void FormEventLoggerBase::RecordFillingAcceptance(LogBuffer& logs) const {
   }
   LOG_AF(logs) << Tr{} << "FillingAcceptance"
                << has_logged_form_filling_suggestion_filled_;
-  // Note that `is_heuristic_only_email_form_` will only be true when the
-  // `kAutofillEnableEmailHeuristicOnlyAddressForms` feature is enabled and the
-  // form meets the requirements expressed in
+  // Note that `is_heuristic_only_email_form_` will only be true when the form
+  // meets the requirements expressed in
   // `DetermineHeuristicOnlyEmailFormStatus`.
   if (is_heuristic_only_email_form_) {
     base::UmaHistogramBoolean("Autofill.EmailHeuristicOnlyAcceptance",

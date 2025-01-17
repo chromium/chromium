@@ -195,7 +195,7 @@ public class DataSharingTabManagerUnitTest {
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                () -> {
+                (type) -> {
                     return mCollaborationControllerDelegate;
                 };
 
@@ -420,6 +420,16 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager.destroy();
         verify(mTabGroupSyncService).removeObserver(any());
         verify(mFaviconHelper).destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
+    public void testShareOrManageFlowWithCollaborationService() {
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
+        mDataSharingTabManager.createGroupFlow(mActivity, TITLE, LOCAL_ID, null);
+
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(SYNC_GROUP_ID1));
     }
 
     @Test

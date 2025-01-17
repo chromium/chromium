@@ -36,8 +36,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -219,7 +219,7 @@ void SVGImage::ApplyViewInfo(const SVGImageViewInfo* viewinfo) {
 
 bool SVGImage::GetIntrinsicSizingInfo(
     const SVGViewSpec* override_viewspec,
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+    NaturalSizingInfo& intrinsic_sizing_info) const {
   const LayoutSVGRoot* layout_root = LayoutRoot();
   if (!layout_root)
     return false;
@@ -236,7 +236,7 @@ bool SVGImage::GetIntrinsicSizingInfo(
         SVGPreserveAspectRatio::kSvgPreserveaspectratioNone) {
       // Clear all the fields so that the concrete object size will equal the
       // default object size.
-      intrinsic_sizing_info = IntrinsicSizingInfo();
+      intrinsic_sizing_info = NaturalSizingInfo();
       intrinsic_sizing_info.has_width = false;
       intrinsic_sizing_info.has_height = false;
     }
@@ -705,7 +705,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // Set the concrete object size before a container size is available.
   // TODO(fs): Make this just set/copy width and height directly. See
   // crbug.com/789511.
-  IntrinsicSizingInfo sizing_info;
+  NaturalSizingInfo sizing_info;
   if (GetIntrinsicSizingInfo(nullptr, sizing_info)) {
     intrinsic_size_ = PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
         sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,

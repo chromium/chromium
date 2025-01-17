@@ -14,10 +14,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -40,64 +38,22 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   // Create our Java counterpart, which manages the lifetime of
   // PermissionDialogDelegate.
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  bool isOneTime =
-      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
-      PermissionUtil::DoesSupportTemporaryGrants(
-          permission_prompt_->GetContentSettingType(0));
-
-  base::android::ScopedJavaLocalRef<jstring> positiveButtonText;
-  base::android::ScopedJavaLocalRef<jstring> negativeButtonText;
-  base::android::ScopedJavaLocalRef<jstring> positiveEphemeralButtonText;
-
-  bool showPositiveNonEphemeralAsFirstButton = false;
-  if (isOneTime) {
-    positiveButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 permissions::feature_params::kUseWhileVisitingLanguage.Get()
-                     ? IDS_PERMISSION_ALLOW_WHILE_VISITING
-                     : IDS_PERMISSION_ALLOW_EVERY_VISIT));
-    negativeButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 permissions::feature_params::kUseStrongerPromptLanguage.Get()
-                     ? IDS_PERMISSION_NEVER_ALLOW
-                     : IDS_PERMISSION_DONT_ALLOW));
-    positiveEphemeralButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
-    showPositiveNonEphemeralAsFirstButton =
-        permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
-  } else {
-    positiveButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-    negativeButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-    positiveEphemeralButtonText =
-        ConvertUTF16ToJavaString(env, std::u16string_view());
-  }
-
-  std::vector<int> content_settings_types;
-  for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
-    content_settings_types.push_back(
-        static_cast<int>(permission_prompt_->GetContentSettingType(i)));
-  }
-
-  PermissionRequest::AnnotatedMessageText annotatedMessageText =
-      permission_prompt_->GetAnnotatedMessageText();
-  std::vector<int> bolded_ranges;
-  for (auto [start, end] : annotatedMessageText.bolded_ranges) {
-    bolded_ranges.push_back(base::checked_cast<int>(start));
-    bolded_ranges.push_back(base::checked_cast<int>(end));
-  }
-
+  bool is_one_time = permission_prompt_->IsOneTimePermissionRequest();
+  bool showPositiveNonEphemeralAsFirstButton =
+      is_one_time &&
+      permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
       env, reinterpret_cast<uintptr_t>(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
-      base::android::ToJavaIntArray(env, content_settings_types),
+      permission_prompt_->GetContentSettingTypes(env),
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
-      ConvertUTF16ToJavaString(env, annotatedMessageText.text),
-      base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
-      negativeButtonText, positiveEphemeralButtonText,
+      ConvertUTF16ToJavaString(
+          env, permission_prompt_->GetAnnotatedMessageText().text),
+      permission_prompt_->GetBoldRanges(env),
+      permission_prompt_->GetPositiveButtonText(env, is_one_time),
+      permission_prompt_->GetNegativeButtonText(env, is_one_time),
+      permission_prompt_->GetPositiveEphemeralButtonText(env, is_one_time),
       showPositiveNonEphemeralAsFirstButton,
       static_cast<int>(permission_prompt_->GetEmbeddedPromptVariant())));
 }

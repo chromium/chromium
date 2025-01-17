@@ -16,9 +16,10 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/ash/editor_menu/lobster_manager.h"
-#include "chrome/browser/ui/ash/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "content/public/browser/browser_context.h"
 
 namespace views {
@@ -89,7 +90,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     ~EditorCardSession() override;
 
     // EditorManager::Observer overrides
-    void OnEditorModeChanged(const EditorMode& mode) override;
+    void OnEditorModeChanged(EditorMode mode) override;
 
     void StartFlowWithFreeformText(const std::string& freeform_text);
     void StartFlowWithPreset(const std::string& preset_id);

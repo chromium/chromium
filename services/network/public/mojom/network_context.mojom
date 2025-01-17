@@ -23,6 +23,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/hash_value.mojom";
@@ -853,6 +854,9 @@ struct URLLoaderFactoryParams {
 
   // Used to report CORP violations caused by COEP.
   pending_remote<CrossOriginEmbedderPolicyReporter>? coep_reporter;
+
+  // Used to report CORP violations caused by DocumentIsolationPolicy.
+  pending_remote<DocumentIsolationPolicyReporter>? dip_reporter;
 
   // Used to notify clients about cookie reads or writes.
   pending_remote<CookieAccessObserver>? cookie_observer;

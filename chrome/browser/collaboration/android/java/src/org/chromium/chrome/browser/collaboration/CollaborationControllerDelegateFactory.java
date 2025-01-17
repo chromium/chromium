@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.collaboration;
 import androidx.annotation.NonNull;
 
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
+import org.chromium.components.collaboration.FlowType;
 
 /** Creates a {@link CollaborationControllerDelegateImpl} for {@link DataSharingTabManager}. */
 @FunctionalInterface
@@ -15,5 +16,5 @@ public interface CollaborationControllerDelegateFactory {
      * @return a {@link CollaborationControllerDelegate}.
      */
     @NonNull
-    CollaborationControllerDelegate create();
+    CollaborationControllerDelegate create(@FlowType int type);
 }

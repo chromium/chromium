@@ -488,6 +488,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.UseResult" enum="NoVarySearchUseResult"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The results of applying the No-Very-Search algorithm in the HTTP disk cache.
+    This metric is emitted once for every cache transaction when the transaction
+    is complete.
+
+    &quot;Used&quot; and &quot;Validated&quot; are the happy cases where
+    applying No-Vary-Search reduced network traffic. &quot;Not applied&quot;,
+    &quot;No match&quot; and &quot;URL Unchanged&quot; it didn't help, but at
+    minimal cost. In the case of &quot;Updated&quot;, a different entry was
+    written than would have been otherwise but nothing user-visible changed.
+    &quot;Not suitable&quot; means it didn't help at a slightly higher cost. The
+    other values mean it didn't help, and there was a cost of additional disk
+    reads.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.OpenDiskEntry" units="ms" expires_after="2025-07-13">
   <owner>yhirano@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>

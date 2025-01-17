@@ -4012,12 +4012,6 @@ const char kWebrtcHwEncodingName[] = "WebRTC hardware video encoding";
 const char kWebrtcHwEncodingDescription[] =
     "Support in WebRTC for encoding video streams using platform hardware.";
 
-const char kWebRtcRemoteEventLogName[] = "WebRTC remote-bound event logging";
-const char kWebRtcRemoteEventLogDescription[] =
-    "Allow collecting WebRTC event logs and uploading them to Crash. "
-    "Please note that, even if enabled, this will still require "
-    "a policy to be set, for it to have an effect.";
-
 const char kWebrtcUseMinMaxVEADimensionsName[] =
     "WebRTC Min/Max Video Encode Accelerator dimensions";
 const char kWebrtcUseMinMaxVEADimensionsDescription[] =

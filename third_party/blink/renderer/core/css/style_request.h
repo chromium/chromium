@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_
 
-#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
