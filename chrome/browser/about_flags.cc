@@ -4301,6 +4301,28 @@ const FeatureEntry::FeatureVariation kAudioDuckingAttenuationVariations[] = {
      std::size(kAudioDuckingAttenuation_100), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation1[] = {
+    {"animation_duration_ms", "240"},
+    {"animation_interpolator", "1"}};
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation2[] = {
+    {"animation_duration_ms", "400"},
+    {"animation_interpolator", "2"}};
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation3[] = {
+    {"animation_duration_ms", "200"},
+    {"animation_interpolator", "3"}};
+const FeatureEntry::FeatureVariation kTabSwitcherColorBlendAnimateVariations[] =
+    {{"Color Blend Animation Variation 1",
+      kTabSwitcherColorBlendAnimateVariation1,
+      std::size(kTabSwitcherColorBlendAnimateVariation1), nullptr},
+     {"Color Blend Animation Variation 2",
+      kTabSwitcherColorBlendAnimateVariation2,
+      std::size(kTabSwitcherColorBlendAnimateVariation2), nullptr},
+     {"Color Blend Animation Variation 3",
+      kTabSwitcherColorBlendAnimateVariation3,
+      std::size(kTabSwitcherColorBlendAnimateVariation3), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7265,6 +7287,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
+
+    {"tab-switcher-color-blend-animate",
+     flag_descriptions::kTabSwitcherColorBlendAnimateName,
+     flag_descriptions::kTabSwitcherColorBlendAnimateDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabSwitcherColorBlendAnimate,
+         kTabSwitcherColorBlendAnimateVariations,
+         "TabSwitcherColorBlendAnimateVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"show-warnings-for-suspicious-notifications",

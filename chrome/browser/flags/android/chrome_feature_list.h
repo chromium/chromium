@@ -183,6 +183,7 @@ BASE_DECLARE_FEATURE(kTabStripIncognitoMigration);
 BASE_DECLARE_FEATURE(kTabStripLayoutOptimization);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabStripTransitionInDesktopWindow);
+BASE_DECLARE_FEATURE(kTabSwitcherColorBlendAnimate);
 BASE_DECLARE_FEATURE(kTabSwitcherFullNewTabButton);
 BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing);
 BASE_DECLARE_FEATURE(kTabWindowManagerIndexReassignmentActivityInSameTask);

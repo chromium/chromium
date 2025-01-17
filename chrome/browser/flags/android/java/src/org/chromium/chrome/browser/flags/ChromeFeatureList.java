@@ -530,6 +530,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
+    public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
     public static final String TAB_SWITCHER_FULL_NEW_TAB_BUTTON = "TabSwitcherFullNewTabButton";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING =
             "TabWindowManagerIndexReassignmentActivityFinishing";
@@ -989,6 +990,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
+    public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
+            newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherFullNewTabButton =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FULL_NEW_TAB_BUTTON, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
@@ -1375,4 +1378,8 @@ public abstract class ChromeFeatureList {
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(
                             "disable_bottom_controls_stacker_y_offset", true);
+    public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateDurationMs =
+            sTabSwitcherColorBlendAnimate.newIntParam("animation_duration_ms", 240);
+    public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateInterpolator =
+            sTabSwitcherColorBlendAnimate.newIntParam("animation_interpolator", 0);
 }

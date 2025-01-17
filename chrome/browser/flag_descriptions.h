@@ -2827,6 +2827,9 @@ extern const char kTabStripLayoutOptimizationDescription[];
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 
+extern const char kTabSwitcherColorBlendAnimateName[];
+extern const char kTabSwitcherColorBlendAnimateDescription[];
+
 extern const char kTabSwitcherFullNewTabButtonName[];
 extern const char kTabSwitcherFullNewTabButtonDescription[];
 

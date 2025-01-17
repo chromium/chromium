@@ -334,6 +334,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripIncognitoMigration,
     &kTabStripLayoutOptimization,
     &kTabStripTransitionInDesktopWindow,
+    &kTabSwitcherColorBlendAnimate,
     &kTabSwitcherFullNewTabButton,
     &kTabWindowManagerIndexReassignmentActivityFinishing,
     &kTabWindowManagerIndexReassignmentActivityInSameTask,
@@ -1056,6 +1057,10 @@ BASE_FEATURE(kTabStripTransitionInDesktopWindow,
 BASE_FEATURE(kTabStripIncognitoMigration,
              "TabStripIncognitoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabSwitcherColorBlendAnimate,
+             "TabSwitcherColorBlendAnimate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabSwitcherFullNewTabButton,
              "TabSwitcherFullNewTabButton",
