@@ -54,9 +54,11 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "device/fido/fake_fido_discovery.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -663,6 +665,12 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
  protected:
   void SetUpOnMainThread() override {
     WebAuthBrowserTestBase::SetUpOnMainThread();
+    // The renderer would disable bfcache during the lifetime of a request.
+    // Since we don't have a renderer here and some of the navigation tests
+    // depend on bfcache being disabled, do so manually.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        shell()->web_contents()->GetPrimaryMainFrame(),
+        RenderFrameHostDisabledForTestingReason());
     ConnectToAuthenticator();
   }
 
@@ -1860,8 +1868,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
 
 class WebAuthLocalClientBackForwardCacheBrowserTest
     : public WebAuthLocalClientBrowserTest {
+ public:
+  WebAuthLocalClientBackForwardCacheBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnNewBfCacheHandling);
+  }
+
  protected:
   BackForwardCacheDisabledTester tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,

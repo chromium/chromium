@@ -167,10 +167,13 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // connection.
   kWebBluetooth = 69,
 
+  // The back/forward cache is disabled during WebAuthn transactions.
+  kWebAuthentication = 70,
+
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kWebBluetooth,
+  kMaxValue = kWebAuthentication,
 };
 
 using WebSchedulerTrackedFeatures =

@@ -702,6 +702,22 @@ void BindVibrationManager(
   }
 }
 
+AuthenticatorBinder& GetAuthenticatorBinderOverride() {
+  static base::NoDestructor<AuthenticatorBinder> binder;
+  return *binder;
+}
+
+void BindAuthenticator(
+    RenderFrameHostImpl* frame,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+  const auto& binder = GetAuthenticatorBinderOverride();
+  if (binder) {
+    binder.Run(std::move(receiver));
+  } else {
+    frame->GetWebAuthenticationService(std::move(receiver));
+  }
+}
+
 void BindMediaPlayerObserverClientHandler(
     RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient> receiver) {
@@ -936,8 +952,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host)));
 
   map->Add<blink::mojom::Authenticator>(
-      base::BindRepeating(&RenderFrameHostImpl::GetWebAuthenticationService,
-                          base::Unretained(host)));
+      base::BindRepeating(&BindAuthenticator, base::Unretained(host)));
 
   map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
       &RenderFrameHostImpl::CreatePaymentCredential, base::Unretained(host)));
@@ -1793,6 +1808,10 @@ void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
 
 void OverrideVibrationManagerBinderForTesting(VibrationManagerBinder binder) {
   internal::GetVibrationManagerBinderOverride() = std::move(binder);
+}
+
+void OverrideAuthenticatorBinderForTesting(AuthenticatorBinder binder) {
+  internal::GetAuthenticatorBinderOverride() = std::move(binder);
 }
 
 }  // namespace content
