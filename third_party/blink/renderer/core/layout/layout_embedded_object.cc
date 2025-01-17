@@ -109,11 +109,4 @@ PhysicalNaturalSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
   return LayoutEmbeddedContent::GetNaturalDimensions();
 }
 
-PhysicalNaturalSizingInfo LayoutEmbeddedObject::ComputeIntrinsicSizingInfo()
-    const {
-  NOT_DESTROYED();
-  DCHECK(!ShouldApplySizeContainment());
-  return GetNaturalDimensions();
-}
-
 }  // namespace blink

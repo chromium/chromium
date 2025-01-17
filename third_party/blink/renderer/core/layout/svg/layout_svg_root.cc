@@ -103,12 +103,6 @@ PhysicalNaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
   return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
 }
 
-PhysicalNaturalSizingInfo LayoutSVGRoot::ComputeIntrinsicSizingInfo() const {
-  NOT_DESTROYED();
-  DCHECK(!ShouldApplySizeContainment());
-  return GetNaturalDimensions();
-}
-
 bool LayoutSVGRoot::IsEmbeddedThroughSVGImage() const {
   NOT_DESTROYED();
   return SVGImage::IsInSVGImage(To<SVGSVGElement>(GetNode()));

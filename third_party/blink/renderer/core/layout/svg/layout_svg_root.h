@@ -142,7 +142,10 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
-  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const override;
+  bool ShouldApplyObjectViewBox() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;

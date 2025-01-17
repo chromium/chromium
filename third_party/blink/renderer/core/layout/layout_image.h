@@ -123,7 +123,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
  protected:
   SVGImage* EmbeddedSVGImage() const;
-  bool CanApplyObjectViewBox() const override;
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
   PhysicalSize NaturalSize() const {

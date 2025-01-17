@@ -64,7 +64,10 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
     return true;
   }
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
-  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const override;
+  bool ShouldApplyObjectViewBox() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   PluginAvailability plugin_availability_ = kPluginAvailable;
   String unavailable_plugin_replacement_text_;

@@ -107,7 +107,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  virtual PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const;
+  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const;
 
   // This callback must be invoked whenever the underlying intrinsic size has
   // changed.
@@ -124,13 +124,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   bool ClipsToContentBox() const;
 
  protected:
-  virtual bool CanApplyObjectViewBox() const {
+  virtual bool ShouldApplyObjectViewBox() const {
     NOT_DESTROYED();
     return true;
   }
-  // Applies a 'object-view-box' (if present) to the provided natural
-  // dimensions.
-  void ApplyObjectViewBox(PhysicalNaturalSizingInfo&) const;
 
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();
@@ -174,7 +171,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
   std::optional<PhysicalRect> ComputeObjectViewBoxRect(
-      const PhysicalSize& natural_size) const;
+      const PhysicalNaturalSizingInfo& sizing_info) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,

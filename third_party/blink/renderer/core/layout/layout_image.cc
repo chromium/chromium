@@ -334,16 +334,6 @@ bool LayoutImage::NodeAtPoint(HitTestResult& result,
   return inside;
 }
 
-bool LayoutImage::CanApplyObjectViewBox() const {
-  if (!EmbeddedSVGImage()) {
-    return true;
-  }
-  // Only apply object-view-box if the image has both natural width/height.
-  const NaturalSizingInfo info =
-      image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
-  return info.has_width && info.has_height;
-}
-
 PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   NOT_DESTROYED();
   if (EmbeddedSVGImage()) {

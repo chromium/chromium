@@ -155,23 +155,28 @@ void LayoutReplaced::RecalcVisualOverflow() {
 }
 
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
-    const PhysicalSize& natural_size) const {
+    const PhysicalNaturalSizingInfo& sizing_info) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
   if (!object_view_box) [[likely]] {
     return std::nullopt;
   }
 
-  if (natural_size.IsEmpty()) {
+  if (!sizing_info.has_width || !sizing_info.has_height) {
     return std::nullopt;
   }
 
-  if (!CanApplyObjectViewBox())
+  if (!ShouldApplyObjectViewBox()) {
     return std::nullopt;
+  }
+
+  if (sizing_info.size.IsEmpty()) {
+    return std::nullopt;
+  }
 
   DCHECK_EQ(object_view_box->GetType(), BasicShape::kBasicShapeInsetType);
 
   Path path;
-  const gfx::RectF bounding_box{gfx::SizeF(natural_size)};
+  const gfx::RectF bounding_box{gfx::SizeF(sizing_info.size)};
   object_view_box->GetPath(path, bounding_box, 1.f);
 
   const PhysicalRect view_box_rect =
@@ -179,7 +184,7 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   if (view_box_rect.IsEmpty())
     return std::nullopt;
 
-  const PhysicalRect natural_rect(PhysicalOffset(), natural_size);
+  const PhysicalRect natural_rect(PhysicalOffset(), sizing_info.size);
   if (view_box_rect == natural_rect) {
     return std::nullopt;
   }
@@ -217,7 +222,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
   // transparent pixels. Regions outside object-view-box (but within image
   // bounds) are scaled as defined by object-fit above and treated as ink
   // overflow.
-  const auto view_box = ComputeObjectViewBoxRect(sizing_info.size);
+  const auto view_box = ComputeObjectViewBoxRect(sizing_info);
 
   // If no view box override was applied, then we don't need to adjust the
   // view-box paint rect.
@@ -316,19 +321,6 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
   return {base_content_rect.offset + object_position, object_size};
 }
 
-void LayoutReplaced::ApplyObjectViewBox(
-    PhysicalNaturalSizingInfo& sizing_info) const {
-  if (!sizing_info.has_width || !sizing_info.has_height) {
-    return;
-  }
-  if (auto view_box = ComputeObjectViewBoxRect(sizing_info.size)) {
-    sizing_info.size = view_box->size;
-    if (!sizing_info.aspect_ratio.IsEmpty()) {
-      sizing_info.aspect_ratio = sizing_info.size;
-    }
-  }
-}
-
 PhysicalRect LayoutReplaced::ReplacedContentRect() const {
   NOT_DESTROYED();
   // This function should compute the result with old geometry even if a
@@ -352,7 +344,14 @@ PhysicalNaturalSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   PhysicalNaturalSizingInfo sizing_info = GetNaturalDimensions();
-  ApplyObjectViewBox(sizing_info);
+
+  // Apply a 'object-view-box' (if present) to the provided natural dimensions.
+  if (auto view_box = ComputeObjectViewBoxRect(sizing_info)) {
+    sizing_info.size = view_box->size;
+    if (!sizing_info.aspect_ratio.IsEmpty()) {
+      sizing_info.aspect_ratio = sizing_info.size;
+    }
+  }
   return sizing_info;
 }
 
