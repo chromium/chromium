@@ -341,6 +341,38 @@
             ]
         }
     ],
+    "AndroidAppIntegrationV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SkipSchemaCheck",
+                    "params": {
+                        "skip_schema_check": "true",
+                        "use_large_favicon": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppIntegrationModule",
+                        "AndroidAppIntegrationV2",
+                        "AndroidAppIntegrationWithFavicon"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "use_large_favicon": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppIntegrationModule",
+                        "AndroidAppIntegrationV2",
+                        "AndroidAppIntegrationWithFavicon"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAutofillPrefillRequestsForChangePassword": [
         {
             "platforms": [

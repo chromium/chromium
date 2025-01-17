@@ -586,15 +586,15 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
-            newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false);
+            newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false, true);
     public static final CachedFlag sAndroidAppIntegrationV2 =
-            newCachedFlag(ANDROID_APP_INTEGRATION_V2, false);
+            newCachedFlag(ANDROID_APP_INTEGRATION_V2, false, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sNewTabPageCustomization =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
-            newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, false);
+            newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, false, true);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
