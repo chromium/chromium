@@ -153,6 +153,8 @@ std::string GetStringNameForOptimizationType(
       return "OptimizationGuideIconView";
     case proto::OptimizationType::PRIVACY_POLICY_ANNOTATION:
       return "PrivacyPolicyAnnotation";
+    case proto::OptimizationType::GLIC_CONTEXTUAL_CUEING:
+      return "GlicContextualCueing";
   }
 
   // The returned string is used to record histograms for the optimization type.
