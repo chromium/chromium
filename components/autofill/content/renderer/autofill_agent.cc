@@ -866,6 +866,9 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
 
 void AutofillAgent::TextFieldValueChanged(
     const WebFormControlElement& element) {
+  field_data_manager_->UpdateFieldDataMap(
+      form_util::GetFieldRendererId(element), element.Value().Utf16(),
+      FieldPropertiesFlags::kUserTyped);
   form_tracker_->TextFieldValueChanged(element);
 }
 
@@ -895,10 +898,12 @@ void AutofillAgent::OnTextFieldValueChanged(
   // showing up.
   ClearPreviewedForm();
 
-  UpdateStateForTextChange(element, FieldPropertiesFlags::kUserTyped,
-                           form_cache);
-
   const auto input_element = element.DynamicTo<WebInputElement>();
+  if (input_element && input_element.IsTextField()) {
+    password_autofill_agent_->UpdatePasswordStateForTextChange(input_element,
+                                                               form_cache);
+  }
+
   if (password_generation_agent_ && input_element &&
       password_generation_agent_->TextDidChangeInTextField(input_element,
                                                            form_cache)) {
