@@ -10,6 +10,7 @@ import '../components/cra/cra-image.js';
 import '../components/cra/cra-menu.js';
 import '../components/cra/cra-menu-item.js';
 import '../components/delete-recording-dialog.js';
+import '../components/language-picker-dialog.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
 import '../components/transcription-view.js';
@@ -32,6 +33,7 @@ import {CraDialog} from '../components/cra/cra-dialog.js';
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {withTooltip} from '../components/directives/with-tooltip.js';
+import {LanguagePickerDialog} from '../components/language-picker-dialog.js';
 import {
   TranscriptionConsentDialog,
 } from '../components/transcription-consent-dialog.js';
@@ -404,6 +406,8 @@ export class RecordPage extends ReactiveLitElement {
 
   private readonly deleteDialog = createRef<DeleteRecordingDialog>();
 
+  private readonly languagePickerDialog = createRef<LanguagePickerDialog>();
+
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
@@ -639,8 +643,12 @@ export class RecordPage extends ReactiveLitElement {
     if (!toggleTranscriptionEnabled()) {
       this.transcriptionConsentDialog.value?.show();
     }
-    // TODO: b/377885042 - Show the language picker when there's no selected
-    // language.
+    // TODO: b/377885042 - Show the language picker when language state is not
+    // downloaded or downloading.
+    if (this.platformHandler.getSelectedLanguage() === null &&
+        this.transcriptionEnabled.value) {
+      this.languagePickerDialog.value?.show();
+    }
   }
 
   private toggleSpeakerLabelEnabled() {
@@ -722,11 +730,7 @@ export class RecordPage extends ReactiveLitElement {
       </transcription-view>`;
     }
 
-    // Note that the image transcript.svg is currently placeholders and don't
-    // use dynamic color tokens yet.
-    // TODO: b/344785475 - Change to final illustration when ready.
     switch (settings.value.transcriptionEnabled) {
-      // TODO: b/377885042 - Change to final string when ready.
       case TranscriptionEnableState.ENABLED: {
         const sodaState = this.platformHandler.getSelectedLanguageState();
         if (sodaState === null) {
@@ -738,18 +742,23 @@ export class RecordPage extends ReactiveLitElement {
             'Language selection is unavailable but' +
               ' getSelectedLanguageState returns null.',
           );
+          const description = replacePlaceholderWithHtml(
+            i18n.recordTranscriptionUnusableSelectLanguageDescription,
+            '[3dot]',
+            html`<cra-icon name="more_vertical"></cra-icon>`,
+          );
           return html`
             <div id="transcription-consent">
               <cra-image name="transcription_off"></cra-image>
               <div class="header">
                 ${i18n.recordTranscriptionUnusableHeader}
               </div>
-              <div class="description">
-                ${i18n.recordTranscriptionUnusableSelectLanguageDescription}
-              </div>
+              <div class="description">${description}</div>
             </div>
           `;
         }
+        // TODO: b/377885042 - Update unusable state string when the spec is
+        // ready.
         switch (sodaState.value.kind) {
           case 'notInstalled': {
             return html`
@@ -1063,6 +1072,9 @@ export class RecordPage extends ReactiveLitElement {
           </div>
         </div>
       </div>
+      <language-picker-dialog
+        ${ref(this.languagePickerDialog)}
+      ></language-picker-dialog>
       <delete-recording-dialog
         current
         @delete=${this.deleteRecording}

@@ -1155,6 +1155,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       saveMode = SaveRequestType.ANNOTATION;
     } else if (this.hasEdits_) {
       saveMode = SaveRequestType.EDITED;
+    } else if (this.hasSearchifyText_) {
+      saveMode = SaveRequestType.SEARCHIFIED;
     } else {
       saveMode = SaveRequestType.ORIGINAL;
     }
@@ -1291,6 +1293,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   private async save_(requestType: SaveRequestType) {
     this.recordSaveMetrics_(requestType);
+
+    // TODO(crbug.com/382610226): Update for `SaveRequestType.SEARCHIFIED` to
+    // allow users to select saving original PDF or text extracted one.
+    // To do so, the save type should be asked first, and then content would be
+    // fetched based on the selected type.
 
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
@@ -1435,6 +1442,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         break;
       case SaveRequestType.EDITED:
         record(UserAction.SAVE_EDITED);
+        break;
+      case SaveRequestType.SEARCHIFIED:
+        // TODO(crbug.com/382610226): Update metric after the code is updated to
+        // give users the option to save searchified or original PDF, and add
+        // test.
+        record(UserAction.SAVE_SEARCHIFIED);
         break;
     }
   }

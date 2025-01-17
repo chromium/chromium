@@ -3735,6 +3735,13 @@
       name: "ScriptRunIteratorCombiningMarks",
       status: "stable",
     },
+    // Killswitch to be removed after M134 reaches stable.
+    // With it enabled, LocalFrameView uses an optimized iteration over just
+    // scrollable areas with scroll nodes.
+    {
+      name: "ScrollableAreasWithScrollNodeOptimization",
+      status: "stable",
+    },
     {
       name: "ScrollbarColor",
       status: "stable",

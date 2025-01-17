@@ -107,9 +107,27 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
         AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
 
     base::RunLoop run_loop;
-    auto dom_node_id = 0;
-    ai_data_service->GetAiDataWithSpecifiers(
-        1, dom_node_id, web_contents, "test",
+    ai_data_service->GetAiData(
+        1, web_contents, "",
+        base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
+                       base::Unretained(this), run_loop.QuitClosure()),
+        1);
+    run_loop.Run();
+    DCHECK(ai_data());
+  }
+
+  void LoadSimplePageAndDataWithSpecifier(
+      AiDataKeyedService::AiDataSpecifier specifier) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url_, 1);
+
+    AiDataKeyedService* ai_data_service =
+        AiDataKeyedServiceFactory::GetAiDataKeyedService(browser()->profile());
+
+    base::RunLoop run_loop;
+    ai_data_service->GetAiDataWithSpecifier(
+        web_contents, std::move(specifier),
         base::BindOnce(&AiDataKeyedServiceBrowserTest::SetAiData,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -260,6 +278,48 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
   EXPECT_EQ(content_attributes.attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
 }
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {
+  AiDataKeyedService::AiDataSpecifier specifier;
+  auto* browser_specifier =
+      specifier.mutable_browser_data_collection_specifier();
+  auto* foreground_tab_specifier =
+      browser_specifier->mutable_foreground_tab_page_context_specifier();
+  foreground_tab_specifier->set_inner_text(true);
+  foreground_tab_specifier->set_tab_screenshot(true);
+  foreground_tab_specifier->set_ax_tree(true);
+  foreground_tab_specifier->set_pdf_data(true);
+  foreground_tab_specifier->set_forms_data(true);
+  auto* general_tabs_specifier =
+      browser_specifier->mutable_tabs_context_specifier()
+          ->mutable_general_tab_specifier();
+  general_tabs_specifier->mutable_page_context_specifier()->set_inner_text(
+      true);
+  general_tabs_specifier->set_tab_limit(2);
+  browser_specifier->set_site_engagement(true);
+  browser_specifier->set_tab_groups(true);
+
+  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+  EXPECT_NE(ai_data()->page_context().tab_screenshot(), "");
+  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  const auto& content_attributes =
+      page_content.root_node().content_attributes();
+  EXPECT_EQ(content_attributes.attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 1);
+  EXPECT_NE(ai_data()->site_engagement().entries()[0].url(), "");
+  EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
+  AiDataKeyedService::AiDataSpecifier specifier;
+  LoadSimplePageAndDataWithSpecifier(std::move(specifier));
+
+  EXPECT_EQ(ai_data()->page_context().tab_screenshot(), "");
+  EXPECT_EQ(ai_data()->page_context().inner_text(), "");
+  EXPECT_EQ(ai_data()->site_engagement().entries().size(), 0);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class AiDataKeyedServiceBrowserTestWithFormsPredictions
     : public AiDataKeyedServiceBrowserTest {

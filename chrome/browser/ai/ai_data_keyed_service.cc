@@ -37,6 +37,8 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/buildflags.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -441,12 +443,23 @@ void GetSiteEngagementScoresForModelPrototyping(
   return std::move(continue_callback).Run(std::move(data));
 }
 
+std::unique_ptr<optimization_guide::proto::PageContextSpecifier>
+CreateDefaultPageContextSpecifier(int dom_node_id) {
+  auto page_context_specifier =
+      std::make_unique<optimization_guide::proto::PageContextSpecifier>();
+  page_context_specifier->set_inner_text(true);
+  page_context_specifier->set_inner_text_dom_node_id(dom_node_id);
+  page_context_specifier->set_tab_screenshot(true);
+  page_context_specifier->set_ax_tree(true);
+  page_context_specifier->set_pdf_data(true);
+  page_context_specifier->set_forms_data(true);
+  return page_context_specifier;
+}
+
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
-void GetModelPrototypingAiData(int tabs_for_inner_text,
-                               int dom_node_id,
+void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
                                content::WebContents* web_contents,
-                               std::string user_input,
                                AiDataKeyedService::AiDataCallback callback) {
   TRACE_EVENT0("browser", "GetModelPrototypingAiData");
   DCHECK(web_contents);
@@ -459,24 +472,61 @@ void GetModelPrototypingAiData(int tabs_for_inner_text,
       base::UTF16ToUTF8(web_contents->GetTitle()));
 
   base::ConcurrentCallbacks<AiDataKeyedService::AiData> concurrent;
+  auto page_context_specifier = specifiers.browser_data_collection_specifier()
+                                    .foreground_tab_page_context_specifier();
+  if (page_context_specifier.default_data()) {
+    auto default_specifier = CreateDefaultPageContextSpecifier(
+        page_context_specifier.inner_text_dom_node_id());
+    page_context_specifier.CopyFrom(*default_specifier);
+  }
+  // TODO(https://crbug.com/385777825) check this specifier. For now always
+  // collect it.
   GetAIPageContentForModelPrototyping(web_contents,
                                       concurrent.CreateCallback());
-  RequestAxTreeSnapshotForModelPrototyping(web_contents,
-                                           concurrent.CreateCallback());
-  GetInnerTextForModelPrototyping(dom_node_id, web_contents,
-                                  concurrent.CreateCallback());
-  GetTabScreenshotForModelPrototyping(web_contents,
-                                      concurrent.CreateCallback());
-#if !BUILDFLAG(IS_ANDROID)
-  GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents, concurrent);
-  GetFormsPredictionsDataForModelPrototyping(web_contents,
+  if (page_context_specifier.ax_tree()) {
+    RequestAxTreeSnapshotForModelPrototyping(web_contents,
                                              concurrent.CreateCallback());
+  }
+  if (page_context_specifier.inner_text()) {
+    GetInnerTextForModelPrototyping(
+        page_context_specifier.inner_text_dom_node_id(), web_contents,
+        concurrent.CreateCallback());
+  }
+  if (page_context_specifier.tab_screenshot()) {
+    GetTabScreenshotForModelPrototyping(web_contents,
+                                        concurrent.CreateCallback());
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/385777825): generalize this logic and support other
+  // page contexts for tabs.
+  auto tab_specifier =
+      specifiers.browser_data_collection_specifier().tabs_context_specifier();
+  if (tab_specifier.has_general_tab_specifier()) {
+    // All tabs metadata is collected, but the tab limit is only used to
+    // determine if inner text should be collected.
+    auto general_tab_specifier = tab_specifier.general_tab_specifier();
+    int tabs_for_inner_text =
+        general_tab_specifier.page_context_specifier().inner_text()
+            ? general_tab_specifier.tab_limit()
+            : 0;
+    GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents,
+                                  concurrent);
+  }
+  if (page_context_specifier.forms_data()) {
+    GetFormsPredictionsDataForModelPrototyping(web_contents,
+                                               concurrent.CreateCallback());
+  }
 #endif
 #if BUILDFLAG(ENABLE_PDF)
-  RequestPdfBytesForModelPrototyping(web_contents, concurrent.CreateCallback());
+  if (page_context_specifier.pdf_data()) {
+    RequestPdfBytesForModelPrototyping(web_contents,
+                                       concurrent.CreateCallback());
+  }
 #endif  // BUILDFLAG(ENABLE_PDF)
-  GetSiteEngagementScoresForModelPrototyping(web_contents->GetBrowserContext(),
-                                             concurrent.CreateCallback());
+  if (specifiers.browser_data_collection_specifier().site_engagement()) {
+    GetSiteEngagementScoresForModelPrototyping(
+        web_contents->GetBrowserContext(), concurrent.CreateCallback());
+  }
   std::move(concurrent)
       .Done(base::BindOnce(&OnDataCollectionsComplete, std::move(callback),
                            std::move(data)));
@@ -510,21 +560,38 @@ AiDataKeyedService::GetAllowlistedAiDataExtensionsFeatureForTesting() {
 void AiDataKeyedService::GetAiData(int dom_node_id,
                                    content::WebContents* web_contents,
                                    std::string user_input,
-                                   AiDataCallback callback) {
+                                   AiDataCallback callback,
+                                   int tabs_for_inner_text) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
-  GetAiDataWithSpecifiers(10, dom_node_id, web_contents, user_input,
-                          std::move(callback));
+  // Configure a default set of specifier.
+  AiDataSpecifier specifier;
+  auto* browser_data_collection_specifier =
+      specifier.mutable_browser_data_collection_specifier();
+  browser_data_collection_specifier
+      ->set_allocated_foreground_tab_page_context_specifier(
+          CreateDefaultPageContextSpecifier(dom_node_id).release());
+
+  auto* general_tabs_context_specifier =
+      browser_data_collection_specifier->mutable_tabs_context_specifier()
+          ->mutable_general_tab_specifier();
+  general_tabs_context_specifier->mutable_page_context_specifier()
+      ->set_inner_text(true);
+  general_tabs_context_specifier->set_tab_limit(tabs_for_inner_text);
+
+  browser_data_collection_specifier->set_site_engagement(true);
+  browser_data_collection_specifier->set_tab_groups(true);
+
+  GetAiDataWithSpecifier(web_contents, std::move(specifier),
+                         std::move(callback));
 }
 
-void AiDataKeyedService::GetAiDataWithSpecifiers(
-    int tabs_for_inner_text,
-    int dom_node_id,
+void AiDataKeyedService::GetAiDataWithSpecifier(
     content::WebContents* web_contents,
-    std::string user_input,
+    AiDataSpecifier specifier,
     AiDataCallback callback) {
-  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiDataWithSpecifiers");
-  GetModelPrototypingAiData(tabs_for_inner_text, dom_node_id, web_contents,
-                            user_input, std::move(callback));
+  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiDataWithSpecifier");
+  GetModelPrototypingAiData(std::move(specifier), web_contents,
+                            std::move(callback));
 }
 
 std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {

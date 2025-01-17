@@ -44,6 +44,7 @@
 
 namespace blink {
 
+// TextRun instances are immutable.
 class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
@@ -51,34 +52,39 @@ class PLATFORM_EXPORT TextRun final {
   TextRun(const LChar* c,
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(len),
         is_8bit_(true),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     data_.characters8 = c;
   }
 
   TextRun(const UChar* c,
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(len),
         is_8bit_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     data_.characters16 = c;
   }
 
+  TextRun(const StringView& string)
+      : TextRun(string, TextDirection::kLtr, false, false) {}
   TextRun(const StringView& string,
-          TextDirection direction = TextDirection::kLtr,
-          bool directional_override = false)
+          TextDirection direction,
+          bool directional_override = false,
+          bool normalize_space = false)
       : len_(string.length()),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        normalize_space_(false) {
+        normalize_space_(normalize_space) {
     if (!len_) {
       is_8bit_ = true;
       data_.characters8 = nullptr;
@@ -91,6 +97,14 @@ class PLATFORM_EXPORT TextRun final {
     }
   }
 
+  // TextRun supports move construction, but supports neither copy construction,
+  // copy assignment, nor move assignment.
+
+  TextRun(const TextRun&) = delete;
+  TextRun& operator=(const TextRun&) = delete;
+  TextRun(TextRun&&) = default;
+  TextRun& operator=(TextRun&&) = delete;
+
   // direction - An optional TextDirection of the new TextRun. If this is not
   //             specified, the new TextRun inherits the TextDirection of
   //             `this`.
@@ -101,14 +115,14 @@ class PLATFORM_EXPORT TextRun final {
 
     TextDirection new_direction = direction.value_or(Direction());
     if (Is8Bit()) {
-      TextRun result = TextRun(data_.characters8 + start_offset, length,
-                               new_direction, directional_override_);
-      result.SetNormalizeSpace(normalize_space_);
+      TextRun result =
+          TextRun(data_.characters8 + start_offset, length, new_direction,
+                  directional_override_, normalize_space_);
       return result;
     }
-    TextRun result = TextRun(data_.characters16 + start_offset, length,
-                             new_direction, directional_override_);
-    result.SetNormalizeSpace(normalize_space_);
+    TextRun result =
+        TextRun(data_.characters16 + start_offset, length, new_direction,
+                directional_override_, normalize_space_);
     return result;
   }
 
@@ -148,9 +162,6 @@ class PLATFORM_EXPORT TextRun final {
   unsigned length() const { return len_; }
 
   bool NormalizeSpace() const { return normalize_space_; }
-  void SetNormalizeSpace(bool normalize_space) {
-    normalize_space_ = normalize_space;
-  }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -177,7 +188,7 @@ class PLATFORM_EXPORT TextRun final {
   const unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
-  unsigned normalize_space_ : 1;
+  const unsigned normalize_space_ : 1;
 };
 
 }  // namespace blink

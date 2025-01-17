@@ -113,6 +113,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     kAnnotation = 0,
     kOriginal = 1,
     kEdited = 2,
+    kSearchified = 3,
   };
 
   // Provides services from the plugin's container.

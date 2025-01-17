@@ -1499,6 +1499,9 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   message.Set("type", "setHasSearchifyText");
   client_->PostMessage(std::move(message));
   pdf_accessibility_data_handler_->OnHasSearchifyText();
+  if (chrome_pdf::features::IsPdfSearchifySaveEnabled()) {
+    SetPluginCanSave(true);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1778,6 +1781,18 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
     case SaveRequestType::kEdited:
       SaveToBuffer(request_type, token);
       return;
+    case SaveRequestType::kSearchified:
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      CHECK(chrome_pdf::features::IsPdfSearchifySaveEnabled());
+      // TODO(crbug.com/382610226): If engine has searchified text, ensure all
+      // pages are searchified and then save.
+      SaveToBuffer(request_type, token);
+      return;
+#else
+      // PDF Searchify is not expected to be triggered when ScreenAI service is
+      // not enabled.
+      NOTREACHED();
+#endif
   }
   NOTREACHED();
 }
@@ -1947,7 +1962,8 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
 void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
                                     const std::string& token) {
   CHECK(request_type == SaveRequestType::kAnnotation ||
-        request_type == SaveRequestType::kEdited);
+        request_type == SaveRequestType::kEdited ||
+        request_type == SaveRequestType::kSearchified);
 
   engine_->KillFormFocus();
 
@@ -1965,6 +1981,10 @@ void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
 #if BUILDFLAG(ENABLE_PDF_INK2)
   use_save_data |= !!ink_module_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  use_save_data |= (request_type == SaveRequestType::kSearchified);
+#endif
 
   if (use_save_data) {
     base::Value::BlobStorage data = engine_->GetSaveData();

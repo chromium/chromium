@@ -26,6 +26,8 @@ class AiDataKeyedService : public KeyedService {
   using BrowserData = optimization_guide::proto::BrowserCollectedInformation;
   using AiData = std::optional<BrowserData>;
   using AiDataCallback = base::OnceCallback<void(AiData)>;
+  using AiDataSpecifier =
+      optimization_guide::proto::ModelPrototypingCollectionSpecifier;
 
   explicit AiDataKeyedService(content::BrowserContext* browser_context);
   AiDataKeyedService(const AiDataKeyedService&) = delete;
@@ -41,17 +43,16 @@ class AiDataKeyedService : public KeyedService {
   void GetAiData(int dom_node_id,
                  content::WebContents* web_contents,
                  std::string user_input,
-                 AiDataCallback callback);
+                 AiDataCallback callback,
+                 int tabs_for_inner_text = 10);
 
   // Fills an AiData and returns the result via the passed in callback. If the
   // AiData is empty, data collection failed. |callback| is guaranteed to be
   // called, and guaranteed to be called asynchronously.
   // |tabs_for_inner_text|: The number of tabs to collect inner text for.
-  void GetAiDataWithSpecifiers(int tabs_for_inner_text,
-                               int dom_node_id,
-                               content::WebContents* web_contents,
-                               std::string user_input,
-                               AiDataCallback callback);
+  void GetAiDataWithSpecifier(content::WebContents* web_contents,
+                              AiDataSpecifier specifier,
+                              AiDataCallback callback);
 
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
 

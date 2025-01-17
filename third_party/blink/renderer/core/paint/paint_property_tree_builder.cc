@@ -2696,7 +2696,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       UpdateScrollNode();
       UpdateOverflowControlEffects();
       UpdateScrollTranslation();
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        object_.GetFrameView()->AddScrollableAreaWithScrollNode(
+            *To<LayoutBox>(object_).GetScrollableArea());
+      }
     } else {
+      if (RuntimeEnabledFeatures::
+              ScrollableAreasWithScrollNodeOptimizationEnabled()) {
+        if (properties_->Scroll() &&
+            To<LayoutBox>(object_).GetScrollableArea()) {
+          object_.GetFrameView()->RemoveScrollableAreaWithScrollNode(
+              *To<LayoutBox>(object_).GetScrollableArea());
+        }
+      }
       OnClearScroll(properties_->ClearScroll());
       OnClearEffect(properties_->ClearVerticalScrollbarEffect());
       OnClearEffect(properties_->ClearHorizontalScrollbarEffect());
