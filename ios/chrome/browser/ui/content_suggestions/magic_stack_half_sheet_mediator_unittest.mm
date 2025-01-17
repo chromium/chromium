@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -30,8 +31,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 class MagicStackHalfSheetMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kTabResumption, kNewFeedPositioning},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kTabResumption, kNewFeedPositioning}, {kIOSDisableParcelTracking});
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     // Necessary set up for kIOSSetUpList.
