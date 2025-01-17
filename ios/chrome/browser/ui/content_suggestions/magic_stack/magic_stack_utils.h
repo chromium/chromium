@@ -24,4 +24,10 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                                      AuthenticationService* auth_service,
                                      PrefService* pref_service);
 
+/// True if the user's preferred content size is an accessibility size.
+bool isContentOversized(id<UITraitEnvironment> trait_environment);
+
+/// Returns the dynamic height of the Magic Stack modules.
+CGFloat GetMagicStackHeight(id<UITraitEnvironment> trait_environment);
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_UTILS_H_

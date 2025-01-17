@@ -171,11 +171,13 @@ const CGFloat kCornerRadius = 8.0;
   UIContentSizeCategory category =
       self.traitCollection.preferredContentSizeCategory;
   NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
-      category, UIContentSizeCategoryExtraLarge);
+      category, UIContentSizeCategoryExtraExtraExtraLarge);
   if (result == NSOrderedAscending) {
     self.titleLabel.numberOfLines = kLabelNumLines;
+    self.titleLabel.lineBreakMode = NSLineBreakByCharWrapping;
   } else {
     self.titleLabel.numberOfLines = 1;
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   }
 }
 

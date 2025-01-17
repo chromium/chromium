@@ -55,6 +55,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
   BOOL _hasSeenEphemeralCard;
+  NSLayoutConstraint* _heightConstraint;
 }
 
 - (void)loadView {
@@ -63,9 +64,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self populateWithPlaceholders];
 
   self.view = _collectionView;
-  [NSLayoutConstraint
-      activateConstraints:@[ [_collectionView.heightAnchor
-                              constraintEqualToConstant:kModuleMaxHeight] ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateCardHeightOnTraitChange)];
+  }
+}
+
+- (void)viewDidLoad {
+  _heightConstraint = [_collectionView.heightAnchor
+      constraintEqualToConstant:GetMagicStackHeight(self.view)];
+
+  [NSLayoutConstraint activateConstraints:@[ _heightConstraint ]];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -90,6 +102,20 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
       }
                       completion:nil];
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateCardHeightOnTraitChange];
+  }
+}
+#endif
 
 #pragma mark - Public
 
@@ -487,6 +513,14 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     case ContentSuggestionsModuleType::kInvalid:
       return NO;
   }
+}
+
+// Resizes the Magic Stack card height.
+- (void)updateCardHeightOnTraitChange {
+  _heightConstraint.constant = GetMagicStackHeight(self.view);
+
+  [_magicStackCollectionViewLayoutConfigurator
+          .magicStackCompositionalLayout invalidateLayout];
 }
 
 @end
