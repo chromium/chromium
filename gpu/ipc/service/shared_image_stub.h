@@ -130,6 +130,9 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                              gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
 
+  void OnCreateSharedImagePool(mojom::CreateSharedImagePoolParamsPtr params);
+  void OnDestroySharedImagePool(mojom::DestroySharedImagePoolParamsPtr params);
+
   ContextResult Initialize();
   void OnError();
 

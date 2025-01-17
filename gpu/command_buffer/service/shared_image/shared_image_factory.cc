@@ -730,6 +730,26 @@ bool SharedImageFactory::GetGpuMemoryBufferHandleInfo(
   return true;
 }
 
+bool SharedImageFactory::CreateSharedImagePool(
+    const SharedImagePoolId& pool_id,
+    mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote) {
+  auto it = shared_image_pool_map_.find(pool_id);
+  // Ensure that there is no pool already corresponding to the |pool_id|.
+  if (it != shared_image_pool_map_.end()) {
+    return false;
+  }
+  auto pool = std::make_unique<SharedImagePoolService>(
+      pool_id, std::move(client_remote), this);
+  shared_image_pool_map_.emplace(pool_id, std::move(pool));
+  return true;
+}
+
+bool SharedImageFactory::DestroySharedImagePool(
+    const SharedImagePoolId& pool_id) {
+  // Ensure that there is a pool corresponding to the |pool_id|.
+  return shared_image_pool_map_.erase(pool_id);
+}
+
 void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
     SharedImageBackingFactory* factory) {
   backing_factory_for_testing_ = factory;
