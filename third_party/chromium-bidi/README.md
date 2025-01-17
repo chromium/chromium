@@ -100,32 +100,32 @@ CdpEventReceivedParameters = {
 
 The event contains a CDP event.
 
-### Field `channel`
+### Field `goog:channel`
 
-Each command can be extended with a `channel`:
+Each command can be extended with a `goog:channel`:
 
 ```cddl
 Command = {
    id: js-uint,
-   channel?: text,
+   "goog:channel"?: text,
    CommandData,
    Extensible,
 }
 ```
 
-If provided and non-empty string, the very same `channel` is added to the response:
+If provided and non-empty string, the very same `goog:channel` is added to the response:
 
 ```cddl
 CommandResponse = {
    id: js-uint,
-   channel?: text,
+   "goog:channel"?: text,
    result: ResultData,
    Extensible,
 }
 
 ErrorResponse = {
   id: js-uint / null,
-  channel?: text,
+  "goog:channel"?: text,
   error: ErrorCode,
   message: text,
   ?stacktrace: text,
@@ -136,12 +136,12 @@ ErrorResponse = {
 When client uses
 commands [`session.subscribe`](https://w3c.github.io/webdriver-bidi/#command-session-subscribe)
 and [`session.unsubscribe`](https://w3c.github.io/webdriver-bidi/#command-session-unsubscribe)
-with `channel`, the subscriptions are handled per channel, and the corresponding
-`channel` filed is added to the event message:
+with `goog:channel`, the subscriptions are handled per channel, and the corresponding
+`goog:channel` filed is added to the event message:
 
 ```cddl
 Event = {
-  channel?: text,
+  "goog:channel"?: text,
   EventData,
   Extensible,
 }
