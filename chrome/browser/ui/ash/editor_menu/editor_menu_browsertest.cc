@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

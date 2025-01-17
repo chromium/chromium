@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom-forward.h"
@@ -196,8 +195,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
       mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
-  void BindEditorPanelManager(
-      mojo::PendingReceiver<mojom::EditorPanelManager> receiver) override;
   void BindEmbeddedAccessibilityHelperClientFactory(
       mojo::PendingReceiver<
           ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)

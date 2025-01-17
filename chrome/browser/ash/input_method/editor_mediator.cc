@@ -97,12 +97,6 @@ void EditorMediator::ResetEditorConnections() {
   }
 }
 
-// TODO: b:389534173 - Remove this method.
-void EditorMediator::BindEditorPanelManager(
-    mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
-        pending_receiver) {
-}
-
 void EditorMediator::OnContextUpdated() {
   editor_switch_->OnContextUpdated();
 }

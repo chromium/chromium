@@ -58,12 +58,6 @@ class EditorMediator : public EditorContext::Observer,
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override;
 
-  // TODO: b:389534173 - Removes this method when Editor Lacros code is removed.
-  // Binds a new panel manager request from a client.
-  void BindEditorPanelManager(
-      mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
-          pending_receiver);
-
   // EditorContext::Observer
   void OnContextUpdated() override;
   void OnImeChange(std::string_view engine_id) override;

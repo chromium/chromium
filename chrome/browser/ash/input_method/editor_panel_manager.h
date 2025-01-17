@@ -19,10 +19,8 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::input_method {
 
@@ -118,8 +116,6 @@ class EditorPanelManagerImpl : public EditorPanelManager {
   void StartEditingFlowWithFreeform(const std::string& text) override;
   void OnEditorMenuVisibilityChanged(bool visible) override;
   void LogEditorMode(chromeos::editor_menu::EditorMode mode) override;
-  void BindEditorObserver(mojo::PendingRemote<crosapi::mojom::EditorObserver>
-                              pending_observer_remote);
 
   void BindEditorClient();
   bool IsEditorMenuVisible() const;
@@ -143,12 +139,10 @@ class EditorPanelManagerImpl : public EditorPanelManager {
       std::vector<orca::mojom::PresetTextQueryPtr> queries);
 
   raw_ptr<Delegate> delegate_;
-  mojo::ReceiverSet<crosapi::mojom::EditorPanelManager> receivers_;
   mojo::Remote<orca::mojom::EditorClient> editor_client_remote_;
 
   bool is_editor_menu_visible_ = false;
 
-  mojo::RemoteSet<crosapi::mojom::EditorObserver> observer_remotes_;
   base::ObserverList<EditorPanelManagerImpl::Observer> observers_;
 
   base::WeakPtrFactory<EditorPanelManagerImpl> weak_ptr_factory_{this};
