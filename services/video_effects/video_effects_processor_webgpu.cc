@@ -39,11 +39,11 @@ namespace {
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
     gpu::SharedImageInterface* sii,
     const media::mojom::VideoFrameInfo& frame_info,
-    gpu::SharedImageUsageSet gpu_usage) {
+    gpu::SharedImageUsageSet gpu_usage,
+    std::string_view debug_label) {
   scoped_refptr<gpu::ClientSharedImage> destination = sii->CreateSharedImage(
       {viz::SinglePlaneFormat::kRGBA_8888, frame_info.coded_size,
-       frame_info.color_space, gpu_usage,
-       "VideoEffectsProcessorIntermediateSharedImage"},
+       frame_info.color_space, gpu_usage, debug_label},
       gpu::kNullSurfaceHandle);
   CHECK(destination);
   CHECK(!destination->mailbox().IsZero());
@@ -252,7 +252,8 @@ void VideoEffectsProcessorWebGpu::PostProcess(
   auto in_image =
       CreateSharedImageRGBA(shared_image_interface_.get(), *input_frame_info,
                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE);
+                                gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+                            "VideoEffectsProcessorInImage");
   // t3=GenSyncToken()
   // Waiting on this sync token should ensure that the `in_image` shared image
   // is ready to be used.
@@ -270,7 +271,8 @@ void VideoEffectsProcessorWebGpu::PostProcess(
       CreateSharedImageRGBA(shared_image_interface_.get(), *input_frame_info,
                             gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE);
+                                gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE,
+                            "VideoEffectsProcessorOutImage");
   // t4=GenSyncToken()
   // Waiting on this sync token should ensure that the `out_image` shared image
   // is ready to be used.

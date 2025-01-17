@@ -31,7 +31,7 @@ namespace video_effects {
 class VideoEffectsProcessorImpl;
 
 class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
-                                GpuChannelHostProvider::Observer {
+                                public GpuChannelHostProvider::Observer {
  public:
   // Similarly to `VideoCaptureServiceImpl`, `VideoEfffectsServiceImpl` needs
   // to receive something that returns `gpu::GpuChannelHost` instances in order
@@ -57,6 +57,7 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService,
  private:
   // GpuChannelHostProvider::Observer:
   void OnPermanentError(scoped_refptr<GpuChannelHostProvider>) override;
+  void OnContextLost(scoped_refptr<GpuChannelHostProvider>) override;
 
   // Creates `webgpu_device_` and initializes it asynchronously.  On completion,
   // invokes `FinishCreatingEffectsProcessors()`.

@@ -15,8 +15,8 @@
 namespace video_effects {
 
 class VizGpuChannelHostProvider : public GpuChannelHostProvider,
-                                  gpu::GpuChannelLostObserver,
-                                  viz::ContextLostObserver {
+                                  public gpu::GpuChannelLostObserver,
+                                  public viz::ContextLostObserver {
  public:
   explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu);
 
@@ -27,7 +27,6 @@ class VizGpuChannelHostProvider : public GpuChannelHostProvider,
       override;
   scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface()
       override;
-  void Reset() override;
   void AddObserver(Observer& observer) override;
   void RemoveObserver(Observer& observer) override;
 
@@ -36,6 +35,8 @@ class VizGpuChannelHostProvider : public GpuChannelHostProvider,
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:
+  void Reset();
+
   // gpu::GpuChannelLostObserver:
   void OnGpuChannelLost() override;
 
