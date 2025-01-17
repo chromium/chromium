@@ -2,7 +2,7 @@ Name: FreeType-Testing
 URL: https://github.com/freetype/freetype2-testing
 Version: VER-04fa94191
 Revision: 04fa94191645af39750f5eff0a66c49c5cb2c2cc
-License: GPL
+License: GPL-2.0
 License File: LICENSE
 Security Critical: no
 Shipped: no

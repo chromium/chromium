@@ -5,7 +5,7 @@ Version: 0.12.0
 Date: 2025-01-03
 Revision: e69e51cf3765da221d26d5eccfa2ac99d8afaab7
 SHA-512: 8963252f0e41321a11a6a5a23997c5cbd64d66d1f1acd166fdbe9f75f90457f94655f91cb896858b401a041f9ad37344d3d7873f03196b0a147b119f460c4ff2
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Shipped: yes
 Security Critical: no

@@ -1,6 +1,6 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
-License: Apache 2.0
+License: BSD-3-Clause, Apache-2.0, MPL-2.0
 License File: src/LICENSE
 Version: v1.54.0-dev
 Revision: a363b6c001139b9c8ffb7cd63f60a72f15349c3b
