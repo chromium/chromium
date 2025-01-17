@@ -9053,10 +9053,6 @@ crbug.com/386349197 external/wpt/css/css-masking/clip-path/clip-path-inline-005.
 # Gardener 2025-01-08
 crbug.com/376320405 [ Debug Linux ] external/wpt/css/css-sizing/keyword-sizes-for-intrinsic-contributions.tentative.html [ Failure ]
 
-# TODO(crrev.com/c/6159568): Re-enable after landing CL.
-crbug.com/388589515 http/tests/devtools/profiler/heap-snapshot-summary-sorting.js [ Failure Skip ]
-crbug.com/388589515 http/tests/devtools/profiler/heap-snapshot-summary-show-ranges.js [ Failure Skip ]
-
 # Gardener 2025-01-10
 crbug.com/389012014 [ Mac13 ] fast/peerconnection/RTCRtpSender-getParameters.html [ Pass Timeout ]
 
