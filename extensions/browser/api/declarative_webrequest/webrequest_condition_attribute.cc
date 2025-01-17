@@ -420,9 +420,9 @@ bool HeaderMatcher::StringMatchTest::Matches(
              base::StartsWith(str, data_, case_sensitive_);
     case kContains:
       if (case_sensitive_ == base::CompareCase::INSENSITIVE_ASCII) {
-        return base::ranges::search(str, data_,
-                                    CaseInsensitiveCompareASCII<char>()) !=
-               str.end();
+        return std::ranges::search(str, data_,
+                                   CaseInsensitiveCompareASCII<char>())
+                   .begin() != str.end();
       } else {
         return base::Contains(str, data_);
       }

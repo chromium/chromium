@@ -40,8 +40,8 @@ TEST(ExtensionEventHistogramValueTest, CheckEnums) {
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(event_histogram_value, &file_contents));
 
-  file_contents.erase(base::ranges::remove_if(file_contents, ::isspace),
-                      file_contents.end());
+  auto to_remove = std::ranges::remove_if(file_contents, ::isspace);
+  file_contents.erase(to_remove.begin(), to_remove.end());
 
   for (const auto& entry : *enums) {
     // Check that the C++ file has a definition equal to the histogram file.

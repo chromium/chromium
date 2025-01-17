@@ -230,7 +230,13 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
   }
 
   emitter->Invalidate(context);
-  auto emitter_entry = base::ranges::find(data->anonymous_emitters, event);
+  // Can't just use `find(listeners_, listener)` here because `v8::Global<T>`
+  // and `v8::Local<T>` do not have a common reference type and thus do not
+  // satisfy `std::equality_comparable_with<>`. We could project using
+  // `v8::Global<T>::Get()`, but that's less efficient.
+  auto emitter_entry = base::ranges::find_if(
+      data->anonymous_emitters,
+      [&event](const auto& emitter) { return emitter == event; });
   if (emitter_entry == data->anonymous_emitters.end()) {
     NOTREACHED();
   }
