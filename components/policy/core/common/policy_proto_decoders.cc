@@ -63,7 +63,7 @@ base::Value DecodeBooleanProto(const em::BooleanPolicyProto& proto) {
 // Convert an IntegerPolicyProto to an int base::Value.
 base::Value DecodeIntegerProto(const em::IntegerPolicyProto& proto,
                                std::string* error) {
-  google::protobuf::int64 value = proto.value();
+  int64_t value = proto.value();
 
   if (value < std::numeric_limits<int>::min() ||
       value > std::numeric_limits<int>::max()) {

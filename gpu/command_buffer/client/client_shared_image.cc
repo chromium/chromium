@@ -313,6 +313,7 @@ ClientSharedImage::ClientSharedImage(
                         sii_holder,
                         gfx::SHARED_MEMORY_BUFFER) {
   shared_memory_mapping_ = std::move(mapping);
+  is_software_ = true;
 }
 
 ClientSharedImage::ClientSharedImage(

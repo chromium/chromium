@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -75,15 +74,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
     private static final String PREF_PHONE_AS_A_SECURITY_KEY = "phone_as_a_security_key";
-    @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
     @VisibleForTesting static final String PREF_FP_PROTECTION = "fp_protection";
     @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
-
-    @VisibleForTesting
-    static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
 
     private IncognitoLockSettings mIncognitoLockSettings;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -246,14 +241,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     .putString(
                             SingleCategorySettings.EXTRA_TITLE,
                             thirdPartyCookies.getTitle().toString());
-        }
-
-        if (QuickDeleteController.isQuickDeleteFollowupEnabled()) {
-            Preference clearBrowsingDataPreference = findPreference(PREF_CLEAR_BROWSING_DATA);
-            Preference clearBrowsingDataAdvancedPreference =
-                    findPreference(PREF_CLEAR_BROWSING_DATA_ADVANCED);
-            clearBrowsingDataPreference.setVisible(false);
-            clearBrowsingDataAdvancedPreference.setVisible(true);
         }
 
         Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);

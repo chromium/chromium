@@ -282,9 +282,10 @@ TEST_F(LensOverlayCoordinatorTest, ShouldPresentVCOnShowCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
 }
 
 // Hiding the overlay should trigger dismissing the container VC.
@@ -300,16 +301,28 @@ TEST_F(LensOverlayCoordinatorTest, ShouldDismissVCOnHideCommandDispatched) {
 
   // After dispatching the create & show command, a view controller should
   // appear presented.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
-    return base_view_controller_.presentedViewController == nil;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return base_view_controller_.presentedViewController != nil;
+      }));
 
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+  __block BOOL completion_called = NO;
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO
+                                                        completion:^{
+                                                          completion_called =
+                                                              YES;
+                                                        }];
 
   // The presented view controller is set to `nil` when the dismiss is over.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return base_view_controller_.presentedViewController == nil;
   }));
+
+  // The completion is called.
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+        return completion_called;
+      }));
 }
 
 // When the UI is created but not shown, then the memory warning should destroy
@@ -336,10 +349,20 @@ TEST_F(LensOverlayCoordinatorTest,
   // Then the UI should appear created.
   EXPECT_TRUE([coordinator_ isUICreated]);
 
+  __block bool completion_called = NO;
+
   // Given a hidden lens overlay.
-  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO];
+  [HandlerForProtocol(dispatcher_, LensOverlayCommands) hideLensUI:NO
+                                                        completion:^{
+                                                          completion_called =
+                                                              YES;
+                                                        }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
     return base_view_controller_.presentedViewController == nil;
+  }));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^bool {
+    return completion_called;
   }));
 
   // When UIKit delivers a low-memory warning notification.

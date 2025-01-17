@@ -155,13 +155,14 @@ public class HomeModulesConfigManagerUnitTest {
                         ModuleType.DEFAULT_BROWSER_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP));
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_SYNC));
+                mHomeModulesConfigManager.getSettingsPreferenceKey(
+                        ModuleType.TAB_GROUP_SYNC_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE));
+                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
 
         // Verifies that the PRICE_CHANGE has its own preference key.
         assertEquals(

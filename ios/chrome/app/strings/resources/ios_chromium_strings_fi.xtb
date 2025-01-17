@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Tämä tarkoittaa, että Chromium pyytää aina tietokonesivustoa.</translation>
 <translation id="2270466829363945454">Osta</translation>
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>
+<translation id="2314220608288760290">Chromium avaa YouTuben incognito-linkit automaattisesti incognito-tilassa.</translation>
 <translation id="231828342043114302">Jos haluat saada kiinnostuksen kohteisiisi perustuvaa personoitua sisältöä, kirjaudu Chromiumiin.</translation>
 <translation id="2326738825692478496">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
 
@@ -284,6 +285,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8240981428553046115">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="8254729934443216898">Tutustu uusiin ominaisuuksiin, joiden avulla saat parhaan hyödyn Chromiumista.</translation>
 <translation id="829047622686389424">Sinulle räätälöity fiidi.</translation>
+<translation id="8293572045658095405">Olet Chromiumin incognito-tilassa</translation>
 <translation id="830951810931292870">Avaa syötetyt URL-osoitteet Chromiumin incognito-tilassa.</translation>
 <translation id="8409374867500149834">Käytössäsi on Chromiumin vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}}</translation>

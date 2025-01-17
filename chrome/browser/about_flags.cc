@@ -1800,9 +1800,22 @@ const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
 const FeatureEntry::FeatureParam kTabstripComboButtonNoBackground[] = {
     {"has_background", "false"}};
 
+const FeatureEntry::FeatureParam kTabstripComboButtonReverseButtonOrder[] = {
+    {"reverse_button_order", "true"}};
+
+const FeatureEntry::FeatureParam
+    kTabstripComboButtonReverseButtonOrderNoBackground[] = {
+        {"has_background", "false"},
+        {"reverse_button_order", "true"}};
+
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - without background", kTabstripComboButtonNoBackground,
      std::size(kTabstripComboButtonNoBackground)},
+    {" - reverse button order", kTabstripComboButtonReverseButtonOrder,
+     std::size(kTabstripComboButtonReverseButtonOrder)},
+    {" - reverse button order & without background",
+     kTabstripComboButtonReverseButtonOrderNoBackground,
+     std::size(kTabstripComboButtonReverseButtonOrderNoBackground)},
 };
 
 #endif
@@ -2614,10 +2627,12 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
-        {"force_card_shown", "true"}};
+        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
+         "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_NonPixel[] = {
-        {"force_card_shown", "true"},
+        {segmentation_platform::features::kMaxAuxiliarySearchForceShow.name,
+         "true"},
         {"show_third_party_card", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
@@ -4300,6 +4315,28 @@ const FeatureEntry::FeatureVariation kAudioDuckingAttenuationVariations[] = {
     {"attenuation 100", kAudioDuckingAttenuation_100,
      std::size(kAudioDuckingAttenuation_100), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation1[] = {
+    {"animation_duration_ms", "240"},
+    {"animation_interpolator", "1"}};
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation2[] = {
+    {"animation_duration_ms", "400"},
+    {"animation_interpolator", "2"}};
+const FeatureEntry::FeatureParam kTabSwitcherColorBlendAnimateVariation3[] = {
+    {"animation_duration_ms", "200"},
+    {"animation_interpolator", "3"}};
+const FeatureEntry::FeatureVariation kTabSwitcherColorBlendAnimateVariations[] =
+    {{"Color Blend Animation Variation 1",
+      kTabSwitcherColorBlendAnimateVariation1,
+      std::size(kTabSwitcherColorBlendAnimateVariation1), nullptr},
+     {"Color Blend Animation Variation 2",
+      kTabSwitcherColorBlendAnimateVariation2,
+      std::size(kTabSwitcherColorBlendAnimateVariation2), nullptr},
+     {"Color Blend Animation Variation 3",
+      kTabSwitcherColorBlendAnimateVariation3,
+      std::size(kTabSwitcherColorBlendAnimateVariation3), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -6235,7 +6272,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAppIntegrationModuleName,
      flag_descriptions::kAndroidAppIntegrationModuleDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAndroidAppIntegrationModule,
+         segmentation_platform::features::kAndroidAppIntegrationModule,
          kAndroidAppIntegrationModuleVariations,
          "AndroidAppIntegrationModule")},
 
@@ -7265,6 +7302,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
+
+    {"tab-switcher-color-blend-animate",
+     flag_descriptions::kTabSwitcherColorBlendAnimateName,
+     flag_descriptions::kTabSwitcherColorBlendAnimateDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabSwitcherColorBlendAnimate,
+         kTabSwitcherColorBlendAnimateVariations,
+         "TabSwitcherColorBlendAnimateVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"show-warnings-for-suspicious-notifications",
@@ -8479,11 +8524,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmartSuggestionForLargeDownloadsDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
-
-    {"quick-delete-android-followup",
-     flag_descriptions::kQuickDeleteAndroidFollowupName,
-     flag_descriptions::kQuickDeleteAndroidFollowupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kQuickDeleteAndroidFollowup)},
 
     {"quick-delete-android-survey",
      flag_descriptions::kQuickDeleteAndroidSurveyName,

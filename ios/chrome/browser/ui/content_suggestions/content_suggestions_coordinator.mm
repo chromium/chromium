@@ -854,6 +854,9 @@ using segmentation_platform::TipIdentifier;
 
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
+    case ContentSuggestionsModuleType::kMostVisited:
+      [_mostVisitedTilesMediator disableModule];
+      break;
     case ContentSuggestionsModuleType::kTabResumption:
       [_tabResumptionMediator disableModule];
       break;
@@ -1585,6 +1588,7 @@ using segmentation_platform::TipIdentifier;
       return ContentSuggestionsModuleType::kSendTabPromo;
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
+    case PushNotificationClientId::kReminders:
       NOTREACHED();
   }
 }

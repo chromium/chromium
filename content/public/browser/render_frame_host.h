@@ -1132,9 +1132,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool IsClipboardOwner(
       ui::ClipboardSequenceNumberToken seqno) const = 0;
 
-  // Marks `seqno` as originating from this RFH.
-  virtual void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) = 0;
-
   // Returns true if RenderFrameHostImpl has non-null PolicyContainerHost.
   // TODO(crbug.com/346386726): Delete this method once we have solidified the
   //   lifetime expectations of the PolicyContainerHost object.

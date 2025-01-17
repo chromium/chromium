@@ -145,7 +145,7 @@ def _get_all_build_files_path(repo_path: str, targets: Set[str]) -> Set[str]:
   all_build_files_path = set()
   for arch in cronet_utils.ARCHS:
     with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
+        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
         all_build_files_path.update(
             cronet_utils.get_transitive_deps_build_files(repo_path, gn_out_dir, targets))
 

@@ -45,6 +45,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -688,8 +689,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Empty space between the rounded rectangle (outside) and menu edge.
   constexpr int kIdentityContainerMargin = 12;
 
-  constexpr int kHeaderVerticalMargin = 10;
-  constexpr int kHeaderHorizontalSpacing = 4;
+  constexpr int kHeaderVerticalSize = 36;
   constexpr int kHeaderImageSize = 16;
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
@@ -703,9 +703,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // represent empty space:
   //
   // Optional header:
-  //     [kHeaderVerticalMargin]
-  //     Horizontal Box: Image (size kHeaderImageSize) + Label
-  //     [kHeaderVerticalMargin]
+  //     HoverButton: (size: kHeaderVerticalSize)
   //     Horizontal Separator
   // [kAvatarTopMargin]
   // Image: Avatar (size: kIdentityInfoImageSize)
@@ -732,6 +730,15 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
                       views::BoxLayout::CrossAxisAlignment::kCenter);
   box_layout->SetCollapseMarginsSpacing(true);
   identity_info_container_->SetLayoutManager(std::move(box_layout));
+
+  // Paint to a layer with rounded corners. This ensures that no element can
+  // draw outside of the rounded corners, even if they use layers. This is
+  // needed in particular for the HoverButton highlight.
+  identity_info_container_->SetPaintToLayer();
+  identity_info_container_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kHigh)));
+
   identity_info_color_callback_ =
       base::BindRepeating(&ProfileMenuViewBase::BuildIdentityInfoColorCallback,
                           base::Unretained(this));
@@ -742,23 +749,24 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
 
   if (!params.header_string.empty() && !params.header_image.IsEmpty()) {
     // Header.
-    identity_info_container_->AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetBetweenChildSpacing(kHeaderHorizontalSpacing)
-            .SetInsideBorderInsets(gfx::Insets::TLBR(
-                kHeaderVerticalMargin, kIdentityContainerHorizontalPadding,
-                kHeaderVerticalMargin, kIdentityContainerHorizontalPadding))
-            .AddChildren(views::Builder<views::ImageView>().SetImage(
-                             GetCircularSizedImage(params.header_image,
-                                                   kHeaderImageSize)),
-                         views::Builder<views::Label>()
-                             .SetText(params.header_string)
-                             .CopyAddressTo(&heading_label_)
-                             .SetTextContext(views::style::CONTEXT_LABEL)
-                             .SetTextStyle(views::style::STYLE_BODY_5)
-                             .SetElideBehavior(gfx::ELIDE_TAIL))
-            .Build());
+    auto hover_button = std::make_unique<HoverButton>(
+        std::move(params.header_action),
+        std::make_unique<views::ImageView>(
+            GetCircularSizedImage(params.header_image, kHeaderImageSize)),
+        params.header_string);
+    hover_button->SetPreferredSize(gfx::Size(
+        kMenuWidth - 2 * kIdentityContainerMargin, kHeaderVerticalSize));
+    hover_button->SetIconHorizontalMargins(0, 0);
+    hover_button->title()->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+
+    // Swap the layout manager so that the text is centered.
+    auto hover_button_box_layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal);
+    hover_button_box_layout->set_main_axis_alignment(
+        views::LayoutAlignment::kCenter);
+    hover_button->SetLayoutManager(std::move(hover_button_box_layout));
+    identity_info_container_->AddChildView(std::move(hover_button));
+
     // Separator.
     identity_info_container_->AddChildView(
         views::Builder<views::Separator>()
@@ -803,6 +811,15 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   }
 
   // Subtitle.
+
+  // Set the subtitle as the name of the parent container, so accessibility
+  // tools can read it together with the button text. The role change is
+  // required by Windows ATs.
+  identity_info_container_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kGroup);
+  identity_info_container_->GetViewAccessibility().SetName(
+      params.subtitle, ax::mojom::NameFrom::kAttribute);
+
   const int subtitle_bottom_margin =
       has_button ? kSubtitleBottomMarginWithButton : kBottomMarginWhenNoButton;
   identity_info_container_->AddChildView(
@@ -1290,21 +1307,18 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
     const ui::ColorProvider* color_provider) {
   if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
       !profile_background_container_) {
-    const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kHigh);
     const int background_color =
         color_provider->GetColor(kColorProfileMenuIdentityInfoBackground);
+    // No need to set rounded corners on the background, because the container
+    // is painted in a layer that has rounded corners already.
     identity_info_container_->SetBackground(
-        views::CreateRoundedRectBackground(background_color, radius));
+        views::CreateSolidBackground(background_color));
+
     title_label_->SetEnabledColor(
         color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
     if (subtitle_label_) {
       subtitle_label_->SetEnabledColor(
           color_provider->GetColor(kColorProfileMenuIdentityInfoSubtitle));
-    }
-    if (heading_label_) {
-      subtitle_label_->SetEnabledColor(
-          color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
     }
     return;
   }

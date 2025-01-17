@@ -157,15 +157,11 @@ void InstallAttributes::Init(const base::FilePath& cache_file) {
     return;
   }
 
-  google::protobuf::RepeatedPtrField<
-      const cryptohome::SerializedInstallAttributes::Attribute>::iterator entry;
   std::map<std::string, std::string> attr_map;
-  for (entry = install_attrs_proto.attributes().begin();
-       entry != install_attrs_proto.attributes().end(); ++entry) {
+  for (const auto& entry : install_attrs_proto.attributes()) {
     // The protobuf values contain terminating null characters, so we have to
     // sanitize the value here.
-    attr_map.insert(
-        std::make_pair(entry->name(), std::string(entry->value().c_str())));
+    attr_map.emplace(entry.name(), std::string(entry.value().c_str()));
   }
 
   DecodeInstallAttributes(attr_map);

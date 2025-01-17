@@ -123,11 +123,6 @@ export class SearchboxMatchElement extends PolymerElement {
         value: -1,
       },
 
-      renderType: {
-        type: String,
-        reflectToAttribute: true,
-      },
-
       showThumbnail: {
         type: Boolean,
         reflectToAttribute: true,
@@ -185,11 +180,13 @@ export class SearchboxMatchElement extends PolymerElement {
   override ariaLabel: string;
   hasAction: boolean;
   hasImage: boolean;
+  isEntitySuggestion: boolean;
+  isRichSuggestion: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
-  searchboxConsistentRowHeight: boolean;
   sideType: SideType;
-  private actionIsVisible_: boolean;
+  showThumbnail: boolean;
+  private isLensSearchbox_: boolean;
   private contentsHtml_: TrustedHTML;
   private descriptionHtml_: TrustedHTML;
   private removeButtonAriaLabel_: string;

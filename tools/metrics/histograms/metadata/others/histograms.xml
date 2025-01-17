@@ -7713,6 +7713,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode"
+    enum="WinGetLastError" expires_after="2025-06-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Error returned when CreateThreadAction fails to CreateRemoteThread(). Not
+    logged on success. For decoding error code please refer to
+    http://goo.gl/fJJiAv.
+  </summary>
+</histogram>
+
+<histogram name="Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode"
+    enum="WinGetLastError" expires_after="2025-06-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Error returned when CreateThreadAction fails to DuplicateHandle(). Not
+    logged on success. For decoding error code please refer to
+    http://goo.gl/fJJiAv.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->
@@ -8888,16 +8910,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Represents whether fetching from the memory-backed code cache would succeed.
     Recorded when the code cache result gets available.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2"
-    units="counts" expires_after="2024-05-19">
-  <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    Represents the (hypothetical) size of the memory-backed code cache. Recorded
-    for every 5 minutes.
   </summary>
 </histogram>
 

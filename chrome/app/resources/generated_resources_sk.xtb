@@ -337,6 +337,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1219219114431716687">Ovocný koláč</translation>
 <translation id="122082903575839559">Algoritmus podpisu certifikátu</translation>
 <translation id="1221024147024329929">Štandard PKCS #1 MD2 so šifrovaním RSA</translation>
+<translation id="1221266967850882682">Zhrnutie na privítanie</translation>
 <translation id="1221825588892235038">Len výber</translation>
 <translation id="1222835797152767346">Nastavte si kód PIN, aby ste sa mohli ľahšie prihlasovať</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> vyžaduje licenciu</translation>
@@ -1923,6 +1924,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2323018538045954000">Uložené siete Wi-Fi</translation>
 <translation id="2325444234681128157">Zapamätať si heslo</translation>
 <translation id="2326188115274135041">Potvrdením kódu PIN zapnite automatické odomykanie</translation>
+<translation id="2326583548923775947">Toto nie je účet Google. Položky, ktoré uložíte do Chromu, nebudú k dispozícii v iných zariadeniach.</translation>
 <translation id="2326906096734221931">Otvoriť nastavenia aplikácie</translation>
 <translation id="2326931316514688470">&amp;Znova načítať aplikáciu</translation>
 <translation id="2327492829706409234">Povoliť aplikáciu</translation>

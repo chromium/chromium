@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -87,6 +88,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsRecyclerViewAnimatorRunningSupplier =
+            new ObservableSupplierImpl<>(false);
 
     private Context mContext;
     private IncognitoTabSwitcherPane mIncognitoTabSwitcherPane;
@@ -115,6 +118,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        when(mTabSwitcherPaneCoordinator.getIsRecyclerViewAnimatorRunning())
+                .thenReturn(mIsRecyclerViewAnimatorRunningSupplier);
 
         mIncognitoTabSwitcherPane =
                 new IncognitoTabSwitcherPane(
@@ -400,6 +405,10 @@ public class IncognitoTabSwitcherPaneUnitTest {
         IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
 
         observer.didBecomeEmpty();
+        mIsRecyclerViewAnimatorRunningSupplier.set(true);
+        mIsRecyclerViewAnimatorRunningSupplier.set(false);
+        ShadowLooper.runUiThreadTasks();
+
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
         verify(mPaneHubController).focusPane(PaneId.TAB_SWITCHER);
         assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
@@ -416,7 +425,12 @@ public class IncognitoTabSwitcherPaneUnitTest {
                 buttonData.resolveContentDescription(mContext));
         assertNotNull(buttonData.resolveIcon(mContext));
 
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
         observer.didBecomeEmpty();
+        mIsRecyclerViewAnimatorRunningSupplier.set(true);
+        mIsRecyclerViewAnimatorRunningSupplier.set(false);
+        ShadowLooper.runUiThreadTasks();
+
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
         verify(mPaneHubController, times(2)).focusPane(PaneId.TAB_SWITCHER);
         assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());

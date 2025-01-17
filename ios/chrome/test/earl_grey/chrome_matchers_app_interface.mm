@@ -771,6 +771,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     nil);
 }
 
++ (id<GREYMatcher>)promoScreenPrimaryButtonMatcher {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)promoScreenSecondaryButtonMatcher {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)settingsAccountButton {
   return grey_accessibilityID(kSettingsAccountCellId);
 }

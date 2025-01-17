@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">개인 정보 보호 오류</translation>
 <translation id="1414134146594747368">유치원</translation>
 <translation id="1419305130220238697">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 활성화하세요.</translation>
+<translation id="1420345875188552368">저장된 자동 결제 수단이 이 결제에 사용될 수 있습니다. Chrome에서 전자 지갑을 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />을(를) 통해 페어링 허용</translation>
 <translation id="14222610277930434">자주 방문함</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
@@ -1283,6 +1284,7 @@
 <translation id="3273757719652748628">IBAN 저장이 전체 높이로 열렸습니다.</translation>
 <translation id="3281350579597955952">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> 조직에서 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>
+<translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286372614333682499">세로 모드</translation>
 <translation id="3287510313208355388">온라인 상태일 때 다운로드</translation>
 <translation id="3288238092761586174">결제 인증을 위해 <ph name="URL" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
@@ -3657,6 +3659,7 @@
 <translation id="7511955381719512146">사용 중인 Wi-Fi에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
 <translation id="7512685745044087310">정책이 'True'로 설정되거나 필수일 수 없으므로 권장으로 변경되었습니다.</translation>
 <translation id="7514365320538308">다운로드</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">오프로드 자동차</translation>
 <translation id="7517414872996418597">봉투 C10</translation>
 <translation id="7518003948725431193">다음 웹 주소(<ph name="URL" />)에 대해 발견된 웹페이지가 없습니다.</translation>

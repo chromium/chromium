@@ -379,6 +379,14 @@ id<GREYMatcher> FakeAddAccountScreenCancelButton() {
   return [ChromeMatchersAppInterface fakeFakeAddAccountScreenCancelButton];
 }
 
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenPrimaryButtonMatcher];
+}
+
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
+  return [ChromeMatchersAppInterface promoScreenSecondaryButtonMatcher];
+}
+
 id<GREYMatcher> SettingsAccountButton() {
   return [ChromeMatchersAppInterface settingsAccountButton];
 }

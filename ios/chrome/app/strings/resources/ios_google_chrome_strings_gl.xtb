@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome abre automaticamente as ligazóns de incógnito de YouTube no modo de incógnito.</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abre unha pestana nova en Chrome</translation>
@@ -126,6 +127,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="4636900170638246267">Inicia sesión neste sitio e en Chrome.</translation>
 <translation id="4646014602299206846">Chrome detectará os números de seguimento dos paquetes nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo.</translation>
 <translation id="4647910807533196601">Abre a pestana máis recente en Chrome.</translation>
+<translation id="4693084815234024320">Estás no modo de incógnito de Chrome</translation>
 <translation id="4724297637870447613">Usa Chrome en todas partes</translation>
 <translation id="4738647308035481133">Páxina de Google Chrome</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>

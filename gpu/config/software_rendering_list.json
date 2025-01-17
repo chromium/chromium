@@ -1435,6 +1435,18 @@
       "features": [
         "skia_graphite"
       ]
+    },
+    {
+      "id": 183,
+      "cr_bugs": [1227033],
+      "description": "Don't use the OOPR Canvas feature on Macs with NVIDIA GPUs",
+      "os": {
+        "type" : "macosx"
+      },
+      "vendor_id": "0x10de",
+      "features": [
+        "accelerated_2d_canvas"
+      ]
     }
   ]
 }

@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -207,6 +208,9 @@ extern const char kClassifyUrlThrottleStatusHistogramName[];
 
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
+
+// Returns the URL of the PACP widget for the iOS local web approval flow.
+GURL GetParentAccessURLForIOS();
 
 }  // namespace supervised_user
 

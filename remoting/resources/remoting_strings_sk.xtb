@@ -28,6 +28,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="2329392777730037872"><ph name="URL" /> sa nepodarilo v klientovi otvoriť.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2366718077645204424">Hostiteľa sa nepodarilo nájsť. Pravdepodobne je to spôsobené konfiguráciou siete, ktorú používate.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Všetky práva vyhradené.</translation>
 <translation id="2504109125669302160">Povolenie prístupu službe <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Pripojené k zariadeniu <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcete tento počítač zdieľať s ďalším používateľom, aby ho mohol zobraziť a ovládať?</translation>
@@ -133,6 +134,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="7067321367069083429">Obrazovka funguje ako dotyková obrazovka</translation>
 <translation id="7116737094673640201">Predstavujeme Vzdialenú plochu Chrome</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
+<translation id="7298392173540380852">Copyright 2025 Autori prehliadača Chromium. Všetky práva vyhradené.</translation>
 <translation id="7312846573060934304">Hostiteľ je v režime offline.</translation>
 <translation id="7319983568955948908">Prestať zdieľať</translation>
 <translation id="7359298090707901886">Vo vybranom prehliadači sa nedajú otvárať webové adresy v miestnom zariadení.</translation>

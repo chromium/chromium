@@ -833,8 +833,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_notNil()];
 
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenSecondaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -879,8 +879,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:
-                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           PromoScreenPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -1030,8 +1030,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:
           grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Give the Sync state a chance to finish UI updates.

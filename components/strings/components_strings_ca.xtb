@@ -248,6 +248,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1413809658975081374">Error de privadesa</translation>
 <translation id="1414134146594747368">Llar d'infants</translation>
 <translation id="1419305130220238697">Botó Gestiona les baixades a Chrome: activa'l per gestionar els fitxers que has baixat a Chrome</translation>
+<translation id="1420345875188552368">És possible que la teva forma de pagament automàtic desada s'utilitzi per a aquest pagament. Per desactivar les carteres electròniques a Chrome, ves a la <ph name="BEGIN_LINK1" />configuració de pagament<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> per permetre la vinculació</translation>
 <translation id="14222610277930434">Hi accedeixes sovint</translation>
 <translation id="1422930527989633628">Pot demanar permís per descobrir dispositius Bluetooth propers</translation>
@@ -1283,6 +1284,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3273757719652748628">Desa l'IBAN està obert a alçada completa.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política de l'administrador no recomana obrir aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana obrir aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">La teva organització, <ph name="ENROLLMENT_DOMAIN" />, ha enviat informació als llocs web següents, com ara opcions de configuració o polítiques.</translation>
+<translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Baixa quan estigui en línia</translation>
 <translation id="3288238092761586174">És possible que <ph name="URL" /> hagi de fer més passos per verificar el teu pagament</translation>
@@ -2156,6 +2158,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un full de càlcul de Google ràpidament</translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
 <translation id="4827283332383516812">Suprimeix la targeta</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> articles seleccionats</translation>
 <translation id="4831993743164297314">Paper de filmadora</translation>
 <translation id="483241715238664915">Activa els advertiments</translation>
 <translation id="4832961164064927107">Barbacoa i cuina a la brasa</translation>
@@ -3657,6 +3660,7 @@ Detalls addicionals:
 <translation id="7511955381719512146">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Com que aquesta política no es pot establir en "True" i ser obligatòria, s'ha canviat a recomanada.</translation>
 <translation id="7514365320538308">Baixa</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Vehicles tot terreny</translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No s'ha trobat cap pàgina web per a l'adreça: <ph name="URL" /></translation>

@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -320,6 +321,46 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
       signalKeys,
       Not(Contains("count_of_clearing_browsing_data_through_quick_delete")));
   EXPECT_THAT(signalKeys, Not(Contains("quick_delete_shown_count")));
+}
+
+// Tests that the Registry registers the AuxiliarySearchPromo card when its
+// feature is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardEnabled) {
+  feature_list_.InitWithFeatures({features::kAndroidAppIntegrationModule}, {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kAuxiliarySearch));
+  EXPECT_GE(registry_->all_cards_input_size(), 1u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kAuxiliarySearch));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kAuxiliarySearch);
+  EXPECT_THAT(signalKeys, Contains(kAuxiliarySearchAvailable));
+}
+
+// Tests that the Registry won't register the AuxiliarySearchPromo card when it
+// is disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
+  feature_list_.InitWithFeatures({features::kAndroidAppIntegrationModule}, {});
+  pref_service_.SetUserPref(kAuxiliarySearchPromoImpressionCounterPref,
+                            std::make_unique<base::Value>(4));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kAuxiliarySearch)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kAuxiliarySearch)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kAuxiliarySearch);
+  EXPECT_THAT(signalKeys, Not(Contains(kAuxiliarySearchAvailable)));
 }
 #endif
 

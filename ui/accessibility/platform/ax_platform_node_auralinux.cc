@@ -2338,7 +2338,7 @@ ImplementedAtkInterfaces AXPlatformNodeAuraLinux::GetGTypeInterfaceMask(
   // interfaces, which are provided by all the AtkObjects that we produce.
   ImplementedAtkInterfaces interface_mask;
 
-  if (!IsImageOrVideo(data.role)) {
+  if (!IsImageOrVideo(data.role) && !ui::IsText(data.role)) {
     interface_mask.Add(ImplementedAtkInterfaces::Value::kText);
     if (!data.IsAtomicTextField())
       interface_mask.Add(ImplementedAtkInterfaces::Value::kHypertext);
@@ -4970,7 +4970,9 @@ void AXPlatformNodeAuraLinux::ActivateFindInPageResult(int start_offset,
   if (!atk_object)
     return;
 
-  DCHECK(ATK_IS_TEXT(atk_object));
+  if (!ATK_IS_TEXT(atk_object)) {
+    return;
+  }
 
   if (!EmitsAtkTextEvents()) {
     ActivateFindInPageInParent(start_offset, end_offset);

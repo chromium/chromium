@@ -649,6 +649,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3955740319737378355">Gotovo</translation>
 <translation id="3955822496205734389">Imate slabe zaporke.</translation>
 <translation id="3958312024468322930">Povucite je na traku pri dnu početnog zaslona</translation>
+<translation id="3960218941754097036">Pretražite bilo što na zaslonu pomoću Google objektiva</translation>
 <translation id="3962326069546168954">Spremi</translation>
 <translation id="3967327056943561740">Oznake</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
@@ -691,6 +692,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4148023517926189160">Web-lokacija želi preuzeti datoteku i dodati je na kalendar.</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
+<translation id="4154753961803534698">Pretražite kamerom</translation>
 <translation id="4158491215857439601">Upravitelj zaporki</translation>
 <translation id="4163699139741158298">{count,plural, =1{Oznaka je spremljena u mapu {title}. Sprema se samo na ovom uređaju.}one{{count} oznaka spremljena je u mapu {title}. Spremaju se samo na ovom uređaju.}few{{count} oznake spremljene su u mapu {title}. Spremaju se samo na ovom uređaju.}other{{count} oznaka spremljeno je u mapu {title}. Spremaju se samo na ovom uređaju.}}</translation>
 <translation id="4168651806173792090">Račun <ph name="NETWORK_NAME" /> koji završava s <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1157,6 +1159,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6168647875670665004">Prijedlozi članaka</translation>
 <translation id="6169031022444660352">Da biste izbrisali sve spremljene vjerodajnice, najprije morate postaviti šifru na uređaju.</translation>
 <translation id="6173499589275053515">Zaporka je spremljena na vaš Google račun, <ph name="EMAIL" /></translation>
+<translation id="6181969657494915430">Pretraži zaslon</translation>
 <translation id="6187302354554850004">Posljednja sinkr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">Izrađeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>
@@ -1594,6 +1597,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8005666035647241369">Na Google upravitelj zaporki na ovom uređaju</translation>
 <translation id="8011489434346330032">Web inspektor</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8023170444051056234">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="8023878949384262191">Proširuje odjeljak.</translation>
 <translation id="8027581147000338959">Otvori u novom prozoru</translation>
 <translation id="8032569120109842252">Praćeno</translation>
@@ -1894,6 +1898,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Pogledajte što možete sinkronizirati<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
+<translation id="94870150074703282">Želite li izbrisati grupu?</translation>
 <translation id="952704832371081537">Odustani</translation>
 <translation id="954667170699278022">Popis za čitanje</translation>
 <translation id="959066944189734975">Pratite kanal <ph name="CHANNEL_NAME" /></translation>

@@ -1673,11 +1673,11 @@ public class AwContents implements SmartClipProvider {
 
     private void installWebContentsObservers() {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
         }
         mWebContentsObserver = new AwWebContentsObserver(mWebContents, this, mContentsClient);
         if (mAwWebContentsMetricsRecorder != null) {
-            mAwWebContentsMetricsRecorder.destroy();
+            mAwWebContentsMetricsRecorder.observe(null);
         }
         mAwWebContentsMetricsRecorder =
                 new AwWebContentsMetricsRecorder(mWebContents, mContext, mSettings);
@@ -1909,9 +1909,9 @@ public class AwContents implements SmartClipProvider {
         if (mCleanupReference != null) {
             assert mNativeAwContents != 0;
 
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
-            mAwWebContentsMetricsRecorder.destroy();
+            mAwWebContentsMetricsRecorder.observe(null);
             mAwWebContentsMetricsRecorder = null;
             mNativeAwContents = 0;
             mWebContents = null;
@@ -4597,10 +4597,6 @@ public class AwContents implements SmartClipProvider {
             mViewEventSink.onWindowFocusChanged(hasWindowFocus);
             mStylusWritingController.onWindowFocusChanged(hasWindowFocus);
             Clipboard.getInstance().onWindowFocusChanged(hasWindowFocus);
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_AUTOFILL_HANDLE_FOCUS_CHANGE)
-                    && mAutofillProvider != null) {
-                mAutofillProvider.onWindowFocusChanged(hasWindowFocus);
-            }
         }
 
         @Override

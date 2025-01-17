@@ -15,7 +15,6 @@
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/input/mock_input_manager.h"
 #include "components/viz/service/input/render_input_router_iterator_impl.h"
@@ -72,8 +71,7 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
-                                                  &output_surface_provider_)) {}
+      : manager_(FrameSinkManagerImpl::InitParams(&output_surface_provider_)) {}
   ~FrameSinkManagerTest() override = default;
 
   RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
@@ -180,7 +178,6 @@ class FrameSinkManagerTest : public testing::Test {
 
  protected:
   DebugRendererSettings debug_settings_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
   FakeSurfaceObserver surface_observer_{manager_.surface_manager()};

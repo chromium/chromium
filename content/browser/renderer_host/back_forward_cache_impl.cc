@@ -200,6 +200,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kSharedWorker,
           WebSchedulerTrackedFeature::kSpeechRecognizer,
           WebSchedulerTrackedFeature::kUnloadHandler,
+          WebSchedulerTrackedFeature::kWebAuthentication,
           WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
           WebSchedulerTrackedFeature::kWebLocks,

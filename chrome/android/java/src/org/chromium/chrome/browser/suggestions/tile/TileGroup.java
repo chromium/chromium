@@ -14,11 +14,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CancelableRunnable;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -515,31 +515,6 @@ public class TileGroup implements MostVisitedSites.Observer {
 
     private class TileInteractionDelegateImpl
             implements TileInteractionDelegate, ContextMenuManager.Delegate, View.OnTouchListener {
-
-        /**
-         * CancelableRunnable is a Runnable class can be canceled. It is created here instead of
-         * making CallbackController.CancelableRunnable reusable is that this class is expected to
-         * be used on UI thread only, so locking mechanism is not required.
-         */
-        private static class CancelableRunnable implements Runnable {
-            private Runnable mRunnable;
-
-            private CancelableRunnable(@NonNull Runnable runnable) {
-                mRunnable = runnable;
-            }
-
-            public void cancel() {
-                mRunnable = null;
-            }
-
-            @Override
-            public void run() {
-                // This is run on UI thread only, so it is not necessary to guard this against
-                // another thread.
-                if (mRunnable != null) mRunnable.run();
-            }
-        }
-
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
         private Runnable mOnRemoveRunnable;

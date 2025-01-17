@@ -123,15 +123,17 @@ public class StaticLayout extends Layout {
 
     /**
      * Creates an instance of the {@link StaticLayout}.
-     * @param context             The current Android's context.
-     * @param updateHost          The {@link LayoutUpdateHost} view for this layout.
-     * @param renderHost          The {@link LayoutRenderHost} view for this layout.
-     * @param viewHost            The {@link LayoutManagerHost} view for this layout
+     *
+     * @param context The current Android's context.
+     * @param updateHost The {@link LayoutUpdateHost} view for this layout.
+     * @param renderHost The {@link LayoutRenderHost} view for this layout.
+     * @param viewHost The {@link LayoutManagerHost} view for this layout.
      * @param requestSupplier Frame request supplier for Compositor MCP.
      * @param tabModelSelector {@link TabModelSelector} instance.
      * @param tabContentManager {@link TabContentsManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param needsOffsetTag Whether or not this layout needs an OffsetTag.
      */
     public StaticLayout(
             Context context,
@@ -142,7 +144,8 @@ public class StaticLayout extends Layout {
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            boolean needsOffsetTag) {
         this(
                 context,
                 updateHost,
@@ -153,7 +156,8 @@ public class StaticLayout extends Layout {
                 tabContentManager,
                 browserControlsStateProvider,
                 topUiThemeColorProvider,
-                null);
+                null,
+                needsOffsetTag);
     }
 
     /** Protected constructor for testing, allows specifying a custom SceneLayer. */
@@ -168,16 +172,18 @@ public class StaticLayout extends Layout {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            StaticTabSceneLayer testSceneLayer) {
+            StaticTabSceneLayer testSceneLayer,
+            boolean needsOffsetTag) {
         super(context, updateHost, renderHost);
 
         mContext = context;
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+
         // Only handle tab lifecycle on tablets.
-        mHandlesTabLifecycles = isTablet;
-        // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
-        // and the tag would have been set on the TabStripSceneLayer already.
-        mNeedsOffsetTag = !isTablet;
+        mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+
+        // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
+        // on the TabStripSceneLayer already if tablet UI is present.
+        mNeedsOffsetTag = needsOffsetTag;
 
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
@@ -219,8 +225,6 @@ public class StaticLayout extends Layout {
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
-                            // and the tag would have been set on the TabStripSceneLayer already.
                             if (mNeedsOffsetTag) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET_TAG,

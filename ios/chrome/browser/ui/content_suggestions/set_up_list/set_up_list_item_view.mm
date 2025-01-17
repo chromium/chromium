@@ -35,7 +35,7 @@ namespace {
 constexpr CGFloat kPadding = 15;
 
 // The spacing between the title and description labels.
-constexpr CGFloat kTextSpacing = 5;
+constexpr CGFloat kTextSpacing = 2;
 constexpr CGFloat kCompactTextSpacing = 0;
 
 // The duration of the icon / label crossfade animation.
@@ -152,12 +152,6 @@ struct ViewConfig {
           kTextSpacing,
       };
     }
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.class ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(hideDescriptionOnTraitChange)];
-    }
   }
   return self;
 }
@@ -182,11 +176,6 @@ struct ViewConfig {
   [super traitCollectionDidChange:previousTraitCollection];
   if (@available(iOS 17, *)) {
     return;
-  }
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self hideDescriptionOnTraitChange];
   }
 }
 #endif
@@ -298,6 +287,8 @@ struct ViewConfig {
   textStack.axis = UILayoutConstraintAxisVertical;
   textStack.translatesAutoresizingMaskIntoConstraints = NO;
   textStack.spacing = _config.text_spacing;
+  textStack.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
 
   // Add a horizontal stack to contain the icon(s) and the text stack.
   NSArray* arrangedSubviews = putIconInSquareBackground
@@ -358,6 +349,10 @@ struct ViewConfig {
   if (_complete) {
     label.attributedText = Strikethrough(label.text);
   }
+  // Set height constraint. Applicable for larger text.
+  [NSLayoutConstraint activateConstraints:@[ [label.heightAnchor
+                                              constraintEqualToConstant:26] ]];
+
   [label
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
@@ -440,16 +435,6 @@ struct ViewConfig {
     case SetUpListItemType::kFollow:
       return set_up_list::kFollowItemID;
   }
-}
-
-// Hides `_description` if the font size category is larger than
-// extra-extra-large.
-- (void)hideDescriptionOnTraitChange {
-  _description.hidden = self.traitCollection.preferredContentSizeCategory >
-                        UIContentSizeCategoryExtraExtraLarge;
-  // Force a layout since the size of text components may have changed.
-  [self setNeedsLayout];
-  [self layoutIfNeeded];
 }
 
 #pragma mark - Private methods (animation helpers)

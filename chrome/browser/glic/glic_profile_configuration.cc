@@ -36,7 +36,9 @@ GlicProfileConfiguration::~GlicProfileConfiguration() = default;
 // static
 void GlicProfileConfiguration::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlicEnabledByPolicy, true);
+  registry->RegisterIntegerPref(
+      prefs::kGlicEnabledByPolicy,
+      static_cast<int>(prefs::EnabledByPolicyState::kEnabled));
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
@@ -44,12 +46,13 @@ void GlicProfileConfiguration::RegisterProfilePrefs(
 }
 
 bool GlicProfileConfiguration::IsEnabledByPolicy() const {
-  return profile_->GetPrefs()->GetBoolean(prefs::kGlicEnabledByPolicy);
+  return profile_->GetPrefs()->GetInteger(prefs::kGlicEnabledByPolicy) ==
+         static_cast<int>(prefs::EnabledByPolicyState::kEnabled);
 }
 
 void GlicProfileConfiguration::OnEnabledByPolicyChanged() {
   // Note: the pref listener can sometimes fire even if the value from
-  // GetBoolean doesn't change (e.g. value was set from multiple sources). See
+  // GetInteger doesn't change (e.g. value was set from multiple sources). See
   // GlicPolicyTest.PrefDisabledByPolicy for an example.
   for (Browser* const browser : *BrowserList::GetInstance()) {
     if (browser->profile() == &profile_.get()) {

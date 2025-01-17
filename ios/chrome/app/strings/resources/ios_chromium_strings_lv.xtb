@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Tas nozīmē, ka Chromium katru reizi pieprasīs datoriem paredzēto vietni.</translation>
 <translation id="2270466829363945454">Veikals</translation>
 <translation id="2313870531055795960">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
+<translation id="2314220608288760290">Pārlūkā Chromium YouTube inkognito saites tiek automātiski atvērtas inkognito režīmā.</translation>
 <translation id="231828342043114302">Lai saņemtu atbilstoši jūsu interesēm personalizētu saturu, pierakstieties pārlūkā Chromium.</translation>
 <translation id="2326738825692478496">Noteikti jūsu Chromium dati vēl nav saglabāti jūsu Google kontā.
 
@@ -284,6 +285,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="8254729934443216898">Izpētiet jaunās funkcijas, kas palīdz pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="829047622686389424">Pielāgota plūsma, kas radīta jums.</translation>
+<translation id="8293572045658095405">Jūs izmantojat Chromium inkognito režīmu</translation>
 <translation id="830951810931292870">Atver ievadītos vietrāžus URL inkognito režīmā pārlūkā Chromium.</translation>
 <translation id="8409374867500149834">Jūs izmantojat Chromium visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}}</translation>

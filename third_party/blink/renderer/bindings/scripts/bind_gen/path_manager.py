@@ -9,6 +9,7 @@ import web_idl
 
 from . import name_style
 from .blink_v8_bridge import blink_class_name
+from web_idl.composition_parts import WithExtendedAttributes
 
 
 class PathManager(object):
@@ -104,9 +105,22 @@ class PathManager(object):
             self._impl_component = default_component
         elif len(components) == 1:
             component = components[0]
-            self._is_cross_components = False
-            self._api_component = component
-            self._impl_component = component
+            # Global interfaces generally have exposed constructors, which we
+            # don't currently label with their component. If a global interface
+            # is defined in core, put the impl in modules even if no partial
+            # interfaces are defined in modules.
+            # TODO(japhet, caseq): Figure out why exposed constructors don't
+            # influence component calculations.
+            if (isinstance(idl_definition, WithExtendedAttributes)
+                    and "Global" in idl_definition.extended_attributes
+                    and component == "core"):
+                self._is_cross_components = True
+                self._api_component = web_idl.Component("core")
+                self._impl_component = web_idl.Component("modules")
+            else:
+                self._is_cross_components = False
+                self._api_component = component
+                self._impl_component = component
         elif len(components) == 2:
             assert components[0] == "core"
             assert components[1] == "modules"

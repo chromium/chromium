@@ -2234,7 +2234,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>
 <translation id="851660987304951246">Notaðu „Hjálpa mér að lesa“ til að gera snögga samantekt á efni eða spyrja spurninga</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> stjórnar inntaki hljóðnema}one{# forrit stjórnar inntaki hljóðnema}other{# forrit stjórna inntaki hljóðnema}}</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
 <translation id="8541078764854166027">Myndavélarrammi</translation>
 <translation id="8542053257095774575">Engin vistuð skrifborð eða sniðmát</translation>

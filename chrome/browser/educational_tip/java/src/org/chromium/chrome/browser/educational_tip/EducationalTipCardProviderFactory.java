@@ -26,13 +26,13 @@ public class EducationalTipCardProviderFactory {
         switch (moduleType) {
             case ModuleType.DEFAULT_BROWSER_PROMO:
                 return new DefaultBrowserPromoCoordinator(onModuleClickedCallback, actionDelegate);
-            case ModuleType.TAB_GROUP:
+            case ModuleType.TAB_GROUP_PROMO:
                 return new TabGroupPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
-            case ModuleType.TAB_GROUP_SYNC:
+            case ModuleType.TAB_GROUP_SYNC_PROMO:
                 return new TabGroupSyncPromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
-            case ModuleType.QUICK_DELETE:
+            case ModuleType.QUICK_DELETE_PROMO:
                 return new QuickDeletePromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
             default:

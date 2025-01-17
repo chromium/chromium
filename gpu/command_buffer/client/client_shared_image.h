@@ -137,6 +137,7 @@ class GPU_EXPORT ClientSharedImage
   SkAlphaType alpha_type() const { return metadata_.alpha_type; }
   SharedImageUsageSet usage() { return metadata_.usage; }
   std::optional<gfx::BufferUsage> buffer_usage() { return buffer_usage_; }
+  bool is_software() const { return is_software_; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }
 
@@ -352,6 +353,8 @@ class GPU_EXPORT ClientSharedImage
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
+
+  bool is_software_ = false;
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;

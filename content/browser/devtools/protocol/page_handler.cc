@@ -1885,6 +1885,9 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::UnloadHandler;
     case WebSchedulerTrackedFeature::kParserAborted:
       return Page::BackForwardCacheNotRestoredReasonEnum::ParserAborted;
+    case WebSchedulerTrackedFeature::kWebAuthentication:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ContentWebAuthenticationAPI;
   }
 }
 
@@ -2104,6 +2107,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
+    case WebSchedulerTrackedFeature::kWebAuthentication:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:

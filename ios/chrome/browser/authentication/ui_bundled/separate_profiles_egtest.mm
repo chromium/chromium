@@ -80,18 +80,6 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   return matcher;
 }
 
-id<GREYMatcher> PromoAcceptButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-id<GREYMatcher> PromoDeclineButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
 }  // namespace
 
 @interface SeparateProfilesTestCase : ChromeTestCase
@@ -222,12 +210,14 @@ id<GREYMatcher> PromoDeclineButtonMatcher() {
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Default broser screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:DefaultBrowserScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
@@ -265,17 +255,20 @@ id<GREYMatcher> PromoDeclineButtonMatcher() {
 
   // Managed profile creation/confirmation screen: Accept.
   [ChromeEarlGrey waitForMatcher:ManagedProfileCreationScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:PromoAcceptButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
   // History sync screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Default broser screen: Decline the promo (irrelevant here).
   [ChromeEarlGrey waitForMatcher:DefaultBrowserScreenMatcher()];
-  [[EarlGrey selectElementWithMatcher:PromoDeclineButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];

@@ -1643,6 +1643,8 @@ void Document::SetContentFromDOMParser(const String& content) {
                                                 parser_behavior, nullptr);
     SetParsingState(kFinishedParsing);
     if (success) {
+      body->ParserFinishedBuildingDocumentFragment(
+          ShouldNotifyInsertedNodes::kNotify);
       // When DCHECK is enabled, use SetContent() and verify fast-path
       // content matches. This effectively means the results of the fast-path
       // parser aren't used with DCHECK enabled, but it provides a way to

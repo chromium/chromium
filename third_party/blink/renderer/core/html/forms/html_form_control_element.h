@@ -117,8 +117,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   Element* interestTargetElement() override;
 
-  AtomicString interestAction() const override;
-
   void DefaultEventHandler(Event&) override;
 
   void SetHovered(bool hovered) override;

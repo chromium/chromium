@@ -16,39 +16,33 @@ InterestEvent::InterestEvent(const AtomicString& type,
                              const InterestEventInit* initializer)
     : Event(type, initializer) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-  if (initializer->hasInvoker()) {
-    invoker_ = initializer->invoker();
-  }
-  if (initializer->hasAction()) {
-    action_ = initializer->action();
+  if (initializer->hasSource()) {
+    source_ = initializer->source();
   }
 }
 
-InterestEvent::InterestEvent(const AtomicString& type,
-                             const String& action,
-                             Element* invoker)
+InterestEvent::InterestEvent(const AtomicString& type, Element* source)
     : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
-      invoker_(invoker),
-      action_(action) {
+      source_(source) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
 }
 
-Element* InterestEvent::invoker() const {
-  Element* invoker = invoker_.Get();
-  if (!invoker) {
+Element* InterestEvent::source() const {
+  Element* source = source_.Get();
+  if (!source) {
     return nullptr;
   }
 
   if (auto* current = currentTarget()) {
     CHECK(current->ToNode());
-    return &current->ToNode()->GetTreeScope().Retarget(*invoker);
+    return &current->ToNode()->GetTreeScope().Retarget(*source);
   }
   DCHECK_EQ(eventPhase(), Event::PhaseType::kNone);
-  return invoker;
+  return source;
 }
 
 void InterestEvent::Trace(Visitor* visitor) const {
-  visitor->Trace(invoker_);
+  visitor->Trace(source_);
   Event::Trace(visitor);
 }
 

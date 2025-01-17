@@ -55,7 +55,6 @@
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -169,7 +168,7 @@ std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
 class DisplayTest : public testing::Test {
  public:
   DisplayTest()
-      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
+      : manager_(FrameSinkManagerImpl::InitParams()),
         support_(
             std::make_unique<CompositorFrameSinkSupport>(nullptr,
                                                          &manager_,
@@ -277,7 +276,6 @@ class DisplayTest : public testing::Test {
   }
 
   DebugRendererSettings debug_settings_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
   gpu::Scheduler gpu_scheduler_{&sync_point_manager_};

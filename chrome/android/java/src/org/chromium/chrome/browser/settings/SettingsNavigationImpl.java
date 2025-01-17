@@ -16,8 +16,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -45,14 +43,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         switch (settingsFragment) {
             case SettingsFragment.CLEAR_BROWSING_DATA:
                 fragmentArgs =
-                        ClearBrowsingDataTabsFragment.createFragmentArgs(
-                                context.getClass().getName());
-                break;
-            case SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE:
-                fragmentArgs =
-                        ClearBrowsingDataFragment.createFragmentArgs(
-                                context.getClass().getName(),
-                                /* isFetcherSuppliedFromOutside= */ false);
+                        ClearBrowsingDataFragment.createFragmentArgs(context.getClass().getName());
                 break;
             case SettingsFragment.SAFETY_CHECK:
                 if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
@@ -112,9 +103,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             case SettingsFragment.MAIN:
                 return null;
             case SettingsFragment.CLEAR_BROWSING_DATA:
-                return ClearBrowsingDataTabsFragment.class;
-            case SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE:
-                return ClearBrowsingDataFragmentAdvanced.class;
+                return ClearBrowsingDataFragment.class;
             case SettingsFragment.PAYMENT_METHODS:
                 return AutofillPaymentMethodsFragment.class;
             case SettingsFragment.SAFETY_CHECK:

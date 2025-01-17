@@ -19,11 +19,26 @@
 #error On ChromeOS, use DBusThreadManager instead.
 #endif
 
+namespace dbus {
+class Bus;
+}
+
 namespace dbus_thread_linux {
 
 // Obtains a task runner to handle DBus IO for usage on desktop Linux.
 COMPONENT_EXPORT(COMPONENTS_DBUS)
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
+// Obtains a shared session bus for usage on desktop Linux. The task runner is
+// the same as the one obtained from GetTaskRunner(). This should be used for
+// all session bus operations except for those that require a named connection
+// (currently MPRIS is the only one). Must be called on the UI thread.
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+scoped_refptr<dbus::Bus> GetSharedSessionBus();
+
+// The same as GetSharedSessionBus(), but for the system bus.
+COMPONENT_EXPORT(COMPONENTS_DBUS)
+scoped_refptr<dbus::Bus> GetSharedSystemBus();
 
 }  // namespace dbus_thread_linux
 

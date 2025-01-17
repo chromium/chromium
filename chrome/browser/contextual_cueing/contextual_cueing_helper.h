@@ -19,8 +19,7 @@ class ContextualCueingHelper
  public:
   // Creates ContextualCueingHelper and attaches it the `web_contents` if
   // contextual cueing is enabled.
-  [[nodiscard]] static std::unique_ptr<ContextualCueingHelper>
-  MaybeCreateForWebContents(content::WebContents* web_contents);
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   ContextualCueingHelper(const ContextualCueingHelper&) = delete;
   ContextualCueingHelper& operator=(const ContextualCueingHelper&) = delete;
@@ -29,12 +28,19 @@ class ContextualCueingHelper
   // content::WebContentsObserver
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
+  const std::string& last_navigation_cue_label() const {
+    return last_navigation_cue_label_;
+  }
+
  private:
   ContextualCueingHelper(content::WebContents* contents,
                          OptimizationGuideKeyedService* ogks);
 
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
+
+  // Holds the cue label for the last navigation in `this`.
+  std::string last_navigation_cue_label_;
 
   friend WebContentsUserData<ContextualCueingHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

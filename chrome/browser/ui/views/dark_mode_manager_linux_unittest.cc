@@ -168,7 +168,6 @@ class DarkModeManagerLinuxTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*mock_bus_, GetDBusTaskRunner()).WillOnce(Return(nullptr));
     manager_.reset();
   }
 

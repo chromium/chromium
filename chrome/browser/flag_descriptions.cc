@@ -3190,12 +3190,6 @@ const char kQuickAppAccessTestUIName[] = "Internal test: quick app access";
 const char kQuickAppAccessTestUIDescription[] =
     "Show an app in the quick app access area at the start of the session";
 
-const char kQuickDeleteAndroidFollowupName[] =
-    "Followup for Quick Delete on Android";
-const char kQuickDeleteAndroidFollowupDescription[] =
-    "Enables some follow up work on Clear Browsing Data for Quick Delete, "
-    "including an improved post delete experience and animations.";
-
 const char kQuickDeleteAndroidSurveyName[] = "HaTS for Quick Delete on Android";
 const char kQuickDeleteAndroidSurveyDescription[] =
     "Enables HaTS survey for Quick Delete on Android.";
@@ -7674,6 +7668,12 @@ const char kHideTabletToolbarDownloadButtonDescription[] =
 const char kShowNewTabAnimationsName[] = "Show New Tab Animations";
 const char kShowNewTabAnimationsDescription[] =
     "Shows new animations for creating tabs.";
+
+const char kTabSwitcherColorBlendAnimateName[] =
+    "Tab Switcher Color Blend Animation";
+const char kTabSwitcherColorBlendAnimateDescription[] =
+    "Animates the color transition between incognito and regular tab switcher "
+    "panes in the Hub.";
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =

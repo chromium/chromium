@@ -63,7 +63,7 @@ public class VSyncPausedTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mObserver.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mObserver.observe(null));
     }
 
     @Test

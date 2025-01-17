@@ -6,10 +6,12 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_FORM_TEST_UTILS_H_
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -92,8 +94,12 @@ struct TestFormFlags {
   bool should_be_queried = false;
   bool should_be_uploaded = false;
   bool has_author_specified_types = false;
-  // The implicit default value `std::nullopt` means no checking.
-  std::optional<bool> is_complete_credit_card_form;
+  // The implicit default value `std::nullopt` means no checking. The first
+  // value is the argument for `IsCompleteCreditCardForm()` specifying the
+  // required completeness level of the credit card form. The second value is
+  // the expected result of `IsCompleteCreditCardForm()`.
+  std::optional<std::pair<FormStructure::CreditCardFormCompleteness, bool>>
+      is_complete_credit_card_form;
   std::optional<int> field_count;
   std::optional<int> autofill_count;
   std::optional<int> section_count;

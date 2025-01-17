@@ -159,7 +159,8 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
       feature_dict: Data for the new What's New feature.
   """
     feature_name = feature_dict['Feature name']
-    whats_new_util_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
+    whats_new_util_file = os.path.join(
+        BASE_DIR, '..', 'ios/chrome/browser/ui/whats_new/whats_new_util.mm')
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
@@ -446,8 +447,7 @@ def LoadValidIconNames() -> ValidIcons:
 
     icon_name_regex = re.compile(r"@\"(.*)\";")
 
-    valid_icons_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/shared/ui/symbols/symbol_names.mm')
+    valid_icons_file = os.path.join(BASE_DIR, '..', CHROME_ICON_FILENAME)
     found_default_icons = False
     with open(valid_icons_file, 'r', encoding='utf-8', newline='') as file:
         # The icons file starts with custom icons until reaching the comment

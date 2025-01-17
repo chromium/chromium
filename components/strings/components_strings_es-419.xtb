@@ -1284,6 +1284,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3273757719652748628">El mensaje para guardar el IBAN está totalmente abierto.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
+<translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3287510313208355388">Descargar cuando haya conexión</translation>
 <translation id="3288238092761586174">Es posible que <ph name="URL" /> deba realizar pasos adicionales para verificar tu pago.</translation>
@@ -3659,6 +3660,7 @@ Detalles adicionales:
 <translation id="7511955381719512146">Es posible que la red Wi-Fi que estás usando requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">No se puede establecer esta política como verdadera ni como obligatoria. Por esta razón, se cambió a recomendada.</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Vehículos todoterreno</translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No se encontró una página web para la siguiente dirección web: <ph name="URL" /></translation>

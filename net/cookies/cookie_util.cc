@@ -872,19 +872,6 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
       schemeful_result.context_type = ContextType::SAME_SITE_LAX_METHOD_UNSAFE;
   }
 
-  ContextMetadata::HttpMethod http_method_enum =
-      HttpMethodStringToEnum(http_method);
-
-  if (result.metadata.cross_site_redirect_downgrade !=
-      ContextMetadata::ContextDowngradeType::kNoDowngrade) {
-    result.metadata.http_method_bug_1221316 = http_method_enum;
-  }
-
-  if (schemeful_result.metadata.cross_site_redirect_downgrade !=
-      ContextMetadata::ContextDowngradeType::kNoDowngrade) {
-    schemeful_result.metadata.http_method_bug_1221316 = http_method_enum;
-  }
-
   return MakeSameSiteCookieContext(result, schemeful_result);
 }
 

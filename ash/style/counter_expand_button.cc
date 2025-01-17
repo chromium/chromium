@@ -74,7 +74,6 @@ CounterExpandButton::CounterExpandButton() {
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kTrayItemCornerRadius});
   layer()->SetIsFastRoundedCorner(true);
 }

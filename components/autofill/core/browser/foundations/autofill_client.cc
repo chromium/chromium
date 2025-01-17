@@ -210,4 +210,9 @@ PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
 void AutofillClient::TriggerPlusAddressUserPerceptionSurvey(
     plus_addresses::hats::SurveyType survey_type) {}
 
+const syncer::SyncService* AutofillClient::GetSyncService() const {
+  return const_cast<const syncer::SyncService*>(
+      const_cast<AutofillClient*>(this)->GetSyncService());
+}
+
 }  // namespace autofill

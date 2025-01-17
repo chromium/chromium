@@ -413,7 +413,6 @@ void AssistantPageView::OnThemeChanged() {
 void AssistantPageView::InitLayout() {
   // Use a solid color layer. The color is set in OnThemeChanged().
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(!chromeos::features::IsSystemBlurEnabled());
 
   view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(

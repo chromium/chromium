@@ -2235,7 +2235,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="851458219935658693">Erakutsi lan-eremu honetan dauden leihoak, aukera-botoia hautatuta dago</translation>
 <translation id="851660987304951246">Erabili Irakurtzeko laguntza edukia bizkor laburbiltzeko edo galderak egiteko</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> aplikazioak kontrolatzen du sarrerako mikrofonoa}other{# aplikaziok kontrolatzen dute sarrerako mikrofonoa}}</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
 <translation id="8541078764854166027">Kamerako markoa</translation>
 <translation id="8542053257095774575">Ez dago lan-eremu edo txantiloirik gordeta</translation>

@@ -111,19 +111,6 @@ void PolicyService::PolicyManagers::SortManagersVector() {
 
 bool PolicyService::PolicyManagers::CloudPolicyOverridesPlatformPolicy(
     const std::vector<scoped_refptr<PolicyManagerInterface>>& providers) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, by default, Group Policy has a higher priority than the
-  // clould policy.
-  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = false;
-#elif BUILDFLAG(IS_MAC)
-  // On macOS, cloud policy has a higher priority than the Managed Preferences.
-  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
-#else
-  // On other platforms, there's no platform policy at the moment, the value
-  // doesn't actually matter.
-  constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
-#endif
-
   auto it = base::ranges::find_if(
       providers, [](scoped_refptr<PolicyManagerInterface> p) {
         return p && (p->CloudPolicyOverridesPlatformPolicy()).has_value();

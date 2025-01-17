@@ -43,7 +43,9 @@ struct ScopeExtensionInfo {
 
   url::Origin origin;
 
-  // Must be the same origin as `origin` else CHECK-fails
+  // Must be the same origin as `origin` else CHECK-fails.
+  // `scope` will also drop any queries or fragments from the URL per manifest
+  // scope rules: https://w3c.github.io/manifest/#scope-member
   GURL scope;
 
   bool has_origin_wildcard = false;

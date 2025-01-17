@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">गोपनीयता एरर</translation>
 <translation id="1414134146594747368">बालवाडी</translation>
 <translation id="1419305130220238697">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
+<translation id="1420345875188552368">तुमची सेव्ह केलेली ऑटोमॅटिक पेमेंट पद्धत या पेमेंटसाठी वापरली जाऊ शकते. Chrome मध्ये ईवॉलेट बंद करण्यासाठी, तुमच्या <ph name="BEGIN_LINK1" />पेमेंट सेटिंग्ज<ph name="END_LINK1" /> वर जा</translation>
 <translation id="1420920093772172268">जोडणीस अनुमती देण्‍यासाठी <ph name="TURN_ON_BLUETOOTH_LINK" /> सुरू करा</translation>
 <translation id="14222610277930434">तुम्ही अनेकदा भेट देता</translation>
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
@@ -1283,6 +1284,7 @@
 <translation id="3273757719652748628">IBAN सेव्ह करा ही शीट पूर्ण उंचीवर उघडली आहे.</translation>
 <translation id="3281350579597955952">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}}</translation>
 <translation id="3282085321714087552">तुमच्या संस्थेने <ph name="ENROLLMENT_DOMAIN" /> खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
+<translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3286372614333682499">पोट्रेट</translation>
 <translation id="3287510313208355388">ऑनलाइन असताना डाउनलोड करा</translation>
 <translation id="3288238092761586174">तुमच्या पेमेंटची पडताळणी करण्यासाठी <ph name="URL" /> ने अतिरिक्त पावले उचलणे आवश्यक असू शकते</translation>
@@ -3658,6 +3660,7 @@
 <translation id="7511955381719512146">तुम्ही वापरत असलेल्या वाय-फाय ला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता असू शकते.</translation>
 <translation id="7512685745044087310">हे धोरण "सत्य" असे सेट केले जाऊ शकत नाही आणि अनिवार्य असू शकत नाही, म्हणून ते शिफारस केलेले वर बदलले.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">ऑफ-रोड वाहने</translation>
 <translation id="7517414872996418597">एन्व्हलप सी१०</translation>
 <translation id="7518003948725431193">या वेबपत्त्यासाठी वेबपेज आढळले नाही: <ph name="URL" /></translation>

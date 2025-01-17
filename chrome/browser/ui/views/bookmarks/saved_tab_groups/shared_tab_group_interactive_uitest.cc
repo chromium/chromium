@@ -386,10 +386,9 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleShareGroupButtonId),
-      WaitForShow(kDataSharingBubbleElementId),
-      // Close the dialog to prevent flakes on mac.
-      HoverTabAt(0), ClickMouse(), WaitForHide(kDataSharingBubbleElementId),
-      FinishTabstripAnimations());
+      WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
+      WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId));
 
   histogram_tester.ExpectUniqueSample(
       kManageHistogram,
@@ -412,10 +411,9 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
-      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
-        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Close();
-      }),
-      WaitForHide(kDataSharingBubbleElementId));
+      WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
+      WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId));
 
   histogram_tester.ExpectUniqueSample(
       kManageHistogram,

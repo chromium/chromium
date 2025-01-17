@@ -220,8 +220,8 @@ void CompleteSigninFlow() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 }
 

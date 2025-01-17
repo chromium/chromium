@@ -236,6 +236,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // The requested size of the renderer. May differ from GetViewBounds().size()
   // when the view requires additional throttling.
   virtual gfx::Size GetRequestedRendererSize();
+  virtual gfx::Size GetRequestedRendererSizeDevicePx();
 
   // Returns the current capture sequence number.
   virtual uint32_t GetCaptureSequenceNumber() const;

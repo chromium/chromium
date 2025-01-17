@@ -33,7 +33,6 @@
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_counter.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -1666,7 +1665,7 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
 
       view_transition_token_to_animation_manager_[transition_token] =
           SurfaceAnimationManager::CreateWithSave(
-              directive, surface, frame_sink_manager_->shared_bitmap_manager(),
+              directive, surface,
               frame_sink_manager_->GetSharedImageInterface(),
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::

@@ -24,7 +24,6 @@ class Scheduler;
 
 namespace viz {
 
-
 // DisplayResourceProvider implementation used with SoftwareRenderer.
 class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     : public DisplayResourceProvider {

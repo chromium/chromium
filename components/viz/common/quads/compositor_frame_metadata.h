@@ -112,6 +112,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // gesture scroll events.
   bool is_handling_interaction = false;
 
+  // True if this compositor frame contains animations.
+  bool is_handling_animation = false;
+
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
   // it's too small to fill the box the parent reserved for it.

@@ -30,7 +30,7 @@
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
 from typing import Any, DefaultDict, FrozenSet, List, Mapping, MutableMapping
-from typing import Optional, Set, Tuple
+from typing import Set, Union
 
 import re
 import collections
@@ -38,7 +38,6 @@ import copy
 import dataclasses
 import enum
 import importlib
-import itertools
 import math
 import os
 import pathlib
@@ -155,8 +154,6 @@ def _expand_test_code(code: str) -> str:
     code = re.sub(r' @moz-todo', '', code)
 
     code = re.sub(r'@moz-UniversalBrowserRead;', '', code)
-
-    code = _remove_extra_newlines(code)
 
     code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
                   _expand_nonfinite(m.group(1), m.group(2), m.group(3)),
@@ -283,11 +280,15 @@ def _render(jinja_env: jinja2.Environment, template_name: str,
 
 def _preprocess_code(jinja_env: jinja2.Environment, code: str,
                      params: _TestParams) -> str:
-    code = _expand_test_code(code)
+    code = _remove_extra_newlines(code)
+
     # Render the code on its own, as it could contain templates expanding
     # to multiple lines. This is needed to get proper indentation of the
     # code in the main template.
     code = _render_template(jinja_env, jinja_env.from_string(code), params)
+
+    # Expand "@..." macros.
+    code = _expand_test_code(code)
     return code
 
 
@@ -438,7 +439,7 @@ class _Variant():
                         variant_id: int) -> None:
         """Finalize this variant by adding computed param fields."""
         self._params['id'] = variant_id
-        for param_name in ('name', 'desc', 'attributes'):
+        for param_name in ('attributes', 'desc', 'expected', 'name'):
             self._render_param(jinja_env, param_name)
         self._params['file_name'] = self._get_file_name()
         self._params['canvas_types'] = self._get_canvas_types()
@@ -874,6 +875,29 @@ def _check_uniqueness(tested: DefaultDict[str, Set[_CanvasType]], name: str,
     tested[name].update(canvas_types)
 
 
+def _indent_filter(s: str, width: Union[int, str] = 4,
+                   first: bool = False, blank: bool = False) -> str:
+    """Returns a copy of the string with each line indented by the `width` str.
+
+    If `width` is a number, `s` is indented by that number of whitespaces. The
+    first line and blank lines are not indented by default, unless `first` or
+    `blank` are `True`, respectively.
+
+    This is a re-implementation of the default `indent` Jinja filter, preserving
+    line ending characters (\r, \n, \f, etc.) The default `indent` Jinja filter
+    incorrectly replaces all of these characters with newlines."""
+    is_first_line = True
+    def indent_needed(line):
+        nonlocal first, blank, is_first_line
+        is_blank = not line.strip()
+        need_indent = (not is_first_line or first) and (not is_blank or blank)
+        is_first_line = False
+        return need_indent
+
+    indentation = width if isinstance(width, str) else ' ' * width
+    return textwrap.indent(s, indentation, indent_needed)
+
+
 def generate_test_files(name_to_dir_file: str) -> None:
     """Generate Canvas tests from YAML file definition."""
     output_dirs = _OutputPaths(element=pathlib.Path('..') / 'element',
@@ -886,6 +910,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
         lstrip_blocks=True)
 
     jinja_env.filters['double_quote_escape'] = _double_quote_escape
+    jinja_env.filters['indent'] = _indent_filter
 
     # Run with --test argument to run unit tests.
     if len(sys.argv) > 1 and sys.argv[1] == '--test':

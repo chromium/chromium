@@ -1281,6 +1281,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3273757719652748628">Londoloza i-IBAN evulwe ngobude obuphelele.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Inqubomgomo yomlawuli ayincomi ukuvula leli fayela e-<ph name="DESTINATION_NAME" />}one{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}other{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Inhlangano yakho, i-<ph name="ENROLLMENT_DOMAIN" />, ithumele ulwazi kumawebhusayithi alandelayo, njengamasethingi noma izinqumbomgomo.</translation>
+<translation id="3282568296779691940">Ngena ngemvume ku-Chrome</translation>
 <translation id="3286372614333682499">ukuma ngobude</translation>
 <translation id="3287510313208355388">Landa uma uxhumeke ku-inthanethi</translation>
 <translation id="3288238092761586174">I-<ph name="URL" /> ingase idinge ukuthatha izinyathelo ezengeziwe ukuqinisekisa inkokhelo yakho</translation>
@@ -3654,6 +3655,7 @@ Imininingwane engeziwe:
 <translation id="7511955381719512146">I-Wi-Fi oyisebenzisayo ingadinga ukuthi uvakashele ku-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Le nqubomgomo ayikwazi ukusethwa kokuthi "Kuyiqiniso" futhi ibe yisibopho, ngakho ishintshelwe kokunconywayo.</translation>
 <translation id="7514365320538308">Landa</translation>
+<translation id="7515998400212163428">I-Android</translation>
 <translation id="7517201160922869406">Izimoto ezihamba nomaphi</translation>
 <translation id="7517414872996418597">Imvilophu ye-C10</translation>
 <translation id="7518003948725431193">Alikho ikhasi lewebhu eliye latholwa kukheli lewebhu: <ph name="URL" /></translation>

@@ -13,7 +13,6 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
@@ -36,13 +35,10 @@ const uint64_t kBeginFrameSourceId = 1337;
 
 class SurfaceTest : public testing::Test {
  public:
-  SurfaceTest()
-      : frame_sink_manager_(
-            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {}
+  SurfaceTest() : frame_sink_manager_(FrameSinkManagerImpl::InitParams()) {}
 
  protected:
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl frame_sink_manager_;
 };
 

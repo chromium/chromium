@@ -47,6 +47,10 @@ export class NewColumnSelectorElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  closeMenu() {
+    this.$.productSelectionMenu.close();
+  }
+
   protected showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.button);
     this.$.button.classList.add('showing-menu');

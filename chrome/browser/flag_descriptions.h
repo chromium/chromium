@@ -1840,9 +1840,6 @@ extern const char kQuickAppAccessTestUIDescription[];
 extern const char kQuickDimName[];
 extern const char kQuickDimDescription[];
 
-extern const char kQuickDeleteAndroidFollowupName[];
-extern const char kQuickDeleteAndroidFollowupDescription[];
-
 extern const char kQuickDeleteAndroidSurveyName[];
 extern const char kQuickDeleteAndroidSurveyDescription[];
 
@@ -2829,6 +2826,9 @@ extern const char kTabStripLayoutOptimizationDescription[];
 
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
+
+extern const char kTabSwitcherColorBlendAnimateName[];
+extern const char kTabSwitcherColorBlendAnimateDescription[];
 
 extern const char kTabSwitcherFullNewTabButtonName[];
 extern const char kTabSwitcherFullNewTabButtonDescription[];

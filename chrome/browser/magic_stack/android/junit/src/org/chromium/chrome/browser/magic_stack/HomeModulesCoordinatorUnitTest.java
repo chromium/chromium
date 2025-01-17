@@ -265,9 +265,9 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.PRICE_CHANGE,
                         ModuleType.SINGLE_TAB,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUP,
-                        ModuleType.TAB_GROUP_SYNC,
-                        ModuleType.QUICK_DELETE);
+                        ModuleType.TAB_GROUP_PROMO,
+                        ModuleType.TAB_GROUP_SYNC_PROMO,
+                        ModuleType.QUICK_DELETE_PROMO);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -295,7 +295,7 @@ public class HomeModulesCoordinatorUnitTest {
 
         mHomeModulesStateListener
                 .getValue()
-                .onModuleConfigChanged(ModuleType.TAB_GROUP_SYNC, false);
+                .onModuleConfigChanged(ModuleType.TAB_GROUP_SYNC_PROMO, false);
         expectedModuleListAfterHidingModule =
                 Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
         assertEquals(

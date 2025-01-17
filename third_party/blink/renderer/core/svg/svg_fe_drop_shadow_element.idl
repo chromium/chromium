@@ -22,13 +22,13 @@
 [
     Exposed=Window
 ] interface SVGFEDropShadowElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber dx;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber dy;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationY;
+    readonly attribute SVGAnimatedString in1;
+    readonly attribute SVGAnimatedNumber dx;
+    readonly attribute SVGAnimatedNumber dy;
+    readonly attribute SVGAnimatedNumber stdDeviationX;
+    readonly attribute SVGAnimatedNumber stdDeviationY;
 
-    [MeasureAs=SVG1DOMFilter] void setStdDeviation(float stdDeviationX, float stdDeviationY);
+    void setStdDeviation(float stdDeviationX, float stdDeviationY);
 };
 
 SVGFEDropShadowElement includes SVGFilterPrimitiveStandardAttributes;

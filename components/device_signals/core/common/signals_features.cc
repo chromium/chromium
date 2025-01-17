@@ -10,45 +10,6 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
              "AllowClientCertificateReportingForUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewEvSignalsEnabled,
-             "NewEvSignalsEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kDisableFileSystemInfo{
-    &kNewEvSignalsEnabled, "DisableFileSystemInfo", false};
-const base::FeatureParam<bool> kDisableSettings{&kNewEvSignalsEnabled,
-                                                "DisableSettings", false};
-const base::FeatureParam<bool> kDisableAntiVirus{&kNewEvSignalsEnabled,
-                                                 "DisableAntiVirus", false};
-const base::FeatureParam<bool> kDisableHotfix{&kNewEvSignalsEnabled,
-                                              "DisableHotfix", false};
-
-bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
-  // AntiVirus and Hotfix are considered "Launched". So only rely on the value
-  // of the kill-switch to control the feature's behavior.
-  bool disable_function = false;
-  switch (new_ev_function) {
-    case NewEvFunction::kFileSystemInfo:
-      disable_function = kDisableFileSystemInfo.Get();
-      break;
-    case NewEvFunction::kSettings:
-      disable_function = kDisableSettings.Get();
-      break;
-    case NewEvFunction::kAntiVirus:
-      disable_function = kDisableAntiVirus.Get();
-      break;
-    case NewEvFunction::kHotfix:
-      disable_function = kDisableHotfix.Get();
-      break;
-  }
-
-  if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
-    return false;
-  }
-
-  return !disable_function;
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
 // Enables the triggering of device signals consent dialog when conditions met

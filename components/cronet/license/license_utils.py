@@ -139,7 +139,7 @@ def parse_chromium_readme_file(readme_path: str,
                                                                         _metadata: _metadata)
     metadata = Metadata(post_process_operation(dependencies[0]))
   except MapperException:
-    raise Exception(f"Failed to post-process f{readme_path}")
+    raise Exception(f"Failed to post-process {readme_path}")
 
   for license in metadata.get_licenses():
     if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:

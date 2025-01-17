@@ -48,7 +48,7 @@ class UnscopedExtensionProviderTest : public testing::Test {
                 Start,
                 (const AutocompleteInput&, bool, std::set<std::string>),
                 (override));
-    MOCK_METHOD(void, IncrementRequestId, (), (override));
+    MOCK_METHOD(void, Stop, (bool clear_cached_suggestions), (override));
   };
 
  protected:
@@ -87,7 +87,7 @@ TEST_F(UnscopedExtensionProviderTest, RunsAndIncrementsRequestIdWithChanges) {
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   input.set_omit_asynchronous_matches(false);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start);
 
   InitProvider(std::move(mock_delegate));
@@ -104,7 +104,7 @@ TEST_F(UnscopedExtensionProviderTest,
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
@@ -122,7 +122,7 @@ TEST_F(UnscopedExtensionProviderTest,
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   input.set_omit_asynchronous_matches(true);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
@@ -138,7 +138,7 @@ TEST_F(UnscopedExtensionProviderTest, DoesNotRunOnFocus) {
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));
@@ -152,7 +152,7 @@ TEST_F(UnscopedExtensionProviderTest, DoesNotRunWithNoUnscopedExtensions) {
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
-  EXPECT_CALL(*mock_delegate, IncrementRequestId).Times(0);
+  EXPECT_CALL(*mock_delegate, Stop);
   EXPECT_CALL(*mock_delegate, Start).Times(0);
 
   InitProvider(std::move(mock_delegate));

@@ -77,16 +77,6 @@ UniqueCookieKey& UniqueCookieKey::operator=(const UniqueCookieKey& other) =
 
 UniqueCookieKey::~UniqueCookieKey() = default;
 
-bool UniqueCookieKey::operator==(const UniqueCookieKey& other) const = default;
-
-bool UniqueCookieKey::operator<(const UniqueCookieKey& other) const {
-  return std::tie(key_type_, partition_key_, name_, domain_, path_,
-                  source_scheme_,
-                  port_) < std::tie(other.key_type_, other.partition_key_,
-                                    other.name_, other.domain_, other.path_,
-                                    other.source_scheme_, other.port_);
-}
-
 UniqueCookieKey::UniqueCookieKey(
     KeyType key_type,
     std::optional<CookiePartitionKey> partition_key,

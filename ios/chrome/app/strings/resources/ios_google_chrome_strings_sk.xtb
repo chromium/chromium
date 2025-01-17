@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1066101356081285416">Chrome zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Sledovacie číslo zásielky a názov webu sa odošlú Googlu na účely poskytovania tejto funkcie a zlepšovania funkcií Nákupov Google pre každého. Kedykoľvek to môžete zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome automaticky otvára odkazy na YouTube v režime inkognito.</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
 <translation id="1143896152279775643">Heslo bude uložené do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otvorenie novej karty v Chrome</translation>
@@ -126,6 +127,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="4636900170638246267">Prihláste sa na tomto webe a v Chrome.</translation>
 <translation id="4646014602299206846">Chrome zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuálne informácie o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých používateľov.</translation>
 <translation id="4647910807533196601">Otvorenie najnovšej karty v Chrome.</translation>
+<translation id="4693084815234024320">Ste v režime inkognito Chromu</translation>
 <translation id="4724297637870447613">Používajte Chrome kdekoľvek</translation>
 <translation id="4738647308035481133">Stránka prehliadača Google Chrome</translation>
 <translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>

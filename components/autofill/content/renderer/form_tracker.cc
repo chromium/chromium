@@ -231,7 +231,7 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
           form_util::GetFieldRendererId(element))) {
     return;
   }
-  blink::WebFormElement form_element = form_util::GetOwningForm(element);
+  blink::WebFormElement form_element = element.GetOwningFormForAutofill();
   if (form_element) {
     UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
   } else {
@@ -252,7 +252,7 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
       !element.GetDocument().GetFrame()) {
     return;
   }
-  blink::WebFormElement form_element = form_util::GetOwningForm(element);
+  blink::WebFormElement form_element = element.GetOwningFormForAutofill();
   if (form_element) {
     UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
   } else {

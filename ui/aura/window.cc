@@ -62,6 +62,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_target_iterator.h"
@@ -333,7 +334,9 @@ void Window::SetTransparent(bool transparent) {
     return;
   transparent_ = transparent;
 
-  layer()->SetFillsBoundsOpaquely(!transparent_);
+  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
+    layer()->SetFillsBoundsOpaquely(!transparent_);
+  }
   TriggerChangedCallback(&transparent_);
 }
 

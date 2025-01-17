@@ -866,6 +866,9 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
 
 void AutofillAgent::TextFieldValueChanged(
     const WebFormControlElement& element) {
+  field_data_manager_->UpdateFieldDataMap(
+      form_util::GetFieldRendererId(element), element.Value().Utf16(),
+      FieldPropertiesFlags::kUserTyped);
   form_tracker_->TextFieldValueChanged(element);
 }
 
@@ -895,10 +898,12 @@ void AutofillAgent::OnTextFieldValueChanged(
   // showing up.
   ClearPreviewedForm();
 
-  UpdateStateForTextChange(element, FieldPropertiesFlags::kUserTyped,
-                           form_cache);
-
   const auto input_element = element.DynamicTo<WebInputElement>();
+  if (input_element && input_element.IsTextField()) {
+    password_autofill_agent_->UpdatePasswordStateForTextChange(input_element,
+                                                               form_cache);
+  }
+
   if (password_generation_agent_ && input_element &&
       password_generation_agent_->TextDidChangeInTextField(input_element,
                                                            form_cache)) {
@@ -1069,7 +1074,7 @@ void AutofillAgent::ApplyFieldsAction(
         std::ranges::any_of(filled_field_ids, [](FieldRendererId field_id) {
           WebFormControlElement element =
               form_util::GetFormControlByRendererId(field_id);
-          return element && !form_util::GetOwningForm(element);
+          return element && !element.GetOwningFormForAutofill();
         });
 
     base::flat_set<FormRendererId> extracted_form_ids;
@@ -1229,7 +1234,7 @@ void AutofillAgent::ApplyFieldAction(
             form_util::GetFieldRendererId(form_control));
         if (form_control) {
           if (WebFormElement form_element =
-                  form_util::GetOwningForm(form_control)) {
+                  form_control.GetOwningFormForAutofill()) {
             UpdateLastInteractedElement(
                 form_util::GetFormRendererId(form_element));
           } else {
@@ -1662,31 +1667,43 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const WebElement& element,
     WebFormRelatedChangeType form_related_change) {
-  auto should_discard_signal = [&] {
+  auto should_handle_event = [&] {
     if (!is_dom_content_loaded_) {
       // When the agent receives the DomContentLoaded signal, it will extract
       // all forms and notify PasswordAutofillAgent by default, so we do not
       // need to run this function as this would be redundant.
-      return true;
+      return false;
     }
     if (!base::FeatureList::IsEnabled(
             features::kAutofillOptimizeFormExtraction)) {
-      return false;
+      return true;
     }
-    if (WebFormControlElement control_element =
-            element.DynamicTo<WebFormControlElement>();
+    auto maybe_control_element = element.DynamicTo<WebFormControlElement>();
+    const bool is_autofillable_element =
         element.DynamicTo<WebFormElement>() ||
-        (control_element &&
-         form_util::IsAutofillableElement(control_element))) {
-      return false;
+        (maybe_control_element &&
+         form_util::IsAutofillableElement(maybe_control_element));
+    switch (form_related_change) {
+      case blink::WebFormRelatedChangeType::kAdd:
+      case blink::WebFormRelatedChangeType::kRemove:
+      case blink::WebFormRelatedChangeType::kReassociate:
+        // If the element dynamically added is not a form element or
+        // autofillable control element (see condition above), it will probably
+        // not have any influence on Autofill at all, and therefore there's no
+        // need to trigger DOM re-extraction on any other case.
+        return is_autofillable_element;
+      case blink::WebFormRelatedChangeType::kHide:
+        // Hidden elements have a slightly different behavior, since they don't
+        // lead to form extraction. Here, we are also interested in input
+        // elements that have type 'hidden', which are not autofillable, but are
+        // one way to hide previously autofillable elements.
+        return is_autofillable_element ||
+               (maybe_control_element &&
+                maybe_control_element.FormControlTypeForAutofill() ==
+                    blink::mojom::FormControlType::kInputHidden);
     }
-    // If the element dynamically added is not a form element or autofillable
-    // control element (see condition above), it will probably not have any
-    // influence on Autofill at all, and therefore there's no need to trigger
-    // DOM re-extraction on any other case.
-    return true;
   };
-  if (should_discard_signal()) {
+  if (!should_handle_event()) {
     return;
   }
 
@@ -1911,7 +1928,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   // tracked form and not JS. This call here is meant to keep the tracked form
   // up to date with the form's most recent version.
   if (provisionally_saved_form() &&
-      form_util::GetFormRendererId(form_util::GetOwningForm(element)) ==
+      form_util::GetFormRendererId(element.GetOwningFormForAutofill()) ==
           last_interacted_form().GetId() &&
       base::FeatureList::IsEnabled(
           features::kAutofillPreferSavedFormAsSubmittedForm)) {

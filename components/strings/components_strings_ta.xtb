@@ -1280,6 +1280,7 @@
 <translation id="3273757719652748628">IBANனைச் சேமிக்கும் தாள் முழு உயரத்தில் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைலைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" /> இல் இந்த ஃபைல்களைத் திறப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="3282085321714087552">அமைப்புகள், கொள்கைகள் போன்ற சில தகவல்களை உங்கள் நிறுவனம் <ph name="ENROLLMENT_DOMAIN" /> பின்வரும் இணையதளங்களுக்கு அனுப்பியுள்ளது.</translation>
+<translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
 <translation id="3286372614333682499">போர்ட்ரெயிட்</translation>
 <translation id="3287510313208355388">ஆன்லைனில் இருக்கும் போது பதிவிறக்கு</translation>
 <translation id="3288238092761586174">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="URL" /> தளத்தில் கூடுதல் படிகளைச் செய்ய வேண்டியிருக்கலாம்</translation>
@@ -2152,6 +2153,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google விரிதாளை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
 <translation id="4827283332383516812">கார்டை நீக்குதல்</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> தேர்ந்தெடுக்கப்பட்டுள்ளன</translation>
 <translation id="4831993743164297314">இமேஜ் செட்டர் காகிதம்</translation>
 <translation id="483241715238664915">எச்சரிக்கைகளை இயக்கு</translation>
 <translation id="4832961164064927107">பார்பிக்யூ மற்றும் கிரில்லிங்</translation>
@@ -3652,6 +3654,7 @@
 <translation id="7511955381719512146">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் வைஃபை, அதன் <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ஐ நீங்கள் பார்க்கக் கோரலாம்.</translation>
 <translation id="7512685745044087310">இந்தக் கொள்கையை "சரி" என அமைக்கவும் கட்டாயமாக்கவும் முடியாது என்பதால் அது பரிந்துரைக்கப்படுவதாக மாற்றப்பட்டுள்ளது.</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">ஆஃப்-ரோட் வாகனங்கள்</translation>
 <translation id="7517414872996418597">என்வெலப் C10</translation>
 <translation id="7518003948725431193">வலை முகவரிக்கான வலைப்பக்கங்கள் ஏதும் காணப்படவில்லை: <ph name="URL" /></translation>

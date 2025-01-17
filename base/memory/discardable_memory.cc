@@ -31,6 +31,12 @@ BASE_FEATURE(kDiscardableMemoryBackingTrial,
              "DiscardableMemoryBackingTrial",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_ENUM_PARAM(DiscardableMemoryTrialGroup,
+                        kDiscardableMemoryBackingParam,
+                        &kDiscardableMemoryBackingTrial,
+                        "DiscardableMemoryBacking",
+                        DiscardableMemoryTrialGroup::kEmulatedSharedMemory,
+                        kDiscardableMemoryBackingParamOptions);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

@@ -118,7 +118,8 @@ bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
 
 bool TrackingProtectionSettings::IsFpProtectionEnabled() const {
   return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kFingerprintingProtectionUx);
+         base::FeatureList::IsEnabled(kFingerprintingProtectionUx) &&
+         is_incognito_;
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {

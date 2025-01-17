@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="382043424867370667">"Gün batımı" divar kağızı</translation>
 <translation id="3824259034819781947">Fayllar əlavə edin</translation>
-<translation id="383586991013681190">Transkripsiya dilini seçin və Ayarlarda endirin</translation>
 <translation id="3836587210832263413">Yalnız etibar etdiyiniz artırmaları aktiv edin</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="3845880861638660475">Dialoqu bağlamaq üçün <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> düyməsini basın.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> deaktivdir</translation>
 <translation id="4428840632568803690">Spiker <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
+<translation id="4430019312045809116">Həcm</translation>
 <translation id="4431821876790500265">Hesabata baxın</translation>
 <translation id="4443192710976771874">qırmızı</translation>
 <translation id="4447592701292766824">Bu kontent üçün xülasə yaratmaq mümkün deyil</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">parlaqlığı artırın</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
-<translation id="4516323842122524821">Səs</translation>
 <translation id="4521826082652183069">Subyektin alternativ adının uyğunluğu</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4536864596629708641">İP Konfiqurasiyası</translation>

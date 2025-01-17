@@ -338,6 +338,8 @@ void ThreadPoolImpl::Shutdown() {
 
   // Ensures that there are enough background worker to run BLOCK_SHUTDOWN
   // tasks.
+  // Shutdown must happen after service thread STOP as ThreadGroupProfiler
+  // destructor expects exclusive access to the instance during destruction.
   foreground_thread_group_->OnShutdownStarted();
   if (utility_thread_group_) {
     utility_thread_group_->OnShutdownStarted();

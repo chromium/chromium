@@ -252,6 +252,7 @@
 <translation id="1413809658975081374">Գաղտնիության սխալ</translation>
 <translation id="1414134146594747368">Նախադպրոցական կրթություն</translation>
 <translation id="1419305130220238697">«Կառավարել ներբեռնումները Chrome-ում» կոճակ․ ակտիվացրեք՝ Chrome-ում ձեր ներբեռնած ֆայլերը կառավարելու համար</translation>
+<translation id="1420345875188552368">Ավտոմատ վճարման ձեր պահված եղանակը կարող է օգտագործվել այս վճարման համար։ Էլեկտրոնային դրամապանակները Chrome-ում անջատելու համար բացեք ձեր <ph name="BEGIN_LINK1" />վճարման կարգավորումները<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />՝ զուգակցումը թույլատրելու համար</translation>
 <translation id="14222610277930434">Հաճախ եք այցելում</translation>
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
@@ -1289,6 +1290,7 @@
 <translation id="3273757719652748628">IBAN-ը պահել ամբողջությամբ բացված պատուհանում։</translation>
 <translation id="3281350579597955952">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ձեր կազմակերպությունը (<ph name="ENROLLMENT_DOMAIN" />) հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
+<translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3286372614333682499">ուղղաձիգ</translation>
 <translation id="3287510313208355388">Ներբեռնել, երբ կապը վերականգնվի</translation>
 <translation id="3288238092761586174"><ph name="URL" /> կայքը կարող է լրացուցիչ քայլեր կատարել՝ ձեր վճարումը հաստատելու համար</translation>
@@ -2162,6 +2164,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Արագ Google աղյուսակ ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
 <translation id="4827283332383516812">Ջնջել քարտը</translation>
+<translation id="4830443836091007686">Ընտրված է <ph name="ITEMS" /> տարր</translation>
 <translation id="4831993743164297314">Իմիջսեթերի թուղթ</translation>
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
@@ -3665,6 +3668,7 @@
 <translation id="7511955381719512146">Անլար կապը, որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />:</translation>
 <translation id="7512685745044087310">Այս կանոնը դարձվել է «առաջարկվող», քանի որ դրա համար չի կարող սահմանվել «True» արժեքը, և այն չի կարող լինել «պարտադիր»։</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Արտաճանապարհային ավտոմեքենաներ</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Վեբէջ չի գտնվել վեբ հասցեի համար՝ <ph name="URL" /></translation>

@@ -32,8 +32,9 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
   ArcSupportMessageHost(const ArcSupportMessageHost&) = delete;
   ArcSupportMessageHost& operator=(const ArcSupportMessageHost&) = delete;
 
-  static const char kHostName[];
-  static const char* const kHostOrigin[];
+  static constexpr char kHostName[] = "com.google.arc_support";
+  static constexpr const char* kHostOrigin[] = {
+      "chrome-extension://cnbgggchhmkkdmeppjobngjoejnihlei/"};
 
   // Called when the arc_support connects the "port". Returns the
   // instance of ArcSupportMessageHost.

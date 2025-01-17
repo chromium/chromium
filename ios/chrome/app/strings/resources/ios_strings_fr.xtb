@@ -270,6 +270,7 @@
 <translation id="2104436223719117661">Recherches populaires</translation>
 <translation id="21133533946938348">Épingler l'onglet</translation>
 <translation id="2119636449201577317">Ouvrir dans…</translation>
+<translation id="2120553909046681540">Votre organisation a désactivé la navigation privée.</translation>
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Rechercher le texte copié</translation>
 <translation id="2147127444698817042">Uniquement disponible sur iPhone</translation>
@@ -337,6 +338,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2384692388811649784">Masquer les onglets de navigation privée</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
 <translation id="2390457533592708044">Masquer "<ph name="MODULE_NAME" />"</translation>
+<translation id="2394659309569789395">Ouvrir le site quand même</translation>
 <translation id="2403129868389095715">Votre colis ne peut pas être livré</translation>
 <translation id="2410754283952462441">Sélectionner un compte</translation>
 <translation id="2424805048070062787">Continuer avec cet onglet</translation>
@@ -1892,6 +1894,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Découvrez ce que vous pouvez synchroniser.<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
+<translation id="94870150074703282">Supprimer le groupe ?</translation>
 <translation id="952704832371081537">Annuler</translation>
 <translation id="954667170699278022">Liste de lecture</translation>
 <translation id="959066944189734975">Vous suivez <ph name="CHANNEL_NAME" /></translation>

@@ -618,19 +618,23 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.com/"));
   web_app_info->title = u"app_name";
-  web_app_info->scope_extensions = web_app::ScopeExtensions(
-      {web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitea.com")),
-       web_app::ScopeExtensionInfo::CreateForScope(
-           GURL("https://app.siteb.com")),
-       web_app::ScopeExtensionInfo::CreateForScope(
-           GURL("https://sitec.com"),
-           /*has_origin_wildcard=*/true),
-       web_app::ScopeExtensionInfo::CreateForScope(
-           GURL("http://☃.net/")) /* Unicode */,
-       web_app::ScopeExtensionInfo::CreateForScope(
-           GURL("https://localhost:443")),
-       web_app::ScopeExtensionInfo::CreateForScope(
-           GURL("https://localhost:9999"))});
+  web_app_info->scope_extensions = web_app::ScopeExtensions({
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitea.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://app.siteb.com")),
+      web_app::ScopeExtensionInfo::CreateForScope(GURL("https://sitec.com"),
+                                                  /*has_origin_wildcard=*/true),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("http://☃.net/")) /* Unicode */,
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://localhost:443")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://localhost:9999")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://google.com/search?q=search+query")),
+      web_app::ScopeExtensionInfo::CreateForScope(
+          GURL("https://google.com/search?q=search+query#fragment")),
+  });
 
   web_app::WebAppInstallParams install_params;
   // Skip origin association validation for testing.
@@ -655,6 +659,7 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
   std::vector<std::string> expected_scope_extensions = {
       "xn--n3h.net" /* Unicode */,
       "app.siteb.com",
+      "google.com",
       "localhost",
       "sitea.com",
       "*.sitec.com",

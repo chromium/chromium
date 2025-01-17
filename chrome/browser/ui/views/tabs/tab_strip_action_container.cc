@@ -409,7 +409,12 @@ void TabStripActionContainer::OnTriggerDeclutterUIVisibility() {
 void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
   CHECK(glic_nudge_button_);
   glic_nudge_button_->SetText(base::UTF8ToUTF16(label));
-  ShowTabStripNudge(glic_nudge_button_);
+
+  if (!label.empty()) {
+    ShowTabStripNudge(glic_nudge_button_);
+  } else {
+    HideTabStripNudge(glic_nudge_button_);
+  }
 }
 
 DeclutterTriggerCTRBucket TabStripActionContainer::GetDeclutterTriggerBucket(

@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="382043424867370667">سن سیٹ وال پیپر</translation>
 <translation id="3824259034819781947">فائلز منسلک کریں</translation>
-<translation id="383586991013681190">ٹرانسکرپشن کی زبان منتخب کریں اور ترتیبات میں ڈاؤن لوڈ کریں</translation>
 <translation id="3836587210832263413">صرف ان ایکسٹینشنز کو آن کریں جن پر آپ بھروسہ کرتے ہیں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3845880861638660475">‏ڈائیلاگ کو بند کرنے کے لیے <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + ‏<ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> دبائیں۔</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> آف ہے</translation>
 <translation id="4428840632568803690">اسپیکر <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
+<translation id="4430019312045809116">والیوم</translation>
 <translation id="4431821876790500265">رپورٹ دیکھیں</translation>
 <translation id="4443192710976771874">سرخ</translation>
 <translation id="4447592701292766824">اس مواد کے لیے خلاصہ تخلیق نہیں کیا جا سکتا</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">چمک بڑھائیں</translation>
 <translation id="4511264077854731334">پورٹل</translation>
 <translation id="4513946894732546136">تاثرات</translation>
-<translation id="4516323842122524821">والیوم</translation>
 <translation id="4521826082652183069">موضوع کا متبادل نام مماثل کریں</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4536864596629708641">‏IP کنفیگریشن</translation>

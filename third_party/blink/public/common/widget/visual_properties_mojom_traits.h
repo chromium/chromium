@@ -42,7 +42,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
   }
 
   static const gfx::Size& new_size(const blink::VisualProperties& r) {
-    return r.new_size;
+    return r.new_size_device_px;
   }
 
   static const gfx::Size& visible_viewport_size(

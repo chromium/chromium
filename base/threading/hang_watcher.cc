@@ -192,6 +192,7 @@ BASE_FEATURE(kEnableHangWatcher,
 );
 
 // Browser process.
+// Note: Do not use the prepared macro as of no need for a local cache.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{
     &kEnableHangWatcher, "io_thread_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
@@ -203,6 +204,7 @@ constexpr base::FeatureParam<int> kThreadPoolLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // GPU process.
+// Note: Do not use the prepared macro as of no need for a local cache.
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
     &kEnableHangWatcher, "gpu_process_io_thread_log_level",
     static_cast<int>(LoggingLevel::kNone)};
@@ -214,6 +216,7 @@ constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
     static_cast<int>(LoggingLevel::kNone)};
 
 // Renderer process.
+// Note: Do not use the prepared macro as of no need for a local cache.
 constexpr base::FeatureParam<int> kRendererProcessIOThreadLogLevel{
     &kEnableHangWatcher, "renderer_process_io_thread_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
@@ -225,6 +228,7 @@ constexpr base::FeatureParam<int> kRendererProcessThreadPoolLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // Utility process.
+// Note: Do not use the prepared macro as of no need for a local cache.
 constexpr base::FeatureParam<int> kUtilityProcessIOThreadLogLevel{
     &kEnableHangWatcher, "utility_process_io_thread_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};

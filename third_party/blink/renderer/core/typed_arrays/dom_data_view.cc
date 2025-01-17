@@ -31,8 +31,7 @@ const WrapperTypeInfo DOMDataView::wrapper_type_info_body_{
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlBufferSourceType,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 const WrapperTypeInfo& DOMDataView::wrapper_type_info_ =

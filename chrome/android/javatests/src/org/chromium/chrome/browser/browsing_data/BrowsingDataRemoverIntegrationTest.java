@@ -15,11 +15,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeVerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -164,7 +162,6 @@ public class BrowsingDataRemoverIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
     public void testClearingTabs() throws TimeoutException {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         String testUrl = testServer.getURL(TEST_PATH);
@@ -172,34 +169,6 @@ public class BrowsingDataRemoverIntegrationTest {
         CallbackHelper callbackHelper = new CallbackHelper();
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
-        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
-                            .clearBrowsingData(
-                                    callbackHelper::notifyCalled,
-                                    new int[] {BrowsingDataType.TABS},
-                                    TimePeriod.ALL_TIME);
-                });
-
-        callbackHelper.waitForCallback(0);
-
-        Assert.assertEquals(0, mActivityTestRule.tabsCount(/* incognito= */ false));
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ true));
-
-        Assert.assertEquals(new GURL(testUrl), mActivityTestRule.getWebContents().getVisibleUrl());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
-    public void testClearingAllTabsOpensNtp() throws TimeoutException {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        String testUrl = testServer.getURL(TEST_PATH);
-
-        CallbackHelper callbackHelper = new CallbackHelper();
-        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
         mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ true);
 
@@ -214,6 +183,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
         callbackHelper.waitForCallback(0);
 
+        // Clearing all tabs should open a new NTP in the regular tab model.
         Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
         Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ true));
 

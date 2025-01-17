@@ -7,6 +7,9 @@
 
 #include "base/feature_list.h"
 
+// Feature flag to enable passkey PRF support in the credential provider.
+BASE_DECLARE_FEATURE(kCredentialProviderPasskeyPRF);
+
 // Feature flag to enable the performance improvements for the credential
 // provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPerformanceImprovements);

@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 <variants name="BrowserInitializationStatus">
   <variant name="" summary="any"/>
   <variant name=".IsBrowserStarting"
-      summary="browser initilization in progress"/>
+      summary="browser initialization in progress"/>
 </variants>
 
 <variants name="Gap">
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="IncognitoSuffix">
   <variant name=""
-      summary="the navigation opened in any profile, which includes incogniro
+      summary="the navigation opened in any profile, which includes incognito
                or guest mode"/>
   <variant name=".Incognito"
       summary="the navigation opened in an incognito mode"/>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="RTTBucketSuffix">
   <variant name="" summary="any"/>
-  <variant name=".ResponseFromCache" summary="resposnse from cache (M130)"/>
+  <variant name=".ResponseFromCache" summary="response from cache (M130)"/>
   <variant name=".RTT200To450" summary="RTT between 200 to 450ms"/>
   <variant name=".RTTAbove450" summary="RTT greater than 450ms"/>
   <variant name=".RTTBelow200" summary="RTT less than 200ms"/>
@@ -1184,9 +1184,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the time {Event}, for Google Search page loads. The recorded values
     are calculated based on the metrics recorded by the JavaScript, which is
-    done after the naivagation commit phase in Search. The metric is emitted
-    when the navigation is completed or the app is backgrounded on Android. This
-    is only recorded in the outermost main frame.
+    done after the navigation commit phase in Search. The metric is emitted when
+    the navigation is completed or the app is backgrounded on Android. This is
+    only recorded in the outermost main frame.
 
     Note that this event is randomly sampled based on the JavaScript in the
     page, recorded at the frequency of 1%.
@@ -1446,8 +1446,8 @@ chromium-metrics-reviews@google.com.
     Search page loads, {SafeSitesFilter}. The actual value is recorded via
     `startTime` in performance.mark()'s markOptions. If `startTime` is not set,
     this metric is not recorded. This is recorded by emitting
-    `perforamnce.mark()` in JavaScript, which is done after the naivagation
-    commit phase in Search. This is onlly recorded in the outermost main frame.
+    `performance.mark()` in JavaScript, which is done after the navigation
+    commit phase in Search. This is only recorded in the outermost main frame.
   </summary>
   <token key="MileStone">
     <variant name="AFTEnd" summary="AFT end event is sent"/>
@@ -1483,7 +1483,7 @@ chromium-metrics-reviews@google.com.
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Records whether the response headers from SERP are consitent with the ones
+    Records whether the response headers from SERP are consistent with the ones
     that the browser internally expects in `GWSPageLoadMetricsObserver`. If
     either of them is mismatched from the expected one, or the expected header
     does not actually exist, or there is an unexpected header in the actual SERP
@@ -1583,7 +1583,7 @@ chromium-metrics-reviews@google.com.
   </owner>
   <summary>
     Records the hit index in learned element locators ordered by frequency up to
-    &quot;max_lcpp_histogram_buckets&quot; when LCP timing predicor succeedded.
+    &quot;max_lcpp_histogram_buckets&quot; when LCP timing predictor succeeded.
     The metric is emitted only for navigations that LCP Critical Path Predictor
     provided non-empty hint data and only once when the user navigates away from
     the page.
@@ -1597,7 +1597,7 @@ chromium-metrics-reviews@google.com.
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
   </owner>
   <summary>
-    Records the result of LCP timing predicor. The metric is emitted only for
+    Records the result of LCP timing predictor. The metric is emitted only for
     navigations that LCP Critical Path Predictor provided non-empty hint data
     and only once when the user navigates away from the page.
   </summary>
@@ -1760,7 +1760,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout2"
+<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout3"
     enum="Boolean" expires_after="2025-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>sergiog@microsoft.com</owner>
@@ -1774,7 +1774,9 @@ chromium-metrics-reviews@google.com.
     as suspended, and thus the timeout timer will be stopped, when page is going
     to back and forward cache or is hidden. Timeout timer will be restarted when
     page is restored from back and forward cache or is back to shown from hidden
-    and first contentful paint was not yet reached.
+    and first contentful paint was not yet reached. In case that navigation is
+    started in background, the timeout timer will not be started until the page
+    is moved to foreground.
   </summary>
 </histogram>
 
@@ -2956,7 +2958,7 @@ chromium-metrics-reviews@google.com.
     Records the number of soft navigations detected during a page load. Recorded
     by the SoftNavigationPageLoadMetricsObserver each time the page enters the
     back/forward cache, and also when the page is destroyed, with the number of
-    soft navigatons observed since the last recording.
+    soft navigations observed since the last recording.
   </summary>
 </histogram>
 
@@ -3105,11 +3107,11 @@ chromium-metrics-reviews@google.com.
     Records heavy ad type for each ad frame, as determined by the first
     threshold hit (see FrameData::HeavyadStatus). This is recorded regardless of
     feature flag or other conditions that prevent the heavy ad intervention from
-    occuring. This includes 1 megabyte of random additive noise on the network
+    occurring. This includes 1 megabyte of random additive noise on the network
     threshold. As such, it is possible for this histogram to record different
     values for the same frame than PageLoad.HeavyAds.ComputedType2.
 
-    Recored for all ad frames with non-zero bytes. Recorded when the ad frame
+    Recorded for all ad frames with non-zero bytes. Recorded when the ad frame
     destroyed or when the page is destroyed.
 
     It is possible for multiple thresholds to be hit at the same time, with the
@@ -3124,7 +3126,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of heavy ad unloaded by the heavy ad intervention. Heavy ad
     type is determined by the first threshold hit. This is not recorded for ad
-    frames that are considered heavy but did not fufill other criteria for the
+    frames that are considered heavy but did not fulfill other criteria for the
     intervention. This includes the feature being enabled and being below the
     per-origin intervention cap.
 
@@ -3256,7 +3258,7 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    The one-based offset of the interction that is the INP
+    The one-based offset of the interaction that is the INP
     (https://web.dev/inp).
   </summary>
 </histogram>
@@ -3266,7 +3268,7 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    The time, relative to navigation start, of the interction that is the INP
+    The time, relative to navigation start, of the interaction that is the INP
     (https://web.dev/inp).
   </summary>
 </histogram>
@@ -3528,7 +3530,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of the soft navigation heuristics when the page's URL is
     changed through the history API. This is recorded at most once for each URL
-    change. If the URL change was not attributable to a user intertaction, that
+    change. If the URL change was not attributable to a user interaction, that
     is recorded immediately. If a soft navigation is detected, then it is
     recorded as soon as we detect it (when all conditions are satisfied).
     Otherwise, to be sure that all tasks associated with the user interaction
@@ -3986,7 +3988,7 @@ chromium-metrics-reviews@google.com.
   <owner>bfcache-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    Meastures the time duration between the page restore from BFcache and the
+    Measures the time duration between the page restore from BFcache and the
     {Count} requestAnimationFrame time.
 
     Do not modify this metric in any way without contacting

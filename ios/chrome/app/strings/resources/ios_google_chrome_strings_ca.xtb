@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome obre automàticament els enllaços d'incògnit de YouTube en el mode d'incògnit.</translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1143896152279775643">La contrasenya es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Obre una pestanya nova a Chrome</translation>
@@ -126,6 +127,7 @@ Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sess
 <translation id="4636900170638246267">Inicia la sessió en aquest lloc web i a Chrome.</translation>
 <translation id="4646014602299206846">Chrome detectarà els números de seguiment dels enviaments als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina de pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom.</translation>
 <translation id="4647910807533196601">Obre la meva darrera pestanya a Chrome.</translation>
+<translation id="4693084815234024320">Estàs en el mode d'incògnit de Chrome</translation>
 <translation id="4724297637870447613">Utilitza Chrome a tot arreu</translation>
 <translation id="4738647308035481133">Pàgina de Google Chrome</translation>
 <translation id="4742795653798179840">S'han suprimit les dades de Chrome</translation>

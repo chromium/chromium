@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Ugyldig pinkode.</translation>
 <translation id="382043424867370667">Baggrunden Solnedgang</translation>
 <translation id="3824259034819781947">Vedhæft filer</translation>
-<translation id="383586991013681190">Vælg transskriptionssprog, og download under Indstillinger</translation>
 <translation id="3836587210832263413">Aktivér kun udvidelser, du har tillid til</translation>
 <translation id="3838338534323494292">Ny adgangskode</translation>
 <translation id="3845880861638660475">Tryk på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> for at lukke dialogboksen.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
 <translation id="4428840632568803690">Taler <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
+<translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="4431821876790500265">Se rapport</translation>
 <translation id="4443192710976771874">rød</translation>
 <translation id="4447592701292766824">Der kan ikke oprettes en oversigt over dette indhold</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">lysstyrke op</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516323842122524821">Lydstyrke</translation>
 <translation id="4521826082652183069">Match af alternativt emnenavn</translation>
 <translation id="4522570452068850558">Detaljer</translation>
 <translation id="4536864596629708641">IP-konfiguration</translation>

@@ -236,7 +236,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
     @Override
     public void cleanupWebContents(WebContents webContents) {
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mWebContentsObserver = null;
         }
     }

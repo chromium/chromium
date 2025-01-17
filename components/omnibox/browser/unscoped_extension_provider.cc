@@ -7,24 +7,12 @@
 #include <string>
 
 #include "base/check_is_test.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/unscoped_extension_provider_delegate.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/page_transition_types.h"
-
-namespace {
-constexpr auto kReservedSectionMap =
-    base::MakeFixedFlatMap<int, omnibox::GroupSection>(
-        {{0, omnibox::SECTION_UNSCOPED_EXTENSION_1},
-         {1, omnibox::SECTION_UNSCOPED_EXTENSION_2}});
-}  // namespace
 
 UnscopedExtensionProvider::UnscopedExtensionProvider(
     AutocompleteProviderClient* client,
@@ -40,42 +28,51 @@ UnscopedExtensionProvider::~UnscopedExtensionProvider() = default;
 
 void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
+  // If the changes to the input are not minimal, clear the current list of
+  // matches and suggestion group information and increment the current request
+  // ID to discard any suggestions that may be incoming later with a stale
+  // request ID.
+  Stop(/*clear_cached_results=*/!minimal_changes,
+       /*due_to_user_inactivity=*/false);
+
+  // Extension suggestions are not allowed in keyword mode.
+  if (input.InKeywordMode()) {
+    return;
+  }
+
+  // Extension suggestions are not allowed for zero-suggest or empty inputs.
+  if (input.IsZeroSuggest() ||
+      input.type() == metrics::OmniboxInputType::EMPTY) {
+    return;
+  }
+
+  // Extension suggestions are always provided asynchronously.
+  if (input.omit_asynchronous_matches()) {
+    return;
+  }
+
+  // Do not forward the input to the extensions delegate if the changes to the
+  // input are minimal.
   if (minimal_changes) {
-    // Return early and maintain the current matches list.
     return;
   }
 
-  // Reset done and increment the input ID to discard any stale extension
-  // suggestions that may be incoming later if the current request id and
-  // incoming request ids do not match.
-  Stop(true, false);
-
-  // Do not forward the event to unscoped extensions delegate if:
-  // 1. there are no unscoped extensions
-  // 2. in zero-suggest mode
-  // 3. only synchronous matches are needed and the changes are not
-  // minimal. Minimal changes will not need an async call.
-  // 4. in keyword mode.
-  std::set<std::string> unscoped_extensions = GetUnscopedModeExtensionIds();
-  bool skip_unscoped_extensions_matches =
-      unscoped_extensions.empty() || input.IsZeroSuggest() ||
-      (input.omit_asynchronous_matches()) || input.InKeywordMode();
-
-  if (skip_unscoped_extensions_matches) {
-    ClearSuggestionGroupsMap();
+  // Do not forward the input to the extensions delegate if there are no
+  // unscoped extensions.
+  std::set<std::string> unscoped_extensions =
+      GetTemplateURLService()->GetUnscopedModeExtensionIds();
+  if (unscoped_extensions.empty()) {
     return;
   }
 
-  delegate_->IncrementRequestId();
+  // Forward the input to the extensions delegate.
   delegate_->Start(input, minimal_changes, unscoped_extensions);
 }
 
 void UnscopedExtensionProvider::Stop(bool clear_cached_results,
                                      bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-  if (due_to_user_inactivity) {
-    delegate_->IncrementRequestId();
-  }
+  delegate_->Stop(clear_cached_results);
 }
 
 TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
@@ -86,24 +83,7 @@ TemplateURLService* UnscopedExtensionProvider::GetTemplateURLService() const {
 }
 
 void UnscopedExtensionProvider::AddToSuggestionGroupsMap(
-    omnibox::GroupId groupId,
-    const std::string& header_text) {
-  // Should never be adding to suggestion groups map beyond max extension
-  // limit.
-  DCHECK_LT(next_available_section_index_, kReservedSectionMap.size());
-  omnibox::GroupConfig group;
-  group.set_section(kReservedSectionMap.at(next_available_section_index_++));
-  group.set_render_type(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL);
-  group.set_header_text(header_text);
-  suggestion_groups_map_[groupId].MergeFrom(group);
-}
-
-void UnscopedExtensionProvider::ClearSuggestionGroupsMap() {
-  suggestion_groups_map_.clear();
-  next_available_section_index_ = 0;
-}
-
-std::set<std::string> UnscopedExtensionProvider::GetUnscopedModeExtensionIds()
-    const {
-  return GetTemplateURLService()->GetUnscopedModeExtensionIds();
+    omnibox::GroupId group_id,
+    omnibox::GroupConfig group_config) {
+  suggestion_groups_map_[group_id].MergeFrom(group_config);
 }

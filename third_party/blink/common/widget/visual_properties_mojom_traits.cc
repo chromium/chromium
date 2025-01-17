@@ -18,7 +18,7 @@ bool StructTraits<
   if (!data.ReadScreenInfos(&out->screen_infos) ||
       !data.ReadMinSizeForAutoResize(&out->min_size_for_auto_resize) ||
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
-      !data.ReadNewSize(&out->new_size) ||
+      !data.ReadNewSize(&out->new_size_device_px) ||
       !data.ReadVisibleViewportSize(&out->visible_viewport_size) ||
       !data.ReadCompositorViewportPixelRect(
           &out->compositor_viewport_pixel_rect) ||

@@ -130,7 +130,7 @@ config("skia_config") {
     defines += [
       "GR_GL_FUNCTION_TYPE=__stdcall",
       "SK_GAMMA_SRGB",
-      "SK_GAMMA_CONTRAST=1.0",
+      "SK_GAMMA_CONTRAST=0.5",
     ]
   }
 

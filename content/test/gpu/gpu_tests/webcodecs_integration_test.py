@@ -322,7 +322,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
         '--enable-blink-features=SharedArrayBuffer',
-        cba.ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT,
+        '--enable-features=VideoFrameAsyncCopyTo',
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ] + cba.ENABLE_WEBGPU_FOR_TESTING
 

@@ -113,6 +113,8 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.getRootId()).thenReturn(ROOT_ID);
         when(mFilter.getRelatedTabListForRootId(ROOT_ID)).thenReturn(mTabsToClose);
+        when(mFilter.getRelatedTabCountForRootId(ROOT_ID)).thenReturn(mTabsToClose.size());
+        when(mFilter.getTabGroupTitle(ROOT_ID)).thenReturn(GROUP_TITLE);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.isClosing()).thenReturn(false);
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -328,7 +330,9 @@ public class TabUiUtilsUnitTest {
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
         mockIdentity(EMAIL2, GAIA_ID2);
-        createSyncGroup(COLLABORATION_ID1);
+        SavedTabGroup group = createSyncGroup(COLLABORATION_ID1);
+        group.title = null;
+        when(mFilter.getTabGroupTitle(ROOT_ID)).thenReturn(null);
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
@@ -337,7 +341,7 @@ public class TabUiUtilsUnitTest {
                 mActionConfirmationManager,
                 mModalDialogManager,
                 TAB_ID);
-        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
+        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq("1 tab"), any());
         verify(mDataSharingService, never()).removeMember(any(), any(), any());
     }
 

@@ -1284,6 +1284,7 @@
 <translation id="3273757719652748628">‏‫IBAN محفوظ کریں پورا کھلا ہوا ہے۔</translation>
 <translation id="3281350579597955952">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
+<translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3287510313208355388">آن لائن ہونے پر ڈاؤن لوڈ کریں</translation>
 <translation id="3288238092761586174">آپ کی ادائیگی کی تصدیق کے لیے <ph name="URL" /> کو اضافی اقدامات کرنے کی ضرورت پڑ سکتی ہے</translation>
@@ -2157,6 +2158,7 @@
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نئی Google Sheet تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
 <translation id="4827283332383516812">کارڈ حذف کریں</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> منتخب کیا گیا</translation>
 <translation id="4831993743164297314">تصویر کو سیٹ کرنے والا کاغذ</translation>
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4832961164064927107">‏BBQ اور گرِلنگ</translation>
@@ -3658,6 +3660,7 @@
 <translation id="7511955381719512146">‏آپ کا زیر استعمال Wi-Fi آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="7512685745044087310">‏اس پالیسی کو “True” اور لازمی پر سیٹ نہیں کیا جا سکتا، اس لیے اسے تجویز کردہ میں تبدیل کر دیا گیا۔</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">آف روڈ گاڑیاں</translation>
 <translation id="7517414872996418597">‏C10 لفافہ</translation>
 <translation id="7518003948725431193">ویب پتہ کیلئے کوئی نیا ویب صفحہ نہیں ملا تھا: <ph name="URL" /></translation>

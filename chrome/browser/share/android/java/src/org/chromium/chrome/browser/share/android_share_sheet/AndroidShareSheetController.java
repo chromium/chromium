@@ -269,6 +269,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                 size,
                 (Bitmap icon, GURL iconUrl) -> {
                     onFaviconRetrieved(context, icon, size, onUriReady);
+                    faviconHelper.destroy();
                 });
     }
 

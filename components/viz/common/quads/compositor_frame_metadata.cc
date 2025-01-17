@@ -31,6 +31,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       content_color_usage(other.content_color_usage),
       may_contain_video(other.may_contain_video),
       is_handling_interaction(other.is_handling_interaction),
+      is_handling_animation(other.is_handling_animation),
       root_background_color(other.root_background_color),
       latency_info(other.latency_info),
       referenced_surfaces(other.referenced_surfaces),

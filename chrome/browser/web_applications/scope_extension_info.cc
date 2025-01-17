@@ -50,7 +50,13 @@ ScopeExtensionInfo ScopeExtensionInfo::CreateForProto(
 ScopeExtensionInfo::ScopeExtensionInfo(url::Origin origin,
                                        GURL scope,
                                        bool has_origin_wildcard)
-    : origin(origin), scope(scope), has_origin_wildcard(has_origin_wildcard) {}
+    : origin(origin), has_origin_wildcard(has_origin_wildcard) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  this->scope = scope.ReplaceComponents(replacements);
+  CHECK(this->scope.is_valid());
+}
 
 void ScopeExtensionInfo::Reset() {
   origin = url::Origin();

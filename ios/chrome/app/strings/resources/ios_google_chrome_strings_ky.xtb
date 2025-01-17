@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1066101356081285416">Chrome сиз кирген сайттардагы көз салуу номерлерин таап, Жаңы өтмөк бетинде таңгак жаңыртууларын көрсөтөт. Бул функцияны камсыздоо жана соода функцияларын баары үчүн жакшыртуу максатында таңгакка көз салуу номери жана вебсайттын аталышы Chromium'га жөнөтүлөт. Муну каалаган убакта <ph name="BEGIN_LINK" />Таңгакка көз салуу параметрлеринен<ph name="END_LINK" /> жаңырта аласыз.</translation>
+<translation id="1076643793026027628">Chrome YouTube'дун жашыруун шилтемелерин автоматтык түрдө Жашыруун режимде ачат.</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
 <translation id="1143896152279775643">Cырсөзүңүз <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат.</translation>
 <translation id="1146503048444965320">Chrome'до жаңы өтмөктү ачуу</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">Бул сайтка жана Chrome'го кириңиз.</translation>
 <translation id="4646014602299206846">Chrome сиз кирген сайттардагы таңгактарга көз салуу номерлерин таап, жаңы өтмөк бетинде таңгак жаңыртууларын көрсөтөт. Бул функцияны камсыздап, Соода кылууну жакшыртуу үчүн маалыматыңыз Google менен бөлүшүлөт.</translation>
 <translation id="4647910807533196601">Chrome'до акыркы өтмөгүмдү ачуу.</translation>
+<translation id="4693084815234024320">Chrome'дун Жашыруун режиминдесиз</translation>
 <translation id="4724297637870447613">Бүт жерде Chrome колдонуңуз</translation>
 <translation id="4738647308035481133">Google Chrome барагы</translation>
 <translation id="4742795653798179840">Chrome'догу маалымат өчүрүлдү</translation>

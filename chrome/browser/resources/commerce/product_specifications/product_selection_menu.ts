@@ -135,7 +135,10 @@ export class ProductSelectionMenuElement extends CrLitElement {
   }
 
   close() {
-    this.$.menu.get().close();
+    const menu = this.$.menu.getIfExists();
+    if (menu) {
+      menu.close();
+    }
   }
 
   protected expandedChanged_(

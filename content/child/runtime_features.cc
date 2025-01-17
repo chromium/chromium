@@ -403,7 +403,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ExperimentalMachineLearningNeuralNetwork",
            raw_ref(webnn::mojom::features::
                        kExperimentalWebMachineLearningNeuralNetwork),
-           kSetOnlyIfOverridden}};
+           kSetOnlyIfOverridden},
+          {"WebAuthenticationNewBfCacheHandlingBlink",
+           raw_ref(device::kWebAuthnNewBfCacheHandling)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {

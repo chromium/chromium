@@ -20,20 +20,34 @@
 #include "base/values.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/platform_policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
-#include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace updater {
+
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+constexpr char kGlobalPolicyKey[] = "";
+#elif !BUILDFLAG(IS_MAC)
+constexpr char kGlobalPolicyKey[] = "global";
+#endif
+
+}  // namespace
 
 using PolicyManagers = std::vector<scoped_refptr<PolicyManagerInterface>>;
 
@@ -770,62 +784,6 @@ TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
                 ->AreUpdatesSuppressedNow(now));
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(PolicyServiceTest, CreateManagers) {
-  base::test::TaskEnvironment environment;
-  registry_util::RegistryOverrideManager registry_overrides;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_overrides.OverrideRegistry(HKEY_LOCAL_MACHINE));
-
-  auto omaha_settings =
-      std::make_unique<::wireless_android_enterprise_devicemanagement::
-                           OmahaSettingsClientProto>();
-  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagers managers(CreateExternalConstants());
-  managers.ResetDeviceManagementManager(dm_policy);
-  EXPECT_EQ(managers.managers().size(), size_t{4});
-  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
-  EXPECT_EQ(managers.managers()[1]->source(), "Default");
-  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers.managers()[3]->source(), "Group Policy");
-
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        Wow6432(KEY_WRITE));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  managers.ResetDeviceManagementManager(dm_policy);
-  EXPECT_EQ(managers.managers().size(), size_t{4});
-  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
-  EXPECT_EQ(managers.managers()[1]->source(), "Default");
-  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers.managers()[3]->source(), "Group Policy");
-}
-#elif BUILDFLAG(IS_MAC)
-TEST_F(PolicyServiceTest, CreateManagers) {
-  auto omaha_settings =
-      std::make_unique<::wireless_android_enterprise_devicemanagement::
-                           OmahaSettingsClientProto>();
-  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagers managers(CreateExternalConstants());
-  managers.ResetDeviceManagementManager(dm_policy);
-  EXPECT_EQ(managers.managers().size(), size_t{4});
-  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
-}
-#else
-TEST_F(PolicyServiceTest, CreateManagers) {
-  auto omaha_settings =
-      std::make_unique<::wireless_android_enterprise_devicemanagement::
-                           OmahaSettingsClientProto>();
-  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
-  PolicyService::PolicyManagers managers(CreateExternalConstants());
-  managers.ResetDeviceManagementManager(dm_policy);
-  EXPECT_EQ(managers.managers().size(), size_t{3});
-  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
-  EXPECT_EQ(managers.managers()[1]->source(), "Default");
-  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
-}
-#endif
-
 TEST_F(PolicyServiceTest, PolicyServiceProxyConfiguration_Get) {
   // Test proxy mode "auto_detect".
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
@@ -878,5 +836,213 @@ TEST_F(PolicyServiceTest, PolicyServiceProxyConfiguration_Get) {
       {std::move(manager), GetDefaultValuesPolicyManager()});
   ASSERT_FALSE(PolicyServiceProxyConfiguration::Get(policy_service));
 }
+
+class PolicyManagersTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_MAC)
+    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP();
+    }
+#endif
+
+    ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile());
+
+#if BUILDFLAG(IS_WIN)
+    ASSERT_NO_FATAL_FAILURE(
+        registry_overrides_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP();
+    }
+#endif
+
+    ASSERT_NO_FATAL_FAILURE(DeleteOverridesFile());
+  }
+
+  void DeleteOverridesFile() {
+    ASSERT_TRUE(
+        test::DeleteFileAndEmptyParentDirectories(overrides_file_path_));
+  }
+
+ private:
+  const std::optional<base::FilePath> overrides_file_path_ =
+      GetOverrideFilePath(GetUpdaterScopeForTesting());
+
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager registry_overrides_;
+  base::test::TaskEnvironment environment_;
+#endif
+};
+
+TEST_F(PolicyManagersTest, NullExternalConstants) {
+  PolicyService::PolicyManagers managers({});
+  ASSERT_EQ(managers.managers().size(), size_t{1});
+  EXPECT_EQ(managers.managers()[0]->source(), "Default");
+}
+
+TEST_F(PolicyManagersTest, MachineUnmanaged) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(false).Overwrite());
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+
+  ASSERT_EQ(managers.managers().size(),
+            size_t{2 + kPlatformPolicyManagerDefined});
+  EXPECT_EQ(managers.managers()[0]->source(), "Default");
+  EXPECT_EQ(managers.managers()[1]->source(), "DictValuePolicy");
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[2]->source(), kSourcePlatformPolicyManager);
+  }
+}
+
+TEST_F(PolicyManagersTest, ValidDeviceManagementManager) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(false).Overwrite());
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+
+  ASSERT_EQ(managers.managers().size(),
+            size_t{3 + kPlatformPolicyManagerDefined});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  EXPECT_EQ(managers.managers()[1]->source(), "Default");
+  EXPECT_EQ(managers.managers()[2]->source(), "DictValuePolicy");
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[3]->source(), kSourcePlatformPolicyManager);
+  }
+}
+
+// TODO(crbug.com/389965546): enable these tests for mac.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+
+  ASSERT_TRUE(ExternalConstantsBuilder()
+                  .SetMachineManaged(true)
+                  .SetGroupPolicies(dict_policies)
+                  .Overwrite());
+
+  base::Value::Dict policies;
+  policies.Set(kGlobalPolicyKey,
+               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
+                                       kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+
+  ASSERT_EQ(managers.managers().size(),
+            size_t{2 + kPlatformPolicyManagerDefined});
+  EXPECT_EQ(managers.managers()[0]->source(), "DictValuePolicy");
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[1]->source(), kSourcePlatformPolicyManager);
+  }
+  EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
+            "Default");
+}
+
+TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
+
+  base::Value::Dict policies;
+  policies.Set(kGlobalPolicyKey,
+               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
+                                       kPolicyDisabled));
+  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+  ASSERT_EQ(managers.managers().size(),
+            size_t{3 + kPlatformPolicyManagerDefined});
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[0]->source(),
+              kCloudPolicyOverridesPlatformPolicyDefaultValue
+                  ? "Device Management"
+                  : kSourcePlatformPolicyManager);
+    EXPECT_EQ(managers.managers()[1]->source(),
+              kCloudPolicyOverridesPlatformPolicyDefaultValue
+                  ? kSourcePlatformPolicyManager
+                  : "Device Management");
+  } else {
+    EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  }
+
+  EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
+            "Default");
+  EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
+            "DictValuePolicy");
+}
+
+TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
+
+  base::Value::Dict policies;
+  policies.Set(kGlobalPolicyKey,
+               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
+                                       kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+
+  ASSERT_EQ(managers.managers().size(),
+            size_t{3 + kPlatformPolicyManagerDefined});
+  EXPECT_EQ(managers.managers()[0]->source(), "Device Management");
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[1]->source(), kSourcePlatformPolicyManager);
+  }
+  EXPECT_EQ(managers.managers()[1 + kPlatformPolicyManagerDefined]->source(),
+            "Default");
+  EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
+            "DictValuePolicy");
+}
+
+TEST_F(PolicyManagersTest,
+       ValidDictDeviceManagementPlatformPolicyCloudOverride) {
+  base::Value::Dict dict_policies;
+  dict_policies.Set("a", 1);
+
+  ASSERT_TRUE(ExternalConstantsBuilder()
+                  .SetMachineManaged(true)
+                  .SetGroupPolicies(dict_policies)
+                  .Overwrite());
+
+  base::Value::Dict policies;
+  policies.Set(kGlobalPolicyKey,
+               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
+                                       kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(test::SetPlatformPolicies(policies));
+
+  auto omaha_settings =
+      std::make_unique<::wireless_android_enterprise_devicemanagement::
+                           OmahaSettingsClientProto>();
+  auto dm_policy = base::MakeRefCounted<DMPolicyManager>(*omaha_settings, true);
+  PolicyService::PolicyManagers managers(CreateExternalConstants());
+  managers.ResetDeviceManagementManager(dm_policy);
+  ASSERT_EQ(managers.managers().size(),
+            size_t{3 + kPlatformPolicyManagerDefined});
+  EXPECT_EQ(managers.managers()[0]->source(), "DictValuePolicy");
+  EXPECT_EQ(managers.managers()[1]->source(), "Device Management");
+  if (kPlatformPolicyManagerDefined) {
+    EXPECT_EQ(managers.managers()[2]->source(), kSourcePlatformPolicyManager);
+  }
+
+  EXPECT_EQ(managers.managers()[2 + kPlatformPolicyManagerDefined]->source(),
+            "Default");
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace updater

@@ -1,6 +1,6 @@
 ## Permissions Policy Guide (Previously Feature Policy)
 Permissions policy is the new name for feature policy with a new HTTP header which uses
-[structured header](https://www.rfc-editor.org/rfc/rfc9651) syntax.
+[Structured Field](https://www.rfc-editor.org/rfc/rfc9651) syntax.
 
 ### How to add a new feature to permissions policy
 
@@ -103,10 +103,11 @@ an HTTP header, and will not inherit to subframes.
 
 Example HTTP header: `Document-Policy: force-load-at-top=?0, lossy-images-max-bpp=1.0`
 
-- `force-load-at-top` is set to boolean value false (`?0` in [structured header syntax](https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html)), i.e. the
- feature is disallowed in current document;
-- `lossy-images-max-bpp` is set to 1.0, i.e. lossy image format (e.g. jpeg) images with
-byte per pixel rate higher than 1.0 will be blocked.
+- `force-load-at-top` is set to boolean value false (`?0` in [Structured Field
+syntax](https://www.rfc-editor.org/rfc/rfc9651#section-3.3.6)), i.e. the feature
+is disallowed in current document;
+- `lossy-images-max-bpp` is set to 1.0, i.e. lossy image format (e.g. jpeg)
+images with byte per pixel rate higher than 1.0 will be blocked.
 
 
 #### Adding a new feature to document policy

@@ -181,7 +181,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     /** Clear the status map and references to other objects. */
     @Override
     public void destroy() {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mIsDestroyed = true;
     }
 
@@ -294,7 +294,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
     /** Clear the reader mode state for this manager. */
     private void removeTabState() {
-        if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
         mDistillationStatus = DistillationStatus.POSSIBLE;
         mIsDismissed = false;
         mMessageRequestedForNavigation = false;

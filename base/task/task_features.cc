@@ -24,48 +24,49 @@ namespace base {
 
 BASE_FEATURE(kUseUtilityThreadGroup,
              "UseUtilityThreadGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
-                                                     "leeway", kDefaultLeeway};
-const base::FeatureParam<TimeDelta> kMaxPreciseDelay{
-    &kAddTaskLeewayFeature, "max_precise_delay", kDefaultMaxPreciseDelay};
+// Note: Do not use the prepared macro as of no need for a local cache.
+constinit const FeatureParam<TimeDelta> kTaskLeewayParam{
+    &kAddTaskLeewayFeature, "leeway", kDefaultLeeway};
+BASE_FEATURE_PARAM(TimeDelta,
+                   kMaxPreciseDelay,
+                   &kAddTaskLeewayFeature,
+                   "max_precise_delay",
+                   kDefaultMaxPreciseDelay);
 
-BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTimerSlackMac,
-             "TimerSlackMac",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTimerSlackMac, "TimerSlackMac", FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUIPumpImprovementsWin,
              "UIPumpImprovementsWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPumpFastToSleepAndroid,
              "PumpFastToSleepAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kThreadPoolCap2,
-             "ThreadPoolCap2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kThreadPoolCap2, "ThreadPoolCap2", FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
+// Note: Do not use the prepared macro as of no need for a local cache.
+constinit const FeatureParam<int> kThreadPoolCapRestrictedCount{
     &kThreadPoolCap2, "restricted_count", 3};
 
 }  // namespace base

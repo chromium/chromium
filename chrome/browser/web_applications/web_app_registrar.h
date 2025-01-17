@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -144,6 +145,24 @@ class WebAppRegistrar {
       const webapps::AppId& app_id,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
+  // Returns true if an app exists in the registry with `app_id` and matches the
+  // filter provided.
+  //
+  // Example usage:
+  //     AppMatches(app_id, WebAppFilter::OpensInBrowserTab())
+  bool AppMatches(const webapps::AppId&,
+                  const WebAppFilter& capabilities) const;
+
+  // Returns the AppId of an app that best matches the specified filter.
+  // 'Best' is determined by the longest scope that is a prefix of `url`.
+  //
+  // Example usage:
+  //    std::optional<webapps::AppId> app_ip = FindBestAppWithUrlInScope(
+  //        url, WebAppFilter::OpensInBrowserTab());
+  std::optional<webapps::AppId> FindBestAppWithUrlInScope(
+      const GURL& url,
+      const WebAppFilter& filter) const;
+
   // This struct can be used `FindBestAppWithUrlInScope` and possible future
   // methods to filter apps.
   struct AppFilterOptions {
@@ -155,6 +174,7 @@ class WebAppRegistrar {
     bool include_extended_scope = false;
   };
 
+  // DEPRECATED: Use `FindBestAppWithUrlInScope(GURL, WebAppFilter)` instead.
   // Returns the app id of an app in the registry in one of the given
   // `allowed_states` and the longest scope that is a prefix of `url`. Will
   // CHECK-fail if `allowed_states` is empty.
@@ -163,24 +183,26 @@ class WebAppRegistrar {
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
       std::initializer_list<proto::InstallState> allowed_states) const;
+  // DEPRECATED: Use `FindBestAppWithUrlInScope(GURL, WebAppFilter)` instead.
   // Same as above but with more filtering options.
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
       std::initializer_list<proto::InstallState> allowed_states,
       AppFilterOptions options) const;
 
-  // Finds all apps that have the given `url` in scope and are in one of the
-  // given `allowed_states`. Will CHECK-fail if `allowed_states` is empty.
-  std::vector<webapps::AppId> FindAllAppsWithUrlInScope(
-      const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states) const;
-
+  // DEPRECATED: Use `FindAllAppsNestedInUrl(GURL, WebAppFilter)` instead.
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and are in one of the given `allowed_states`. Will
   // CHECK-fail if `allowed_states` is empty.
   std::vector<webapps::AppId> FindAllAppsNestedInUrl(
       const GURL& outer_scope,
       std::initializer_list<proto::InstallState> allowed_states) const;
+
+  // Finds all apps that have scopes that are nested within the given
+  // `outer_scope`, and match the specified filter.
+  std::vector<webapps::AppId> FindAllAppsNestedInUrl(
+      const GURL& outer_scope,
+      const WebAppFilter& filter) const;
 
   // Returns true if there exists at least one app installed under `scope` that
   // is in the given `allowed_states`.

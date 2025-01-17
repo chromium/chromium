@@ -5,10 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_IPH_FOR_NEW_CHROME_USER_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
+
+namespace bookmarks {
+class BookmarkModel;
+class BookmarkNode;
+}  // namespace bookmarks
 
 class Browser;
 @class CommandDispatcher;
@@ -22,7 +30,8 @@ class Tracker;
 
 // A browser agent that serves a central manager for all IPHs features that
 // should be triggered by tab and/or tab list changes.
-class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
+class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
+                                public BrowserUserData<TabBasedIPHBrowserAgent>,
                                 public BrowserObserver,
                                 public UrlLoadingObserver,
                                 public web::WebStateObserver {
@@ -62,6 +71,13 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
 
 #pragma mark - Observer headers
 
+  // bookmarks::BaseBookmarkModelObserver
+  void BookmarkModelChanged() override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
+
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
@@ -88,6 +104,11 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
 
   explicit TabBasedIPHBrowserAgent(Browser* browser);
 
+  // Stops observing the bookmark model for changes. This is typically called
+  // when `TabBasedIPHBrowserAgent` is being destroyed or when it should no
+  // longer react to bookmark modifications.
+  void StopObservingBookmarkModel();
+
   // For all IPH features managed by this class, resets their tracker variables
   // to `false`, and remove currently displaying IPH views from the view.
   void ResetFeatureStatesAndRemoveIPHViews();
@@ -101,7 +122,12 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
       active_web_state_observer_;
 
 #pragma mark - Observers variables
-
+  // `BookmarkModel` instance providing access to bookmarks. May be `nullptr`.
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+  // Automatically remove this observer from its host when destroyed.
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BaseBookmarkModelObserver>
+      bookmark_model_observation_{this};
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.

@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_subscribe_subscription_id
-  KeyError: 'subscription'
-Harness: the test ran to completion.
-

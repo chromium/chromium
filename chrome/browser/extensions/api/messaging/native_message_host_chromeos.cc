@@ -26,26 +26,25 @@ std::unique_ptr<NativeMessageHost> CreateIt2MeHost(
   return remoting::CreateIt2MeNativeMessagingHostForChromeOS();
 }
 
-}  // namespace
-
-const NativeMessageBuiltInHost kBuiltInHosts[] = {
+const NativeMessageBuiltInHost kBuiltInHostsArray[] = {
     {NativeMessageEchoHost::kHostName, NativeMessageEchoHost::kOrigins,
-     NativeMessageEchoHost::kOriginCount, &NativeMessageEchoHost::Create},
+     &NativeMessageEchoHost::Create},
     {remoting::kIt2MeNativeMessageHostName, remoting::kIt2MeOrigins,
-     remoting::kIt2MeOriginsSize, &CreateIt2MeHost},
+     &CreateIt2MeHost},
     {arc::ArcSupportMessageHost::kHostName,
-     arc::ArcSupportMessageHost::kHostOrigin, 1,
+     arc::ArcSupportMessageHost::kHostOrigin,
      &arc::ArcSupportMessageHost::Create},
     {drive::kDriveFsNativeMessageHostName,
-     drive::kDriveFsNativeMessageHostOrigins.data(),
-     drive::kDriveFsNativeMessageHostOrigins.size(),
+     {drive::kDriveFsNativeMessageHostOrigins},
      &drive::CreateDriveFsNativeMessageHostAsh},
     {ash::guest_os::VmSKForwardingNativeMessageHost::kHostName,
-     ash::guest_os::VmSKForwardingNativeMessageHost::kOrigins,
-     ash::guest_os::VmSKForwardingNativeMessageHost::kOriginCount,
+     {ash::guest_os::VmSKForwardingNativeMessageHost::kOrigins},
      &ash::guest_os::VmSKForwardingNativeMessageHost::CreateFromExtension},
 };
 
-const size_t kBuiltInHostsCount = std::size(kBuiltInHosts);
+}  // namespace
+
+constexpr base::span<const NativeMessageBuiltInHost> kBuiltInHosts =
+    kBuiltInHostsArray;
 
 }  // namespace extensions

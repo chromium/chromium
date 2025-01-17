@@ -179,6 +179,7 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -3998,11 +3999,10 @@ bool RenderFrameHostImpl::CreateRenderFrame(
     if (previous_rfh) {
       // When migrating a frame to a new/different render process, use the frame
       // size we already have from the existing RenderFrameHost.
-      if (params->widget_params->visual_properties.new_size.IsZero()) {
-        float dsf = rwh->GetScreenInfo().device_scale_factor;
-        params->widget_params->visual_properties.new_size =
-            gfx::ScaleToRoundedSize(
-                previous_rfh->GetFrameSize().value_or(gfx::Size()), 1.f / dsf);
+      if (params->widget_params->visual_properties.new_size_device_px
+              .IsZero()) {
+        params->widget_params->visual_properties.new_size_device_px =
+            previous_rfh->GetFrameSize().value_or(gfx::Size());
       }
 
       params->widget_params->reuse_compositor =
@@ -17935,12 +17935,19 @@ void RenderFrameHostImpl::AddDeferredSharedStorageHeaderCallback(
 
 bool RenderFrameHostImpl::IsClipboardOwner(
     ui::ClipboardSequenceNumberToken seqno) const {
-  return IsLastClipboardWrite(*this, seqno);
-}
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  if (clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste) != seqno) {
+    return false;
+  }
 
-void RenderFrameHostImpl::MarkClipboardOwner(
-    ui::ClipboardSequenceNumberToken seqno) {
-  SetLastClipboardWrite(*this, seqno);
+  std::string pickled_rfh_token;
+  clipboard->ReadData(SourceRFHTokenType(), /*data_dst=*/nullptr,
+                      &pickled_rfh_token);
+
+  auto rfh_token = GlobalRenderFrameHostToken::FromPickle(
+      base::Pickle::WithData(base::as_byte_span(pickled_rfh_token)));
+
+  return rfh_token && RenderFrameHost::FromFrameToken(*rfh_token) == this;
 }
 
 bool RenderFrameHostImpl::HasPolicyContainerHost() const {

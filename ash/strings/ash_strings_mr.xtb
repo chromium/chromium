@@ -1264,6 +1264,7 @@
 <translation id="5245201184978705914">ट्रान्स्क्रिप्ट जनरेट करू शकत नाही</translation>
 <translation id="5251174953851719648">आशय रिफ्रेश करा</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले, बॅटरी<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5256939106029293271">तुमच्या माइकची चाचणी करा</translation>
 <translation id="5258528442992323769">कोणतीही सेव्ह केलेली डेस्‍क नाहीत</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
 <translation id="5265391159779542051">परिणाम लोड झाले आहेत</translation>
@@ -1421,6 +1422,7 @@
 <translation id="5745612484876805746">रात्रीचा प्रकाश सूर्यास्ताच्या वेळी आपोआप सुरू होतो</translation>
 <translation id="5750765938512549687">ब्लूटूथ बंद आहे</translation>
 <translation id="5758114525425072423">फोकस सुरू करा. टायमर <ph name="FOCUS_DURATION" /> वर सेट केला.</translation>
+<translation id="5759522586053040964">इतर वापरकर्त्यांना तुमचा आवाज कसा ऐकू येईल ते ऐका. थांबवण्यासाठी, चाचणी आयकनवर क्लिक करा किंवा व्हिडिओ कॉल पॅनल बंद करा.</translation>
 <translation id="5760866832697883462">तुमचे <ph name="NAME" /> कनेक्ट करा</translation>
 <translation id="5762420912707163638">मार्कर टॉगल करा. <ph name="STATE_TEXT" /> स्क्रीनवर ड्रॉ करण्यासाठी ट्रॅकपॅड, टचस्क्रीन किंवा स्टायलस वापरा.</translation>
 <translation id="576341972084747908">धोकादायक <ph name="FILENAME" /> डाउनलोड करा</translation>
@@ -2234,7 +2236,6 @@
 <translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="851660987304951246">आशयाचा झटपट सारांश देण्यासाठी किंवा प्रश्न विचारण्यासाठी मला वाचण्यात मदत करा वापरा</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{माइकचे इनपुट <ph name="APP_NAME" /> द्वारे नियंत्रित केले जाते}other{माइकचे इनपुट # ॲप्सद्वारे नियंत्रित केले जाते}}</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
 <translation id="8541078764854166027">कॅमेरा फ्रेमिंग</translation>
 <translation id="8542053257095774575">कोणतीही सेव्ह केलेली डेस्‍क किंवा टेंप्लेट नाहीत</translation>

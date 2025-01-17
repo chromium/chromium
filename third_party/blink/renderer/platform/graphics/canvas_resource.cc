@@ -194,11 +194,10 @@ bool CanvasResource::PrepareTransferableResource(
     TRACE_EVENT0("blink",
                  "CanvasResource::PrepareUnacceleratedTransferableResource");
 
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        client_shared_image, GetSyncToken(), client_shared_image->size(),
-        client_shared_image->format(),
-        viz::TransferableResource::ResourceSource::kCanvas);
-    out_resource->color_space = client_shared_image->color_space();
+    *out_resource = viz::TransferableResource::Make(
+        client_shared_image, viz::TransferableResource::ResourceSource::kCanvas,
+        GetSyncToken());
+
     return true;
   }
 
@@ -210,15 +209,12 @@ bool CanvasResource::PrepareTransferableResource(
   if (!ContextProviderWrapper())
     return false;
 
-  *out_resource = viz::TransferableResource::MakeGpu(
-      client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
+  *out_resource = viz::TransferableResource::Make(
+      client_shared_image, GetTransferableResourceSource(),
       GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
-      client_shared_image->size(), client_shared_image->format(),
-      IsOverlayCandidate(), GetTransferableResourceSource());
+      /*override=*/{.is_overlay_candidate = IsOverlayCandidate()});
 
-  out_resource->color_space = client_shared_image->color_space();
   out_resource->hdr_metadata = GetHDRMetadata();
-  out_resource->origin = client_shared_image->surface_origin();
 
   // When a resource is returned by the display compositor, a sync token is
   // provided to indicate when the compositor's commands using the resource are

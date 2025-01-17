@@ -327,6 +327,7 @@ class AutofillClient {
 
   // Gets the sync service associated with the client.
   virtual syncer::SyncService* GetSyncService() = 0;
+  const syncer::SyncService* GetSyncService() const;
 
   // Gets the IdentityManager associated with the client.
   virtual signin::IdentityManager* GetIdentityManager() = 0;

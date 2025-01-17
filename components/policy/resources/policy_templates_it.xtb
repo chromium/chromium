@@ -1981,6 +1981,7 @@ L'utente può scegliere un'immagine di Google Foto come sfondo se questo criteri
 
       Nota: se vengono isolati troppi siti su Android, potrebbero verificarsi problemi di prestazioni, in particolare sui dispositivi con poca memoria. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per applicare il criterio a piattaforme non Androd, utilizza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2407758458436268630">Consenti al modello di oscuramento smart di estendere il tempo di oscuramento dello schermo</translation>
+<translation id="2410163749464044777">Impostazioni spazio di archiviazione dei dati utente locale</translation>
 <translation id="2411629345938804022">Se il criterio è impostato su 3, i siti web possono chiedere l'accesso ai dispositivi Bluetooth nelle vicinanze. Se il criterio è impostato su 2, l'accesso ai dispositivi Bluetooth nelle vicinanze viene negato.
 
       Se il criterio non viene configurato, i siti possono chiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
@@ -2496,6 +2497,9 @@ Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801378553855965587">Disattiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Consenti la visualizzazione di popup in tutti i siti</translation>
 <translation id="2806804577787377637">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
+<translation id="2812417768214606683">Questa policy consente di specificare un elenco di dispositivi di archiviazione USB esenti dalle policy <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> e <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
+
+Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare il modello di dispositivo USB specifico.</translation>
 <translation id="2815701930753942156">Questo criterio specifica un elenco di intervalli settimanali durante i quali il dispositivo <ph name="PRODUCT_OS_NAME" /> non può essere utilizzato. Eventuali sessioni in corso verranno chiuse e l'accesso verrà bloccato.
 
 Non sono supportati intervalli sovrapposti.
@@ -8572,6 +8576,7 @@ Questo criterio non influisce sui gestori delle password di terze parti che util
 API di accessibilità.</translation>
 <translation id="7114169791477667553">Disattiva il provider di ricerca predefinito</translation>
 <translation id="7115684775550072082">Mantieni solo gli spazi vuoti per i tipi MIME di testo e XML</translation>
+<translation id="7119538491527883595">Spazio di archiviazione dei dati utente locale</translation>
 <translation id="7121046543122812054">Questo criterio è deprecato. Potresti usare il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
       Consente all'utente di accedere a <ph name="PRODUCT_NAME" />.
@@ -8882,6 +8887,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="7339315111520512972">Forza l'esecuzione del codice di networking nel processo di browser</translation>
 <translation id="7340034977315324840">Indicazione tempi di attività del dispositivo</translation>
 <translation id="734095828044419464">Disattiva il provisioning dei certificati client</translation>
+<translation id="7341773449551289679">Lista consentita per l'unità di archiviazione esterna</translation>
 <translation id="7343004974628511824">Esegui controlli dell'intercettazione DNS</translation>
 <translation id="7343497214039883642">File di configurazione delle stampanti aziendali per i dispositivi</translation>
 <translation id="7357148531287978404">Disattiva l'input audio</translation>

@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="382043424867370667">နေဝင်သည့် နောက်ခံ</translation>
 <translation id="3824259034819781947">ဖိုင်များပူးတွဲရန်</translation>
-<translation id="383586991013681190">စာသားမှတ်တမ်း၏ ဘာသာစကားကိုရွေးပြီး ဆက်တင်များတွင် ဒေါင်းလုဒ်လုပ်နိုင်သည်</translation>
 <translation id="3836587210832263413">သင်ယုံကြည်သော နောက်ဆက်တွဲများကိုသာ ဖွင့်ပါ</translation>
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
 <translation id="3845880861638660475">ဒိုင်ယာလော့ပိတ်ရန် <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> နှိပ်ပါ။</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ပိတ်ထားသည်</translation>
 <translation id="4428840632568803690">ပြောသူ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos လက်မှတ်သည် မကြာမီ သက်တမ်းကုန်ပါတော့မည်</translation>
+<translation id="4430019312045809116">ပမာဏ</translation>
 <translation id="4431821876790500265">အစီရင်ခံစာကို ကြည့်ရန်</translation>
 <translation id="4443192710976771874">အနီရောင်</translation>
 <translation id="4447592701292766824">ဤအကြောင်းအရာအတွက် အကျဉ်းချုပ် ပြုလုပ်၍မရပါ</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">တောက်ပမှု တိုးရန်</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
 <translation id="4513946894732546136">အကြံပြုချက်</translation>
-<translation id="4516323842122524821">အသံအတိုးအကျယ်</translation>
 <translation id="4521826082652183069">အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4536864596629708641">IP စီစဉ်သတ်မှတ်ချက်</translation>

@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -583,6 +584,11 @@ public class BrowserControlsManagerUnitTest {
         notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT / 4, TOOLBAR_HEIGHT);
         assertEquals(
                 0.25f, mBrowserControlsManager.getBrowserControlHiddenRatio(), MathUtils.EPSILON);
+
+        Mockito.clearInvocations(mContainerView);
+        notifyBrowserControlsOffsetChanged(0, 0);
+        verify(mContainerView).requestLayout();
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // For native pages, we can't run an animation so the initial offsets should be overridden
         // to 0.

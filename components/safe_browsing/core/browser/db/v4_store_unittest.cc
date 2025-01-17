@@ -23,7 +23,6 @@
 
 namespace safe_browsing {
 
-using ::google::protobuf::int32;
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
 using ::testing::Pair;
@@ -410,7 +409,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesFailsWhenRemovalsIndexTooLarge) {
   // Even though the merged map could have size 3 without removals, the
   // removals index should only count the entries in the old map.
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(1);
   std::string expected_checksum;
@@ -429,7 +428,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222"]
   raw_removals.Add(0);  // Removes "2222"
   std::string expected_checksum = std::string(
@@ -458,7 +457,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "4444"]
   raw_removals.Add(0);  // Removes "2222"
   std::string expected_checksum = std::string(
@@ -490,7 +489,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMiddleElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(1);  // Removes "3333"
   std::string expected_checksum = std::string(
@@ -521,7 +520,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesLastElement) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444"]
   raw_removals.Add(2);  // Removes "4444"
   std::string expected_checksum = std::string(
@@ -553,7 +552,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesWhenOldHasDifferentSizes) {
             V4Store::AddUnlumpedHashes(5, "1111133333", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", 4444", "aaaaa", "bbbbb"]
   raw_removals.Add(3);  // Removes "aaaaa"
   std::string expected_checksum = std::string(
@@ -586,7 +585,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
             V4Store::AddUnlumpedHashes(5, "11111", &prefix_map_additions));
 
   V4Store store(task_runner(), store_path_);
-  RepeatedField<int32> raw_removals;
+  RepeatedField<int32_t> raw_removals;
   // old_store: ["2222", "3333", "33333", "44444", "aaaa", "bbbbb"]
   raw_removals.Add(1);  // Removes "3333"
   raw_removals.Add(3);  // Removes "44444"

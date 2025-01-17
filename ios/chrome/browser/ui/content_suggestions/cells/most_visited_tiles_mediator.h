@@ -104,6 +104,9 @@ class UrlLoadingBrowserAgent;
 // Trigger a refresh of the Most Visited tiles.
 - (void)refreshMostVisitedTiles;
 
+// Disable the most visited sites module.
+- (void)disableModule;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_MEDIATOR_H_

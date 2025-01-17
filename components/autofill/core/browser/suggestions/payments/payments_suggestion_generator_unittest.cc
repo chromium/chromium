@@ -1722,6 +1722,101 @@ TEST_F(PaymentsSuggestionGeneratorTest,
             SuggestionType::kMerchantPromoCodeEntry);
 }
 
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GenerateLocalSaveAndFillSuggestion_CreditCardUploadDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+  SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/false);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  // `suggestions` should contain 3 suggestions which are save and fill
+  // suggestion, separator, and manage cards footer.
+  ASSERT_GE(suggestions.size(), 3ul);
+  EXPECT_THAT(
+      suggestions[0],
+      EqualsSuggestion(
+          SuggestionType::kSaveAndFillCreditCardEntry,
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
+          Suggestion::Icon::kSaveAndFill,
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_LOCAL_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}}));
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GenerateServerSaveAndFillSuggestion_CreditCardUploadEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+  SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  // `suggestions` should contain 3 suggestions which are save and fill
+  // suggestion, separator, and manage cards footer.
+  ASSERT_GE(suggestions.size(), 3ul);
+  EXPECT_THAT(
+      suggestions[0],
+      EqualsSuggestion(
+          SuggestionType::kSaveAndFillCreditCardEntry,
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE),
+          Suggestion::Icon::kSaveAndFill,
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION))}}));
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GenerateLocalSaveAndFillSuggestion_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSaveAndFill);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  ASSERT_GE(suggestions.size(), 0ul);
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_NotOfferedWhenCreditCardIsSavedInProfile) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+
+  payments_data().AddCreditCard(test::GetCreditCard());
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_EQ(suggestions.size(), 3ul);
+  EXPECT_THAT(suggestions[0],
+              EqualsSuggestion(SuggestionType::kCreditCardEntry));
+}
 // This class helps test the credit card contents that are displayed in
 // Autofill suggestions. It covers suggestions on Desktop/Android dropdown,
 // and on Android keyboard accessory.

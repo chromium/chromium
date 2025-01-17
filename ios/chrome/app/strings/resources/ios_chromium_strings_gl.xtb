@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">En consecuencia, Chromium sempre solicitará abrir o sitio para ordenadores.</translation>
 <translation id="2270466829363945454">Comprar</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
+<translation id="2314220608288760290">Chromium abre automaticamente as ligazóns de incógnito de YouTube no modo de incógnito.</translation>
 <translation id="231828342043114302">Para recibir contido personalizado en función dos teus intereses, inicia sesión en Chromium.</translation>
 <translation id="2326738825692478496">Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google.
 
@@ -284,6 +285,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8254729934443216898">Explora novas funcións que che axudarán a tirar o máximo proveito de Chromium.</translation>
 <translation id="829047622686389424">Un feed personalizado creado para ti.</translation>
+<translation id="8293572045658095405">Estás no modo incógnito de Chromium</translation>
 <translation id="830951810931292870">Abre os URL introducidos en Chromium no modo de incógnito.</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}}</translation>

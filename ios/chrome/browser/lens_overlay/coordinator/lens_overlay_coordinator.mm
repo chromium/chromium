@@ -53,10 +53,10 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -124,9 +124,6 @@ const int kExpectedExitAnimationCount = 2;
 
   /// Indicates this coordinator has received the `stop` call.
   BOOL _isStopped;
-
-  /// Command handler for loadQueryCommands.
-  id<LoadQueryCommands> _loadQueryHandler;
 
   /// This auxiliary window is used while restoring the sheet state when
   /// returning to the tab where Lens Overlay is active.
@@ -257,8 +254,6 @@ const int kExpectedExitAnimationCount = 2;
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensOverlayCommands)];
-  _loadQueryHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), LoadQueryCommands);
 }
 
 - (void)stop {
@@ -404,7 +399,7 @@ const int kExpectedExitAnimationCount = 2;
   [_metricsRecorder recordPermissionRequestedToBeShown];
 }
 
-- (void)hideLensUI:(BOOL)animated {
+- (void)hideLensUI:(BOOL)animated completion:(void (^)())completion {
   if (!self.isUICreated) {
     return;
   }
@@ -413,17 +408,28 @@ const int kExpectedExitAnimationCount = 2;
   [_metricsRecorder setLensOverlayInForeground:NO];
   _associatedTabHelper->UpdateSnapshotStorage();
   [self dismissRestorationWindow];
-
   __weak id<LensCommands> weakCommands =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   [weakCommands lensOverlayWillDismissWithCause:
                     LensOverlayDismissalCauseExternalNavigation];
+  __weak LensOverlayResultsPagePresenter* weakResultsPagePresenter =
+      _resultsPagePresenter;
+
   [_containerPresenter
       dismissContainerAnimated:animated
                     completion:^{
                       [weakCommands
                           lensOverlayDidDismissWithCause:
                               LensOverlayDismissalCauseExternalNavigation];
+                      // If the result page is still visible, dismiss it before
+                      // calling the completion.
+                      if (weakResultsPagePresenter.isResultPageVisible) {
+                        [weakResultsPagePresenter
+                            dismissResultsPageAnimated:animated
+                                            completion:completion];
+                      } else if (completion) {
+                        completion();
+                      }
                     }];
 }
 
@@ -625,8 +631,9 @@ const int kExpectedExitAnimationCount = 2;
   _associatedTabHelper->RecordSheetDimensionState(
       _resultsPagePresenter.sheetDimension);
   if (IsLensOverlaySameTabNavigationEnabled()) {
-    [_loadQueryHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
-                     immediately:YES];
+    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+    [HandlerForProtocol(dispatcher, BrowserCoordinatorCommands)
+        animateLensOverlayNavigationToURL:URL];
   } else {
     [self openURLInNewTab:URL];
     [self showRestorationWindowIfNeeded];

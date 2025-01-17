@@ -54,6 +54,7 @@
 <translation id="2236584955986023187">ይህ ማለት Chromium የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="2270466829363945454">ይግዙ</translation>
 <translation id="2313870531055795960">በChromium ላይ በተከማቹ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ሲያወርዱ Chromium እንዲሁም የገጽ ይዘት ቢትስንም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል።</translation>
+<translation id="2314220608288760290">Chromium የYouTube ማንነት የማያሳውቁ አገናኞችን በራስ-ሰር በማንነት የማያሳውቅ ይከፍታል።</translation>
 <translation id="231828342043114302">በፍላጎቶችዎ ላይ የተመሠረተ ግላዊነት የተላበሰ ይዘትን ለመቀበል ወደ Chromium ይግቡ።</translation>
 <translation id="2326738825692478496">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
 
@@ -283,6 +284,7 @@
 <translation id="8240981428553046115">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="8254729934443216898">ከChromium ማግኘት የሚቻለውን ሁሉ ለማግኘት የሚያግዙዎትን አዳዲስ ባህሪያት ያስሱ።</translation>
 <translation id="829047622686389424">ለእርስዎ የተሰራ ብጁ ምግብ።</translation>
+<translation id="8293572045658095405">Chromium ማንነት የማያሳውቅ ውስጥ ነዎት</translation>
 <translation id="830951810931292870">የገቡትን ዩአርኤልዎች ማንነት በማያሳውቅ Chromium ውስጥ ይከፍታል።</translation>
 <translation id="8409374867500149834">ከጎጂ ድር ጣቢያዎች የሚከላከል የChromium በጣም ጠንካራ ጥበቃ አለዎት</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}one{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃ ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}other{ይህ የሚሆነው Chromium ለ{THRESHOLD} ደቂቃዎች ስራ ላይ ሳይውል ሲቀር ነው። በመለያ ገብተው ሳለ በዚህ መሣሪያ ላይ የተቀመጠ ውሂብ ብቻ ይሰረዛል። ይህ ታሪክን እና የይለፍ ቃላትን ሊያካትት ይችላል።}}</translation>

@@ -46,6 +46,7 @@ BASE_FEATURE(kYieldWithInputHint,
 // Min time delta between checks for the input hint. Must be a smaller than
 // time to produce a frame, but a bit longer than the time it takes to retrieve
 // the hint.
+// Note: Do not use the prepared macro as of no need for a local cache.
 const base::FeatureParam<int> kPollIntervalMillisParam{&kYieldWithInputHint,
                                                        "poll_interval_ms", 1};
 

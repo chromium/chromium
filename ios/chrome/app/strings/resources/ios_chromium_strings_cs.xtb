@@ -54,6 +54,7 @@
 <translation id="2236584955986023187">To znamená, že Chromium bude pokaždé odesílat požadavek na web pro počítač.</translation>
 <translation id="2270466829363945454">Nakupování</translation>
 <translation id="2313870531055795960">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
+<translation id="2314220608288760290">Odkazy z YouTube v anonymním režimu otevírá Chromium automaticky v anonymních oknech.</translation>
 <translation id="231828342043114302">Pokud chcete dostávat personalizovaný obsah na základě svých zájmů, přihlaste se do prohlížeče Chromium.</translation>
 <translation id="2326738825692478496">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
 
@@ -283,6 +284,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="8254729934443216898">Prozkoumejte nové funkce, které vám pomohou využít Chromium na maximum.</translation>
 <translation id="829047622686389424">Feed přizpůsobený pro vás.</translation>
+<translation id="8293572045658095405">Jste v anonymním režimu prohlížeče Chromium</translation>
 <translation id="830951810931292870">Otevře zadané adresy URL v prohlížeči Chromium v anonymním režimu.</translation>
 <translation id="8409374867500149834">Máte nejsilnější zabezpečení prohlížeče Chromium proti škodlivým webům</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{K tomuto dochází, když Chromium {THRESHOLD} minutu nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}few{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}many{K tomuto dochází, když Chromium {THRESHOLD} minuty nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}other{K tomuto dochází, když Chromium {THRESHOLD} minut nepoužíváte. Data uložená pouze na tomto zařízení v době, kdy jste byli přihlášeni, se vymažou. Může to zahrnovat historii a hesla.}}</translation>

@@ -714,8 +714,7 @@ public class ExternalNavigationHandler {
         // checking both that the tab is foreground, and the app is foreground, so we can skip it
         // for intent launches for the same reason.
         if (incomingIntentRedirect) return false;
-        if (params.isBackgroundTabNavigation()
-                && !params.areIntentLaunchesAllowedInBackgroundTabs()) {
+        if (params.isBackgroundTabNavigation()) {
             if (debug()) Log.i(TAG, "Navigation in background tab");
             return true;
         }

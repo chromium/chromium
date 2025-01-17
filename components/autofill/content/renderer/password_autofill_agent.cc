@@ -368,7 +368,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
 
   std::vector<WebFormControlElement> elements =
       form_util::GetOwnedAutofillableFormControls(
-          frame->GetDocument(), form_util::GetOwningForm(password_element));
+          frame->GetDocument(), password_element.GetOwningFormForAutofill());
 
   auto iter = base::ranges::find(elements, password_element);
   if (iter == elements.end())
@@ -906,7 +906,7 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const SynchronousFormCache& form_cache) {
   NotifyPasswordManagerAboutFieldModification(element);
 
-  InformBrowserAboutUserInput(form_util::GetOwningForm(element), element,
+  InformBrowserAboutUserInput(element.GetOwningFormForAutofill(), element,
                               form_cache);
 }
 
@@ -1086,7 +1086,7 @@ void PasswordAutofillAgent::SubmitChangePasswordForm(
     return;
   }
   std::optional<FormData> form_data = GetFormDataFromWebForm(
-      form_util::GetOwningForm(last_element), /*form_cache=*/{});
+      last_element.GetOwningFormForAutofill(), /*form_cache=*/{});
   if (!form_data) {
     return;
   }
@@ -1123,7 +1123,7 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
     AutofillSuggestionTriggerSource suggestion_source) {
   CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
   DoFillField(password_input, credential, GetFieldFlags(suggestion_source));
-  InformBrowserAboutUserInput(form_util::GetOwningForm(password_input),
+  InformBrowserAboutUserInput(password_input.GetOwningFormForAutofill(),
                               password_input, /*form_cache=*/{});
 }
 
@@ -1317,7 +1317,7 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
   checked_safe_browsing_reputation_ = true;
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   GURL frame_url = GURL(frame->GetDocument().Url());
-  WebFormElement form_element = form_util::GetOwningForm(element);
+  WebFormElement form_element = element.GetOwningFormForAutofill();
   GURL action_url = form_element
                         ? form_util::GetCanonicalActionForForm(form_element)
                         : GURL();
@@ -1360,8 +1360,8 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
   CHECK(has_amendable_username_element || has_editable_password_element);
 
   WebFormElement form = password_element
-                            ? form_util::GetOwningForm(password_element)
-                            : form_util::GetOwningForm(username_element);
+                            ? password_element.GetOwningFormForAutofill()
+                            : username_element.GetOwningFormForAutofill();
   std::optional<FormData> form_data =
       form ? GetFormDataFromWebForm(form, /*form_cache=*/{})
            : GetFormDataFromUnownedInputElements(/*form_cache=*/{});
@@ -1825,7 +1825,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
     return;
   }
 
-  WebFormElement form = form_util::GetOwningForm(cleared_element);
+  WebFormElement form = cleared_element.GetOwningFormForAutofill();
   if (!form) {
     // Process password field clearing for fields outside the <form> tag.
     if (std::optional<FormData> unowned_form_data =
@@ -2487,7 +2487,7 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
   }
 
   std::optional<FormData> form_data = GetFormDataFromWebForm(
-      form_util::GetOwningForm(focused_element), /*form_cache=*/{});
+      focused_element.GetOwningFormForAutofill(), /*form_cache=*/{});
   if (form_data && (times_received_fill_data_[form_data->renderer_id()] == 1) &&
 #if BUILDFLAG(IS_ANDROID)
       // Limit showing suggestions on autofocus to WebAuthn forms only, since

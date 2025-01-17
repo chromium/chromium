@@ -5867,7 +5867,50 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderChecksComplete(
   // Cases with a UrlLoader are handled in OnStartChecksComplete.
   MaybeDispatchNavigateEventForCrossDocumentTraversal();
 
+  InheritServiceWorkerControllerFromParentIfNeeded();
+
   CommitNavigation();
+}
+
+void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
+  if (!base::FeatureList::IsEnabled(features::kServiceWorkerSrcdocSupport)) {
+    return;
+  }
+
+  CHECK(!loader_);
+  CHECK(!service_worker_handle_);
+  RenderFrameHostImpl* parent = frame_tree_node()->parent();
+  if (!parent || !GetURL().IsAboutSrcdoc()) {
+    return;
+  }
+  base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+      parent->GetLastCommittedServiceWorkerClient();
+  if (!parent_service_worker_client) {
+    return;
+  }
+
+  if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
+       network::mojom::WebSandboxFlags::kOrigin) ==
+      network::mojom::WebSandboxFlags::kOrigin) {
+    return;
+  }
+  StoragePartition* partition = GetStoragePartitionWithCurrentSiteInfo();
+  auto* service_worker_context = static_cast<ServiceWorkerContextWrapper*>(
+      partition->GetServiceWorkerContext());
+  // As ServiceWorkerMainResourceHandle is not used for intercepting the srcdoc
+  // iframe main resource, the fetch event client id is not used. Use empty
+  // string as fetch_event_client_id when creating it.
+  service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
+      service_worker_context, base::DoNothing(),
+      /*fetch_event_client_id=*/std::string(), parent_service_worker_client);
+  service_worker_handle_->set_service_worker_client(
+      service_worker_context->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWindow(
+              IsSecureFrame(frame_tree_node_->parent()),
+              frame_tree_node_->frame_tree_node_id()));
+  service_worker_handle_->service_worker_client()->InheritControllerFrom(
+      *parent_service_worker_client, net::SimplifyUrlForRequest(GetURL()));
 }
 
 void NavigationRequest::RunCommitDeferringConditions() {
@@ -6566,7 +6609,7 @@ void NavigationRequest::CommitPageActivation() {
 void NavigationRequest::SetExpectedProcess(
     RenderProcessHost* expected_process) {
   if (expected_process &&
-      expected_process->GetDeprecatedID() == expected_render_process_host_id_) {
+      expected_process->GetID() == expected_render_process_host_id_) {
     // This |expected_process| has already been informed of the navigation,
     // no need to update it again.
     return;
@@ -6579,7 +6622,7 @@ void NavigationRequest::SetExpectedProcess(
 
   // Keep track of the speculative RenderProcessHost and tell it to expect a
   // navigation to |site_info_|.
-  expected_render_process_host_id_ = expected_process->GetDeprecatedID();
+  expected_render_process_host_id_ = expected_process->GetID();
   expected_process->AddObserver(this);
   RenderProcessHostImpl::AddExpectedNavigationToSite(
       frame_tree_node()->navigator().controller().GetBrowserContext(),
@@ -6597,7 +6640,7 @@ void NavigationRequest::SetExpectedProcessIfAssociated() {
 }
 
 void NavigationRequest::ResetExpectedProcess() {
-  if (expected_render_process_host_id_ == ChildProcessHost::kInvalidUniqueID) {
+  if (expected_render_process_host_id_.is_null()) {
     // No expected process is set, nothing to update.
     return;
   }
@@ -6609,11 +6652,11 @@ void NavigationRequest::ResetExpectedProcess() {
         process, site_info_);
     process->RemoveObserver(this);
   }
-  expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
+  expected_render_process_host_id_ = ChildProcessId();
 }
 
 void NavigationRequest::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  DCHECK_EQ(host->GetDeprecatedID(), expected_render_process_host_id_);
+  DCHECK_EQ(host->GetID(), expected_render_process_host_id_);
   ResetExpectedProcess();
 }
 
@@ -6694,9 +6737,10 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
 
 void NavigationRequest::UpdateSiteInfo(
     RenderProcessHost* post_redirect_process) {
-  int post_redirect_process_id = post_redirect_process
-                                     ? post_redirect_process->GetDeprecatedID()
-                                     : ChildProcessHost::kInvalidUniqueID;
+  ChildProcessId post_redirect_process_id;
+  if (post_redirect_process) {
+    post_redirect_process_id = post_redirect_process->GetID();
+  }
 
   SiteInfo new_site_info = GetSiteInfoForCommonParamsURL();
   if (new_site_info == site_info_ &&
@@ -9072,7 +9116,7 @@ GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {
   }
 }
 
-int NavigationRequest::GetExpectedRenderProcessHostId() {
+ChildProcessId NavigationRequest::GetExpectedRenderProcessHostId() {
   DCHECK_LT(state_, READY_TO_COMMIT);
   return expected_render_process_host_id_;
 }

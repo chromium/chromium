@@ -70,8 +70,8 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                       base::SysNSStringToUTF16(fake_identity.userGivenName))),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
   if (expect_history_sync_ui) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            PromoScreenPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
   [ChromeEarlGreyUI waitForAppToIdle];

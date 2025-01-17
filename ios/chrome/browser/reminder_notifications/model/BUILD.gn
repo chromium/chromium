@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("client") {
+  sources = [
+    "reminder_notification_client.h",
+    "reminder_notification_client.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+  ]
+  frameworks = [ "UserNotifications.framework" ]
+}

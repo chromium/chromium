@@ -28,6 +28,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
@@ -82,6 +84,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
+@NullMarked
 class AutocompleteMediator
         implements OnSuggestionsReceivedListener,
                 OmniboxSuggestionsDropdown.GestureObserver,
@@ -127,10 +130,10 @@ class AutocompleteMediator
     // When set, indicates an active omnibox session.
     private boolean mIsActive;
     // When set, specifies the system time of the most recent suggestion list request.
-    private Long mLastSuggestionRequestTime;
+    private @Nullable Long mLastSuggestionRequestTime;
     // When set, specifies the time when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
-    private Long mFirstSuggestionListModelCreatedTime;
+    private @Nullable Long mFirstSuggestionListModelCreatedTime;
 
     @IntDef({
         EditSessionState.INACTIVE,
@@ -165,7 +168,7 @@ class AutocompleteMediator
      * omnibox suggestions was received. When the user presses enter in the omnibox, this value is
      * compared to the URL bar text to determine whether the first suggestion is still valid.
      */
-    private String mUrlTextAfterSuggestionsReceived;
+    private @Nullable String mUrlTextAfterSuggestionsReceived;
 
     private boolean mShouldPreventOmniboxAutocomplete;
     private long mLastActionUpTimestamp;
@@ -266,7 +269,7 @@ class AutocompleteMediator
         if (mNativeInitialized) {
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
-        mHandler.removeCallbacks(null);
+        mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
         mLifecycleDispatcher.unregister(this);
     }
@@ -318,7 +321,7 @@ class AutocompleteMediator
      * @param matchIndex The index of the suggestion to fetch.
      * @return The suggestion at the given index.
      */
-    public AutocompleteMatch getSuggestionAt(int matchIndex) {
+    public @Nullable AutocompleteMatch getSuggestionAt(int matchIndex) {
         return mAutocompleteResult.map(r -> r.getSuggestionsList().get(matchIndex)).orElse(null);
     }
 
@@ -993,6 +996,7 @@ class AutocompleteMediator
         AutocompleteMatch suggestionMatch;
 
         if (getSuggestionCount() > 0
+                && mUrlTextAfterSuggestionsReceived != null
                 && urlText.trim().equals(mUrlTextAfterSuggestionsReceived.trim())) {
             // Common case: the user typed something, received suggestions, then pressed enter.
             // This triggers the Default Match.
@@ -1004,9 +1008,9 @@ class AutocompleteMediator
             // from the autocomplete controller.
             suggestionMatch = mAutocomplete.map(a -> a.classify(urlText)).orElse(null);
             // If urlText couldn't be classified, bail.
-            if (suggestionMatch == null) return;
         }
 
+        if (suggestionMatch == null) return;
         loadUrlForOmniboxMatch(
                 0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab, true);
     }
@@ -1414,8 +1418,9 @@ class AutocompleteMediator
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Initializer
     @NonNull
-    SuggestionsListAnimationDriver initializeAnimationDriver(Window window) {
+    SuggestionsListAnimationDriver initializeAnimationDriver(@Nullable Window window) {
         if (mDelegate.isToolbarPositionCustomizationEnabled()) {
             int addedVerticalOffset =
                     mContext.getResources()
@@ -1429,7 +1434,8 @@ class AutocompleteMediator
                             mDelegate::isToolbarBottomAnchored,
                             addedVerticalOffset);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
+                && OmniboxFeatures.shouldAnimateSuggestionsListAppearance()
+                && window != null) {
             int addedVerticalOffset =
                     mContext.getResources()
                             .getDimensionPixelOffset(

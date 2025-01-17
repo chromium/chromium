@@ -1281,6 +1281,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3273757719652748628">Salva IBAN aperto a schermo intero.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Il criterio dell'amministratore sconsiglia di aprire questo file in <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di aprire questi file in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">La tua organizzazione, <ph name="ENROLLMENT_DOMAIN" />, ha inviato alcune informazioni, quali impostazioni o criteri, ai siti web indicati di seguito.</translation>
+<translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286372614333682499">verticale</translation>
 <translation id="3287510313208355388">Scarica quando è online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> potrebbe dover effettuare altri passaggi per verificare il pagamento</translation>
@@ -1963,6 +1964,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4438821706955556403">Prezzo tipico</translation>
+<translation id="444116852243722675">Apri tutte (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignorato perché il criterio può essere impostato solo da un utente cloud.</translation>
 <translation id="4445133368066241428">Argomenti popolari</translation>
 <translation id="4445964943162061557">Si tratta di una funzionalità sperimentale e potrebbe commettere errori.</translation>
@@ -3655,6 +3657,7 @@ Ulteriori dettagli:
 <translation id="7511955381719512146">La rete Wi-Fi in uso potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Questo criterio non può essere impostato su "Vero" ed essere configurato come obbligatorio, pertanto è diventato consigliato.</translation>
 <translation id="7514365320538308">Scarica</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Veicoli fuoristrada</translation>
 <translation id="7517414872996418597">Busta C10</translation>
 <translation id="7518003948725431193">Nessuna pagina web trovata per l'indirizzo web: <ph name="URL" /></translation>

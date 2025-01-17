@@ -640,13 +640,9 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
   input_context->metadata_args.emplace(
       segmentation_platform::kSafetyHubFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kAuxiliarySearchFreshness,
-      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
 
   std::vector<std::string> result = {kPriceChange, kSingleTab,
-                                     kTabResumptionForAndroidHome, kSafetyHub,
-                                     kAuxiliarySearch};
+                                     kTabResumptionForAndroidHome, kSafetyHub};
   ExpectGetClassificationResult(
       segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
       input_context,

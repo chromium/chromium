@@ -146,6 +146,10 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _mostVisitedSites->Refresh();
 }
 
+- (void)disableModule {
+  _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled, false);
+}
+
 - (MostVisitedTilesConfig*)mostVisitedTilesConfig {
   return _mostVisitedConfig;
 }

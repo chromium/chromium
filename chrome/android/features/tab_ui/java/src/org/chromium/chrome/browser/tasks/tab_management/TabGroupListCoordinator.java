@@ -185,12 +185,14 @@ public class TabGroupListCoordinator {
             Callback<Drawable> callback) {
         Resources resources = context.getResources();
         int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
+        FaviconHelper faviconHelper = new FaviconHelper();
         FaviconImageCallback faviconImageCallback =
-                (Bitmap bitmap, GURL ignored) ->
-                        onForeignFavicon(context, fallbackProvider, callback, bitmap);
-        new FaviconHelper()
-                .getForeignFaviconImageForURL(
-                        profile, url, faviconSizePixels, faviconImageCallback);
+                (Bitmap bitmap, GURL ignored) -> {
+                    onForeignFavicon(context, fallbackProvider, callback, bitmap);
+                    faviconHelper.destroy();
+                };
+        faviconHelper.getForeignFaviconImageForURL(
+                profile, url, faviconSizePixels, faviconImageCallback);
     }
 
     private static void onForeignFavicon(

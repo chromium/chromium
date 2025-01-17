@@ -588,9 +588,6 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
   if (!data.ReadRedirectTypeBug1221316(&out->redirect_type_bug_1221316))
     return false;
 
-  if (!data.ReadHttpMethodBug1221316(&out->http_method_bug_1221316))
-    return false;
-
   return true;
 }
 

@@ -128,7 +128,7 @@ public class EducationalTipModuleBuilderUnitTest {
     @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
     public void testBuildEducationalTipTabGroupSyncModule_NotEligible() {
         EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
-                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate);
 
         assertFalse(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
@@ -143,7 +143,7 @@ public class EducationalTipModuleBuilderUnitTest {
     })
     public void testBuildEducationalTipTabGroupSyncModule_Eligible() {
         EducationalTipModuleBuilder moduleBuilderForTabGroupSync =
-                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate);
 
         assertTrue(moduleBuilderForTabGroupSync.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback).onResult(any(ModuleProvider.class));
@@ -167,7 +167,7 @@ public class EducationalTipModuleBuilderUnitTest {
         assertNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
 
         EducationalTipModuleBuilder moduleBuilderForTabGroupPromo =
-                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP_PROMO, mActionDelegate);
         inputContextForTest = moduleBuilderForTabGroupPromo.createInputContext();
         assertNull(
                 inputContextForTest.getEntryForTesting(

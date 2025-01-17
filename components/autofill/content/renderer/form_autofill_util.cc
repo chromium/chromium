@@ -2154,7 +2154,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
       child_frames.clear();
     }
     const bool success = (!fields.empty() || !child_frames.empty()) &&
-                         fields.size() < kMaxExtractableFields;
+                         fields.size() <= kMaxExtractableFields;
     if (!success) {
       return std::nullopt;
     }
@@ -2383,30 +2383,6 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
   return elements;
 }
 
-WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
-  CHECK(form_control);
-  // The owning form is the furthest ancestor form element, if there is one.
-  WebFormElement owner;
-  // Look for ancestors of the associated form of `form_control` inside the
-  // same tree.
-  for (WebNode same_dom_ancestor = form_control.Form();  // nocheck
-       same_dom_ancestor; same_dom_ancestor = same_dom_ancestor.ParentNode()) {
-    if (auto form = same_dom_ancestor.DynamicTo<WebFormElement>()) {
-      owner = form;
-    }
-  }
-
-  // If `form_control` is inside Shadow DOM, also consider ancestors of
-  // `form_control`.
-  for (WebNode ancestor = form_control.OwnerShadowHost(); ancestor;
-       ancestor = ancestor.ParentOrShadowHostNode()) {
-    if (auto form = ancestor.DynamicTo<WebFormElement>()) {
-      owner = form;
-    }
-  }
-  return owner;
-}
-
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
@@ -2421,7 +2397,7 @@ FindFormAndFieldForFormControlElement(
   }
 
   WebDocument document = element.GetDocument();
-  WebFormElement owning_form = GetOwningForm(element);
+  WebFormElement owning_form = element.GetOwningFormForAutofill();
   std::optional<FormData> form = form_cache.GetOrExtractForm(
       document, owning_form, field_data_manager, timer_state, extract_options);
   const bool extract_form_data_succeeded = form.has_value();
@@ -2444,11 +2420,14 @@ FindFormAndFieldForFormControlElement(
   }
 
   // This is not reachable if the following holds:
-  // `base::Contains(GetOwnedFormControls(GetOwningForm(element)), element)`.
-  // This does not hold if `element` is an unowned element in a shadow DOM and
-  // kAutofillIncludeShadowDomInUnassociatedListedElements is disabled. Then
-  // `GetOwningForm(element)` returns the unowned form, but
-  // `GetOwnedFormControls()` does not include the field.
+  // ```
+  // base::Contains(GetOwnedFormControls(element.GetOwningFormForAutofill()),
+  //                element)
+  // ```
+  // This does not hold if `element` is an unowned element in a
+  // shadow DOM and kAutofillIncludeShadowDomInUnassociatedListedElements is
+  // disabled. Then `element.GetOwningFormForAutofill()` returns the unowned
+  // form, but `GetOwnedFormControls()` does not include the field.
   // See crbug.com/347059988 for more details.
   GURL url;
   if (WebDocument doc = element.GetDocument()) {

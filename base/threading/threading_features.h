@@ -17,13 +17,14 @@ namespace base {
 
 #if BUILDFLAG(IS_APPLE)
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizedRealtimeThreadingMac);
-extern const BASE_EXPORT FeatureParam<bool>
-    kOptimizedRealtimeThreadingMacPreemptible;
-extern const BASE_EXPORT FeatureParam<double>
-    kOptimizedRealtimeThreadingMacBusy;
-extern const BASE_EXPORT FeatureParam<double>
-    kOptimizedRealtimeThreadingMacBusyLimit;
-extern const BASE_EXPORT Feature kUserInteractiveCompositingMac;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kOptimizedRealtimeThreadingMacPreemptible);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                       kOptimizedRealtimeThreadingMacBusy);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                       kOptimizedRealtimeThreadingMacBusyLimit);
+BASE_EXPORT BASE_DECLARE_FEATURE(kUserInteractiveCompositingMac);
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);

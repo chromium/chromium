@@ -249,9 +249,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Increments the indent.
-  void IncrementIndent() {
-    indent_.resize(indent_.size() + kIndentSize, ' ');
-  }
+  void IncrementIndent() { indent_.resize(indent_.size() + kIndentSize, ' '); }
 
   // Decrements the indent.
   void DecrementIndent() {
@@ -304,9 +302,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Indents the current line.
-  bool WriteIndent() {
-    return Write(indent_);
-  }
+  bool WriteIndent() { return Write(indent_); }
 
   // Converts a time string written to the JSON codec into a time_t string
   // (used by bookmarks.html) and writes it.
@@ -377,18 +373,15 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         return false;
       }
       if (folder_type == BookmarkNode::BOOKMARK_BAR) {
-        if (!Write(kBookmarkBar))
+        if (!Write(kBookmarkBar)) {
           return false;
+        }
         title = l10n_util::GetStringUTF8(IDS_BOOKMARK_BAR_FOLDER_NAME);
       } else if (!Write(kFolderAttributeEnd)) {
         return false;
       }
-      if (!Write(title, CONTENT) ||
-          !Write(kFolderEnd) ||
-          !Write(kNewline) ||
-          !WriteIndent() ||
-          !Write(kFolderChildren) ||
-          !Write(kNewline)) {
+      if (!Write(title, CONTENT) || !Write(kFolderEnd) || !Write(kNewline) ||
+          !WriteIndent() || !Write(kFolderChildren) || !Write(kNewline)) {
         return false;
       }
       IncrementIndent();
@@ -407,9 +400,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         folder_type != BookmarkNode::MOBILE) {
       // Close out the folder.
       DecrementIndent();
-      if (!WriteIndent() ||
-          !Write(kFolderChildrenEnd) ||
-          !Write(kNewline)) {
+      if (!WriteIndent() || !Write(kFolderChildrenEnd) || !Write(kNewline)) {
         return false;
       }
     }
@@ -443,9 +434,7 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
     Profile* profile,
     const base::FilePath& path,
     BookmarksExportObserver* observer)
-    : profile_(profile),
-      path_(path),
-      observer_(observer) {
+    : profile_(profile), path_(path), observer_(observer) {
   DCHECK(!profile->IsOffTheRecord());
   favicons_map_ = std::make_unique<URLFaviconMap>();
 }
@@ -457,20 +446,23 @@ void BookmarkFaviconFetcher::ExportBookmarks() {
       BookmarkModelFactory::GetForBrowserContext(profile_)->other_node());
   ExtractUrls(
       BookmarkModelFactory::GetForBrowserContext(profile_)->mobile_node());
-  if (!bookmark_urls_.empty())
+  if (!bookmark_urls_.empty()) {
     FetchNextFavicon();
-  else
+  } else {
     ExecuteWriter();
+  }
 }
 
 void BookmarkFaviconFetcher::ExtractUrls(const BookmarkNode* node) {
   if (node->is_url()) {
     std::string url = node->url().spec();
-    if (!url.empty())
+    if (!url.empty()) {
       bookmark_urls_.push_back(url);
+    }
   } else {
-    for (const auto& child : node->children())
+    for (const auto& child : node->children()) {
       ExtractUrls(child.get());
+    }
   }
 }
 
@@ -519,8 +511,7 @@ void BookmarkFaviconFetcher::OnFaviconDataAvailable(
     bookmark_urls_.pop_front();
   }
   if (bitmap_result.is_valid() && !url.is_empty()) {
-    favicons_map_->insert(
-        make_pair(url.spec(), bitmap_result.bitmap_data));
+    favicons_map_->insert(make_pair(url.spec(), bitmap_result.bitmap_data));
   }
 
   if (FetchNextFavicon()) {
@@ -535,8 +526,9 @@ void WriteBookmarks(Profile* profile,
                     const base::FilePath& path,
                     BookmarksExportObserver* observer) {
   // We allow only one concurrent bookmark export operation per profile.
-  if (profile->GetUserData(kBookmarkFaviconFetcherKey))
+  if (profile->GetUserData(kBookmarkFaviconFetcherKey)) {
     return;
+  }
 
   auto fetcher =
       std::make_unique<BookmarkFaviconFetcher>(profile, path, observer);

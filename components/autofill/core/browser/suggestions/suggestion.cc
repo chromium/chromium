@@ -116,6 +116,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kNoIcon";
     case Suggestion::Icon::kBnpl:
       return "kBnpl";
+    case Suggestion::Icon::kSaveAndFill:
+      return "kSaveAndFill";
   }
   NOTREACHED();
 }

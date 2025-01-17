@@ -1215,10 +1215,18 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
     fetch_data_.pending_idps = std::move(pending_idps);
   }
 
+  std::vector<FederatedProviderFetcher::FetchRequest> idps;
+  for (const auto& idp : fetch_data_.pending_idps) {
+    auto idp_get = token_request_get_infos_.find(idp);
+    CHECK(idp_get != token_request_get_infos_.end());
+    idps.emplace_back(
+        idp, idp_get->second.provider->config->from_idp_registration_api);
+  }
+
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
       render_frame_host(), network_manager_.get());
   provider_fetcher_->Start(
-      fetch_data_.pending_idps, rp_mode_, icon_ideal_size, icon_minimum_size,
+      idps, rp_mode_, icon_ideal_size, icon_minimum_size,
       base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }

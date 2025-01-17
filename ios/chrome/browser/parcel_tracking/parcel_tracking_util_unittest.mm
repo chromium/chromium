@@ -72,6 +72,9 @@ class ParcelTrackingUtilTest : public PlatformTest {
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns true when the user
 // is eligible.
 TEST_F(ParcelTrackingUtilTest, UserIsEligibleForPrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSDisableParcelTracking);
+
   SignIn();
   SetPromptDisplayedStatus(false);
   IOSChromeScopedTestingVariationsService scoped_variations_service;
@@ -83,6 +86,9 @@ TEST_F(ParcelTrackingUtilTest, UserIsEligibleForPrompt) {
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
 // user is not signed in.
 TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSDisableParcelTracking);
+
   SignOut();
   SetPromptDisplayedStatus(false);
   shopping_service_->SetIsParcelTrackingEligible(false);
@@ -93,9 +99,9 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
-// feature is disabled.
+// feature is disabled. This is now the default behavior, so doesn't require a
+// specific feature override.
 TEST_F(ParcelTrackingUtilTest, FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list(kIOSDisableParcelTracking);
   SignIn();
   SetPromptDisplayedStatus(false);
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
@@ -105,6 +111,9 @@ TEST_F(ParcelTrackingUtilTest, FeatureDisabled) {
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
 // user has seen the prompt.
 TEST_F(ParcelTrackingUtilTest, UserHasSeenPrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSDisableParcelTracking);
+
   SignIn();
   SetPromptDisplayedStatus(true);
   IOSChromeScopedTestingVariationsService scoped_variations_service;
@@ -116,6 +125,9 @@ TEST_F(ParcelTrackingUtilTest, UserHasSeenPrompt) {
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
 // permanent country is not set to US.
 TEST_F(ParcelTrackingUtilTest, CountryNotUS) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSDisableParcelTracking);
+
   SignIn();
   SetPromptDisplayedStatus(true);
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(

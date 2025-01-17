@@ -94,7 +94,7 @@ class SavableResourcesTest : public ContentBrowserTest {
 };
 
 // Flaky on Linux MSan. See crbug.com/1423060.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && defined(MEMORY_SANITIZER)
 #define MAYBE_GetSavableResourceLinksWithPageHasValidStyleLink \
   DISABLED_GetSavableResourceLinksWithPageHasValidStyleLink
 #else

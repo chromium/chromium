@@ -151,6 +151,7 @@ struct IdentityProviderParameters {
   std::optional<std::vector<std::string>> fields;
   const char* params_json;
   std::optional<std::string> type;
+  bool from_idp_registration_api = false;
 };
 
 // Parameters for a call to RequestToken.
@@ -1136,6 +1137,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       options->config = blink::mojom::IdentityProviderConfig::New();
       options->config->config_url = GURL(identity_provider.provider);
       options->config->client_id = identity_provider.client_id;
+      options->config->from_idp_registration_api =
+          identity_provider.from_idp_registration_api;
       options->nonce = identity_provider.nonce;
       options->login_hint = identity_provider.login_hint;
       options->domain_hint = identity_provider.domain_hint;
@@ -1812,6 +1815,32 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
   RunAuthTest(kDefaultRequestParameters, request_not_in_list, config);
   EXPECT_TRUE(DidFetchWellKnownAndConfig());
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+}
+
+// Test that when the provider url is not in the well-known, it succeeds when it
+// is registered.
+TEST_F(FederatedAuthRequestImplTest, WellKnownNotInListButRegistered) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdPRegistration);
+
+  const char* idp_config_url =
+      kDefaultRequestParameters.identity_providers[0].provider;
+  const char* kWellKnownMismatchConfigUrl = "https://mismatch.example";
+  EXPECT_NE(std::string(idp_config_url), kWellKnownMismatchConfigUrl);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[idp_config_url].well_known = {
+      {kWellKnownMismatchConfigUrl}, {ParseStatus::kSuccess, net::HTTP_OK}};
+  RequestParameters requestParameters = kDefaultRequestParameters;
+  requestParameters.identity_providers[0].from_idp_registration_api = true;
+
+  // Need to simulate there is actually a registered IdP, or the call will fail.
+  std::vector<GURL> registry;
+  registry.emplace_back(kProviderUrlFull);
+  EXPECT_CALL(*test_permission_delegate_, GetRegisteredIdPs())
+      .WillOnce(Return(registry));
+
+  RunAuthTest(requestParameters, kExpectationSuccess, config);
 }
 
 // Test that the well-known file has too many provider urls.

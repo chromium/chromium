@@ -29,21 +29,21 @@
     Exposed=Window
 ] interface SVGFETurbulenceElement : SVGElement {
     // Turbulence Types
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_TURBULENCE_TYPE_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_TURBULENCE_TYPE_FRACTALNOISE = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_TURBULENCE_TYPE_TURBULENCE = 2;
+    const unsigned short SVG_TURBULENCE_TYPE_UNKNOWN = 0;
+    const unsigned short SVG_TURBULENCE_TYPE_FRACTALNOISE = 1;
+    const unsigned short SVG_TURBULENCE_TYPE_TURBULENCE = 2;
 
     // Stitch Options
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_STITCHTYPE_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_STITCHTYPE_STITCH = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_STITCHTYPE_NOSTITCH = 2;
+    const unsigned short SVG_STITCHTYPE_UNKNOWN = 0;
+    const unsigned short SVG_STITCHTYPE_STITCH = 1;
+    const unsigned short SVG_STITCHTYPE_NOSTITCH = 2;
 
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber baseFrequencyX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber baseFrequencyY;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedInteger numOctaves;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber seed;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration stitchTiles;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration type;
+    readonly attribute SVGAnimatedNumber baseFrequencyX;
+    readonly attribute SVGAnimatedNumber baseFrequencyY;
+    readonly attribute SVGAnimatedInteger numOctaves;
+    readonly attribute SVGAnimatedNumber seed;
+    readonly attribute SVGAnimatedEnumeration stitchTiles;
+    readonly attribute SVGAnimatedEnumeration type;
 };
 
 SVGFETurbulenceElement includes SVGFilterPrimitiveStandardAttributes;

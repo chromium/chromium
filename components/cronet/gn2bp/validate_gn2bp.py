@@ -98,7 +98,7 @@ def _main():
       # beneath the repository root until gn2bp is tweaked to
       # deal with this small differences.
       with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
-        cronet_utils.gn(gn_out_dir, cronet_utils.get_gn_args_for_aosp(arch))
+        cronet_utils.gn(gn_out_dir, ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
         if _write_desc_json(gn_out_dir, temp_file) != 0:
           # Close the files and exit if we failed to generate any
           # of the desc.json files.

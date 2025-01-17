@@ -519,6 +519,66 @@ TEST_F(CookieSettingsTest, ForceEnableThirdPartyCookieMitigations) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(CookieSettingsTest,
+       IsCookieAccessible_CookieSettingOverrideBlockSameSiteNoneCookie) {
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", kURL);
+  const url::Origin top_level_origin = url::Origin::Create(GURL(kOtherURL));
+
+  settings.set_block_third_party_cookies(false);
+
+  auto is_third_party_cookie_accessible =
+      [&](net::CookieSettingOverrides overrides) -> bool {
+    return settings.IsCookieAccessible(
+        *cookie, GURL(kURL), net::SiteForCookies(), top_level_origin,
+        net::FirstPartySetMetadata(), overrides, &status);
+  };
+  // Third-party cookie is accessible with no source blocking it.
+  ASSERT_TRUE(is_third_party_cookie_accessible(net::CookieSettingOverrides()));
+  ASSERT_TRUE(status.HasWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
+
+  status.ResetForTesting();
+  // Third-party cookies are blocked by overrides.
+  EXPECT_FALSE(is_third_party_cookie_accessible(
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies}));
+  EXPECT_TRUE(status.HasExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES));
+
+  net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
+       net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations});
+  status.ResetForTesting();
+  // Verify that cookie has the phaseout exclusion reason with both required
+  // overrides present.
+  EXPECT_FALSE(is_third_party_cookie_accessible(overrides));
+  EXPECT_TRUE(status.HasExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT));
+
+  // No override can overrule a site-specific setting.
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting(kURL, "*", CONTENT_SETTING_BLOCK)});
+  status.ResetForTesting();
+  EXPECT_FALSE(is_third_party_cookie_accessible(overrides));
+  // Cookies blocked by a site-specific setting should still use
+  // `EXCLUDE_USER_PREFERENCES` reason.
+  EXPECT_TRUE(status.HasExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES));
+
+  // No override can overrule a global setting.
+  status.ResetForTesting();
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+  EXPECT_FALSE(is_third_party_cookie_accessible(overrides));
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES));
+}
+
 TEST_F(CookieSettingsTest, ShouldAlwaysAllowCookies) {
   CookieSettings settings;
   settings.set_secure_origin_cookies_allowed_schemes({kChromeScheme});
@@ -1815,6 +1875,63 @@ TEST_F(CookieSettingsTest,
                                 net::CookieInclusionStatus::WarningReason::
                                     WARN_THIRD_PARTY_PHASEOUT})),
                   _, _, _))));
+}
+
+TEST_F(
+    CookieSettingsTest,
+    AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed_CookieSettingOverrideBlock3PC) {
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(false);
+
+  const url::Origin origin = url::Origin::Create(GURL(kOtherURL));
+
+  net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies});
+  {
+    net::CookieAccessResultList maybe_included_cookies = {
+        {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}}};
+    net::CookieAccessResultList excluded_cookies = {};
+
+    EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+        GURL(kURL), net::SiteForCookies(), &origin,
+        net::FirstPartySetMetadata(), overrides, maybe_included_cookies,
+        excluded_cookies));
+
+    EXPECT_THAT(
+        excluded_cookies,
+        UnorderedElementsAre(MatchesCookieWithAccessResult(
+            net::MatchesCookieWithName("third_party"),
+            MatchesCookieAccessResult(
+                net::HasExactlyExclusionReasonsForTesting(
+                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                        net::CookieInclusionStatus::ExclusionReason::
+                            EXCLUDE_USER_PREFERENCES}),
+                _, _, _))));
+  }
+  // Both overrides should be present to yield the phaseout exclusion reason.
+  overrides.Put(
+      net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations);
+  {
+    net::CookieAccessResultList maybe_included_cookies = {
+        {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}}};
+    net::CookieAccessResultList excluded_cookies = {};
+    EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
+        GURL(kURL), net::SiteForCookies(), &origin,
+        net::FirstPartySetMetadata(), overrides, maybe_included_cookies,
+        excluded_cookies));
+
+    // Verify that the excluded cookie has the expected reason.
+    EXPECT_THAT(
+        excluded_cookies,
+        UnorderedElementsAre(MatchesCookieWithAccessResult(
+            net::MatchesCookieWithName("third_party"),
+            MatchesCookieAccessResult(
+                net::HasExactlyExclusionReasonsForTesting(
+                    std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                        net::CookieInclusionStatus::ExclusionReason::
+                            EXCLUDE_THIRD_PARTY_PHASEOUT}),
+                _, _, _))));
+  }
 }
 
 TEST_F(CookieSettingsTest,

@@ -571,16 +571,30 @@ inline constexpr int kPolicyForceInstallUser = 6;
 inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
-// Policy manager `source()` constants.
+// Policy manager constants.
 inline constexpr char kSourceDMPolicyManager[] = "Device Management";
 inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
 inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
 #if BUILDFLAG(IS_WIN)
+inline constexpr bool kPlatformPolicyManagerDefined = true;
 inline constexpr char kSourcePlatformPolicyManager[] = "Group Policy";
+
+// On Windows, by default, Group Policy has a higher priority than the
+// clould policy.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = false;
 #elif BUILDFLAG(IS_MAC)
+inline constexpr bool kPlatformPolicyManagerDefined = true;
 inline constexpr char kSourcePlatformPolicyManager[] = "Managed Preferences";
+
+// On macOS, cloud policy has a higher priority than the Managed Preferences.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
 #else
+inline constexpr bool kPlatformPolicyManagerDefined = false;
 inline constexpr char kSourcePlatformPolicyManager[] = "not-defined";
+
+// On other platforms, there's no platform policy at the moment, the value
+// doesn't actually matter.
+inline constexpr bool kCloudPolicyOverridesPlatformPolicyDefaultValue = true;
 #endif
 
 // Serializes updater installs. Defined in the .cc file so that the updater

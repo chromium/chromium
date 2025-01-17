@@ -200,6 +200,9 @@
       <message name="IDS_TAB_GRID_MANAGE_BUTTON_TEXT" desc="Text for managing the sharing of the current tab group from the tab group dialog toolbar.">
         Manage
       </message>
+      <message name="IDS_MANAGE_SHARING_CONTENT_DESCRIPTION" desc="Content description for the account avatar button that manages sharing for a shared tab group.">
+        Manage sharing
+      </message>
 
       <!-- Bottom Tab Strip strings -->
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_EXPAND_TAB_SHEET" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the '^' sign.">

@@ -304,6 +304,7 @@ public class StripLayoutHelper
                         groupTitle.updateRootId(newRootId);
                         // Refresh properties since removing the root tab may have cleared the ones
                         // associated with the oldRootId before updating to the newRootId here.
+                        mLayerTitleCache.transferAvatarToNewRootId(oldRootId, newRootId);
                         updateGroupTextAndSharedState(groupTitle);
                         updateGroupTitleTint(groupTitle);
                     }

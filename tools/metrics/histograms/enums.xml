@@ -6476,17 +6476,17 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1027" label="ExecCommandOnInputOrTextarea"/>
   <int value="1028" label="V8History_ScrollRestoration_AttributeGetter"/>
   <int value="1029" label="V8History_ScrollRestoration_AttributeSetter"/>
-  <int value="1030" label="SVG1DOMFilter"/>
+  <int value="1030" label="ObsoleteSVG1DOMFilter"/>
   <int value="1031" label="OfflineAudioContextStartRendering"/>
   <int value="1032" label="OfflineAudioContextSuspend"/>
   <int value="1033" label="OfflineAudioContextResume"/>
   <int value="1034" label="AttrCloneNode"/>
-  <int value="1035" label="SVG1DOMPaintServer"/>
+  <int value="1035" label="ObsoleteSVG1DOMPaintServer"/>
   <int value="1036" label="SVGSVGElementFragmentSVGView"/>
   <int value="1037" label="SVGSVGElementFragmentSVGViewElement"/>
   <int value="1038" label="PresentationConnectionClose"/>
   <int value="1039" label="SVG1DOMShape"/>
-  <int value="1040" label="SVG1DOMText"/>
+  <int value="1040" label="ObsoleteSVG1DOMText"/>
   <int value="1041" label="RTCPeerConnectionConstructorConstraints"/>
   <int value="1042" label="RTCPeerConnectionConstructorCompliant"/>
   <int value="1043"
@@ -21514,6 +21514,7 @@ from previous Chrome versions.
       label="IPH_KeyboardAccessoryPaymentVirtualCard:enabled"/>
   <int value="403288255" label="enable-wheel-scroll-latching"/>
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
+  <int value="404176987" label="TabSwitcherColorBlendAnimate:enabled"/>
   <int value="405068544" label="GlobalMediaControlsUpdatedUI:enabled"/>
   <int value="405329388"
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
@@ -25098,6 +25099,7 @@ from previous Chrome versions.
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
   <int value="1814854881" label="NearbySharingSelfShareUI:disabled"/>
   <int value="1815186008" label="SearchResumptionModuleAndroid:enabled"/>
+  <int value="1815687487" label="TabSwitcherColorBlendAnimate:disabled"/>
   <int value="1815734544" label="ChromeRefresh2023TopChromeFont:enabled"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
   <int value="1816515324" label="BaselineGM3SurfaceColors:disabled"/>

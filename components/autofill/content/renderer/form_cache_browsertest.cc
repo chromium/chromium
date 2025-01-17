@@ -96,7 +96,13 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
                                         kCallTimerStateDummy);
   }
 
-  size_t num_extracted_forms() { return form_cache_->extracted_forms().size(); }
+  size_t num_extracted_forms() {
+    return std::ranges::count_if(form_cache_->extracted_forms(),
+                                 [](const auto& id_and_form) {
+                                   const auto& [id, form] = id_and_form;
+                                   return form != nullptr;
+                                 });
+  }
 
   FieldDataManager& GetFieldDataManager() const {
     return *field_data_manager_.get();

@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">See tähendab, et Chromium taotleb iga kord töölauasaiti.</translation>
 <translation id="2270466829363945454">Ostlemine</translation>
 <translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
+<translation id="2314220608288760290">Chromium avab YouTube'i inkognito lingid automaatselt inkognito režiimis.</translation>
 <translation id="231828342043114302">Huvide põhjal loodud isikupärastatud sisu saamiseks logige Chromiumisse sisse.</translation>
 <translation id="2326738825692478496">Teatud Chromiumi andmeid pole veel teie Google’i kontole salvestatud.
 
@@ -284,6 +285,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="8254729934443216898">Avastage uusi funktsioone, mis aitavad teil Chromiumi parimal moel kasutada.</translation>
 <translation id="829047622686389424">Teie jaoks loodud kohandatud voog.</translation>
+<translation id="8293572045658095405">Olete Chromiumi inkognito režiimis</translation>
 <translation id="830951810931292870">Avab sisestatud URL-id Google Chromiumis inkognito režiimis.</translation>
 <translation id="8409374867500149834">Teil on Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}}</translation>

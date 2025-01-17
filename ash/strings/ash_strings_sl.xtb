@@ -2234,7 +2234,6 @@ Nova namestitev</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
 <translation id="851660987304951246">Uporabite funkcijo Pomagaj mi brati za hiter povzetek vsebine ali postavljanje vprašanj</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Vhod za mikrofon nadzira aplikacija <ph name="APP_NAME" />}one{Vhod za mikrofon nadzira # aplikacija}two{Vhod za mikrofon nadzirata # aplikaciji}few{Vhod za mikrofon nadzirajo # aplikacije}other{Vhod za mikrofon nadzira # aplikacij}}</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
 <translation id="8541078764854166027">Kadriranje</translation>
 <translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>

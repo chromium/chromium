@@ -138,11 +138,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           CreateCommerceUiTabHelper(tab.GetContents(), profile);
     }
 
-    if (!profile->IsIncognitoProfile()) {
-      contextual_cueing_helper_ =
-          contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
-              tab.GetContents());
-    }
+    contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
+        tab.GetContents());
 
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(

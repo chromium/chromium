@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="382043424867370667">Pozadinska slika zalaska sunca</translation>
 <translation id="3824259034819781947">Prilaganje fajlova</translation>
-<translation id="383586991013681190">Odaberite jezik transkripcije i preuzmite u Postavkama</translation>
 <translation id="3836587210832263413">Uključite samo ekstenzije kojima vjerujete</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da zatvorite dijaloški okvir.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
 <translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />. govornik</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
+<translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4431821876790500265">Prikaži izvještaj</translation>
 <translation id="4443192710976771874">crvene</translation>
 <translation id="4447592701292766824">Nije moguće kreirati sažetak za ovaj sadržaj</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">povećavanje osvjetljenja</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
-<translation id="4516323842122524821">Jačina zvuka</translation>
 <translation id="4521826082652183069">Podudaranje alternativnog naziva predmeta</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4536864596629708641">Konfiguracija IP adrese</translation>

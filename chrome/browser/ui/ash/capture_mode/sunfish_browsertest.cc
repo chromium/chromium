@@ -7,12 +7,14 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/view_utils.h"
@@ -149,6 +151,19 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {
   delegate->SendMultimodalSearch(SkBitmap(), gfx::Rect(10, 10, 400, 400),
                                  "Search",
                                  base::BindRepeating([](GURL url) {}));
+}
+
+// Tests that the policy can be read and set browser-side.
+IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, BrowserPolicy) {
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  EXPECT_TRUE(delegate->IsSearchAllowedByPolicy());
+  EXPECT_TRUE(IsSunfishAllowedAndEnabled());
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
+  EXPECT_FALSE(delegate->IsSearchAllowedByPolicy());
+  EXPECT_FALSE(IsSunfishAllowedAndEnabled());
 }
 
 }  // namespace ash

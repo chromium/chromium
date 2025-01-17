@@ -143,6 +143,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
     case Suggestion::Icon::kPlusAddress:
+    case Suggestion::Icon::kSaveAndFill:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
@@ -317,6 +318,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
 #endif
+    case Suggestion::Icon::kSaveAndFill:
+      return ImageModelFromVectorIcon(kCreditCardIcon, kIconSize);
     case Suggestion::Icon::kSettings:
       return ImageModelFromVectorIcon(omnibox::kProductIcon, kIconSize);
     case Suggestion::Icon::kUndo:

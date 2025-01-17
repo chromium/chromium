@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1066101356081285416">Chrome আপনার ভিজিট করা সাইটে ট্র্যাকিং নম্বর শনাক্ত করবে এবং 'নতুন ট্যাব' পৃষ্ঠায় প্যাকেজ সংক্রান্ত আপডেট দেবে। সকলের জন্য এই ফিচার দিতে ও Google 'শপিং' ফিচারের উন্নতি করতে প্যাকেজ ট্র্যাকিং নম্বর ও ওয়েবসাইটের নাম Google-এ পাঠানো হবে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />প্যাকেজ ট্র্যাকিং সেটিংস<ph name="END_LINK" /> থেকে এটি আপডেট করতে পারবেন।</translation>
+<translation id="1076643793026027628">Chrome ছদ্মবেশী মোডে, অটোমেটিক YouTube ছদ্মবেশী লিঙ্ক খোলে।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />-এর জন্য Google পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
 <translation id="1146503048444965320">Chrome-এ নতুন ট্যাব খুলুন</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">এই সাইট ও Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="4646014602299206846">Chrome আপনার ভিজিট করা সাইটে প্যাকেজ ট্র্যাকিং নম্বর শনাক্ত করবে এবং 'নতুন ট্যাব' পৃষ্ঠায় প্যাকেজ সংক্রান্ত আপডেট দেবে। এই ফিচার ব্যবহারের সুযোগ দিতে এবং সকলের জন্য Shopping পরিষেবা আরও ভালো করতে Google-এর সাথে আপনার ডেটা শেয়ার করা হবে।</translation>
 <translation id="4647910807533196601">Chrome-এ 'আমার লেটেস্ট ট্যাব' খুলুন।</translation>
+<translation id="4693084815234024320">আপনি Chrome ছদ্মবেশী মোড ব্যবহার করছেন</translation>
 <translation id="4724297637870447613">সব জায়গায় Chrome ব্যবহার করুন</translation>
 <translation id="4738647308035481133">Google Chrome পৃষ্ঠা</translation>
 <translation id="4742795653798179840">Chrome সম্পর্কিত ডেটা মুছে ফেলা হয়েছে</translation>

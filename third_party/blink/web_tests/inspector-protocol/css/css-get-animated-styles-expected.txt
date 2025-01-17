@@ -40,3 +40,9 @@ There is only 1 animation: TRUE
 The name of the animation is --color: TRUE
 The color property is animated: TRUE
 
+Scroll driven animations in a non-scrollable container
+There is no animation: TRUE
+
+Animations with `animation-start-delay`
+There is no animation: TRUE
+

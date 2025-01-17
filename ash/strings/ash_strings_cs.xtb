@@ -2233,7 +2233,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>
 <translation id="851660987304951246">Pomocí funkce Pomoz mi číst si můžete nechat rychle shrnout obsah nebo se na něco zeptat</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Vstup mikrofonu ovládá aplikace <ph name="APP_NAME" />}few{Vstup mikrofonu ovládají # aplikace}many{Vstup mikrofonu ovládá # aplikace}other{Vstup mikrofonu ovládá # aplikací}}</translation>
 <translation id="8535393432370007982">Zrušit řazení podle barvy</translation>
 <translation id="8541078764854166027">Automatické zabírání</translation>
 <translation id="8542053257095774575">Žádné uložené plochy ani šablony</translation>

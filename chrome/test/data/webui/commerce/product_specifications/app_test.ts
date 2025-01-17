@@ -2233,6 +2233,95 @@ suite('AppTest', () => {
     assertEquals(UserFeedback.kUnspecified, feedbackArgs);
   });
 
+  test('product selection menus are closed after set updates', async () => {
+    const exampleUrl = {url: 'https://example.com/'};
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [],
+        },
+      ],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info = createProductInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: exampleUrl,
+      imageUrl: {url: `${exampleUrl.url}'/image.png'`},
+    });
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+        products: [specsProduct],
+      }),
+      productInfos: [info],
+    });
+    const specsSet = createSpecsSet({
+      name: 'table',
+      urls: [exampleUrl],
+      uuid: {value: testId},
+    });
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+    await createAppElementWithPromiseValues(promiseValues);
+
+    // Populate the product selection menu with options.
+    const productTabs = [{
+      title: 'title',
+      url: {url: 'https://example2.com/'},
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+
+    // Open the new column selection menu.
+    const newColSelector = appElement.$.newColumnSelector;
+    newColSelector.$.button.click();
+    await waitAfterNextRender(appElement);
+
+    let menu = newColSelector.$.productSelectionMenu.$.menu.get();
+    assertTrue(menu.open);
+
+    focusWindowAndTriggerSetUpdate(createSpecsSet({
+      name: 'table',
+      urls: [exampleUrl, {url: 'https://example3.com'}],
+      uuid: {value: testId},
+    }));
+    await waitAfterNextRender(appElement);
+
+    assertFalse(menu.open);
+
+    // Open one of the product selection menus from a selector.
+    const productSelector = $$<ProductSelectorElement>(
+        appElement.$.summaryTable, 'product-selector');
+    assertTrue(!!productSelector);
+    productSelector.$.currentProductContainer.click();
+    await waitAfterNextRender(appElement);
+
+    menu = productSelector.$.productSelectionMenu.$.menu.get();
+    assertTrue(menu.open);
+
+    focusWindowAndTriggerSetUpdate(createSpecsSet({
+      name: 'table',
+      urls: [exampleUrl, {url: 'https://example4.com'}],
+      uuid: {value: testId},
+    }));
+    await waitAfterNextRender(appElement);
+
+    assertFalse(menu.open);
+  });
+
   suite('FeatureState', () => {
     test('feedback hidden if not allowed', async () => {
       shoppingServiceApi.setResultFor(

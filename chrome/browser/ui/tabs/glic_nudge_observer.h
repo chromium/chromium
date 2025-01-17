@@ -9,7 +9,9 @@
 
 class GlicNudgeObserver : public base::CheckedObserver {
  public:
-  // Called when all checks pass to be able to show the glic nudge UI.
+  // Called when the glic nudge UI needs to be triggered, or to be turned off.
+  // When the UI needs to be shown `label' holds the nudge label. When the nudge
+  // UI should be turned off, `label` is empty.
   virtual void OnTriggerGlicNudgeUI(std::string label) {}
 };
 

@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Això vol dir que Chromium sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
 <translation id="2270466829363945454">Botiga</translation>
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
+<translation id="2314220608288760290">Chromium obre automàticament els enllaços d'incògnit de YouTube en el mode d'incògnit.</translation>
 <translation id="231828342043114302">Per rebre contingut personalitzat basat en els teus interessos, inicia la sessió a Chromium.</translation>
 <translation id="2326738825692478496">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
 
@@ -284,6 +285,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8240981428553046115">Chromium no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="8254729934443216898">Explora funcions noves que t'ajudaran a treure el màxim partit de Chromium.</translation>
 <translation id="829047622686389424">Un feed personalitzat per a tu.</translation>
+<translation id="8293572045658095405">Estàs en el mode d'incògnit de Chromium</translation>
 <translation id="830951810931292870">Obre els URL introduïts en mode d'incògnit a Chromium.</translation>
 <translation id="8409374867500149834">Tens la seguretat més efectiva de Chromium contra llocs web perillosos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}}</translation>

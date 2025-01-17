@@ -186,6 +186,7 @@ void ProfileMenuView::BuildMenu() {
   CHECK(!profile->IsOffTheRecord());
   const bool is_web_app = web_app::AppBrowserController::IsWebApp(browser());
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    SetMenuTitleForAccessibility();
     BuildIdentityWithCallToAction();
   } else {
     BuildIdentity();
@@ -273,6 +274,14 @@ std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
                                        menu_subtitle_);
   }
   return title;
+}
+
+void ProfileMenuView::OnProfileManagementButtonClicked() {
+  RecordClick(ActionableItem::kProfileManagementLabel);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  chrome::ExecuteCommand(browser(), IDC_SHOW_MANAGEMENT_PAGE);
 }
 
 void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
@@ -541,6 +550,50 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
     return;
   }
   chrome::ShowSettingsSubPage(browser(), chrome::kAutofillSubPage);
+}
+
+void ProfileMenuView::SetMenuTitleForAccessibility() {
+  CHECK(switches::IsImprovedSigninUIOnDesktopEnabled());
+  Profile* profile = browser()->profile();
+  const signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(core_account_info);
+
+  switch (signin_util::GetSignedInState(identity_manager)) {
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn: {
+      std::string profile_user_display_name, profile_user_email;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+      profile_user_display_name = profile->GetPrefs()->GetString(
+          enterprise_signin::prefs::kProfileUserDisplayName);
+      profile_user_email = profile->GetPrefs()->GetString(
+          enterprise_signin::prefs::kProfileUserEmail);
+#endif
+      menu_title_ =
+          profile_user_display_name.empty()
+              ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
+              : base::UTF8ToUTF16(profile_user_display_name);
+      menu_subtitle_ = base::UTF8ToUTF16(profile_user_email);  // Often empty.
+    } break;
+    case signin_util::SignedInState::kSyncPaused:
+    case signin_util::SignedInState::kSignInPending:
+      menu_title_ = base::UTF8ToUTF16(account_info.full_name);
+      menu_subtitle_ =
+          l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+      break;
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSignedIn:
+      menu_title_ = base::UTF8ToUTF16(account_info.full_name);
+      menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
+      break;
+  }
+
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void ProfileMenuView::BuildIdentity() {
@@ -877,6 +930,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
               ->GetManagementIconForProfile();
     }
 
+    params.header_action =
+        base::BindRepeating(&ProfileMenuView::OnProfileManagementButtonClicked,
+                            base::Unretained(this));
     if (custom_management_image) {
       params.header_image = *custom_management_image;
     } else {

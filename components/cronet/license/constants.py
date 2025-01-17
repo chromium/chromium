@@ -17,6 +17,7 @@ def create_license_post_processing(*args: Mapper) -> Callable:
 
 RAW_LICENSE_TO_FORMATTED_DETAILS = {
     "BSD": ("BSD", LicenseType.NOTICE, "SPDX-license-identifier-BSD"),
+    "BSD-2-Clause": ("BSD_2_CLAUSE", LicenseType.NOTICE, "SPDX-license-identifier-BSD-2-Clause"),
     "BSD 3-Clause": (
         "BSD_3_CLAUSE", LicenseType.NOTICE,
         "SPDX-license-identifier-BSD-3-Clause"),
@@ -42,8 +43,12 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
       ("ZLIB", LicenseType.RECIPROCAL, "SPDX-license-identifier-Zlib"),
     "MPL 1.1":
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
+    "MPL-1.1":
+      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
     "MPL 2.0":
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
+    "NCSA":
+      ("NCSA", LicenseType.NOTICE, "SPDX-license-identifier-NCSA"),
     "unencumbered":
       ("UNENCUMBERED", LicenseType.UNENCUMBERED,
        "SPDX-license-identifier-Unlicense"),
@@ -56,22 +61,20 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
 #
 # The current structure is Mapper(dictionary_key, expected_value, value_to_write)
 POST_PROCESS_OPERATION = {
-    "base/third_party/nspr/README.chromium": create_license_post_processing(
-        Mapper("License", ['MPL 1.1/GPL 2.0/LGPL 2.1'], ["MPL 1.1"])),
     "url/third_party/mozilla/README.chromium": create_license_post_processing(
         Mapper("License", ['MPLv2'], ["MPL 2.0"])),
+    "third_party/apache-portable-runtime/README.chromium": create_license_post_processing(
+        Mapper("License", ['Apache-2.0', 'dso', 'Zlib', 'ISC', 'BSD-4-Clause-UC'], ["Apache 2.0"])),
     "third_party/libc++abi/README.chromium": create_license_post_processing(
         Mapper("License",
-               ['MIT',
-                'University of Illinois/NCSA Open Source License'],
+               ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],
                ["MIT"])),
     "third_party/libc++/README.chromium": create_license_post_processing(
         Mapper("License",
-               ['MIT',
-                'University of Illinois/NCSA Open Source License'],
+               ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],
                ["MIT"])),
     "third_party/boringssl/README.chromium": create_license_post_processing(
-        Mapper("License", ['BSDish'], ["BSD"]),
+        Mapper("License", ['MIT', 'BSD-3-Clause', 'OpenSSL', 'ISC', 'SSLeay'], ["BSD"]),
         # TODO(b/360316861): Fix upstream by setting an explicit version to boringssl.
         Mapper("Version", "git", None)),
     "net/third_party/quiche/METADATA": create_license_post_processing(

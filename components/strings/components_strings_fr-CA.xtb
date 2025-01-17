@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">Erreur dans les paramètres de confidentialité</translation>
 <translation id="1414134146594747368">Éducation préscolaire</translation>
 <translation id="1419305130220238697">Bouton Gérer les téléchargements dans Chrome, activez-le pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
+<translation id="1420345875188552368">Votre mode de paiement automatique enregistré peut être utilisé pour ce paiement. Pour désactiver les portefeuilles électroniques dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres des paiements<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> pour autoriser l'association</translation>
 <translation id="14222610277930434">Vous visitez souvent cette page</translation>
 <translation id="1422930527989633628">Les sites peuvent demander à découvrir les appareils Bluetooth à proximité</translation>
@@ -1283,6 +1284,7 @@
 <translation id="3273757719652748628">Zone de contenu « Enregistrer l'IBAN » dans le bas de l'écran ouverte à pleine hauteur.</translation>
 <translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
+<translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3287510313208355388">Télécharger en ligne</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pourrait devoir prendre des mesures supplémentaires pour vérifier votre paiement</translation>
@@ -2156,6 +2158,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="4827283332383516812">Supprimer la carte</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> sélectionné(s)</translation>
 <translation id="4831993743164297314">Papier de création d'images</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillade</translation>
@@ -3656,6 +3659,7 @@ Détails supplémentaires :
 <translation id="7511955381719512146">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Cette politique ne peut pas être définie à « Vrai » et être obligatoire, alors elle a été définie à Recommandé.</translation>
 <translation id="7514365320538308">Télécharger</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Véhicules tout terrain</translation>
 <translation id="7517414872996418597">Enveloppe C10</translation>
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse : <ph name="URL" /></translation>

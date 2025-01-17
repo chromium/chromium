@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/text_and_image_mode.h"
 
@@ -18,38 +17,32 @@ EditorMenuCardContext::EditorMenuCardContext(const EditorMenuCardContext&) =
 EditorMenuCardContext::~EditorMenuCardContext() = default;
 
 TextAndImageMode EditorMenuCardContext::text_and_image_mode() const {
-  // TODO: b:389553095 - With the introduction of EditorTextSelectionMode,
-  // merge kRewrite and kWrite into a single enum value.
-  switch (editor_mode_) {
-    case EditorMode::kRewrite:
-    case EditorMode::kWrite:
-    case EditorMode::kConsentNeeded:
-      if (editor_mode_ == EditorMode::kConsentNeeded &&
-          !ash::features::IsMagicBoostRevampEnabled()) {
-        return TextAndImageMode::kPromoCard;
-      }
-      if (lobster_mode_ == LobsterMode::kBlocked) {
-        return text_selection_mode_ ==
-                       EditorMenuCardTextSelectionMode::kHasSelection
-                   ? TextAndImageMode::kEditorRewriteOnly
-                   : TextAndImageMode::kEditorWriteOnly;
-      }
-      return text_selection_mode_ ==
-                     EditorMenuCardTextSelectionMode::kHasSelection
-                 ? TextAndImageMode::kEditorRewriteAndLobster
-                 : TextAndImageMode::kEditorWriteAndLobster;
-
-    case EditorMode::kSoftBlocked:
-    case EditorMode::kHardBlocked:
-      if (lobster_mode_ == LobsterMode::kBlocked) {
-        return TextAndImageMode::kBlocked;
-      }
-
-      return text_selection_mode_ ==
-                     EditorMenuCardTextSelectionMode::kHasSelection
-                 ? TextAndImageMode::kLobsterWithSelectedText
-                 : TextAndImageMode::kLobsterWithNoSelectedText;
+  if (lobster_mode_ == LobsterMode::kBlocked) {
+    if (editor_mode_ == EditorMode::kRewrite) {
+      return TextAndImageMode::kEditorRewriteOnly;
+    }
+    if (editor_mode_ == EditorMode::kWrite) {
+      return TextAndImageMode::kEditorWriteOnly;
+    }
+    if (editor_mode_ == EditorMode::kConsentNeeded) {
+      return TextAndImageMode::kPromoCard;
+    }
+    return TextAndImageMode::kBlocked;
   }
+
+  if (editor_mode_ == EditorMode::kRewrite) {
+    return TextAndImageMode::kEditorRewriteAndLobster;
+  }
+  if (editor_mode_ == EditorMode::kWrite) {
+    return TextAndImageMode::kEditorWriteAndLobster;
+  }
+  if (editor_mode_ == EditorMode::kConsentNeeded) {
+    return TextAndImageMode::kPromoCard;
+  }
+  if (lobster_mode_ == LobsterMode::kNoSelectedText) {
+    return TextAndImageMode::kLobsterWithNoSelectedText;
+  }
+  return TextAndImageMode::kLobsterWithSelectedText;
 }
 
 bool EditorMenuCardContext::consent_status_settled() const {

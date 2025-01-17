@@ -5,9 +5,14 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.getPaneColorBlendInterpolator;
 import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -54,12 +59,14 @@ public class HubToolbarView extends LinearLayout {
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private final AnimationHandler mColorBlendAnimatorHandler;
+    private final AnimationHandler mHubSearchAnimatorHandler;
     private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mColorBlendAnimatorHandler = new AnimationHandler();
+        mHubSearchAnimatorHandler = new AnimationHandler();
         mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
         mToolbarOverviewColorSetter = (color) -> {};
     }
@@ -179,16 +186,20 @@ public class HubToolbarView extends LinearLayout {
                     @ColorInt
                     int prevSelectedIconColor =
                             HubColors.getSelectedIconColor(context, prevColorScheme);
-                    return createMultiColorBlendAnimation(
-                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                            new int[] {prevIconColor, prevSelectedIconColor},
-                            new int[] {newIconColor, newSelectedIconColor},
-                            colorList -> {
-                                @ColorInt int interpolatedIconColor = colorList[0];
-                                @ColorInt int interpolatedSelectedIconColor = colorList[1];
-                                updateTabIconTintInternal(
-                                        interpolatedIconColor, interpolatedSelectedIconColor);
-                            });
+                    Animator animation =
+                            createMultiColorBlendAnimation(
+                                    PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                                    new int[] {prevIconColor, prevSelectedIconColor},
+                                    new int[] {newIconColor, newSelectedIconColor},
+                                    colorList -> {
+                                        @ColorInt int interpolatedIconColor = colorList[0];
+                                        @ColorInt int interpolatedSelectedIconColor = colorList[1];
+                                        updateTabIconTintInternal(
+                                                interpolatedIconColor,
+                                                interpolatedSelectedIconColor);
+                                    });
+                    animation.setInterpolator(getPaneColorBlendInterpolator());
+                    return animation;
                 };
         mAnimatorSetBuilder.registerBlend(multiColorBlend);
 
@@ -263,7 +274,25 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisible(boolean visible) {
-        mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+        AnimatorSet hubSearchTransitionAnimation = getHubSearchBoxTransitionAnimation(visible);
+        AnimatorListenerAdapter animationListener =
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (visible) {
+                            mSearchBoxLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!visible) {
+                            mSearchBoxLayout.setVisibility(View.GONE);
+                        }
+                    }
+                };
+        hubSearchTransitionAnimation.addListener(animationListener);
+        mHubSearchAnimatorHandler.startAnimation(hubSearchTransitionAnimation);
     }
 
     public void setSearchLoupeVisible(boolean visible) {
@@ -317,5 +346,19 @@ public class HubToolbarView extends LinearLayout {
                         ? R.string.hub_search_empty_hint_incognito
                         : R.string.hub_search_empty_hint;
         mSearchBoxTextView.setHint(context.getString(emptyHintRes));
+    }
+
+    private AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
+        float fadeAlphaFrom = visible ? 0 : 1;
+        float fadeAlphaTo = visible ? 1 : 0;
+        float slideTransitionY = visible ? 0 : -mSearchBoxLayout.getHeight();
+        Animator fade =
+                ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
+        Animator slide =
+                ObjectAnimator.ofFloat(mSearchBoxLayout, View.TRANSLATION_Y, slideTransitionY);
+        AnimatorSet slideFadeHubSearchBoxAnimator = new AnimatorSet();
+        slideFadeHubSearchBoxAnimator.play(slide).with(fade);
+        slideFadeHubSearchBoxAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
+        return slideFadeHubSearchBoxAnimator;
     }
 }

@@ -223,6 +223,18 @@
     Show cards from your Google Account
   </message>
 
+  <message name="IDS_AUTOFILL_SAVE_AND_FILL_SUGGESTION_TITLE" desc="Title for the `Save and Fill` suggestion shown in the Autofill dropdown for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to save and fill a credit card with a single click.">
+    Save card for faster checkout
+  </message>
+
+  <message name="IDS_AUTOFILL_LOCAL_SAVE_AND_FILL_SUGGESTION_DESCRIPTION" desc="Description for the local `Save and Fill` suggestion shown in the Autofill dropdown for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to save and fill a credit card with a single click">
+    Autofill next time. Card is saved on your device.
+  </message>
+
+  <message name="IDS_AUTOFILL_SERVER_SAVE_AND_FILL_SUGGESTION_DESCRIPTION" desc="Description for the server `Save and Fill` suggestion shown in the Autofill dropdown for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to save and fill a credit card with a single click">
+    Autofill next time. Card is encrypted when saved.
+  </message>
+
   <if expr="not is_android">
     <message name="IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA" desc="The accessibility text to speak when we display an autofill popup.">
       Autofill

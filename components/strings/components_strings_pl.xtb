@@ -248,6 +248,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1413809658975081374">Błąd dotyczący prywatności</translation>
 <translation id="1414134146594747368">Edukacja przedszkolna</translation>
 <translation id="1419305130220238697">Przycisk Zarządzaj pobranymi plikami w Chrome; aktywuj, aby zarządzać pobranymi plikami w Chrome</translation>
+<translation id="1420345875188552368">Do tej płatności może zostać użyta zapisana forma płatności automatycznej. Aby wyłączyć e-portfele w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, by umożliwić sparowanie</translation>
 <translation id="14222610277930434">Często odwiedzasz</translation>
 <translation id="1422930527989633628">Może prosić o zgodę na wykrywanie urządzeń Bluetooth w pobliżu</translation>
@@ -1283,6 +1284,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3273757719652748628">Zapisywanie numeru IBAN jest otwarte na całą wysokość.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się otwierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
+<translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3287510313208355388">Pobierz, gdy będę online</translation>
 <translation id="3288238092761586174">Weryfikacja Twojej płatności może wymagać od <ph name="URL" /> podjęcia dodatkowych działań</translation>
@@ -3658,6 +3660,7 @@ Dodatkowe informacje:
 <translation id="7511955381719512146">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Te zasady nie mogą mieć wartości „Prawda”, a ich przestrzeganie nie może być obowiązkowe. Zmieniliśmy ich stan na zalecane.</translation>
 <translation id="7514365320538308">Pobierz</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Pojazdy terenowe</translation>
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>

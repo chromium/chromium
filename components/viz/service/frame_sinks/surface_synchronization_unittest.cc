@@ -7,7 +7,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/frame_index_constants.h"
@@ -193,7 +192,7 @@ class SurfaceSynchronizationTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(
-        FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
+        FrameSinkManagerImpl::InitParams());
     surface_observer_ =
         std::make_unique<FakeSurfaceObserver>(surface_manager(), false);
     begin_frame_source_ =
@@ -268,7 +267,6 @@ class SurfaceSynchronizationTest : public testing::Test {
 
  private:
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<FakeSurfaceObserver> surface_observer_;
   std::unique_ptr<FakeExternalBeginFrameSource> begin_frame_source_;

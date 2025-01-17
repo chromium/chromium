@@ -763,12 +763,88 @@ bool WebAppRegistrar::IsInstallState(
   return state_set.Has(install_state.value());
 }
 
+bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
+                                 const WebAppFilter& filter) const {
+  std::optional<proto::InstallState> install_state = GetInstallState(app_id);
+  if (install_state == std::nullopt ||
+      install_state == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+    return false;
+  }
+
+  if (filter.opens_in_browser_tab_) {
+    return GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser;
+  }
+
+  if (filter.opens_in_dedicated_window_) {
+    return GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  }
+
+  if (filter.captures_links_in_scope_) {
+    return CapturesLinksInScope(app_id);
+  }
+
+  if (filter.is_isolated_app_) {
+    return IsIsolated(app_id);
+  }
+
+  if (filter.displays_badge_on_os_ || filter.supports_os_notifications_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
+  if (filter.installed_in_chrome_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION ||
+           install_state == proto::INSTALLED_WITHOUT_OS_INTEGRATION;
+  }
+
+  return false;
+}
+
+std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
+    const GURL& url,
+    const WebAppFilter& filter) const {
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+
+  const std::string url_spec = url.spec();
+
+  std::optional<webapps::AppId> best_app_id;
+  int best_score = 0;
+
+  for (const webapps::AppId& app_id :
+       GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!GetAppScope(app_id).is_valid()) {
+      continue;
+    }
+
+    if (GetInstallState(app_id) == proto::SUGGESTED_FROM_ANOTHER_DEVICE) {
+      continue;
+    }
+
+    // TODO(crbug.com/341337420): Audit call sites and ideally have scope
+    // extensions be considered by default.
+    int score = GetUrlInAppScopeScore(url_spec, app_id);
+    if (score > 0 && score > best_score) {
+      best_app_id = app_id;
+      best_score = score;
+    }
+  }
+
+  if (best_app_id.has_value() && AppMatches(best_app_id.value(), filter)) {
+    return best_app_id;
+  }
+
+  return std::nullopt;
+}
+
+// DEPRECATED:
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     const GURL& url,
     std::initializer_list<proto::InstallState> states) const {
   return FindBestAppWithUrlInScope(url, states, AppFilterOptions());
 }
 
+// DEPRECATED:
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     const GURL& url,
     std::initializer_list<proto::InstallState> states,
@@ -818,36 +894,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   return best_app_id;
 }
 
-// Returns all apps that have the given `url` in scope and are in one of the
-// given `states`.
-std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsWithUrlInScope(
-    const GURL& url,
-    std::initializer_list<proto::InstallState> states) const {
-  CHECK_NE(states.size(), 0ul);
-  if (!url.is_valid()) {
-    return {};
-  }
-  std::string url_spec = url.spec();
-
-  std::vector<webapps::AppId> apps_with_url_in_scope;
-  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-
-    std::string app_scope = GetAppScope(app_id).spec();
-    DCHECK(!app_scope.empty());
-
-    if (!base::StartsWith(app_scope, url_spec, base::CompareCase::SENSITIVE)) {
-      continue;
-    }
-
-    apps_with_url_in_scope.push_back(app_id);
-  }
-
-  return apps_with_url_in_scope;
-}
-
+// DEPRECATED:
 // Returns all apps that have the given `url` in scope and are in one of the
 // given `states`.
 std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
@@ -862,6 +909,35 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
   std::vector<webapps::AppId> apps_in_outer_scope;
   for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
     if (!IsInstallState(app_id, states)) {
+      continue;
+    }
+
+    std::string app_scope = GetAppScope(app_id).spec();
+    DCHECK(!app_scope.empty());
+
+    if (!base::StartsWith(app_scope, outer_scope_spec,
+                          base::CompareCase::SENSITIVE)) {
+      continue;
+    }
+
+    apps_in_outer_scope.push_back(app_id);
+  }
+
+  return apps_in_outer_scope;
+}
+
+// Returns all apps that have the given `url` in scope and match the filter.
+std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
+    const GURL& outer_scope,
+    const WebAppFilter& filter) const {
+  if (!outer_scope.is_valid()) {
+    return {};
+  }
+  std::string outer_scope_spec = outer_scope.spec();
+
+  std::vector<webapps::AppId> apps_in_outer_scope;
+  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!AppMatches(app_id, filter)) {
       continue;
     }
 

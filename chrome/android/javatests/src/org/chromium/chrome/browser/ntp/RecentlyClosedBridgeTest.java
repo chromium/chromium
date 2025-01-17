@@ -1605,6 +1605,86 @@ public class RecentlyClosedBridgeTest {
         assertTabsAre(recentTabs, titles, urls);
     }
 
+    /** Tests opening the closed tab group when another group is pending closure. */
+    @Test
+    @MediumTest
+    public void testOpenRecentlyClosedTabGroupEntryWhenHasPendingTabGroupClosure() {
+        if (mTabGroupModelFilter == null) return;
+
+        // Tab order is inverted in RecentlyClosedEntry as most recent comes first so log data in
+        // reverse.
+        final String[] group1Urls = new String[] {getUrl(TEST_PAGE_C), getUrl(TEST_PAGE_B)};
+        final String[] group2Urls = new String[] {getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(group2Urls[0], /* incognito= */ false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(group1Urls[1], /* incognito= */ false);
+        final Tab tabC = sActivityTestRule.loadUrlInNewTab(group1Urls[0], /* incognito= */ false);
+
+        final String[] group1Titles = new String[2];
+        final String[] group2Titles = new String[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabB.getId());
+                    mTabGroupModelFilter.setTabGroupTitle(tabB.getId(), "Group 1");
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, true);
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Group 2");
+                    group2Titles[0] = tabA.getTitle();
+                    group1Titles[1] = tabB.getTitle();
+                    group1Titles[0] = tabC.getTitle();
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabB, tabC))
+                                    .hideTabGroups(false)
+                                    .build());
+                    mTabModel.commitAllTabClosures();
+                });
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(2, tabCount);
+        Assert.assertEquals(1, recentEntries.size());
+        assertEntryIs(
+                recentEntries.get(0),
+                RecentlyClosedGroup.class,
+                new String[] {"Group 1"},
+                group1Titles,
+                group1Urls);
+
+        // Close Group 2 and restore Group 1.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(false).build());
+                    mRecentlyClosedBridge.openMostRecentlyClosedEntry(mTabModel);
+                });
+
+        // 1. Blank tab
+        // 2. Restored tabB
+        // 3. Restored tabC
+        final List<Tab> tabs = getAllTabs();
+        Assert.assertEquals(3, tabs.size());
+        Assert.assertEquals(group1Titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
+        Assert.assertEquals(group1Urls[1], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
+        Assert.assertEquals(group1Titles[0], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
+        Assert.assertEquals(group1Urls[0], ChromeTabUtils.getUrlOnUiThread(tabs.get(2)).getSpec());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            "Group 1", mTabGroupModelFilter.getTabGroupTitle(tabs.get(1).getId()));
+                    Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
+                    Assert.assertEquals(
+                            Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
+                            mTabGroupModelFilter.getRelatedTabList(tabs.get(1).getId()));
+                });
+
+        tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(3, tabCount);
+        Assert.assertEquals(1, recentEntries.size());
+        assertEntryIs(
+                recentEntries.get(0),
+                RecentlyClosedGroup.class,
+                new String[] {"Group 2"},
+                group2Titles,
+                group2Urls);
+    }
+
     // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,
     // but the flag state is flipped.
 

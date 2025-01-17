@@ -271,6 +271,12 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
     return Result::kServerTransientError;
   }
 
+  if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+    // Treat proxy errors as connection errors. It makes sense to retry again
+    // once the user responds to the authentication challenge.
+    return Result::kConnectionError;
+  }
+
   if (response_code >= net::HTTP_BAD_REQUEST) {
     // Server error 4xx.
     return Result::kServerPersistentError;

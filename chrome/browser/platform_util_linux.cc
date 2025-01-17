@@ -31,7 +31,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -66,13 +65,7 @@ class ShowItemHelper {
     return *instance;
   }
 
-  ShowItemHelper()
-      : browser_shutdown_subscription_(
-            browser_shutdown::AddAppTerminatingCallback(
-                base::BindOnce(&ShowItemHelper::OnAppTerminating,
-                               // Unretained is safe, the ShowItemHelper
-                               // instance is never destroyed.
-                               base::Unretained(this)))) {}
+  ShowItemHelper() = default;
 
   ShowItemHelper(const ShowItemHelper&) = delete;
   ShowItemHelper& operator=(const ShowItemHelper&) = delete;
@@ -84,12 +77,7 @@ class ShowItemHelper {
       return;
     }
     if (!bus_) {
-      // Sets up the D-Bus connection.
-      dbus::Bus::Options bus_options;
-      bus_options.bus_type = dbus::Bus::SESSION;
-      bus_options.connection_type = dbus::Bus::PRIVATE;
-      bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-      bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+      bus_ = dbus_thread_linux::GetSharedSessionBus();
     }
 
     if (api_type_.has_value()) {
@@ -141,16 +129,6 @@ class ShowItemHelper {
       ShowItemInFolderOnApiTypeSet(pending_requests_.front());
       pending_requests_.pop();
     }
-  }
-
-  void OnAppTerminating() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    // The browser process is about to exit. Clean up while we still can.
-    portal_object_proxy_ = nullptr;
-    file_manager_object_proxy_ = nullptr;
-    if (bus_)
-      bus_->ShutdownOnDBusThreadAndBlock();
-    bus_.reset();
   }
 
   void CheckPortalRunningResponse(std::optional<bool> is_running) {
@@ -315,8 +293,6 @@ class ShowItemHelper {
 
   // Requests that are queued until the API availability is determined.
   std::queue<base::FilePath> pending_requests_;
-
-  base::CallbackListSubscription browser_shutdown_subscription_;
 };
 
 void OnLaunchOptionsCreated(const std::string& command,
@@ -339,12 +315,14 @@ void OnLaunchOptionsCreated(const std::string& command,
   // applications. See http://crbug.com/24120
   char* disable_gnome_bug_buddy = getenv("GNOME_DISABLE_CRASH_DIALOG");
   if (disable_gnome_bug_buddy &&
-      disable_gnome_bug_buddy == std::string("SET_BY_GOOGLE_CHROME"))
+      disable_gnome_bug_buddy == std::string("SET_BY_GOOGLE_CHROME")) {
     options.environment["GNOME_DISABLE_CRASH_DIALOG"] = std::string();
+  }
 
   base::Process process = base::LaunchProcess(argv, options);
-  if (process.IsValid())
+  if (process.IsValid()) {
     base::EnsureProcessGetsReaped(std::move(process));
+  }
 }
 
 void RunCommand(const std::string& command,
@@ -396,10 +374,11 @@ void ShowItemInFolder(Profile*, const base::FilePath& full_path) {
 
 void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (url.SchemeIs("mailto"))
+  if (url.SchemeIs("mailto")) {
     XDGEmail(url.spec());
-  else
+  } else {
     XDGOpen(base::FilePath(), url.spec());
+  }
 }
 
 }  // namespace platform_util

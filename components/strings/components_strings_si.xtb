@@ -1283,6 +1283,7 @@
 <translation id="3273757719652748628">IBAN සුරැකීම සම්පූර්ණ උසින් විවෘත විය.</translation>
 <translation id="3281350579597955952">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}}</translation>
 <translation id="3282085321714087552">ඔබගේ සංවිධානය, <ph name="ENROLLMENT_DOMAIN" />, සැකසීම් හෝ ප්‍රතිපත්ති වැනි, යම් තොරතුරු පහත සඳහන් වෙබ් අඩවි වෙත යවා ඇත.</translation>
+<translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3286372614333682499">ප්‍රතිමූර්තිය</translation>
 <translation id="3287510313208355388">සබැඳි විට බාගන්න</translation>
 <translation id="3288238092761586174"><ph name="URL" /> හට ඔබගේ ගෙවීම සත්‍යාපනය කිරීම සඳහා අතිරේක පියවර ගැනීමට අවශ්‍ය විය හැකිය</translation>
@@ -2156,6 +2157,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඉක්මනින් නව Google Sheet එකක් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
 <translation id="4827283332383516812">කාඩ්පත මකන්න</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> තෝරා ගන්නා ලදි</translation>
 <translation id="4831993743164297314">රූප සැකසුම් කඩදාසි</translation>
 <translation id="483241715238664915">අනතුරු ඇඟවීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="4832961164064927107">බාබකියු සහ ග්‍රිල් කිරීම</translation>
@@ -3656,6 +3658,7 @@
 <translation id="7511955381719512146">ඔබ භාවිතා කරන Wi-Fi මගින් ඔබ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> වෙත පිවිසීමට අවශ්‍ය විය හැක.</translation>
 <translation id="7512685745044087310">මෙම ප්‍රතිපත්තිය "සත්‍ය" ලෙස සැකසිය නොහැකි අතර එය අනිවාර්ය විය යුතුය, එබැවින් එය නිර්දේශිත ලෙස වෙනස් කරන ලදි.</translation>
 <translation id="7514365320538308">බාගන්න</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">ඔෆ් රෝඩ් වාහන</translation>
 <translation id="7517414872996418597">ලියුම් කවරය C10</translation>
 <translation id="7518003948725431193">ජාල ලිපිනය සඳහා කිසිඳු ජාල පිටුවක් හමු නොවුනි: <ph name="URL" /></translation>

@@ -1349,4 +1349,61 @@ TEST_F(EwalletManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
 }
 
+TEST_F(EwalletManagerTest,
+       ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
+  // When purchase action is invoked, the progress screen would be showing.
+  test_api(*ewallet_manager_).ShowProgressScreen();
+
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->secure_payload_.action_token =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  test_api(*ewallet_manager_)
+      .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kSuccess,
+          std::move(response_details));
+
+  // The progress screen is persisted for a short duration after invoking the
+  // purchase action for a smooth transition to the platform screen.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kProgressScreen);
+
+  FastForwardBy(base::Seconds(1));
+
+  // The progress screen should be dismissed after a short delay.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+}
+
+TEST_F(EwalletManagerTest,
+       ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
+  // When purchase action is invoked, the progress screen would be showing.
+  test_api(*ewallet_manager_).ShowProgressScreen();
+
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->secure_payload_.action_token =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  test_api(*ewallet_manager_)
+      .OnInitiatePaymentResponseReceived(
+          base::TimeTicks::Now() - base::Seconds(2),
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+              kSuccess,
+          std::move(response_details));
+
+  // If the purchase action could not be invoked, the `PurchaseActionResult` is
+  // returned immediately. The error screen is shown.
+  test_api(*ewallet_manager_)
+      .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
+                           PurchaseActionResult::kCouldNotInvoke);
+  FastForwardBy(base::Seconds(1));
+
+  // The error screen shouldn't be auto-dismissed.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kErrorScreen);
+}
+
 }  // namespace payments::facilitated

@@ -9431,7 +9431,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Avoid having the root try to handle the following event.
   root_view->set_event_handler(nullptr);
 
-  auto size = root_view->GetSize();
+  auto size = root_view->GetSizeDIPs();
   float x = size.width() / 2;
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);

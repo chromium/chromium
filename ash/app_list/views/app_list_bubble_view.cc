@@ -105,7 +105,6 @@ class SeparatorWithLayer : public views::View {
   SeparatorWithLayer() {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     // Color is set in OnThemeChanged().
-    layer()->SetFillsBoundsOpaquely(false);
   }
   SeparatorWithLayer(const SeparatorWithLayer&) = delete;
   SeparatorWithLayer& operator=(const SeparatorWithLayer&) = delete;

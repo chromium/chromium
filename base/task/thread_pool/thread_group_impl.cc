@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/profiler/thread_group_profiler.h"
 #include "base/sequence_token.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/checked_lock.h"
@@ -234,6 +235,13 @@ void ThreadGroupImpl::Start(
       service_thread_task_runner, worker_thread_observer, worker_environment,
       synchronous_thread_start_for_testing, may_block_threshold);
 
+  // Create thread group profiler if profiling is enabled after the thread group
+  // start but before worker threads are created.
+  if (ThreadGroupProfiler::IsProfilingEnabled()) {
+    thread_group_profiler_.emplace(service_thread_task_runner,
+                                   thread_group_label_);
+  }
+
   ScopedCommandsExecutor executor(this);
   CheckedAutoLock auto_lock(lock_);
   DCHECK(workers_.empty());
@@ -330,10 +338,15 @@ void ThreadGroupImpl::WorkerDelegate::OnMainEntry(WorkerThread* worker) {
   worker_only().worker_thread_ = static_cast<WorkerThread*>(worker);
   SetBlockingObserverForCurrentThread(this);
 
+  if (outer_->thread_group_profiler_) {
+    outer_->thread_group_profiler_->OnWorkerThreadStarted(worker);
+  }
+
   if (outer_->worker_started_for_testing_) {
-    // When |worker_started_for_testing_| is set, the thread that starts workers
-    // should wait for a worker to have started before starting the next one,
-    // and there should only be one thread that wakes up workers at a time.
+    // When |worker_started_for_testing_| is set, the thread that starts
+    // workers should wait for a worker to have started before starting the
+    // next one, and there should only be one thread that wakes up workers at
+    // a time.
     DCHECK(!outer_->worker_started_for_testing_->IsSignaled());
     outer_->worker_started_for_testing_->Signal();
   }
@@ -362,6 +375,10 @@ void ThreadGroupImpl::WorkerDelegate::OnMainExit(WorkerThread* worker_base) {
 #if BUILDFLAG(IS_WIN)
   worker_only().win_thread_environment.reset();
 #endif  // BUILDFLAG(IS_WIN)
+
+  if (outer_->thread_group_profiler_) {
+    outer_->thread_group_profiler_->OnWorkerThreadExiting(worker_base);
+  }
 
   // Count cleaned up workers for tests. It's important to do this here
   // instead of at the end of CleanupLockRequired() because some side-effects
@@ -413,8 +430,22 @@ RegisteredTaskSource ThreadGroupImpl::WorkerDelegate::GetWork(
   DCHECK(!read_worker().current_shutdown_behavior);
 
   ScopedCommandsExecutor executor(outer_.get());
-  CheckedAutoLock auto_lock(outer_->lock_);
-  return GetWorkLockRequired(&executor, worker);
+  RegisteredTaskSource task_source;
+  {
+    CheckedAutoLock auto_lock(outer_->lock_);
+    task_source = GetWorkLockRequired(&executor, worker);
+  }
+  // Notify the profiler on the worker thread status when profiling is enabled.
+  // This must be called without holding lock_ as lock_ is not a universal
+  // predecessor that does not satisfy OnWorkerThreadIdle's CheckedLock.
+  if (outer_->thread_group_profiler_) {
+    // GetWork is only called when waking up, i.e. from an idle state. No need
+    // to mark it idle again if no task source available.
+    if (task_source) {
+      outer_->thread_group_profiler_->OnWorkerThreadActive(worker);
+    }
+  }
+  return task_source;
 }
 
 RegisteredTaskSource ThreadGroupImpl::WorkerDelegate::GetWorkLockRequired(
@@ -500,39 +531,47 @@ RegisteredTaskSource ThreadGroupImpl::WorkerDelegate::SwapProcessedTask(
 
   ScopedCommandsExecutor workers_executor(outer_.get());
   ScopedReenqueueExecutor reenqueue_executor;
-  CheckedAutoLock auto_lock(outer_->lock_);
+  RegisteredTaskSource next_task_source;
+  {
+    CheckedAutoLock auto_lock(outer_->lock_);
 
-  // During shutdown, max_tasks may have been incremented in
-  // OnShutdownStartedLockRequired().
-  if (incremented_max_tasks_for_shutdown_) {
-    DCHECK(outer_->shutdown_started_);
-    outer_->DecrementMaxTasksLockRequired();
-    if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT) {
-      outer_->DecrementMaxBestEffortTasksLockRequired();
+    // During shutdown, max_tasks may have been incremented in
+    // OnShutdownStartedLockRequired().
+    if (incremented_max_tasks_for_shutdown_) {
+      DCHECK(outer_->shutdown_started_);
+      outer_->DecrementMaxTasksLockRequired();
+      if (*read_worker().current_task_priority == TaskPriority::BEST_EFFORT) {
+        outer_->DecrementMaxBestEffortTasksLockRequired();
+      }
+      incremented_max_tasks_since_blocked_ = false;
+      incremented_max_best_effort_tasks_since_blocked_ = false;
+      incremented_max_tasks_for_shutdown_ = false;
     }
-    incremented_max_tasks_since_blocked_ = false;
-    incremented_max_best_effort_tasks_since_blocked_ = false;
-    incremented_max_tasks_for_shutdown_ = false;
+
+    DCHECK(read_worker().blocking_start_time.is_null());
+    DCHECK(!incremented_max_tasks_since_blocked_);
+    DCHECK(!incremented_max_best_effort_tasks_since_blocked_);
+
+    // Running task bookkeeping.
+    outer_->DecrementTasksRunningLockRequired(
+        *read_worker().current_task_priority);
+    write_worker().current_shutdown_behavior = std::nullopt;
+    write_worker().current_task_priority = std::nullopt;
+
+    if (transaction_with_task_source) {
+      outer_->ReEnqueueTaskSourceLockRequired(
+          &workers_executor, &reenqueue_executor,
+          std::move(transaction_with_task_source.value()));
+    }
+
+    next_task_source = GetWorkLockRequired(&workers_executor,
+                                           static_cast<WorkerThread*>(worker));
   }
-
-  DCHECK(read_worker().blocking_start_time.is_null());
-  DCHECK(!incremented_max_tasks_since_blocked_);
-  DCHECK(!incremented_max_best_effort_tasks_since_blocked_);
-
-  // Running task bookkeeping.
-  outer_->DecrementTasksRunningLockRequired(
-      *read_worker().current_task_priority);
-  write_worker().current_shutdown_behavior = std::nullopt;
-  write_worker().current_task_priority = std::nullopt;
-
-  if (transaction_with_task_source) {
-    outer_->ReEnqueueTaskSourceLockRequired(
-        &workers_executor, &reenqueue_executor,
-        std::move(transaction_with_task_source.value()));
+  // Must be called without holding a lock.
+  if (outer_->thread_group_profiler_ && !task_source) {
+    outer_->thread_group_profiler_->OnWorkerThreadIdle(worker);
   }
-
-  return GetWorkLockRequired(&workers_executor,
-                             static_cast<WorkerThread*>(worker));
+  return next_task_source;
 }
 
 bool ThreadGroupImpl::WorkerDelegate::CanCleanupLockRequired(
@@ -755,6 +794,10 @@ void ThreadGroupImpl::WorkerDelegate::IncrementMaxTasksLockRequired()
 }
 
 void ThreadGroupImpl::JoinForTesting() {
+  // profiler needs to shutdown first to not block worker thread joins.
+  if (thread_group_profiler_) {
+    thread_group_profiler_->Shutdown();
+  }
   decltype(workers_) workers_copy;
   {
     CheckedAutoLock auto_lock(lock_);
@@ -857,6 +900,10 @@ void ThreadGroupImpl::OnShutdownStarted() {
   }
   if (join_for_testing_started_) [[unlikely]] {
     return;
+  }
+
+  if (thread_group_profiler_) {
+    thread_group_profiler_->Shutdown();
   }
 
   // Start a MAY_BLOCK scope on each worker that is already running a task.

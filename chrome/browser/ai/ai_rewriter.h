@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -30,8 +31,10 @@ class AIRewriter : public AIContextBoundObject,
       mojo::PendingReceiver<blink::mojom::AIRewriter> receiver);
   AIRewriter(const AIRewriter&) = delete;
   AIRewriter& operator=(const AIRewriter&) = delete;
-
   ~AIRewriter() override;
+
+  static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
+  ToProtoOptions(const blink::mojom::AIRewriterCreateOptionsPtr& options);
 
   // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,

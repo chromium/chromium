@@ -3705,6 +3705,18 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
 }
 
+void AddShortcutInputStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kShortcutInputStrings[] = {
+      {"shortcutIncludeStartModifier", IDS_SHORTCUT_INCLUDE_START_MODIFIER},
+      {"shortcutTooManyModifiers", IDS_SHORTCUT_TOO_MANY_MODIFIERS},
+      {"shortcutNeedCharacter", IDS_SHORTCUT_NEED_CHARACTER},
+      {"shortcutSet", IDS_SHORTCUT_SET},
+      {"shortcutNotSet", IDS_SHORTCUT_NOT_SET},
+      {"shortcutTypeAShortcut", IDS_TYPE_A_SHORTCUT},
+  };
+  html_source->AddLocalizedStrings(kShortcutInputStrings);
+}
+
 }  // namespace
 
 extern void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
@@ -3736,6 +3748,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddPrivacyGuideStrings(html_source);
   AddPrivacyStrings(html_source, profile);
   AddSafetyHubStrings(html_source);
+  AddShortcutInputStrings(html_source);
   AddResetStrings(html_source, profile);
   AddSearchEnginesStrings(html_source);
   AddSearchInSettingsStrings(html_source);

@@ -305,6 +305,16 @@ id<GREYMatcher> IdentityChooserScrim();
 // Returns matcher for the cancel button in the fake add account flow.
 id<GREYMatcher> FakeAddAccountScreenCancelButton();
 
+// Returns matcher for the primary button (typically labeled somethings like
+// "Yes") in various promo screens, including sign-in, history sync, default
+// browser choice, and more.
+id<GREYMatcher> PromoScreenPrimaryButtonMatcher();
+
+// Returns matcher for the secondary button (typically labeled somethings like
+// "No Thanks") in various promo screens, including sign-in, history sync,
+// default browser choice, and more.
+id<GREYMatcher> PromoScreenSecondaryButtonMatcher();
+
 // Returns a matcher for the button for the currently signed in account in the
 // settings menu.
 id<GREYMatcher> SettingsAccountButton();

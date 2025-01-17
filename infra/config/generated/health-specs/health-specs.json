@@ -6974,27 +6974,6 @@
           }
         ]
       },
-      "android-asan": {
-        "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "android-avd-packager": {
         "problem_specs": [
           {
@@ -9481,26 +9460,6 @@
           }
         ]
       },
-      "ios17-sdk-device": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "ios17-sdk-simulator": {
         "problem_specs": [
           {
@@ -9522,6 +9481,27 @@
         ]
       },
       "ios18-beta-simulator": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "ios18-sdk-device": {
+        "contact_team_email": "bling-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

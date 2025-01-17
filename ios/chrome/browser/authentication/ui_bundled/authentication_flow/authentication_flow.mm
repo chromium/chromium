@@ -13,7 +13,10 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
+#import "components/prefs/pref_service.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
@@ -58,6 +61,7 @@ namespace {
 enum AuthenticationState {
   BEGIN,
   FETCH_MANAGED_STATUS,
+  FETCH_PROFILE_SEPARATION_POLICIES,
   SHOW_MANAGED_CONFIRMATION,
   CONVERT_PERSONAL_PROFILE_TO_MANAGED,
   SIGN_OUT_IF_NEEDED,
@@ -127,6 +131,12 @@ enum class CancelationReason {
 
   // Capabilities fetcher for the subsequent History Sync Opt-In screen.
   HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
+
+  // Value of the ProfileSeparationDataMigrationSettings for
+  // `_identityToSignin`. This is used to know if the user can convert an
+  // existing profile into a managed profile.
+  policy::ProfileSeparationDataMigrationSettings
+      _profileSeparationDataMigrationSettings;
 }
 
 @synthesize handlingError = _handlingError;
@@ -150,6 +160,8 @@ enum class CancelationReason {
     _presentingViewController = presentingViewController;
     _state = BEGIN;
     _cancelationReason = CancelationReason::kNotCanceled;
+    _profileSeparationDataMigrationSettings =
+        policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
   }
   return self;
 }
@@ -211,6 +223,7 @@ enum class CancelationReason {
   switch (_state) {
     case BEGIN:
     case FETCH_MANAGED_STATUS:
+    case FETCH_PROFILE_SEPARATION_POLICIES:
     case SHOW_MANAGED_CONFIRMATION:
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
     case SIGN_OUT_IF_NEEDED:
@@ -242,9 +255,16 @@ enum class CancelationReason {
       if (ShouldShowManagedConfirmationForHostedDomain(
               _identityToSignInHostedDomain, _accessPoint,
               _identityToSignIn.gaiaID, [self prefs])) {
-        return SHOW_MANAGED_CONFIRMATION;
+        return !AreSeparateProfilesForManagedAccountsEnabled() ||
+                       [self shouldSkipBrowsingDataMigration:_accessPoint
+                                                     gaia_id:_identityToSignIn
+                                                                 .gaiaID]
+                   ? SHOW_MANAGED_CONFIRMATION
+                   : FETCH_PROFILE_SEPARATION_POLICIES;
       }
       return SIGN_OUT_IF_NEEDED;
+    case FETCH_PROFILE_SEPARATION_POLICIES:
+      return SHOW_MANAGED_CONFIRMATION;
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldConvertPersonalProfileToManaged) {
         return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
@@ -309,6 +329,11 @@ enum class CancelationReason {
       [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
 
+    case FETCH_PROFILE_SEPARATION_POLICIES:
+      [_performer fetchProfileSeparationPolicies:profile
+                                     forIdentity:_identityToSignIn];
+      return;
+
     case SHOW_MANAGED_CONFIRMATION: {
       [self showManagedConfirmationStep];
       return;
@@ -365,23 +390,36 @@ enum class CancelationReason {
 
 // Shows a confirmation dialog for signing in to an account managed.
 - (void)showManagedConfirmationStep {
-  // This value is not used if
+  // These value are not used if
   // `AreSeparateProfilesForManagedAccountsEnabled()` is false.
   BOOL skipBrowsingDataMigration = NO;
+  BOOL mergeBrowsingDataByDefault = NO;
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
     // Skip browsing data migration if we are at the first run screen or if
     // there is already a profile that exists with the account we are trying
     // to signin with.
     skipBrowsingDataMigration =
+        _profileSeparationDataMigrationSettings == policy::ALWAYS_SEPARATE ||
         [self shouldSkipBrowsingDataMigration:_accessPoint
                                       gaia_id:_identityToSignIn.gaiaID];
+
+    auto* pref_service = [self prefs];
+    // Merge browsing data by default if the data migration screen is shown to
+    // the user and if a policy was set by the admin to merge the browsing data
+    // by default.
+    mergeBrowsingDataByDefault =
+        !skipBrowsingDataMigration &&
+        pref_service->GetInteger(
+            prefs::kProfileSeparationDataMigrationSettings) ==
+            policy::USER_OPT_OUT;
   }
   [_performer
       showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
                                    userEmail:_identityToSignIn.userEmail
                               viewController:_presentingViewController
                                      browser:_browser
-                   skipBrowsingDataMigration:skipBrowsingDataMigration];
+                   skipBrowsingDataMigration:skipBrowsingDataMigration
+                  mergeBrowsingDataByDefault:mergeBrowsingDataByDefault];
 }
 
 // Signs out, if the user is already signed in with a different identity.
@@ -579,6 +617,14 @@ enum class CancelationReason {
   [self handleAuthenticationError:flowError];
 }
 
+- (void)didFetchProfileSeparationPolicies:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profile_separation_data_migration_settings {
+  _profileSeparationDataMigrationSettings =
+      profile_separation_data_migration_settings;
+  [self continueFlow];
+}
+
 - (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Only show the dialog once per account.
@@ -694,12 +740,20 @@ enum class CancelationReason {
   [self continueFlow];
 }
 
-// Returns true if we are at the FRE step of it there is already a profile that
-// has been fully initialized for `gaia_id`.
+// Returns true if any of the following holds:
+// * we are at the FRE step,
+// * there is already a profile that has been fully initialized for gaia_id, or
+// * a policy forces the browsing data to stay separated.
 - (BOOL)shouldSkipBrowsingDataMigration:
             (signin_metrics::AccessPoint)access_point
                                 gaia_id:(NSString*)gaia_id {
-  return access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
+  auto* pref_service = [self prefs];
+  bool always_separate_browsing_data_per_policy =
+      pref_service->GetInteger(
+          prefs::kProfileSeparationDataMigrationSettings) ==
+      policy::ALWAYS_SEPARATE;
+  return always_separate_browsing_data_per_policy ||
+         access_point == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
          GetApplicationContext()
              ->GetAccountProfileMapper()
              ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));

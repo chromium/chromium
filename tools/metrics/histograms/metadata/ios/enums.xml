@@ -1290,6 +1290,7 @@ the generic promo launch. -->
   <int value="4" label="Sports"/>
   <int value="5" label="Safety Check"/>
   <int value="6" label="Send Tab"/>
+  <int value="7" label="Reminders"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/push_notification_client_id.h:PushNotificationClientId) -->

@@ -318,12 +318,12 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
     case Suggestion::Icon::kPlusAddress:
+    case Suggestion::Icon::kSaveAndFill:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kBnpl:
-
       NOTREACHED();
   }
   NOTREACHED();

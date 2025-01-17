@@ -33,6 +33,7 @@
                               hostedDomain:(NSString*)hostedDomain
                                    browser:(Browser*)browser
                  skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

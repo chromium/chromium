@@ -1528,11 +1528,14 @@ void PrintRenderFrameHelper::PrintFrameContent(
     return;
 
   ContentProxySet typeface_content_info;
+  ContentProxySet image_content_info;
   MetafileSkia metafile(mojom::SkiaDocumentType::kMSKP,
                         params->document_cookie);
 
-  // Provide a typeface context to use with serializing to the print compositor.
+  // Provide typeface and image contexts to use with serializing to the print
+  // compositor.
   metafile.UtilizeTypefaceContext(&typeface_content_info);
+  metafile.UtilizeImageContext(&image_content_info);
 
   gfx::Size area_size = params->printable_area.size();
   // Since GetVectorCanvasForNewPage() starts a new recording, it will return
@@ -1834,6 +1837,8 @@ bool PrintRenderFrameHelper::RenderPreviewPage(
   }
   render_metafile->UtilizeTypefaceContext(
       print_preview_context_.typeface_content_info());
+  render_metafile->UtilizeImageContext(
+      print_preview_context_.image_content_info());
   base::TimeTicks begin_time = base::TimeTicks::Now();
   PrintPageInternalResult result = PrintPageInternal(
       print_params, page_index, print_preview_context_.total_page_count(),
@@ -2242,12 +2247,15 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   const mojom::PrintPagesParams& params = *print_pages_params_;
   const mojom::PrintParams& print_params = *params.params;
 
-  // Provide a typeface context to use with serializing to the print compositor.
+  // Provide typeface and image context to use with serializing to the print
+  // compositor.
   ContentProxySet typeface_content_info;
+  ContentProxySet image_content_info;
   MetafileSkia metafile(print_params.printed_doc_type,
                         print_params.document_cookie);
   CHECK(metafile.Init());
   metafile.UtilizeTypefaceContext(&typeface_content_info);
+  metafile.UtilizeImageContext(&image_content_info);
 
   bool generate_tagged_pdf = print_params.generate_tagged_pdf.value_or(
       delegate_->ShouldGenerateTaggedPDF());
@@ -3038,10 +3046,17 @@ PrintRenderFrameHelper::PrintPreviewContext::typeface_content_info() {
   return &typeface_content_info_;
 }
 
+ContentProxySet*
+PrintRenderFrameHelper::PrintPreviewContext::image_content_info() {
+  DCHECK(IsRendering());
+  return &image_content_info_;
+}
+
 void PrintRenderFrameHelper::PrintPreviewContext::ClearContext() {
   prep_frame_view_.reset();
   metafile_.reset();
   typeface_content_info_.clear();
+  image_content_info_.clear();
   pages_to_render_.clear();
   error_ = PrintPreviewErrorBuckets::kNone;
 }

@@ -1283,6 +1283,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3273757719652748628">Lưu IBAN đã mở trên toàn màn hình.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
+<translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3286372614333682499">dọc</translation>
 <translation id="3287510313208355388">Tải xuống khi trực tuyến</translation>
 <translation id="3288238092761586174"><ph name="URL" /> có thể cần thực hiện các bước bổ sung để xác minh khoản thanh toán của bạn</translation>
@@ -3658,6 +3659,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7511955381719512146">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Chính sách này đã được chuyển thành chính sách đề xuất do đây là chính sách không bắt buộc và không thể đặt thành ''Bật''</translation>
 <translation id="7514365320538308">Tải xuống</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Xe địa hình</translation>
 <translation id="7517414872996418597">Phong bì C10</translation>
 <translation id="7518003948725431193">Không tìm thấy trang web nào ứng với địa chỉ web:<ph name="URL" /></translation>

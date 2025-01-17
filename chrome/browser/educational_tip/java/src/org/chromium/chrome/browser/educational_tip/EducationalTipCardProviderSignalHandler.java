@@ -44,7 +44,7 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(
                                 hasDefaultBrowserPromoShownInOtherSurface(tracker)));
                 return inputContext;
-            case ModuleType.TAB_GROUP:
+            case ModuleType.TAB_GROUP_PROMO:
                 inputContext.addEntry(
                         "tab_group_exists",
                         ProcessedValue.fromFloat(tabGroupExists(actionDelegate)));
@@ -52,12 +52,12 @@ public class EducationalTipCardProviderSignalHandler {
                         "number_of_tabs",
                         ProcessedValue.fromFloat(getCurrentTabCount(actionDelegate)));
                 return inputContext;
-            case ModuleType.TAB_GROUP_SYNC:
+            case ModuleType.TAB_GROUP_SYNC_PROMO:
                 inputContext.addEntry(
                         "synced_tab_group_exists",
                         ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
-            case ModuleType.QUICK_DELETE:
+            case ModuleType.QUICK_DELETE_PROMO:
                 return inputContext;
             default:
                 assert false : "Card type not supported!";

@@ -409,6 +409,15 @@ UIColor* SelectionCircleColor() {
   }
 }
 
+- (void)moveTargetViewOnScreenWithAnimation {
+  // NO-OP
+}
+
+- (void)moveTargetViewOffscreenInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  // NO-OP
+}
+
 - (void)animateTargetViewCompleted:(BOOL)completed
                      withDirection:(UISwipeGestureRecognizerDirection)direction
                       withDuration:(NSTimeInterval)duration {

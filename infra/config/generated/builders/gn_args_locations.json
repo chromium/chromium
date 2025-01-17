@@ -315,9 +315,9 @@
     "ios-webkit-tot": "ci/ios-webkit-tot/gn-args.json",
     "ios-wpt-fyi-rel": "ci/ios-wpt-fyi-rel/gn-args.json",
     "ios17-beta-simulator": "ci/ios17-beta-simulator/gn-args.json",
-    "ios17-sdk-device": "ci/ios17-sdk-device/gn-args.json",
     "ios17-sdk-simulator": "ci/ios17-sdk-simulator/gn-args.json",
     "ios18-beta-simulator": "ci/ios18-beta-simulator/gn-args.json",
+    "ios18-sdk-device": "ci/ios18-sdk-device/gn-args.json",
     "ios18-sdk-simulator": "ci/ios18-sdk-simulator/gn-args.json",
     "linux-annotator-rel": "ci/linux-annotator-rel/gn-args.json",
     "linux-blink-heap-verification": "ci/linux-blink-heap-verification/gn-args.json",
@@ -418,7 +418,6 @@
     "WebKit Linux ASAN": "ci/WebKit Linux ASAN/gn-args.json",
     "WebKit Linux Leak": "ci/WebKit Linux Leak/gn-args.json",
     "WebKit Linux MSAN": "ci/WebKit Linux MSAN/gn-args.json",
-    "android-asan": "ci/android-asan/gn-args.json",
     "ios-asan": "ci/ios-asan/gn-args.json",
     "win-asan": "ci/win-asan/gn-args.json"
   },

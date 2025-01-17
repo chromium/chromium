@@ -44,7 +44,7 @@ declare global {
 
 export interface ViewerToolbarElement {
   $: {
-    sidenavToggle: HTMLElement,
+    sidenavToggle: HTMLButtonElement,
     menu: CrActionMenuElement,
     'present-button': HTMLButtonElement,
     'two-page-view-button': HTMLButtonElement,
@@ -262,11 +262,22 @@ export class ViewerToolbarElement extends CrLitElement {
   }
   // </if>
 
-  // <if expr="enable_ink or enable_pdf_ink2">
+  // <if expr="enable_ink">
   protected showAnnotationsBar_(): boolean {
-    return this.pdfAnnotationsEnabled && !this.loading_ && this.annotationMode;
+    return this.pdfAnnotationsEnabled && !this.loading_ &&
+        this.isInInk1AnnotationMode_();
   }
-  // </if>
+
+  protected isInInk1AnnotationMode_(): boolean {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      return false;
+    }
+    // </if> enable_pdf_ink2
+
+    return this.annotationMode;
+  }
+  // </if> enable_ink
 
   protected onPrintClick_() {
     this.dispatchEvent(new CustomEvent('print'));

@@ -11,10 +11,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+namespace signin {
+class PrimaryAccountAccessTokenFetcher;
+}  // namespace signin
+
+class GoogleServiceAuthError;
 
 namespace network {
 struct ResourceRequest;
@@ -25,7 +34,8 @@ class SimpleURLLoader;
 // A service to fetch suggestions from the search aggregator endpoint URL.
 class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
  public:
-  explicit EnterpriseSearchAggregatorSuggestionsService(
+  EnterpriseSearchAggregatorSuggestionsService(
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~EnterpriseSearchAggregatorSuggestionsService() override;
@@ -54,6 +64,15 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       CompletionCallback completion_callback);
 
  private:
+  // Called when an access token request completes (successfully or not).
+  void AccessTokenAvailable(std::unique_ptr<network::ResourceRequest> request,
+                            std::string request_body,
+                            net::NetworkTrafficAnnotationTag traffic_annotation,
+                            StartCallback start_callback,
+                            CompletionCallback completion_callback,
+                            GoogleServiceAuthError error,
+                            signin::AccessTokenInfo access_token_info);
+
   // TODO(crbug.com/385756623): Factor out this method so it can be used across
   //   document_suggestions_service and
   //   enterprise_search_aggregator_suggestions_service.
@@ -65,6 +84,13 @@ class EnterpriseSearchAggregatorSuggestionsService : public KeyedService {
       CompletionCallback completion_callback);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // This will outlive this instance because of the factory dependencies.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Helper for fetching OAuth2 access tokens. Non-null when we have a token
+  // available, or while a token fetch is in progress.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ENTERPRISE_SEARCH_AGGREGATOR_SUGGESTIONS_SERVICE_H_

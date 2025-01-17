@@ -337,6 +337,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1219219114431716687">Tarta owocowa</translation>
 <translation id="122082903575839559">Algorytm podpisu certyfikatu</translation>
 <translation id="1221024147024329929">PKCS #1, MD2 z szyfrowaniem RSA</translation>
+<translation id="1221266967850882682">Podsumowanie ostatnich działań</translation>
 <translation id="1221825588892235038">Tylko zaznaczenie</translation>
 <translation id="1222835797152767346">Aby ułatwić sobie logowanie, ustaw kod PIN</translation>
 <translation id="1223484782328004593"><ph name="APP_NAME" /> wymaga licencji</translation>
@@ -1911,6 +1912,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2323018538045954000">Zapisane sieci Wi-Fi</translation>
 <translation id="2325444234681128157">Zapamiętaj hasło</translation>
 <translation id="2326188115274135041">Potwierdź kod PIN, by włączyć automatyczne odblokowywanie</translation>
+<translation id="2326583548923775947">To nie jest konto Google. Elementy zapisane w Chrome nie będą dostępne na innych urządzeniach.</translation>
 <translation id="2326906096734221931">Otwórz ustawienia aplikacji</translation>
 <translation id="2326931316514688470">P&amp;rzeładuj aplikację</translation>
 <translation id="2327492829706409234">Włącz aplikację</translation>

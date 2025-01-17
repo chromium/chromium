@@ -1283,6 +1283,7 @@
 <translation id="3273757719652748628">"IBAN кодун сактоо" терезеси толук экранда ачылды.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратордун саясатында бул файлды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясатында бул файлдарды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> уюмуңуз жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
+<translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3287510313208355388">Интернетке туташканда жүктөлүп алынсын</translation>
 <translation id="3288238092761586174">Төлөмүңүздү ырастоо үчүн <ph name="URL" /> кошумча кадамдарды аткарышы керек</translation>
@@ -2155,6 +2156,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңы Google таблицасын тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
 <translation id="4827283332383516812">Картаны өчүрүү</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" /> тандалды</translation>
 <translation id="4831993743164297314">Фото машина үчүн кагаз</translation>
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4832961164064927107">Барбекю жана гриль</translation>
@@ -3655,6 +3657,7 @@
 <translation id="7511955381719512146">Сиз колдонуп жаткан Wi-Fi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> дарегине өтүшүңүздү талап кылышы мүмкүн.</translation>
 <translation id="7512685745044087310">Бул саясатты "True" жана милдеттүү деп коюга болбойт, андыктан ал сунушталган болуп өзгөртүлдү.</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Жолсуз жерлерде жүрүүчү унаалар</translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Бул веб даректин бир да веб-баракчасы табылган жок: <ph name="URL" /></translation>

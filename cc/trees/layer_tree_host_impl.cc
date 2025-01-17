@@ -2497,6 +2497,10 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         input_delegate_->IsHandlingTouchSequence();
   }
 
+  auto active_types = FrameSequenceTrackerActiveTypes();
+  metadata.is_handling_animation = HasMainThreadAnimation(active_types) ||
+                                   HasCompositorThreadAnimation(active_types);
+
   const base::flat_set<viz::SurfaceRange>& referenced_surfaces =
       active_tree_->SurfaceRanges();
   for (auto& surface_range : referenced_surfaces)

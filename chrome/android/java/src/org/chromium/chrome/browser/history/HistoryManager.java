@@ -580,7 +580,7 @@ public class HistoryManager
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(
-                mActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+                mActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
     }
 
     // HistoryContentManager.Observer

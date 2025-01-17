@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -158,6 +159,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       base::flat_map<uint32_t, sk_sp<SkPicture>>;
   using TypefaceDeserializationContext =
       base::flat_map<uint32_t, sk_sp<SkTypeface>>;
+  using ImageDeserializationContext = base::flat_map<uint32_t, sk_sp<SkImage>>;
 
   // Base structure to store a frame's content and its subframe
   // content information.
@@ -178,6 +180,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
     // Typefaces used within scope of this frame.
     TypefaceDeserializationContext typefaces;
+
+    // Images used within scope of this frame.
+    ImageDeserializationContext images;
   };
 
   // Other than content, it also stores the status during frame composition.
@@ -284,6 +289,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
   // Context for dealing with all typefaces encountered across multiple pages.
   TypefaceDeserializationContext typefaces_;
+
+  // Context for dealing with all images encountered across multiple pages.
+  ImageDeserializationContext images_;
 
   std::vector<std::unique_ptr<RequestInfo>> requests_;
   std::unique_ptr<DocumentInfo> doc_info_;

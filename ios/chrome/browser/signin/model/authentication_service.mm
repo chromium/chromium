@@ -316,6 +316,9 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
         identity_manager_->GetDeviceAccountsSynchronizer();
     for (const auto& pair : cached_mdm_errors) {
       const CoreAccountId& account_id = pair.first;
+      // For some reasons, it is possible to have a MDM error for an unknown
+      // identity. This MDM error can be ignored.
+      // See crbug.com/1482236.
       if (identity_manager_->HasAccountWithRefreshToken(account_id)) {
         device_accounts_synchronizer->ReloadAccountFromSystem(account_id);
       }
@@ -612,15 +615,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
 
 void AuthenticationService::OnIdentityListChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
-
-  // The list of identities may change while in an authorized call. Signing out
-  // the authenticated user at this time may lead to crashes (e.g.
-  // http://crbug.com/398431 ).
-  // Handle the change of the identity list on the next message loop cycle.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AuthenticationService::ReloadCredentialsFromIdentities,
-                     GetWeakPtr()));
+  ReloadCredentialsFromIdentities();
 }
 
 bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,

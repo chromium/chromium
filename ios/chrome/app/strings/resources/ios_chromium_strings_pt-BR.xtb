@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Isso significa que o Chromium vai solicitar sempre o site para computador.</translation>
 <translation id="2270466829363945454">Compras</translation>
 <translation id="2313870531055795960">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chromium. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chromium também poderá enviar os URLs, incluindo partes do conteúdo da página, para o Navegação segura.</translation>
+<translation id="2314220608288760290">O Chromium abre automaticamente os links anônimos do YouTube na navegação anônima.</translation>
 <translation id="231828342043114302">Para receber conteúdo personalizado com base nos seus interesses, faça login no Chromium.</translation>
 <translation id="2326738825692478496">Alguns dos seus dados do Chromium ainda não foram salvos na sua Conta do Google.
 
@@ -284,6 +285,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="8254729934443216898">Conheça os novos recursos que ajudam você a aproveitar o Chromium ao máximo.</translation>
 <translation id="829047622686389424">Um feed personalizado para você.</translation>
+<translation id="8293572045658095405">Você está na navegação anônima do Chromium</translation>
 <translation id="830951810931292870">Abre os URLs inseridos na navegação anônima do Chromium.</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}}</translation>

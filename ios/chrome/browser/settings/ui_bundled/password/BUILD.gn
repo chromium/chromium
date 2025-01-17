@@ -84,7 +84,6 @@ source_set("ui") {
   ]
   deps = [
     ":common",
-    ":features",
     ":password_constants",
     ":title_view",
     "//base",
@@ -97,7 +96,6 @@ source_set("ui") {
     "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
-    "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
@@ -171,7 +169,6 @@ source_set("features") {
     "password_manager_ui_features.h",
     "password_manager_ui_features.mm",
   ]
-  deps = [ "//components/sync/base:features" ]
   public_deps = [ "//base" ]
 }
 

@@ -65,9 +65,11 @@ size_t GetSharedPassIndex(
 
 // static
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrame::CreateForTesting(
-    CompositorFrameTransitionDirective directive) {
-  return base::WrapUnique(new SurfaceSavedFrame(
-      base::PassKey<SurfaceSavedFrame>(), std::move(directive)));
+    CompositorFrameTransitionDirective directive,
+    gpu::SharedImageInterface* shared_image_interface) {
+  return base::WrapUnique(
+      new SurfaceSavedFrame(base::PassKey<SurfaceSavedFrame>(),
+                            std::move(directive), shared_image_interface));
 }
 
 SurfaceSavedFrame::SurfaceSavedFrame(
@@ -84,8 +86,10 @@ SurfaceSavedFrame::SurfaceSavedFrame(
 
 SurfaceSavedFrame::SurfaceSavedFrame(
     base::PassKey<SurfaceSavedFrame>,
-    CompositorFrameTransitionDirective directive)
-    : directive_(std::move(directive)) {
+    CompositorFrameTransitionDirective directive,
+    gpu::SharedImageInterface* shared_image_interface)
+    : directive_(std::move(directive)),
+      shared_image_interface_(shared_image_interface) {
   frame_result_.emplace();
 }
 
@@ -262,15 +266,17 @@ SurfaceSavedFrame::FrameResult SurfaceSavedFrame::TakeResult() {
 }
 
 void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
-  SkBitmap bitmap;
-  bitmap.allocPixels(
-      SkImageInfo::MakeN32Premul(kDefaultTextureSizeForTesting.width(),
-                                 kDefaultTextureSizeForTesting.height()));
-
   frame_result_->shared_results.resize(directive_.shared_elements().size());
   for (auto& result : frame_result_->shared_results) {
     result.emplace();
-    result->bitmap = std::move(bitmap);
+    result->shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, kDefaultTextureSizeForTesting,
+             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "SurfaceSavedFrameForTesting"});
+    result->sync_token = shared_image_interface_->GenVerifiedSyncToken();
+    result->release_callback =
+        base::DoNothingWithBoundArgs(result->shared_image);
     result->draw_data.size = kDefaultTextureSizeForTesting;
     result->is_software = true;
   }
@@ -308,9 +314,6 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
 
   color_space = std::move(other.color_space);
   other.color_space = gfx::ColorSpace();
-
-  bitmap = std::move(other.bitmap);
-  other.bitmap = SkBitmap();
 
   shared_image = std::move(other.shared_image);
 

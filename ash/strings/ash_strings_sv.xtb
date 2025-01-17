@@ -2234,7 +2234,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
 <translation id="851660987304951246">Använd Help me read för att snabbt sammanfatta innehåll eller ställa frågor</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoningången styrs av <ph name="APP_NAME" />}other{Mikrofoningången styrs av # appar}}</translation>
 <translation id="8535393432370007982">Ångra sortering efter färg</translation>
 <translation id="8541078764854166027">Inramning</translation>
 <translation id="8542053257095774575">Det finns inga sparade skrivbord eller mallar</translation>

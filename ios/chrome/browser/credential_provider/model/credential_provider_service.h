@@ -138,6 +138,12 @@ class CredentialProviderService
   // includes account storage.)
   void UpdatePasswordSyncSetting();
 
+  // Syncs whether or not PRF is enabled.
+  void UpdatePasskeyPRFSetting();
+
+  // Syncs whether or not the Passkeys M2 feature is enabled.
+  void UpdatePasskeysM2Availability();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
@@ -214,7 +220,7 @@ class CredentialProviderService
 
   // The preference associated with
   // password_manager::prefs::kCredentialsEnablePasskeys. See
-  // `AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled` documentation
+  // `AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled` documentation
   // for important caveats.
   BooleanPrefMember saving_passkeys_enabled_;
 

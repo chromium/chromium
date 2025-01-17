@@ -52,9 +52,23 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   XRWebGLDepthInformation* getDepthInformation(XRView* view,
                                                ExceptionState& exception_state);
 
+  gfx::Rect GetViewportForView(XRProjectionLayer* layer,
+                               XRViewData* view) override;
+
+  WebGLRenderingContextBase* context() const { return webgl_context_.Get(); }
+
   void Trace(Visitor*) const override;
 
  private:
+  bool CanCreateLayer(ExceptionState& exception_state);
+  bool ValidateLayerColorFormat(GLenum color_format,
+                                ExceptionState& exception_state);
+  bool ValidateLayerDepthStencilFormat(GLenum depth_stencil_format,
+                                       ExceptionState& exception_state);
+  GLenum FormatForLayerFormat(GLenum format);
+  GLenum InternalFormatForLayerFormat(GLenum format);
+  GLenum TypeForLayerFormat(GLenum format);
+
   Member<WebGLRenderingContextBase> webgl_context_;
   bool webgl2_;
 };

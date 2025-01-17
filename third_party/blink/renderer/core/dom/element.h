@@ -1071,10 +1071,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return false;
   }
 
+  // Implementation of the `interesttarget` feature.
   void InterestGained();
-
+  void InterestLost();
   virtual Element* interestTargetElement() { return nullptr; }
-  virtual AtomicString interestAction() const { return g_null_atom; }
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".

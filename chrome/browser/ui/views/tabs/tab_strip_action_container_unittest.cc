@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -85,6 +86,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
     tab_strip_action_container_.reset();
+    glic_nudge_controller_.reset();
   }
 
   void BuildGlicContainer(bool use_otr_profile) {
@@ -97,17 +99,24 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, tab_strip_->controller()->GetProfile());
 
+    tab_interface_ = std::make_unique<tabs::MockTabInterface>();
+
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*browser_window_interface_, GetTabStripModel)
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
     ON_CALL(*browser_window_interface_, GetProfile)
         .WillByDefault(
             ::testing::Return(tab_strip_->controller()->GetProfile()));
+    ON_CALL(*browser_window_interface_, GetActiveTabInterface)
+        .WillByDefault(::testing::Return(tab_interface_.get()));
+    ON_CALL(*tab_interface_, GetContents)
+        .WillByDefault(::testing::Return(web_contents_.get()));
 
     tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
         browser_window_interface_.get());
 
-    glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>();
+    glic_nudge_controller_ = std::make_unique<tabs::GlicNudgeController>(
+        browser_window_interface_.get());
 
     locked_expansion_view_ = std::make_unique<views::View>();
 
@@ -121,6 +130,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;

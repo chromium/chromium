@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 

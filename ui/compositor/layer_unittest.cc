@@ -865,7 +865,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
 
   constexpr SkColor kTransparent = SK_ColorTRANSPARENT;
   layer->SetColor(kTransparent);
-  layer->SetFillsBoundsOpaquely(false);
+
   // Color and opaqueness targets should be preserved during cloning, even after
   // switching away from solid color content.
   ASSERT_TRUE(layer->SwitchCCLayerForTest());
@@ -881,23 +881,6 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_FLOAT_EQ(new_layer_hue_rotation, clone->layer_hue_rotation());
   EXPECT_FALSE(clone->LayerHasCustomColorMatrix());
   EXPECT_FALSE(clone->fills_bounds_opaquely());
-
-  // A solid color layer with transparent color can be marked as opaque. The
-  // clone should retain this state.
-  layer = CreateLayer(LAYER_SOLID_COLOR);
-  layer->SetColor(kTransparent);
-  layer->SetFillsBoundsOpaquely(true);
-
-  clone = layer->Clone();
-  EXPECT_TRUE(clone->GetTargetTransform().IsIdentity());
-  EXPECT_EQ(kTransparent, clone->background_color());
-  EXPECT_EQ(kTransparent, clone->GetTargetColor());
-  EXPECT_FALSE(clone->layer_inverted());
-  // Sepia and hue rotation should be off by default.
-  EXPECT_FLOAT_EQ(0, layer->layer_sepia());
-  EXPECT_FLOAT_EQ(0, clone->layer_hue_rotation());
-  EXPECT_FALSE(clone->LayerHasCustomColorMatrix());
-  EXPECT_TRUE(clone->fills_bounds_opaquely());
 
   layer = CreateLayer(LAYER_SOLID_COLOR);
   layer->SetVisible(true);
@@ -1143,7 +1126,6 @@ TEST_F(LayerWithNullDelegateTest, LayerContentOpaqueness) {
 
 TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   std::unique_ptr<Layer> l1 = CreateLayer(LAYER_SOLID_COLOR);
-  l1->SetFillsBoundsOpaquely(true);
   l1->SetVisible(false);
   l1->SetBounds(gfx::Rect(4, 5));
 
@@ -2690,7 +2672,6 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerSolidColorNotAnimating) {
   SkColor transparent = SK_ColorTRANSPARENT;
   std::unique_ptr<Layer> root = CreateLayer(LAYER_SOLID_COLOR);
   GetCompositor()->SetRootLayer(root.get());
-  root->SetFillsBoundsOpaquely(false);
   root->SetColor(transparent);
 
   EXPECT_FALSE(root->fills_bounds_opaquely());
@@ -2727,7 +2708,6 @@ TEST_F(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
   {
     ui::ScopedLayerAnimationSettings animation(root->GetAnimator());
     animation.SetTransitionDuration(base::Milliseconds(1000));
-    root->SetFillsBoundsOpaquely(false);
     root->SetColor(transparent);
   }
 

@@ -93,9 +93,11 @@ StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
                                     const String& rule) {
+  AllowedRules allowed_rules = CSSParserImpl::kTopLevelRules;
+  allowed_rules.Remove(CSSAtRuleID::kCSSAtRuleCharset);
   return CSSParserImpl::ParseRule(rule, context, nesting_type,
                                   parent_rule_for_nesting, style_sheet,
-                                  CSSParserImpl::kAllowImportRules);
+                                  allowed_rules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(

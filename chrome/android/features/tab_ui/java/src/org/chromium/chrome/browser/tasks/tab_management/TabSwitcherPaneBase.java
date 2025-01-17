@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -264,15 +265,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        int tabId = getCurrentTabId();
-        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+        @Nullable Tab tab = getCurrentTab();
+        if (getTabListMode() == TabListMode.LIST || tab == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
         SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
-                requestAnimationData(hubContainerView, /* isShrink= */ true, tabId);
+                requestAnimationData(hubContainerView, /* isShrink= */ true, tab);
         return ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
                 hubContainerView,
                 animationDataSupplier,
@@ -285,15 +286,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        int tabId = getCurrentTabId();
-        if (getTabListMode() == TabListMode.LIST || tabId == Tab.INVALID_TAB_ID) {
+        Tab tab = getCurrentTab();
+        if (getTabListMode() == TabListMode.LIST || tab == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
 
         @ColorInt int backgroundColor = getAnimationBackgroundColor();
         SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier =
-                requestAnimationData(hubContainerView, /* isShrink= */ false, tabId);
+                requestAnimationData(hubContainerView, /* isShrink= */ false, tab);
         return ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
                 hubContainerView,
                 animationDataSupplier,
@@ -313,7 +314,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     private SyncOneshotSupplier<ShrinkExpandAnimationData> requestAnimationData(
-            @NonNull HubContainerView hubContainerView, boolean isShrink, int tabId) {
+            @NonNull HubContainerView hubContainerView, boolean isShrink, @NonNull Tab tab) {
         SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
                 new SyncOneshotSupplierImpl<>();
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
@@ -341,6 +342,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             finalBottomCornerRadius = 0;
         }
 
+        int tabId = tab.getId();
+        boolean isTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(tab);
+
         Runnable provideAnimationData =
                 () -> {
                     Rect hubRect = new Rect();
@@ -358,6 +362,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                     }
 
                     int leftOffset = 0;
+                    // Account for the hub's search box container height.
                     int searchBoxHeight =
                             OmniboxFeatures.sAndroidHubSearch.isEnabled()
                                     ? HubUtils.getSearchBoxHeight(
@@ -365,9 +370,16 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                                             R.id.hub_toolbar,
                                             R.id.toolbar_action_container)
                                     : 0;
-                    // Account for the hub's search box container height.
-                    recyclerViewRect.offset(0, -searchBoxHeight);
-                    recyclerViewRect.bottom += searchBoxHeight;
+                    // If the bottom toolbar will show for the tab we need to offset the
+                    // initial/final location by the height of the toolbar.
+                    int topToolbarOffset =
+                            isTopToolbar
+                                    ? 0
+                                    : res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                    int topOffset = searchBoxHeight + topToolbarOffset;
+
+                    recyclerViewRect.offset(0, -topOffset);
+                    recyclerViewRect.bottom += topOffset;
                     if (isShrink) {
                         initialRect = recyclerViewRect;
                         finalRect = coordinator.getTabThumbnailRect(tabId);
@@ -512,8 +524,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      */
     protected abstract void showAllTabs();
 
-    /** Returns the current selected tab ID. */
-    protected abstract int getCurrentTabId();
+    /** Returns the current selected tab. */
+    protected abstract @Nullable Tab getCurrentTab();
 
     /** Returns whether to eagerly create the coordinator in the {@link LoadHint.WARM} state. */
     protected abstract boolean shouldEagerlyCreateCoordinator();

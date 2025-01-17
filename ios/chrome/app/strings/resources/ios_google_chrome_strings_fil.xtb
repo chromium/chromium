@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1066101356081285416">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Google ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature ng Google para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Awtomatikong binubuksan ng Chrome sa Incognito ang mga Incognito na link ng YouTube.</translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1143896152279775643">Ise-save ang iyong password sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Magbukas ng bagong tab sa Chrome</translation>
@@ -126,6 +127,7 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="4636900170638246267">Mag-sign in sa site na ito at sa Chrome.</translation>
 <translation id="4646014602299206846">Made-detect ng Chrome ang mga tracking number ng package sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na bagong tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat.</translation>
 <translation id="4647910807533196601">Buksan ang aking pinakabagong tab sa Chrome.</translation>
+<translation id="4693084815234024320">Nasa Incognito ka sa Chrome</translation>
 <translation id="4724297637870447613">Gamitin ang Chrome sa lahat ng lugar</translation>
 <translation id="4738647308035481133">Page ng Google Chrome</translation>
 <translation id="4742795653798179840">Na-delete na ang data sa Chrome</translation>

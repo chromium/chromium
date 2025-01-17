@@ -27,9 +27,9 @@
 
 [Exposed=Window]
 interface SVGTextPositioningElement : SVGTextContentElement {
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList x;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList y;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList dx;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList dy;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedNumberList rotate;
+    readonly attribute SVGAnimatedLengthList x;
+    readonly attribute SVGAnimatedLengthList y;
+    readonly attribute SVGAnimatedLengthList dx;
+    readonly attribute SVGAnimatedLengthList dy;
+    readonly attribute SVGAnimatedNumberList rotate;
 };

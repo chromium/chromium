@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import android.os.SystemClock;
@@ -49,7 +49,11 @@ public class HomeModulesUtils {
     // List of all educational tip modules.
     private static final HashSet<Integer> sEducationalTipCardList =
             new HashSet<>(
-                    Arrays.asList(DEFAULT_BROWSER_PROMO, TAB_GROUP, TAB_GROUP_SYNC, QUICK_DELETE));
+                    Arrays.asList(
+                            DEFAULT_BROWSER_PROMO,
+                            TAB_GROUP_PROMO,
+                            TAB_GROUP_SYNC_PROMO,
+                            QUICK_DELETE_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);

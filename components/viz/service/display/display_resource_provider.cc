@@ -244,12 +244,6 @@ void DisplayResourceProvider::ReceiveFromChild(
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
-
-    // If using legacy shared bitmaps, verify that the format is supported.
-    DCHECK(!transferable_resource.is_software ||
-           transferable_resource.IsSoftwareSharedImage() ||
-           (!transferable_resource.IsSoftwareSharedImage() &&
-            transferable_resource.format.IsBitmapFormatSupported()));
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));
     child_info.child_to_parent_map[transferable_resource.id] = local_id;

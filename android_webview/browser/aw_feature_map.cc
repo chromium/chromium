@@ -55,7 +55,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewWebauthn,
     &::features::kPrefetchBrowserInitiatedTriggers,
-    &features::kWebViewAutofillHandleFocusChange,
 };
 
 // static

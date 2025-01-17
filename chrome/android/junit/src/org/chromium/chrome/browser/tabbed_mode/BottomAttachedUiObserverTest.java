@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -348,6 +349,15 @@ public class BottomAttachedUiObserverTest {
         // Hide the snackbar.
         mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
         mColorChangeObserver.assertState(null, false, false);
+    }
+
+    /*
+    Tests that when floating snackbar is enabled, we do not add BottomAttachedUiObserver.
+    */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testDoesNotAddBottomAttachedUiObserver() {
+        verify(mSnackbarManager, never()).addObserver(eq(mBottomAttachedUiObserver));
     }
 
     @Test

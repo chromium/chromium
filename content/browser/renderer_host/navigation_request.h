@@ -49,6 +49,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -425,7 +426,7 @@ class CONTENT_EXPORT NavigationRequest
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
   GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;
-  int GetExpectedRenderProcessHostId() override;
+  ChildProcessId GetExpectedRenderProcessHostId() override;
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
@@ -2147,6 +2148,13 @@ class CONTENT_EXPORT NavigationRequest
   // contexts or if DocumentIsolationPolicy is not supported.
   void SanitizeDocumentIsolationPolicyHeader();
 
+  // Sets up service worker client info to inherit controller from the parent
+  // frame if it is a same origin srcdoc iframe.
+  // This method creates a ServiceWorkerClient associated with the navigating
+  // frame. It should not be called when NavigationURLLoader is used as that
+  // would also create ServiceWorkerClient and cause conflict.
+  void InheritServiceWorkerControllerFromParentIfNeeded();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
@@ -2296,7 +2304,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Identifies in which RenderProcessHost this navigation is expected to
   // commit.
-  int expected_render_process_host_id_ = ChildProcessHost::kInvalidUniqueID;
+  ChildProcessId expected_render_process_host_id_;
 
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().

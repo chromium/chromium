@@ -248,6 +248,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Pré-escola</translation>
 <translation id="1419305130220238697">Botão Gerir transferências no Chrome; ative para gerir os ficheiros que transferiu no Chrome</translation>
+<translation id="1420345875188552368">O seu método de pagamento automático guardado pode ser usado para este pagamento. Para desativar as carteiras eletrónicas no Chrome, aceda às <ph name="BEGIN_LINK1" />definições de pagamento<ph name="END_LINK1" /></translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronização</translation>
 <translation id="14222610277930434">Visita frequentemente</translation>
 <translation id="1422930527989633628">Pode solicitar a deteção de dispositivos Bluetooth próximos</translation>
@@ -1283,6 +1284,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3273757719652748628">"Guardar IBAN" aberto à altura total.</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
+<translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3286372614333682499">retrato</translation>
 <translation id="3287510313208355388">Transferir quando estiver online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
@@ -3657,6 +3659,7 @@ Detalhes adicionais:
 <translation id="7511955381719512146">A rede Wi-Fi que está a utilizar pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Não é possível definir esta política como "True" e obrigatória, por isso, foi alterada para recomendada.</translation>
 <translation id="7514365320538308">Transferir</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Veículos todo-o-terreno</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Não foi encontrada qualquer página Web para o endereço Web: <ph name="URL" /></translation>

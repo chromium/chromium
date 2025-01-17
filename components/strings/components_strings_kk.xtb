@@ -1282,6 +1282,7 @@
 <translation id="3273757719652748628">Толығымен ашылған IBAN нөмірін сақтау.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
+<translation id="3282568296779691940">Chrome жүйесіне кіру</translation>
 <translation id="3286372614333682499">портреттік</translation>
 <translation id="3287510313208355388">Онлайн болған кезде жүктеп алу</translation>
 <translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
@@ -3656,6 +3657,7 @@
 <translation id="7511955381719512146">Пайдаланып жатқан Wi-Fi сізден <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
 <translation id="7512685745044087310">Бұл саясатқа "True" күйін тағайындау және оны міндетті ету мүмкін емес, сондықтан ол ұсынылған күйге өзгертілді.</translation>
 <translation id="7514365320538308">Жүктеу</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Жол талғамайтын көліктер</translation>
 <translation id="7517414872996418597">C10 хатқалтасы</translation>
 <translation id="7518003948725431193">Веб-мекенжай үшін веб-бет табылмады: <ph name="URL" /></translation>

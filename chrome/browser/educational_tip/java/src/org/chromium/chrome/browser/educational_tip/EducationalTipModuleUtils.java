@@ -15,9 +15,9 @@ public class EducationalTipModuleUtils {
     public static HashSet<Integer> getModuleTypes() {
         HashSet<Integer> modules = new HashSet<>();
         modules.add(ModuleType.DEFAULT_BROWSER_PROMO);
-        modules.add(ModuleType.TAB_GROUP);
-        modules.add(ModuleType.TAB_GROUP_SYNC);
-        modules.add(ModuleType.QUICK_DELETE);
+        modules.add(ModuleType.TAB_GROUP_PROMO);
+        modules.add(ModuleType.TAB_GROUP_SYNC_PROMO);
+        modules.add(ModuleType.QUICK_DELETE_PROMO);
         return modules;
     }
 }

@@ -55,6 +55,7 @@
 <translation id="2236584955986023187">Yəni, Chromium hər dəfə masaüstü saytını tələb edəcək.</translation>
 <translation id="2270466829363945454">Mağaza</translation>
 <translation id="2313870531055795960">URL'ləri Chromium'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
+<translation id="2314220608288760290">Chromium YouTube Anonim keçidlərini avtomatik olaraq Anonim rejimdə açır.</translation>
 <translation id="231828342043114302">Maraqlarınıza əsasən fərdiləşdirilmiş kontent qəbul etmək üçün Chromium-a daxil olun.</translation>
 <translation id="2326738825692478496">Müəyyən Chromium datası Google Hesabında yadda saxlanılmayıb.
 
@@ -284,6 +285,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="8254729934443216898">Chromium-dan maksimum yararlanmaq imkanı verən yeni funksiyaları araşdırın.</translation>
 <translation id="829047622686389424">Sizin üçün hazırlanan fərdi lent.</translation>
+<translation id="8293572045658095405">Chromium Anonim rejimindəsiniz</translation>
 <translation id="830951810931292870">Daxil edilən URL-ləri Chromium-da Anonim rejimdə açır.</translation>
 <translation id="8409374867500149834">Zərərli vebsaytlara qarşı Chromium'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Daxil olduğunuz zaman yalnız bu cihazda yadda saxlanan data silinəcək. Bura tarixçə və parollar daxil ola bilər.}other{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Daxil olduğunuz zaman yalnız bu cihazda yadda saxlanan data silinəcək. Bura tarixçə və parollar daxil ola bilər.}}</translation>

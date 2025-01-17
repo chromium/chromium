@@ -281,8 +281,8 @@
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];

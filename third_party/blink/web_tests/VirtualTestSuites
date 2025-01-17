@@ -891,7 +891,7 @@
     "owners": ["drott@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
-    "args": ["--enable-font-antialiasing",  "--text-contrast=0.5", "--text-gamma=0.0"],
+    "args": ["--enable-font-antialiasing"],
     "expires": "Jan 1, 2026"
   },
   " Temporary test suite running virtual/text-antialias using FreeType, until   ",
@@ -1496,6 +1496,27 @@
     "args": [
       "--private-aggregation-developer-mode",
       "--enable-features=EnableBandAPrivateAggregation,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
+    ],
+    "expires": "Jul 14, 2025"
+  },
+  {
+    "prefix": "fledge-bidding-and-auction-for-debugging-only",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "behamilton@google.com",
+      "pauljensen@chromium.org",
+      "qingxinwu@google.com"
+    ],
+    "bases": [
+      "external/wpt/fledge/tentative/server-response-for-debugging-only.https.window.js"
+    ],
+    "args": [
+      "--enable-features=FledgeSampleDebugReports,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
+      "--disable-features=FledgeSampleDebugReports"
     ],
     "expires": "Jul 14, 2025"
   },

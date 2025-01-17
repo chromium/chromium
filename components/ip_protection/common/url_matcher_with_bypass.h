@@ -9,11 +9,13 @@
 #include <memory>
 #include <string_view>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/types/optional_ref.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/scheme_host_port_matcher_result.h"
@@ -54,6 +56,7 @@ class UrlMatcherWithBypass {
   UrlMatcherWithBypassResult Matches(
       const GURL& resource_url,
       const std::optional<net::SchemefulSite>& top_frame_site,
+      MdlType mdl_type = MdlType::kDefault,
       bool skip_bypass_check = false) const;
 
   // Builds a matcher to match to the public suffix list domains.
@@ -117,9 +120,12 @@ class UrlMatcherWithBypass {
            std::vector<std::unique_ptr<net::SchemeHostPortMatcher>>>
       bypass_matchers_map_;
 
-  // Maps partition map keys to smaller maps of domains eligible for the match
-  // list and the top frame domains that allow the match list to be bypassed.
-  std::map<std::string, std::vector<PartitionMatcher>>
+  // Maps the an experiment group to a map of the relevant map of partition
+  // keys to a list of matchers.
+  // This allows us to have a separate set of matchers for each experiment
+  // group.
+  std::map<std::pair<ip_protection::MdlType, std::string>,
+           std::vector<PartitionMatcher>>
       match_list_with_bypass_map_;
 
   // This is used to generate a unique key for each bypass matcher. It MUST be

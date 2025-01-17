@@ -5,12 +5,14 @@
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 
 #include <set>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -100,9 +102,9 @@ bool MaskedDomainListManager::Matches(
   switch (proxy_bypass_policy_) {
     case IpProtectionProxyBypassPolicy::kNone:
     case IpProtectionProxyBypassPolicy::kExclusionList:
-      match_result =
-          url_matcher_with_bypass_.Matches(request_url_ref, top_frame_site,
-                                           /*skip_bypass_check=*/true);
+      match_result = url_matcher_with_bypass_.Matches(
+          request_url_ref, top_frame_site, MdlType::kDefault,
+          /*skip_bypass_check=*/true);
       break;
     case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
       if (!top_frame_site.has_value()) {
@@ -139,7 +141,7 @@ bool MaskedDomainListManager::Matches(
       // opaque), we should skip the first party check and match only on the
       // request_url.
       match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site,
+          request_url_ref, top_frame_site, MdlType::kDefault,
           network_anonymization_key.IsTransient());
       break;
   }
@@ -156,41 +158,6 @@ bool MaskedDomainListManager::Matches(
       // third-party.
       return MatchesPublicSuffixList(request_url_ref);
   }
-}
-
-std::set<std::string> MaskedDomainListManager::ExcludeDomainsFromMDL(
-    const std::set<std::string>& mdl_domains,
-    const std::set<std::string>& excluded_domains) {
-  if (excluded_domains.empty()) {
-    return mdl_domains;
-  }
-
-  std::set<std::string> mdl_domains_after_exclusions;
-  for (const auto& mdl_domain : mdl_domains) {
-    std::string mdl_superdomain(mdl_domain);
-    bool shouldInclude = true;
-
-    // Check if any super domains exist in the exclusion set
-    // For example, mdl_domain W.X.Y.Z should be excluded if exclusion set
-    // contains super domains W.X.Y.Z or X.Y.Z or Y.Z or Z
-
-    // TODO(crbug/326399905): Add logic for excluding a domain X if any other
-    // domain owned by X's resource owner is on the exclusion list.
-
-    while (!mdl_superdomain.empty()) {
-      if (base::Contains(excluded_domains, mdl_superdomain)) {
-        shouldInclude = false;
-        break;
-      }
-      mdl_superdomain = net::GetSuperdomain(mdl_superdomain);
-    }
-
-    if (shouldInclude) {
-      mdl_domains_after_exclusions.insert(mdl_domain);
-    }
-  }
-
-  return mdl_domains_after_exclusions;
 }
 
 void MaskedDomainListManager::UpdateMaskedDomainList(

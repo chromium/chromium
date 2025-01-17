@@ -102,6 +102,10 @@ extern const char kSendTabNotificationKey[];
 // `kFeaturePushNotificationPermissions`.
 extern const char kSafetyCheckNotificationKey[];
 
+// Key of Reminder notification used in pref
+// `kFeaturePushNotificationPermissions`.
+extern const char kReminderNotificationKey[];
+
 // Action identifier for the Content Notifications Feedback action.
 extern NSString* const kContentNotificationFeedbackActionIdentifier;
 

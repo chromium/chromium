@@ -126,7 +126,6 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
         {
             extensions_features::
                 kApiEnterpriseReportingPrivateReportDataMaskingEvent,
-            enterprise_signals::features::kNewEvSignalsEnabled,
         },
         /*disabled_features=*/{});
 #else

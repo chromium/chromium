@@ -2235,7 +2235,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="851458219935658693">Mostrar ventanas del escritorio actual, botón seleccionado</translation>
 <translation id="851660987304951246">Usa Ayúdame a leer para resumir rápidamente el contenido o hacer preguntas</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de micrófono controlada por <ph name="APP_NAME" />}other{Entrada de micrófono controlada por # aplicaciones}}</translation>
 <translation id="8535393432370007982">Deshacer orden por color</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>

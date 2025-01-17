@@ -369,7 +369,6 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           MatchMethod(GlobalAcceleratorListenerLinux::kSessionInterface,
                       GlobalAcceleratorListenerLinux::kMethodCloseSession),
           _, _));
-  EXPECT_CALL(*mock_bus, ShutdownAndBlock());
   global_shortcut_listener.reset();
 }
 

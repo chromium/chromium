@@ -288,7 +288,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
   });
 
   test('There is no Connected APN and no custom APNs', async () => {
@@ -313,7 +313,7 @@ suite('ApnListTest', () => {
     assertTrue(!!apns[1]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
-    assertFalse(apns[0].isConnected);
+    assertFalse(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 
@@ -329,7 +329,7 @@ suite('ApnListTest', () => {
         assertEquals(1, apns.length);
         assertTrue(!!apns[0]);
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isApnConnected);
         assertFalse(!!getZeroStateContent());
       });
 
@@ -349,7 +349,7 @@ suite('ApnListTest', () => {
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
-        assertTrue(apns[0].isConnected);
+        assertTrue(apns[0].isApnConnected);
         assertFalse(!!getZeroStateContent());
       });
 
@@ -367,7 +367,7 @@ suite('ApnListTest', () => {
     assertTrue(OncMojo.apnMatch(apns[0].apn, customApn3));
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 
@@ -380,7 +380,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertTrue(apns[0].isConnected);
+    assertTrue(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
 
     // Simulate the APN no longer being connected.
@@ -392,7 +392,7 @@ suite('ApnListTest', () => {
     assertEquals(1, apns.length);
     assertTrue(!!apns[0]);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
-    assertFalse(apns[0].isConnected);
+    assertFalse(apns[0].isApnConnected);
     assertFalse(!!getZeroStateContent());
   });
 

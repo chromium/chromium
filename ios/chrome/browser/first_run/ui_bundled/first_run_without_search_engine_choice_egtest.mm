@@ -88,12 +88,12 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [ChromeEarlGreyUI waitForAppToIdle];
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -110,7 +110,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
             FRESigninIntentRegular];
   // Skip sign-in.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -308,8 +308,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -336,8 +336,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -364,8 +364,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -397,8 +397,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninDisabledByPolicy];
   // Accept FRE.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -422,8 +422,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -456,8 +456,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -495,8 +495,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithSyncDisabledPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -568,8 +568,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -598,8 +598,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithUMAReportingDisabledPolicy];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -630,8 +630,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -661,8 +661,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
             @NO,
       }];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -682,18 +682,18 @@ id<GREYMatcher> ManageUMALinkMatcher() {
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -746,8 +746,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
             @YES,
       }];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -764,17 +764,16 @@ id<GREYMatcher> ManageUMALinkMatcher() {
           grey_allOf(chrome_test_util::ButtonWithForegroundColor(
                          kSolidButtonTextColor),
                      chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(kBlueColor),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -806,8 +805,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity withUnknownCapabilities:YES];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -833,18 +832,18 @@ id<GREYMatcher> ManageUMALinkMatcher() {
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(
               chrome_test_util::ButtonWithForegroundColor(foregroundColorName),
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
+              chrome_test_util::PromoScreenSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -894,8 +893,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity withUnknownCapabilities:YES];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -907,7 +906,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Decline History Sync.
   [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+             chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -955,8 +954,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 // See https://crbug.com/1471972.
 - (void)testSignInWithNoAccount {
   // Add account.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -972,14 +971,13 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   NSString* continueAsText = l10n_util::GetNSStringF(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(),
-                     grey_descendant(grey_text(continueAsText)), nil)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::PromoScreenPrimaryButtonMatcher(),
+                            grey_descendant(grey_text(continueAsText)), nil)]
       assertWithMatcher:grey_notNil()];
   // Sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1025,8 +1023,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1052,17 +1050,16 @@ id<GREYMatcher> ManageUMALinkMatcher() {
           grey_allOf(chrome_test_util::ButtonWithForegroundColor(
                          kSolidButtonTextColor),
                      chrome_test_util::ButtonWithBackgroundColor(kBlueColor),
-                     chrome_test_util::SigninScreenPromoPrimaryButtonMatcher(),
-                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
+                     chrome_test_util::PromoScreenPrimaryButtonMatcher(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithForegroundColor(kBlueColor),
-              chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(chrome_test_util::ButtonWithForegroundColor(kBlueColor),
+                     chrome_test_util::PromoScreenSecondaryButtonMatcher(),
+                     nil)] assertWithMatcher:grey_sufficientlyVisible()];
   // Accept History Sync.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1130,8 +1127,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1172,8 +1169,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1214,8 +1211,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1235,14 +1232,14 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept History Sync.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1274,8 +1271,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -1313,8 +1310,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Accept sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               PromoScreenPrimaryButtonMatcher()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];

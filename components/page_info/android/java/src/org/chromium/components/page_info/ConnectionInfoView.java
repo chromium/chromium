@@ -246,7 +246,7 @@ public class ConnectionInfoView implements OnClickListener {
                         }
 
                         @Override
-                        public void onDestroy() {
+                        public void webContentsDestroyed() {
                             dismiss(DialogDismissalCause.UNKNOWN);
                         }
                     };
@@ -263,7 +263,7 @@ public class ConnectionInfoView implements OnClickListener {
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
             mPopup.onDismiss();
-            mWebContentsObserver.destroy();
+            mWebContentsObserver.observe(null);
             mDialogModel = null;
         }
 

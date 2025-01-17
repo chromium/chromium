@@ -31,8 +31,7 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     // v8::Proxy (without an internal field) is used as a (pseudo) wrapper.
     WrapperTypeInfo::kNoInternalFieldClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlObservableArray,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 }  // namespace

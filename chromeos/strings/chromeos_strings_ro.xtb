@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="382043424867370667">Imagine de fundal cu apus</translation>
 <translation id="3824259034819781947">Atașează fișiere</translation>
-<translation id="383586991013681190">Selectează limba pentru transcriere și descarcă în Setări</translation>
 <translation id="3836587210832263413">Activează doar extensiile în care ai încredere</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3845880861638660475">Apasă pe <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> și pe <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> pentru a închide caseta de dialog.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622">Rețeaua <ph name="NETWORK_NAME" /> este dezactivată</translation>
 <translation id="4428840632568803690">Vorbitorul <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
+<translation id="4430019312045809116">Volum</translation>
 <translation id="4431821876790500265">Consultă raportul</translation>
 <translation id="4443192710976771874">roșu</translation>
 <translation id="4447592701292766824">Nu se poate crea un rezumat pentru acest conținut</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">mărește luminozitatea</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516323842122524821">Volum</translation>
 <translation id="4521826082652183069">Potrivire a numelui alternativ al subiectului</translation>
 <translation id="4522570452068850558">Detalii</translation>
 <translation id="4536864596629708641">Configurația adresei IP</translation>

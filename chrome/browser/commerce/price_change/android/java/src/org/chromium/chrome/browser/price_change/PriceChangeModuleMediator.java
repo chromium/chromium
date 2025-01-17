@@ -197,6 +197,7 @@ public class PriceChangeModuleMediator implements TabModelSelectorObserver {
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
                 mPriceAnnotationsPrefListener);
         mTabModelSelector.removeObserver(this);
+        mFaviconHelper.destroy();
     }
 
     int getModuleType() {

@@ -2234,7 +2234,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
 <translation id="851660987304951246">Folosește funcția Ajută-mă să citesc pentru a rezuma rapid conținutul sau a pune întrebări</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Intrare pentru microfon controlată de <ph name="APP_NAME" />}few{Intrare pentru microfon controlată de # aplicații}other{Intrare pentru microfon controlată de # de aplicații}}</translation>
 <translation id="8535393432370007982">Anulează sortarea după culoare</translation>
 <translation id="8541078764854166027">Încadrare cameră</translation>
 <translation id="8542053257095774575">Nu există desktopuri sau șabloane salvate</translation>

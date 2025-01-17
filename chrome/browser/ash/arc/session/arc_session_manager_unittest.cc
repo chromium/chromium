@@ -409,6 +409,7 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
 
   void TearDown() override {
     resourced_client_ = nullptr;
+    ash::DlcserviceClient::Shutdown();
     ash::ResourcedClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }

@@ -187,6 +187,7 @@
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
@@ -1089,6 +1090,7 @@ enum class ToolbarKind {
   _sideSwipeMediator.engagementTracker = engagementTracker;
   _sideSwipeMediator.helpHandler =
       HandlerForProtocol(_dispatcher, HelpCommands);
+
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       !IsModernTabStripOrRaccoonEnabled()) {
     [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
@@ -2240,6 +2242,24 @@ enum class ToolbarKind {
   }
 
   return NO;
+}
+
+- (void)animateLensOverlayNavigationToURL:(GURL)URL {
+  [_sideSwipeMediator
+      prepareForSlideInDirection:UseRTLLayout()
+                                     ? UISwipeGestureRecognizerDirectionRight
+                                     : UISwipeGestureRecognizerDirectionLeft];
+
+  __weak SideSwipeMediator* weakSideSwipeMediator = _sideSwipeMediator;
+
+  [HandlerForProtocol(_dispatcher, LensOverlayCommands)
+      hideLensUI:NO
+      completion:^{
+        [weakSideSwipeMediator slideToCenterAnimated];
+      }];
+
+  [_loadQueryCommandsHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
+                           immediately:YES];
 }
 
 #pragma mark - BrowserViewVisibilityConsumer
@@ -3564,21 +3584,31 @@ enum class ToolbarKind {
     return @[];
   }
 
-  LensOverlayTabHelper* lensOverlayTabHelper =
-      LensOverlayTabHelper::FromWebState(webState);
-
-  BOOL webStateHasLensOverlay =
-      IsLensOverlayAvailable() && lensOverlayTabHelper &&
-      lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
-
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
 
-  // A lens overlay is mapped to the given web state.
-  if (webStateHasLensOverlay) {
-    UIView* lensOverlayView = _lensOverlayCoordinator.viewController.view;
+  if (IsLensOverlayAvailable()) {
+    LensOverlayTabHelper* lensOverlayTabHelper =
+        LensOverlayTabHelper::FromWebState(webState);
 
-    if (lensOverlayView) {
-      [overlays addObject:lensOverlayView];
+    if (lensOverlayTabHelper) {
+      BOOL isLensOverlayCurrentlyInvoked;
+
+      if (IsLensOverlaySameTabNavigationEnabled()) {
+        isLensOverlayCurrentlyInvoked =
+            lensOverlayTabHelper->IsLensOverlayInvokedOnCurrentNavigationItem();
+      } else {
+        isLensOverlayCurrentlyInvoked =
+            lensOverlayTabHelper->IsLensOverlayUIAttachedAndAlive();
+      }
+
+      // A lens overlay is invoked in the given web state.
+      if (isLensOverlayCurrentlyInvoked) {
+        UIView* lensOverlayView = _lensOverlayCoordinator.viewController.view;
+
+        if (lensOverlayView) {
+          [overlays addObject:lensOverlayView];
+        }
+      }
     }
   }
 

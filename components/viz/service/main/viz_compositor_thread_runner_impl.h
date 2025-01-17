@@ -29,7 +29,6 @@ class GmbVideoFramePoolContextProvider;
 class HintSessionFactory;
 class InProcessGpuMemoryBufferManager;
 class OutputSurfaceProvider;
-class ServerSharedBitmapManager;
 class SharedImageInterfaceProvider;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -83,7 +82,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
 
   // Start variables to be accessed only on |task_runner_|.
   std::unique_ptr<HintSessionFactory> hint_session_factory_;
-  std::unique_ptr<ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<OutputSurfaceProvider> output_surface_provider_;
   // `gmb_video_frame_pool_context_provider_` depends on

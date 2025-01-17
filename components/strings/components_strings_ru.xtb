@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">Ошибка нарушения конфиденциальности</translation>
 <translation id="1414134146594747368">Образование детей от 0 до 5 лет</translation>
 <translation id="1419305130220238697">Кнопка "Управлять скачанными файлами в Chrome". Нажмите ее, чтобы управлять файлами, скачанными в Chrome.</translation>
+<translation id="1420345875188552368">Для этого платежа можно использовать сохраненный способ автоматической оплаты. Чтобы отключить электронные кошельки в Chrome, откройте <ph name="BEGIN_LINK1" />платежные настройки<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
 <translation id="14222610277930434">Часто посещаете</translation>
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
@@ -1282,6 +1283,7 @@
 <translation id="3273757719652748628">Экран для сохранения кода IBAN открыт полностью.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
+<translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
@@ -2155,6 +2157,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
 <translation id="4827283332383516812">Удаление карты</translation>
+<translation id="4830443836091007686">Выбрано: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Бумага для фотонаборной машины</translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
 <translation id="4832961164064927107">Барбекю и гриль</translation>
@@ -3656,6 +3659,7 @@
 <translation id="7511955381719512146">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi.</translation>
 <translation id="7512685745044087310">Правило стало рекомендованным, потому что оно больше не может быть обязательным и принимать значение True.</translation>
 <translation id="7514365320538308">Скачать</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Внедорожные транспортные средства</translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не найдена страница для веб-адреса <ph name="URL" /></translation>

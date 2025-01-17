@@ -102,7 +102,7 @@ contenteditable).
 Note: The term [form owner] used in the HTML spec about form-[associated]
 elements is unrelated to Autofill's concept of ownership.
 
-**WARNING:** Autofill code shall only call `GetOwningForm()` and
+**WARNING:** Autofill code shall only call `GetOwningFormForAutofill()` and
 `GetOwnedFormControls()` to determine the owner/ownee relationship between forms
 and form controls. A presubmit script warns when code uses the Blink-analogues
 to these functions.

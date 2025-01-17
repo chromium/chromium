@@ -140,6 +140,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1415846719612499304">Mostra l'elenco di reti. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Sblocca il dispositivo per eseguire l'azione di notifica</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
+<translation id="1421166164855200062">Gruppo suggerito</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1435537621343861112">Impossibile avviare la dettatura. Il microfono è disattivato.</translation>
 <translation id="1445031758921122223">File di controllo del volto scaricati</translation>
@@ -243,12 +244,14 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="17722141032474077">Calcoli</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, è attualmente selezionata la data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
+<translation id="1785317913592722944">Rimuovi l'elemento dal gruppo suggerito</translation>
 <translation id="1786487376942610288">Passa dalla dimensione massima a quella corrente e viceversa della finestra Picture in picture</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Siti web che includono le pagine che hai visitato e le pagine aperte</translation>
 <translation id="179842970735685253">Termini di servizio di Google</translation>
 <translation id="1805407494113167797">Impossibile riprodurre i suoni della modalità Niente distrazioni</translation>
 <translation id="181103072419391116">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
+<translation id="1815039896005206046">L'opzione Non mi piace invia un feedback che indica che non ti piace questo gruppo suggerito</translation>
 <translation id="1816896987747843206">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Attiva l'accesso alla posizione</translation>
@@ -390,6 +393,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2370971919968699910">Per questa operazione potrebbe essere addebitato il costo dei dati.
 <ph name="DEVICECOUNT" /> dispositivi connessi.</translation>
+<translation id="2383521554963939360">Gruppi di schede e app</translation>
 <translation id="2386292613071805067">Seleziona tutto sulla pagina</translation>
 <translation id="2389423187722941333">Attiva/disattiva Gemini</translation>
 <translation id="2392659840443812875">Nessun hotspot disponibile. Assicurati che il dispositivo sia nelle vicinanze e che il Bluetooth sia attivo.</translation>
@@ -917,6 +921,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4151054805501931758">Ritocco del ritratto</translation>
 <translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
 Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
+<translation id="4158003972857765638">Organizza in una nuova scrivania</translation>
 <translation id="4160919062868802509">Più sorgenti audio rilevate</translation>
 <translation id="416245495747357243">Finito!</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
@@ -981,6 +986,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4322742403972824594">La scorciatoia da tastiera Ctrl + Alt + Freccia su è cambiata. Per usare il tasto Home, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia sinistra.</translation>
 <translation id="4324840740119394760">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="4327147325944669226">Registra partita</translation>
+<translation id="4329076911374908740">È stato raggiunto il numero massimo di gruppi salvati.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, disattivato</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
@@ -1938,6 +1944,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
+<translation id="7534543072325030705">L'opzione Mi piace invia un feedback che indica che ti piace questo gruppo suggerito</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Aggiorna la finestra sinistra</translation>
 <translation id="7543399541175347147">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
@@ -2102,6 +2109,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8005527720597583355">Avvia sessione in modalità Niente distrazioni</translation>
 <translation id="8015361438441228492">Impossibile modificare l'attività.</translation>
+<translation id="8027187124910699148">Riprendi gruppo suggerito</translation>
 <translation id="802782383769312836">Scrivania precedente: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Connessione all'hotspot non riuscita</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
@@ -2210,6 +2218,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8426708595819210923">Buonasera <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
+<translation id="8429547770382807369">Salva gruppo per dopo</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella barra delle app è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Apri lo strumento di feedback</translation>
@@ -2218,6 +2227,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Chiudi Seleziona per ascoltare</translation>
+<translation id="8466665972451889002">Mostra elementi in <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">Scadenza: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Impostazioni scala di visualizzazione</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -2233,7 +2243,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>
 <translation id="851660987304951246">Usa Aiutami a leggere per riassumere rapidamente i contenuti o fare domande</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Ingresso del microfono controllato da <ph name="APP_NAME" />}other{Ingresso del microfono controllato da # app}}</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
@@ -2241,6 +2250,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
 <translation id="8553395910833293175">Finestra già assegnata a tutte le scrivanie.</translation>
 <translation id="8555757996376137129">Rimuovi la scrivania corrente</translation>
+<translation id="8558521694042102707">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte.</translation>
 <translation id="8559845965695780508">Modificato da <ph name="USER" /></translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Ecco alcuni suggerimenti da provare</translation>
@@ -2263,6 +2273,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="8638637208069328956">Attiva/disattiva il microfono</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> rimanente</translation>
+<translation id="8640470573049727749">Nascondi tutti i suggerimenti sul gruppo</translation>
 <translation id="8641510901370802679">Sono mostrate informazioni su: <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">Timer: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per aggiungere una persona, inserisci il codice accesso genitori di Family Link</translation>
@@ -2344,6 +2355,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8905919797434099235">(Senza titolo)</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8909138438987180327">Livello batteria: <ph name="PERCENTAGE" />%.</translation>
+<translation id="8916866375277139011">Nascondi elementi in <ph name="GROUP_NAME" /></translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistente Google non parla questa lingua.</translation>
 <translation id="8926951137623668982">Barra delle app sempre nascosta</translation>

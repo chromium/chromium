@@ -1297,12 +1297,16 @@ bool VideoFrame::CopyToAsync(
     const VideoFrameLayout& dest_layout) {
   auto* background_readback = BackgroundReadback::From(
       *ExecutionContext::From(resolver->GetScriptState()));
-  if (!background_readback)
+  if (!background_readback) {
     return false;
+  }
 
-  ArrayBufferContents contents = PinArrayBufferContent(destination);
-  if (!contents.DataLength())
+  ArrayBufferContents contents = PinSharedArrayBufferContent(destination);
+  if (!contents.IsValid() || !contents.DataLength()) {
+    // `contents` is empty, most likely destination isn't a shared buffer.
+    // Async copyTo() can't be used.
     return false;
+  }
 
   auto readback_done_handler =
       [](ArrayBufferContents contents,
@@ -1388,12 +1392,14 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
     DCHECK(local_frame->HasSharedImage());
 
     if (base::FeatureList::IsEnabled(kVideoFrameAsyncCopyTo)) {
+      // Check if we can run copyTo() asynchronously.
       if (CopyToAsync(resolver, local_frame, src_rect, destination,
                       dest_layout)) {
         return promise;
       }
     }
 
+    // Async version didn't work, let's copy planes synchronously.
     if (!CopyTexturablePlanes(*local_frame, src_rect, dest_layout, buffer)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Failed to read VideoFrame data.");

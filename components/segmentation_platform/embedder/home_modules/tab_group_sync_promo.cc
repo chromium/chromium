@@ -84,7 +84,7 @@ CardSelectionInfo::ShowResult TabGroupSyncPromo::ComputeCardResult(
 
   if (*resultForSyncedTabGroupExists &&
       resultForTabGroupSyncPromoShownCount.value() < kShownCountLimit) {
-    result.position = EphemeralHomeModuleRank::kTop;
+    result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }
 

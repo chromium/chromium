@@ -2248,35 +2248,6 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
     return func_def
 
 
-def make_constant_callback_def(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    logging_nodes = SequenceNode([
-        make_report_deprecate_as(cg_context),
-        make_report_measure_as(cg_context),
-        make_log_activity(cg_context),
-    ])
-    if not logging_nodes:
-        return None
-
-    func_def = _make_empty_callback_def(cg_context, function_name)
-    body = func_def.body
-
-    v8_set_return_value = _format(
-        "bindings::V8SetReturnValue(${info}, ${class_name}::Constant::{});",
-        constant_name(cg_context))
-    body.extend([
-        make_runtime_call_timer_scope(cg_context),
-        make_bindings_trace_event(cg_context),
-        logging_nodes,
-        EmptyNode(),
-        TextNode(v8_set_return_value),
-    ])
-
-    return func_def
-
-
 def make_constant_constant_def(cg_context, constant_name):
     # IDL constant's C++ constant definition
     assert isinstance(cg_context, CodeGenContext)
@@ -4634,43 +4605,11 @@ def _make_attribute_registration_table(table_name, attribute_entries):
     ])
 
 
-def _make_constant_callback_registration_table(table_name, constant_entries):
-    assert isinstance(table_name, str)
-    assert isinstance(constant_entries, (list, tuple))
-    assert all(
-        isinstance(entry, _PropEntryConstant)
-        and isinstance(entry.const_callback_name, str)
-        for entry in constant_entries)
-
-    T = TextNode
-
-    entry_nodes = []
-    pattern = (
-        "{{"  #
-        "\"{property_name}\", "
-        "{constant_callback}"
-        "}},")
-    for entry in constant_entries:
-        text = _format(
-            pattern,
-            property_name=entry.property_.identifier,
-            constant_callback=entry.const_callback_name)
-        entry_nodes.append(T(text))
-
-    return ListNode([
-        T("static const IDLMemberInstaller::ConstantCallbackConfig " +
-          table_name + "[] = {"),
-        ListNode(entry_nodes),
-        T("};"),
-    ])
-
-
 def _make_constant_value_registration_table(table_name, constant_entries):
     assert isinstance(table_name, str)
     assert isinstance(constant_entries, (list, tuple))
     assert all(
-        isinstance(entry, _PropEntryConstant)
-        and entry.const_callback_name is None for entry in constant_entries)
+        isinstance(entry, _PropEntryConstant) for entry in constant_entries)
 
     T = TextNode
 
@@ -4892,13 +4831,11 @@ class _PropEntryAttribute(_PropEntryBase):
 
 class _PropEntryConstant(_PropEntryBase):
     def __init__(self, is_context_dependent, exposure_conditional, world,
-                 constant, const_callback_name, const_constant_name):
-        assert _is_none_or_str(const_callback_name)
+                 constant, const_constant_name):
         assert isinstance(const_constant_name, str)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, constant)
-        self.const_callback_name = const_callback_name
         self.const_constant_name = const_constant_name
 
 
@@ -5053,19 +4990,9 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
             constant=constant,
             for_world=world,
             v8_callback_type=CodeGenContext.V8_ACCESSOR_NAME_GETTER_CALLBACK)
-        const_callback_name = callback_function_name(cgc)
-        const_callback_node = make_constant_callback_def(
-            cgc, const_callback_name)
-        if const_callback_node is None:
-            const_callback_name = None
         # IDL constant's C++ constant name
         const_constant_name = _format("${class_name}::Constant::{}",
                                       constant_name(cgc))
-
-        callback_def_nodes.extend([
-            const_callback_node,
-            EmptyNode(),
-        ])
 
         constant_entries.append(
             _PropEntryConstant(
@@ -5073,7 +5000,6 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 exposure_conditional=exposure_conditional,
                 world=world,
                 constant=constant,
-                const_callback_name=const_callback_name,
                 const_constant_name=const_constant_name))
 
     def process_constructor_group(constructor_group, is_context_dependent,
@@ -5936,25 +5862,12 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
     install_properties(table_name, entries, _make_attribute_registration_table,
                        installer_call_text)
 
-    table_name = "kConstantCallbackTable"
-    installer_call_text = _format(
-        pattern_without_interface_name,
-        install_func="IDLMemberInstaller::InstallConstants",
-        table_name=table_name)
-    constant_callback_entries = list(
-        filter(lambda entry: entry.const_callback_name, constant_entries))
-    install_properties(table_name, constant_callback_entries,
-                       _make_constant_callback_registration_table,
-                       installer_call_text)
-
     table_name = "kConstantValueTable"
     installer_call_text = _format(
         pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
-    constant_value_entries = list(
-        filter(lambda entry: not entry.const_callback_name, constant_entries))
-    install_properties(table_name, constant_value_entries,
+    install_properties(table_name, constant_entries,
                        _make_constant_value_registration_table,
                        installer_call_text)
 
@@ -6539,7 +6452,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
     ${class_name}::kMaxSubclassTag,
     {wrapper_type_prototype},
     {wrapper_class_id},
-    {active_script_wrappable_inheritance},
     {idl_definition_kind},
     {is_skipped_in_interface_object_prototype_chain},
 }};
@@ -6567,20 +6479,12 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
         wrapper_class_id = "WrapperTypeInfo::kNodeClassId"
     else:
         wrapper_class_id = "WrapperTypeInfo::kObjectClassId"
-    if class_like.code_generator_info.is_active_script_wrappable:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kInheritFromActiveScriptWrappable")
-    else:
-        active_script_wrappable_inheritance = (
-            "WrapperTypeInfo::kNotInheritFromActiveScriptWrappable")
-    if class_like.is_interface:
+    if class_like.is_interface or class_like.is_callback_interface:
         idl_definition_kind = "WrapperTypeInfo::kIdlInterface"
     elif class_like.is_namespace:
         idl_definition_kind = "WrapperTypeInfo::kIdlNamespace"
-    elif class_like.is_callback_interface:
-        idl_definition_kind = "WrapperTypeInfo::kIdlCallbackInterface"
     elif class_like.is_async_iterator or class_like.is_sync_iterator:
-        idl_definition_kind = "WrapperTypeInfo::kIdlAsyncOrSyncIterator"
+        idl_definition_kind = "WrapperTypeInfo::kIdlOtherType"
     else:
         assert False
     is_skipped_in_interface_object_prototype_chain = (
@@ -6592,8 +6496,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
           wrapper_type_info_of_inherited=wrapper_type_info_of_inherited,
           wrapper_type_prototype=wrapper_type_prototype,
           wrapper_class_id=wrapper_class_id,
-          active_script_wrappable_inheritance=(
-              active_script_wrappable_inheritance),
           idl_definition_kind=idl_definition_kind,
           is_skipped_in_interface_object_prototype_chain=(
               is_skipped_in_interface_object_prototype_chain)))
@@ -6695,9 +6597,6 @@ def _make_v8_context_snapshot_get_reference_table_function(
         if entry.exposure_conditional.is_always_true:
             callback_names.append(entry.attr_get_callback_name)
             callback_names.append(entry.attr_set_callback_name)
-    for entry in constant_entries:
-        if entry.exposure_conditional.is_always_true:
-            callback_names.append(entry.const_callback_name)
     for entry in constructor_entries:
         if entry.exposure_conditional.is_always_true:
             callback_names.append(entry.ctor_callback_name)

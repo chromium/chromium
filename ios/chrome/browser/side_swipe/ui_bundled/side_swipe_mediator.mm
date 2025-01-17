@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -206,6 +207,36 @@ const CGFloat kIpadTabSwipeDistance = 100;
       [self animatePageNavigationInDirection:direction];
       break;
   }
+}
+
+- (void)prepareForSlideInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  if (_inSwipe || [_swipeDelegate preventSideSwipe]) {
+    return;
+  }
+
+  _inSwipe = YES;
+  [_swipeDelegate updateAccessoryViewsForSideSwipeWithVisibility:NO];
+
+  _pageSideSwipeView = [self fullscreenSnapshotSideSwipeView:direction];
+
+  UIView* fullscreenView = [_swipeDelegate sideSwipeFullscreenView];
+
+  [_pageSideSwipeView setTargetView:fullscreenView];
+  [fullscreenView.superview insertSubview:_pageSideSwipeView
+                             belowSubview:fullscreenView];
+
+  __weak SideSwipeMediator* weakSelf = self;
+
+  [self addCurtainWithCompletionHandler:^{
+    [weakSelf handleCurtainCompletion];
+  }];
+
+  [_pageSideSwipeView moveTargetViewOffscreenInDirection:direction];
+}
+
+- (void)slideToCenterAnimated {
+  [_pageSideSwipeView moveTargetViewOnScreenWithAnimation];
 }
 
 - (web::WebState*)activeWebState {
@@ -602,7 +633,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
     self.trailingEdgeNavigationEnabled = YES;
   }
 
-  if (IsLensOverlayAvailable()) {
+  if (IsLensOverlayAvailable() && IsLensOverlaySameTabNavigationEnabled()) {
     LensOverlayTabHelper* lensOverlayTabHelper =
         LensOverlayTabHelper::FromWebState(webState);
     // if the previous page has lens overlay invoked, enable leading edge swipe.
@@ -804,8 +835,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
 // overlay.
 - (SideSwipeSnapshotNavigationView*)fullscreenSnapshotSideSwipeView:
     (UISwipeGestureRecognizerDirection)direction {
-  DCHECK([self swipingFullScreenContent:direction]);
-
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(self.activeWebState);
 

@@ -45,7 +45,7 @@ TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
       inputs.end());
 }
 
-// Validates that ComputeCardResult() returns kTop when default browser promo
+// Validates that ComputeCardResult() returns kLast when default browser promo
 // card is enabled.
 TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
   pref_service_.SetUserPref(kDefaultBrowserPromoInteractedPref,
@@ -56,7 +56,7 @@ TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
                    /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
   CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
-  EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
+  EXPECT_EQ(EphemeralHomeModuleRank::kLast, result.position);
 }
 
 // Validates that when the default browser promo card is disabled because the

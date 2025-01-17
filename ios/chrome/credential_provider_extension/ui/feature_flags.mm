@@ -8,17 +8,23 @@
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
+BOOL IsPasskeyPRFEnabled() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()]
+      boolValue];
+}
+
 BOOL IsPasswordCreationUserEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsEnabled()]
       boolValue];
 }
 
 BOOL IsPasswordCreationManaged() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged()]
+          AppGroupUserDefaultsCredentialProviderSavingPasswordsManaged()]
       boolValue];
 }
 
@@ -30,6 +36,13 @@ BOOL IsPasswordSyncEnabled() {
 
 BOOL IsPasskeyCreationAllowedByPolicy() {
   return [[app_group::GetGroupUserDefaults()
-      objectForKey:AppGroupUserDefaulsCredentialProviderSavingPasskeysEnabled()]
+      objectForKey:
+          AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()]
+      boolValue];
+}
+
+BOOL IsPasskeysM2Enabled() {
+  return [[app_group::GetGroupUserDefaults()
+      objectForKey:AppGroupUserDefaultsCredentialProviderPasskeysM2Enabled()]
       boolValue];
 }

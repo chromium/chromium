@@ -105,7 +105,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDcVulkan);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUService);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUBlobCache);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseDXC);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseTintIR);
 GPU_EXPORT extern const base::FeatureParam<std::string> kWebGPUUnsafeFeatures;
 GPU_EXPORT extern const base::FeatureParam<std::string> kWGSLUnsafeFeatures;

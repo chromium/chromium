@@ -31,7 +31,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
-    "//ui/android:ui_utils_java",
   ]
 
   sources = [

@@ -97,8 +97,7 @@ public class BrowsingDataTest {
                                     ProfileManager.getLastUsedRegularProfile(),
                                     callback,
                                     TimePeriod.LAST_HOUR,
-                                    BrowsingDataType.SITE_DATA,
-                                    ClearBrowsingDataTab.ADVANCED);
+                                    BrowsingDataType.SITE_DATA);
                 });
         helper.waitForCallback(0);
         // The counter returns a result like "3 sites" or "None".

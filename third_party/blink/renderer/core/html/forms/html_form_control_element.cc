@@ -417,17 +417,6 @@ void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {
   setAttribute(html_names::kPopovertargetactionAttr, value);
 }
 
-AtomicString HTMLFormControlElement::interestAction() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kInterestactionAttr);
-  if (attribute_value && !attribute_value.IsNull() &&
-      !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
-}
-
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   // Buttons that aren't form participants might be Invoker buttons or Popover
   // buttons.

@@ -405,6 +405,9 @@ class PLATFORM_EXPORT WidgetBase
 
   void OnDevToolsSessionConnectionChanged(bool attached);
 
+  // Helper to get the non-emulated device scale factor.
+  float GetOriginalDeviceScaleFactor() const;
+
  private:
   static void AssertAreCompatible(const WidgetBase& a, const WidgetBase& b);
 
@@ -430,9 +433,6 @@ class PLATFORM_EXPORT WidgetBase
 
   // Called after the delay given in `RequestAnimationAfterDelay()`.
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
-
-  // Helper to get the non-emulated device scale factor.
-  float GetOriginalDeviceScaleFactor() const;
 
   // Finishes the call to RequestNewLayerTreeFrameSink() once the
   // |gpu_channel_host| is available.

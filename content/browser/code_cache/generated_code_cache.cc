@@ -247,16 +247,6 @@ bool GeneratedCodeCache::IsValidHeader(
   return buffer_size == kHeaderSizeInBytes + kSHAKeySizeInBytes;
 }
 
-void GeneratedCodeCache::ReportPeriodicalHistograms() {
-  DCHECK_EQ(cache_type_, CodeCacheType::kJavaScript);
-  base::UmaHistogramCustomCounts(
-      "SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheSize2",
-      lru_cache_.GetSize(),
-      /*min=*/0,
-      /*exclusive_max=*/kLruCacheCapacity,
-      /*buckets=*/50);
-}
-
 std::string GeneratedCodeCache::GetResourceURLFromKey(const std::string& key) {
   constexpr size_t kPrefixStringLen = std::size(kPrefix) - 1;
   // |key| may not have a prefix and separator (e.g. for deduplicated entries).
@@ -458,12 +448,6 @@ GeneratedCodeCache::GeneratedCodeCache(const base::FilePath& path,
                      ? kLruCacheCapacity
                      : std::min<int64_t>(kLruCacheCapacity, max_size_bytes)) {
   CreateBackend();
-  if (cache_type == CodeCacheType::kJavaScript) {
-    histograms_timer_.Start(
-        FROM_HERE, base::Minutes(5),
-        base::BindRepeating(&GeneratedCodeCache::ReportPeriodicalHistograms,
-                            base::Unretained(this)));
-  }
 }
 
 GeneratedCodeCache::~GeneratedCodeCache() = default;

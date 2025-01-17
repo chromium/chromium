@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1066101356081285416">Chrome ќе ги открива броевите за следење на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Бројот за следење пакети и името на веб-сајтот ќе се испратат до Google за да се обезбеди функцијава и да се подобрат функциите за купување за сите. Ова може да го ажурирате кога сакате во <ph name="BEGIN_LINK" />Поставките за следење пакети<ph name="END_LINK" />.</translation>
+<translation id="1076643793026027628">Chrome автоматски ги отвора линковите на YouTube „Инкогнито“ во режим „Инкогнито“.</translation>
 <translation id="1086486568852410168">Пребарувајте со Google Lens</translation>
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Отворете нова картичка во Chrome</translation>
@@ -126,6 +127,7 @@
 <translation id="4636900170638246267">Најавете се на сајтов и на Chrome.</translation>
 <translation id="4646014602299206846">Chrome ќе ги открива броевите за следење пакети на сајтовите што ги отворате и ќе ви прикажува новости за пакетите на страницата во нова картичка. Вашите податоци ќе се споделат со Google за да се обезбеди функцијава и да се подобри Shopping за сите.</translation>
 <translation id="4647910807533196601">Отвори ја мојата последна картичка во Chrome.</translation>
+<translation id="4693084815234024320">Користите режим „Инкогнито“ во Chrome</translation>
 <translation id="4724297637870447613">Користете го Chrome насекаде</translation>
 <translation id="4738647308035481133">Страница на Google Chrome</translation>
 <translation id="4742795653798179840">Избришани податоци на Chrome</translation>

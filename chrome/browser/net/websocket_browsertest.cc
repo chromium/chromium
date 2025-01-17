@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -231,6 +232,19 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
   }
 
   virtual net::EmbeddedTestServer& server() = 0;
+};
+
+// Websocket upgrades can't happen when only top-level navigations are
+// upgraded, so disable the feature for these tests.
+class WebSocketBrowserTestWebSocketHSTS : public WebSocketBrowserTest {
+ public:
+  WebSocketBrowserTestWebSocketHSTS() {
+    feature_list_.InitAndDisableFeature(
+        net::features::kHstsTopLevelNavigationsOnly);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Concrete impl for tests that use connect_to.html over HTTP.
@@ -422,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTestWebSocketHSTS,
+                       WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());

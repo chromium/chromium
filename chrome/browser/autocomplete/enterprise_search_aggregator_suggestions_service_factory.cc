@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -36,9 +37,11 @@ EnterpriseSearchAggregatorSuggestionsServiceFactory::
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<EnterpriseSearchAggregatorSuggestionsService>(
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+      identity_manager, profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 EnterpriseSearchAggregatorSuggestionsServiceFactory::
@@ -51,7 +54,9 @@ EnterpriseSearchAggregatorSuggestionsServiceFactory::
               // TODO(crbug.com/41488885): Check if this service is needed for
               //   Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 EnterpriseSearchAggregatorSuggestionsServiceFactory::
     ~EnterpriseSearchAggregatorSuggestionsServiceFactory() = default;

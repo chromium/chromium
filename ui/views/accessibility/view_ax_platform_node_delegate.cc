@@ -556,6 +556,23 @@ const ui::AXSelection ViewAXPlatformNodeDelegate::GetUnignoredSelection()
   return selection;
 }
 
+const ui::AXSelection ViewAXPlatformNodeDelegate::GetHypertextSelection()
+    const {
+  const ui::AXSelection& selection = GetUnignoredSelection();
+  // In Views, the selection is purely used for textfields, and therefore the
+  // does not need to be adjusted away from leaf node endpoints for
+  // text/hypertext interfaces.
+#if DCHECK_IS_ON()
+  if (selection.anchor_offset != ax::mojom::kNoSelectionOffset) {
+    DCHECK_EQ(data_.id, selection.anchor_object_id);
+    DCHECK_EQ(data_.id, selection.focus_object_id);
+    DCHECK(data_.IsAtomicTextField());
+  }
+#endif
+
+  return selection;
+}
+
 // Since AtomicViewAXTreeManager only ever contains a single node, we can be
 // sure that we are in a leaf node and only need to return a text position.
 ui::AXNodePosition::AXPositionInstance

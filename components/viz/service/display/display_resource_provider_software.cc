@@ -50,7 +50,6 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
-  DCHECK(resource->transferable.IsSoftwareSharedImage());
   DCHECK(shared_image_manager_);
   auto it = resource_shared_images_.find(id);
   if (it == resource_shared_images_.end()) {

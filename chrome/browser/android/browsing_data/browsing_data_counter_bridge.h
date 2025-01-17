@@ -22,8 +22,7 @@ class BrowsingDataCounterBridge {
                             const base::android::JavaParamRef<jobject>& obj,
                             Profile* profile,
                             jint selected_time_period,
-                            jint data_type,
-                            jint clear_browsing_data_tab);
+                            jint data_type);
 
   BrowsingDataCounterBridge(const BrowsingDataCounterBridge&) = delete;
   BrowsingDataCounterBridge& operator=(const BrowsingDataCounterBridge&) =
@@ -46,7 +45,6 @@ class BrowsingDataCounterBridge {
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<browsing_data::BrowsingDataCounter> counter_;
-  browsing_data::ClearBrowsingDataTab clear_browsing_data_tab_;
 };
 
-#endif // CHROME_BROWSER_ANDROID_BROWSING_DATA_BROWSING_DATA_COUNTER_BRIDGE_H_
+#endif  // CHROME_BROWSER_ANDROID_BROWSING_DATA_BROWSING_DATA_COUNTER_BRIDGE_H_

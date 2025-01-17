@@ -576,7 +576,6 @@
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="382043424867370667">خلفية تعرض غروب الشمس</translation>
 <translation id="3824259034819781947">إرفاق ملفات</translation>
-<translation id="383586991013681190">يُرجى اختيار لغة تحويل الصوت إلى نص وتنزيل النموذج من خلال "الإعدادات"</translation>
 <translation id="3836587210832263413">ننصحك بتفعيل الإضافات التي تثق بها فقط</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="3845880861638660475">‏اضغط على <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />مفتاح الخروج (Esc)<ph name="ESC_SHORTCUT_END" /> لإغلاق مربع الحوار.</translation>
@@ -709,6 +708,7 @@
 <translation id="4428374560396076622">شبكة<ph name="NETWORK_NAME" /> متوقّفة</translation>
 <translation id="4428840632568803690">المتحدّث <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
+<translation id="4430019312045809116">مستوى الصوت</translation>
 <translation id="4431821876790500265">عرض التقرير</translation>
 <translation id="4443192710976771874">أحمر</translation>
 <translation id="4447592701292766824">يتعذّر إنشاء ملخّص لهذا المحتوى</translation>
@@ -730,7 +730,6 @@
 <translation id="4507392511610824664">رفع مستوى السطوع</translation>
 <translation id="4511264077854731334">المدخل</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
-<translation id="4516323842122524821">مستوى الصوت</translation>
 <translation id="4521826082652183069">مطابقة الاسم البديل الخاص بالموضوع</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4536864596629708641">‏إعدادات عنوان IP</translation>

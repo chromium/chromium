@@ -122,8 +122,6 @@ class SecretPortalKeyProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*mock_bus_, ShutdownAndBlock());
-
     // Shutdown the bus to ensure clean-up
     key_provider_.reset();
 

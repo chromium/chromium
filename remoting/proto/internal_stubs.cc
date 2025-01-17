@@ -128,10 +128,18 @@ std::unique_ptr<UpdateRemoteAccessHostRequest> GetUpdateRemoteAccessHostRequest(
 // SessionAuthzService helpers
 // ===========================
 
+std::string_view GetRemoteAccessSessionAuthzPath() {
+  return {};
+}
+
+std::string_view GetRemoteSupportSessionAuthzPath() {
+  return {};
+}
+
 // GenerateHostToken
 
-std::string GetGenerateHostTokenRequestPath() {
-  return "";
+std::string_view GetGenerateHostTokenRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<GenerateHostTokenRequest> GetGenerateHostTokenRequest(
@@ -146,8 +154,8 @@ GetGenerateHostTokenResponseStruct(const GenerateHostTokenResponse&) {
 
 // VerifySessionToken
 
-std::string GetVerifySessionTokenRequestPath() {
-  return "";
+std::string_view GetVerifySessionTokenRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<VerifySessionTokenRequest> GetVerifySessionTokenRequest(
@@ -162,8 +170,8 @@ GetVerifySessionTokenResponseStruct(const VerifySessionTokenResponse&) {
 
 // ReauthorizeHost
 
-std::string GetReauthorizeHostRequestPath() {
-  return "";
+std::string_view GetReauthorizeHostRequestVerb() {
+  return {};
 }
 
 std::unique_ptr<ReauthorizeHostRequest> GetReauthorizeHostRequest(

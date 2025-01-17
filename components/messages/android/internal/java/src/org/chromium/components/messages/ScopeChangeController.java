@@ -84,6 +84,7 @@ class ScopeChangeController {
         // TODO(crbug.com/40230391): Replace GURL with Origin.
         private GURL mLastVisitedUrl;
         private boolean mIsActive;
+        private boolean mIsDestroyed;
 
         public NavigationWebContentsScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             super(scopeKey.webContents);
@@ -134,10 +135,19 @@ class ScopeChangeController {
         }
 
         @Override
-        public void onDestroy() {
+        public void webContentsDestroyed() {
+            destroy();
+        }
+
+        @Override
+        public void destroy() {
+            if (mIsDestroyed) return;
+            mIsDestroyed = true;
+
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.DESTROY));
             mIsActive = false;
+            observe(null);
         }
 
         @Override

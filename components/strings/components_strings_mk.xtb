@@ -1283,6 +1283,7 @@
 <translation id="3273757719652748628">Долниот лист за зачувување IBAN е отворен на целосна висина.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администраторското правило не препорачува да се отвори датотекава во <ph name="DESTINATION_NAME" />}one{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}other{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Вашата организација, <ph name="ENROLLMENT_DOMAIN" />, испратила одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
+<translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3286372614333682499">портрет</translation>
 <translation id="3287510313208355388">Преземи кога ќе има мрежа</translation>
 <translation id="3288238092761586174"><ph name="URL" /> можеби ќе треба да преземе дополнителни чекори за да го потврди вашето плаќање</translation>
@@ -2156,6 +2157,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова табела на Google</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4827283332383516812">Бришење картичка</translation>
+<translation id="4830443836091007686">Избрано: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Хартија за префрлање слики</translation>
 <translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4832961164064927107">Скара</translation>
@@ -3656,6 +3658,7 @@
 <translation id="7511955381719512146">Wi-Fi што го користите може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Правилово не може да се постави на „Точно“ и да биде задолжително, па затоа беше променето на препорачано.</translation>
 <translation id="7514365320538308">Преземи</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Теренски возила</translation>
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е пронајдена веб-страница за веб-адресата: <ph name="URL" /></translation>

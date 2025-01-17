@@ -34,15 +34,12 @@ public class BrowsingDataCounterBridge {
      * @param callback A callback to call with the result when the counter finishes.
      * @param selectedTimePeriod The time period selected in the UI.
      * @param dataType The browsing data type to be counted (from the shared enum
-     * @param prefType The type of preference that should be handled (Default, Basic or Advanced
-     *     from {@link org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTab}).
      */
     public BrowsingDataCounterBridge(
             Profile profile,
             BrowsingDataCounterCallback callback,
             @TimePeriod int selectedTimePeriod,
-            int dataType,
-            int prefType) {
+            int dataType) {
         mCallback = callback;
         mNativeBrowsingDataCounterBridge =
                 BrowsingDataCounterBridgeJni.get()
@@ -50,8 +47,7 @@ public class BrowsingDataCounterBridge {
                                 BrowsingDataCounterBridge.this,
                                 profile,
                                 selectedTimePeriod,
-                                dataType,
-                                prefType);
+                                dataType);
     }
 
     public void setSelectedTimePeriod(@TimePeriod int selectedTimePeriod) {
@@ -84,8 +80,7 @@ public class BrowsingDataCounterBridge {
                 BrowsingDataCounterBridge caller,
                 @JniType("Profile*") Profile profile,
                 int selectedTimePeriod,
-                int dataType,
-                int prefType);
+                int dataType);
 
         void setSelectedTimePeriod(
                 long nativeBrowsingDataCounterBridge,

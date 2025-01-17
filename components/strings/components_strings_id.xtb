@@ -1284,6 +1284,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3273757719652748628">Simpan IBAN terbuka sepenuhnya.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
+<translation id="3282568296779691940">Login ke Chrome</translation>
 <translation id="3286372614333682499">potret</translation>
 <translation id="3287510313208355388">Download saat online</translation>
 <translation id="3288238092761586174"><ph name="URL" /> mungkin perlu melakukan langkah tambahan untuk memverifikasi pembayaran Anda</translation>
@@ -3656,6 +3657,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7511955381719512146">Wi-Fi yang digunakan mungkin mewajibkan Anda mengunjungi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Kebijakan ini tidak dapat disetel ke "Benar" dan menjadi wajib. Oleh karena itu, kebijakan diubah menjadi direkomendasikan.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Kendaraan Off-Road</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Tidak ada halaman web yang ditemukan untuk alamat web:<ph name="URL" /></translation>

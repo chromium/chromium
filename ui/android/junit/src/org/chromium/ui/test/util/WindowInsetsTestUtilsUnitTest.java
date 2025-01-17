@@ -23,7 +23,8 @@ public class WindowInsetsTestUtilsUnitTest {
     private static final int CAPTION_BAR = WindowInsetsCompat.Type.captionBar();
     private static final int SYSTEM_BARS = WindowInsetsCompat.Type.systemBars();
     private static final int DISPLAY_CUTOUT = WindowInsetsCompat.Type.displayCutout();
-    private static final int ALL_INSETS = SYSTEM_BARS + DISPLAY_CUTOUT;
+    private static final int IME = WindowInsetsCompat.Type.ime();
+    private static final int ALL_INSETS = SYSTEM_BARS + DISPLAY_CUTOUT + IME;
 
     @Test
     public void spyWindowInsetsBuilder_navBars() {
@@ -103,5 +104,33 @@ public class WindowInsetsTestUtilsUnitTest {
         assertEquals(Insets.of(2, 0, 0, 0), insets.getInsets(DISPLAY_CUTOUT));
         assertEquals(Insets.of(0, 5, 0, 10), insets.getInsets(SYSTEM_BARS));
         assertEquals(Insets.of(2, 5, 0, 10), insets.getInsets(ALL_INSETS));
+    }
+
+    @Test
+    public void spyWindowInsetsBuilder_ImeWithBottomNavBar() {
+        WindowInsetsCompat insets =
+                new SpyWindowInsetsBuilder()
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 10))
+                        .setInsets(IME, Insets.of(0, 0, 0, 22))
+                        .build();
+
+        assertEquals(Insets.of(0, 0, 0, 10), insets.getInsets(NAVIGATION_BARS));
+        assertEquals(Insets.of(0, 0, 0, 22), insets.getInsets(IME));
+        assertEquals(Insets.of(0, 0, 0, 10), insets.getInsets(SYSTEM_BARS));
+        assertEquals(Insets.of(0, 0, 0, 22), insets.getInsets(ALL_INSETS));
+    }
+
+    @Test
+    public void spyWindowInsetsBuilder_ImeWithLeftNavBar() {
+        WindowInsetsCompat insets =
+                new SpyWindowInsetsBuilder()
+                        .setInsets(NAVIGATION_BARS, Insets.of(10, 0, 0, 0))
+                        .setInsets(IME, Insets.of(0, 0, 0, 22))
+                        .build();
+
+        assertEquals(Insets.of(10, 0, 0, 0), insets.getInsets(NAVIGATION_BARS));
+        assertEquals(Insets.of(0, 0, 0, 22), insets.getInsets(IME));
+        assertEquals(Insets.of(10, 0, 0, 0), insets.getInsets(SYSTEM_BARS));
+        assertEquals(Insets.of(10, 0, 0, 22), insets.getInsets(ALL_INSETS));
     }
 }

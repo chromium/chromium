@@ -1181,6 +1181,11 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.data.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  output_frame.data.is_handling_interaction_or_animation =
+      swap_frame_data.is_handling_interaction_or_animation;
+#endif
+
   if (buffer_queue_) {
     gfx::Rect damage_rect = output_frame.sub_buffer_rect.value_or(
         gfx::Rect(surface_size_for_swap_buffers()));

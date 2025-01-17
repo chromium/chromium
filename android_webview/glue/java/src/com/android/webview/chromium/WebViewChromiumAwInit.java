@@ -160,21 +160,25 @@ public class WebViewChromiumAwInit {
         void onSuccess(WebViewStartUpDiagnostics result);
     }
 
-    // TODO(gsennton): store aw-objects instead of adapters here
-    // Initialization guarded by mLock.
-    private AwBrowserContext mDefaultBrowserContext;
-    private SharedStatics mSharedStatics;
-    private GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
+    @GuardedBy("mLock")
     private CookieManagerAdapter mDefaultCookieManager;
 
+    @GuardedBy("mLock")
     private WebIconDatabaseAdapter mWebIconDatabase;
-    private WebStorageAdapter mDefaultWebStorage;
+
+    @GuardedBy("mLock")
     private WebViewDatabaseAdapter mDefaultWebViewDatabase;
-    private AwServiceWorkerController mDefaultServiceWorkerController;
-    private AwTracingController mAwTracingController;
+
+    @GuardedBy("mLock")
+    private ChromiumStartedGlobals mChromiumStartedGlobals;
+
+    @GuardedBy("mLock")
     private VariationsSeedLoader mSeedLoader;
+
+    // This is only accessed during WebViewChromiumFactoryProvider.initialize() which is guarded by
+    // the WebViewFactory lock in the framework, and on the UI thread during startChromiumLocked
+    // which cannot be called before initialize() has completed.
     private Thread mSetUpResourcesThread;
-    private AwProxyController mAwProxyController;
 
     // Guards accees to the other members, and is notifyAll() signalled on the UI thread
     // when the chromium process has been started.
@@ -240,20 +244,20 @@ public class WebViewChromiumAwInit {
 
     public AwTracingController getAwTracingController() {
         synchronized (mLock) {
-            if (mAwTracingController == null) {
+            if (mChromiumStartedGlobals == null) {
                 ensureChromiumStartedLocked(true, CallSite.GET_AW_TRACING_CONTROLLER);
             }
+            return mChromiumStartedGlobals.mAwTracingController;
         }
-        return mAwTracingController;
     }
 
     public AwProxyController getAwProxyController() {
         synchronized (mLock) {
-            if (mAwProxyController == null) {
+            if (mChromiumStartedGlobals == null) {
                 ensureChromiumStartedLocked(true, CallSite.GET_AW_PROXY_CONTROLLER);
             }
+            return mChromiumStartedGlobals.mAwProxyController;
         }
-        return mAwProxyController;
     }
 
     public void setProviderInitOnMainLooperLocation(Throwable t) {
@@ -266,7 +270,8 @@ public class WebViewChromiumAwInit {
     // lives in the ui/ layer. See ui/base/ui_base_paths.h
     private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
 
-    protected void startChromiumLocked(@CallSite int callSite, boolean triggeredFromUIThread) {
+    @GuardedBy("mLock")
+    private void startChromiumLocked(@CallSite int callSite, boolean triggeredFromUIThread) {
         long startTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLocked")) {
@@ -362,11 +367,6 @@ public class WebViewChromiumAwInit {
             AwBrowserProcess.loadComponents();
             AwBrowserProcess.initializeMetricsLogUploader();
 
-            mSharedStatics = new SharedStatics();
-            if (BuildInfo.isDebugAndroidOrApp()) {
-                mSharedStatics.setWebContentsDebuggingEnabledUnconditionally(true);
-            }
-
             RecordHistogram.recordSparseHistogram(
                     "Android.WebView.TargetSdkVersion",
                     context.getApplicationInfo().targetSdkVersion);
@@ -374,18 +374,12 @@ public class WebViewChromiumAwInit {
             try (ScopedSysTraceEvent e =
                     ScopedSysTraceEvent.scoped(
                             "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
-                // Initialize thread-unsafe singletons.
-                mDefaultBrowserContext = AwBrowserContext.getDefault();
-                mDefaultGeolocationPermissions =
-                        new GeolocationPermissionsAdapter(
-                                mFactory, mDefaultBrowserContext.getGeolocationPermissions());
-                mDefaultWebStorage =
-                        new WebStorageAdapter(
-                                mFactory, mDefaultBrowserContext.getQuotaManagerBridge());
-                mAwTracingController = new AwTracingController();
-                mDefaultServiceWorkerController =
-                        mDefaultBrowserContext.getServiceWorkerController();
-                mAwProxyController = new AwProxyController();
+                mChromiumStartedGlobals = new ChromiumStartedGlobals(mFactory);
+            }
+
+            if (BuildInfo.isDebugAndroidOrApp()) {
+                mChromiumStartedGlobals.mSharedStatics
+                        .setWebContentsDebuggingEnabledUnconditionally(true);
             }
 
             if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -434,7 +428,7 @@ public class WebViewChromiumAwInit {
      *
      * @param context The context.
      */
-    public void setUpResourcesOnBackgroundThread(int packageId, Context context) {
+    void setUpResourcesOnBackgroundThread(int packageId, Context context) {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped(
                         "WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
@@ -486,8 +480,8 @@ public class WebViewChromiumAwInit {
     // This method is not private only because the downstream subclass needs to access it,
     // it shouldn't be accessed from anywhere else.
     // Postcondition: Chromium startup is finished when this method returns.
-    /* package */ void ensureChromiumStartedLocked(
-            boolean fromThreadSafeFunction, @CallSite int callSite) {
+    @GuardedBy("mLock")
+    void ensureChromiumStartedLocked(boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
         ensureChromiumStartupHappensSoon(fromThreadSafeFunction, callSite);
         if (mInitState.get() == INIT_FINISHED) { // Early-out for the common case.
@@ -513,6 +507,7 @@ public class WebViewChromiumAwInit {
 
     // Postcondition: Chromium startup will be finished in the near future, but it may or may not be
     // finished after this method returns.
+    @GuardedBy("mLock")
     private void ensureChromiumStartupHappensSoon(
             boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
@@ -602,14 +597,15 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    // Only on UI thread.
+    // This is called only on the same thread that initializes the variable, so
+    // no need to hold a lock.
+    @SuppressWarnings("GuardedBy")
     AwBrowserContext getDefaultBrowserContextOnUiThread() {
-        assert (mDefaultBrowserContext != null);
         if (BuildConfig.ENABLE_ASSERTS && !ThreadUtils.runningOnUiThread()) {
             throw new RuntimeException(
                     "getBrowserContextOnUiThread called on " + Thread.currentThread());
         }
-        return mDefaultBrowserContext;
+        return mChromiumStartedGlobals.mDefaultBrowserContext;
     }
 
     /**
@@ -623,23 +619,23 @@ public class WebViewChromiumAwInit {
 
     public SharedStatics getStatics() {
         synchronized (mLock) {
-            if (mSharedStatics == null) {
+            if (mChromiumStartedGlobals == null) {
                 // TODO: Optimization potential: most of the static methods only need the native
                 // library loaded and initialized, not the entire browser process started.
                 ensureChromiumStartedLocked(true, CallSite.GET_STATICS);
                 SharedStatics.setStartupTriggered();
             }
+            return mChromiumStartedGlobals.mSharedStatics;
         }
-        return mSharedStatics;
     }
 
     public GeolocationPermissions getDefaultGeolocationPermissions() {
         synchronized (mLock) {
-            if (mDefaultGeolocationPermissions == null) {
+            if (mChromiumStartedGlobals == null) {
                 ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS);
             }
+            return mChromiumStartedGlobals.mDefaultGeolocationPermissions;
         }
-        return mDefaultGeolocationPermissions;
     }
 
     public CookieManager getDefaultCookieManager() {
@@ -648,17 +644,17 @@ public class WebViewChromiumAwInit {
                 mDefaultCookieManager =
                         new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
             }
+            return mDefaultCookieManager;
         }
-        return mDefaultCookieManager;
     }
 
     public AwServiceWorkerController getDefaultServiceWorkerController() {
         synchronized (mLock) {
-            if (mDefaultServiceWorkerController == null) {
+            if (mChromiumStartedGlobals == null) {
                 ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER);
             }
+            return mChromiumStartedGlobals.mDefaultServiceWorkerController;
         }
-        return mDefaultServiceWorkerController;
     }
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
@@ -668,17 +664,17 @@ public class WebViewChromiumAwInit {
             if (mWebIconDatabase == null) {
                 mWebIconDatabase = new WebIconDatabaseAdapter();
             }
+            return mWebIconDatabase;
         }
-        return mWebIconDatabase;
     }
 
     public WebStorage getDefaultWebStorage() {
         synchronized (mLock) {
-            if (mDefaultWebStorage == null) {
+            if (mChromiumStartedGlobals == null) {
                 ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_WEB_STORAGE);
             }
+            return mChromiumStartedGlobals.mDefaultWebStorage;
         }
-        return mDefaultWebStorage;
     }
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
@@ -689,10 +685,10 @@ public class WebViewChromiumAwInit {
                         new WebViewDatabaseAdapter(
                                 mFactory,
                                 HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
-                                mDefaultBrowserContext);
+                                mChromiumStartedGlobals.mDefaultBrowserContext);
             }
+            return mDefaultWebViewDatabase;
         }
-        return mDefaultWebViewDatabase;
     }
 
     // See comments in VariationsSeedLoader.java on when it's safe to call this.
@@ -705,6 +701,7 @@ public class WebViewChromiumAwInit {
         }
     }
 
+    @GuardedBy("mLock")
     private void finishVariationsInitLocked() {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.finishVariationsInitLocked")) {
@@ -758,6 +755,31 @@ public class WebViewChromiumAwInit {
                 () -> callback.onSuccess(mWebViewStartUpDiagnostics));
         synchronized (mLock) {
             ensureChromiumStartupHappensSoon(true, CallSite.ASYNC_WEBVIEW_STARTUP);
+        }
+    }
+
+    // These are objects that need to be created on the UI thread and after chromium has started.
+    // Thus created during startChromiumLocked for ease.
+    private static final class ChromiumStartedGlobals {
+        final AwBrowserContext mDefaultBrowserContext;
+        final GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
+        final WebStorageAdapter mDefaultWebStorage;
+        final AwServiceWorkerController mDefaultServiceWorkerController;
+        final AwTracingController mAwTracingController;
+        final AwProxyController mAwProxyController;
+        final SharedStatics mSharedStatics;
+
+        ChromiumStartedGlobals(WebViewChromiumFactoryProvider factory) {
+            mSharedStatics = new SharedStatics();
+            mDefaultBrowserContext = AwBrowserContext.getDefault();
+            mDefaultGeolocationPermissions =
+                    new GeolocationPermissionsAdapter(
+                            factory, mDefaultBrowserContext.getGeolocationPermissions());
+            mDefaultWebStorage =
+                    new WebStorageAdapter(factory, mDefaultBrowserContext.getQuotaManagerBridge());
+            mAwTracingController = new AwTracingController();
+            mDefaultServiceWorkerController = mDefaultBrowserContext.getServiceWorkerController();
+            mAwProxyController = new AwProxyController();
         }
     }
 }

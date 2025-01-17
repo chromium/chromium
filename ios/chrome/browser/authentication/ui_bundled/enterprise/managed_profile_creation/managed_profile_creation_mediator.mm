@@ -19,21 +19,19 @@
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
-              skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration {
+              skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+             mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault {
   self = [super init];
   if (self) {
-    // TODO(crbug.com/382240108): Enable the ProfileDataMigrationSettings policy
-    // here.
-
-    // Merging data is not possible at FRE, nor is separate profiles are not
-    // supported, nor if the account is signed in.
+    // We can merge if either
+    // * we are at FRE,
+    // * separate profiles are not supported, or
+    // * the user is signed-in.
     _canShowBrowsingDataMigration =
         !skipBrowsingDataMigration &&
         AreSeparateProfilesForManagedAccountsEnabled() &&
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    // The default behavior should be to create a new profile for the user and
-    // keep any existing browsing data separate from the new managed profile.
-    _keepBrowsingDataSeparate = true;
+    _keepBrowsingDataSeparate = !mergeBrowsingDataByDefault;
   }
   return self;
 }

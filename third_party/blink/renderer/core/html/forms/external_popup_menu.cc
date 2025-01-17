@@ -308,10 +308,31 @@ void ExternalPopupMenu::GetPopupMenuInfo(
   const ComputedStyle& menu_style = owner_element.GetComputedStyle()
                                         ? *owner_element.GetComputedStyle()
                                         : *owner_element.EnsureComputedStyle();
-  // These coordinates need to be in CSS pixels.
-  float dpr = GetDprForSizeAdjustment(owner_element);
+  // There are two completely different scaling factors that need to be
+  // considered.
+  //
+  // The first scaling factor is the "page scale factor" which is what you get
+  // when you pinch-zoom on a trackpad or you double-finger-double-tap on a
+  // trackpad. That is available as `Page::PageScaleFactor()`. It does not
+  // include DPR.
+  //
+  // The second scaling factor is "page zoom factor" which is what you get when
+  // you press ⌘+/⌘-. The "page zoom factor" also includes the DPR (historical
+  // note: this is true as of the enabling of the "zoom-for-dsf" feature). The
+  // "page zoom factor" is baked into the font metrics.
+  //
+  // Because the `font_size` is sent by the browser process to the OS APIs to
+  // create a font that matches the text size of the <select> element, it must
+  // be in device-independent points and thus the DPR must be removed.
+  //
+  // Account for both scaling factors: put the page scale factor in the
+  // numerator, to multiply by it, and the DPR in the denominator so as to
+  // cancel it out.
+  float scale =
+      owner_element.GetDocument().GetFrame()->GetPage()->PageScaleFactor() /
+      GetDprForSizeAdjustment(owner_element);
   *font_size = static_cast<int>(
-      menu_style.GetFont().GetFontDescription().ComputedSize() / dpr);
+      menu_style.GetFont().GetFontDescription().ComputedSize() * scale);
   *selected_item = ToExternalPopupMenuItemIndex(
       owner_element.SelectedListIndex(), owner_element);
 

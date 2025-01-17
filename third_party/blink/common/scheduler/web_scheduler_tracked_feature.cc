@@ -152,6 +152,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"parser-aborted", "parser was aborted"};
     case WebSchedulerTrackedFeature::kWebBluetooth:
       return {"webbluetooth", "Active Bluetooth connection"};
+    case WebSchedulerTrackedFeature::kWebAuthentication:
+      return {"webauthn", "Active WebAuthn transaction"};
   }
   return {};
 }

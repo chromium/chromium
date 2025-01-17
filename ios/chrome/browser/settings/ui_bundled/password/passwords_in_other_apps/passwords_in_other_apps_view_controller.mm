@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -28,8 +27,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-using ::password_manager::features::IOSPasskeysM2Enabled;
 
 CGFloat const kCaptionTextViewOffset = 16;
 CGFloat const kDefaultMargin = 16;
@@ -543,7 +540,6 @@ CGFloat const kContentOptimalWidth = 327;
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    NSLog(@"%@", captionTextView.text);
     UIImage* checkmark = [[UIImage imageNamed:@"settings_safe_state"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
@@ -622,9 +618,7 @@ CGFloat const kContentOptimalWidth = 327;
 }
 
 - (BOOL)useShortInstruction {
-  return ios::provider::SupportShortenedInstructionForPasswordAutoFill() &&
-         base::FeatureList::IsEnabled(
-             kEnableShortenedPasswordAutoFillInstruction);
+  return ios::provider::SupportShortenedInstructionForPasswordAutoFill();
 }
 
 - (NSArray<NSString*>*)steps {

@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#include "ios/chrome/browser/signin/model/constants.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 
 @class UIViewController;
 
@@ -26,6 +27,12 @@
 
 // Indicates that the requested identity managed status fetch failed.
 - (void)didFailFetchManagedStatus:(NSError*)error;
+
+// Indicates that the value for ProfileSeparationDataMigrationSettings has been
+// fetched from the server.
+- (void)didFetchProfileSeparationPolicies:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 // Indicates that the user accepted signing in to a managed account.
 - (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate;

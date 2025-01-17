@@ -167,6 +167,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.Result"
+    enum="BooleanSuccess" expires_after="2026-01-14">
+  <owner>nikhilcn@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Deprecated. Records the result of an attempt to create a custom APN.
+  </summary>
+</histogram>
+
+<histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.Result2"
     enum="CreateCustomApnResult" expires_after="2026-01-14">
   <owner>nikhilcn@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>

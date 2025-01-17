@@ -144,13 +144,6 @@ class AuthenticationServiceTestBase : public PlatformTest {
     return prefs;
   }
 
-  void FlushTaskRunner() {
-    base::RunLoop loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
   void VerifyLastSigninTimestamp() {
     EXPECT_EQ(profile_.get()->GetPrefs()->GetTime(prefs::kLastSigninTimestamp),
               base::Time::Now());
@@ -372,7 +365,6 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // the loop.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
-  base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -393,7 +385,6 @@ TEST_P(AuthenticationServiceTest,
   // the loop.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
-  base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -401,16 +392,13 @@ TEST_P(AuthenticationServiceTest,
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
-TEST_P(AuthenticationServiceTest,
-       OnApplicationEnterForegroundReloadCredentials) {
+// Tests that AuthenticationService triggers the IdentityManager reloads when
+// a secondary identity is added.
+TEST_P(AuthenticationServiceTest, OnAddIdentity) {
   // Sign in.
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   VerifyLastSigninTimestamp();
-
-  FakeSystemIdentity* fake_system_identity3 =
-      [FakeSystemIdentity fakeIdentity3];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
 
   auto account_compare_func = [](const CoreAccountInfo& first,
                                  const CoreAccountInfo& second) {
@@ -427,13 +415,12 @@ TEST_P(AuthenticationServiceTest,
       base::SysNSStringToUTF8(fake_system_identity2_.gaiaID));
   EXPECT_EQ(gaiad_id_2, accounts[1].account_id);
 
-  // Simulate a switching to background and back to foreground, triggering a
-  // credentials reload.
-  fake_system_identity_manager()->FireSystemIdentityReloaded();
-  base::RunLoop().RunUntilIdle();
+  FakeSystemIdentity* fake_system_identity3 =
+      [FakeSystemIdentity fakeIdentity3];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
 
   // Accounts are reloaded, "foo3@gmail.com" is added as it is now in
-  // ChromeAccountManagerService.
+  // IdentityManager.
   accounts = identity_manager()->GetAccountsWithRefreshTokens();
   std::sort(accounts.begin(), accounts.end(), account_compare_func);
   ASSERT_EQ(3u, accounts.size());
@@ -549,8 +536,6 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -579,8 +564,6 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -618,8 +601,6 @@ TEST_F(
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -654,8 +635,6 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -690,8 +669,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.
-//
-// Regression test for root cause of crbug/1482236
+// Regression test for root cause of crbug.com/1482236
 TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -699,12 +677,18 @@ TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
 
   // Fake an mdm error for an identity that is not loaded in IdentityManager.
   FakeSystemIdentity* fake_system_identity3 =
       [FakeSystemIdentity fakeIdentity3];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity3);
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
+  id<RefreshAccessTokenError> mdm_error_mock =
+      OCMStrictProtocolMock(@protocol(RefreshAccessTokenError));
+  SetCachedMDMInfo(fake_system_identity3, mdm_error_mock);
+
+  // Make sure we still have 2 identities and `fake_system_identity3` is still
+  // not loaded.
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
 
   GoogleServiceAuthError error(
       GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
@@ -717,6 +701,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
       identity_manager()->GetAccountsWithRefreshTokens()[0].account_id.empty());
   EXPECT_FALSE(
       identity_manager()->GetAccountsWithRefreshTokens()[1].account_id.empty());
+  EXPECT_OCMOCK_VERIFY((id)mdm_error_mock);
 }
 
 // Tests that MDM errors are correctly cleared when signing out of a managed
@@ -730,8 +715,6 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -763,8 +746,6 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  // IdentityManager is updated via a posted task; wait for that to happen.
-  FlushTaskRunner();
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
@@ -950,9 +931,6 @@ TEST_P(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   SetPattern("foo");
   EXPECT_FALSE(account_manager_->HasIdentities());
 
-  // Set the authentication service as "In Background" and run the loop.
-  base::RunLoop().RunUntilIdle();
-
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
@@ -1015,7 +993,6 @@ TEST_P(AuthenticationServiceTest,
   // Let's load `fakeIdentity3`.
   id<SystemIdentity> fake_identity3 = [FakeSystemIdentity fakeIdentity3];
   fake_system_identity_manager()->AddIdentity(fake_identity3);
-  base::RunLoop().RunUntilIdle();
   account_info_vector =
       identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
   EXPECT_EQ(3ul, account_info_vector.size());

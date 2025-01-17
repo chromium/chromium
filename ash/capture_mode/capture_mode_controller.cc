@@ -814,6 +814,10 @@ bool CaptureModeController::IsCustomFolderManagedByPolicy() const {
          CaptureModeDelegate::CapturePathEnforcement::kManaged;
 }
 
+bool CaptureModeController::IsSearchAllowedByPolicy() const {
+  return delegate_->IsSearchAllowedByPolicy();
+}
+
 bool CaptureModeController::IsAudioRecordingInProgress() const {
   return video_recording_watcher_ &&
          !video_recording_watcher_->is_shutting_down() &&

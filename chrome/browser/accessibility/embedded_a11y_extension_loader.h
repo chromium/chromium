@@ -35,7 +35,7 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // profiles.
   struct ExtensionInfo {
     ExtensionInfo(const std::string& extension_id,
-                  const std::string& extension_path,
+                  const base::FilePath& extension_path,
                   const base::FilePath::CharType* extension_manifest_file,
                   bool should_localize);
     ExtensionInfo(const ExtensionInfo& other);
@@ -48,7 +48,7 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
     const std::string extension_id;
 
     // The path to the extension manifest file.
-    const std::string extension_path;
+    const base::FilePath extension_path;
 
     // The name of the extension manifest file.
     const base::FilePath::CharType* extension_manifest_file;
@@ -72,9 +72,14 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // `manifest_name` must live for the duration of the program. (e.g. be
   // statically allocated)
   void InstallExtensionWithId(const std::string& extension_id,
-                              const std::string& extension_path,
+                              const std::string& extension_resource_directory,
                               const base::FilePath::CharType* manifest_name,
                               bool should_localize);
+  void InstallExtensionWithIdAndPath(
+      const std::string& extension_id,
+      const base::FilePath& extension_path,
+      const base::FilePath::CharType* manifest_name,
+      bool should_localize);
   void RemoveExtensionWithId(const std::string& extension_id);
 
   // We can't use extensions::ExtensionHostTestHelper as those require a
@@ -104,7 +109,7 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   // if it isn't yet installed.
   void MaybeInstallExtension(Profile* profile,
                              const std::string& extension_id,
-                             const std::string& extension_path,
+                             const base::FilePath& extension_path,
                              const base::FilePath::CharType* manifest_name,
                              bool should_localize);
 

@@ -27,6 +27,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -53,6 +55,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
@@ -78,6 +81,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1159,6 +1164,38 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
     /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr std::array kActionableItems_ManagedProfile = {
+    ProfileMenuViewBase::ActionableItem::kProfileManagementLabel,
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kProfileManagementLabel};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_ManagedProfile,
+    ProfileMenuClickTest_ManagedProfile,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop,
+         features::kEnterpriseProfileBadgingForMenu}),
+    /*disabled_features=*/{}) {
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_browser_management_ =
+          std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+              policy::ManagementServiceFactory::GetForProfile(
+                  browser()->profile()),
+              policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
   RunTest();
 }
 

@@ -131,8 +131,10 @@ export class SearchboxDropdownElement extends PolymerElement {
   canShowSecondarySide: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
+  hasEmptyInput: boolean;
   result: AutocompleteResult;
   selectedMatchIndex: number;
+  showThumbnail: boolean;
   private hiddenGroupIds_: number[];
   private selectableMatchElements_: SearchboxMatchElement[];
   private showSecondarySide_: boolean;

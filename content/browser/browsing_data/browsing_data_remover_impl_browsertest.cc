@@ -167,19 +167,29 @@ class BrowsingDataRemoverImplBrowserTest
     EXPECT_TRUE(IsHstsSet());
   }
 
-  // Returns true if HSTS is set on localhost.  Does this by issuing an HTTP
-  // request to the embedded test server, and expecting it to be redirected from
-  // HTTP to HTTPS if HSTS is enabled.  If the request succeeds, it was sent
-  // over HTTPS, so HSTS is enabled. If it fails, the request was send using
-  // HTTP instead, so HSTS is not enabled for the domain.
+  // Returns true if HSTS is set on localhost.  Does this by issuing a main
+  // frame HTTP request to the embedded test server, and expecting it to be
+  // redirected from HTTP to HTTPS if HSTS is enabled.  If the request succeeds,
+  // it was sent over HTTPS, so HSTS is enabled. If it fails, the request was
+  // send using HTTP instead, so HSTS is not enabled for the domain.
+  //
+  // That the request be main frame is necessary when
+  // kHstsTopLevelNavigationsOnly is enabled.
   bool IsHstsSet() {
     GURL url = ssl_server_.GetURL(kHstsHostname, "/echo");
     GURL::Replacements replacements;
     replacements.SetSchemeStr("http");
     url = url.ReplaceComponents(replacements);
+    url::Origin origin = url::Origin::Create(url);
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
     request->url = url;
+    request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
+    request->update_first_party_url_on_redirect = true;
+    request->trusted_params.emplace();
+    request->trusted_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+        net::SiteForCookies::FromOrigin(origin));
 
     std::unique_ptr<network::SimpleURLLoader> loader =
         network::SimpleURLLoader::Create(std::move(request),

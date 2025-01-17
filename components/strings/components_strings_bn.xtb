@@ -248,6 +248,7 @@
 <translation id="1413809658975081374">গোপনীয়তা ত্রুটি</translation>
 <translation id="1414134146594747368">প্রি-স্কুল</translation>
 <translation id="1419305130220238697">'Chrome-এ ডাউনলোড ম্যানেজ করুন' বোতাম, Chrome-এ আপনার ডাউনলোড করা ফাইল ম্যানেজ করতে এটি চালু করুন</translation>
+<translation id="1420345875188552368">আপনার সেভ করা অটোমেটিক পেমেন্ট পদ্ধতি এই পেমেন্টের জন্য ব্যবহার করা হতে পারে। Chrome-এ ই-ওয়ালেট বন্ধ করতে, আপনার <ph name="BEGIN_LINK1" />পেমেন্ট সেটিংস<ph name="END_LINK1" /> বিকল্পে যান</translation>
 <translation id="1420920093772172268">যুক্ত হওয়ার জন্য  <ph name="TURN_ON_BLUETOOTH_LINK" /> কে অনুমতি দিতে</translation>
 <translation id="14222610277930434">আপনি প্রায়ই দেখেন</translation>
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
@@ -559,7 +560,7 @@
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">আপনার টেক্সট ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য তা ব্যবহার করা হতে পারে।
   <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="196146181975453736">আরও ঝটপট পেমেন্ট করতে, নিরাপত্তা সংক্রান্ত এককালীন চেক প্রসেস সম্পূর্ণ করুন</translation>
+<translation id="196146181975453736">আরও ঝটপট পেমেন্ট করতে, নিরাপত্তা সংক্রান্ত এককালীন চেকিংয়ের প্রসেস সম্পূর্ণ করুন</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
 <translation id="1973785048533660168">ক্লারিক্যাল ও অ্যাডমিনিস্ট্রেটিভ চাকরি</translation>
@@ -1284,6 +1285,7 @@
 <translation id="3273757719652748628">IBAN সেভ করার সুবিধা সম্পূর্ণ স্ক্রিনে খুলে দেওয়া হয়েছে।</translation>
 <translation id="3281350579597955952">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}}</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
+<translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3287510313208355388">অনলাইন হয়ে ডাউনলোড করবেন</translation>
 <translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
@@ -2157,6 +2159,7 @@
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Sheet তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="4827283332383516812">কার্ড মুছে দিন</translation>
+<translation id="4830443836091007686"><ph name="ITEMS" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="4831993743164297314">ইমেজ সেটার পেপার</translation>
 <translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4832961164064927107">বার্বিকিউ ও গ্রিলিং</translation>
@@ -3657,6 +3660,7 @@
 <translation id="7511955381719512146">আপনি যে ওয়াই-ফাই-টি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />-তে যেতে হতে পারে৷</translation>
 <translation id="7512685745044087310">এই নীতি "সত্যি" এবং বাধ্যতামূলক হিসেবে সেট করা যাচ্ছে না, তাই পরিবর্তন করে 'সাজেস্ট করা হয়েছে' হিসেবে সেট করা হয়েছে।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">সবধরনের রাস্তায় চলা যানবাহন</translation>
 <translation id="7517414872996418597">এনভেলপ C10</translation>
 <translation id="7518003948725431193">No webpage was found for the web address: <ph name="URL" /></translation>

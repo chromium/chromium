@@ -575,6 +575,7 @@ AuthenticationExtensionsPRFValues* GetPRFExtensionResults(
 void OnMakePublicKeyCredentialComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
     RequiredOriginType required_origin_type,
     bool is_rk_required,
     AuthenticatorStatus status,
@@ -686,6 +687,7 @@ bool IsForPayment(const CredentialCreationOptions* options,
 void OnSaveCredentialIdForPaymentExtension(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
     MakeCredentialAuthenticatorResponsePtr credential,
     PaymentCredentialStorageStatus storage_status) {
   auto status = AuthenticatorStatus::SUCCESS;
@@ -696,6 +698,7 @@ void OnSaveCredentialIdForPaymentExtension(
   }
   OnMakePublicKeyCredentialComplete(
       std::move(scoped_resolver), std::move(scoped_abort_state),
+      std::move(feature_handle),
       RequiredOriginType::kSecureWithPaymentOrCreateCredentialPermissionPolicy,
       /*is_rk_required=*/false, status, std::move(credential),
       /*dom_exception_details=*/nullptr);
@@ -704,6 +707,7 @@ void OnSaveCredentialIdForPaymentExtension(
 void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
     const String& rp_id_for_payment_extension,
     const WTF::Vector<uint8_t>& user_id_for_payment_extension,
     AuthenticatorStatus status,
@@ -739,12 +743,14 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
       std::move(user_id_for_payment_extension),
       WTF::BindOnce(&OnSaveCredentialIdForPaymentExtension,
                     std::make_unique<ScopedPromiseResolver>(resolver),
-                    std::move(scoped_abort_state), std::move(credential)));
+                    std::move(scoped_abort_state), std::move(feature_handle),
+                    std::move(credential)));
 }
 
 void OnGetAssertionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
     bool is_conditional_ui_request,
     AuthenticatorStatus status,
     GetAssertionAuthenticatorResponsePtr credential,
@@ -1502,10 +1508,19 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->GetAssertion(
           std::move(mojo_options),
-          WTF::BindOnce(&OnGetAssertionComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        is_conditional_ui_request));
+          WTF::BindOnce(
+              &OnGetAssertionComplete,
+              std::make_unique<ScopedPromiseResolver>(resolver),
+              std::move(scoped_abort_state),
+              RuntimeEnabledFeatures::
+                      WebAuthenticationNewBfCacheHandlingBlinkEnabled()
+                  ? ExecutionContext::From(script_state)
+                        ->GetScheduler()
+                        ->RegisterFeature(
+                            SchedulingPolicy::Feature::kWebAuthentication,
+                            SchedulingPolicy::DisableBackForwardCache())
+                  : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(),
+              is_conditional_ui_request));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -1955,6 +1970,13 @@ AuthenticationCredentialsContainer::create(
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle =
+      RuntimeEnabledFeatures::WebAuthenticationNewBfCacheHandlingBlinkEnabled()
+          ? ExecutionContext::From(script_state)
+                ->GetScheduler()
+                ->RegisterFeature(SchedulingPolicy::Feature::kWebAuthentication,
+                                  SchedulingPolicy::DisableBackForwardCache())
+          : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle();
   if (mojo_options->is_payment_credential_creation) {
     String rp_id_for_payment_extension = mojo_options->relying_party->id;
     WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
@@ -1968,7 +1990,7 @@ AuthenticationCredentialsContainer::create(
           WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
                         std::make_unique<ScopedPromiseResolver>(resolver),
                         std::move(scoped_abort_state),
-                        rp_id_for_payment_extension,
+                        std::move(feature_handle), rp_id_for_payment_extension,
                         std::move(user_id_for_payment_extension)));
     } else {
       authenticator->MakeCredential(
@@ -1976,7 +1998,7 @@ AuthenticationCredentialsContainer::create(
           WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
                         std::make_unique<ScopedPromiseResolver>(resolver),
                         std::move(scoped_abort_state),
-                        rp_id_for_payment_extension,
+                        std::move(feature_handle), rp_id_for_payment_extension,
                         std::move(user_id_for_payment_extension)));
     }
   } else {
@@ -1987,8 +2009,8 @@ AuthenticationCredentialsContainer::create(
         std::move(mojo_options),
         WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
                       std::make_unique<ScopedPromiseResolver>(resolver),
-                      std::move(scoped_abort_state), required_origin_type,
-                      is_rk_required));
+                      std::move(scoped_abort_state), std::move(feature_handle),
+                      required_origin_type, is_rk_required));
   }
 
   return promise;

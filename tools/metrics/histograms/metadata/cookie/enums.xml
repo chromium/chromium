@@ -183,19 +183,6 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="First-Party-Only, HttpOnly, Secure, Persistent"/>
 </enum>
 
-<enum name="HttpMethods">
-  <int value="0" label="UNKNOWN"/>
-  <int value="1" label="GET"/>
-  <int value="2" label="HEAD"/>
-  <int value="3" label="POST"/>
-  <int value="4" label="PUT"/>
-  <int value="5" label="DELETE"/>
-  <int value="6" label="CONNECT"/>
-  <int value="7" label="OPTIONS"/>
-  <int value="8" label="TRACE"/>
-  <int value="9" label="PATCH"/>
-</enum>
-
 <enum name="InterestingCookiePorts">
   <int value="0" label="Other Port"/>
   <int value="1" label="Port 80"/>

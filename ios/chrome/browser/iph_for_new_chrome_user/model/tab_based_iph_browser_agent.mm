@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 
+#import "base/check.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/send_tab_to_self/features.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -23,12 +28,19 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
       active_web_state_observer_(
           std::make_unique<ActiveWebStateObservationForwarder>(web_state_list_,
                                                                this)),
+      bookmark_model_(
+          ios::BookmarkModelFactory::GetForProfile(browser->GetProfile())),
       url_loading_notifier_(
           UrlLoadingNotifierBrowserAgent::FromBrowser(browser)),
       command_dispatcher_(browser->GetCommandDispatcher()),
-      engagement_tracker_(
-          feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile())) {
+      engagement_tracker_(feature_engagement::TrackerFactory::GetForProfile(
+          browser->GetProfile())) {
   browser->AddObserver(this);
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
+      bookmark_model_) {
+    bookmark_model_observation_.Observe(bookmark_model_.get());
+  }
   url_loading_notifier_->AddObserver(this);
 }
 
@@ -80,12 +92,48 @@ void TabBasedIPHBrowserAgent::NotifySwitchToAdjacentTabFromTabGrid() {
   tapped_adjacent_tab_ = true;
 }
 
+#pragma mark - bookmarks::BaseBookmarkModelObserver
+
+void TabBasedIPHBrowserAgent::BookmarkModelChanged() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+}
+
+void TabBasedIPHBrowserAgent::BookmarkModelBeingDeleted() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  StopObservingBookmarkModel();
+}
+
+void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  if (added_by_user) {
+    // The bookmark was manually added by the user and not via syncing or
+    // duplicating the bookmark.
+
+    // TODO(crbug.com/389911609): Fire a UI command to display the relevant
+    // Reminder Notifications Bubble IPH.
+  }
+}
+
 #pragma mark - BrowserObserver
 
 void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   active_web_state_observer_.reset();
   url_loading_notifier_->RemoveObserver(this);
   browser->RemoveObserver(this);
+
+  if (send_tab_to_self::
+          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    StopObservingBookmarkModel();
+  }
+
   web_state_list_ = nil;
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
@@ -195,6 +243,14 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+void TabBasedIPHBrowserAgent::StopObservingBookmarkModel() {
+  CHECK(
+      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+
+  bookmark_model_ = nullptr;
+  bookmark_model_observation_.Reset();
+}
 
 void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;

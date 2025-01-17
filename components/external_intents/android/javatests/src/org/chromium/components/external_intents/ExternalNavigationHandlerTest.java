@@ -1923,19 +1923,6 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testBackgroundTabNavigationWithIntentLaunchesInBackgroundTabsAllowed() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
-
-        checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
-                .withIsBackgroundTabNavigation(true)
-                .withAllowIntentLaunchesInBackgroundTabs(true)
-                .expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-    }
-
-    @Test
-    @SmallTest
     public void testPdfDownloadHappensInChrome() {
         mDelegate.add(new IntentActivity(CALENDAR_URL, "calendar"));
 
@@ -3473,7 +3460,6 @@ public class ExternalNavigationHandlerTest {
         private boolean mIsRedirect;
         private boolean mChromeAppInForegroundRequired = true;
         private boolean mIsBackgroundTabNavigation;
-        private boolean mIntentLaunchesAllowedInBackgroundTabs;
         private boolean mHasUserGesture;
         private RedirectHandler mRedirectHandler;
         private boolean mIsRendererInitiated = true;
@@ -3521,12 +3507,6 @@ public class ExternalNavigationHandlerTest {
         public ExternalNavigationTestParams withIsBackgroundTabNavigation(
                 boolean isBackgroundTabNavigation) {
             mIsBackgroundTabNavigation = isBackgroundTabNavigation;
-            return this;
-        }
-
-        public ExternalNavigationTestParams withAllowIntentLaunchesInBackgroundTabs(
-                boolean allowIntentLaunchesInBackgroundTabs) {
-            mIntentLaunchesAllowedInBackgroundTabs = allowIntentLaunchesInBackgroundTabs;
             return this;
         }
 
@@ -3592,8 +3572,6 @@ public class ExternalNavigationHandlerTest {
                             .setApplicationMustBeInForeground(mChromeAppInForegroundRequired)
                             .setRedirectHandler(mRedirectHandler)
                             .setIsBackgroundTabNavigation(mIsBackgroundTabNavigation)
-                            .setIntentLaunchesAllowedInBackgroundTabs(
-                                    mIntentLaunchesAllowedInBackgroundTabs)
                             .setIsMainFrame(mIsMainFrame)
                             .setNativeClientPackageName(mDelegate.getReferrerWebappPackageName())
                             .setHasUserGesture(mHasUserGesture)

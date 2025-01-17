@@ -492,6 +492,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3130863904455712965">Cronologia e altro ancora</translation>
 <translation id="313283613037595347">Crea nuova scheda di navigazione in incognito.</translation>
 <translation id="3138611310073113613">Ignora la selezione</translation>
+<translation id="3140825265190223781">Password e passkey salvate</translation>
 <translation id="3143515551205905069">Annulla sincronizzazione</translation>
 <translation id="314837624430314508">Non perderti le ultime notizie, gli aggiornamenti sul monitoraggio dei prezzi e altro ancora.</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
@@ -1669,6 +1670,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8299613349954694191">Apri una scheda di navigazione in incognito per navigare sul Web in privato.</translation>
 <translation id="8307481894409578819">Impossibile caricare il file</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
+<translation id="833647236762414178">Crea, salva e gestisci le tue password e passkey in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8364563001733875155">Per cambiare il PIN, devi prima impostare un passcode sul dispositivo.</translation>
@@ -1898,6 +1900,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="939736085109172342">Nuova cartella</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">Invia feedback</translation>
+<translation id="94870150074703282">Eliminare il gruppo?</translation>
 <translation id="952704832371081537">Annulla</translation>
 <translation id="954667170699278022">Elenco di lettura</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>

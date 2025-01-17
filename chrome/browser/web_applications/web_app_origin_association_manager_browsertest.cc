@@ -23,7 +23,7 @@ namespace {
 const std::string& kWebAppIdentity = "https://foo.com/index";
 const std::string& kInvalidFileUrl = "https://a.com";
 const std::string& kValidAppUrl = "https://b.com";
-const std::string& kValidAndInvalidAppsUrl = "https://c.com";
+const std::string& kValidAndInvalidAppsUrl = "https://c.com/search";
 
 constexpr char kInvalidFileContent[] = "invalid";
 constexpr char kValidAppFileContent[] =
@@ -33,7 +33,7 @@ constexpr char kValidAppFileContent[] =
 constexpr char kValidAndInvalidAppsFileContent[] =
     R"({
     // 1st app is valid.
-      "https://foo.com/index": {},
+      "https://foo.com/index": { "scope": "/search?q=some+text#frag"},
     // 2nd app is invalid since kWebAppIdentity doesn't match.
       "https://bar.com/": {}
     })";
@@ -76,8 +76,7 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
 
     valid_and_invalid_app_scope_extension_ =
         std::make_unique<ScopeExtensionInfo>(
-            ScopeExtensionInfo::CreateForOrigin(
-                url::Origin::Create(GURL(kValidAndInvalidAppsUrl))));
+            ScopeExtensionInfo::CreateForScope(GURL(kValidAndInvalidAppsUrl)));
   }
 
   void VerifyValidAndInvalidAppsResult(int expected_callback_count,
@@ -89,8 +88,8 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
     auto valid_app_scope_extension =
         ScopeExtensionInfo::CreateForOrigin(valid_app_scope_extension_->origin);
     auto valid_and_invalid_app_scope_extension =
-        ScopeExtensionInfo::CreateForOrigin(
-            valid_and_invalid_app_scope_extension_->origin,
+        ScopeExtensionInfo::CreateForScope(
+            valid_and_invalid_app_scope_extension_->scope,
             /*has_origin_wildcard*/ valid_and_invalid_app_scope_extension_
                 ->has_origin_wildcard);
 

@@ -144,6 +144,13 @@ BASE_DECLARE_FEATURE(kWebAuthnNeverSkipTrustThisComputer);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 
+// With this flag, WebAuthn only disables the back-forward cache during the
+// lifetime of a WebAuthn request.
+// With the flag off, the back-forward cache is disabled for the lifetime of
+// the page when a request is started.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNewBfCacheHandling);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

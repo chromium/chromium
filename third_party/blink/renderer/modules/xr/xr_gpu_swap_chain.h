@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GPU_SWAP_CHAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GPU_SWAP_CHAIN_H_
 
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -13,39 +15,22 @@ namespace blink {
 
 class GPUDevice;
 class GPUTexture;
-class XRCompositionLayer;
 
-class XRGPUSwapChain : public GarbageCollected<XRGPUSwapChain> {
+class XRGPUSwapChain : public XRSwapChain<GPUTexture> {
  public:
   explicit XRGPUSwapChain(GPUDevice*);
-  virtual ~XRGPUSwapChain() = default;
-
-  GPUTexture* GetCurrentTexture();
-  virtual void OnFrameStart();
-  virtual void OnFrameEnd();
-
-  virtual const wgpu::TextureDescriptor& descriptor() const = 0;
+  ~XRGPUSwapChain() override = default;
 
   GPUDevice* device() { return device_.Get(); }
+  virtual const wgpu::TextureDescriptor& descriptor() const = 0;
 
-  virtual void SetLayer(XRCompositionLayer* layer) { layer_ = layer; }
-  XRCompositionLayer* layer() { return layer_.Get(); }
-
-  bool texture_was_queried() const { return texture_queried_; }
-
-  virtual void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  protected:
-  virtual GPUTexture* ProduceTexture() = 0;
-
-  GPUTexture* ResetCurrentTexture();
   void ClearCurrentTexture(wgpu::CommandEncoder);
 
  private:
   Member<GPUDevice> device_;
-  Member<GPUTexture> current_texture_;
-  Member<XRCompositionLayer> layer_;
-  bool texture_queried_;
 };
 
 // A texture swap chain that is not communicated back to the compositor, used

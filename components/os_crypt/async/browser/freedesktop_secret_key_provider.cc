@@ -87,14 +87,6 @@ void CallMethod(
           interface_name, method_name, std::move(callback)));
 }
 
-scoped_refptr<dbus::Bus> CreateBus() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
 const char* InitStatusToString(
     FreedesktopSecretKeyProvider::InitStatus status) {
   switch (status) {
@@ -255,7 +247,7 @@ FreedesktopSecretKeyProvider::FreedesktopSecretKeyProvider(
       product_name_(product_name),
       bus_(std::move(bus)) {
   if (!bus_) {
-    bus_ = CreateBus();
+    bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
 }
 

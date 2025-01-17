@@ -705,6 +705,7 @@ void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
       // - Root node can't be removed
       // - Only one node is removed (not all underlying nodes)
       // This menu shouldn't be removed.
+      ++i;
       continue;
     }
 

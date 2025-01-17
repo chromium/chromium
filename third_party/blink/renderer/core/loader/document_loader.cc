@@ -2959,12 +2959,6 @@ void DocumentLoader::CommitNavigation() {
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
-  for (const auto& policy : security_init.PermissionsPolicyHeader()) {
-    if (policy.deprecated_feature.has_value()) {
-      Deprecation::CountDeprecation(frame_->DomWindow(),
-                                    *policy.deprecated_feature);
-    }
-  }
 
   frame_->ClearScrollSnapshotClients();
 

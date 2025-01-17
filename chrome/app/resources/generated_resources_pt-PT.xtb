@@ -335,6 +335,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1219219114431716687">Tarte de fruta</translation>
 <translation id="122082903575839559">Algoritmo de assinatura do certificado</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Com encriptação RSA</translation>
+<translation id="1221266967850882682">Resumo de boas-vindas</translation>
 <translation id="1221825588892235038">Apenas a seleção</translation>
 <translation id="1222835797152767346">Defina um PIN para facilitar o início de sessão</translation>
 <translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
@@ -1921,6 +1922,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
 <translation id="2325444234681128157">Memorizar palavra-passe</translation>
 <translation id="2326188115274135041">Confirme o PIN para ativar o desbloqueio automático.</translation>
+<translation id="2326583548923775947">Esta não é uma Conta Google. Os itens que guardar no Chrome não vão estar disponíveis noutros dispositivos.</translation>
 <translation id="2326906096734221931">Abrir definições da app</translation>
 <translation id="2326931316514688470">&amp;Recarregar aplicação</translation>
 <translation id="2327492829706409234">Ativar aplicação</translation>

@@ -39,6 +39,9 @@ FROM
 WHERE
   step IS NOT NULL
   AND latency_id != -1
+-- Deduplicate in the rare case where the browser emitted the same input event
+-- more than once (b:390406106).
+GROUP BY latency_id, utid, step, input_type
 ORDER BY slice_id, ts;
 
 -- Each row represents one input pipeline.

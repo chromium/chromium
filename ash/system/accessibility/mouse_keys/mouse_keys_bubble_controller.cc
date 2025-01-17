@@ -26,21 +26,24 @@ void MouseKeysBubbleController::StopTimer() {
   }
 }
 
+void MouseKeysBubbleController::UpdateMouseKeysBubblePosition(
+    gfx::Point position) {
+  if (mouse_keys_bubble_view_) {
+    mouse_keys_bubble_view_->SetAnchorRect(gfx::Rect(position, gfx::Size()));
+  }
+}
+
 void MouseKeysBubbleController::UpdateBubble(
     bool visible,
     MouseKeysBubbleIconType icon,
     const std::optional<std::u16string>& text) {
   EnsureInitialize();
 
-  gfx::Point cursor_position =
+  gfx::Point bubble_position =
       Shell::Get()->mouse_keys_controller()->GetLastMousePositionDips();
-  cursor_position.Offset(16, 16);
+  bubble_position.Offset(16, 16);
 
-  if (mouse_keys_bubble_view_) {
-    mouse_keys_bubble_view_->SetAnchorRect(
-        gfx::Rect(cursor_position, gfx::Size()));
-  }
-
+  UpdateMouseKeysBubblePosition(bubble_position);
   Update(icon, text);
   widget_->SetVisible(visible);
   if (timer_.IsRunning()) {

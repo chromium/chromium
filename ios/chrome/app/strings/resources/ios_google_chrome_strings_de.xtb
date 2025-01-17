@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Einkaufsfunktionen von Google für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
+<translation id="1076643793026027628">In Chrome werden YouTube-Inkognitolinks automatisch im Inkognitomodus geöffnet.</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1146503048444965320">Neuen Tab in Chrome öffnen</translation>
@@ -126,6 +127,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="4636900170638246267">Melde dich bei dieser Website und in Chrome an.</translation>
 <translation id="4646014602299206846">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern.</translation>
 <translation id="4647910807533196601">Aktuellen Tab in Chrome öffnen.</translation>
+<translation id="4693084815234024320">Chrome befindet sich im Inkognitomodus</translation>
 <translation id="4724297637870447613">Chrome überall nutzen</translation>
 <translation id="4738647308035481133">Google Chrome-Seite</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>

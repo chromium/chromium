@@ -1,0 +1,32 @@
+caption: Control <ph name="GLIC">Glic</ph> access
+desc: |-
+  If this policy is Enabled or not set, users are able to use the
+  <ph name="GLIC">Glic</ph> feature. Setting this policy to Disabled prevents
+  users from interacting with <ph name="GLIC">Glic</ph>; the button in the tab
+  strip is hidden and <ph name="GLIC">Glic</ph> is unavailable via keyboard
+  shortcut unless enabled in another profile.
+owners:
+- bokan@chromium.org
+- file://chrome/browser/glic/OWNERS
+example_value: 0
+future_on:
+- chrome.*
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Enable use of <ph name="GLIC">Glic</ph>
+  name: Enabled
+  value: 0
+- caption: Disable use of <ph name="GLIC">Glic</ph>.
+  name: Disabled
+  value: 1
+default: 0
+tags:
+- google-sharing

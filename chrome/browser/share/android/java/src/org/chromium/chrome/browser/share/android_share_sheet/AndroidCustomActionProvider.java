@@ -277,7 +277,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         }
         // TODO(386833405): Update the text based on UX reviews and icon resolution.
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
-                .setIcon(R.drawable.ic_person_add_40dp, R.string.collaboration_share_group_title)
+                .setIcon(R.drawable.ic_person_add_40dp, R.string.sharing_tab_group)
                 .setShareActionType(ShareCustomAction.SHARE_AS_TAB_GROUP)
                 .setFeatureNameForMetrics(USER_ACTION_SHARE_AS_TAB_GROUP)
                 .setOnClickCallback(

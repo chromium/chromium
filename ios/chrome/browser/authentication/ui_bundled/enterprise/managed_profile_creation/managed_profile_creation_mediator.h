@@ -29,6 +29,7 @@ class IdentityManager;
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
               skipBrowsingDataMigration:(BOOL)skipBrowsingDataMigration
+             mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

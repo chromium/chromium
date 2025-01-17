@@ -107,22 +107,6 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       const char* interface_name,
       base::span<const NoAllocDirectCallAttributeConfig> configs);
 
-  // Web IDL constant
-  struct ConstantCallbackConfig {
-    ConstantCallbackConfig& operator=(const ConstantCallbackConfig&) = delete;
-
-    const char* name;
-    v8::AccessorNameGetterCallback callback;
-  };
-  static void InstallConstants(
-      v8::Isolate* isolate,
-      const DOMWrapperWorld& world,
-      v8::Local<v8::Template> instance_template,
-      v8::Local<v8::Template> prototype_template,
-      v8::Local<v8::Template> interface_template,
-      v8::Local<v8::Signature> signature,
-      base::span<const ConstantCallbackConfig> configs);
-
   struct ConstantValueConfig {
     ConstantValueConfig& operator=(const ConstantValueConfig&) = delete;
 

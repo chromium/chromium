@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -126,8 +127,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
-      WaitForShow(kTabGroupEditorBubbleShareGroupButtonId),
-      PressButton(kTabGroupEditorBubbleShareGroupButtonId),
+      WaitForShow(kTabGroupEditorBubbleShareGroupButtonId), Do([=, this]() {
+        // Directly show share UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            group_id);
+      }),
       WaitForShow(kDataSharingBubbleElementId),
       // Check the share bubble is anchored onto the group header view.
       CheckView(kDataSharingBubbleElementId,
@@ -156,7 +160,11 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kTabGroupEditorBubbleManageSharedGroupButtonId),
-      PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      Do([=, this]() {
+        // Directly show manage UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            group_id);
+      }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {
         return bubble->GetWidget()->IsModal();
@@ -174,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
         auto* data_sharing_service =
             data_sharing::DataSharingServiceFactory::GetForProfile(
                 browser()->profile());
-        data_sharing_service->HandleShareURLNavigationIntercepted(share_link,
-                                                                  nullptr);
+        // Directly show join UI to bypass sign in flow.
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+            data_sharing_service->ParseDataSharingUrl(share_link).value());
       }),
       WaitForShow(kDataSharingBubbleElementId),
       CheckView(kDataSharingBubbleElementId, [](views::View* bubble) {

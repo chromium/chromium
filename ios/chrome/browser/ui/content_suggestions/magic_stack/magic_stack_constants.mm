@@ -9,7 +9,7 @@ NSString* const kMagicStackSectionIdentifier = @"MagicStackSectionIdentifier";
 NSString* const kMagicStackEditSectionIdentifier =
     @"MagicStackEditSectionIdentifier";
 
-const int kModuleMaxHeight = 150;
+const int kMaxTextSizeForStyleFootnote = 24;
 
 const CGFloat kMagicStackSpacing = 12.0f;
 

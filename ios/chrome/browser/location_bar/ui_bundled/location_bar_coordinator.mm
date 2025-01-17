@@ -175,10 +175,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.viewController.dispatcher =
-      static_cast<id<ActivityServiceCommands, ApplicationCommands,
-                     LoadQueryCommands, LensOverlayCommands, OmniboxCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.viewController.dispatcher = static_cast<
+      id<ActivityServiceCommands, ApplicationCommands, LoadQueryCommands,
+         LensCommands, LensOverlayCommands, OmniboxCommands>>(
+      self.browser->GetCommandDispatcher());
   self.viewController.tracker =
       feature_engagement::TrackerFactory::GetForProfile(
           self.browser->GetProfile());

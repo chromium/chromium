@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 
@@ -71,8 +72,7 @@ class NET_EXPORT CookiePartitionKey {
   ~CookiePartitionKey();
 
   bool operator==(const CookiePartitionKey& other) const;
-  bool operator!=(const CookiePartitionKey& other) const;
-  bool operator<(const CookiePartitionKey& other) const;
+  std::strong_ordering operator<=>(const CookiePartitionKey& other) const;
 
   // Methods for serializing and deserializing a partition key to/from a string.
   // This is currently used for:

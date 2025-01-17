@@ -248,6 +248,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1413809658975081374">Adatvédelmi hiba</translation>
 <translation id="1414134146594747368">Óvoda</translation>
 <translation id="1419305130220238697">Letöltések kezelése a Chrome-ban gomb. A gombot megnyomva kezelheti a Chrome-ban letöltött fájlokat.</translation>
+<translation id="1420345875188552368">Az Ön mentett automatikus fizetési módja használható ennél a fizetésnél. Az elektronikus pénztárcák Chrome-ban való kikapcsolásához lépjen a <ph name="BEGIN_LINK1" />fizetési beállításokhoz<ph name="END_LINK1" />.</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> a párosítás engedélyezéséhez</translation>
 <translation id="14222610277930434">Ön által gyakran felkeresett</translation>
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
@@ -1281,6 +1282,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3273757719652748628">Az IBAN-kód mentése panel teljes magasságban van megnyitva.</translation>
 <translation id="3281350579597955952">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a megnyitását itt: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a megnyitását itt: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A szervezete (<ph name="ENROLLMENT_DOMAIN" />) elküldött bizonyos információkat (pl. a beállításokat és a házirendeket) a következő webhelyeknek.</translation>
+<translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3286372614333682499">álló</translation>
 <translation id="3287510313208355388">Letöltés online állapotban</translation>
 <translation id="3288238092761586174">Előfordulhat, hogy a(z) <ph name="URL" /> webhelynek további lépések megtételére van szüksége az Ön fizetésének ellenőrzéséhez.</translation>
@@ -3655,6 +3657,7 @@ További részletek:
 <translation id="7511955381719512146">Az Ön által használt Wi-Fi-hálózat megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
 <translation id="7512685745044087310">Ez a házirend nem állítható „true” (igaz) értékre, és nem tehető kötelezővé, ezért ajánlottra lett módosítva.</translation>
 <translation id="7514365320538308">Letöltés</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7517201160922869406">Terepjárók</translation>
 <translation id="7517414872996418597">C10 boríték</translation>
 <translation id="7518003948725431193">Nem található weboldal az internetcímen:<ph name="URL" /></translation>

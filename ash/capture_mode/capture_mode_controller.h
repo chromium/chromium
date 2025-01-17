@@ -171,6 +171,9 @@ class ASH_EXPORT CaptureModeController
   // `ScreenCaptureLocation` policy and can't be changed.
   bool IsCustomFolderManagedByPolicy() const;
 
+  // Returns true if Search is allowed.
+  bool IsSearchAllowedByPolicy() const;
+
   // Returns true if there's an active video recording that is recording audio.
   bool IsAudioRecordingInProgress() const;
 

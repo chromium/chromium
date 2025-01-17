@@ -1676,6 +1676,7 @@ static_library("ui") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:features",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/contextual_cueing",
 
       # TODO(crbug.com/370804668i): Remove the dependency when chrome/browser/serial
       # gets modularized.
@@ -3089,7 +3090,6 @@ static_library("ui") {
 
     deps += [
       "//chrome/app:generated_resources",
-      "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/on_device_translation:language_pack_util",
       "//chrome/browser/shortcuts",
       "//components/capture_mode",
@@ -3908,6 +3908,8 @@ static_library("ui") {
       "views/controls/subpage_view.h",
       "views/controls/text_with_controls_view.cc",
       "views/controls/text_with_controls_view.h",
+      "views/data_sharing/collaboration_controller_delegate_desktop.cc",
+      "views/data_sharing/collaboration_controller_delegate_desktop.h",
       "views/data_sharing/data_sharing_bubble_controller.cc",
       "views/data_sharing/data_sharing_bubble_controller.h",
       "views/data_sharing/data_sharing_open_group_helper.cc",
@@ -4955,6 +4957,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//components/collaboration/public",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:shopping_service",

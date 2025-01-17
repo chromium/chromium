@@ -9264,14 +9264,17 @@ bool WebContentsImpl::MaybeCopyContentAreaAsBitmap(
 
 bool WebContentsImpl::SupportsForwardTransitionAnimation() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!GetDelegate()) {
-    return true;
-  }
-  return GetDelegate()->SupportsForwardTransitionAnimation();
+  return supports_forward_transition_animation_;
 #else
   return true;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WebContentsImpl::SetSupportsForwardTransitionAnimation(bool supports) {
+  supports_forward_transition_animation_ = supports;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
                                     const std::string& name) {
@@ -10241,7 +10244,7 @@ gfx::Size WebContentsImpl::GetSize() {
   return window->bounds().size();
 #elif BUILDFLAG(IS_ANDROID)
   ui::ViewAndroid* view_android = GetNativeView();
-  return view_android->GetSize();
+  return view_android->GetSizeDIPs();
 #elif BUILDFLAG(IS_IOS)
   // TODO(crbug.com/40254930): Implement me.
   NOTREACHED();

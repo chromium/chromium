@@ -9,6 +9,7 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -131,6 +132,14 @@ class AITestUtils {
 
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
+
+  static void CheckWritingAssistanceApiRequest(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::string& expected_shared_context,
+      const std::string& expected_context,
+      const optimization_guide::proto::WritingAssistanceApiOptions&
+          expected_options,
+      const std::string& expected_input);
 };
 
 #endif  // CHROME_BROWSER_AI_AI_TEST_UTILS_H_

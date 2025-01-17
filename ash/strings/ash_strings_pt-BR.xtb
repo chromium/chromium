@@ -2234,7 +2234,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="851660987304951246">Use o recurso "Quero ajuda para ler" para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">Seu <ph name="DEVICE_TYPE" /> pode não ser carregado enquanto estiver ligado.</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de microfone controlada pelo app <ph name="APP_NAME" />}one{Entrada de microfone controlada por # app}other{Entrada de microfone controlada por # apps}}</translation>
 <translation id="8535393432370007982">Desfazer ordem de classificação por cor</translation>
 <translation id="8541078764854166027">Enquadramento da câmera</translation>
 <translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo salvo</translation>

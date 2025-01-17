@@ -47,7 +47,7 @@ class UnscopedExtensionProviderDelegateImpl
   void Start(const AutocompleteInput& input,
              bool minimal_changes,
              std::set<std::string> unscoped_mode_extension_ids) override;
-  void IncrementRequestId() override;
+  void Stop(bool clear_cached_results) override;
 
   // OmniboxInputWatcher::Observer:
   void OnOmniboxInputEntered() override;
@@ -63,26 +63,29 @@ class UnscopedExtensionProviderDelegateImpl
       int relevance,
       const std::string& extension_id);
 
-  // Resets all state related to suggestion group mapping.
-  void ResetSuggestionGroupsMap();
+  // Clears the current list of cached matches and suggestion group information.
+  void ClearSuggestions();
 
-  // Identifies the current input state. This is incremented each time the
-  // autocomplete edit's input changes in any way. It is used to tell
-  // whether suggest results from the extension are current.
+  // Incremented each time a new request for suggestions is sent to extensions
+  // or when the input is accepted. Used to discard any suggestions that may be
+  // incoming later with a stale request ID.
   int current_request_id_ = 0;
 
-  // TODO(378538411): populate this once the suggestions logic is implemented.
-  //  Saved suggestions that were received from the extension used
-  //  for resetting matches without asking the extension again.
+  // Current list of matches received from the extensions. Used to update the
+  // list of matches in the provider.
   std::vector<AutocompleteMatch> extension_suggest_matches_;
 
   // Next group available to be given to a set of extension suggestions.
   // Possible groups are defined in `kReservedGroupIdMap`.
-  int next_available_group_index_ = 0;
+  size_t next_available_group_index_ = 0;
+  // Next section available to be given to a set of extension suggestions.
+  // Possible sections are defined in `kReservedSectionMap`.
+  size_t next_available_section_index_ = 0;
 
-  // Maps extension id to a group. Allows extensions to have distinct headers.
+  // Maps extension IDs to group IDs. Allows suggestions from different
+  // extensions to have distinct headers.
   std::unordered_map<extensions::ExtensionId, omnibox::GroupId>
-      extension_id_group_map_;
+      extension_id_to_group_id_map_;
 
   raw_ptr<Profile> profile_;
 

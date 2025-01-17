@@ -18,7 +18,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/core/embedder/embedder.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -185,9 +184,8 @@ int DemoMain() {
 
   // The ContextFactory must exist before any Compositors are created.
   viz::HostFrameSinkManager host_frame_sink_manager;
-  viz::ServerSharedBitmapManager server_shared_bitmap_manager;
   viz::FrameSinkManagerImpl frame_sink_manager{
-      viz::FrameSinkManagerImpl::InitParams(&server_shared_bitmap_manager)};
+      viz::FrameSinkManagerImpl::InitParams()};
   host_frame_sink_manager.SetLocalManager(&frame_sink_manager);
   frame_sink_manager.SetLocalClient(&host_frame_sink_manager);
   auto context_factory = std::make_unique<ui::InProcessContextFactory>(

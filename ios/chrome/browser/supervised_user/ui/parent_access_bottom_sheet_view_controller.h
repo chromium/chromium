@@ -8,13 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
-
-@protocol ParentAccessViewControllerDelegate;
+#import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
 
 // A view controller that displays the embedded PACP widget in a bottom sheet.
-@interface ParentAccessBottomSheetViewController : BottomSheetViewController
-
-@property(nonatomic, weak) id<ParentAccessViewControllerDelegate> delegate;
+@interface ParentAccessBottomSheetViewController
+    : BottomSheetViewController <ParentAccessConsumer>
 
 @end
 

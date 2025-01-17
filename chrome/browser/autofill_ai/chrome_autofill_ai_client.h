@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_AI_CHROME_AUTOFILL_AI_CLIENT_H_
 
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/prefs/pref_service.h"
@@ -41,6 +42,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   std::string GetTitle() override;
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;
+  autofill::EntityDataManager* GetEntityDataManager() override;
   bool IsAutofillAiEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
   void OpenAutofillAiSettings() override;

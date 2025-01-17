@@ -107,7 +107,6 @@ MicTestButton::MicTestButton() {
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   auto* background_layer = background_view_->layer();
   background_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
-  background_layer->SetFillsBoundsOpaquely(false);
 
   button_container_ =
       AddChildView(std::make_unique<MicTestButtonContainer>(base::BindRepeating(

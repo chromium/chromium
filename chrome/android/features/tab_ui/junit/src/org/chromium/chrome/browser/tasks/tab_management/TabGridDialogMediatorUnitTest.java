@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
@@ -1454,6 +1455,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_DeleteSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
+        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -1467,6 +1469,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_LeaveSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
 
+        when(mTabGroupModelFilter.getTabGroupTitle(anyInt())).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
@@ -1712,6 +1715,14 @@ public class TabGridDialogMediatorUnitTest {
                 .dismiss(MessageType.COLLABORATION_ACTIVITY);
 
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        verify(mMessagingBackendService)
+                .clearDirtyTabMessagesForGroup(
+                        argThat(
+                                eitherGroupId ->
+                                        eitherGroupId
+                                                .getLocalId()
+                                                .tabGroupId
+                                                .equals(TAB_GROUP_ID)));
     }
 
     @Test

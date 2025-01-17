@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/back_forward_cache_browsertest.h"
+#include "content/browser/browser_interface_binders.h"
 #include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/presentation/presentation_test_utils.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/test/idle_test_utils.h"
 
@@ -3367,8 +3369,9 @@ void RegisterServiceWorker(RenderFrameHostImpl* rfh) {
 // Returns a unique script for each request, to test service worker update.
 std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdateWorker(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != "/back_forward_cache/service-worker.js")
+  if (request.relative_url != "/back_forward_cache/service-worker.js") {
     return nullptr;
+  }
   static int counter = 0;
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
@@ -4957,6 +4960,210 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
                     {blink::scheduler::WebSchedulerTrackedFeature::kWebLocks},
                     {}, {}, {}, FROM_HERE);
+}
+
+enum TestAuthenticatorBehavior {
+  kErrorOut,
+  kStallRequest,
+};
+
+// An implementation of blink::mojom::Authenticator that stalls all requests.
+class TestAuthenticator : public blink::mojom::Authenticator {
+ public:
+  explicit TestAuthenticator(TestAuthenticatorBehavior behavior)
+      : behavior_(behavior) {
+    OverrideAuthenticatorBinderForTesting(base::BindRepeating(
+        &TestAuthenticator::BindAuthenticator, base::Unretained(this)));
+  }
+
+  ~TestAuthenticator() override {
+    OverrideVibrationManagerBinderForTesting(base::NullCallback());
+  }
+
+  void BindAuthenticator(
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
+ private:
+  // blink::mojom::Authenticator:
+  void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      MakeCredentialCallback callback) override {
+    if (behavior_ == kStallRequest) {
+      pending_make_credential_callback_ = std::move(callback);
+    } else {
+      std::move(callback).Run(blink::mojom::AuthenticatorStatus::ABORT_ERROR,
+                              nullptr, nullptr);
+    }
+  }
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+                    GetAssertionCallback callback) override {
+    if (behavior_ == kStallRequest) {
+      pending_get_assertion_callback_ = std::move(callback);
+    } else {
+      std::move(callback).Run(blink::mojom::AuthenticatorStatus::ABORT_ERROR,
+                              nullptr, nullptr);
+    }
+  }
+  void GetClientCapabilities(GetClientCapabilitiesCallback callback) override {}
+  void Report(blink::mojom::PublicKeyCredentialReportOptionsPtr options,
+              ReportCallback callback) override {}
+  void IsUserVerifyingPlatformAuthenticatorAvailable(
+      IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override {
+  }
+  void IsConditionalMediationAvailable(
+      IsConditionalMediationAvailableCallback callback) override {}
+  void Cancel() override {}
+
+  MakeCredentialCallback pending_make_credential_callback_;
+  GetAssertionCallback pending_get_assertion_callback_;
+  TestAuthenticatorBehavior behavior_;
+  mojo::Receiver<blink::mojom::Authenticator> receiver_{this};
+};
+
+// Tests that an ongoing WebAuthn get assertion request disables BFcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WebAuthnGetAssertion_NoCachingDuringRequest) {
+  TestAuthenticator test_authenticator(kStallRequest);
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Leave a WebAuthn get assertion request pending.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    navigator.credentials.get({ publicKey: {
+      challenge: new TextEncoder().encode("speedrun a game"),
+      userVerification: "discouraged",
+      allowCredentials: [{type: "public-key", id: Uint8Array.from([1, 2, 3])}],
+    }});
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // - Page A should not be in the cache.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebAuthentication}, {},
+      {}, {}, FROM_HERE);
+}
+
+// Tests that after a WebAuthn get assertion request completes, BFcache is not
+// disabled.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WebAuthnGetAssertion_CacheAfterRequest) {
+  TestAuthenticator test_authenticator(kErrorOut);
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Complete a WebAuthn get assertion request.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    navigator.credentials.get({ publicKey: {
+      challenge: new TextEncoder().encode("speedrun a game"),
+      userVerification: "discouraged",
+      allowCredentials: [{type: "public-key", id: Uint8Array.from([1, 2, 3])}],
+    }}).catch(() => {});
+  )"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+// Tests that an ongoing WebAuthn make credential request disables BFcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WebAuthnMakeCredential_NoCachingDuringRequest) {
+  TestAuthenticator test_authenticator(kStallRequest);
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Leave a WebAuthn make credential request pending.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    navigator.credentials.create({ publicKey: {
+      challenge: new TextEncoder().encode("speedrun a game"),
+      userVerification: "discouraged",
+      rp: { name: "Acme"},
+      user: {
+        id: new TextEncoder().encode("1234"),
+        name: "fox",
+        displayName: "Fox McCloud"
+      },
+      pubKeyCredParams: [{ type: "public-key", alg: -7}],
+    }});
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // - Page A should not be in the cache.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebAuthentication}, {},
+      {}, {}, FROM_HERE);
+}
+
+// Tests that after a WebAuthn make credential request completes, BFcache is not
+// disabled.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WebAuthnMakeCredential_CacheAfterRequest) {
+  TestAuthenticator test_authenticator(kErrorOut);
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Leave a WebAuthn make credential request pending.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    navigator.credentials.create({ publicKey: {
+      challenge: new TextEncoder().encode("speedrun a game"),
+      userVerification: "discouraged",
+      rp: { name: "Acme"},
+      user: {
+        id: new TextEncoder().encode("1234"),
+        name: "fox",
+        displayName: "Fox McCloud"
+      },
+      pubKeyCredParams: [{ type: "public-key", alg: -7}],
+    }}).catch(() => {});
+  )"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // TODO(crbug.com/40937711): Reenable. This is flaky because we block on

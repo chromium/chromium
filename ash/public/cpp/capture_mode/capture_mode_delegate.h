@@ -124,6 +124,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Returns whether screen capture is allowed by an enterprise policy.
   virtual bool IsCaptureAllowedByPolicy() const = 0;
 
+  // Returns whether search is allowed by the browser enterprise policy.
+  virtual bool IsSearchAllowedByPolicy() const = 0;
+
   // Called when a video capture for |window| and |bounds| area is started, so
   // that Data Leak Prevention can start observing the area.
   // |on_area_restricted_callback| will be called when the area becomes

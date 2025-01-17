@@ -122,6 +122,11 @@ public class LayerTitleCache {
 
     /** Destroys the native reference. */
     public void shutDown() {
+        if (mFaviconHelper != null) {
+            mFaviconHelper.destroy();
+            mFaviconHelper = null;
+        }
+
         if (mNativeLayerTitleCache == 0) return;
         LayerTitleCacheJni.get().destroy(mNativeLayerTitleCache);
         mNativeLayerTitleCache = 0;
@@ -334,6 +339,13 @@ public class LayerTitleCache {
         int resId = View.generateViewId();
         dynamicResourceLoader.registerResource(resId, avatarResource);
         mSharedAvatarResIds.put(rootId, resId);
+    }
+
+    public void transferAvatarToNewRootId(int oldRootId, int newRootId) {
+        int avatarResId = mSharedAvatarResIds.get(oldRootId, ResourcesCompat.ID_NULL);
+        if (avatarResId == ResourcesCompat.ID_NULL) return;
+        mSharedAvatarResIds.delete(oldRootId);
+        mSharedAvatarResIds.put(newRootId, avatarResId);
     }
 
     private void unregisterSharedGroupAvatar(int resId) {

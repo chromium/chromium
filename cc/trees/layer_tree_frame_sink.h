@@ -60,9 +60,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   // Optional and won't be used unless |worker_context_provider_wrapper| is
   // present.
   //
-  // |gpu_memory_buffer_manager| and |shared_bitmap_manager| must outlive the
-  // LayerTreeFrameSink. |shared_bitmap_manager| is optional (won't be used) if
-  // |context_provider| is present. |gpu_memory_buffer_manager| is optional
+  // |gpu_memory_buffer_manager|  must outlive the
+  // LayerTreeFrameSink. |gpu_memory_buffer_manager| is optional
   // (won't be used) unless |context_provider| is present.
   LayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,

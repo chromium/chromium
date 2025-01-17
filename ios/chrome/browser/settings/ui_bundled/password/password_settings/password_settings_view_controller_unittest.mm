@@ -7,8 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -28,11 +28,7 @@ namespace {
 // displayed on top. This differs based on the addition of the automatic passkey
 // upgrades toggle. Should be cleaned up after the feature is launched.
 int ExpectedSectionAfterAlwaysVisibleTopSections() {
-  return syncer::IsWebauthnCredentialSyncEnabled() &&
-                 base::FeatureList::IsEnabled(
-                     password_manager::features::kIOSPasskeysM2)
-             ? 3
-             : 2;
+  return IOSPasskeysM2Enabled() ? 3 : 2;
 }
 
 }  // namespace
@@ -137,8 +133,7 @@ TEST_F(PasswordSettingsViewControllerTest,
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSPasskeysM2);
+  scoped_feature_list.InitAndEnableFeature(kIOSPasskeysM2);
 
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();

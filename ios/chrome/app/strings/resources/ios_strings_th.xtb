@@ -492,6 +492,7 @@
 <translation id="3130863904455712965">ประวัติการเข้าชมและอื่นๆ</translation>
 <translation id="313283613037595347">สร้างแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3138611310073113613">ทิ้งรายการที่เลือกไว้</translation>
+<translation id="3140825265190223781">รหัสผ่านและพาสคีย์ที่บันทึกไว้</translation>
 <translation id="3143515551205905069">ยกเลิกการซิงค์</translation>
 <translation id="314837624430314508">ติดตามข่าวสารล่าสุด ข้อมูลอัปเดตการติดตามราคา และอื่นๆ</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
@@ -649,6 +650,7 @@
 <translation id="3955740319737378355">เสร็จ</translation>
 <translation id="3955822496205734389">คุณมีรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3958312024468322930">ลากแอปไปยังแถบแอปที่ด้านล่างของหน้าจอหลัก</translation>
+<translation id="3960218941754097036">ค้นหาอะไรก็ได้บนหน้าจอด้วย Google Lens</translation>
 <translation id="3962326069546168954">บันทึก</translation>
 <translation id="3967327056943561740">บุ๊กมาร์ก</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
@@ -691,6 +693,7 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">เว็บไซต์นี้ต้องการดาวน์โหลดไฟล์และเพิ่มลงในปฏิทิน</translation>
 <translation id="4152011295694446843">คุณจะเห็นบุ๊กมาร์กที่นี่</translation>
+<translation id="4154753961803534698">ค้นหาด้วยกล้อง</translation>
 <translation id="4158491215857439601">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4163699139741158298">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1157,6 +1160,7 @@
 <translation id="6168647875670665004">บทความแนะนำ</translation>
 <translation id="6169031022444660352">หากต้องการลบข้อมูลเข้าสู่ระบบที่บันทึกไว้ทั้งหมด คุณต้องตั้งค่ารหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="6173499589275053515">บันทึกรหัสผ่านไว้ในบัญชี Google <ph name="EMAIL" /> แล้ว</translation>
+<translation id="6181969657494915430">ค้นหาบนหน้าจอ</translation>
 <translation id="6187302354554850004">ซิงค์ครั้งล่าสุด: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">ยังไม่ได้อ่าน</translation>
@@ -1594,6 +1598,7 @@
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
 <translation id="8011489434346330032">เครื่องมือตรวจสอบเว็บ</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
+<translation id="8023170444051056234">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ของคุณทุกเครื่อง</translation>
 <translation id="8023878949384262191">ขยายส่วนนี้</translation>
 <translation id="8027581147000338959">เปิดในหน้าต่างใหม่</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
@@ -1665,6 +1670,7 @@
 <translation id="8299613349954694191">เปิดแท็บที่ไม่ระบุตัวตนเพื่อท่องเว็บในแบบส่วนตัว</translation>
 <translation id="8307481894409578819">อัปโหลดไฟล์นี้ไม่ได้</translation>
 <translation id="8319076807703933069">ค้นหาใหม่</translation>
+<translation id="833647236762414178">สร้าง บันทึก และจัดการรหัสผ่านและพาสคีย์เพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8364563001733875155">หากต้องการเปลี่ยน PIN ให้ตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
@@ -1894,6 +1900,7 @@
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
+<translation id="94870150074703282">ลบกลุ่มไหม</translation>
 <translation id="952704832371081537">ยกเลิก</translation>
 <translation id="954667170699278022">เรื่องรออ่าน</translation>
 <translation id="959066944189734975">คุณกำลังติดตาม <ph name="CHANNEL_NAME" /></translation>

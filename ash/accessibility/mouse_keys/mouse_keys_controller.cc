@@ -162,13 +162,17 @@ void MouseKeysController::set_enabled(bool enabled) {
 }
 
 void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
-  bool is_synthesized = event->IsSynthesized() ||
-                        event->source_device_id() == ui::ED_UNKNOWN_DEVICE;
-  if (is_synthesized || event->type() != ui::EventType::kMouseMoved) {
+  if (event->type() != ui::EventType::kMouseMoved) {
     return;
   }
+
   if (event->target()) {
     last_mouse_position_dips_ = event->target()->GetScreenLocation(*event);
+
+    gfx::Point bubble_position = last_mouse_position_dips_;
+    bubble_position.Offset(16, 16);
+    mouse_keys_bubble_controller_->UpdateMouseKeysBubblePosition(
+        bubble_position);
   }
 }
 
