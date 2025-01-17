@@ -51,9 +51,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   CHECK(!profile->IsOffTheRecord());
 
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
-      !IsSharedTabGroupsJoinEnabled(profile) ||
+  if (!IsSharedTabGroupsJoinEnabled(profile) ||
       !base::FeatureList::IsEnabled(
           collaboration::features::kCollaborationMessaging)) {
     return std::make_unique<EmptyMessagingBackendService>();
