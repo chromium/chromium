@@ -2351,12 +2351,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebAudioOutputBufferingEnabled,
     prefs::kWebAudioOutputBufferingEnabled,
     base::Value::Type::BOOLEAN },
-
-#if BUILDFLAG(ENABLE_GLIC)
-  { key::kGlicEnabled,
-    glic::prefs::kGlicEnabledByPolicy,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(ENABLE_GLIC)
 };
 // clang-format on
 
@@ -3303,6 +3297,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           base::Value::Type::BOOLEAN),
       std::make_unique<PowerBatteryChargingOptimizationPolicyHandler>()));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_GLIC)
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kGlicSettings, glic::prefs::kGlicEnabledByPolicy,
+      static_cast<int>(glic::prefs::EnabledByPolicyState::kMinValue),
+      static_cast<int>(glic::prefs::EnabledByPolicyState::kMaxValue), false));
+#endif
 
   return handlers;
 }

@@ -7,10 +7,10 @@
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "glic.enabled_by_policy",
-      "default_value": true,
+      "default_value": 0,
       "values_to_test": [
-        true,
-        false
+        0,
+        1
       ]
     }
   }

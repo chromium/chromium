@@ -27,7 +27,8 @@ bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
     return false;
   }
 
-  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicEnabledByPolicy);
+  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicEnabledByPolicy) ==
+         static_cast<int>(glic::prefs::EnabledByPolicyState::kEnabled);
 }
 
 glic::GlicEnabledStatus GlicEnabling::CheckEnabling() {
