@@ -426,8 +426,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Description when the selected transcription language is not installed in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_NOT_INSTALLED_DESCRIPTION">
     Download transcription model in Settings
   </message>
-  <message desc="Description when transcription language is not selected in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_SELECT_LANGUAGE_DESCRIPTION">
-    Select transcription language and download in Settings
+  <message desc="Description when transcription language is not selected in the transcription view while recording. The [3dot] will be replaced by an icon of the 3 dots menu." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_SELECT_LANGUAGE_DESCRIPTION">
+    Select transcription language and download in Settings or in the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
   </message>
   <message desc="Description when the selected transcription language is downloading in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_WAITING_DOWNLOAD_TEXT">
     Downloading transcription model…
