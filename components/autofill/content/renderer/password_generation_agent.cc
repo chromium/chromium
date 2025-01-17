@@ -426,7 +426,7 @@ std::optional<FormData> PasswordGenerationAgent::CreateFormDataToPresave(
   // with the same algorithm (to match html attributes, action, etc.).
   std::unique_ptr<FormData> form_data;
   WebFormElement form =
-      form_util::GetOwningForm(current_generation_item_->generation_element_);
+      current_generation_item_->generation_element_.GetOwningFormForAutofill();
   return form
              ? password_agent_->GetFormDataFromWebForm(form, form_cache)
              : password_agent_->GetFormDataFromUnownedInputElements(form_cache);
@@ -508,7 +508,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
       return false;
     }
     WebFormElement form =
-        form_util::GetOwningForm(last_focused_password_element);
+        last_focused_password_element.GetOwningFormForAutofill();
     std::vector<WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(document, form);
 
@@ -608,9 +608,9 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // Presave the username if it has been changed.
     if (current_generation_item_ &&
         current_generation_item_->password_is_generated_ && element &&
-        form_util::GetOwningForm(element) ==
-            form_util::GetOwningForm(
-                current_generation_item_->generation_element_)) {
+        element.GetOwningFormForAutofill() ==
+            current_generation_item_->generation_element_
+                .GetOwningFormForAutofill()) {
       const std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
       if (generated_password.empty()) {
@@ -803,7 +803,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
        current_generation_item_->password_is_generated_))
     return;
 
-  WebFormElement form_element = form_util::GetOwningForm(generation_element);
+  WebFormElement form_element = generation_element.GetOwningFormForAutofill();
   std::optional<FormData> form_data =
       form_element
           ? password_agent_->GetFormDataFromWebForm(form_element, form_cache)

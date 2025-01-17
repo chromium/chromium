@@ -1074,7 +1074,7 @@ void AutofillAgent::ApplyFieldsAction(
         std::ranges::any_of(filled_field_ids, [](FieldRendererId field_id) {
           WebFormControlElement element =
               form_util::GetFormControlByRendererId(field_id);
-          return element && !form_util::GetOwningForm(element);
+          return element && !element.GetOwningFormForAutofill();
         });
 
     base::flat_set<FormRendererId> extracted_form_ids;
@@ -1234,7 +1234,7 @@ void AutofillAgent::ApplyFieldAction(
             form_util::GetFieldRendererId(form_control));
         if (form_control) {
           if (WebFormElement form_element =
-                  form_util::GetOwningForm(form_control)) {
+                  form_control.GetOwningFormForAutofill()) {
             UpdateLastInteractedElement(
                 form_util::GetFormRendererId(form_element));
           } else {
@@ -1928,7 +1928,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   // tracked form and not JS. This call here is meant to keep the tracked form
   // up to date with the form's most recent version.
   if (provisionally_saved_form() &&
-      form_util::GetFormRendererId(form_util::GetOwningForm(element)) ==
+      form_util::GetFormRendererId(element.GetOwningFormForAutofill()) ==
           last_interacted_form().GetId() &&
       base::FeatureList::IsEnabled(
           features::kAutofillPreferSavedFormAsSubmittedForm)) {
