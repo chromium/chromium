@@ -279,8 +279,9 @@ BASE_FEATURE(kLensOverlayForceShowOnboardingScreen,
              "EnableLensOverlayForceShowOnboardingScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Multi-value switches need to be lower case.
 const char kLensOverlayAlternativeOnboardingType[] =
-    "kLensOverlayAlternativeOnboardingType";
+    "lens-overlay-alternative-onboarding-type";
 
 BASE_FEATURE(kLensOverlayAlternativeOnboarding,
              "LensOverlayAlternativeOnboarding",

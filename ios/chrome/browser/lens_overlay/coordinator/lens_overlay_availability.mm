@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 
+#import "base/command_line.h"
+#import "base/strings/string_number_conversions.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -35,4 +37,30 @@ bool IsLensOverlaySameTabNavigationEnabled() {
 
 bool IsLVFUnifiedExperienceEnabled() {
   return base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
+}
+
+LensOverlayOnboardingTreatment GetLensOverlayOnboardingTreatment() {
+  LensOverlayOnboardingTreatment fallbackDefault =
+      LensOverlayOnboardingTreatment::kDefaultOnboardingExperience;
+
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  bool hasOnboardingSwitch =
+      command_line->HasSwitch(kLensOverlayAlternativeOnboardingType);
+  if (!hasOnboardingSwitch) {
+    return fallbackDefault;
+  }
+
+  std::string optionString =
+      command_line->GetSwitchValueASCII(kLensOverlayAlternativeOnboardingType);
+
+  unsigned int intValue;
+  bool conversionSuccess = base::StringToUint(optionString, &intValue);
+  unsigned int maxValue =
+      static_cast<int>(LensOverlayOnboardingTreatment::kMaxValue);
+  if (intValue > maxValue || !conversionSuccess) {
+    return fallbackDefault;
+  }
+
+  return static_cast<LensOverlayOnboardingTreatment>(intValue);
 }
