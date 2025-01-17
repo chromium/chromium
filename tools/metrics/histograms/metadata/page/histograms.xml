@@ -1760,7 +1760,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout2"
+<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout3"
     enum="Boolean" expires_after="2025-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>sergiog@microsoft.com</owner>
@@ -1774,7 +1774,9 @@ chromium-metrics-reviews@google.com.
     as suspended, and thus the timeout timer will be stopped, when page is going
     to back and forward cache or is hidden. Timeout timer will be restarted when
     page is restored from back and forward cache or is back to shown from hidden
-    and first contentful paint was not yet reached.
+    and first contentful paint was not yet reached. In case that navigation is
+    started in background, the timeout timer will not be started until the page
+    is moved to foreground.
   </summary>
 </histogram>
 
