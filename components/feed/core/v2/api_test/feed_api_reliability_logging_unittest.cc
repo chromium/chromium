@@ -320,6 +320,78 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NoResponseReceived) {
       surface.reliability_logging_bridge.GetEventsString());
 }
 
+TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_InternetDisconnected) {
+  network_.error = net::ERR_INTERNET_DISCONNECTED;
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      // Should not call LogResponseReceived.
+      "LogRequestFinished result=-106 id=1\n"
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NameNotResolved) {
+  network_.error = net::ERR_NAME_NOT_RESOLVED;
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      // Should not call LogResponseReceived.
+      "LogRequestFinished result=-105 id=1\n"
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_AddressUnreachable) {
+  network_.error = net::ERR_ADDRESS_UNREACHABLE;
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
+
+      "LogFeedRequestStart id=1\n"
+      "LogRequestSent id=1\n"
+      // Should not call LogResponseReceived.
+      "LogRequestFinished result=-109 id=1\n"
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
 TEST_F(FeedApiReliabilityLoggingTest,
        LoadStreamComplete_ResponseReceivedWithHttpError) {
   network_.http_status_code = net::HttpStatusCode::HTTP_FORBIDDEN;
