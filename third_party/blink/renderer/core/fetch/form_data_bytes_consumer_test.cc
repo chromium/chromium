@@ -719,7 +719,7 @@ TEST_F(FormDataBytesConsumerTest, InvalidType1) {
   data->AppendData(base::span_from_cstring("foo"));
   AppendDataPipe(data, " hello world");
   data->AppendBlob(CreateBlobHandle("bar"));
-  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+  ASSERT_FALSE(FormDataBytesConsumer::IsValidForTesting(data.get()));
 
   // The mid "hello world" datapipe is ignored.
   EXPECT_EQ("foobar", DrainAsString(data));
@@ -730,7 +730,7 @@ TEST_F(FormDataBytesConsumerTest, InvalidType2) {
   data->AppendData(base::span_from_cstring("foo"));
   data->AppendBlob(CreateBlobHandle("blob"));
   AppendDataPipe(data, " datapipe");
-  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+  ASSERT_FALSE(FormDataBytesConsumer::IsValidForTesting(data.get()));
 
   auto* consumer =
       MakeGarbageCollected<FormDataBytesConsumer>(GetFrame().DomWindow(), data);

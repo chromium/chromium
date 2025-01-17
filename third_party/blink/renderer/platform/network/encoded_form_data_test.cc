@@ -17,7 +17,6 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 
 namespace blink {
 
@@ -91,36 +90,6 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
   // ThreadSafeRefCounted.
   // filename_ is now thread safe, so it doesn't need a deep copy.
-}
-
-TEST_F(EncodedFormDataTest, GetType) {
-  scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendData(base::span_from_cstring("Foo"));
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendFile("Bar.txt", base::Time());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataAndEncodedFileOrBlob,
-            form_data->GetType());
-
-  form_data->AppendDataPipe(nullptr);
-  EXPECT_EQ(EncodedFormData::FormDataType::kInvalid, form_data->GetType());
-}
-
-TEST_F(EncodedFormDataTest, GetType2) {
-  scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendData(base::span_from_cstring("Foo"));
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
-
-  form_data->AppendDataPipe(nullptr);
-  EXPECT_EQ(EncodedFormData::FormDataType::kDataAndDataPipe,
-            form_data->GetType());
-
-  form_data->AppendFile("Bar.txt", base::Time());
-  EXPECT_EQ(EncodedFormData::FormDataType::kInvalid, form_data->GetType());
 }
 
 }  // namespace
