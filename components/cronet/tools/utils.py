@@ -22,7 +22,7 @@ _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
-AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false')
+AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false', 'use_allocator_shim=false')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
