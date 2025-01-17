@@ -1800,9 +1800,22 @@ const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
 const FeatureEntry::FeatureParam kTabstripComboButtonNoBackground[] = {
     {"has_background", "false"}};
 
+const FeatureEntry::FeatureParam kTabstripComboButtonReverseButtonOrder[] = {
+    {"reverse_button_order", "true"}};
+
+const FeatureEntry::FeatureParam
+    kTabstripComboButtonReverseButtonOrderNoBackground[] = {
+        {"has_background", "false"},
+        {"reverse_button_order", "true"}};
+
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - without background", kTabstripComboButtonNoBackground,
      std::size(kTabstripComboButtonNoBackground)},
+    {" - reverse button order", kTabstripComboButtonReverseButtonOrder,
+     std::size(kTabstripComboButtonReverseButtonOrder)},
+    {" - reverse button order & without background",
+     kTabstripComboButtonReverseButtonOrderNoBackground,
+     std::size(kTabstripComboButtonReverseButtonOrderNoBackground)},
 };
 
 #endif

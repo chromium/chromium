@@ -333,9 +333,17 @@ bool IsTabstripComboButtonEnabled() {
 const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
     &kTabstripComboButton, "has_background", true};
 
+const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
+    &kTabstripComboButton, "reverse_button_order", false};
+
 bool HasTabstripComboButtonWithBackground() {
   return IsTabstripComboButtonEnabled() &&
          features::kTabstripComboButtonHasBackground.Get();
+}
+
+bool HasTabstripComboButtonWithReverseButtonOrder() {
+  return IsTabstripComboButtonEnabled() &&
+         features::kTabstripComboButtonHasReverseButtonOrder.Get();
 }
 
 // Force Privacy Guide to be available even if it would be unavailable
