@@ -110,8 +110,17 @@ void LogPixFopSelectorShownUkm(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
-void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
+void LogPixFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
   ukm::builders::FacilitatedPayments_Pix_FopSelectorResult(ukm_source_id)
+      .SetResult(accepted)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogEwalletFopSelectorResultUkm(bool accepted,
+                                    ukm::SourceId ukm_source_id,
+                                    PaymentLinkValidator::Scheme scheme) {
+  ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult(ukm_source_id)
+      .SetScheme(static_cast<uint8_t>(scheme))
       .SetResult(accepted)
       .Record(ukm::UkmRecorder::Get());
 }

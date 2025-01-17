@@ -1293,4 +1293,60 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(EwalletManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  ewallet_manager_->TriggerEwalletPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  EXPECT_CALL(client_, LoadRiskData(testing::_));
+  EXPECT_CALL(client_, ShowProgressScreen());
+
+  test_api(*ewallet_manager_)
+      .OnEwalletPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                    /*selected_instrument_id=*/100L);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::
+           kResultName,
+       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+           kSchemeName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
+}
+
+TEST_F(EwalletManagerTest, ScreenClosedByUser_FopSelectorRejected) {
+  const std::vector<autofill::Ewallet> ewallets = {
+      autofill::test::CreateEwalletAccount(100L)};
+  test_api(*ewallet_manager_)
+      .ShowEwalletPaymentPrompt(std::move(ewallets), base::DoNothing());
+  // Simulate new screen was shown successfully.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  // Simulate UI screen was closed by the user.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::
+           kResultName,
+       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown::
+           kSchemeName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"), false);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
+}
+
 }  // namespace payments::facilitated
