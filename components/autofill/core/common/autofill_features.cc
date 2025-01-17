@@ -805,6 +805,11 @@ BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// If enabled, other apps can open the Autofill Options in Chrome.
+BASE_FEATURE(kAutofillDeepLinkAutofillOptions,
+             "AutofillDeepLinkAutofillOptions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.
 BASE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid,

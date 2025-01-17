@@ -296,6 +296,8 @@ BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillDeepLinkAutofillOptions);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillThirdPartyModeContentProvider);

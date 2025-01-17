@@ -217,6 +217,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableVerveCardSupport";
     public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
             "AutofillEnableVirtualCardMetadata";
+    public static final String AUTOFILL_DEEP_LINK_AUTOFILL_OPTIONS =
+            "AutofillDeepLinkAutofillOptions";
     public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
             "AutofillVirtualViewStructureAndroid";
     public static final String AUTOFILL_THIRD_PARTY_MODE_CONTENT_PROVIDER =
