@@ -20,6 +20,13 @@ bool ShouldHandleShareURLNavigation(
     return false;
   }
 
+  // If this is a session or tab restore, don't intercept the
+  // navigation to avoid showing the dialog on each browser
+  // start.
+  if (navigation_handle->GetRestoreType() == content::RestoreType::kRestored) {
+    return false;
+  }
+
   if (navigation_handle->IsRendererInitiated()) {
     if (navigation_handle->HasUserGesture()) {
       return true;
